@@ -76,6 +76,29 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
         }
       }
     }
+    // The Contact journey uses a standalone visible footer and hides the
+    // legacy global footer. Never bury the language selector in that shell.
+    for (const locale of ["en-GB", "ar"]) {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      try {
+        if (locale !== "en-GB") {
+          await context.addCookies([{ name: "np_locale", value: locale, url: origin }]);
+        }
+        const page = await context.newPage();
+        const response = await page.goto(origin + "/contact/", { waitUntil: "domcontentloaded" });
+        assert.equal(response?.status(), 200, engineName + " Contact page must load");
+        const selector = page.locator("[data-np-locale-control]");
+        await selector.waitFor({ state: "visible" });
+        assert.equal(await selector.count(), 1, "Contact must expose one visible locale selector");
+        assert.equal(await selector.evaluate((node) =>
+          Boolean(node.closest(".np-contact-reference-footer-inner"))), true,
+          engineName + " / " + locale + ": selector inserted into hidden legacy Contact footer");
+        assert.equal(await page.locator("#np-interface-locale").inputValue(), locale);
+        console.log("Standalone Contact footer locale acceptance passed:", engineName, locale);
+      } finally {
+        await context.close();
+      }
+    }
   } finally {
     await browser.close();
   }
