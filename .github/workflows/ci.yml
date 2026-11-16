@@ -25,7 +25,7 @@ jobs:
       - name: Enforce no-email production publication contract
         run: node --test scripts/test-no-email-release-guard.mjs
       - name: Enforce cross-estate Apple debugging inventory and regression tests
-        run: node --test scripts/test-debugging-dna.mjs && node scripts/audit-debugging-dna.mjs --strict
+        run: python3 -m unittest discover -s scripts -p test_audit_debugging_dna.py && python3 scripts/audit_debugging_dna.py --strict
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
       - name: Audit production dependencies and preserve evidence
