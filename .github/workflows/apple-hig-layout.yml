@@ -17,7 +17,7 @@ on:
       - "apps/technology/components/arrow-link.tsx"
       - "apps/portal/components/dashboard.tsx"
       - "apps/portal/components/portal-client.tsx"
-      - "apps/portal/app/[[...slug]]/page.tsx"
+      - "apps/portal/app/**/page.tsx"
       - "src/core/interface-locale.ts"
       - "src/components/interface-locale-switcher.tsx"
       - "scripts/build-public-pages.mjs"
