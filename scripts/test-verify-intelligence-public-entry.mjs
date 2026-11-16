@@ -70,7 +70,7 @@ test("obsolete registration claim fails the live Writing acceptance gate", async
     '<p>Subscription checkout and medicines access become available only after organisation approval.</p>' +
     '<a href="/auth/customer/start">Sign in</a>';
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
-  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /legacy_account_cta_published/u);
 });
 test("excessive PKCE cookie lifetime is never treated as a secure sign-in", async () => {
   const h = mock({
@@ -109,7 +109,7 @@ test("previous human-entry branding cannot certify the current approved registra
     '<p>Your business email, password and verification are handled by NovaPharm secure identity provider.</p>' +
     '<a href="/auth/customer/start">Sign in securely</a><a href="/auth/customer/register">Create a business account</a>';
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
-  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /legacy_account_cta_published/u);
 });
 
 test("approved Cognito password and TOTP card proves the revised public writing contract only", async () => {
@@ -126,13 +126,13 @@ test("new registration link without the mandatory approval boundary is rejected"
     ""
   );
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
-  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /approval_disclaimer_not_published/u);
 });
 
 test("obsolete registration CTA is rejected even when the new boundary copy is present", async () => {
   const html = approvedCardMarkup.replace('>Register a sign-in</a>', '>Create a business account</a>');
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
-  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /legacy_account_cta_published/u);
 });
 
 test("uncontrolled direct Cognito card without recovery cannot pass public entry", async () => {
