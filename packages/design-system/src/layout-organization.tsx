@@ -16,7 +16,8 @@ export type HierarchyItem = Readonly<{
   label: string;
   description: string;
   detail?: string;
-  href?: string;
+  // Optional route can be explicitly undefined in a mapping of governed records.
+  href?: string | undefined;
   status?: string;
 }>;
 export type HierarchyGroup = Readonly<{
