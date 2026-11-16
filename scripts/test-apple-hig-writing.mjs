@@ -70,6 +70,8 @@ needs("signIn", 'aria-busy={busy}');
 needs("signIn", 'role="status" aria-live="polite"');
 needs("signIn", '{busy ? "Signing in…" : "Sign in"}');
 needs("browserAcceptance", 'getByRole("button", { name: "Sign in", exact: true })');
+needs("browserAcceptance", '"Sign in to the right workspace", "login"');
+avoids("browserAcceptance", 'One governed entry point. Four precise access boundaries.');
 avoids("browserAcceptance", '"Sign in securely"');
 avoids("signIn", "One governed entry point. Four precise access boundaries.");
 
