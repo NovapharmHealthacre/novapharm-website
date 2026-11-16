@@ -17,13 +17,15 @@ Build **Nova ML** as a NovaPharm-branded, governed set of four modules in the ex
 
 The protected routes are:
 
-`/portal/executive-platform/medicines-intelligence/nova-ml-studio/`
+`/portal/executive-platform/nova-ml/nova-ml-studio/`
 
-`/portal/executive-platform/medicines-intelligence/nova-core-runtime/`
+`/portal/executive-platform/nova-ml/nova-core-runtime/`
 
-`/portal/executive-platform/medicines-intelligence/nova-device-intelligence/`
+`/portal/executive-platform/nova-ml/nova-device-intelligence/`
 
-`/portal/executive-platform/medicines-intelligence/nova-generative-assist/`
+`/portal/executive-platform/nova-ml/nova-generative-assist/`
+
+The existing Medicines Intelligence subview addresses remain compatible as protected aliases, but the Nova ML address family is the dedicated entry. Both routes use the same server-side authorization gate.
 
 They resolve through the existing `executive.nhs-data` protected module and server-verifiable session. Do not create public endpoints or bypass current role gating. A web deep link is an implementation path, not evidence that a live deployment contains it.
 
