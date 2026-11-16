@@ -35,3 +35,14 @@ test("the protected snapshot refresh reports success or failure explicitly", () 
   assert.match(load, /setSnapshot\(null\);\s*return false;/);
   assert.match(load, /return false;\s*\} finally/);
 });
+
+test("protected search never reports zero records when the service failed", () => {
+  assert.match(source, /const \[searchFailure, setSearchFailure\] = useState<string \| null>\(null\)/);
+  assert.match(source, /setSearchFailure\(failure\)/);
+  assert.match(source, /setSearchFailure\(null\)/);
+  assert.match(source, /searchFailure \? <div role="alert">/);
+  assert.match(source, /Search could not be completed/);
+  assert.match(source, /Retry authorised search/);
+  assert.match(source, /No authorised records found in this scope/);
+  assert.ok(source.indexOf("searchFailure ? <div role=\"alert\">") < source.indexOf("No authorised records found in this scope."));
+});
