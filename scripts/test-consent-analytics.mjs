@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
+import { APPROVED_NUTRAXIN_PRODUCT_PATHS, validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
 
 assert.equal(validGa4Id("G-ABCD123456"), true);
 for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
@@ -12,6 +12,11 @@ assert.equal(publicAnalyticsRoute("/products/nutraxin/vitamin-d3-120-tablets/"),
 // GA4 must be opt-in AND limited to exact reviewed public product URLs.
 const approvedRetail = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
 assert.equal(approvedRetail.length, 19, "Review the product allowlist whenever the catalogue changes");
+assert.deepEqual(
+  [...APPROVED_NUTRAXIN_PRODUCT_PATHS].sort(),
+  approvedRetail.map((product) => "/products/nutraxin/" + product.slug + "/").sort(),
+  "Consent analytics may allow exactly the current 19 reviewed public product pages, without extra or missing slugs"
+);
 for (const product of approvedRetail) {
   assert.equal(publicAnalyticsRoute("/products/nutraxin/" + product.slug + "/"), true, "Approved informational product must remain eligible: " + product.slug);
 }
