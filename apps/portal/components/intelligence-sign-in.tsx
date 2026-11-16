@@ -258,7 +258,7 @@ export function IntelligenceSignIn() {
           <section className={styles["signInCard"]} aria-labelledby="intelligence-signin-card-title">
             <IntelligenceLogo small />
             <h2 id="intelligence-signin-card-title">{customer ? "Your secure workspace." : "Sign in to your secure workspace."}</h2>
-            {!customer && phase === "password" ? <p className={styles["providerNote"]}>A verified business identity is required for private workspaces. You can explore the public platform before creating an account.</p> : null}
+            {!customer && phase === "password" ? <p className={styles["providerNote"]}>Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.</p> : null}
             {customer ? (
               <>
                 <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
@@ -356,7 +356,7 @@ export function IntelligenceSignIn() {
                   <>
                     <a className={styles["recoveryAction"]} href="/auth/customer/start?mode=reset">Forgot your password?</a>
                     <div className={styles["divider"]}><span>or</span></div>
-                    <a className={styles["createAction"]} href="/auth/customer/register">Create a business account</a>
+                    <a className={styles["createAction"]} href="/auth/customer/register">Register a sign-in</a>
                   </>
                 )}
               </>
