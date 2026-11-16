@@ -157,7 +157,7 @@ export function FormField({ id, label, hint, error, required, children }: Readon
   // screen-reader references, native required state or other control semantics.
   const existingProps = isValidElement<Record<string, unknown>>(children) ? children.props : {};
   const originalDescription = typeof existingProps["aria-describedby"] === "string"
-    ? existingProps["aria-describedby"].split(/\\s+/).filter(Boolean) : [];
+    ? existingProps["aria-describedby"].split(/\s+/).filter(Boolean) : [];
   const describedBy = [...new Set([...originalDescription, ...(hint ? [`${id}-hint`] : []), ...(error ? [`${id}-error`] : [])])].join(" ") || undefined;
   const isRequired = required ?? (existingProps["required"] === true);
   const control = isValidElement<Record<string, unknown>>(children)
