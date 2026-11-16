@@ -85,7 +85,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader locale={locale} />
         <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
-        <SiteFooter />
+        <SiteFooter locale={locale} />
         <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="technology-organisation-schema" value={technologyOrganisationSchema()} />
         <JsonLd id="technology-website-schema" value={technologyWebsiteSchema()} />

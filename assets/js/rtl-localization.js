@@ -51,7 +51,7 @@
     });
     var note = document.createElement("span");
     note.className = "np-locale-note";
-    note.textContent = locale === "ar" ? "تمت ترجمة التنقل فقط؛ ترجمة بقية المحتوى قيد الإعداد." : locale === "he" ? "הניווט תורגם; תרגום שאר התוכן עדיין בהכנה." : "Navigation translated; full content translation pending.";
+    note.textContent = locale === "ar" ? "تمت ترجمة بعض عناوين التنقل؛ ترجمة المحتوى الكامل قيد الإعداد." : locale === "he" ? "חלק מתוויות הניווט תורגמו; תרגום התוכן המלא עדיין בהכנה." : "Some navigation labels translated; full content translation pending.";
     control.append(label, select, note);
     document.body.appendChild(control);
   }

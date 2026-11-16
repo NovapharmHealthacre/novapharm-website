@@ -185,6 +185,10 @@ test("interface localization does not claim that clinical, legal, or regulated e
   assert.equal((read("apps/corporate/components/mobile-navigation.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate mobile link branches must translate");
   assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
+  assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale, "Company links"\)/);
+  assert.match(read("apps/technology/components/site-footer.tsx"), /interfaceLabel\(locale, item.label\)/);
+  assert.match(read("apps/technology/app/layout.tsx"), /<SiteFooter locale=\{locale\} \/>/);
+  assert.match(read("src/core/interface-locale.ts"), /Some navigation labels translated; full content translation pending/);
   const arrowLink = read("apps/technology/components/arrow-link.tsx");
   assert.match(arrowLink, /<ArrowRight data-np-directional-arrow="true" \/>/);
   assert.match(arrowLink, /<ArrowUpRight \/>/);

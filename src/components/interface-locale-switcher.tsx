@@ -30,7 +30,7 @@ export function InterfaceLocaleSwitcher({ locale }: Props) {
         <option value="ar" lang="ar">العربية · RTL</option>
         <option value="he" lang="he">עברית · RTL</option>
       </select>
-      <span className="np-locale-note">{interfaceLabel(locale, "Navigation translated; full content translation pending.")}</span>
+      <span className="np-locale-note">{interfaceLabel(locale, "Some navigation labels translated; full content translation pending.")}</span>
     </div>
   );
 }
