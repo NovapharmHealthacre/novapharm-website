@@ -12175,3 +12175,93 @@ body[data-page="home"] .pharma-home-media img {
     outline-offset: 3px;
   }
 }
+
+/* Source: rtl-localization.css */
+/*
+ * NovaPharm Apple HIG right-to-left baseline.
+ * Direction is logical layout, NEVER transform:scaleX(-1) on an entire page.
+ * Brand logos, medicine packaging, photos, chart axes and universal icons
+ * preserve their true orientation.
+ */
+:root { --np-rtl-contract: 1; }
+
+.np-locale-control {
+  position: fixed;
+  inset-inline-end: max(12px, env(safe-area-inset-right, 0px));
+  inset-block-end: max(12px, env(safe-area-inset-bottom, 0px));
+  z-index: 75;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  inline-size: min(218px, calc(100vw - 24px));
+  padding: 9px 11px;
+  background: #fff;
+  color: #1b2028;
+  border: 1px solid #ccd1d7;
+  border-radius: 8px;
+  box-shadow: 0 5px 22px rgba(17, 24, 39, .12);
+  direction: ltr;
+  text-align: left;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+.np-locale-control label { font-size: 11px; font-weight: 600; line-height: 1.35; }
+.np-locale-control select {
+  max-inline-size: 100%;
+  min-block-size: 44px;
+  padding: 6px 8px;
+  background: #fff;
+  color: #111827;
+  border: 1px solid #9199a5;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 14px;
+}
+.np-locale-note { font-size: 10px; line-height: 1.4; color: #4d5967; }
+.np-locale-control :focus-visible { outline: 3px solid #0b69ff; outline-offset: 2px; }
+
+html[dir="rtl"] {
+  direction: rtl;
+  font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+}
+html[dir="rtl"] body { direction: rtl; }
+html[dir="rtl"] :is(.site-header, .site-footer, .site-nav, .desktop-nav,
+ .site-header__nav, .site-navigation, .mobile-menu, .breadcrumb,
+ .portal-shell, .portal-sidebar, .workspace-shell, .workspace-sidebar,
+ .workspace-content, .status-header, .status-footer) {
+  direction: rtl;
+}
+html[dir="rtl"] :is(.site-header, .site-footer, .status-header, .status-footer)
+ :is(h1, h2, h3, h4, nav, ul, li, label) {
+  text-align: start;
+}
+html[dir="rtl"] :is(.site-nav, .desktop-nav, .site-header__nav, .site-navigation, .breadcrumb) {
+  unicode-bidi: isolate;
+}
+/* An English paragraph must not be right-aligned merely because surrounding
+   navigation is Arabic or Hebrew. Published editorial copy is not translated yet. */
+html[dir="rtl"] :is(main[lang="en-GB"], article[lang="en-GB"])
+ :is(p, blockquote) { direction: ltr; text-align: left; }
+/* Data identifiers must retain the exact digit and character sequence. */
+html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[type="url"],
+ input[type="number"], input[type="date"], input[type="datetime-local"],
+ [data-np-ltr], [data-np-number], [data-np-medicine-code]) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] :is(.table-region, .np-hig-table-region, .portal-table-scroll) {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+/* Only controls explicitly identified as reading-direction arrows mirror.
+   Do NOT mirror geography, medical images, charts, actual compass directions,
+   universal glyphs, company marks or third-party artwork. */
+html[dir="rtl"] [data-np-directional-arrow="true"] { transform: scaleX(-1); }
+@media (max-width: 420px) {
+  .np-locale-control { inline-size: 180px; padding: 7px; }
+  .np-locale-note { font-size: 9px; }
+}
+@media (forced-colors: active) {
+  .np-locale-control { border: 1px solid CanvasText; box-shadow: none; }
+  .np-locale-control select { border: 1px solid CanvasText; }
+}
