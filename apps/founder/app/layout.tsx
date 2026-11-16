@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SiteChrome } from "@/components/chrome";
 import { JsonLdScript } from "@/components/json-ld";
 import { founderPersonSchema, websiteSchema } from "@/lib/seo";
@@ -7,6 +7,10 @@ import "./base.css";
 import "./evidence.css";
 import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/novapharm-hig-motion.css";
+import "../../../assets/css/rtl-localization.css";
+
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vishal.novapharmhealthcare.com"),
@@ -36,9 +40,10 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>): Promise<React.JSX.Element> {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
 
   return (
-    <html className="no-js" lang="en-GB" suppressHydrationWarning>
+    <html className="no-js" lang={locale} dir={directionForLocale(locale)} suppressHydrationWarning>
       <head>
         <script id="founder-javascript-mode" nonce={nonce}>
           {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
@@ -47,7 +52,8 @@ export default async function RootLayout({
       <body>
         <JsonLdScript data={websiteSchema()} />
         <JsonLdScript data={founderPersonSchema()} />
-        <SiteChrome>{children}</SiteChrome>
+        <div lang="en-GB" data-np-untranslated><SiteChrome>{children}</SiteChrome></div>
+        <InterfaceLocaleSwitcher locale={locale} />
       </body>
     </html>
   );
