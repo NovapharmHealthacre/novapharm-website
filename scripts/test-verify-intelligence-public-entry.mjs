@@ -14,10 +14,16 @@ for(const [key,val] of Object.entries({
  code_challenge:"a".repeat(43),state:"b".repeat(43),nonce:"c".repeat(43)
 }))redirect.searchParams.set(key,val);
 
+const approvedCardMarkup = '<h1>A more human intelligence for medicine.</h1>' +
+  '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
+  '<p>Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.</p>' +
+  '<a href="/auth/customer/start?mode=reset">Forgot your password?</a>' +
+  '<a href="/auth/customer/register">Register a sign-in</a>';
+
 function mock(overrides={}) {
  const calls=[];
  const replies=new Map([
-  [origin+"/",()=>new Response('<h1>Understand the medicine</h1><p>Invitation-only access</p><a href="/auth/customer/start">Sign in</a>',{status:200})],
+  [origin+"/",()=>new Response(approvedCardMarkup,{status:200})],
   [corporate+"/technology/",()=>new Response('<a href="'+origin+'/">Sign in</a>Invitation-only',{status:200})],
   [origin+login,()=>new Response(null,{status:302,headers:{"location":redirect.toString(),"set-cookie":cookie}})],
   [callback,()=>new Response("Denied",{status:401,headers:{"cache-control":"no-store"}})],
@@ -59,20 +65,12 @@ test("any anonymous private API success or redirect fails closed",async()=>{
   await assert.rejects(()=>verifyIntelligencePublicEntry({fetchImpl:h.fetchImpl}),/not_iam_protected/u);
  }
 });
-test("current governed account registration copy is a valid public entry, without access grants", async () => {
+test("obsolete registration claim fails the live Writing acceptance gate", async () => {
   const html = '<h1>Understand the medicine</h1><p>Create a business account</p>' +
     '<p>Subscription checkout and medicines access become available only after organisation approval.</p>' +
     '<a href="/auth/customer/start">Sign in</a>';
-  const h = mock({
-    [origin + "/"]: () => new Response(html, { status: 200 }),
-    [origin + login]: () => new Response(null, {
-      status: 302,
-      headers: { location: redirect.toString(), "set-cookie": cookie.replace("Max-Age=300", "Max-Age=900") },
-    }),
-  });
-  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
-  assert.equal(result.verified, true);
-  assert.equal(result.customerTenantActivated, false);
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
 });
 test("excessive PKCE cookie lifetime is never treated as a secure sign-in", async () => {
   const h = mock({
@@ -106,31 +104,41 @@ test("corporate link, invitation caveat and callback denial are required",async(
  }
 });
 
-test("approved human portal copy retains secure identity and registration contracts", async () => {
+test("previous human-entry branding cannot certify the current approved registration copy", async () => {
   const html = '<h1>A more human intelligence for medicine.</h1>' +
     '<p>Your business email, password and verification are handled by NovaPharm secure identity provider.</p>' +
     '<a href="/auth/customer/start">Sign in securely</a><a href="/auth/customer/register">Create a business account</a>';
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+});
+
+test("approved Cognito password and TOTP card proves the revised public writing contract only", async () => {
+  const h = mock({ [origin + "/"]: () => new Response(approvedCardMarkup, { status: 200 }) });
   const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
   assert.equal(result.verified, true);
   assert.equal(result.customerTenantActivated, false);
+  assert.equal(result.scope, "public-entry-and-anonymous-denial-only");
 });
 
-test("direct Cognito PASSWORD + TOTP sign-in card is a valid guarded public entry", async () => {
-  const html = '<h1>A more human intelligence for medicine.</h1>' +
-    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
-    '<a href="/auth/customer/start?mode=reset">Forgot your password?</a>' +
-    '<a href="/auth/customer/register">Create a business account</a>';
-  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
-  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
-  assert.equal(result.verified, true);
-  assert.equal(result.customerTenantActivated, false);
-});
-
-test("uncontrolled direct Cognito card without recovery cannot pass public entry", async () => {
-  const html = '<h1>A more human intelligence for medicine.</h1>' +
-    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
-    '<a href="/auth/customer/register">Create a business account</a>';
+test("new registration link without the mandatory approval boundary is rejected", async () => {
+  const html = approvedCardMarkup.replace(
+    "Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.",
+    ""
+  );
   const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
   await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
 });
+
+test("obsolete registration CTA is rejected even when the new boundary copy is present", async () => {
+  const html = approvedCardMarkup.replace('>Register a sign-in</a>', '>Create a business account</a>');
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+});
+
+test("uncontrolled direct Cognito card without recovery cannot pass public entry", async () => {
+  const html = approvedCardMarkup.replace('/auth/customer/start?mode=reset', '/auth/customer/unapproved-recovery');
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+});
+
+
