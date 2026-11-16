@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { SegmentedChoice } from "../../../packages/design-system/src/menu-actions";
 
 type RecordedSection = Readonly<{
   title: string;
@@ -129,11 +130,12 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
     <div className="distribution-wms-evidence-exceptions">
       <div className="distribution-wms-evidence-exceptions-heading">
         <div><h3>Exception review</h3><p>Suggested priorities from existing application evidence, not confirmed 3PL incidents.</p></div>
-        {hasWorklist ? <fieldset className="distribution-wms-evidence-filters" aria-label="Filter recorded exceptions">
-          {(["all", "high", "standard"] as const).map((choice) =>
-            <button type="button" key={choice} aria-pressed={priority === choice}
-              onClick={() => setPriority(choice)}>{choice === "all" ? "All" : choice === "high" ? "High" : "Standard"}</button>)}
-        </fieldset> : null}
+        {hasWorklist ? <SegmentedChoice name="recorded-exception-priority"
+          label="Filter recorded exceptions by priority"
+          value={priority}
+          options={[{ value: "all", label: "All" }, { value: "high", label: "High" },
+            { value: "standard", label: "Standard" }]}
+          onChange={(value) => setPriority(value as PriorityFilter)} /> : null}
       </div>
       {hasWorklist ? <>
         <div className="distribution-wms-evidence-search">
