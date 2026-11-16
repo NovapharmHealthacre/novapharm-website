@@ -67,7 +67,7 @@ export function finalizePublicRtlArtifacts(root = process.cwd()) {
     // second build. Reposition standalone RTL CSS at one canonical location
     // *before* CSS hashing, so the final released HTML is byte-identical.
     const bundleLinked = /href=["']\/assets\/css\/novapharm\.bundle\.css(?:\?[^"']*)?["']/i.test(html);
-    const standaloneLink = /^[ \t]*<link\s+rel=["']stylesheet["']\s+href=["']\/assets\/css\/rtl-localization\.css(?:\?[^"']*)?["']\s*\/?>[ \t]*(?:\r?\n)?/gim;
+    const standaloneLink = /[ \t]*<link\s+rel=["']stylesheet["']\s+href=["']\/assets\/css\/rtl-localization\.css(?:\?[^"']*)?["']\s*\/?>[ \t]*(?:\r?\n)?/gim;
     const existingStandaloneLinks = html.match(standaloneLink) ?? [];
     if (existingStandaloneLinks.length > 1) {
       throw new Error("Duplicate RTL stylesheet links in public artifact: " + file);
