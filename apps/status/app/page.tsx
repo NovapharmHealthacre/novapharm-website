@@ -56,9 +56,9 @@ export default async function StatusPage() {
           <p className="eyebrow">Monitored boundaries</p>
           <h2 id="services-title">Current service position</h2>
         </div>
-        <div className="service-list">
+        <ul className="service-list">
           {snapshot.services.map((service) => (
-            <article className="service-row" key={service.code}>
+            <li className="service-row" key={service.code}>
               <div>
                 <span className={`state-dot state-${service.state}`} aria-hidden="true" />
                 <h3>{service.name}</h3>
@@ -70,9 +70,9 @@ export default async function StatusPage() {
               ) : (
                 <span className="private-boundary">{destinationLabels[service.visibility]}</span>
               )}
-            </article>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
       <footer className="status-footer">
         <p>NovaPharm Healthcare Ltd. Status data is intentionally limited to operational availability.</p>

@@ -10,10 +10,19 @@ test("public-only Pages release jobs must never auto-overwrite live AWS contact"
     assert.match(workflow, /workflow_dispatch:/, file + " requires manual recovery option");
   }
 });
-test("every approved main push dispatches an immutable AWS contact release", () => {
+test("approved public main pushes retain immutable AWS contact release while private Nova ML-only merges are excluded", () => {
   const dispatcher = get("dispatch-approved-aws-contact-release.yml");
   assert.match(dispatcher, /\non:\n  push:\n    branches: \[main\]/);
   assert.doesNotMatch(dispatcher, /\n    paths:/);
+  assert.match(dispatcher, /id: private_release/);
+  assert.match(dispatcher, /private_only=true/);
+  assert.match(dispatcher, /changed_any=true/);
+  assert.match(dispatcher, /apps\/portal\/\*/);
+  assert.match(dispatcher, /native\/novapharm-intelligence-apple\/\*/);
+  assert.match(dispatcher, /scripts\/aws\/contact-release-routing\.test\.mjs/);
+  assert.match(dispatcher, /if: steps\.private_release\.outputs\.skip != 'true'/);
+  const guardedAwsSteps = dispatcher.match(/if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
+  assert.equal(guardedAwsSteps.length, 2, "both the AWS health check and contact dispatch must skip for private-only merges");
   assert.match(dispatcher, /gh workflow run publish-aws-contact-production\.yml/);
   assert.match(dispatcher, /expected_sha="\$EXPECTED_SHA"/);
   assert.match(dispatcher, /\.ready == true and \.acceptingPublicSubmissions == true/);

@@ -18,7 +18,7 @@ const guides: Readonly<Record<AccountAudience, Guide>> = {
     reason: "A verified business account is needed for customer-specific pricing, documents, order requests and financial records. You can explore public information without signing in.",
     before: [
       "Explore products and services on the public NovaPharm website.",
-      "Apply for a business account. NovaPharm reviews the application before granting access.",
+      "Register interest in a business account. Eligible businesses may then receive a private application invitation.",
       "Once approved, sign in to the Customer workspace with your assigned credentials.",
     ],
     after: [
@@ -27,7 +27,7 @@ const guides: Readonly<Record<AccountAudience, Guide>> = {
       "Check your account permissions before requesting orders or changes.",
     ],
     accessHref: "https://novapharmhealthcare.com/account-application/",
-    accessLabel: "Apply for a business account",
+    accessLabel: "Register business interest",
   },
   employee: {
     reason: "Employee access protects operational, customer and distribution information. Your administrator must assign the correct role.",

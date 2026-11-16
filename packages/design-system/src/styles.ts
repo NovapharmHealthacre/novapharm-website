@@ -173,4 +173,23 @@ export const designSystemCss = String.raw`
 @media(max-width:480px){.np-payment-request{border-radius:1rem;padding:1rem}.np-payment-request__card{padding:1.5rem 1rem}.np-payment-request__actions>*{flex:1 1 auto}}
 @media(prefers-contrast:more){.np-payment-request{border-color:#1d1d1f}.np-payment-request__card{border-color:#515154}.np-payment-request__note{color:#1d1d1f}}
 @media(forced-colors:active){.np-payment-request,.np-payment-request__card{border:1px solid CanvasText}}
+
+/* Layout and organization components share the same logical spacing as the web estate. */
+.np-hig-box{box-sizing:border-box;inline-size:min(100%,var(--np-hig-box-max,52rem));min-inline-size:0;border:1px solid var(--np-hig-box-border,color-mix(in srgb,currentColor 18%,transparent));border-radius:12px;background:var(--np-hig-box-surface,transparent);padding:clamp(16px,2.5vw,24px)}
+.np-hig-box--subtle{--np-hig-box-surface:color-mix(in srgb,currentColor 4%,transparent);--np-hig-box-border:transparent}
+.np-hig-box--plain{border-color:transparent;background:transparent;padding:0}
+.np-hig-box--wide{--np-hig-box-max:100%}
+.np-hig-box__heading{margin:0;font-size:clamp(1rem,1.8vw,1.25rem);line-height:1.3}
+.np-hig-box__description{margin:8px 0 0;max-inline-size:68ch;line-height:1.55}
+.np-hig-box__content{display:grid;gap:16px;min-inline-size:0;margin-block-start:12px}
+.np-hig-box:not(:has(.np-hig-box__heading,.np-hig-box__description))>.np-hig-box__content{margin-block-start:0}
+.np-hig-collection{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(16px,2vw,32px);list-style:none;padding:0;margin:0}
+.np-hig-collection>li{min-inline-size:0}
+.np-hig-split-view{display:grid;grid-template-columns:minmax(0,min(34%,340px)) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:start}
+.np-hig-split-view>*{min-inline-size:0}
+.np-hig-disclosure>summary{cursor:pointer;display:flex;align-items:center;min-block-size:44px;gap:12px}
+.np-hig-disclosure>summary:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.np-hig-disclosure__content{min-inline-size:0;padding-block:12px 4px}
+@media(max-width:760px){.np-hig-split-view{grid-template-columns:minmax(0,1fr)}.np-hig-box{inline-size:100%}}
+@media(forced-colors:active){.np-hig-box{border-color:CanvasText}.np-hig-box--plain{border-color:transparent}}
 `;

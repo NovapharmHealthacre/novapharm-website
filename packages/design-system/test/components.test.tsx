@@ -4,6 +4,10 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   ApprovalStatus,
+  CollectionView,
+  Disclosure,
+  GroupBox,
+  SplitView,
   Breadcrumbs,
   DataTable,
   Dialog,
@@ -64,4 +68,29 @@ test("search field exposes scope, assistive result status and a non-submitting c
   assert.match(html, /aria-hidden="true"/);
   const empty = renderToStaticMarkup(<SearchField label="Products" value="" onChange={() => {}} />);
   assert.doesNotMatch(empty, /Clear products/);
+});
+
+test("group box labels related content, without nesting unnecessary containers", () => {
+  const html = renderToStaticMarkup(<>
+    <GroupBox title="Delivery details" description="Only authorised addresses appear here." headingLevel={2}>
+      <label htmlFor="delivery-reference">Reference</label><input id="delivery-reference" />
+    </GroupBox>
+    <GroupBox variant="plain"><span>Ungrouped title-free note</span></GroupBox>
+  </>);
+  assert.match(html, /<section[^>]*class="np-hig-box np-hig-box--outlined"[^>]*aria-labelledby=/);
+  assert.match(html, /<h2 class="np-hig-box__heading"/);
+  assert.match(html, /Only authorised addresses appear here/);
+  assert.match(html, /<div class="np-hig-box np-hig-box--plain"/);
+  assert.doesNotMatch(html, /aria-label="undefined"/);
+});
+
+test("collection source order, split panes and disclosure remain accessible without JS", () => {
+  const html = renderToStaticMarkup(<>
+    <CollectionView title="Service groups" items={[{ id: "a", content: "First" }, { id: "b", content: "Second" }]} />
+    <SplitView label="Evidence and details" leading={<nav>Sources</nav>}><p>Selected evidence</p></SplitView>
+    <Disclosure summary="More information">Verified notes</Disclosure>
+  </>);
+  assert.match(html, /<ul class="np-hig-collection"><li>First<\/li><li>Second<\/li><\/ul>/);
+  assert.match(html, /class="np-hig-split-view" aria-label="Evidence and details"/);
+  assert.match(html, /<details class="np-hig-disclosure"><summary>More information<\/summary>/);
 });

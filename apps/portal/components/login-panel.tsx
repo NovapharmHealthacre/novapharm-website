@@ -61,8 +61,8 @@ export function LoginPanel() {
       <PortalBrand />
       <div className="login-copy">
         <p className="eyebrow">Secure workspace</p>
-        <h1 id="portal-title">One governed entry point. Four precise access boundaries.</h1>
-        <p>Customer operations, company workflows, board intelligence and platform administration remain separated by server-enforced permissions.</p>
+        <h1 id="portal-title">Sign in to the right workspace</h1>
+        <p>Choose Customer, Employee, Board or Administrator. Your assigned permissions determine which tools and records you can access.</p>
       </div>
       <p className="environment-line">Authorised business users only. Activity is security logged.</p>
     </section>
@@ -73,7 +73,7 @@ export function LoginPanel() {
         <p className="muted" id="portal-account-reason">{accessReason[accessType]}</p>
       </div>
       <fieldset className="access-selector">
-        <legend>Portal type</legend>
+        <legend>Choose a workspace</legend>
         {accessTypes.map(({ value, label, icon: Icon }) => <label key={value} className={accessType === value ? "selected" : ""}>
           <input type="radio" name="accessType" value={value} checked={accessType === value} onChange={() => setAccessType(value)} />
           <Icon aria-hidden="true" className="np-symbol" /><span>{label}</span>
@@ -90,7 +90,7 @@ export function LoginPanel() {
             {showPassword ? <EyeOff aria-hidden="true" className="np-symbol" /> : <Eye aria-hidden="true" className="np-symbol" />}
           </button>
         </div>
-        <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
+        <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
       </form>
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>

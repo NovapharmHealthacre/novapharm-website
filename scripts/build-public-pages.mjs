@@ -22,6 +22,8 @@ import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platfo
 const root = resolve(process.cwd());
 const platformMode = resolvePlatformMode();
 const platformCapabilities = getPlatformCapabilities(platformMode);
+// Public-only pages cannot promise account creation or a working application.
+const accountCtaLabel = platformCapabilities.accountApplication ? "Apply for a business account" : "Discuss account eligibility";
 const nutraxinCatalogue = validateNutraxinRegister({ repositoryRoot: root }).register;
 const articlesDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articlesDirectory)
@@ -145,7 +147,7 @@ function header(slug = "") {
         ${navigation.filter(([label]) => label !== "Secure Portal").map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
         <a class="nav-search" href="/search/" data-ai-search-open>Search <kbd>Ctrl K</kbd></a>
         <a class="nav-portal" href="https://portal.novapharmhealthcare.com/">Secure portal</a>
-        <a class="btn btn-primary nav-cta" href="/account-application/">Open an account</a>
+        <a class="btn btn-primary nav-cta" href="/account-application/">${esc(accountCtaLabel)}</a>
       </nav>
     </div>
   </header>`;
@@ -162,7 +164,7 @@ function footer() {
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/oncology/">Oncology continuity</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
-        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
+        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/trust-centre/">Trust centre</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
       <div class="footer-notices">
@@ -397,7 +399,7 @@ function regulatoryNotice() {
 }
 
 function finalCta(title = "Build the next pharmaceutical partnership with NovaPharm.") {
-  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">Open an account</a></div></div></section>`;
+  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">${esc(accountCtaLabel)}</a></div></div></section>`;
 }
 
 function leaderVisual(profile, eager = false, sizes = eager ? "(max-width: 760px) 100vw, 50vw" : "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px") {
@@ -810,7 +812,7 @@ function partnersPage() {
   ${mediaStory({ src: "/assets/media/editorial/partnership-pathway.svg", alt: "Five controlled stages in a pharmaceutical partnership pathway", kicker: "Qualified collaboration", title: "The route from introduction to launch should be visible.", text: "Strategic fit, evidence, due diligence, agreement, implementation and review are treated as explicit stages. No organisation is presented as a partner until permission and scope are confirmed.", reverse: true })}
   <section class="section"><div class="container">${sectionHeading("Partner ecosystem", "Who NovaPharm is designed to work with.")}<div class="partner-type-grid partner-type-grid-large">${partnerTypes.map((type) => `<span>${esc(type)}</span>`).join("")}</div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Partner journey", "Ten controlled stages from first conversation to ongoing review.")}<ol class="partner-journey">${partnerJourney.map((step, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(step)}</strong></li>`).join("")}</ol></div></section>
-  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>Open a business account</strong></a></div></section>
+  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>${esc(accountCtaLabel)}</strong></a></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
 }
@@ -927,8 +929,10 @@ function contactPage() {
 function accountApplicationPage() {
   const slug = "account-application";
   const meta = {
-    title: "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-    description: "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    title: platformCapabilities.accountApplication ? "Apply for a Pharmaceutical Customer Account | NovaPharm Healthcare" : "Business Account Eligibility | NovaPharm Healthcare",
+    description: platformCapabilities.accountApplication
+      ? "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow."
+      : "Learn how NovaPharm assesses business account eligibility. The public-only website cannot accept formal applications or private documents.",
     eyebrow: "Customer onboarding"
   };
   if (!platformCapabilities.accountApplication) {
@@ -1080,7 +1084,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {
@@ -1135,7 +1139,7 @@ export function buildPublicPages() {
   write("legal/modern-slavery/index.html", modernSlaveryPage());
   write("legal/environment-carbon/index.html", environmentPage());
   write("404.html", errorPage("404", "Page not found", "The page may have moved, or the address may be incorrect."));
-  write("500.html", errorPage("500", "Service unavailable", "NovaPharm's secure service is temporarily unavailable. Please try again later."));
+  write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable. Try again later or go to the home page."));
   write("service-unavailable/index.html", errorPage("503", "Service temporarily unavailable", "The secure NovaPharm service is not ready to accept this request."));
   write("contact.html", redirectPage("Contact", "/contact/"));
   write("company-profile/index.html", redirectPage("Company", "/about/company/"));

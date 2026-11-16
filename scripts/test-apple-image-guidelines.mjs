@@ -57,3 +57,15 @@ test("high-density public imagery retains modern sources and fallbacks", () => {
   assert.match(nutraxin, /srcset="[^"]*480w[^"]*800w/);
   assert.match(nutraxin, /<source[^>]+type="image\/avif"/);
 });
+
+test("public browser image-density advisories respect responsive srcset descriptors", () => {
+  const audit = read("scripts/test-public-sitemap-geometry.mjs");
+  assert.match(audit, /const srcsets = \[/, "Audit must inspect image and picture source candidates");
+  assert.match(audit, /img\.closest\("picture"\)/, "Audit must inspect preferred AVIF or WebP sources");
+  assert.match(audit, /estimatedSourcePixelWidth/, "Audit needs a density-aware resource width");
+  assert.match(audit, /const scalableVector = /, "SVGs must be recognised as scalable vectors");
+  assert.match(audit, /lowDensity:local && !scalableVector && visibleMedia/, "SVGs must not appear in raster density advisories");
+  assert.match(audit, /sourcePixelWidthBasis:selectedDescriptor/, "Advisories must label their source");
+  assert.doesNotMatch(audit, /img\.naturalWidth < box\.width \* Math\.min\(window\.devicePixelRatio/,
+    "Density-corrected naturalWidth cannot be treated as physical resource pixels");
+});

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
 import { intelligenceWorkspaceCatalogue, intelligenceWorkspaceSlugs } from "../data/intelligence-workspaces";
+import { novaMlWorkspaceCatalogue, novaMlWorkspaceSlugs } from "../data/nova-ml-modules";
 import { areaLandingRoutes, isPortalAccessType, landingRouteForAccess, medicinesIntelligenceSubviews, normalisePortalPath, resolvePortalView } from "../data/routes";
 
 test("only release-visible governed modules resolve through the component portal", () => {
@@ -67,4 +68,39 @@ test("all 22 canonical workspaces resolve to the existing protected executive mo
   }
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/admin/"), null);
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/data-operations/"), null);
+});
+
+test("Nova ML remains four independently named, protected Intelligence extensions", () => {
+  assert.equal(novaMlWorkspaceCatalogue.length, 4);
+  assert.equal(new Set(novaMlWorkspaceSlugs).size, 4);
+  assert.equal(intelligenceWorkspaceCatalogue.length, 22, "native extensions must not redefine the canonical medicine workspaces");
+
+  const landing = resolvePortalView("/portal/executive-platform/nova-ml/");
+  assert.equal(landing?.kind, "module");
+  if (landing?.kind === "module") {
+    assert.equal(landing.module.code, "executive.nhs-data");
+    assert.equal(landing.subview, "nova-ml-studio");
+  }
+
+  for (const candidate of novaMlWorkspaceCatalogue) {
+    for (const prefix of [
+      "/portal/executive-platform/nova-ml/",
+      "/portal/executive-platform/medicines-intelligence/",
+    ]) {
+      const route = `${prefix}${candidate.slug}/`;
+      const view = resolvePortalView(route);
+      assert.equal(view?.kind, "module", route);
+      if (view?.kind === "module") {
+        assert.equal(view.module.code, "executive.nhs-data");
+        assert.equal(view.subview, candidate.slug);
+      }
+    }
+    assert.ok(candidate.requirements.length >= 3);
+    assert.match(candidate.platform, /required/);
+  }
+  for (const route of [
+    "/portal/executive-platform/nova-ml/unapproved-model/",
+    "/portal/executive-platform/nova-ml/nova-ml-studio/secret/",
+    "/portal/executive-platform/nova-ml/admin/",
+  ]) assert.equal(resolvePortalView(route), null, route);
 });

@@ -21,7 +21,35 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 2
+      - name: Skip contact publication for Nova ML-only main merges
+        id: private_release
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Private model-governance source does not justify public AWS contact
+          # publication. On any unexpected path, retain the guarded old flow.
+          private_only=true
+          changed_any=false
+          while IFS= read -r changed; do
+            [ -n "$changed" ] || continue
+            changed_any=true
+            case "$changed" in
+              apps/portal/*|native/novapharm-intelligence-apple/*|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/aws/contact-release-routing.test.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/nova-ml-native-apple.yml|.github/workflows/dispatch-approved-aws-contact-release.yml)
+                ;;
+              *)
+                private_only=false
+                ;;
+            esac
+          done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
+          if [ "$changed_any" = true ] && [ "$private_only" = true ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Nova ML-only merge: no AWS contact call or public Pages overwrite."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Other changes: preserve the verified contact publisher workflow."
+          fi
       - name: Avoid a duplicate release for a directly published commit
+        if: steps.private_release.outputs.skip != 'true'
         id: publisher
         shell: bash
         env:
@@ -53,7 +81,7 @@ jobs:
           done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
           echo "skip=false" >> "$GITHUB_OUTPUT"
       - name: Verify AWS contact candidate is already activated
-        if: steps.publisher.outputs.skip != 'true'
+        if: steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
         env:
           CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
         run: |
@@ -63,7 +91,7 @@ jobs:
           jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' /tmp/contact-health.json
           echo 'Confirmed AWS contact intake is enabled. No real enquiry data was read.'
       - name: Dispatch independently verified exact-SHA contact release
-        if: steps.publisher.outputs.skip != 'true'
+        if: steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.sha }}
