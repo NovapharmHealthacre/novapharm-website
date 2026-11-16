@@ -14,7 +14,7 @@ The uploaded Core AI Debugger disk image is an Apple/macOS installer; never atta
 
 ## Whole-estate workflow
 
-**Every pull request and every main-branch change** launches the read-only inventory in .github/workflows/apple-debugging-dna.yml:
+**Every pull request and every main-branch change** launches the read-only inventory in .github/workflows/apple-debugging-dna.yml; the existing .github/workflows/ci.yml production-readiness job independently enforces the same strict scanner and its regression tests:
 
 - Enumerate every Git-tracked path (including binary assets, documentation, test files and workflows). A file is counted as *text inspected* or *metadata only*; there is no misleading claim that binary content was decoded.
 - Classify each route, source module, stylesheet and workflow by estate. Check JSON parsability, inadvertent unconditional JavaScript/TypeScript debugger statements, public source-map publication and integrity of the authoritative 54-code Portal module catalogue.
