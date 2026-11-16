@@ -158,3 +158,19 @@ test("privacy access and browser-permission boundaries span the public estate an
   assert.match(securePolicy, /camera=\(\), microphone=\(\), geolocation=\(\)/);
   assert.match(portalProxy, /Cache-Control", "no-store"/);
 });
+
+test("privacy-attribution changes are included in guarded public publication", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  const preview = source(".github/workflows/pages-live-publish.yml");
+  const dispatch = source(".github/workflows/dispatch-approved-aws-contact-release.yml");
+  for (const [name, workflow] of [
+    ["guarded publisher", publisher],
+    ["Pages PR preflight", preview],
+    ["duplicate-release dispatcher", dispatch]
+  ]) {
+    assert.ok(workflow.includes("assets/js/marketing-attribution.js"),
+      name + " must include consent-scoped attribution changes");
+  }
+  assert.ok(publisher.includes("node --test scripts/test-apple-privacy-contract.mjs"),
+    "directly published marketing changes require the privacy contract");
+});
