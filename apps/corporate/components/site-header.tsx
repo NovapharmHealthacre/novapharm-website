@@ -1,5 +1,5 @@
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
 import { navigation } from "@/data/site";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { Brand } from "./brand";
 import { MobileNavigation } from "./mobile-navigation";
 
