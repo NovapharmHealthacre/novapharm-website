@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import { getStatusSnapshot, type OverallState, type ServiceState } from "@/lib/status";
 import { interfaceLabel, resolveInterfaceLocale } from "../../../src/core/interface-locale";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -77,6 +78,7 @@ export default async function StatusPage() {
       <footer className="status-footer">
         <p>NovaPharm Healthcare Ltd. Status data is intentionally limited to operational availability.</p>
         <nav aria-label="Status privacy and support"><a href="https://novapharmhealthcare.com/legal/privacy/">Privacy notice</a><a href="https://novapharmhealthcare.com/contact/">Contact NovaPharm Healthcare</a></nav>
+        <InterfaceLocaleSwitcher locale={locale} />
       </footer>
     </main>
   );
