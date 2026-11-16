@@ -3,6 +3,13 @@ import { CONSENT_STORAGE_KEY, parseConsent } from "./cookie-consent.js";
 // Privacy allowlist: only reviewed public Nutraxin product-detail pages may be
 // measured after consent. New SKUs require an explicit review and test.
 // Keep in sync with assets/data/nutraxin-retail-catalogue.json.
+const APPROVED_OTHER_PRODUCT_PATHS = new Set([
+  "/products/",
+  "/products/strategic-portfolio/",
+  "/products/marketplace/",
+  "/products/esco/"
+]);
+
 const APPROVED_NUTRAXIN_PRODUCT_PATHS = new Set([
   "/products/nutraxin/vitamin-d3-120-tablets/",
   "/products/nutraxin/vitamin-d3-spray-30ml/",
@@ -34,10 +41,14 @@ export function validGa4Id(id) {
 export function publicAnalyticsRoute(pathname) {
   const path = String(pathname || "");
   if (!/^\/(?:$|about\/|capabilities\/|services\/|regulatory-services\/|cro\/|oncology\/|products\/|partner-with-us\/|technology\/|news-insights\/|leadership\/)/.test(path)) return false;
-  // Explicit allowlist prevents basket, account, checkout and new unreviewed
-  // Nutraxin routes from inheriting tracking, including their nested pages.
-  if (path.startsWith("/products/nutraxin/")) {
-    return path === "/products/nutraxin/" || APPROVED_NUTRAXIN_PRODUCT_PATHS.has(path);
+  // Product analytics are allowed only on reviewed public informational pages.
+  // Baskets, accounts, payments, tracking, all nested and future unreviewed
+  // commerce routes fail closed rather than inheriting a blanket /products/ rule.
+  if (path.startsWith("/products/")) {
+    if (path.startsWith("/products/nutraxin/")) {
+      return path === "/products/nutraxin/" || APPROVED_NUTRAXIN_PRODUCT_PATHS.has(path);
+    }
+    return APPROVED_OTHER_PRODUCT_PATHS.has(path);
   }
   return !/(?:\/portal\/|\/admin\/|\/employee\/|\/account-application\/|\/contact\/)/.test(path);
 }
