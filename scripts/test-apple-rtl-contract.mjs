@@ -86,4 +86,7 @@ test("interface localization does not claim that clinical, legal, or regulated e
   assert.equal((read("apps/corporate/components/mobile-navigation.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate mobile link branches must translate");
   assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
+  const arrowLink = read("apps/technology/components/arrow-link.tsx");
+  assert.match(arrowLink, /<ArrowRight data-np-directional-arrow="true" \/>/);
+  assert.match(arrowLink, /<ArrowUpRight \/>/);
 });
