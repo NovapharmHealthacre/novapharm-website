@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { company } from "@/data/site";
-import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { AppStoreAvailability } from "./app-store-availability";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";
