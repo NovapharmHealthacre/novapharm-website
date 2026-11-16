@@ -232,8 +232,19 @@ function TenderResearch() {
 
 function DraftReport({ kind, detail, analytics }: WorkspaceProps) {
   const [notes, setNotes] = useState("");
+  const [downloadRequested, setDownloadRequested] = useState(false);
   const notesId = useId();
   const ready = Boolean(detail);
+  const hasUnexportedNotes = Boolean(notes.trim() && !downloadRequested);
+  useEffect(() => {
+    if (!hasUnexportedNotes) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [hasUnexportedNotes]);
   const download = () => {
     if (!detail) return;
     const passport = detail.investigationPassport;
@@ -274,15 +285,20 @@ function DraftReport({ kind, detail, analytics }: WorkspaceProps) {
     anchor.href = url;
     anchor.download = `novapharm-${cleanFilePart(kind)}-${cleanFilePart(detail.medicine.medicineId)}-draft.json`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    // Revoke after the browser has been allowed to begin its local download.
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    setDownloadRequested(true);
   };
   return <section className={styles.feature} aria-labelledby="draft-report-title">
     <h3 id="draft-report-title">{kind === "decision-workspace" ? "Prepare a decision review" : "Create an investigation brief"}</h3>
     <p>This local draft contains identity and evidence metadata, never unlicensed raw market rows. It is not saved, signed, sent or published.</p>
     <label htmlFor={notesId}>Review notes and unresolved assumptions (local until download)</label>
-    <textarea id={notesId} maxLength={2000} rows={4} value={notes} onChange={(event) => setNotes(event.currentTarget.value)}
+    <textarea id={notesId} maxLength={2000} rows={4} value={notes}
+      onChange={(event) => { setNotes(event.currentTarget.value); setDownloadRequested(false); }}
       placeholder="Record alternatives, evidence gaps and questions for the responsible reviewer. Do not include patient or confidential personal data." />
     <button type="button" onClick={download} disabled={!ready}>Download unapproved investigation draft</button>
+    {hasUnexportedNotes ? <p role="status">Unsaved local notes: download your draft before leaving this page. Notes are never stored on our servers by this tool.</p> : null}
+    {downloadRequested ? <p role="status">Download requested. Confirm the file was saved by your browser before leaving; no report was published or submitted.</p> : null}
     {!ready ? <p>Select a medicine with the search bar before generating its investigation record.</p> : null}
   </section>;
 }
