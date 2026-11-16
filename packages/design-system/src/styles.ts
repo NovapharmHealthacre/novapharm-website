@@ -192,4 +192,73 @@ export const designSystemCss = String.raw`
 .np-hig-disclosure__content{min-inline-size:0;padding-block:12px 4px}
 @media(max-width:760px){.np-hig-split-view{grid-template-columns:minmax(0,1fr)}.np-hig-box{inline-size:100%}}
 @media(forced-colors:active){.np-hig-box{border-color:CanvasText}.np-hig-box--plain{border-color:transparent}}
+
+/* Native modal uses showModal() for inert background and focus containment. */
+.np-modal-dialog{max-height:min(85dvh,60rem);max-width:calc(100vw - 2rem);overflow:auto;color:#1d1d1f;background:#fff}
+.np-modal-dialog::backdrop{background:rgba(0,0,0,.48)}
+.np-modal-dialog__header{display:flex;align-items:start;justify-content:space-between;gap:1rem}
+.np-modal-dialog__header h2{margin:0;font-size:clamp(1.375rem,3vw,2rem);line-height:1.2}
+.np-modal-dialog__dismiss{min-height:44px;min-width:44px;border:1px solid #d2d2d7;border-radius:8px;background:#fff;color:#1d1d1f;font:inherit;cursor:pointer}
+.np-modal-dialog__body{padding-block:1.25rem;max-width:68ch;line-height:1.6}
+.np-modal-dialog__actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end}
+.np-modal-dialog :where(button,a):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-chart__provenance{font-size:.875rem;line-height:1.5;color:#515861}
+.np-chart summary{min-height:44px;display:list-item;padding-block:.75rem;cursor:pointer;color:#0059b8}
+.np-tabs [role=tabpanel]:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+@media (forced-colors:active){.np-modal-dialog{border:2px solid CanvasText}.np-modal-dialog__dismiss{border-color:CanvasText}.np-modal-dialog::backdrop{background:Canvas}}
+
+/* Local file selection is not a network upload; input is the keyboard alternative. */
+.np-file-zone{display:grid;gap:.6rem;border:1px dashed #8a8a91;border-radius:12px;background:#fff;padding:clamp(1rem,3vw,1.75rem);color:#1d1d1f;min-width:0}
+.np-file-zone--dragged{border:2px solid #0066cc;background:#f5faff}
+.np-file-zone label{font-weight:650}
+.np-file-zone input[type=file]{min-height:44px;max-width:100%;font:inherit}
+.np-file-zone p{margin:0;line-height:1.5}
+.np-file-zone__help{color:#515154}
+.np-file-zone input:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-file-zone input[aria-invalid=true]{outline:2px solid #a8182a}
+@media(forced-colors:active){.np-file-zone,.np-file-zone--dragged{border:2px dashed CanvasText;background:Canvas;color:CanvasText}}
+
+/* Read-only controlled documents and tables print as readable A4 content.
+   No invoice/payment/approval document is fabricated by these print rules. */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  .np-navigation,.np-skip-link,.np-portal-controls__actions,.np-document-viewer>header a,.np-file-zone,.np-modal-dialog,.np-drawer { display: none !important; }
+  .np-document-viewer { border: 0; padding: 0; color: #000; background: #fff; break-inside: auto; }
+  .np-document-viewer__content { min-height: 0; border-top: 1px solid #555; padding-top: .5rem; margin-top: 1rem; }
+  .np-data-table { font-size: 9pt; border-collapse: collapse; }
+  .np-table-scroll { overflow: visible; max-width: none; }
+  .np-data-table thead { display: table-header-group; }
+  .np-data-table tr { break-inside: avoid; }
+  .np-data-table th,.np-data-table td { padding: .35rem .5rem; border-bottom: 1px solid #999; }
+  .np-chart { border: 0; padding: 0; }
+  .np-chart details { display: block; }
+  .np-chart summary { display: none; }
+}
+
+/* Private document details are a presentation of server-provided permissions only. */
+.np-controlled-document{min-width:0;border:1px solid #d8dde4;border-radius:12px;padding:clamp(1rem,3vw,2rem);background:#fff;color:#1d1d1f}
+.np-controlled-document__header h2{font-size:clamp(1.1rem,2vw,1.65rem);margin:0 0 1rem}
+.np-controlled-document__access{display:grid;gap:.5rem;margin:0 0 1rem}
+.np-controlled-document__access>div{display:flex;flex-wrap:wrap;gap:1rem}
+.np-controlled-document__access dt{min-width:8rem;font-weight:650}
+.np-controlled-document__access dd{margin:0}
+.np-controlled-document__content{min-width:0;margin-top:1.5rem}
+.np-controlled-document__note{font-size:.875rem;color:#515154;max-width:70ch}
+.np-controlled-document a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+@media(forced-colors:active){.np-controlled-document{border-color:CanvasText}}
+
+/* Notification preferences: only confirmed server revisions count as saved. */
+.np-notification-settings{min-width:0;max-width:52rem;padding:clamp(1rem,3vw,2rem);border:1px solid #d8dde4;border-radius:12px;background:#fff;color:#1d1d1f}
+.np-notification-settings h2{margin:0 0 .5rem}
+.np-notification-settings form{display:grid;gap:1rem}
+.np-notification-settings fieldset{border:0;margin:0;padding:0;display:grid;gap:.75rem}
+.np-notification-settings legend{font-weight:650;padding-bottom:.75rem}
+.np-notification-settings__choice{display:flex;align-items:flex-start;gap:1rem;min-height:44px;padding:.75rem 0;border-bottom:1px solid #e5e5e9}
+.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#B30E09}
+.np-notification-settings__choice span{display:grid;gap:.25rem;font-size:.95rem}
+.np-notification-settings__choice span span{color:#515154}
+.np-notification-settings button{min-height:44px;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d1d1f;color:#fff;font:inherit;font-weight:600;justify-self:start}
+.np-notification-settings button:disabled{opacity:.55;cursor:not-allowed}
+.np-notification-settings :is(input,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+@media(forced-colors:active){.np-notification-settings{border-color:CanvasText}.np-notification-settings button:disabled{opacity:1;color:GrayText}}
 `;
