@@ -1,9 +1,9 @@
 "use client";
 
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
-import type { InterfaceLocale } from "../../../src/core/interface-locale";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
+import type { InterfaceLocale } from "../../../src/core/interface-locale";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
