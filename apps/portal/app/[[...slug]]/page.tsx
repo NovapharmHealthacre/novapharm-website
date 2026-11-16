@@ -1,6 +1,6 @@
 import { cookies, headers } from "next/headers";
-import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { notFound, redirect } from "next/navigation";
+import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
 import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
