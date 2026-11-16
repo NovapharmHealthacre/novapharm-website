@@ -84,7 +84,7 @@ test("segmented priority filtering uses native mutually exclusive radio inputs",
   assert.match(html, /<fieldset[^>]*class="np-segmented-choice"/);
   assert.match(html, /<legend[^>]*>Recorded exception priority<\/legend>/);
   assert.equal((html.match(/type="radio"/g) ?? []).length, 3);
-  assert.match(html, /type="radio"[^>]*value="high" checked=""/);
+  assert.match(html, /type="radio"[^>]*checked=""[^>]*value="high"/);
   assert.equal((html.match(/checked=""/g) ?? []).length, 1);
   assert.doesNotMatch(html, /aria-pressed|role="menu"/);
 });
