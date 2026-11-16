@@ -6,8 +6,8 @@ import "../../../assets/css/novapharm-hig-colours.css";
 import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-motion.css";
-import "../../../assets/css/rtl-localization.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
+import "../../../assets/css/rtl-localization.css";
 
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
