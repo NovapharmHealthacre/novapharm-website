@@ -30,8 +30,8 @@ function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
   useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <header className="site-header" data-site-header>
-      <Link className="brand" href="/" aria-label="Vishal Chakravarty — home">
+    <header className="site-header" data-site-header lang={locale}>
+      <Link className="brand" href="/" aria-label="Vishal Chakravarty — home" lang="en-GB">
         <span className="brand-mark" aria-hidden="true">
           VC
         </span>
@@ -95,7 +95,7 @@ function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
         <div>
           <p>{founderProfile.proposition}</p>
         </div>
-        <nav aria-label="Footer navigation">
+        <nav aria-label="Footer navigation" lang={locale}>
           <Link href="/about/">{interfaceLabel(locale, "About")}</Link>
           <Link href="/ventures/">{interfaceLabel(locale, "Ventures")}</Link>
           <Link href="/thinking/">{interfaceLabel(locale, "Thinking")}</Link>
