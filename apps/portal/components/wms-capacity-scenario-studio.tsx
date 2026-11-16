@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { initialWmsScenarioHistory, reduceWmsScenarioHistory } from "../lib/wms-scenario-history";
 import {
   evaluateWmsCapacityScenario,
   type WmsCapacityScenarioInput,
 } from "../lib/wms-capacity-scenario";
+import { initialWmsScenarioHistory, reduceWmsScenarioHistory } from "../lib/wms-scenario-history";
 
 const fields = [
   { key: "orderLines", label: "Order lines per shift", min: 0, max: 1000000 },
