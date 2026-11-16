@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FounderEvidenceProvider, OpenEvidenceLink } from "@/components/founder-evidence";
 import { founderContact, founderProfile, profileReviewedOn } from "@/lib/site-data";
-import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 const navigation = Object.freeze([
   { href: "/about/", label: "About" },
