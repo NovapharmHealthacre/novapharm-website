@@ -65,8 +65,9 @@ export function finalizePublicRtlArtifacts(root = process.cwd()) {
     }
     // The shared bundle already contains the exact RTL rules. Legacy pages
     // with a separate stylesheet still need the shared RTL stylesheet.
-    if (!/href=["']\/assets\/css\/novapharm\.bundle\.css(?:\?[^"']*)?["']/i.test(html) &&
-        !html.includes(rtlStylesheet)) {
+    // Preserve idempotence even when the asset-versioning pass adds a
+    // content-hash query string to the standalone RTL stylesheet.
+    if (!/href=["']\/assets\/css\/(?:novapharm\.bundle|rtl-localization)\.css(?:\?[^"']*)?["']/i.test(html)) {
       html = html.replace(/<\/head>/i, "  " + rtlStylesheet + "\n</head>");
     }
     html = html.replace(/<main\b[^>]*>/i, (main) => {
