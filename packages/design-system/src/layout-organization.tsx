@@ -26,6 +26,8 @@ function focusAdjacent(event: KeyboardEvent<HTMLButtonElement>) {
   const next = event.key === "Home" ? 0 : event.key === "End" ? controls.length - 1
     : (position + (event.key === "ArrowDown" ? 1 : -1) + controls.length) % controls.length;
   controls[next]?.focus();
+  // A browser-style selection follows the keyboard cursor; never submits a record.
+  controls[next]?.click();
 }
 
 /** A desktop-friendly group → record → preview browser; no implied permission to act. */
@@ -36,7 +38,7 @@ export function ColumnBrowser({ label, groups }: Readonly<{ label: string; group
   const item = group?.items.find((entry) => entry.id === selectedItemId) ?? group?.items[0];
   const headingId = useId();
   if (!groups.length) return <p role="status">No categories are available.</p>;
-  return <div className="np-hig-column-browser" aria-label={label}>
+  return <div className="np-hig-column-browser" role="region" aria-label={label}>
     <nav className="np-hig-column-browser__pane" aria-label={`${label}: categories`}>
       <h3>Categories</h3>
       <ul>{groups.map((entry) => <li key={entry.id}>
