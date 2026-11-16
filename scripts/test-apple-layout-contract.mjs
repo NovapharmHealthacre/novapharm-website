@@ -114,7 +114,7 @@ test("HIG box and organization patterns remain restrained and responsive", () =>
     assert.match(components, new RegExp(`export function ${name}\\(`));
   }
   const founder = read("apps/founder/app/layout.tsx");
-  assert.match(founder, /apple-hig-layout\\.css/);
+  assert.match(founder, /apple-hig-layout\.css/);
   const status = read("apps/status/app/page.tsx");
   assert.match(status, /<ul className="service-list">/);
   assert.match(status, /<li className="service-row"/);
