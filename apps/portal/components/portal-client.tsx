@@ -1,8 +1,8 @@
 "use client";
 
 import type { PortalModule } from "@novapharm/portal-contracts";
-import type { InterfaceLocale } from "../../../src/core/interface-locale";
 import dynamic from "next/dynamic";
+import type { InterfaceLocale } from "../../../src/core/interface-locale";
 import modulePresentations from "../data/module-presentations.json";
 import type { PortalView } from "../data/routes";
 import styles from "./module-presentations.module.css";
