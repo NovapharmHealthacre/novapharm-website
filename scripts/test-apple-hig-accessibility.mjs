@@ -103,5 +103,7 @@ assert.match(source, /body \.npd-footer \.npd-footer-top div > a:not\(\.footer-b
   "Public footer navigation needs a minimum pointer target");
 assert.match(source, /body \.npd-footer \.npd-footer-legal :is\(a, button\)/,
   "Footer legal links and the cookie settings control need a minimum pointer target");
+assert.match(source, /body \.npd-footer \.npd-footer-bottom a/,
+  "Footer company registration link must also receive a minimum pointer target");
 assert.match(source, /min-height:\s*28px;/,
   "Public footer touch targets must be at least 28 CSS pixels tall");
