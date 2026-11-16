@@ -24,7 +24,7 @@ The supplied UIKit URL was duplicated end-to-end in the message; its canonical p
 
 ## Design acceptance for both corporate renderers
 - Height 52px; charcoal \#171719 nav material, quiet cool-white labels; controlled contrast.
-- Approved NovaPharm logo artwork only: reverse white logo in Next.js; white visual treatment of public approved mark (without swapping the registered identity or modifying the underlying image).
+- Approved NovaPharm logo artwork only: white visual treatment of the existing approved logo in both corporate renderers (without swapping the registered identity or modifying the underlying image).
 - At desktop width: compact, restrained global hierarchy; approved red Secure Portal action. No brand or Apple mark substitution.
 - At narrow widths: visible, operable Menu button with a scrollable disclosure and no viewport overflow.
 - Static category mega panels share the bar's restrained dark material, preserve ordinary anchor destinations and remain keyboard operable; do not require JavaScript to reach essential pages.
