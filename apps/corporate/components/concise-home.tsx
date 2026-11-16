@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { ContentImage } from "@novapharm/design-system";
+import Image from "next/image";
 import nutraxinRegister from "@/data/nutraxin-product-register.json";
 
 const sourcingRoutes = [
