@@ -12752,7 +12752,7 @@ html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .des
 html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:focus-visible {
   color: #fff;
 }
-html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child {
   display: inline-flex;
   min-height: 32px;
   height: 32px;
@@ -12761,8 +12761,8 @@ html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .des
   background: #b50f0b;
   color: #fff;
 }
-html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"]:hover,
-html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"]:focus-visible {
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child:hover,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child:focus-visible {
   background: #d41b15;
   color: #fff;
 }
@@ -13017,6 +13017,11 @@ html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
   html[data-np-estate="corporate"] .mobile-menu nav { background: #242426; background-color: #242426; }
 }
 @media (pointer: coarse) {
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 22px;
+  }
   .npd-global-nav.site-nav > a:last-child,
   body[data-page="home"] .npd-global-nav.site-nav > a:last-child,
   html[data-np-estate="corporate"] .desktop-nav > a:last-child {
