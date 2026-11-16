@@ -77,7 +77,7 @@ export function AccountInterestWorkflow() {
 
       form.reset();
       setState("success");
-      setMessage("Your account interest has been received and recorded securely. This does not create an account or portal access; NovaPharm will review eligibility before any controlled application invitation.");
+      setMessage("Your business interest has been received. No account or portal access has been created. If eligible, your business may be invited to complete a private application.");
     } catch (error) {
       setState("error");
       setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine));
@@ -95,10 +95,10 @@ export function AccountInterestWorkflow() {
         </div>
         <div className="field-grid">
           <label><span>Full name</span><input name="name" autoComplete="name" maxLength={120} required /></label>
-          <label><span>Business email</span><input name="email" type="email" autoComplete="email" maxLength={160} required /></label>
+          <label><span>Business email</span><input name="email" type="email" autoComplete="email" placeholder="name@company.co.uk" maxLength={160} required /></label>
           <label><span>Company</span><input name="company" autoComplete="organization" maxLength={160} required /></label>
           <label><span>Role or job title</span><input name="role" autoComplete="organization-title" maxLength={120} required /></label>
-          <label><span>Country</span><input name="country" autoComplete="country-name" maxLength={80} required /></label>
+          <label><span>Country</span><input name="country" autoComplete="country-name" placeholder="For example, United Kingdom" maxLength={80} required /></label>
           <label><span>Telephone <small>optional</small></span><input name="telephone" type="tel" autoComplete="tel" maxLength={40} /></label>
         </div>
         <label>
@@ -113,18 +113,18 @@ export function AccountInterestWorkflow() {
           </select>
         </label>
         <label>
-          <span>What would you like the account to support?</span>
-          <textarea name="interest" minLength={20} maxLength={1400} required aria-describedby="account-interest-boundary" />
+          <span>How would you use a business account?</span>
+          <textarea name="interest" minLength={20} maxLength={1400} required aria-describedby="account-interest-boundary" placeholder="Describe your business and the products or services you want to discuss." />
         </label>
         <p className="field-note" id="account-interest-boundary">Submit non-confidential business information only. Do not upload or paste licences, bank details, patient information, adverse-event reports, contracts or other sensitive records here. Any later due-diligence evidence uses a separately controlled workflow.</p>
         <label className="check-row"><input type="checkbox" name="safetyConfirmation" value="yes" required /><span>I confirm that this submission contains no patient-identifiable information, adverse-event report or urgent medical information.</span></label>
         <label className="check-row"><input type="checkbox" name="privacyAcknowledgement" value="yes" required /><span>I have read the <a href="/legal/privacy/#business-enquiries">business-enquiry privacy information</a>. This is not marketing consent.</span></label>
         <button className="button button-primary" type="submit" disabled={state === "sending"}>
-          {state === "sending" ? "Submitting..." : "Register qualified account interest"}
+          {state === "sending" ? "Submitting…" : "Register business interest"}
         </button>
       </form>
       <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
-        <p>{message || "This first step records non-confidential account interest only. No customer account, approval or portal identity is created automatically."}</p>
+        <p>{message || "This form records business interest only. It does not approve an application, create an account or grant portal access."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20account%20interest">Use the verified corporate email route</a> : null}
     </div>
