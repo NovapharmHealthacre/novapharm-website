@@ -88,9 +88,9 @@ export function OutlineView({ label, groups }: Readonly<{ label: string; groups:
   </section>;
 }
 
-/** Explicit view choice; mounted panes preserve expanded groups when switching. */
+/** Outline is the no-script default; mounted panes retain state when switching. */
 export function HierarchyExplorer({ label, groups }: Readonly<{ label: string; groups: readonly HierarchyGroup[] }>) {
-  const [view, setView] = useState<"columns" | "outline">("columns");
+  const [view, setView] = useState<"columns" | "outline">("outline");
   return <div className="np-hig-hierarchy-explorer">
     <div className="np-hig-explorer-switch" role="group" aria-label={`${label} display`}>
       <button type="button" aria-pressed={view === "columns"} onClick={() => setView("columns")}>Columns</button>
