@@ -32,9 +32,13 @@ test("after verified AWS origin, enable a single receipt-only business-interest 
     'name="safetyConfirmation"', 'data-account-request-status',
     'src="/assets/js/account-request-production.js"',
     'href="/legal/privacy/#business-enquiries"',
-    "A request does not activate a trading account"
+    "A request does not activate a trading account",
+    "Register interest in a business account.",
+    "Register business interest</button>",
+    "Registering interest does not create an account or grant portal access."
   ]) assert.ok(out.includes(marker), "Missing required release control: " + marker);
-  assert.doesNotMatch(out, /data-email-enquiry-form|No application data is collected here|type="file"|type="password"/);
+  assert.doesNotMatch(out, /data-email-enquiry-form|No application data is collected here|type="file"|type="password"|Request a business account in minutes|Your NovaPharm account starts here/);
+  assert.equal((out.match(/Register business interest<\/button>/g) || []).length, 1);
   assert.match(out, /<footer class="site-footer/);
   assert.match(out, /<\/section><\/main>/);
 });
@@ -46,6 +50,8 @@ test("never collect passwords or documents and never invent an activated account
     "receipt?.persisted !== true",
     'form.reset()',
     "account is not yet activated",
+    "Business interest received. Reference:",
+    "The request could not be confirmed. It may have been received.",
     'controller.abort()'
   ]) assert.ok(js.includes(marker), "Missing JS contract: " + marker);
   assert.doesNotMatch(js, /localStorage|sessionStorage|\.password\b|type\s*=\s*["']password|FormData\([^)]*password/i);
