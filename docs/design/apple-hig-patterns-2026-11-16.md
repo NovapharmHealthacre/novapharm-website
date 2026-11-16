@@ -89,3 +89,11 @@ All cited official pattern pages live under https://developer.apple.com/design/h
 A new `ControlledDocumentViewer` component displays a private document preview only when a **server-provided**, document/version-specific access decision is verified and `mayRead` is true. Version, sharing scope and content stay hidden when access is unverified or revoked. The download link also requires `mayDownload` and a local relative URL, and must be independently re-authorised by the serving private endpoint. This does **not** create a sharing or revocation API, expose private document storage, verify a recipient, or demonstrate live permission enforcement. Secure previews, version histories, recipient revocation and audit records remain backend acceptance work.
 
 No real document contents may be passed to this component before the server has verified the current tenant, user, document and version. Never infer permission from the UI props alone.
+
+## Notification settings — verified-receipt presentation (additional source candidate)
+
+The new `NotificationPreferenceEditor` renders only a **server-verified** record, with revision, optional topics and server-defined immutable categories. If access has not been verified or a save service has not been supplied, the form stays unavailable/read-only. Saving is explicit and stays unconfirmed until the authorised service returns `ok: true` and a nonempty revision. Errors never become successful preferences. No browser notification permission prompt, push, email or SMS delivery is initiated.
+
+Production activation requires: authenticated tenant-specific source, persisted preference API with CSRF/authorisation, optimistic concurrency, opt-in consent evidence, audit records, separate delivery policy and security/critical alerts protected against inappropriate opt-out. Do not represent this code as an active customer settings service or live opt-in.
+
+The controlled document viewer introduced earlier is likewise only a fail-closed presentation boundary. It does not establish a production share, revoke permissions, upload, or directly deliver confidential files.
