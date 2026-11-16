@@ -52,7 +52,7 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 - Shared FormField preserves original accessible instructions, required/invalid field semantics; shared tables display explicit scoped empty results.
 - Shared RTL-aware tabs: ArrowLeft/ArrowRight/Home/End support; panel focus.
 - New web-native `ModalDialog`: browser `showModal()` focus containment; Escape handling, explicit close, focus restoration.
-- Authenticated WMS capacity scenario: proportional illustrative zone bars, visible numeric text, an exact-value HTML table; a single-step "Undo reset" that restores previous assumptions without a server write.
+- Authenticated WMS capacity scenario: proportional illustrative zone bars, visible numeric text, an exact-value HTML table; multi-step in-memory undo/redo of edits and reset without a server write.
 - Authenticated WMS recorded source chart: exact counts and source-unavailable states in a keyboard-scrollable table, without inferring 3PL inventory/throughput totals.
 - Medicines Intelligence trend chart: preserve true recorded zeroes but reject missing/null/non-finite metric points; use unique SVG title/description IDs. This is presentation-only and does not alter governed data ingestion.
 - Source tests for form/empty tables, WMS charts and medicine observed values; path-scoped GitHub Actions; existing production checks still required.
