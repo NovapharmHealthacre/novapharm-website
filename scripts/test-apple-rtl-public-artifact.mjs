@@ -81,3 +81,21 @@ test("missing RTL bootstrap or an untranslated English main blocks release", () 
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("versioned RTL CSS survives repeat build without a duplicate link", () => {
+  const { root } = fixture();
+  try {
+    const file = join(root, "about/sample-0/index.html");
+    writeFileSync(file, '<html lang="en-GB"><head><title>Account</title>' +
+      '<link rel="stylesheet" href="/assets/css/rtl-localization.css?v=abc123"></head>' +
+      '<body><main>English account information</main></body></html>');
+    finalizePublicRtlArtifacts(root);
+    assert.equal(finalizePublicRtlArtifacts(root).updated, 0, "Repeat release must remain byte-identical");
+    const html = readFileSync(file, "utf8");
+    assert.equal((html.match(/rtl-localization\.css/g) || []).length, 1);
+    assert.equal((html.match(/rtl-localization\.js/g) || []).length, 1);
+    assert.equal(validatePublicRtlArtifacts(root).valid, 56);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
