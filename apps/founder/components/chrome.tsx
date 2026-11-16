@@ -1,12 +1,11 @@
 "use client";
 
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FounderEvidenceProvider, OpenEvidenceLink } from "@/components/founder-evidence";
 import { founderContact, founderProfile, profileReviewedOn } from "@/lib/site-data";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 const navigation = Object.freeze([
   { href: "/about/", label: "About" },
@@ -47,7 +46,12 @@ function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
         <span>{interfaceLabel(locale, "Menu")}</span>
         <span className="menu-glyph" aria-hidden="true" />
       </button>
-      <nav id="site-navigation" className="site-navigation" data-open={open} aria-label={interfaceLabel(locale, "Primary navigation")}>
+      <nav
+        id="site-navigation"
+        className="site-navigation"
+        data-open={open}
+        aria-label={interfaceLabel(locale, "Primary navigation")}
+      >
         <ul className="site-nav-list">
           {navigation.map((item) => (
             <li key={item.href}>
@@ -120,7 +124,13 @@ function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
   );
 }
 
-export function SiteChrome({ children, locale }: { readonly children: React.ReactNode; readonly locale: InterfaceLocale }): React.JSX.Element {
+export function SiteChrome({
+  children,
+  locale,
+}: {
+  readonly children: React.ReactNode;
+  readonly locale: InterfaceLocale;
+}): React.JSX.Element {
   return (
     <FounderEvidenceProvider>
       <a className="skip-link" href="#main">
