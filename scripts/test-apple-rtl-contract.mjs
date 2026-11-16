@@ -13,7 +13,10 @@ test("Apple HIG RTL foundation uses logical direction, does not reverse brand im
   for (const rule of ["html[dir=\"rtl\"]", "direction: rtl", "direction: ltr",
     "unicode-bidi: isolate", "input[type=\"email\"]", "input[type=\"tel\"]",
     "data-np-number", "data-np-medicine-code", "data-np-directional-arrow",
-    "env(safe-area-inset-bottom", "@media (max-width: 420px)", "forced-colors: active"]) {
+    "env(safe-area-inset-bottom", "@media (max-width: 420px)", "forced-colors: active",
+    ".desktop-nav a::after", ".roadmap-track li::before", ".status-notice",
+    ".refresh-command", ".service-row > a", ".profile-detail aside",
+    ".medicine-search-results li button", ".article-disclaimer"]) {
     assert.ok(css.includes(rule), `Missing right-to-left requirement: ${rule}`);
   }
   assert.doesNotMatch(css, /html\[dir="rtl"\]\s*:?is\([^)]*(?:img|picture|svg)[^)]*\)\s*\{[^}]*scaleX\(-1\)/s);
