@@ -527,8 +527,10 @@ async function runRtlPreflight(name: string, browserType: BrowserType): Promise<
           assert.ok(imageTransform === "none" || imageTransform === "matrix(1, 0, 0, 1, 0, 0)",
             `${name}: ${locale} logo must never be mirrored`);
 
-          await control.selectOption("en-GB");
-          await page.waitForLoadState("domcontentloaded");
+          await Promise.all([
+            page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+            control.selectOption("en-GB"),
+          ]);
           assert.equal(await page.locator("html").getAttribute("dir"), "ltr", "switcher did not restore English direction");
           await page.close();
         } finally {
