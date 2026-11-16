@@ -11,6 +11,7 @@ const corporateLayout = read("apps/corporate/app/layout.tsx");
 const corporateBrand = read("apps/corporate/components/brand.tsx");
 const corporateHeader = read("apps/corporate/components/site-header.tsx");
 const publicHome = read("index.html");
+const publicMenuScript = read("assets/js/novapharm.js");
 
 test("the actual corporate web header uses compact dark navigation and visible keyboard focus", () => {
   assert.match(design, /--npd-header:\s*52px/);
@@ -46,5 +47,9 @@ test("site destinations and native keyboard/browser commands remain intact", () 
   }
   assert.match(publicHome, /data-nav-toggle/);
   assert.match(publicHome, /data-mega-trigger/);
+  assert.match(publicMenuScript, /trigger\.addEventListener\("click", \(event\) =>/);
+  assert.match(publicMenuScript, /event\.metaKey \|\| event\.ctrlKey \|\| event\.altKey/);
+  assert.match(publicMenuScript, /event\.preventDefault\(\)/);
+  assert.match(publicMenuScript, /panel\.querySelector\("a"\)\?\.focus/);
   assert.doesNotMatch(design, /Apple logo|apple\.com\/assets/);
 });
