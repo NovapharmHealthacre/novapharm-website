@@ -2,7 +2,7 @@
 
 Date: 15 November 2026  
 Scope: NovaPharm Corporate static public site, newer Next.js Corporate site, their privacy/cookie notices and shared browser preference record.  
-Status: source implementation candidate, **not** an independent legal audit or proof of a live production release.
+Status: original privacy implementation **merged** in PR #721 on 15 November 2026; the public GitHub Pages production release passed its exact-domain privacy checks in [workflow run 43766343978](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/43766343978), sourced from commit `2f2c9621c9b03afa85dd9743019f943726b527f8`. This does **not** certify a separate managed-app rollout, authenticated role/network tests or UK legal sign-off.
 
 ## Official guidance reviewed
 
@@ -48,6 +48,15 @@ Status: source implementation candidate, **not** an independent legal audit or p
 | Intelligence / Distribution modules | Existing protected access logic remains unchanged | Application-specific data-flow, processor, retention and permission verification |
 
 Apple UIKit, Core Location, Keychain and App Tracking Transparency are native frameworks, not web-browser capabilities. This change adapts the underlying privacy principles without claiming proprietary Apple protections.
+
+## 16 November 2026 — GA4 route privacy hardening
+
+The original public release exposed a risk in the analytics route allowlist: any path nested under `/products/nutraxin/`, including the public Bag, could be treated as a reportable page after Analytics consent. Even when a query string is stripped, basket, authentication and order journeys must never be eligible for measurement in this public GA4 integration.
+
+- New privacy gate: the only reportable Nutraxin routes are the public product landing `/products/nutraxin/` and the 19 explicitly reviewed product-detail slugs present in `assets/data/nutraxin-retail-catalogue.json`.
+- Any account, Bag, checkout, order, payment, receipt, nested or future unreviewed route is denied by default; the normal consent requirement and no-personal-data event sanitiser remain in force.
+- Adding a public product route now requires an explicit source-code allowlist review. Regression tests compare the allowlist with all 19 current catalogue products and test sensitive and unlisted paths.
+- This is a source-level follow-up, not a claim that the new fix is already published; confirm its PR, exact release SHA and a live on-domain no-GA4 check before asserting it is live.
 
 ## Release acceptance checklist
 
