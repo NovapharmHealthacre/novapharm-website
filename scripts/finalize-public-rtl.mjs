@@ -63,11 +63,17 @@ export function finalizePublicRtlArtifacts(root = process.cwd()) {
     if (!html.includes(rtlScript)) {
       html = html.replace(/<head\b[^>]*>/i, (head) => head + "\n  " + rtlScript);
     }
-    // The shared bundle already contains the exact RTL rules. Legacy pages
-    // with a separate stylesheet still need the shared RTL stylesheet.
-    // Preserve idempotence even when the asset-versioning pass adds a
-    // content-hash query string to the standalone RTL stylesheet.
-    if (!/href=["']\/assets\/css\/(?:novapharm\.bundle|rtl-localization)\.css(?:\?[^"']*)?["']/i.test(html)) {
+    // SEO rewriters can relocate a pre-existing stylesheet in the head on a
+    // second build. Reposition standalone RTL CSS at one canonical location
+    // *before* CSS hashing, so the final released HTML is byte-identical.
+    const bundleLinked = /href=["']\/assets\/css\/novapharm\.bundle\.css(?:\?[^"']*)?["']/i.test(html);
+    const standaloneLink = /^[ \t]*<link\s+rel=["']stylesheet["']\s+href=["']\/assets\/css\/rtl-localization\.css(?:\?[^"']*)?["']\s*\/?>[ \t]*(?:\r?\n)?/gim;
+    const existingStandaloneLinks = html.match(standaloneLink) ?? [];
+    if (existingStandaloneLinks.length > 1) {
+      throw new Error("Duplicate RTL stylesheet links in public artifact: " + file);
+    }
+    if (!bundleLinked) {
+      if (existingStandaloneLinks.length) html = html.replace(standaloneLink, "");
       html = html.replace(/<\/head>/i, "  " + rtlStylesheet + "\n</head>");
     }
     html = html.replace(/<main\b[^>]*>/i, (main) => {
