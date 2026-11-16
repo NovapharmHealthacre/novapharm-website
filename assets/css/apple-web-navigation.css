@@ -631,7 +631,7 @@ footer.site-footer .footer-bottom a:hover { text-decoration: underline; }
   .npd-footer .np-apple-footer-disclosure[open] summary::after,
   footer.site-footer .np-apple-footer-disclosure[open] summary::after { content: "−"; }
   .npd-footer .np-apple-footer-disclosure-links,
-  footer.site-footer .np-apple-footer-disclosure-links { padding: 0 0 10px 12px; }
+  footer.site-footer .np-apple-footer-disclosure-links { padding-block: 0 10px; padding-inline: 12px 0; }
   .npd-footer .npd-footer-top > div > a,
   .npd-footer .np-apple-footer-disclosure-links > a,
   footer.site-footer .footer-grid > div > a,
