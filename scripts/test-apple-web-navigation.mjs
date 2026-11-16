@@ -22,6 +22,8 @@ test("the actual corporate web header uses compact dark navigation and visible k
   assert.match(design, /min-height:\s*44px/);
   assert.match(design, /:focus-visible/);
   assert.match(design, /prefers-reduced-motion/);
+  assert.match(design, /\@media \(pointer: coarse\)/);
+  assert.match(design, /html\[data-np-estate="corporate"\] \.site-header \.brand img \{ filter: none; \}/);
   assert.match(design, /forced-colors:\s*active/);
   assert.match(design, /\.mobile-menu nav a:focus-visible/);
   assert.match(design, /background: #3a3a3e/);
