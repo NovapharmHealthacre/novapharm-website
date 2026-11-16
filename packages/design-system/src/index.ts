@@ -65,3 +65,5 @@ export * from "./app-store-badges";
 export * from "./modal-dialog";
 
 export * from "./file-selection-zone";
+
+export * from "./controlled-document-viewer";
