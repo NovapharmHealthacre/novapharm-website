@@ -21,10 +21,13 @@ const fields = [
 
 export function WmsCapacityScenarioStudio() {
   const [values, setValues] = useState<WmsCapacityScenarioInput>(DEFAULT_WMS_CAPACITY_SCENARIO);
+  const [priorToReset, setPriorToReset] = useState<WmsCapacityScenarioInput | null>(null);
   const result = useMemo(() => evaluateWmsCapacityScenario(values), [values]);
+  const zoneMax = result.status === "invalid_inputs" ? 0 : Math.max(0, ...result.zones.map((zone) => zone.hypotheticalLines));
   const update = (key: keyof WmsCapacityScenarioInput, next: string) => {
     const n = Number(next);
     setValues((old) => ({ ...old, [key]: next.trim() === "" ? NaN : n }));
+    setPriorToReset(null);
   };
 
   return <section className="distribution-wms-capacity-studio" aria-labelledby="wms-capacity-title">
@@ -45,10 +48,16 @@ export function WmsCapacityScenarioStudio() {
                 onChange={(event) => update(key,event.target.value)}/>
             </label>)}
         </div>
-        <button type="button" className="distribution-wms-capacity-reset"
-          onClick={() => setValues(DEFAULT_WMS_CAPACITY_SCENARIO)}>
-          Reset assumptions
-        </button>
+        <div className="distribution-wms-capacity-reset-actions">
+          <button type="button" className="distribution-wms-capacity-reset"
+            onClick={() => { setPriorToReset(values); setValues(DEFAULT_WMS_CAPACITY_SCENARIO); }}>
+            Reset assumptions
+          </button>
+          {priorToReset ? <button type="button" className="distribution-wms-capacity-undo"
+            onClick={() => { setValues(priorToReset); setPriorToReset(null); }}>
+            Undo reset
+          </button> : null}
+        </div>
       </div>
       <div className="distribution-wms-capacity-output" aria-live="polite">
         <h3>Scenario output</h3>
@@ -69,13 +78,29 @@ export function WmsCapacityScenarioStudio() {
                 ? "Scenario workload is close to the assumed capacity ceiling."
                 : "Scenario capacity exceeds the modelled workload."}</p>
           </div>
-          <h4>Illustrative zone load</h4>
-          <div className="distribution-wms-capacity-zones">
-            {result.zones.map((zone) => <div key={zone.zone}>
-              <strong>{zone.zone}</strong>
-              <span>{zone.hypotheticalLines.toLocaleString("en-GB")} lines</span>
-            </div>)}
-          </div>
+          <figure className="distribution-wms-capacity-zone-chart" aria-labelledby="wms-capacity-zone-title" aria-describedby="wms-capacity-zone-summary">
+            <figcaption>
+              <h4 id="wms-capacity-zone-title">Illustrative zone load</h4>
+              <p id="wms-capacity-zone-summary">Relative zone demand under the current assumptions. This chart contains hypothetical values, not live stock, shift or labour records.</p>
+            </figcaption>
+            <div className="distribution-wms-capacity-zone-bars">
+              {result.zones.map((zone) => <div key={zone.zone} className="distribution-wms-capacity-zone-row">
+                <strong>{zone.zone}</strong>
+                <span className="distribution-wms-capacity-zone-track" aria-hidden="true">
+                  <span style={{ width: `${zoneMax > 0 ? Math.min(100, (zone.hypotheticalLines / zoneMax) * 100) : 0}%` }} />
+                </span>
+                <span className="distribution-wms-capacity-zone-value">{zone.hypotheticalLines.toLocaleString("en-GB")} lines</span>
+              </div>)}
+            </div>
+            <details className="distribution-wms-capacity-zone-data">
+              <summary>View exact zone values in a table</summary>
+              <table>
+                <caption>Scenario demand by warehouse zone</caption>
+                <thead><tr><th scope="col">Zone</th><th scope="col">Hypothetical lines</th></tr></thead>
+                <tbody>{result.zones.map((zone) => <tr key={zone.zone}><th scope="row">{zone.zone}</th><td>{zone.hypotheticalLines.toLocaleString("en-GB")}</td></tr>)}</tbody>
+              </table>
+            </details>
+          </figure>
           <p className="distribution-wms-capacity-disclaimer">{result.reason}
             Actual labour, automation, slotting, task release and product availability remain
             subject to provider data, legal scope and operational approval.</p>
