@@ -12269,7 +12269,7 @@ body[data-page="home"] .pharma-home-media img {
  * Brand logos, medicine packaging, photos, chart axes and universal icons
  * preserve their true orientation.
  */
-:root { --np-rtl-contract: 1; }
+:root { --np-rtl-contract: 1; --np-locale-footer-contract: 1; }
 
 /* Apple-inspired footer language utility: no floating or bordered card.
    Keep a 44px hit target without drawing an oversized control. */
