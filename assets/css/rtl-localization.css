@@ -100,7 +100,8 @@
 .npd-footer-bottom > .np-locale-control,
 .footer-secondary > .np-locale-control,
 .site-footer__bottom > .np-locale-control,
-.footer-base > .np-locale-control { margin-inline-start: auto; }
+.footer-base > .np-locale-control,
+.status-footer > .np-locale-control { margin-inline-start: auto; }
 body > .np-locale-control {
   display: flex;
   inline-size: fit-content;
