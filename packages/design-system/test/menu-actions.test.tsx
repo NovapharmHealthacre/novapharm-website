@@ -3,7 +3,7 @@ import test from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  ActionToolbar, BinaryToggle, ChoicePicker, CommandMenu, SharePublicLink,
+  ActionToolbar, BinaryToggle, ChoicePicker, CommandMenu, SegmentedChoice, SharePublicLink,
 } from "../src/index.ts";
 
 test("pull-down renders an accessible native disclosure with a clear action hierarchy", () => {
@@ -70,4 +70,19 @@ test("sharing fails closed when the URL is not a public HTTPS URL", () => {
   assert.match(html, /<button[^>]*>Share<\/button>/);
   assert.equal((html.match(/disabled=""/g) ?? []).length, 3);
   assert.match(html, /aria-live="polite"/);
+});
+
+
+test("segmented priority filtering uses native mutually exclusive radio inputs", () => {
+  const html = renderToStaticMarkup(<SegmentedChoice name="priority" label="Recorded exception priority"
+    value="high" options={[
+      { value: "all", label: "All" }, { value: "high", label: "High" },
+      { value: "standard", label: "Standard" },
+    ]} onChange={() => {}} />);
+  assert.match(html, /<fieldset[^>]*class="np-segmented-choice"/);
+  assert.match(html, /<legend[^>]*>Recorded exception priority<\/legend>/);
+  assert.equal((html.match(/type="radio"/g) ?? []).length, 3);
+  assert.match(html, /type="radio"[^>]*value="high" checked=""/);
+  assert.equal((html.match(/checked=""/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /aria-pressed|role="menu"/);
 });
