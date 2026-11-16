@@ -11772,6 +11772,16 @@ body .link-grid > a { min-height: 28px; padding-block: 4px; }
 /* ESCO Bag aftercare descriptions must retain readable contrast against their
    light cards at 390px; this intentionally overrides the legacy muted grey. */
 body .esco-shop-bag .esco-bag-aftercare p { color: #505057; }
+/* Mobile browser geometry found public footer links only 19px tall.
+   Keep the approved compact typography while giving every standalone
+   footer navigation/legal control at least a 28px clickable height.
+   In-sentence legal links retain WCAG's inline-target exception. */
+body .npd-footer .npd-footer-top div > a:not(.footer-brand),
+body .npd-footer .npd-footer-legal :is(a, button) {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+}
 
 /* Source: novapharm-hig-materials.css */
 /*
