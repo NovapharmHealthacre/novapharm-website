@@ -513,7 +513,8 @@ async function runRtlPreflight(name: string, browserType: BrowserType): Promise<
           assert.equal(await page.locator("html").getAttribute("dir"), "rtl", `${name}: missing RTL direction for ${locale}`);
           assert.equal(await page.locator("html").getAttribute("lang"), locale, `${name}: missing document language`);
           assert.equal(await page.locator("main").getAttribute("lang"), "en-GB", "untranslated article marked as local-language copy");
-          const control = page.getByRole("combobox", { name: "Language and layout preview" });
+          const selectName = locale === "ar" ? "معاينة اللغة واتجاه العرض" : "תצוגה מקדימה של שפה וכיוון";
+          const control = page.getByRole("combobox", { name: selectName });
           assert.equal(await control.inputValue(), locale, `${name}: selected preference not restored`);
           const translatedCompany = locale === "ar" ? "الشركة" : "החברה";
           const translatedNav = page.locator(".desktop-nav").getByRole("link", { name: translatedCompany });
