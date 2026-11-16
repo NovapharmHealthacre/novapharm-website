@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   cpSync,
   existsSync,
@@ -207,6 +208,32 @@ if (cname !== "novapharmhealthcare.com") {
 const { validatePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 const rtlValidation = validatePublicRtlArtifacts(output);
 console.log("Validated RTL bootstrap on " + rtlValidation.valid + " staged public HTML pages.");
+
+// Source HTML stays byte-identical to the approved generators, but the actual
+// Pages artifact uses a content-addressed locale bootstrap. Safari must not
+// reuse a cached pre-redesign JavaScript file after a successful deployment.
+const { publicRtlFiles } = await import("./finalize-public-rtl.mjs");
+const localeBytes = readFileSync(join(output, "assets/js/rtl-localization.js"));
+const localeVersion = createHash("sha256").update(localeBytes).digest("hex").slice(0, 16);
+const unversionedLocaleScript = '<script src="/assets/js/rtl-localization.js"></script>';
+const versionedLocaleScript = '<script src="/assets/js/rtl-localization.js?v=' + localeVersion + '"></script>';
+let localeVersionedPages = 0;
+for (const file of publicRtlFiles(output)) {
+  const html = readFileSync(file, "utf8");
+  if (html.split(unversionedLocaleScript).length - 1 !== 1) {
+    throw new Error("Public Pages locale bootstrap must occur exactly once before versioning: " + file);
+  }
+  const changed = html.replace(unversionedLocaleScript, versionedLocaleScript);
+  if (!changed.includes(versionedLocaleScript) || changed.includes(unversionedLocaleScript)) {
+    throw new Error("Stale public locale script URL remains in Pages artifact: " + file);
+  }
+  writeFileSync(file, changed, "utf8");
+  localeVersionedPages += 1;
+}
+if (localeVersionedPages !== rtlValidation.valid) {
+  throw new Error("Not every public RTL page received the versioned Safari bootstrap");
+}
+console.log("Pinned exact locale JavaScript fingerprint in " + localeVersionedPages + " staged Pages HTML files.");
 
 const stagedFiles = walk(output);
 if (!stagedFiles.length) throw new Error("Pages artifact contains no files.");
