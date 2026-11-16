@@ -27,8 +27,9 @@ export function inspectLiveRtl({ home, cookies, contact, script, bundle }) {
   assert.match(controlStyle, /background:\s*transparent;/, "Legacy language card fill is still published");
   assert.match(controlStyle, /border:\s*0;/, "Legacy language card outline is still published");
   assert.match(controlStyle, /box-shadow:\s*none;/, "Legacy language card shadow is still published");
-  assert.match(script, /document\.querySelectorAll\("\.np-contact-reference-footer-inner, \.npd-footer-bottom,/, "Locale selector must include Contact and shared footers");
-  assert.match(script, /node\.getClientRects\(\)\.length > 0/, "Locale selector must ignore hidden legacy footers");
+  assert.match(script, /footerSelectors = \["\.np-contact-reference-footer-inner", "\.npd-footer-bottom",/, "Locale selector must prioritize Contact and shared utility rows");
+  assert.match(script, /footerSelectors\.map\(function \(selector\) \{ return document\.querySelector\(selector\); \}\)/, "Priority order must control footer lookup");
+  assert.match(script, /node && node\.getClientRects\(\)\.length > 0/, "Locale selector must ignore hidden legacy footers");
   assert.match(contact, /data-live-b2b-enquiry-form/, "Do not downgrade the verified live contact service");
   assert.doesNotMatch(contact, /data-email-enquiry-form/, "Public-only placeholder must not replace live contact");
   return source[1];
