@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import "./globals.css";
 import "./apple-pharma-portal.css";
