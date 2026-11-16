@@ -151,7 +151,7 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
 test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  const source=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
  const page=readFileSync("products/nutraxin/bag/index.html","utf8");
- const rtlPublished=page.includes('<script src="/assets/js/rtl-localization.js"></script>');
+ const rtlPublished=/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag lang="en-GB" data-np-untranslated>/.test(page);
  const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const generated=generator?.split("  return `")[1]?.split("`;")[0];
