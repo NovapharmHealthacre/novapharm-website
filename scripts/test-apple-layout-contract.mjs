@@ -52,3 +52,13 @@ test("custom SwiftUI code is a reference, not a web runtime dependency", () => {
     assert.doesNotMatch(read(file), /SwiftUI|\.dmg|\.xcframework/);
   }
 });
+
+test("generated public navigation has exactly one secure portal destination", () => {
+  const source = read("src/content/site-content.mjs");
+  const generator = read("scripts/build-public-pages.mjs");
+  // The shared route register still includes the portal for other consumers.
+  // Static public pages render it only once as a dedicated, discoverable link.
+  assert.match(source, /\["Secure Portal", "\/portal\/"\]/);
+  assert.match(generator, /navigation\.filter\(\(\[label\]\) => label !== "Secure Portal"\)\.map\(/);
+  assert.match(generator, /<a class="nav-portal" href="https:\/\/portal\.novapharmhealthcare\.com\/">Secure portal<\/a>/);
+});
