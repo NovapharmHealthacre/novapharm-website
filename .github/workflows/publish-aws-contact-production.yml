@@ -455,24 +455,30 @@ jobs:
                 && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-contact.html \
                 && grep -Fq 'src="/assets/js/contact-production.js"' /tmp/novapharm-live-contact.html \
                 && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-live-contact.html; then
-                curl --fail --silent --show-error --max-time 15 -o /tmp/novapharm-live-contact.js "https://novapharmhealthcare.com/assets/js/contact-production.js"
-                grep -Fq "data-live-b2b-enquiry-form" /tmp/novapharm-live-contact.js
-                curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
-                  "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" > /tmp/novapharm-live-account.html
-                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html
-                grep -Fq 'Register interest in a business account.' /tmp/novapharm-live-account.html
-                grep -Fq 'Register business interest</button>' /tmp/novapharm-live-account.html
-                ! grep -Fq 'Request a business account in minutes' /tmp/novapharm-live-account.html
-                grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html
-                grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html
-                ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html
-                curl --fail --silent --show-error --max-time 15 \
-                  -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js"
-                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js
-                grep -Fq 'Business interest received. Reference:' /tmp/novapharm-live-account.js
-                grep -Fq 'The request could not be confirmed. It may have been received.' /tmp/novapharm-live-account.js
-                echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
-                exit 0
+                if curl --fail --silent --show-error --max-time 15 -H "Cache-Control: no-cache" \
+                  -o /tmp/novapharm-live-contact.js "https://novapharmhealthcare.com/assets/js/contact-production.js" \
+                  && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-live-contact.js; then
+                  if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
+                    "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" \
+                    > /tmp/novapharm-live-account.html; then
+                    if grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html \
+                      && grep -Fq 'Register interest in a business account.' /tmp/novapharm-live-account.html \
+                      && grep -Fq 'Register business interest</button>' /tmp/novapharm-live-account.html \
+                      && ! grep -Fq 'Request a business account in minutes' /tmp/novapharm-live-account.html \
+                      && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html \
+                      && grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html \
+                      && ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html; then
+                      if curl --fail --silent --show-error --max-time 15 -H "Cache-Control: no-cache" \
+                        -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js" \
+                        && grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js \
+                        && grep -Fq 'Business interest received. Reference:' /tmp/novapharm-live-account.js \
+                        && grep -Fq 'The request could not be confirmed. It may have been received.' /tmp/novapharm-live-account.js; then
+                        echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
+                        exit 0
+                      fi
+                    fi
+                  fi
+                fi
               fi
             fi
             sleep 10
