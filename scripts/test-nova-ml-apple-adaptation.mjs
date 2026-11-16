@@ -70,6 +70,15 @@ test("native candidates fail closed and require trusted model/data permits", () 
   assert.match(generator, /explicitlyRequestedByUser/);
   assert.match(generator, /humanReviewRequired: Bool = true/);
   assert.match(generator, /publicationApproved: Bool = false/);
+  const vision = source("native/novapharm-intelligence-apple/NovaDocumentIntelligence.swift");
+  const intents = source("native/novapharm-intelligence-apple/NovaResearchAppIntent.swift");
+  assert.match(vision, /import Vision/);
+  assert.match(vision, /VNRecognizeTextRequest/);
+  assert.match(vision, /userExplicitlySelectedImage/);
+  assert.match(vision, /containsPatientOrSensitiveData/);
+  assert.match(intents, /import AppIntents/);
+  assert.match(intents, /openAppWhenRun: Bool = true/);
+  assert.doesNotMatch(intents, /\bURLSession\b|\bfetch\(/);
   for (const swift of [trainer, runtime, generator]) {
     assert.doesNotMatch(swift, /\bURLSession\b|\bNSCameraUsageDescription\b|\bAVCaptureSession\b/);
   }
