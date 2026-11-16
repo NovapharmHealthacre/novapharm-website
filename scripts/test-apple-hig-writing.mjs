@@ -20,6 +20,9 @@ const source = {
   errorStatic: read("500.html"),
   errorUnavailable: read("service-unavailable/index.html"),
   staticBuilder: read("scripts/build-public-pages.mjs"),
+  homeFinishingPass: read("scripts/apply-pages-presentation-parity.mjs"),
+  corporateFinishingPass: read("scripts/apply-corporate-product-discipline.mjs"),
+  publicPortalBuilder: read("scripts/build-pages.mjs"),
   cookies: read("apps/corporate/components/cookie-controls.tsx"),
   standard: read("docs/design/novapharm-apple-hig-writing.md"),
 };
@@ -93,6 +96,15 @@ needs("staticBuilder", 'Business Account Eligibility | NovaPharm Healthcare');
 needs("staticBuilder", 'The public-only website cannot accept formal applications or private documents.');
 avoids("staticBuilder", 'Open an account');
 avoids("staticBuilder", '<strong>Open a business account</strong>');
+for (const key of ["homeFinishingPass", "corporateFinishingPass"]) {
+  needs(key, 'getPlatformCapabilities(resolvePlatformMode()).accountApplication');
+  needs(key, '"Apply for a business account" : "Discuss account eligibility"');
+  avoids(key, 'Open an account');
+  avoids(key, 'Open a business account');
+}
+needs("publicPortalBuilder", 'href="/account-application/">Discuss account eligibility</a>');
+needs("publicPortalBuilder", 'Customers can discuss eligibility through the public business account information page;');
+avoids("publicPortalBuilder", 'href="/account-application/">Request a business account</a>');
 needs("staticBuilder", '<a class="btn btn-primary" href="/">Go to home page</a>');
 needs("staticBuilder", 'write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable.');
 avoids("interest", "No information was submitted.");
@@ -105,4 +117,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 16 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 19 reviewed source surfaces.");

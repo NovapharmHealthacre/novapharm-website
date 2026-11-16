@@ -1,5 +1,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
+
+const accountCtaLabel = getPlatformCapabilities(resolvePlatformMode()).accountApplication
+  ? "Apply for a business account" : "Discuss account eligibility";
 
 const homePath = resolve(process.cwd(), "index.html");
 const html = readFileSync(homePath, "utf8");
@@ -93,7 +97,7 @@ const conciseMain = `<main id="main">
       </div>
       <div class="pharma-actions">
         <a class="btn btn-primary" href="/contact/">Contact NovaPharm</a>
-        <a class="btn btn-ghost" href="/account-application/">Open an account</a>
+        <a class="btn btn-ghost" href="/account-application/">${accountCtaLabel}</a>
       </div>
       <p class="pharma-disclosure">Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model. The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm.</p>
     </div>

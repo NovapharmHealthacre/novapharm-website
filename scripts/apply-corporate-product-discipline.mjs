@@ -2,6 +2,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { company, leadership } from "../src/content/site-content.mjs";
 import { validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
+
+const accountCtaLabel = getPlatformCapabilities(resolvePlatformMode()).accountApplication
+  ? "Apply for a business account" : "Discuss account eligibility";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -138,7 +142,7 @@ function footer() {
         <div><h2>Company</h2><a href="/about/">Overview</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
-        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
+        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       <div class="npd-footer-notices">
