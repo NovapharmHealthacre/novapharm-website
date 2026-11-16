@@ -245,6 +245,15 @@ html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
   .npd-global-nav.site-nav,
   html[data-np-estate="corporate"] .mobile-menu nav { background: #242426; background-color: #242426; }
 }
+@media (pointer: coarse) {
+  .npd-global-nav.site-nav > a:last-child,
+  body[data-page="home"] .npd-global-nav.site-nav > a:last-child,
+  html[data-np-estate="corporate"] .desktop-nav > a:last-child {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 22px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .npd-global-nav.site-nav > a,
   html[data-np-estate="corporate"] .desktop-nav > a { transition: none; }
@@ -265,10 +274,12 @@ html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
   html[data-np-estate="corporate"] .site-header :is(a, button, summary) { color: LinkText; }
   .npd-global-nav.site-nav > a:last-child,
   html[data-np-estate="corporate"] .desktop-nav > a:last-child { border: 1px solid ButtonText; background: ButtonFace; color: ButtonText; }
-  .npd-header .brand .brand-logo img { filter: none; }
+  .npd-header .brand .brand-logo img,
+  html[data-np-estate="corporate"] .site-header .brand img { filter: none; }
 }
 @media print {
   .npd-header.site-header,
   html[data-np-estate="corporate"] .site-header { background: transparent; color: #000; }
-  .npd-header .brand .brand-logo img { filter: none; }
+  .npd-header .brand .brand-logo img,
+  html[data-np-estate="corporate"] .site-header .brand img { filter: none; }
 }
