@@ -92,3 +92,12 @@ test("public sitemap routes maintain accessible semantic structure and image met
     }
   }
 });
+
+test("homepage current-page semantics remain accurate", () => {
+  const generator = read("scripts/apply-corporate-product-discipline.mjs");
+  assert.match(generator, /function globalSection\(route\)\s*\{\s*if \(route === "\/"\) return "";/);
+  const home = read("index.html");
+  const nav = home.match(/<nav class="site-nav[^>]*>[\s\S]*?<\/nav>/)?.[0] ?? "";
+  assert.ok(nav, "Home page needs a primary navigation landmark");
+  assert.doesNotMatch(nav, /aria-current="page"/, "No section is the current page on the home route");
+});
