@@ -1,5 +1,6 @@
 import { type PortalArea, type PortalModule, portalModuleByCode, visiblePortalModules } from "@novapharm/portal-contracts";
 import { type IntelligenceWorkspaceSlug, intelligenceWorkspaceSlugs } from "./intelligence-workspaces";
+import { type NovaMlWorkspaceSlug, novaMlWorkspaceSlugs } from "./nova-ml-modules";
 
 export type PortalView =
   | Readonly<{ kind: "login" }>
@@ -18,9 +19,9 @@ export const medicinesIntelligenceSubviews = Object.freeze([
   "data-sources",
 ] as const);
 
-export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number] | IntelligenceWorkspaceSlug;
+export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number] | IntelligenceWorkspaceSlug | NovaMlWorkspaceSlug;
 // Existing eight legacy views remain available for deep links; the canonical 22 have their own evidence states.
-const medicinesIntelligenceSubviewSet = new Set<string>([...medicinesIntelligenceSubviews, ...intelligenceWorkspaceSlugs]);
+const medicinesIntelligenceSubviewSet = new Set<string>([...medicinesIntelligenceSubviews, ...intelligenceWorkspaceSlugs, ...novaMlWorkspaceSlugs]);
 
 export type PortalAccessType = "customer" | "employee" | "board" | "admin";
 
