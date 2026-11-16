@@ -26,9 +26,9 @@ jobs:
         with:
           node-version: "24"
       - name: Validate debugging inventory and regression gates
-        run: node --test scripts/test-debugging-dna.mjs
+        run: python3 -m unittest discover -s scripts -p test_audit_debugging_dna.py
       - name: Inspect tracked files and release-sensitive debug leakage
-        run: node scripts/audit-debugging-dna.mjs --strict
+        run: python3 scripts/audit_debugging_dna.py --strict
       - name: Preserve minimal debugging inventory
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
