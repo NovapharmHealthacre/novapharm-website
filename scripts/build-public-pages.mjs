@@ -142,7 +142,7 @@ function header(slug = "") {
         <span class="nav-toggle-lines" aria-hidden="true"><i></i><i></i></span><span class="sr-only">Open navigation</span>
       </button>
       <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${navigation.map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
+        ${navigation.filter(([label]) => label !== "Secure Portal").map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
         <a class="nav-search" href="/search/" data-ai-search-open>Search <kbd>Ctrl K</kbd></a>
         <a class="nav-portal" href="https://portal.novapharmhealthcare.com/">Secure portal</a>
         <a class="btn btn-primary nav-cta" href="/account-application/">Open an account</a>
