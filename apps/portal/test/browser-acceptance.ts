@@ -647,11 +647,20 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
 
     const hiddenModules = portalModules.filter((entry) => !entry.visibleInNavigation);
+    // Keep the same authenticated executive context, but avoid reusing a
+    // heavily navigated page for every denied route in WebKit.
+    // Each dependency-blocked route MUST still return 404; no retries,
+    // security bypasses or exception suppression are introduced.
     for (const [index, module] of hiddenModules.entries()) {
-      const response = await page.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
-      assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
-      await page.getByRole("heading", { name: "Portal route not found" }).waitFor();
-      if (index === 0) await captureInteractionState(page, engine, desktopViewport, "interaction.hidden-module-not-found");
+      const hiddenPage = await boardContext.newPage();
+      try {
+        const response = await hiddenPage.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
+        assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
+        await hiddenPage.getByRole("heading", { name: "Portal route not found" }).waitFor();
+        if (index === 0) await captureInteractionState(hiddenPage, engine, desktopViewport, "interaction.hidden-module-not-found");
+      } finally {
+        await hiddenPage.close();
+      }
     }
   } finally {
     await boardContext.close();
@@ -722,10 +731,13 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
 }
 
 async function runEngine(engine: string, browserType: BrowserType): Promise<void> {
+  // The matrix and the interaction suite share serialised, role-scoped test
+  // sessions, not a long-lived browser process. WebKit can become unstable
+  // after the complete responsive and accessibility sweep.
+  const states = new Map<PortalArea, StoredBrowserState>();
   const browser = await browserType.launch({ headless: true });
   try {
     await verifyAuthenticationBoundaries(browser, engine);
-    const states = new Map<PortalArea, StoredBrowserState>();
     for (const area of areas) states.set(area, await login(browser, area));
 
     for (const viewport of interactionOnly ? [] : viewports) {
@@ -751,9 +763,18 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
       }
       console.log(`${engine}: completed ${viewport.name}`);
     }
-    await verifyInteractions(browser, engine, states);
   } finally {
     await browser.close();
+  }
+
+  // Start a fresh process for interaction acceptance without skipping any
+  // viewport, role, route or interaction assertion. Reuse only the scoped
+  // synthetic cookies captured by the login fixtures.
+  const interactionBrowser = await browserType.launch({ headless: true });
+  try {
+    await verifyInteractions(interactionBrowser, engine, states);
+  } finally {
+    await interactionBrowser.close();
   }
 }
 
