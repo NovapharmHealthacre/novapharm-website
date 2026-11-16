@@ -51,6 +51,7 @@ html[data-np-estate="corporate"] .site-header .brand {
 html[data-np-estate="corporate"] .site-header .brand img {
   max-width: 100%;
   height: auto;
+  filter: grayscale(1) brightness(0) invert(1);
 }
 .npd-global-nav.site-nav,
 body[data-page="home"] .npd-global-nav.site-nav,
@@ -151,7 +152,8 @@ html[data-np-estate="corporate"] .site-header .brand:focus-visible {
   .npd-header .npd-mega-column a:hover,
   .npd-header .npd-mega-column a:focus-visible { color: #fff; text-decoration: underline; }
 }
-.npd-menu.nav-toggle {
+.npd-header .npd-menu.nav-toggle,
+body[data-page="home"] .npd-header .npd-menu.nav-toggle {
   min-height: 44px;
   color: #f5f5f7;
   background: transparent;
