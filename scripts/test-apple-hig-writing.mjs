@@ -14,6 +14,7 @@ const source = {
   portalError: read("apps/portal/app/error.tsx"),
   founderError: read("apps/founder/app/error.tsx"),
   statusError: read("apps/status/app/error.tsx"),
+  publicAccount: read("account-application/index.html"),
   notFoundStatic: read("404.html"),
   errorStatic: read("500.html"),
   errorUnavailable: read("service-unavailable/index.html"),
@@ -47,6 +48,16 @@ needs("help", "Register interest in a business account.");
 needs("help", 'accessLabel: "Register business interest"');
 avoids("help", 'accessLabel: "Apply for a business account"');
 avoids("interest", "Register qualified account interest");
+
+// The PUBLIC_ONLY fallback must not suggest that it accepts formal applications.
+// This protects against a deployment silently restoring a misleading static CTA.
+needs("publicAccount", "An account is approved through evidence, not created by a public form.");
+needs("publicAccount", "This public information release does not accept account applications or business documents.");
+needs("publicAccount", "No application data is collected here.");
+needs("publicAccount", "The managed application is not active on this public page.");
+needs("publicAccount", "Discuss account eligibility");
+avoids("publicAccount", "Request a business account in minutes.");
+avoids("publicAccount", "data-account-application");
 
 // Plain labels, accessible feedback and role-specific guidance remain explicit.
 needs("signIn", "Sign in to the right workspace");
@@ -86,4 +97,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 14 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 15 reviewed source surfaces.");
