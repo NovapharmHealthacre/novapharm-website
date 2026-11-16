@@ -52,7 +52,7 @@ test("Nova ML does not fetch the unrelated Medicines Intelligence module snapsho
   assert.match(dashboard, /const moduleSnapshot: Snapshot = privateModelGovernance/);
   assert.match(dashboard, /\? \{/);
   assert.match(dashboard, /: await gatewayJson<Snapshot>\(/);
-  assert.match(dashboard, /\[module\.area, module\.code, subview\]/);
+  assert.match(dashboard, /\[module, subview\]/);
   assert.match(ml, /<NovaMlWorkspace key=\{current\} kind=\{current\}/);
 });
 

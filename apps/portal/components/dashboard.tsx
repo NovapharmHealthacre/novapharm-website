@@ -3,8 +3,8 @@
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
-import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import { isNovaMlWorkspaceSlug } from "../data/nova-ml-modules";
+import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
@@ -170,7 +170,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     } finally {
       setLoading(false);
     }
-  }, [module.area, module.code, subview]);
+  }, [module, subview]);
 
   useEffect(() => { void load(); }, [load]);
 
