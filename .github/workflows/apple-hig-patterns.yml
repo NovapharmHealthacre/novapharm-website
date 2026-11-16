@@ -10,6 +10,7 @@ on:
       - 'apps/portal/lib/observed-chart-series.ts'
       - 'apps/portal/test/observed-chart-series.test.ts'
       - 'apps/portal/lib/wms-scenario-history.ts'
+      - 'apps/portal/test/wms-fullscreen-contract.test.ts'
       - 'apps/portal/test/wms-scenario-history.test.ts'
       - 'apps/portal/app/employee-distribution.css'
       - 'apps/portal/test/wms-patterns.test.ts'
@@ -42,3 +43,5 @@ jobs:
         run: npx tsx --test apps/portal/test/observed-chart-series.test.ts
       - name: Verify local WMS undo/redo history semantics
         run: npx tsx --test apps/portal/test/wms-scenario-history.test.ts
+      - name: Verify optional full-screen safety and controls
+        run: npx tsx --test apps/portal/test/wms-fullscreen-contract.test.ts
