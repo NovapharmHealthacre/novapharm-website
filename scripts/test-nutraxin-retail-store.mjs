@@ -151,11 +151,18 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
 test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  const source=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
  const page=readFileSync("products/nutraxin/bag/index.html","utf8");
- const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const rtlPublished=page.includes('<script src="/assets/js/rtl-localization.js"></script>');
+ const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const generated=generator?.split("  return `")[1]?.split("`;")[0];
  assert.ok(expected,"Canonical Bag main exists");
- assert.equal(generated,expected,"Site generator must preserve the approved Bag HTML exactly");
+ // The final publisher adds only the English-language boundary to the
+ // approved Bag main, without altering forms, payment copy or order steps.
+ const approved=rtlPublished
+   ? generated?.replace('data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>')
+   : generated;
+ assert.equal(expected,approved,
+   "Checked-in and finalized Bag HTML must exactly match their approved generator states");
  assert.match(generated,/Simple from start to finish\./);
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);

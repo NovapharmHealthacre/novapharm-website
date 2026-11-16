@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import "./globals.css";
 import "../../../assets/css/novapharm-hig-colours.css";
 import "../../../assets/css/symbol-system.css";
@@ -7,6 +7,7 @@ import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-materials.css";
 import "../../../assets/css/novapharm-hig-motion.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
+import "../../../assets/css/rtl-localization.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -15,6 +16,9 @@ import { parentOrganisationSchema, technologyOrganisationSchema, technologyWebsi
 
 const environment = process.env as { PUBLIC_INDEXABLE?: string };
 const indexable = environment.PUBLIC_INDEXABLE !== "false";
+
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -68,9 +72,10 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
 
   return (
-    <html className="no-js" lang="en-GB" data-np-estate="technology" suppressHydrationWarning>
+    <html className="no-js" lang={locale} dir={directionForLocale(locale)} data-np-estate="technology" suppressHydrationWarning>
       <head>
         <script id="technology-javascript-mode" nonce={nonce}>
           {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
@@ -78,9 +83,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader />
-        <main id="main-content">{children}</main>
-        <SiteFooter />
+        <SiteHeader locale={locale} />
+        <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
+        <SiteFooter locale={locale} />
+        <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="technology-organisation-schema" value={technologyOrganisationSchema()} />
         <JsonLd id="technology-website-schema" value={technologyWebsiteSchema()} />
         <JsonLd id="parent-organisation-schema" value={parentOrganisationSchema()} />

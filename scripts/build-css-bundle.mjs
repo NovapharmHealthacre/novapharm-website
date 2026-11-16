@@ -31,7 +31,8 @@ const sources = [
   ["novapharm-hig-accessibility.css", null],
   ["novapharm-hig-materials.css", null],
   ["novapharm-apple-27-web-adaptation.css", null],
-  ["novapharm-hig-motion.css", null]
+  ["novapharm-hig-motion.css", null],
+  ["rtl-localization.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {

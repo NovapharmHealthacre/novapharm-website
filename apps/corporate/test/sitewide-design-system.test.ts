@@ -83,7 +83,10 @@ test("forensic page identity and privacy choices do not regress", () => {
     "The Oncology H1 must have a spoken word boundary at its visual line break");
   assert.doesNotMatch(capabilitiesCss, /#767981/i,
     "Small Capabilities labels must not use the previously low-contrast grey");
-  assert.ok(layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content">'),
+  assert.match(layout, /<main id="main-content" lang="en-GB" data-np-untranslated>/,
+    "Untranslated content must remain explicitly identified as English");
+  assert.ok(layout.includes("<CookieControls />") &&
+    layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content"'),
     "Cookie consent must be in normal document flow before main content");
   assert.match(style, /Forensic remediation: non-obscuring consent/);
   assert.match(style, /\.cookie-banner\s*\{[\s\S]*?position: relative;/);

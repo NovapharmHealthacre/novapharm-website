@@ -3,10 +3,11 @@ import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { ArrowUpRight } from "@/components/icons";
 import { navigation, site } from "@/data/site";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
-export function SiteFooter() {
+export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" lang="en-GB">
       <div className="shell">
         <div className="site-footer__lead">
           <div>
@@ -28,11 +29,11 @@ export function SiteFooter() {
           </div>
           <div>
             <p className="footer-label">Navigate</p>
-            <nav aria-label="Footer navigation">
+            <nav lang={locale} aria-label={interfaceLabel(locale, "Footer navigation")}>
               {navigation.map((item) => (
-                <Link href={item.href as Route} key={item.href}>{item.label}</Link>
+                <Link href={item.href as Route} key={item.href}>{interfaceLabel(locale, item.label)}</Link>
               ))}
-              <Link href="/contact">Contact</Link>
+              <Link href="/contact">{interfaceLabel(locale, "Contact")}</Link>
             </nav>
           </div>
           <div>
@@ -48,9 +49,9 @@ export function SiteFooter() {
 
         <div className="site-footer__bottom">
           <p>© {new Date().getFullYear()} Novapharm Innovation Technology.</p>
-          <div>
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
+          <div lang={locale}>
+            <Link href="/privacy">{interfaceLabel(locale, "Privacy")}</Link>
+            <Link href="/terms">{interfaceLabel(locale, "Terms")}</Link>
           </div>
           <p><a href="https://novapharmhealthcare.com/">NovaPharm Healthcare digital estate</a> · Vadodara · India</p>
         </div>
