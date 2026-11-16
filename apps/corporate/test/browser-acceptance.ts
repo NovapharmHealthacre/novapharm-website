@@ -198,7 +198,7 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
-  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.png$/, `${engine} ${route}: unofficial header logo`);
+  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo-reverse\.svg$/, `${engine} ${route}: header must use the approved reverse NovaPharm logo`);
 
   const keyViewport = viewport.name === "desktop-1440" || viewport.name === "mobile-390";
   if (keyViewport) {
