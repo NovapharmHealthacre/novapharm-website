@@ -48,7 +48,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
               locale: document.documentElement.lang,
               direction: document.documentElement.dir,
               chosen: select?.value,
-              noteVisible: Boolean(element.querySelector(".np-locale-note")?.getClientRects().length),
+              noteVisible: !getComputedStyle(element.querySelector(".np-locale-note")).clipPath.startsWith("inset("),
               text: element.textContent,
             };
           });
