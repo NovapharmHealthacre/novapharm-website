@@ -2,7 +2,7 @@
 
 Owner: NovaPharm Healthcare Ltd Board  
 Version: 1.3  
-Source audit: 15 November 2026 (source reconciliation; browser/network acceptance still required)  
+Source audit: 15 November 2026 (source reconciliation); RTL preference disclosure addendum 16 November 2026 (legal review and live browser/network acceptance still required)  
 Method: historical source, generated-page and response-header evidence; fresh source/CI and live-browser verification required for this candidate  
 Release gate: browser cookie, local-storage and network inspection on the private preview and production origins
 
@@ -11,6 +11,7 @@ Release gate: browser cookie, local-storage and network inspection on the privat
 | `np_csrf` | NovaPharm | Cookie | Match same-site state-changing requests and prevent CSRF | Strictly necessary | 1 hour | First party | No | None by itself |
 | `np_session` | NovaPharm | Secure HttpOnly cookie | Maintain the requested authenticated, role-scoped session | Strictly necessary | 30 minutes of inactivity or 8 hours absolute, with earlier revocation | First party | No for requested portal service | None by itself |
 | `np_cookie_consent` | NovaPharm | Local storage | Remember notice version, selected categories, timestamp and random preference ID | Strictly necessary preference record | 180 days | First party | No; needed to remember the user's choice | None by itself |
+| `np_locale` | NovaPharm | First-party cookie | Remember an expressly chosen English, Arabic RTL-preview or Hebrew RTL-preview interface setting; never changes access or tracks activity | Functional language preference | Up to 365 days after explicit selection | First party | No optional-analytics consent; set only after the visitor selects a language | None by itself |
 | `_ga`, `_ga_*` | Google Analytics 4 | First-party cookie | Optional public visits and coarse interactions | Analytics | Configured up to 90 days, subject to browser limits | Google | Yes, before provider load | Review Google processing and international transfers |
 | `novapharm-public-ai` | NovaPharm | IndexedDB | Opt-in local semantic retrieval cache; no query or answer saved | Optional feature | Until user clears cache or browser removes it | First party | Yes, feature-specific choice | No transfer by the cache itself |
 
@@ -23,3 +24,7 @@ The consent record key is `np_cookie_consent`; the current website consent schem
 Any proposed technology must be added to this register, tested as blocked before consent, reviewed for data minimisation and international transfers, and released only after the privacy and cookie notices are updated.
 
 Reference: [ICO guidance on the use of storage and access technologies, finalised 29 April 2026](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/). NovaPharm does not rely on the Data (Use and Access) Act 2025 statistical-purpose exception in this release; analytics remains optional and fail-closed until both owner activation and affirmative consent. Marketing remains disabled.
+
+## 16 November 2026 localization preference addendum
+
+The `np_locale` first-party cookie is created only following a visitor's explicit language selection, uses `SameSite=Lax`, `Secure` on HTTPS and a 365-day maximum age, and is shared only with the NovaPharm domain family when on those hosts. Arabic and Hebrew are **RTL layout previews**, not reviewed translations of regulated, clinical, contractual or legal content. This cookie neither enables analytics nor affects portal authorization. The visitor can return to English using the same selector. Legal review and browser confirmation of this functional-cookie disclosure remain outstanding; the `np_cookie_consent` schema (`2026-11-15-v1.3`) is unchanged.
