@@ -6,6 +6,7 @@ import { activateAccountRequestHtml } from "./activate-account-request.mjs";
 const html = readFileSync("account-application/index.html", "utf8");
 const js = readFileSync("assets/js/account-request-production.js", "utf8");
 const valid = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+const publisher = readFileSync(".github/workflows/publish-aws-contact-production.yml", "utf8");
 
 test("public source collects no account credentials or applications", () => {
   assert.match(html, /This public information release does not accept account applications or business documents/);
@@ -55,4 +56,17 @@ test("never collect passwords or documents and never invent an activated account
     'controller.abort()'
   ]) assert.ok(js.includes(marker), "Missing JS contract: " + marker);
   assert.doesNotMatch(js, /localStorage|sessionStorage|\.password\b|type\s*=\s*["']password|FormData\([^)]*password/i);
+});
+
+test("guarded publisher verifies the new business-interest wording on staged and live public releases", () => {
+  for (const marker of [
+    "grep -Fq 'Register interest in a business account.' _site/account-application/index.html",
+    "grep -Fq 'Register business interest</button>' _site/account-application/index.html",
+    "! grep -Fq 'Request a business account in minutes' _site/account-application/index.html",
+    "grep -Fq 'Register interest in a business account.' /tmp/novapharm-live-account.html",
+    "grep -Fq 'Register business interest</button>' /tmp/novapharm-live-account.html",
+    "! grep -Fq 'Request a business account in minutes' /tmp/novapharm-live-account.html",
+    "grep -Fq 'Business interest received. Reference:' /tmp/novapharm-live-account.js",
+    "grep -Fq 'The request could not be confirmed. It may have been received.' /tmp/novapharm-live-account.js"
+  ]) assert.ok(publisher.includes(marker), "Missing verified staged/live publication contract: " + marker);
 });

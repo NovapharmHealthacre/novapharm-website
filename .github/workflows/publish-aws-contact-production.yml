@@ -369,6 +369,9 @@ jobs:
           grep -Fq 'src="/assets/js/contact-production.js"' _site/contact/index.html
           grep -Fq 'Secure online enquiry storage' _site/legal/privacy/index.html
           grep -Fq 'data-live-account-request-form' _site/account-application/index.html
+          grep -Fq 'Register interest in a business account.' _site/account-application/index.html
+          grep -Fq 'Register business interest</button>' _site/account-application/index.html
+          ! grep -Fq 'Request a business account in minutes' _site/account-application/index.html
           grep -Fq 'data-account-request-status' _site/account-application/index.html
           grep -Fq "data-api-origin=\"$NOVAPHARM_CONTACT_API_ORIGIN\"" _site/account-application/index.html
           grep -Fq 'src="/assets/js/account-request-production.js"' _site/account-application/index.html
@@ -457,12 +460,17 @@ jobs:
                 curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
                   "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" > /tmp/novapharm-live-account.html
                 grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html
+                grep -Fq 'Register interest in a business account.' /tmp/novapharm-live-account.html
+                grep -Fq 'Register business interest</button>' /tmp/novapharm-live-account.html
+                ! grep -Fq 'Request a business account in minutes' /tmp/novapharm-live-account.html
                 grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html
                 grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html
                 ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html
                 curl --fail --silent --show-error --max-time 15 \
                   -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js"
                 grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js
+                grep -Fq 'Business interest received. Reference:' /tmp/novapharm-live-account.js
+                grep -Fq 'The request could not be confirmed. It may have been received.' /tmp/novapharm-live-account.js
                 echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
                 exit 0
               fi
