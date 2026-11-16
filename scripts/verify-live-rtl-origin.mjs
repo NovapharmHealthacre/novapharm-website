@@ -21,6 +21,13 @@ export function inspectLiveRtl({ home, cookies, contact, script, bundle }) {
   assert.match(script, /html\.dir = locale === "en-GB" \? "ltr" : "rtl"/, "Serve LTR and RTL direction handling");
   assert.match(script, /layout-preview/, "Expose preview status rather than full translation");
   assert.match(bundle, /--np-rtl-contract:\s*1/, "Ship RTL rules in the public CSS bundle");
+  const footerCss = bundle.split("/* Source: rtl-localization.css */")[1] ?? "";
+  assert.match(footerCss, /--np-locale-footer-contract:\s*1/, "Live release must contain the new footer language design");
+  const controlStyle = footerCss.match(/\.np-locale-control\s*\{([^}]*)\}/)?.[1] ?? "";
+  assert.match(controlStyle, /background:\s*transparent;/, "Legacy language card fill is still published");
+  assert.match(controlStyle, /border:\s*0;/, "Legacy language card outline is still published");
+  assert.match(controlStyle, /box-shadow:\s*none;/, "Legacy language card shadow is still published");
+  assert.match(script, /document\.querySelector\("\.npd-footer-bottom,/, "Locale selector must move into the public footer");
   assert.match(contact, /data-live-b2b-enquiry-form/, "Do not downgrade the verified live contact service");
   assert.doesNotMatch(contact, /data-email-enquiry-form/, "Public-only placeholder must not replace live contact");
   return source[1];
