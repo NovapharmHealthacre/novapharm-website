@@ -94,6 +94,34 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               const renderedRatio = box.height ? box.width / box.height : 0;
               const visibleMedia = visible(img) && box.width > 1 && box.height > 1;
               const src = img.currentSrc || img.src;
+              // naturalWidth is density-corrected for responsive srcset picks.
+              // Compare CSS pixels with the selected resource's *declared* pixel
+              // width instead, retaining naturalWidth as the no-srcset fallback.
+              // This is an advisory; exact encoded dimensions need asset checks.
+              const srcsets = [
+                img.getAttribute("srcset"),
+                ...[...(img.closest("picture")?.querySelectorAll("source[srcset]") ?? [])]
+                  .map((source) => source.getAttribute("srcset"))
+              ].filter(Boolean);
+              let selectedDescriptor = null;
+              for (const srcset of srcsets) {
+                for (const candidate of srcset.split(",")) {
+                  const match = candidate.trim().match(/^(\\S+)\\s+(\\d+(?:\\.\\d+)?)(w|x)$/i);
+                  if (!match) continue;
+                  try {
+                    if (new URL(match[1], location.href).href === src) {
+                      selectedDescriptor = {value:Number(match[2]),unit:match[3].toLowerCase()};
+                      break;
+                    }
+                  } catch { /* Ignore malformed optional responsive candidates. */ }
+                }
+                if (selectedDescriptor) break;
+              }
+              const estimatedSourcePixelWidth = selectedDescriptor?.unit === "w"
+                ? selectedDescriptor.value
+                : selectedDescriptor?.unit === "x"
+                  ? img.naturalWidth * selectedDescriptor.value
+                  : img.naturalWidth;
               const local = src.startsWith(location.origin + "/assets/");
               const productPhoto = Boolean(img.closest(
                 ".nx-product-visual, .nx-featured-image, .esco-product-visual"
@@ -102,13 +130,15 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
                 src:src.slice(0,220),
                 local, visible:visibleMedia, complete:img.complete,
                 naturalWidth:img.naturalWidth, naturalHeight:img.naturalHeight,
+                estimatedSourcePixelWidth,
+                sourcePixelWidthBasis:selectedDescriptor ? "srcset-descriptor" : "naturalWidth",
                 width:Math.round(box.width), height:Math.round(box.height),
                 objectFit:style.objectFit, productPhoto,
                 missingAlt:!img.hasAttribute("alt"),
                 stretched:visibleMedia && naturalRatio > 0 && renderedRatio > 0 &&
                   style.objectFit === "fill" && Math.abs(Math.log(naturalRatio / renderedRatio)) > .12,
-                lowDensity:local && visibleMedia && img.naturalWidth > 0 &&
-                  img.naturalWidth < box.width * Math.min(window.devicePixelRatio, 3) * .75
+                lowDensity:local && visibleMedia && estimatedSourcePixelWidth > 0 &&
+                  estimatedSourcePixelWidth < box.width * Math.min(window.devicePixelRatio, 3) * .75
               };
             });
             return {
