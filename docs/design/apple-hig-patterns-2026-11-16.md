@@ -37,7 +37,7 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 | [Playing audio](https://developer.apple.com/design/human-interface-guidelines/playing-audio) | Native media controls, no unrequested autoplay, captions/transcripts for essential messages, device volume respected | **Conditional on real media** |
 | [Playing haptics](https://developer.apple.com/design/human-interface-guidelines/playing-haptics) | Web vibration is unreliable, potentially intrusive and not a substitute for visible/audible feedback | **Not applicable by default**; no vibration added |
 | [Playing video](https://developer.apple.com/design/human-interface-guidelines/playing-video) | User-controlled playback, captions, poster, reduced motion, keyboard/PiP where available and licensed | **Conditional on approved actual videos** |
-| [Printing](https://developer.apple.com/design/human-interface-guidelines/printing) | Accessible browser print, A4 invoice/statement/quality document styling, hide navigation, preserve essential IDs and dates | **Existing print work; route-by-route proof pending** |
+| [Printing](https://developer.apple.com/design/human-interface-guidelines/printing) | Accessible browser print, A4 invoice/statement/quality document styling, hide navigation, preserve essential IDs and dates | **Initial shared A4 print CSS in this PR**; actual invoices, statements and authorised documents require route-by-route print proof |
 | [Ratings and reviews](https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews) | App Store review solicitation applies to an eligible native app, not regulated wholesale procurement dashboards | **Not applicable to current web estate**; never invent customer testimonials |
 | [Searching](https://developer.apple.com/design/human-interface-guidelines/searching) | Clearly state authorised search scope, predictable clear, live count and empty state; no private history by default | **Existing shared search specification**; live medicine and orders checks pending |
 | [Settings](https://developer.apple.com/design/human-interface-guidelines/settings) | Prioritise meaningful account, accessibility, language, notification, privacy and consent preferences; reflect true persisted state | **Existing partial implementation**; test preference semantics and safe storage |
@@ -50,6 +50,7 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 
 - Shared chart component: optional truthful source/as-at provenance; exact-value table remains accessible even if visual marks are decorative.
 - Shared FormField preserves original accessible instructions, required/invalid field semantics; shared tables display explicit scoped empty results.
+- Shared document/data-table print CSS now includes A4 page size, clean page boundaries and repeated table headers; original account/invoice provenance must remain server-authoritative.
 - Shared RTL-aware tabs: ArrowLeft/ArrowRight/Home/End support; panel focus.
 - New web-native `ModalDialog`: browser `showModal()` focus containment; Escape handling, explicit close, focus restoration.
 - Authenticated WMS capacity scenario: proportional illustrative zone bars, visible numeric text, an exact-value HTML table; multi-step in-memory undo/redo of edits and reset without a server write.
