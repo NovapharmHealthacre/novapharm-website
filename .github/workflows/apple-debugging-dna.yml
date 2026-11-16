@@ -28,7 +28,7 @@ jobs:
       - name: Validate debugging inventory and regression gates
         run: node --test scripts/test-debugging-dna.mjs
       - name: Inspect tracked files and release-sensitive debug leakage
-        run: node scripts/audit-debugging-dna.mjs --strict --out artifacts/debugging/site-audit.json
+        run: node scripts/audit-debugging-dna.mjs --strict
       - name: Preserve minimal debugging inventory
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
