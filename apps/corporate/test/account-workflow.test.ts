@@ -16,7 +16,8 @@ test("account application route is explicit and remains truth-bounded", () => {
   assert.match(route, /AccountInterestWorkflow/);
   assert.match(route, /No automatic account creation/);
   assert.match(route, /No private evidence here/);
-  assert.match(route, /controlled application should be invited/i);
+  assert.match(route, /Eligible businesses may receive a private application invitation/i);
+  assert.match(route, /Registering interest does not create an account or grant portal access/i);
   assert.doesNotMatch(route, /href="\/contact\/\?enquiry=/);
 });
 
@@ -34,7 +35,8 @@ test("public account interest uses the existing controlled lead authority", () =
   assert.match(workflow, /platformEndpoint\("\/contact"\)/);
   assert.match(workflow, /"X-CSRF-Token"/);
   assert.match(workflow, /enquiryType: "Pharmacy or wholesaler account"/);
-  assert.match(workflow, /No customer account, approval or portal identity is created automatically/i);
+  assert.match(workflow, /No account or portal access has been created/i);
+  assert.match(workflow, /does not approve an application, create an account or grant portal access/i);
   assert.match(workflow, /Do not upload or paste licences, bank details, patient information/i);
   assert.match(workflow, /privacyAcknowledgement/);
   assert.match(workflow, /safetyConfirmation/);
