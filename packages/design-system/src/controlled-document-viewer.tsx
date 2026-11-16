@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 
 /**
  * Render-only contract. A server must authenticate the user, authorise this
