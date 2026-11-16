@@ -121,3 +121,12 @@ assert.match(read("news-insights/three-pillar-pharmaceutical-sourcing-model/inde
 assert.match(read("products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"),
   /<nav class="npd-breadcrumb" aria-label="Breadcrumb">/,
   "Nutraxin product must use the shared breadcrumb selector");
+
+/* Focus-occlusion acceptance exercises sequential keyboard stops only.
+   Empty ESCO Bag's Contact sales has tabindex=-1 and aria-disabled=true;
+   programmatic focusing it must not be reported as a Tab-reachable defect. */
+const publicGeometryAudit = read("scripts/test-public-sitemap-geometry.mjs");
+assert.match(publicGeometryAudit, /if \(node\.tabIndex < 0\) return false;/,
+  "Sequential keyboard occlusion census must exclude negative-tabindex controls");
+assert.match(read("assets/js/esco-bag.js"), /send\.tabIndex = state\.length \? 0 : -1;/,
+  "Empty-bag Contact sales link must not be a sequential keyboard stop");
