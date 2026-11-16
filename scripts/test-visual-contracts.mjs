@@ -61,7 +61,7 @@ assert.match(homepageCss, /prefers-reduced-motion: reduce/, "editorial motion mu
 assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must ship inside the production CSS bundle");
 
 const home = text("index.html");
-assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
+assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home" lang="en-GB" data-np-untranslated>/, "Published homepage must retain the approved main landmark with an explicit English-language boundary");
 assert.match(home, /<h1(?:\s+[^>]*)?>Medicine\. Where it needs to be\.<\/h1>/, "homepage preserves the approved semantic hero headline");
 assert.match(home, /class="npd-apple-hero nph-earth-hero"/, "approved Earth-horizon hero layout");
 assert.match(home, /class="nph-earth-hero-landscape"/, "approved morning-Earth image placement");
