@@ -7,6 +7,7 @@ import {
   ContentLockup,
   HierarchyExplorer,
   OutlineView,
+  TextLabel,
   type HierarchyGroup,
 } from "../src/index.ts";
 
@@ -26,6 +27,10 @@ test("column browser starts with selected group and item, native buttons and gov
   assert.match(html, /aria-label="WMS workspaces: records"/);
   assert.match(html, /aria-pressed="true"/);
   assert.match(html, /<button type="button"/);
+  assert.match(html, /Category width/);
+  assert.match(html, /type="range"/);
+  assert.match(html, /aria-valuetext="28% of browser width"/);
+  assert.match(html, /np-hig-text-label--secondary/);
   assert.match(html, /Lot review/);
   assert.match(html, /3PL approval pending/);
   assert.match(html, /href="\/employee\/quality\/"/);
@@ -65,4 +70,12 @@ test("lockups contain one accessible destination instead of nested buttons and l
 test("empty hierarchy exposes a readable status instead of blank panes", () => {
   assert.match(renderToStaticMarkup(<ColumnBrowser label="Documents" groups={[]} />), /No categories are available/);
   assert.match(renderToStaticMarkup(<OutlineView label="Documents" groups={[]} />), /No categories are available/);
+});
+
+test("static labels remain selectable and use semantic neutral prominence", () => {
+  const primary = renderToStaticMarkup(<TextLabel>Important source</TextLabel>);
+  const secondary = renderToStaticMarkup(<TextLabel tone="secondary">Supporting detail</TextLabel>);
+  assert.match(primary, /np-hig-text-label--primary/);
+  assert.match(secondary, /np-hig-text-label--secondary/);
+  assert.match(secondary, /Supporting detail/);
 });
