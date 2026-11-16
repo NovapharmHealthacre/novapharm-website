@@ -10,7 +10,7 @@ const APPROVED_OTHER_PRODUCT_PATHS = new Set([
   "/products/esco/"
 ]);
 
-const APPROVED_NUTRAXIN_PRODUCT_PATHS = new Set([
+export const APPROVED_NUTRAXIN_PRODUCT_PATHS = new Set([
   "/products/nutraxin/vitamin-d3-120-tablets/",
   "/products/nutraxin/vitamin-d3-spray-30ml/",
   "/products/nutraxin/vitamin-d3-k2-120-tablets/",
