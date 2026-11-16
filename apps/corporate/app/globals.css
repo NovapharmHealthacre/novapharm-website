@@ -601,3 +601,17 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
 .account-path-help > div{padding:0 20px 20px;font-size:.94rem;line-height:1.65}
 .account-path-help p{margin:0 0 10px;max-width:68ch}
 .account-path-help a{text-underline-offset:3px}
+
+
+/* Apple-inspired corporate footer rhythm, preserving NovaPharm brand and legal copy. */
+.site-footer { background: #f5f5f7; color: #424245; border-top: 1px solid #d2d2d7; }
+.site-footer .footer-primary { gap: clamp(18px, 3vw, 42px); padding-block: clamp(40px, 5vw, 58px); }
+.site-footer .footer-primary nav { gap: 9px; }
+.site-footer .footer-primary nav strong { color: #1d1d1f; font-size: 12px; font-weight: 650; margin-bottom: 5px; }
+.site-footer .footer-primary nav a,
+.site-footer .footer-primary nav button { color: #424245; font-size: 12px; line-height: 1.55; text-decoration: none; }
+.site-footer .footer-primary nav :is(a, button):hover { color: #1d1d1f; text-decoration: underline; text-underline-offset: 3px; }
+.site-footer .footer-secondary { border-top-color: #d2d2d7; gap: 15px 28px; flex-wrap: wrap; }
+.site-footer .footer-secondary p { color: #6e6e73; font-size: 12px; line-height: 1.6; }
+.site-footer :is(a, button, select):focus-visible { outline: 2px solid #ad1525; outline-offset: 4px; }
+@media (forced-colors: active) { .site-footer { background: Canvas; color: CanvasText; border-color: CanvasText; } .site-footer a { color: LinkText; } }
