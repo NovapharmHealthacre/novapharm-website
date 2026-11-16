@@ -1,0 +1,44 @@
+name: Apple HIG Content — image primitives
+
+on:
+  pull_request:
+    paths:
+      - 'packages/design-system/src/image-content.tsx'
+      - 'packages/design-system/src/index.ts'
+      - 'packages/design-system/test/image-content.test.tsx'
+      - 'packages/design-system/workbench/build.tsx'
+      - 'docs/design/apple-hig-content-web-adaptation-2026-11-16.md'
+      - '.github/workflows/apple-hig-content-image.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/design-system/src/image-content.tsx'
+      - 'packages/design-system/src/index.ts'
+      - 'packages/design-system/test/image-content.test.tsx'
+      - 'packages/design-system/workbench/build.tsx'
+      - '.github/workflows/apple-hig-content-image.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  content-image-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Verify image component TypeScript
+        run: npm run typecheck --workspace=@novapharm/design-system
+      - name: Verify local image safety and accessible view/button semantics
+        run: npx tsx --test packages/design-system/test/image-content.test.tsx
+      - name: Build real shared component workbench
+        run: npm run build:workbench --workspace=@novapharm/design-system
