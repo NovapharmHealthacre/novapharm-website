@@ -72,7 +72,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <SiteHeader locale={locale} />
         <CookieControls />
         <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
-        <SiteFooter />
+        <SiteFooter locale={locale} />
         <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />
