@@ -92,7 +92,18 @@ if (megaHeader) {
     const inOpenPanel = panels.some((panel) => panel.classList.contains("is-open") && panel.contains(target));
     if (!inOpenPanel && !target.closest("[data-mega-trigger]")) closeMega();
   });
-  megaHeader.addEventListener("pointerleave", closeMega);
+  // Mouse hover must not collapse a menu while its trigger or a menu link
+  // retains keyboard focus. Otherwise the focused link becomes display:none
+  // and disappears from the accessibility and keyboard navigation tree.
+  const focusWithinActiveMega = () => {
+    if (!activeTrigger) return false;
+    const focused = document.activeElement;
+    return activeTrigger === focused || panels.some((panel) =>
+      panel.classList.contains("is-open") && panel.contains(focused));
+  };
+  megaHeader.addEventListener("pointerleave", () => {
+    if (!focusWithinActiveMega()) closeMega();
+  });
   megaHeader.addEventListener("click", (event) => {
     if (event.target.closest(".npd-mega a")) closeMega();
   });
