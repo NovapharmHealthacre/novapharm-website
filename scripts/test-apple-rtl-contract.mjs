@@ -10,6 +10,8 @@ const js = read("assets/js/rtl-localization.js");
 
 test("Apple HIG RTL foundation uses logical direction, does not reverse brand imagery or numeric digits", () => {
   assert.match(css, /--np-rtl-contract:\s*1/);
+  assert.match(css, /\.np-locale-control\s*\{\s*position:\s*static;/, "Locale selector must not intercept underlying controls");
+  assert.doesNotMatch(css, /\.np-locale-control\s*\{[^}]*position:\s*fixed;/s);
   for (const rule of ["html[dir=\"rtl\"]", "direction: rtl", "direction: ltr",
     "unicode-bidi: isolate", "input[type=\"email\"]", "input[type=\"tel\"]",
     "data-np-number", "data-np-medicine-code", "data-np-directional-arrow",
