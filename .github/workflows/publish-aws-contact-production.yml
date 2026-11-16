@@ -628,6 +628,9 @@ jobs:
                  -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/cookies/?${cache}" -o /tmp/novapharm-live-cookies.html \
               && curl --fail --silent --show-error --location --max-time 15 \
                  -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/cookie-consent.js?${cache}" -o /tmp/novapharm-live-cookie-consent.js \
+              && grep -Fq 'class="np-privacy-overview"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'Your information. Your choice.' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'class="np-privacy-primary-action"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'id="privacy-by-design"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'id="privacy-controls"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-privacy.html \
