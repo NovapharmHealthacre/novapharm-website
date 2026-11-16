@@ -18,3 +18,7 @@ This is a **source-only candidate**. The gateway remains responsible for CSRF, a
 ## Release gates
 
 Run exact-head portal source/type tests, security and both Chromium/WebKit portal role boundaries. Test success, request rejection, uncertain response, rapid double-click, and refresh failures with a real authenticated test identity. Merge/deploy only with verified main SHA, trusted service receipt and live acceptance. No transactional action may be fabricated or simulated as complete for real customers.
+
+## Protected search error and retry
+
+The dashboard now separates a failed protected-search request from a successful search returning zero authorised matches. Failed requests display an accessible error and a Retry authorised search action; no 'zero records' claim is made from a failed service response. Errors never disclose unauthorised records or expand tenant scope. Search stays opt-in and source-scoped. Validate with forced API failure and no-result fixtures in both Chromium and WebKit.
