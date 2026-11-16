@@ -107,3 +107,17 @@ assert.match(source, /body \.npd-footer \.npd-footer-bottom a/,
   "Footer company registration link must also receive a minimum pointer target");
 assert.match(source, /min-height:\s*28px;/,
   "Public footer touch targets must be at least 28 CSS pixels tall");
+
+// Product and editorial breadcrumbs are links, not sentence-level exceptions.
+for (const token of [
+  'nav.breadcrumb[aria-label="Breadcrumb"] > a',
+  'nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a'
+]) {
+  assert.ok(source.includes(token), "Enlarge standalone breadcrumb touch target: " + token);
+}
+assert.match(read("news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"),
+  /<nav class="breadcrumb" aria-label="Breadcrumb"><a href="\/">Home<\/a>/,
+  "Editorial route must use the shared breadcrumb selector");
+assert.match(read("products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"),
+  /<nav class="npd-breadcrumb" aria-label="Breadcrumb">/,
+  "Nutraxin product must use the shared breadcrumb selector");
