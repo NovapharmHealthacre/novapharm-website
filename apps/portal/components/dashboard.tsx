@@ -44,7 +44,7 @@ function formatted(value: unknown, type = "", row: Record<string, unknown> = {},
   if (value === null || value === undefined || value === "") return "Not recorded";
   if (type === "money") return new Intl.NumberFormat(locale, { style: "currency", currency: String(row["currency"] ?? "GBP") }).format(Number(value) / 100);
   if (type === "number") return new Intl.NumberFormat(locale).format(Number(value));
-  if (type === "basis_points") return `${(Number(value) / 100).toFixed(0)}%`;
+  if (type === "basis_points") return new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(Number(value) / 10000);
   if (type === "status") return readable(value);
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return new Date(value).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" });
   return String(value);

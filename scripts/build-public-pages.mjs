@@ -1080,7 +1080,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {

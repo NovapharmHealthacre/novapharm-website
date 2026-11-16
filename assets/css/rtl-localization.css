@@ -45,6 +45,10 @@ body:has(.cookie-banner:not([hidden])) .np-locale-control {
 }
 .np-locale-note { font-size: 12px; line-height: 1.45; color: #4d5967; }
 .np-locale-control :focus-visible { outline: 3px solid #0b69ff; outline-offset: 2px; }
+/* In RTL, inline-end is the physical left: protect that safe area. */
+html[dir="rtl"] .np-locale-control {
+  inset-inline-end: max(12px, env(safe-area-inset-left, 0px));
+}
 .np-locale-control[data-np-control-locale="ar"],
 .np-locale-control[data-np-control-locale="he"] {
   direction: rtl;

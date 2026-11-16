@@ -72,6 +72,9 @@ test("protected workspace formats currencies, numbers and dates using the server
   assert.match(dashboard, /\.toLocaleString\(locale/);
   assert.match(dashboard, /data-np-number=/);
   assert.match(dashboard, /data-np-medicine-code=/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale, \{ style: "percent"/);
+  assert.match(read("assets/css/rtl-localization.css"), /safe-area-inset-left/);
+  assert.match(read("scripts/build-public-pages.mjs"), /class="error-shell" lang="en-GB" data-np-untranslated/);
   // Values and permissions are not translated, only their display format.
   assert.match(page, /sessionDecision\(view, session\)/);
 });
