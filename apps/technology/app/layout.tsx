@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader />
+        <SiteHeader locale={locale} />
         <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
         <SiteFooter />
         <InterfaceLocaleSwitcher locale={locale} />
