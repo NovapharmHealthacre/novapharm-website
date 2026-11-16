@@ -12,6 +12,7 @@ export type NotificationTopic = Readonly<{
 }>;
 
 export type NotificationPreferenceRecord = Readonly<{
+  verified: boolean;
   revision: string;
   topics: readonly NotificationTopic[];
 }>;
@@ -46,7 +47,7 @@ export function NotificationPreferenceEditor({
   const revisionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!record?.revision) {
+    if (!record?.verified || !record.revision) {
       setDraft({});
       setConfirmed({});
       revisionRef.current = null;
@@ -58,9 +59,9 @@ export function NotificationPreferenceEditor({
     setConfirmed(values);
     revisionRef.current = record.revision;
     setStatus("");
-  }, [record]);
+  }, [record?.revision]);
 
-  const canEdit = Boolean(record?.revision && onSave);
+  const canEdit = Boolean(record?.verified && record.revision && onSave);
   const changed = record?.topics.some((topic) =>
     topic.editable && draft[topic.id] !== confirmed[topic.id]) ?? false;
 
@@ -90,7 +91,7 @@ export function NotificationPreferenceEditor({
     }
   };
 
-  if (!record?.revision) {
+  if (!record?.verified || !record.revision) {
     return <section className="np-notification-settings" aria-label="Notification preferences">
       <h2>Notification preferences</h2>
       <p role="status">Your authorised preferences have not been loaded. No notification settings can be changed here.</p>
