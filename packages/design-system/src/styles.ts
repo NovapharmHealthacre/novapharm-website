@@ -215,4 +215,16 @@ export const designSystemCss = String.raw`
   .np-chart details { display: block; }
   .np-chart summary { display: none; }
 }
+
+/* Private document details are a presentation of server-provided permissions only. */
+.np-controlled-document{min-width:0;border:1px solid #d8dde4;border-radius:12px;padding:clamp(1rem,3vw,2rem);background:#fff;color:#1d1d1f}
+.np-controlled-document__header h2{font-size:clamp(1.1rem,2vw,1.65rem);margin:0 0 1rem}
+.np-controlled-document__access{display:grid;gap:.5rem;margin:0 0 1rem}
+.np-controlled-document__access>div{display:flex;flex-wrap:wrap;gap:1rem}
+.np-controlled-document__access dt{min-width:8rem;font-weight:650}
+.np-controlled-document__access dd{margin:0}
+.np-controlled-document__content{min-width:0;margin-top:1.5rem}
+.np-controlled-document__note{font-size:.875rem;color:#515154;max-width:70ch}
+.np-controlled-document a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+@media(forced-colors:active){.np-controlled-document{border-color:CanvasText}}
 `;
