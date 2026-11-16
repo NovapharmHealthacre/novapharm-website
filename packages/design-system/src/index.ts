@@ -69,3 +69,4 @@ export * from "./controlled-document-viewer";
 export * from "./notification-preferences";
 export * from "./layout-organization";
 export * from "./layout-policy";
+export * from "./menu-actions";
