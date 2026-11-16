@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { company } from "@/data/site";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { AppStoreAvailability } from "./app-store-availability";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";
@@ -22,6 +23,7 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
       <div className="shell footer-secondary">
         <p lang="en-GB" dir="ltr">&copy; {new Date().getFullYear()} {company.legalName}. Company number {company.companyNumber}.</p>
         <p lang="en-GB" dir="ltr">Corporate and qualified B2B information only. No patient ordering or medical advice.</p>
+        <InterfaceLocaleSwitcher locale={locale} />
       </div>
     </footer>
   );
