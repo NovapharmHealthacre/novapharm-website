@@ -261,4 +261,37 @@ export const designSystemCss = String.raw`
 .np-notification-settings button:disabled{opacity:.55;cursor:not-allowed}
 .np-notification-settings :is(input,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 @media(forced-colors:active){.np-notification-settings{border-color:CanvasText}.np-notification-settings button:disabled{opacity:1;color:GrayText}}
+
+/* Apple HIG menus/actions web adaptation: restrained, semantic and RTL-safe. */
+.np-command-menu{position:relative;display:inline-block;min-inline-size:0;color:#1d1d1f}
+.np-command-menu__trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:.7rem;min-block-size:44px;padding:.6rem .85rem;font:inherit;font-weight:550;border:1px solid #d2d2d7;border-radius:9px;background:#fff;color:inherit;cursor:pointer;list-style:none}
+.np-command-menu__trigger::-webkit-details-marker{display:none}
+.np-command-menu__chevron{display:inline-block;font-size:1.125rem;line-height:1;transform:translateY(-.1rem)}
+.np-command-menu[open] .np-command-menu__chevron{transform:rotate(180deg)}
+.np-command-menu__items{position:absolute;z-index:100;inset-block-start:calc(100% + 4px);inset-inline-end:0;inline-size:max-content;min-inline-size:min(12rem,calc(100vw - 2rem));max-inline-size:min(22rem,calc(100vw - 2rem));margin:0;padding:.35rem;list-style:none;border:1px solid #d8dde4;border-radius:12px;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.np-command-menu--start .np-command-menu__items{inset-inline-end:auto;inset-inline-start:0}
+.np-command-menu__items>li{margin:0;padding:0}
+.np-command-menu__separated{border-block-start:1px solid #e5e5e9;margin-block-start:.35rem!important;padding-block-start:.35rem!important}
+.np-command-action{box-sizing:border-box;display:inline-flex;align-items:center;min-block-size:44px;padding:.65rem .8rem;background:transparent;border:0;border-radius:7px;text-align:start;text-decoration:none;color:#1d1d1f;cursor:pointer;font:inherit;line-height:1.3}
+.np-command-menu__items .np-command-action{display:flex;inline-size:100%;white-space:normal;overflow-wrap:anywhere}
+.np-command-action:hover:not(:disabled){background:#f5f5f7}
+.np-command-action:active:not(:disabled){background:#e8e8ed}
+.np-command-action--destructive{color:#a8182a}
+.np-command-action:disabled{color:#73737b;cursor:not-allowed;opacity:1}
+.np-command-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;min-inline-size:0}
+.np-command-toolbar__leading{flex:1 1 auto;min-inline-size:0}
+.np-command-toolbar__actions{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem;min-inline-size:0}
+.np-command-toolbar__direct{font-weight:600}
+.np-choice-picker{display:grid;gap:.35rem;max-inline-size:100%;color:inherit}
+.np-choice-picker label{font-size:.875rem;font-weight:600}
+.np-choice-picker select{min-block-size:44px;padding:.5rem .75rem;max-inline-size:100%;font:inherit;border:1px solid #a8a8ae;border-radius:8px;background:Canvas;color:CanvasText}
+.np-binary-toggle{display:inline-flex;align-items:center;gap:.75rem;min-block-size:44px;cursor:pointer}
+.np-binary-toggle input{flex:none;inline-size:1.25rem;block-size:1.25rem;accent-color:#B30E09}
+.np-binary-toggle:has(input:disabled){opacity:.65;cursor:not-allowed}
+.np-share-link{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.5rem}
+.np-share-link__status{font-size:.875rem;color:#515154}
+.np-command-menu__trigger:focus-visible,.np-command-action:focus-visible,.np-choice-picker select:focus-visible,.np-binary-toggle input:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+@media(max-width:480px){.np-command-toolbar__actions{inline-size:100%}.np-command-menu__items{max-inline-size:calc(100vw - 2rem)}}
+@media(forced-colors:active){.np-command-menu__trigger,.np-command-menu__items,.np-choice-picker select{border-color:CanvasText;box-shadow:none}.np-command-action--destructive{color:LinkText}.np-command-action:disabled{color:GrayText}.np-command-action:hover:not(:disabled){outline:1px solid Highlight}}
+@media(prefers-reduced-motion:reduce){.np-command-menu__chevron{transition:none}}
 `;
