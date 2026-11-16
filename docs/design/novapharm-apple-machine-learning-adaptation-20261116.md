@@ -10,7 +10,7 @@ Build **Nova ML** as a NovaPharm-branded, governed set of four modules in the ex
 
 | Nova ML module and protected slug | Apple capability | Real source delivered | What is not active |
 | --- | --- | --- | --- |
-| Nova ML Studio — `nova-ml-studio` | Create ML, model metadata, splitting, evaluation | Protected module, planning checklist, macOS trainer candidate | No signed training app, approved dataset, model, independent holdout or training run |
+| Nova ML Studio — `nova-ml-studio` | Create ML, model metadata, splitting, evaluation | Protected module, Apple HIG design contracts, fixed-seed Create ML trainer candidate and macOS Swift Package build/test workflow | No signed training app, approved dataset, model, independent holdout or training run |
 | Nova Core Runtime — `nova-core-runtime` | Core ML on-device inference | Protected module, model-permit and input-schema-checked Swift adapter | No bundled approved model or live native inference |
 | Nova Device Intelligence — `nova-device-intelligence` | Vision/VisionKit, Natural Language, Speech | Protected module, native single-image Vision OCR candidate and permission/data requirements | No live camera, microphone, browser OCR, auto-upload, speech permission or production device runtime activation |
 | Nova Generative Assist — `nova-generative-assist` | Foundation Models, App Intents, Writing Tools | Protected module, explicit-request native draft adapter, read-only native app-opening App Intent candidate | No native app, model session in production, installed App Intent, Siri or protected-data access |
@@ -38,16 +38,16 @@ The duplicate Generative Models URL in the owner list is one source, reviewed on
 | https://developer.apple.com/design/human-interface-guidelines/machine-learning | Distinguish critical/complementary, private/public, proactive/reactive; opt-in, calibration, feedback, mistakes, correction, multiple options, attribution, limitations; hide uncalibrated numeric confidence | Web model-readiness contract and source-first/no-claim boundary created; live scenario validation pending |
 | https://developer.apple.com/design/human-interface-guidelines/privacy | Purpose-specific data minimisation, clear consent, device processing and permission timing | No collection, training, capture, network inference or persistence in new module; final privacy/legal review pending |
 | https://developer.apple.com/documentation/technologyoverviews/ai-machine-learning | Choose system intelligence, native/developer models and appropriate model lifecycle | Platform separation and native candidates added |
-| https://developer.apple.com/documentation/technologyoverviews/built-in-intelligence | Vision, VisionKit, Natural Language, Speech and other embedded frameworks | Native OCR, on-device Natural Language and file-only Speech candidates; no deployed native host or camera/microphone capture |
+| https://developer.apple.com/documentation/technologyoverviews/built-in-intelligence | Vision, VisionKit, Natural Language, Speech and other embedded frameworks | Native Vision OCR, Natural Language and strictly offline, user-file-only Speech candidates; no deployed native host or camera/microphone capture |
 | https://developer.apple.com/documentation/technologyoverviews/apple-intelligence | App Intents, app entities, Writing Tools, Siri/Shortcuts/Spotlight, optional images | Native integration path documented; do not claim private data are donated to Siri, or that proprietary Apple services are copied into NI |
 | https://developer.apple.com/documentation/technologyoverviews/generative-models | Foundation Models, guided output, Core ML, Core AI and custom models | Native Foundation Models draft candidate; no LLM, server inference or Core AI shipped |
 | https://developer.apple.com/documentation/createml | Training, evaluation, model tasks and export | macOS text-classification trainer candidate and testable lifecycle contract |
 | https://developer.apple.com/documentation/createml/create-ml-utilties | Apple's original legacy/irregularly spelled URL is titled **Data visualizations** in the live page; useful for training-data visual review, not an API integration prerequisite | Reviewed as training-dataset tooling guidance; no visual model analysis implemented |
 | https://developer.apple.com/documentation/createml/detecting-human-actions-in-a-live-video-feed | Vision pose/frame classification sample; live camera permission and high error consequences | **Excluded from initial pharmaceutical web release.** No monitoring of workers, patients, faces or bodies |
 | https://developer.apple.com/documentation/createml/recording-or-choosing-training-videos | Video quality, negative examples, diverse positions and consistent capture | Documented as optional future native research only; datasets and lawful purpose absent |
-| https://developer.apple.com/documentation/createml/mlcreateerror | Training cancellation, data mutation, parameter mismatch, I/O and type errors | Native Swift typed failure and explicit approval/holdout failure; full parity pending |
+| https://developer.apple.com/documentation/createml/mlcreateerror | Training cancellation, data mutation, parameter mismatch, I/O and type errors | Mapped cancellation, dataset mutation, invalid parameter/type, I/O and generic errors to redacted native failures; device and runtime tests pending |
 | https://developer.apple.com/documentation/createml/mlmodelmetadata | Provenance metadata such as author, version, licence and description | Native Create ML export includes author, licence, version and purpose; signed register pending |
-| https://developer.apple.com/documentation/createml/mlsplitstrategy | Fixed or automatic split; holdout must be independent and leakage-safe | Candidate requires separate holdout CSV; real split-policy and group/time validation pending |
+| https://developer.apple.com/documentation/createml/mlsplitstrategy | Fixed or automatic split; holdout must be independent and leakage-safe | Fixed-ratio, fixed-seed internal validation via MLSplitStrategy; requires a separate independent holdout CSV and external class-balance/leakage review. Real dataset tests still pending |
 | https://developer.apple.com/documentation/coreml | On-device model format, predict, computed hardware, app-bound model lifecycle | Native Swift adapter can load a bundled compiled model under permit and schema checks; no trained artifact shipped |
 
 Apple SDK availability is device-, OS- and region-dependent. Use the currently installed Apple SDK/Xcode to revalidate signatures and test on eligible devices; GitHub source alone does not compile or deploy an Apple application.
@@ -66,11 +66,17 @@ The role distinction is *complementary*, not essential to pharmaceutical service
 **Natural Language:** keep raw text in the native process, only for approved public excerpts; do not infer a confident language on very short text. Both APIs are candidates pending native application support.
 **Video/action classification:** Apple's sample expects a continuously running camera and actual device, but is out of scope for NovaPharm's initial pharmaceutical product. Document the training-video best practices for an optional consented future research study (single participant, complete body, good lighting, varied examples, negative class) without building or activating workplace, patient or employee surveillance.
 
+## Native package and CI acceptance
+
+`native/novapharm-intelligence-apple/Package.swift` declares a Swift Package with the seven candidate adapters. `Tests/NovaMLAppleTests.swift` exercises unapproved data/model/speech denial before touching an external source, and `.github/workflows/nova-ml-native-apple.yml` requests a macOS GitHub runner to compile the package and run those denial tests.
+
+This **is not** an Xcode app target, signed app, licensed model package, physical-device test, customer installation or live runtime. The CI run must complete successfully; source presence alone is not evidence that the native code compiles. The full permission and privacy impact checklist is at `native/novapharm-intelligence-apple/APP_PRIVACY_CHECKLIST.md`.
+
 ## Required validation before release
 
 1. Review accepted lawful basis, copyright/data-use rights, licence, representative dataset and sensitive health-data exclusion for every model.
 2. Choose a qualified human owner for each task. No medication recommendation, diagnosis, pharmacovigilance action, stock guarantee, PLPI approval prediction, credit decision, automated supplier rejection or outbound customer contact is granted.
-3. Add a signed app project/bundle identifier, identity binding and protected session handoff. Native code must not accept a browser-provided approval flag in place of verified authority.
+3. Add a signed app project/bundle identifier, identity binding and protected session handoff (Swift Package alone does not provide an app). Native code must not accept a browser-provided approval flag in place of verified authority.
 4. Build and sign with current Xcode on macOS. Compile and run real Create ML training on permitted nonpatient data with an independent, leakage-safe test set.
 5. Bind model metadata, SHA-256/rights receipts, platform versions, dataset provenance, calibrated quality metrics and a revocable release gate.
 6. Test Core ML inference on actual compatible devices for correctness, memory, latency, offline fallback, model removal and account sign-out.
