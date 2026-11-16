@@ -499,6 +499,49 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
   }
 }
 
+async function runRtlPreflight(name: string, browserType: BrowserType): Promise<void> {
+  const browser = await browserType.launch({ headless: true });
+  try {
+    for (const locale of ["ar", "he"] as const) {
+      for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 800 }]) {
+        const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
+        try {
+          await context.addCookies([{ name: "np_locale", value: locale, url: baseUrl, sameSite: "Lax" }]);
+          const page = await context.newPage();
+          const response = await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+          assert.equal(response?.status(), 200, `${name}: RTL homepage failed to load`);
+          assert.equal(await page.locator("html").getAttribute("dir"), "rtl", `${name}: missing RTL direction for ${locale}`);
+          assert.equal(await page.locator("html").getAttribute("lang"), locale, `${name}: missing document language`);
+          assert.equal(await page.locator("main").getAttribute("lang"), "en-GB", "untranslated article marked as local-language copy");
+          const control = page.getByRole("combobox", { name: "Language and layout preview" });
+          assert.equal(await control.inputValue(), locale, `${name}: selected preference not restored`);
+
+          const widths = await page.evaluate(() => ({
+            document: document.documentElement.scrollWidth,
+            viewport: document.documentElement.clientWidth,
+          }));
+          assert.ok(widths.document <= widths.viewport + 1,
+            `${name}: ${locale} RTL horizontal overflow ${widths.document} > ${widths.viewport}`);
+          const imageTransform = await page.locator(".brand img").first().evaluate((img) =>
+            getComputedStyle(img).transform);
+          assert.ok(imageTransform === "none" || imageTransform === "matrix(1, 0, 0, 1, 0, 0)",
+            `${name}: ${locale} logo must never be mirrored`);
+
+          await control.selectOption("en-GB");
+          await page.waitForLoadState("domcontentloaded");
+          assert.equal(await page.locator("html").getAttribute("dir"), "ltr", "switcher did not restore English direction");
+          await page.close();
+        } finally {
+          await context.close();
+        }
+      }
+    }
+    console.log(`${name}: Arabic/Hebrew RTL locale, overflow, brand and reset preflight passed`);
+  } finally {
+    await browser.close();
+  }
+}
+
 function markdownReport(generatedAt: string): string {
   return `# Corporate browser acceptance\n\n- Generated: ${generatedAt}\n- Candidate: local standalone Node production artifact\n- Engines: Chromium and WebKit\n- Canonical routes: ${canonicalRoutes.length}\n- Viewports: ${viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${accessibilityRuns}\n- High-density product-media runs: ${highDensityRuns}\n- Scriptless-navigation runs: ${noJavaScriptRuns}\n- Serious or critical findings: ${findings.length}\n- Search indexing: disabled with meta robots and X-Robots-Tag during validation\n- Data: synthetic and non-confidential only\n`;
 }
@@ -507,6 +550,8 @@ await fs.rm(artifactRoot, { recursive: true, force: true });
 await fs.mkdir(artifactRoot, { recursive: true });
 try {
   await startServer();
+  await runRtlPreflight("chromium", chromium);
+  await runRtlPreflight("webkit", webkit);
   await runInteractionPreflight("chromium", chromium);
   await runInteractionPreflight("webkit", webkit);
   await runCraftPreflight("chromium", chromium);
