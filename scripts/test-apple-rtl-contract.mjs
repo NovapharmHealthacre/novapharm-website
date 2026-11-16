@@ -230,7 +230,8 @@ test("Apple-like footer language selector stays unboxed, accessible and honest a
     assert.ok(block.includes(rule), "Missing unboxed Apple-like footer contract: " + rule);
   }
   assert.doesNotMatch(block, /position: fixed/);
-  assert.match(staticJs, /document\.querySelector\("\.npd-footer-bottom,/);
+  assert.match(staticJs, /document\.querySelectorAll\("\.np-contact-reference-footer-inner, \.npd-footer-bottom,/);
+  assert.match(staticJs, /node\.getClientRects\(\)\.length > 0/);
   assert.match(staticJs, /\(footer \|\| document\.body\)\.appendChild\(control\)/);
   assert.match(staticJs, /label\.textContent = locale === "ar" \? "اللغة"/);
   assert.match(react, /interfaceLabel\(locale, "Language"\)/);
