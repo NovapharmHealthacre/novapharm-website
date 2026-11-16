@@ -19,7 +19,7 @@ test("Apple HIG layout primitives preserve flow, safe areas, reflow and accessib
 });
 
 test("all current web application shells import the shared layout without touching business logic", () => {
-  for (const site of ["corporate", "portal", "technology", "status"]) {
+  for (const site of ["corporate", "portal", "technology", "status", "founder"]) {
     const layout = read(`apps/${site}/app/layout.tsx`);
     assert.match(layout, /import "\.\.\/\.\.\/\.\.\/assets\/css\/apple-hig-layout\.css";/,
       `Missing layout CSS in ${site} app shell`);
@@ -100,4 +100,23 @@ test("homepage current-page semantics remain accurate", () => {
   const nav = home.match(/<nav class="site-nav[^>]*>[\s\S]*?<\/nav>/)?.[0] ?? "";
   assert.ok(nav, "Home page needs a primary navigation landmark");
   assert.doesNotMatch(nav, /aria-current="page"/, "No section is the current page on the home route");
+});
+
+test("HIG box and organization patterns remain restrained and responsive", () => {
+  for (const marker of [
+    ".np-hig-box", ".np-hig-box--plain", ".np-hig-box--subtle",
+    ".np-hig-box__heading", ".np-hig-collection", ".np-hig-split-view",
+    ".np-hig-disclosure__content", ".np-hig-subgroup",
+    "grid-template-columns: minmax(0, 1fr)", "border-block-start",
+  ]) assert.ok(css.includes(marker), `Missing organization primitive: ${marker}`);
+  const components = read("packages/design-system/src/components.tsx");
+  for (const name of ["GroupBox", "CollectionView", "SplitView", "Disclosure"]) {
+    assert.match(components, new RegExp(`export function ${name}\\(`));
+  }
+  const founder = read("apps/founder/app/layout.tsx");
+  assert.match(founder, /apple-hig-layout\\.css/);
+  const status = read("apps/status/app/page.tsx");
+  assert.match(status, /<ul className="service-list">/);
+  assert.match(status, /<li className="service-row"/);
+  assert.doesNotMatch(status, /<article className="service-row"/);
 });
