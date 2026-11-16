@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import "./concise.css";
 import "./apple-pharma.css";
