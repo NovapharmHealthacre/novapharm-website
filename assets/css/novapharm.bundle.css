@@ -13333,3 +13333,11 @@ footer.site-footer .footer-bottom a:hover { text-decoration: underline; }
   .npd-footer :is(a, button),
   footer.site-footer .footer-grid a { color: LinkText; }
 }
+/* Keep inherited legacy footer heading margins out of disclosure headings. */
+.npd-footer.site-footer .npd-footer-top .np-apple-footer-disclosure summary h2 {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+
