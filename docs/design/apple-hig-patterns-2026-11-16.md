@@ -18,10 +18,10 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 
 | Official Apple section | NovaPharm website interpretation | Applicability and acceptance |
 |---|---|---|
-| [Charting data](https://developer.apple.com/design/human-interface-guidelines/charting-data) | Accessible labels, comparison scales, colour-independent semantics, exact tables, truthfulness, units and provenance; reuse chart styles across Intelligence/Distribution | **Initial code in this PR**: WMS scenario bars, values and accessible table; shared chart provenance. Other charts require inventory and browser tests |
+| [Charting data](https://developer.apple.com/design/human-interface-guidelines/charting-data) | Accessible labels, comparison scales, colour-independent semantics, exact tables, truthfulness, units and provenance; reuse chart styles across Intelligence/Distribution | **Initial code in this PR**: WMS hypothetical scenario and recorded source chart tables; medicine chart excludes unavailable metrics instead of displaying false zeroes; unique SVG labels and shared chart provenance. Other charts require inventory and browser tests |
 | [Collaboration and sharing](https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing) | Authorised link/file sharing, clearly scoped recipient permissions, revocation, send-copy versus collaborate, no public private URLs | **Future security-gated**: identify supported back-end permissions and audit endpoints first |
 | [Drag and drop](https://developer.apple.com/design/human-interface-guidelines/drag-and-drop) | Support accepted file drops where there is a secure upload endpoint; always provide equivalent accessible file picker or move/copy controls | **Not blanket enabled**: validate file type, size, malware scanning, authorisation and undo |
-| [Entering data](https://developer.apple.com/design/human-interface-guidelines/entering-data) | Labelled fields, browser autofill, format hints, dynamic validation, accessible required/errors, native keyboard patterns, no prefilled passwords | **Existing components; broader review pending** across contact, account, returns, quality, pricing |
+| [Entering data](https://developer.apple.com/design/human-interface-guidelines/entering-data) | Labelled fields, browser autofill, format hints, dynamic validation, accessible required/errors, native keyboard patterns, no prefilled passwords | **Existing and improved components**: FormField now preserves nested ARIA descriptions, required and invalid state; broader form review pending across contact, account, returns, quality and pricing |
 | [Feedback](https://developer.apple.com/design/human-interface-guidelines/feedback) | Inline noninterruptive status for routine changes, actionable error for failure, confirmation only for verified important mutation | **Existing components; broader review pending**, including live ARIA feedback |
 | [File management](https://developer.apple.com/design/human-interface-guidelines/file-management) | Explicit filename, owner, revision, date, source, preview and download permissions, user-cancellable uploads and accessible browse controls | **Future governed API review**, no arbitrary file-system access |
 | [Going full screen](https://developer.apple.com/design/human-interface-guidelines/going-full-screen) | Opt-in fullscreen for dense chart/workspace views where browser API supports it; clear escape route and controls | **Future conditional**; avoid forcing homepage fullscreen |
@@ -49,10 +49,13 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 ## First candidate in this branch
 
 - Shared chart component: optional truthful source/as-at provenance; exact-value table remains accessible even if visual marks are decorative.
+- Shared FormField preserves original accessible instructions, required/invalid field semantics; shared tables display explicit scoped empty results.
 - Shared RTL-aware tabs: ArrowLeft/ArrowRight/Home/End support; panel focus.
 - New web-native `ModalDialog`: browser `showModal()` focus containment; Escape handling, explicit close, focus restoration.
 - Authenticated WMS capacity scenario: proportional illustrative zone bars, visible numeric text, an exact-value HTML table; a single-step "Undo reset" that restores previous assumptions without a server write.
-- Source tests and path-scoped GitHub Actions; existing production checks still required.
+- Authenticated WMS recorded source chart: exact counts and source-unavailable states in a keyboard-scrollable table, without inferring 3PL inventory/throughput totals.
+- Medicines Intelligence trend chart: preserve true recorded zeroes but reject missing/null/non-finite metric points; use unique SVG title/description IDs. This is presentation-only and does not alter governed data ingestion.
+- Source tests for form/empty tables, WMS charts and medicine observed values; path-scoped GitHub Actions; existing production checks still required.
 
 ## Domain-specific acceptance still required
 
