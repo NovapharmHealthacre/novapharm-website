@@ -35,8 +35,8 @@ assert.doesNotMatch(publicAppleCss, /body\[data-page="home"\]\s+h[1-4]\b/,
   "homepage heading scale must stay inside main, not bleed into the footer");
 assert.match(publicAppleCss, /body\[data-page="home"\] main h2/,
   "homepage editorial section headings must still receive their approved scale");
-assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*13px/s,
-  "shared footer typography requires an explicitly scoped heading override");
+assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*var\(--np-type-caption-size,\s*0\.875rem\)/s,
+  "shared footer typography requires an explicitly scoped 14px caption role");
 
 function contrastOnWhite(hex) {
   assert.match(hex, /^#[0-9a-f]{6}$/i);
