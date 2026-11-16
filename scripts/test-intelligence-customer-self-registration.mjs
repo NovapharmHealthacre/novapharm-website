@@ -22,6 +22,9 @@ test("Cognito self registration reuses cryptographically bound code+PKCE transac
 test("registered identity does not create customer, subscription, contract, seat or licence grant", () => {
   assert.doesNotMatch(route, /AdminCreateUser|stripe\.com\/v1|UpdateItem|PutItem|TransactWrite|grantsCustomerAccess: true/iu);
   assert.match(ui, /href="\/auth\/customer\/register"/u);
+  assert.match(ui, /href="\/auth\/customer\/register">Register a sign-in<\/a>/u);
+  assert.match(ui, /Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data\./u);
+  assert.doesNotMatch(ui, /Create a business account/u);
   assert.match(ui, /href="\/auth\/customer\/start"/u);
   assert.match(ui, /Subscription checkout and medicines access become available only after organisation, contract, billing and dataset approvals\./u);
 });
