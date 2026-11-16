@@ -27,13 +27,14 @@
     }
     var control = document.createElement("div");
     control.className = "np-locale-control";
+    control.dataset.npControlLocale = locale;
     control.setAttribute("data-np-locale-control", "");
     var label = document.createElement("label");
     label.htmlFor = "np-interface-locale";
-    label.textContent = "Language / RTL layout preview";
+    label.textContent = locale === "ar" ? "اللغة / معاينة العرض من اليمين إلى اليسار" : locale === "he" ? "שפה / תצוגה מקדימה מימין לשמאל" : "Language / RTL layout preview";
     var select = document.createElement("select");
     select.id = "np-interface-locale";
-    select.setAttribute("aria-label", "Language and layout preview");
+    select.setAttribute("aria-label", locale === "ar" ? "معاينة اللغة واتجاه العرض" : locale === "he" ? "תצוגה מקדימה של שפה וכיוון" : "Language and layout preview");
     [["en-GB","English"],["ar","العربية · RTL"],["he","עברית · RTL"]].forEach(function (item) {
       var option = document.createElement("option");
       option.value = item[0]; option.textContent = item[1];
@@ -50,7 +51,7 @@
     });
     var note = document.createElement("span");
     note.className = "np-locale-note";
-    note.textContent = "Navigation translated; full content translation pending.";
+    note.textContent = locale === "ar" ? "تمت ترجمة التنقل فقط؛ ترجمة بقية المحتوى قيد الإعداد." : locale === "he" ? "הניווט תורגם; תרגום שאר התוכן עדיין בהכנה." : "Navigation translated; full content translation pending.";
     control.append(label, select, note);
     document.body.appendChild(control);
   }
