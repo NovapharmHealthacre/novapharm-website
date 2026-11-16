@@ -52,6 +52,8 @@ test("NovaPharm privacy editorial appearance is responsive and independent of Ap
   assert.match(css, /@media \(forced-colors: active\)/);
   assert.match(css, /focus-visible/);
   assert.match(css, /min-height: 46px/);
+  assert.match(css, /\\.np-privacy-overview \\.np-privacy-eyebrow \\{[^}]*font-size: var\\(--np-type-caption-size, 0\\.875rem\\)/s);
+  assert.match(css, /\\.np-privacy-topic-links \\.np-privacy-topic-label \\{[^}]*font-size: var\\(--np-type-caption-size, 0\\.875rem\\)/s);
   assert.doesNotMatch(html, /apple\.com\/privacy\/|apple-logo\.svg|apple-intelligence\.png/);
 });
 
