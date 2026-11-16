@@ -42,11 +42,11 @@ test("outline preserves semantic group disclosure and integration boundaries", (
   assert.match(html, /<ul>/);
 });
 
-test("display switch never discards either accessible mode or expanded tree during a toggle", () => {
+test("default outline remains available without JavaScript and both modes are present", () => {
   const html = renderToStaticMarkup(<HierarchyExplorer label="Warehouse" groups={groups} />);
   assert.match(html, /role="group" aria-label="Warehouse display"/);
-  assert.match(html, /aria-pressed="true">Columns/);
-  assert.match(html, /aria-pressed="false">Outline/);
+  assert.match(html, /aria-pressed="false">Columns/);
+  assert.match(html, /aria-pressed="true">Outline/);
   assert.match(html, /class="np-hig-column-browser"/);
   assert.match(html, /class="np-hig-outline"/);
   assert.match(html, /hidden=""/);
