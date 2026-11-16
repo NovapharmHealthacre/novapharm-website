@@ -52,7 +52,7 @@ assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Ex
 // The approved Nutraxin master remains byte-identical apart from the
 // explicit English-language boundary needed by the Arabic/Hebrew layout preview.
 const masterIntro = master.slice(0, master.indexOf('<a class="nx-product-card"'));
-const publishedIntro = masterIntro.replace(/<main\\b[^>]*>/, (main) =>
+const publishedIntro = masterIntro.replace(/<main\b[^>]*>/, (main) =>
   main.slice(0, -1) + ' lang="en-GB" data-np-untranslated>');
 assert.ok(page.includes(publishedIntro), "Published introduction must preserve the approved master layout and English-language boundary");
 assert.ok(page.includes(expectedNutraxinCssHref), "Published Nutraxin stylesheet must match its exact CSS bytes and approved version");
