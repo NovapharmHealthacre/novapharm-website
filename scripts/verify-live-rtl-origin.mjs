@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -12,7 +13,11 @@ export function inspectLiveRtl({ home, cookies, contact, script, bundle }) {
   const main = home.match(/<main\b[^>]*>/i)?.[0] ?? "";
   assert.match(main, /\blang="en-GB"/, "Untranslated public main must remain identified as English");
   assert.match(main, /\bdata-np-untranslated\b/, "Do not imply published clinical/legal content was translated");
-  assert.match(home, /src="\/assets\/js\/rtl-localization\.js"/, "Public RTL bootstrap must load");
+  const localeScript = home.match(/<script\s+src="\/assets\/js\/rtl-localization\.js\?v=([0-9a-f]{16})"\s*><\/script>/i);
+  assert.ok(localeScript, "Public RTL bootstrap must use a content-versioned URL to defeat stale Safari caches");
+  const scriptDigest = createHash("sha256").update(script).digest("hex").slice(0, 16);
+  assert.equal(localeScript[1], scriptDigest, "Homepage is referencing an outdated RTL script; visual release is not live");
+  assert.doesNotMatch(script, /Language \/ RTL layout preview/, "Pre-redesign boxed selector JavaScript is still live");
   assert.match(cookies, /<code>np_locale<\/code>/, "Disclose the first-party functional language cookie");
   assert.match(cookies, /Up to 365 days after selection/, "Disclose its actual retention limit");
   assert.match(cookies, /right-to-left layout preview/, "Arabic/Hebrew must remain clearly described as previews");
