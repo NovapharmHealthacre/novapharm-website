@@ -34,7 +34,7 @@ jobs:
             [ -n "$changed" ] || continue
             changed_any=true
             case "$changed" in
-              apps/portal/*|native/novapharm-intelligence-apple/*|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/nova-ml-native-apple.yml|.github/workflows/dispatch-approved-aws-contact-release.yml)
+              apps/portal/*|native/novapharm-intelligence-apple/*|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/aws/contact-release-routing.test.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/nova-ml-native-apple.yml|.github/workflows/dispatch-approved-aws-contact-release.yml)
                 ;;
               *)
                 private_only=false
