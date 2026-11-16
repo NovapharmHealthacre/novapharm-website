@@ -49,21 +49,22 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
   const page = await probe(fetchImpl, origin + "/");
   if (page.status !== 200) reject("login_page_not_public");
   const markup = await page.text();
-  // A public 200 is not enough: verify the *current* reviewed Writing copy.
-  // Former sign-in headings and registration promises must not certify a
-  // deployment whose source-level fix has not actually reached this domain.
+  // A public 200 is not enough: require the current approved Writing copy.
+  // Return only fixed, non-sensitive diagnostic codes; never log page content,
+  // Cognito URLs, user identifiers, cookie values or private workspace data.
+  if (markup.length > 2_000_000) reject("login_copy_or_constraints_invalid");
+  if (markup.includes("Create a business account")) reject("legacy_account_cta_published");
+  if (!markup.includes("Register a sign-in") ||
+      !markup.includes('href="/auth/customer/register"')) reject("registration_cta_not_published");
+  if (!markup.includes("Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.")) {
+    reject("approval_disclaimer_not_published");
+  }
   const approvedCardEntry = markup.includes("A more human") &&
     markup.includes("intelligence for") &&
     markup.includes("medicine.") &&
     markup.includes("Sign in with your business email and password. Authenticator verification follows.") &&
-    markup.includes('href="/auth/customer/register"') &&
-    markup.includes("Register a sign-in") &&
-    markup.includes("Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.") &&
-    markup.includes("/auth/customer/start?mode=reset") &&
-    !markup.includes("Create a business account");
-  if (markup.length > 2_000_000 ||
-      !approvedCardEntry ||
-      !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
+    markup.includes("/auth/customer/start?mode=reset");
+  if (!approvedCardEntry || !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");
   if (companyPage.status !== 200) reject("corporate_intelligence_page_not_public");
