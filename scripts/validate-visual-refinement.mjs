@@ -93,7 +93,14 @@ for (const [name, html] of Object.entries(pages)) {
   [css, "@media (forced-colors: active)", "Forced-colours support"],
   [css, "@media print", "Print acceptance layer"],
   [bundleCss, "--corporate-product-discipline-contract: 1", "Bundled corporate design contract"],
-  [javascript, 'visibleLabel.textContent = isOpen ? "Close" : "Menu"', "Textual mobile menu control"],
+  // The mobile-menu label must retain its English fallback and the reviewed
+  // Arabic/Hebrew variants. The old hard-coded "Close" / "Menu" check became
+  // invalid when the RTL handler was made locale-aware.
+  [javascript, 'const localizedMenuLabels = {', "Textual mobile menu localization table"],
+  [javascript, 'menu: "Menu", closed: "Close", nav: "Primary navigation"', "English mobile menu fallback"],
+  [javascript, 'if (visibleLabel) visibleLabel.textContent = isOpen ? menuLabels.closed : menuLabels.menu;', "Textual mobile menu control"],
+  [javascript, 'if (label) label.textContent = isOpen ? menuLabels.close : menuLabels.open;', "Accessible mobile menu control"],
+  [javascript, 'navToggle.setAttribute("aria-label", menuLabels.open)', "Accessible mobile navigation label"],
   [build, 'import("./apply-corporate-product-discipline.mjs")', "Deterministic corporate transformation"],
 ].forEach(([content, text, label]) => requireText(content, text, label));
 
