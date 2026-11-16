@@ -10,6 +10,7 @@
  * considered. Authenticated portal routes and private/generated workspaces
  * are deliberately excluded.
  */
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
@@ -21,7 +22,14 @@ export const publicRtlDirectories = Object.freeze([
   "service-unavailable", "services", "technology", "trust-centre",
 ]);
 const rootFiles = Object.freeze(["index.html", "404.html", "500.html", "portal/index.html"]);
-const rtlScript = '<script src="/assets/js/rtl-localization.js"></script>';
+// The locale script must use a content fingerprint so an existing Safari tab
+// cannot keep the pre-redesign boxed selector after an otherwise valid deploy.
+const rtlScriptPattern = /<script\s+src=["']\/assets\/js\/rtl-localization\.js(?:\?[^"']*)?["']\s*><\/script>/gi;
+function versionedRtlScript(root) {
+  const script = readFileSync(join(resolve(root), "assets/js/rtl-localization.js"));
+  const version = createHash("sha256").update(script).digest("hex").slice(0, 16);
+  return `<script src="/assets/js/rtl-localization.js?v=${version}"></script>`;
+}
 const rtlStylesheet = '<link rel="stylesheet" href="/assets/css/rtl-localization.css">';
 
 function* collectHtml(directory) {
@@ -51,6 +59,7 @@ export function finalizePublicRtlArtifacts(root = process.cwd()) {
   const files = publicRtlFiles(root);
   if (files.length < 50) throw new Error("Refusing to finalize an incomplete public RTL estate");
   let updated = 0;
+  const rtlScript = versionedRtlScript(root);
   for (const file of files) {
     const original = readFileSync(file, "utf8");
     if (!/<head\b[^>]*>/i.test(original) || !/<\/head>/i.test(original)) {
@@ -60,9 +69,10 @@ export function finalizePublicRtlArtifacts(root = process.cwd()) {
       throw new Error("Public page missing main landmark: " + file);
     }
     let html = original;
-    if (!html.includes(rtlScript)) {
-      html = html.replace(/<head\b[^>]*>/i, (head) => head + "\n  " + rtlScript);
-    }
+    const localeScripts = [...html.matchAll(rtlScriptPattern)];
+    if (localeScripts.length > 1) throw new Error("Duplicate RTL bootstrap in public page: " + file);
+    if (localeScripts.length === 1) html = html.replace(rtlScriptPattern, rtlScript);
+    else html = html.replace(/<head\b[^>]*>/i, (head) => head + "\n  " + rtlScript);
     // SEO rewriters can relocate a pre-existing stylesheet in the head on a
     // second build. Reposition standalone RTL CSS at one canonical location
     // *before* CSS hashing, so the final released HTML is byte-identical.
@@ -102,10 +112,13 @@ export function validatePublicRtlArtifacts(root = process.cwd()) {
   }
   const files = publicRtlFiles(root);
   if (files.length < 50) throw new Error("RTL public release covers fewer than 50 pages");
+  const expectedScript = versionedRtlScript(root);
   for (const file of files) {
     const html = readFileSync(file, "utf8");
-    const scriptCount = html.split(rtlScript).length - 1;
-    if (scriptCount !== 1) throw new Error("Exactly one RTL bootstrap required in " + file);
+    const localeScripts = [...html.matchAll(rtlScriptPattern)];
+    if (localeScripts.length !== 1 || localeScripts[0][0] !== expectedScript) {
+      throw new Error("Exactly one content-versioned RTL bootstrap required in " + file);
+    }
     const main = html.match(/<main\b[^>]*>/i)?.[0] ?? "";
     if (!/\blang="en-GB"/i.test(main) || !/\bdata-np-untranslated\b/i.test(main)) {
       throw new Error("Untranslated English main landmark not annotated in " + file);
