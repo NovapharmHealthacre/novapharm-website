@@ -173,4 +173,10 @@ test("privacy-attribution changes are included in guarded public publication", (
   }
   assert.ok(publisher.includes("node --test scripts/test-apple-privacy-contract.mjs"),
     "directly published marketing changes require the privacy contract");
+  assert.ok(publisher.includes("test -s _site/assets/js/marketing-attribution.js"),
+    "the guarded publisher must stage the actual attribution module");
+  assert.ok(publisher.includes("/tmp/novapharm-live-marketing-attribution.js"),
+    "the guarded publisher must fetch the live module before claiming release success");
+  assert.ok(publisher.includes("if (!publicAnalyticsRoute(location.pathname)) return null;"),
+    "the published module must retain the denied-route read guard");
 });
