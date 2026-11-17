@@ -9,6 +9,7 @@ import {
 const envelope = Object.freeze({
   sourceId: "ca-health-canada-dpd",
   jurisdiction: "CA",
+  domain: "regulatory",
   responseSha256: "a".repeat(64),
   retrievedAt: "2026-11-17T16:00:00.000Z",
   canPublish: false,
@@ -45,6 +46,14 @@ test("source-local identifiers retain leading zeroes and are never promoted to c
   assert.equal(rows[0].mappingDecision, "unresolved");
   assert.equal(rows[0].commercialReleaseApproved, false);
   assert.throws(() => buildLocalIdentityCandidates({ ...envelope, canPublish: true }));
+  assert.throws(
+    () => buildLocalIdentityCandidates({ ...envelope, jurisdiction: "GLOBAL", domain: "clinical-trials" }),
+    /Only national regulatory product sources/
+  );
+  assert.throws(
+    () => buildLocalIdentityCandidates({ ...envelope, domain: "literature" }),
+    /Only national regulatory product sources/
+  );
 });
 test("market candidates retain price type, units, currency, country, observation period and rejection", () => {
   const checked = assertMarketFactCandidate(market);
