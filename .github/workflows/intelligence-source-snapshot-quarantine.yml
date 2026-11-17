@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/core/intelligence-source-snapshot-quarantine.mjs'
       - 'scripts/test-intelligence-source-snapshot-quarantine.mjs'
+      - 'docs/intelligence/source-snapshot-quarantine-v1.schema.json'
+      - 'scripts/test-intelligence-source-snapshot-schema.mjs'
       - '.github/workflows/intelligence-source-snapshot-quarantine.yml'
   workflow_dispatch:
 
@@ -25,4 +27,5 @@ jobs:
         run: |
           node --check src/core/intelligence-source-snapshot-quarantine.mjs
           node --check scripts/test-intelligence-source-snapshot-quarantine.mjs
-          node --test scripts/test-intelligence-source-snapshot-quarantine.mjs
+          node --check scripts/test-intelligence-source-snapshot-schema.mjs
+          node --test scripts/test-intelligence-source-snapshot-quarantine.mjs scripts/test-intelligence-source-snapshot-schema.mjs
