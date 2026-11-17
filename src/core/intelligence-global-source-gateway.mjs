@@ -1,3 +1,8 @@
+import {
+  assertInternalEvaluationPermit,
+  buildEvaluationEnvelope
+} from "./intelligence-global-evidence-contract.mjs";
+
 /**
  * Governed upstream read adapter candidates. Server-side only.
  * Every request requires a trusted, independent rights-authorisation callback.
@@ -173,13 +178,11 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       const permission = await authorize({
         sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
       });
-      if (permission?.decision !== "approved" ||
-          typeof permission.receiptId !== "string" || !permission.receiptId.trim() ||
-          typeof permission.validUntil !== "string" ||
-          !Number.isFinite(Date.parse(permission.validUntil)) ||
-          Date.parse(permission.validUntil) <= now()) {
-        throw new Error("Source rights are not approved");
-      }
+      const grantedAt = now();
+      const grant = assertInternalEvaluationPermit({
+        permit: permission, sourceId, tenantId,
+        domain: plan.domain, country: plan.country, now: grantedAt
+      });
       const response = await transport(plan.url, {
         method: "GET",
         redirect: "error",
@@ -188,7 +191,11 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
         headers: { accept: "application/json" },
         signal: AbortSignal.timeout(TIMEOUT_MS)
       });
-      return normaliseGovSourceResult(plan, await readJsonBounded(response));
+      const raw = await readJsonBounded(response);
+      const normalized = normaliseGovSourceResult(plan, raw);
+      return buildEvaluationEnvelope({
+        plan, normalized, raw, grant, capturedAt: now()
+      });
     }
   });
 }
