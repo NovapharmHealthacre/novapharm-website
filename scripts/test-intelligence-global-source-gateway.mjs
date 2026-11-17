@@ -7,8 +7,8 @@ import {
   sourcePlans
 } from "../src/core/intelligence-global-source-gateway.mjs";
 
-test("only three documented HTTPS hosts are reachable through fixed-path plans", () => {
-  assert.equal(Object.keys(sourcePlans).length, 3);
+test("only five documented HTTPS hosts are reachable through fixed-path plans", () => {
+  assert.equal(Object.keys(sourcePlans).length, 5);
   for (const sourceId of Object.keys(sourcePlans)) {
     const p = buildGovSourcePlan({ sourceId, term: "Apixaban", limit: 5 });
     assert.equal(new URL(p.url).protocol, "https:");
@@ -17,6 +17,8 @@ test("only three documented HTTPS hosts are reachable through fixed-path plans",
   }
   assert.match(buildGovSourcePlan({ sourceId: "global-clinicaltrials", term: "Apixaban" }).url, /pageSize=5/);
   assert.match(buildGovSourcePlan({ sourceId: "es-aemps-cima", term: "Apixaban" }).url, /nombre=Apixaban/);
+  assert.match(buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban" }).url, /brandname=Apixaban/);
+  assert.match(buildGovSourcePlan({ sourceId: "global-europepmc", term: "Apixaban" }).url, /pageSize=5/);
 });
 test("bounds reject query injection, unsupported hosts and unbounded pages", () => {
   for (const term of ['" OR true', "https://evil.example", "a", " ".repeat(100), "a\nb"]) {
@@ -76,4 +78,19 @@ test("US and Spanish response normalizers keep local identifiers distinct", () =
   assert.notEqual(fda.jurisdiction, cima.jurisdiction);
   assert.equal(fda.canPublish, false);
   assert.equal(cima.canPublish, false);
+});
+
+test("Canadian DINs and Europe PMC publication IDs remain provenance-separated and non-publishable", () => {
+  const canada = normaliseGovSourceResult(buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban" }), [
+    { drug_identification_number: "00326925", brand_name: "Canadian example" }
+  ]);
+  const literature = normaliseGovSourceResult(buildGovSourcePlan({ sourceId: "global-europepmc", term: "Apixaban" }), {
+    resultList: { result: [{ id: "12345678", title: "Research example" }] }
+  });
+  assert.equal(canada.jurisdiction, "CA");
+  assert.equal(canada.records[0].localId, "00326925");
+  assert.equal(literature.jurisdiction, "GLOBAL");
+  assert.equal(literature.records[0].localId, "12345678");
+  assert.equal(canada.canPublish, false);
+  assert.equal(literature.canPublish, false);
 });
