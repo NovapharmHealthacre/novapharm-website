@@ -50,8 +50,10 @@ function normaliseTerm(value) {
 }
 
 export function buildGovSourcePlan({ sourceId, term, limit = 5 }) {
+  if (typeof sourceId !== "string" || !Object.hasOwn(sourcePlans, sourceId)) {
+    throw new Error("Unsupported source");
+  }
   const source = sourcePlans[sourceId];
-  if (!source) throw new Error("Unsupported source");
   if (!Number.isInteger(limit) || limit < 1 || limit > MAX_RESULTS) throw new Error("Invalid page size");
   const query = normaliseTerm(term);
   const url = new URL(source.path, source.origin);
