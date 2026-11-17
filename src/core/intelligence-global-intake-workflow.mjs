@@ -21,6 +21,7 @@ import {
   buildSourceSnapshotQuarantine,
   classifySourceSnapshotReplay
 } from "./intelligence-source-snapshot-quarantine.mjs";
+import {assessGlobalSourcePageQuality} from "./intelligence-global-intake-quality.mjs";
 
 const MAX_BYTES=262144;
 const EVALUATION_CONTRACT="novapharm.intelligence.global-intake-evaluation.v1";
@@ -94,6 +95,9 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       const evidence=buildEvaluationEnvelope({
         plan,normalized,raw,grant,capturedAt:authorisedAt
       });
+      const pageQuality=assessGlobalSourcePageQuality({
+        sourceId,raw,normalized,manifest,limit
+      });
       return Object.freeze({
         contract:EVALUATION_CONTRACT,
         tenantId,
@@ -103,6 +107,7 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
         sourceRightsReceipt:grant.receiptId,
         manifest,
         evidence,
+        pageQuality,
         canPublish:false,
         productionAccepted:false,
         sourceRightsIndependentlyVerified:false,
