@@ -203,7 +203,7 @@ export default function App() {
           data={sources}
           numColumns={twoColumns ? 2 : 1}
           columnWrapperStyle={twoColumns ? styles.sourceRow : undefined}
-          keyExtractor={(item) => [item.country, item.provider, item.url].join("|")}
+          keyExtractor={(item) => item.candidateKey}
           renderItem={({ item }) => <SourceCard item={item} twoColumns={twoColumns} />}
           ListHeaderComponent={sourceHeader}
           ListEmptyComponent={<Text style={styles.noResults}>No source candidates match this filter.</Text>}
