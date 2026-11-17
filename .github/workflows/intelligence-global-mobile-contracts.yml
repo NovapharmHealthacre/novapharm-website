@@ -1,0 +1,33 @@
+name: Intelligence mobile and global source candidate contracts
+
+on:
+  pull_request:
+    paths:
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'scripts/test-intelligence-global-source-gateway.mjs'
+      - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - '.github/workflows/intelligence-global-mobile-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-source-contracts:
+    name: Global data rights + mobile preview source contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Check governed backend candidate syntax
+        run: |
+          node --check src/core/intelligence-global-source-gateway.mjs
+          node --check scripts/test-intelligence-global-source-gateway.mjs
+      - name: Test upstream read-denial, source schema and 22-workspace catalogue
+        run: |
+          node --test scripts/test-intelligence-global-source-gateway.mjs
+          node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
