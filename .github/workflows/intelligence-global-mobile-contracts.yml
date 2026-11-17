@@ -7,6 +7,8 @@ on:
       - 'src/core/intelligence-global-source-gateway.mjs'
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'src/core/intelligence-global-canonical-candidates.mjs'
+      - 'src/core/intelligence-global-source-aliases.mjs'
+      - 'scripts/test-intelligence-global-source-aliases.mjs'
       - 'scripts/test-intelligence-global-canonical-candidates.mjs'
       - 'scripts/test-intelligence-global-source-registry.mjs'
       - 'docs/intelligence/global-source-candidate-v2.schema.json'
@@ -34,6 +36,7 @@ jobs:
           node --check src/core/intelligence-global-source-gateway.mjs
           node --check src/core/intelligence-global-evidence-contract.mjs
           node --check src/core/intelligence-global-canonical-candidates.mjs
+          node --check src/core/intelligence-global-source-aliases.mjs
           node --check scripts/test-intelligence-global-canonical-candidates.mjs
           node --check scripts/test-intelligence-global-source-registry.mjs
           node --check scripts/test-intelligence-global-source-gateway.mjs
@@ -42,6 +45,7 @@ jobs:
           node --test scripts/test-intelligence-global-source-gateway.mjs
           node --test scripts/test-intelligence-global-canonical-candidates.mjs
           node --test scripts/test-intelligence-global-source-registry.mjs
+          node --test scripts/test-intelligence-global-source-aliases.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
 
   mobile-bundle-preflight:
