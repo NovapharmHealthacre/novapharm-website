@@ -1,0 +1,38 @@
+name: Intelligence global intake integration and rights contracts
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-global-intake-workflow.mjs'
+      - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
+      - 'src/core/intelligence-source-snapshot-quarantine.mjs'
+      - 'scripts/test-intelligence-global-intake-workflow.mjs'
+      - 'scripts/test-intelligence-source-snapshot-quarantine.mjs'
+      - 'scripts/test-intelligence-source-snapshot-schema.mjs'
+      - 'docs/intelligence/source-snapshot-quarantine-v1.schema.json'
+      - '.github/workflows/intelligence-global-intake-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governed-intake:
+    name: Fail-closed global source intake integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Check node syntax
+        run: |
+          node --check src/core/intelligence-global-intake-workflow.mjs
+          node --check src/core/intelligence-source-snapshot-quarantine.mjs
+          node --check scripts/test-intelligence-global-intake-workflow.mjs
+      - name: Validate integration and upstream standalone contracts
+        run: |
+          node --test scripts/test-intelligence-global-intake-workflow.mjs scripts/test-intelligence-global-source-gateway.mjs
+          node --test scripts/test-intelligence-source-snapshot-quarantine.mjs scripts/test-intelligence-source-snapshot-schema.mjs
