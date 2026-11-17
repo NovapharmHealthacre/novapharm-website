@@ -35,6 +35,10 @@ function assertUnpublishedEnvelope(envelope) {
 
 export function buildLocalIdentityCandidates(envelope) {
   assertUnpublishedEnvelope(envelope);
+  if (!isCountry(envelope.jurisdiction) ||
+      !["regulatory", "authorisation"].includes(envelope.domain)) {
+    throw new Error("Only national regulatory product sources may suggest medicine identity");
+  }
   return Object.freeze(envelope.records.map(({ localId, label }) => {
     if (!isBounded(localId, 120) || !isBounded(label, 240)) {
       throw new Error("Invalid source-local medicine identity");
