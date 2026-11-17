@@ -5,11 +5,13 @@ on:
     paths:
       - 'src/core/intelligence-global-intake-workflow.mjs'
       - 'src/core/intelligence-global-intake-quality.mjs'
+      - 'src/core/intelligence-global-nhsbsa-bridge.mjs'
       - 'src/core/intelligence-global-source-gateway.mjs'
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'src/core/intelligence-source-snapshot-quarantine.mjs'
       - 'scripts/test-intelligence-global-intake-workflow.mjs'
       - 'scripts/test-intelligence-global-intake-quality.mjs'
+      - 'scripts/test-intelligence-global-nhsbsa-bridge.mjs'
       - 'scripts/test-intelligence-source-snapshot-quarantine.mjs'
       - 'scripts/test-intelligence-source-snapshot-schema.mjs'
       - 'docs/intelligence/source-snapshot-quarantine-v1.schema.json'
@@ -33,10 +35,12 @@ jobs:
         run: |
           node --check src/core/intelligence-global-intake-workflow.mjs
           node --check src/core/intelligence-global-intake-quality.mjs
+          node --check src/core/intelligence-global-nhsbsa-bridge.mjs
           node --check src/core/intelligence-source-snapshot-quarantine.mjs
           node --check scripts/test-intelligence-global-intake-workflow.mjs
           node --check scripts/test-intelligence-global-intake-quality.mjs
+          node --check scripts/test-intelligence-global-nhsbsa-bridge.mjs
       - name: Validate integration and upstream standalone contracts
         run: |
-          node --test scripts/test-intelligence-global-intake-workflow.mjs scripts/test-intelligence-global-intake-quality.mjs scripts/test-intelligence-global-source-gateway.mjs
+          node --test scripts/test-intelligence-global-intake-workflow.mjs scripts/test-intelligence-global-intake-quality.mjs scripts/test-intelligence-global-nhsbsa-bridge.mjs scripts/test-intelligence-global-source-gateway.mjs
           node --test scripts/test-intelligence-source-snapshot-quarantine.mjs scripts/test-intelligence-source-snapshot-schema.mjs
