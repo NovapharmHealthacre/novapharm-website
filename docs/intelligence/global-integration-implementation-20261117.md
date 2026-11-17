@@ -6,10 +6,12 @@
 
 1. Research register: docs/intelligence/global-pharma-sources-20261117.json contains 101 national/global candidates and flags EVERY candidate as rights not reviewed / not connected.
 2. Country/domain research: docs/intelligence/global-pharma-api-blueprint-20261117.md.
-3. Backend candidate: src/core/intelligence-global-source-gateway.mjs adds **three** bounded query/normalizer implementations for official documented interfaces:
+3. Backend candidate: src/core/intelligence-global-source-gateway.mjs adds **five** bounded query/normalizer implementations for official documented interfaces:
    - US FDA Drugs@FDA, search by brand name (not a sales dataset);
    - Global ClinicalTrials.gov v2, study discovery (not proof of clinical benefit);
    - Spain AEMPS CIMA, medication search (not Spanish pack sales).
+   - Health Canada Drug Product Database, brand/DIN metadata (not Canadian sales or live stock).
+   - Europe PMC literature discovery (not rights to republish journal full text).
 4. Expo SDK 58/React Native mobile candidate: native/novapharm-intelligence-mobile. It displays the canonical 22-workspace navigation catalogue and the 101 source candidates, without login, protected data or commercial claims.
 
 ## Run source contract tests
@@ -38,7 +40,7 @@ Future production ingestion requires:
 
 ## Sequencing
 
-**P0:** Accept one UK medicine identity in six governed workspaces and complete MFA/two-tenant proof. Next, approve and test the three candidate API adapters.
+**P0:** Accept one UK medicine identity in six governed workspaces and complete MFA/two-tenant proof. Next, approve and test the five candidate API adapters.
 
 **P1:** Add France, Canada, Denmark, Poland, Singapore, Korea, Australia, EU/EMA where documented, permitted and needed. Every adapter separately reviewed and tested.
 
