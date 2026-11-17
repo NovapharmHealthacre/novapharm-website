@@ -80,8 +80,10 @@ export function assertMarketFactCandidate(fact) {
     const p = fact.price;
     // Amounts as decimal text, not floating-point money.
     if (!p || !ALLOWED_PRICE_TYPES.has(p.priceType) ||
-        !/^[A-Z]{3}$/.test(p.currency || "") ||
-        !/^(0|[1-9]\d{0,11})(\.\d{1,6})?$/.test(p.amount || "") ||
+        typeof p.currency !== "string" ||
+        !/^[A-Z]{3}$/.test(p.currency) ||
+        typeof p.amount !== "string" ||
+        !/^(0|[1-9]\d{0,11})(\.\d{1,6})?$/.test(p.amount) ||
         !isBounded(p.priceBasis, 80) ||
         !isDate(p.effectiveDate) ||
         !isBounded(p.packPresentationId)) {
