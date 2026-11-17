@@ -1,5 +1,11 @@
+/**
+ * NovaPharm Intelligence — private mobile candidate.
+ * No HTTP, credentials, customer records or source facts are included.
+ * Existing web workspace states and global source candidates remain non-live.
+ */
 import React, { useMemo, useState } from "react";
 import {
+  FlatList,
   Platform,
   Pressable,
   SafeAreaView,
@@ -8,189 +14,326 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 
-type Screen = "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
-const palette = {
+type Source = (typeof sourceRegister.sources)[number];
+
+const palette = Object.freeze({
   canvas: "#FFFFFF",
-  surface: "#F5F5F7",
+  grouped: "#F5F5F7",
+  raised: "#E8E8ED",
   border: "#D2D2D7",
   primary: "#1D1D1F",
   secondary: "#424245",
   tertiary: "#595961",
-  brand: "#E3120B"
-} as const;
+  accent: "#E3120B"
+});
+const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
+const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
+const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
+  { screen: "overview", label: "Overview" },
+  { screen: "workspaces", label: "Workspaces" },
+  { screen: "sources", label: "Sources" },
+  { screen: "account", label: "Account" }
+];
+const pilotSlugs = new Set([
+  "medicine-search", "medicine-overview", "identity",
+  "evidence", "observed-market", "geography"
+]);
 
-const groups = [...new Set(intelligenceWorkspaceCatalogue.map((workspace) => workspace.group))];
-
-function Action({ label, onPress, active }: { label: string; onPress: () => void; active?: boolean }) {
+function SectionHeading({ title, detail }: { title: string; detail?: string }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected: Boolean(active) }}
-      onPress={onPress}
-      style={[styles.action, active ? styles.actionActive : null]}
-    >
-      <Text style={[styles.actionText, active ? styles.actionTextActive : null]}>{label}</Text>
-    </Pressable>
+    <View style={styles.sectionHeading}>
+      <Text style={styles.sectionTitle} accessibilityRole="header">{title}</Text>
+      {detail ? <Text style={styles.sectionIntro}>{detail}</Text> : null}
+    </View>
   );
 }
 
-function WorkspaceRow({ item, onPress }: { item: Workspace; onPress: () => void }) {
+function Metric({ number, label }: { number: string; label: string }) {
+  return (
+    <View style={styles.metric} accessible accessibilityLabel={number + ". " + label}>
+      <Text style={styles.metricNumber}>{number}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function WorkspaceCard({ item, onPress }: { item: Workspace; onPress: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={item.title + ". Inspect availability and prerequisites"}
+      accessibilityLabel={item.title + ". Read prerequisites. Not enabled in this mobile app."}
       onPress={onPress}
       style={styles.card}
     >
-      <View style={styles.spaceBetween}>
+      <View style={styles.rowBetween}>
         <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.chevron}>View</Text>
+        <Text style={styles.cardAction}>Details</Text>
       </View>
       <Text style={styles.description}>{item.summary}</Text>
       <Text style={styles.meta}>
-        {item.state === "gated" ? "Restricted workspace" : "Read-only foundation · not a live mobile service"}
+        {item.state === "gated" ? "Gated · not available" : "Web read-only foundation · mobile unavailable"}
       </Text>
     </Pressable>
   );
 }
 
+function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean }) {
+  return (
+    <View
+      accessible
+      accessibilityLabel={item.provider + ", " + item.country + ". " + item.mode + ". Not connected; source rights have not been reviewed."}
+      style={[styles.sourceCard, twoColumns ? styles.sourceHalf : null]}
+    >
+      <Text style={styles.cardTitle}>{item.provider}</Text>
+      <Text style={styles.sourceCountry}>{item.country} · {item.region}</Text>
+      <Text style={styles.description}>{item.domains}</Text>
+      <View style={styles.sourceDivider} />
+      <Text style={styles.meta}>{item.mode} · Rights not reviewed · Not connected</Text>
+    </View>
+  );
+}
+
+function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (screen: Screen) => void }) {
+  return (
+    <View style={styles.navigation} accessibilityRole="tablist">
+      {tabs.map((tab) => {
+        const active = selected === tab.screen;
+        return (
+          <Pressable
+            key={tab.screen}
+            accessibilityRole="tab"
+            accessibilityLabel={tab.label}
+            accessibilityState={{ selected: active }}
+            style={[styles.navItem, active && styles.navItemActive]}
+            onPress={() => onSelect(tab.screen)}
+          >
+            <Text style={[styles.navLabel, active && styles.navLabelActive]}>{tab.label}</Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("workspaces");
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Workspace | null>(null);
-  const sourceItems = useMemo(() => {
-    const query = search.toLocaleLowerCase().trim();
-    if (!query) return sourceRegister.sources;
-    return sourceRegister.sources.filter((source) =>
-      [source.country, source.provider, source.domains, source.region].join(" ").toLocaleLowerCase().includes(query)
-    );
-  }, [search]);
+  const { width } = useWindowDimensions();
+  const twoColumns = width >= 760;
+  const [screen, setScreen] = useState<Screen>("overview");
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState("All regions");
+
+  const sources = useMemo(() => {
+    const needle = query.trim().toLocaleLowerCase();
+    return sourceRegister.sources.filter((item) => {
+      if (region !== "All regions" && item.region !== region) return false;
+      if (!needle) return true;
+      return [item.provider, item.country, item.region, item.domains]
+        .join(" ").toLocaleLowerCase().includes(needle);
+    });
+  }, [query, region]);
+
+  const changeScreen = (value: Screen) => {
+    setSelectedWorkspace(null);
+    setScreen(value);
+  };
+
+  const notice = (
+    <View style={styles.notice}>
+      <Text style={styles.noticeTitle}>Research preview · private and unconnected</Text>
+      <Text style={styles.noticeText}>
+        No live medicine data, customer session, payments, external API calls or AI inference is enabled.
+        Every source needs independent rights and data acceptance.
+      </Text>
+    </View>
+  );
+
+  const sourceHeader = (
+    <>
+      {notice}
+      <SectionHeading title="Global data sources" detail="Official and commercial candidate sources. No entry is yet approved for customer publication." />
+      <Text style={styles.count}>{sources.length} of {sourceRegister.sources.length} source candidates</Text>
+      <TextInput
+        value={query}
+        onChangeText={setQuery}
+        accessibilityLabel="Search country, regulator or pharmaceutical dataset"
+        placeholder="Search source or country"
+        placeholderTextColor={palette.tertiary}
+        autoCapitalize="none"
+        style={styles.input}
+        returnKeyType="search"
+      />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.regionScroller} contentContainerStyle={styles.regionRow} accessibilityLabel="Filter sources by region">
+        {sourceRegions.map((name) => (
+          <Pressable
+            key={name}
+            accessibilityRole="button"
+            accessibilityState={{ selected: region === name }}
+            style={[styles.regionOption, region === name && styles.regionSelected]}
+            onPress={() => setRegion(name)}
+          >
+            <Text style={[styles.regionLabel, region === name && styles.regionLabelSelected]}>{name}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </>
+  );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.root}>
       <StatusBar barStyle="dark-content" />
-      <View style={styles.header}>
+      <View style={styles.appHeader}>
         <Text style={styles.brand}>NOVAPHARM</Text>
-        <Text style={styles.heading}>Intelligence</Text>
-        <Text style={styles.subheading}>Pharmaceutical intelligence, with evidence at every level.</Text>
+        <Text style={styles.appTitle} accessibilityRole="header">Intelligence</Text>
+        <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
-      <View style={styles.tabBar}>
-        <Action label="Workspaces" active={screen === "workspaces"} onPress={() => { setScreen("workspaces"); setSelected(null); }} />
-        <Action label="Data sources" active={screen === "sources"} onPress={() => { setScreen("sources"); setSelected(null); }} />
-        <Action label="Account" active={screen === "account"} onPress={() => { setScreen("account"); setSelected(null); }} />
-      </View>
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.body}>
-        <View style={styles.notice} accessible accessibilityRole="text">
-          <Text style={styles.noticeTitle}>Private mobile preview</Text>
-          <Text style={styles.noticeText}>
-            No live medicine data, customer session, payment or AI access is enabled. Sources listed here are research candidates only.
-          </Text>
-        </View>
-        {screen === "workspaces" && !selected && (
-          <>
-            <Text style={styles.sectionTitle}>22 research workspaces</Text>
-            <Text style={styles.sectionIntro}>The canonical catalogue is shared with the secure NovaPharm web platform.</Text>
-            {groups.map((group) => (
-              <View key={group}>
-                <Text style={styles.groupTitle}>{group}</Text>
-                {intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((item) => (
-                  <WorkspaceRow key={item.slug} item={item} onPress={() => setSelected(item)} />
-                ))}
+
+      {screen === "sources" ? (
+        <FlatList
+          key={twoColumns ? "sources-wide" : "sources-narrow"}
+          style={styles.list}
+          data={sources}
+          numColumns={twoColumns ? 2 : 1}
+          columnWrapperStyle={twoColumns ? styles.sourceRow : undefined}
+          keyExtractor={(item) => [item.country, item.provider, item.url].join("|")}
+          renderItem={({ item }) => <SourceCard item={item} twoColumns={twoColumns} />}
+          ListHeaderComponent={sourceHeader}
+          ListEmptyComponent={<Text style={styles.noResults}>No source candidates match this filter.</Text>}
+          keyboardShouldPersistTaps="handled"
+          removeClippedSubviews={Platform.OS === "android"}
+          initialNumToRender={8}
+          maxToRenderPerBatch={8}
+          windowSize={7}
+          contentContainerStyle={[styles.content, styles.contentLimit]}
+        />
+      ) : (
+        <ScrollView style={styles.list} keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.content, styles.contentLimit]}>
+          {notice}
+          {screen === "overview" && (
+            <>
+              <SectionHeading title="Intelligence overview" detail="One governed platform. National source identities retained. No fabricated data or availability." />
+              <View style={styles.metricGrid}>
+                <Metric number={String(intelligenceWorkspaceCatalogue.length)} label="Canonical workspaces" />
+                <Metric number={String(sourceRegister.sources.length)} label="Source candidates" />
+                <Metric number={String(sourceRegions.length - 1)} label="Source regions" />
               </View>
-            ))}
-          </>
-        )}
-        {screen === "workspaces" && selected && (
-          <>
-            <Action label="Back to workspaces" onPress={() => setSelected(null)} />
-            <Text style={styles.sectionTitle}>{selected.title}</Text>
-            <Text style={styles.sectionIntro}>{selected.summary}</Text>
-            <Text style={styles.groupTitle}>Required before activation</Text>
-            {selected.requirements.map((condition) => (
-              <View key={condition} style={styles.requirement}>
-                <Text style={styles.description}>{condition}</Text>
+              <View style={styles.rule} />
+              <SectionHeading title="First medicine pilot" detail="Six repository journeys requiring independent identity, rights, data, MFA and tenant-isolation acceptance." />
+              {intelligenceWorkspaceCatalogue.filter((item) => pilotSlugs.has(item.slug)).map((item) => (
+                <WorkspaceCard key={item.slug} item={item} onPress={() => { setScreen("workspaces"); setSelectedWorkspace(item); }} />
+              ))}
+              <View style={styles.rule} />
+              <SectionHeading title="Our evidence standard" />
+              <Text style={styles.description}>
+                Medicine identity, regulatory status, safety, utilization, reimbursement and stock are separate facts.
+                Each needs its own source, country, period, units, review status and provenance before it can be shown as intelligence.
+              </Text>
+            </>
+          )}
+          {screen === "workspaces" && !selectedWorkspace && (
+            <>
+              <SectionHeading title="Research workspaces" detail="The canonical 22-workspace list from NovaPharm Intelligence. A route is not production readiness." />
+              {workspaceGroups.map((group) => (
+                <View key={group}>
+                  <Text style={styles.groupTitle} accessibilityRole="header">{group}</Text>
+                  {intelligenceWorkspaceCatalogue.filter((item) => item.group === group).map((item) => (
+                    <WorkspaceCard key={item.slug} item={item} onPress={() => setSelectedWorkspace(item)} />
+                  ))}
+                </View>
+              ))}
+            </>
+          )}
+          {screen === "workspaces" && selectedWorkspace && (
+            <>
+              <Pressable accessibilityRole="button" style={styles.back} onPress={() => setSelectedWorkspace(null)}>
+                <Text style={styles.backText}>Back to workspaces</Text>
+              </Pressable>
+              <SectionHeading title={selectedWorkspace.title} detail={selectedWorkspace.summary} />
+              <Text style={styles.groupTitle}>Release prerequisites</Text>
+              {selectedWorkspace.requirements.map((item) => (
+                <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
+              ))}
+              <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
+            </>
+          )}
+          {screen === "account" && (
+            <>
+              <SectionHeading title="Enterprise access" detail="Identity and data availability are independent permission decisions." />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Authentication not enabled</Text>
+                <Text style={styles.description}>A reviewed mobile Cognito authorization-code and PKCE flow, MFA, tenant scoping, secure storage, revocation and signed release are required.</Text>
+                <Text style={styles.meta}>No credentials, JWTs or private customer/medicine records are collected by this preview.</Text>
               </View>
-            ))}
-            <Text style={styles.meta}>Not connected. Mobile entitlement and evidence checks remain mandatory.</Text>
-          </>
-        )}
-        {screen === "sources" && (
-          <>
-            <Text style={styles.sectionTitle}>Global source registry</Text>
-            <Text style={styles.sectionIntro}>
-              {sourceRegister.sources.length} candidate source entries. None is approved for mobile data publication.
-            </Text>
-            <TextInput
-              accessibilityLabel="Search country, regulator or pharmaceutical dataset"
-              style={styles.input}
-              placeholder="Search country or source"
-              placeholderTextColor={palette.tertiary}
-              autoCapitalize="none"
-              value={search}
-              onChangeText={setSearch}
-            />
-            {sourceItems.map((item) => (
-              <View key={[item.country, item.provider, item.url].join("|")} style={styles.card}>
-                <Text style={styles.cardTitle}>{item.provider}</Text>
-                <Text style={styles.description}>{item.country} · {item.region}</Text>
-                <Text style={styles.description}>{item.domains}</Text>
-                <Text style={styles.meta}>{item.mode} · Rights not reviewed · Not connected</Text>
-              </View>
-            ))}
-            {sourceItems.length === 0 && <Text style={styles.description}>No source candidates match this search.</Text>}
-          </>
-        )}
-        {screen === "account" && (
-          <>
-            <Text style={styles.sectionTitle}>Secure account</Text>
-            <Text style={styles.sectionIntro}>Sign-in will use the approved NovaPharm Cognito OIDC flow with PKCE, MFA and revocable device sessions.</Text>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Authentication not enabled</Text>
-              <Text style={styles.description}>No account credentials, JWTs, tokens or tenant content are collected or stored in this candidate build.</Text>
-              <Text style={styles.meta}>Production sign-in requires a reviewed mobile OAuth client, redirect URI and backend enforcement.</Text>
-            </View>
-          </>
-        )}
-      </ScrollView>
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Research preview · {Platform.OS === "ios" ? "iOS" : Platform.OS === "android" ? "Android" : "Cross-platform"}</Text>
-      </View>
+              <SectionHeading title="Private access controls" />
+              {["A verified person and tenant", "Source-specific rights and country", "Independent data admission", "Session expiry and revocation", "Complete auditing and rollback"].map((item) => (
+                <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
+              ))}
+            </>
+          )}
+          <View style={styles.endSpacing} />
+        </ScrollView>
+      )}
+      <Navigation selected={screen} onSelect={changeScreen} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: palette.canvas },
-  header: { paddingHorizontal: 24, paddingTop: 18, paddingBottom: 14 },
-  brand: { color: palette.brand, fontSize: 12, fontWeight: "700", letterSpacing: 1.6, marginBottom: 8 },
-  heading: { color: palette.primary, fontSize: 32, fontWeight: "700", letterSpacing: -0.9 },
-  subheading: { color: palette.secondary, fontSize: 14, lineHeight: 21, marginTop: 6 },
-  tabBar: { flexDirection: "row", paddingHorizontal: 20, paddingBottom: 8, borderBottomWidth: 1, borderColor: palette.border },
-  action: { minHeight: 44, borderRadius: 9, paddingHorizontal: 12, justifyContent: "center", marginRight: 5 },
-  actionActive: { backgroundColor: palette.primary },
-  actionText: { fontSize: 13, fontWeight: "600", color: palette.primary },
-  actionTextActive: { color: palette.canvas },
-  body: { paddingHorizontal: 24, paddingBottom: 32 },
-  notice: { backgroundColor: palette.surface, borderRadius: 12, padding: 16, marginTop: 20, marginBottom: 24 },
-  noticeTitle: { fontSize: 14, fontWeight: "700", color: palette.primary },
-  noticeText: { fontSize: 13, color: palette.secondary, lineHeight: 20, marginTop: 6 },
-  sectionTitle: { fontSize: 23, fontWeight: "700", color: palette.primary, letterSpacing: -0.3, marginBottom: 5 },
-  sectionIntro: { fontSize: 14, color: palette.secondary, lineHeight: 21, marginBottom: 16 },
-  groupTitle: { fontSize: 12, fontWeight: "700", color: palette.secondary, marginTop: 18, marginBottom: 10, letterSpacing: 0.5 },
-  card: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 16, marginBottom: 10, minHeight: 96 },
-  cardTitle: { color: palette.primary, fontSize: 16, fontWeight: "600", flexShrink: 1 },
+  root: { flex: 1, backgroundColor: palette.canvas },
+  appHeader: { paddingHorizontal: 24, paddingTop: 18, paddingBottom: 16, borderBottomWidth: 1, borderColor: palette.border },
+  brand: { fontSize: 11, fontWeight: "700", letterSpacing: 1.8, color: palette.accent, marginBottom: 7 },
+  appTitle: { fontSize: 29, lineHeight: 36, fontWeight: "700", letterSpacing: -0.7, color: palette.primary },
+  appSubtitle: { fontSize: 13, lineHeight: 19, color: palette.secondary, marginTop: 2 },
+  list: { flex: 1 },
+  content: { paddingHorizontal: 22, paddingBottom: 28 },
+  contentLimit: { alignSelf: "center", width: "100%", maxWidth: 960 },
+  notice: { marginTop: 20, marginBottom: 24, padding: 16, borderRadius: 13, backgroundColor: palette.grouped },
+  noticeTitle: { color: palette.primary, fontSize: 14, fontWeight: "700", lineHeight: 20 },
+  noticeText: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
+  sectionHeading: { marginBottom: 12 },
+  sectionTitle: { fontSize: 23, lineHeight: 30, fontWeight: "700", color: palette.primary, letterSpacing: -0.4 },
+  sectionIntro: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 5 },
+  count: { color: palette.secondary, fontSize: 12, marginBottom: 12 },
+  metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 10 },
+  metric: { flexGrow: 1, minWidth: 100, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15 },
+  metricNumber: { fontSize: 26, fontWeight: "700", color: palette.primary, fontVariant: ["tabular-nums"] },
+  metricLabel: { fontSize: 12, color: palette.secondary, lineHeight: 18, marginTop: 4 },
+  rule: { height: 1, backgroundColor: palette.border, marginVertical: 22 },
+  groupTitle: { fontSize: 12, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
+  card: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 16, marginBottom: 10 },
+  sourceCard: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15, marginBottom: 10 },
+  sourceHalf: { flex: 1, minWidth: 0 },
+  sourceRow: { gap: 10 },
+  sourceCountry: { color: palette.secondary, fontSize: 12, marginTop: 4, lineHeight: 19 },
+  sourceDivider: { marginTop: 12, backgroundColor: palette.border, height: 1 },
+  rowBetween: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  cardTitle: { color: palette.primary, fontSize: 15, fontWeight: "600", lineHeight: 22, flexShrink: 1 },
+  cardAction: { color: palette.secondary, fontSize: 12, marginLeft: 10 },
   description: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
   meta: { color: palette.tertiary, fontSize: 12, lineHeight: 18, marginTop: 10 },
-  chevron: { color: palette.secondary, fontSize: 12, marginLeft: 12 },
-  spaceBetween: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, minHeight: 48, padding: 13, borderRadius: 10 },
+  regionScroller: { flexGrow: 0, marginBottom: 15, marginTop: 12 },
+  regionRow: { gap: 8, paddingBottom: 2 },
+  regionOption: { minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderWidth: 1, borderColor: palette.border, borderRadius: 22 },
+  regionSelected: { backgroundColor: palette.primary, borderColor: palette.primary },
+  regionLabel: { color: palette.primary, fontSize: 12, fontWeight: "600" },
+  regionLabelSelected: { color: palette.canvas },
+  noResults: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 16 },
+  back: { minHeight: 44, alignSelf: "flex-start", justifyContent: "center", marginBottom: 15 },
+  backText: { color: palette.primary, fontSize: 14, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
-  input: { borderWidth: 1, borderColor: palette.border, borderRadius: 9, minHeight: 46, padding: 12, color: palette.primary, backgroundColor: palette.canvas },
-  footer: { borderTopWidth: 1, borderColor: palette.border, paddingVertical: 12, alignItems: "center" },
-  footerText: { color: palette.tertiary, fontSize: 11 }
+  endSpacing: { height: 24 },
+  navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
+  navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },
+  navItemActive: { backgroundColor: palette.primary },
+  navLabel: { fontSize: 11, fontWeight: "600", color: palette.secondary, textAlign: "center" },
+  navLabelActive: { color: palette.canvas }
 });
