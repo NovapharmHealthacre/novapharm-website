@@ -47,7 +47,9 @@ test("bounds reject query injection, unsupported hosts and unbounded pages", () 
   for (const term of ['" OR true', "https://evil.example", "a", " ".repeat(100), "a\nb"]) {
     assert.throws(() => buildGovSourcePlan({ sourceId: "us-fda-drugsfda", term }));
   }
-  assert.throws(() => buildGovSourcePlan({ sourceId: "evil", term: "Apixaban" }));
+  for (const sourceId of ["evil", "__proto__", "constructor", "toString"]) {
+    assert.throws(() => buildGovSourcePlan({ sourceId, term: "Apixaban" }), /Unsupported source/);
+  }
   assert.throws(() => buildGovSourcePlan({ sourceId: "us-fda-drugsfda", term: "Apixaban", limit: 500 }));
 });
 test("missing or expired rights deny BEFORE any outgoing request", async () => {
