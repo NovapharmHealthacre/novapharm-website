@@ -12,7 +12,7 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
 
-The current navigation is deliberately a research preview: all 22 workspaces show their existing repo descriptions, and all 101 data sources are marked unapproved/unconnected. Existing read-only repository screens are **not** treated as live mobile customer modules. Search here filters local source-candidate metadata only.
+The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, and a **virtualized**, searchable and region-filtered global source list. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
 ## Release blockers
 
