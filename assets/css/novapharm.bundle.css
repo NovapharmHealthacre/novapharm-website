@@ -13141,6 +13141,9 @@ footer.site-footer .footer-grid .footer-intro .footer-brand {
   flex: 0 0 auto;
   width: min(180px, 100%);
   margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .npd-footer .npd-footer-identity .brand-logo,
 .npd-footer .npd-footer-identity .brand-logo img { width: 100%; height: auto; }
