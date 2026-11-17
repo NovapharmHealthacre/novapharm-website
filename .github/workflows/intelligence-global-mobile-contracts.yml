@@ -31,3 +31,24 @@ jobs:
         run: |
           node --test scripts/test-intelligence-global-source-gateway.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
+
+  mobile-bundle-preflight:
+    name: iOS/Android candidate typecheck and offline bundle preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: native/novapharm-intelligence-mobile
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Install candidate-native dependencies in the isolated app
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify TypeScript and exact React Native imports
+        run: npm run typecheck
+      - name: Compile offline JavaScript bundles for both platforms
+        run: |
+          npx expo export --platform ios --output-dir /tmp/novapharm-ios-candidate
+          npx expo export --platform android --output-dir /tmp/novapharm-android-candidate
