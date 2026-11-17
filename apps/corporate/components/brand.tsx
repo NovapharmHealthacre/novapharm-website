@@ -10,6 +10,7 @@ export function Brand({ footer = false }: { readonly footer?: boolean }) {
         width={2048}
         height={258}
         priority={!footer}
+        loading={footer ? "eager" : undefined}
         unoptimized
       />
     </Link>
