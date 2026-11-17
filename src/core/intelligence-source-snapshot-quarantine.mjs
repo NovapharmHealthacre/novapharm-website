@@ -12,7 +12,7 @@ function date(value){
   return value;
 }
 function time(value){
-  if(typeof value!=="string"||!/^\d{4}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)||!Number.isFinite(Date.parse(value)))fail("retrieval time");
+  if(typeof value!=="string"||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)||!Number.isFinite(Date.parse(value)))fail("retrieval time");
   return new Date(value).toISOString();
 }
 function pinLocation(url,origin){
