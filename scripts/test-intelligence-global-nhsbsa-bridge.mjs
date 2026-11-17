@@ -56,4 +56,6 @@ test("deny cross-tenant rights, revoked rights and a prematurely activated candi
   await assert.rejects(make(async c=>permit(c,{revokedAt:"2026-11-17T18:30:00.000Z"})).evaluate(args),/not approved/);
   const changed=registry.map(x=>x.candidateKey===key?{...x,rightsStatus:"approved",activeAdapterId:"nhsbsa.epd"}:x);
   await assert.rejects(make().evaluate({...args,registry:changed}),/may not be activated/);
+  const spoofed=registry.map(x=>x.candidateKey===key?{...x,url:"https://evil.example/dataset/english-prescribing-dataset-epd-with-snomed-code"}:x);
+  await assert.rejects(make().evaluate({...args,registry:spoofed}),/registry publisher URL/);
 });
