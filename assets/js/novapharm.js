@@ -380,6 +380,12 @@ if (window.location.pathname.startsWith("/products/nutraxin/") &&
 }
 
 
+/* Keep the approved public wordmark visible in full-page WebKit captures
+   and on quick navigation to the footer. It is a small, shared brand asset. */
+for (const image of document.querySelectorAll(".npd-footer .npd-footer-identity .brand-logo img")) {
+  image.loading = "eager";
+}
+
 /* Apple-style mobile web footer disclosure. The source links remain visible
    without JS; only enhance the ordinary public corporate footer groups. */
 for (const directory of document.querySelectorAll(

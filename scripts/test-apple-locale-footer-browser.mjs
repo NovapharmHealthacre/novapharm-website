@@ -122,6 +122,34 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
             label + ": footer content must retain Apple's constrained reading width");
           assert.equal(footerSurface.notesBeforeDirectory, true,
             label + ": regulatory notes must precede footer directory");
+          // Check the rendered brand, not merely the presence of an image tag.
+          // Without this scroll/load check, full-page WebKit screenshots can
+          // silently omit the actual wordmark at the bottom of a long page.
+          const footerWordmark = page.locator(".npd-footer .npd-footer-identity .brand-logo img");
+          assert.equal(await footerWordmark.count(), 1, label + ": expected one approved footer wordmark");
+          await footerWordmark.scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => {
+            const image = document.querySelector(".npd-footer .npd-footer-identity .brand-logo img");
+            return Boolean(image && image.complete && image.naturalWidth > 0);
+          }, null, { timeout: 10000 });
+          const wordmarkAppearance = await footerWordmark.evaluate((image) => {
+            const container = image.closest("a");
+            const style = container ? getComputedStyle(container) : null;
+            return {
+              width: image.getBoundingClientRect().width,
+              loading: image.loading,
+              background: style?.backgroundColor,
+              padding: style ? [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft] : [],
+              shadow: style?.boxShadow,
+            };
+          });
+          assert.ok(wordmarkAppearance.width >= 120, label + ": footer wordmark is not visibly sized");
+          assert.equal(wordmarkAppearance.loading, "eager", label + ": footer logo fetch remains deferred");
+          assert.match(wordmarkAppearance.background ?? "", /rgba?\(0,\s*0,\s*0,\s*0\)/,
+            label + ": legacy white card still surrounds footer brand");
+          assert.ok(wordmarkAppearance.padding.every((value) => value === "0px"),
+            label + ": footer brand retains boxed padding");
+          assert.equal(wordmarkAppearance.shadow, "none", label + ": footer brand retains a card shadow");
           console.log("Footer language acceptance passed:", label);
         } finally {
           await context.close();
