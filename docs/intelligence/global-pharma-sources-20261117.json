@@ -199,10 +199,10 @@
       "region": "Europe",
       "country": "France",
       "provider": "Open Medic",
-      "url": "https://www.data.gouv.fr/reuses/open-medic-2014-2025",
+      "url": "https://www.assurance-maladie.ameli.fr/etudes-et-donnees/open-medic-base-complete-depenses-medicaments",
       "domains": "Reimbursement and medicine spend",
       "mode": "Download-review",
-      "note": "Verify current official data publisher, coding and latest year",
+      "note": "Official insurer CSV, 2014–2025; review 2025 regional anomaly notice",
       "rightsStatus": "not-reviewed",
       "integrationStatus": "candidate-only"
     },
