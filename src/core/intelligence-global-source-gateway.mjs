@@ -26,7 +26,7 @@ export const sourcePlans = Object.freeze({
 });
 
 function normaliseTerm(value) {
-  if (typeof value !== "string") throw new Error("Invalid search term");
+  if (typeof value !== "string" || /[\u0000-\u001f\u007f]/.test(value)) throw new Error("Invalid search term");
   const term = value.normalize("NFKC").trim().replace(/\s+/g, " ");
   if (term.length < 2 || term.length > 72 || !/^[\p{L}\p{N} .,-]+$/u.test(term)) {
     throw new Error("Invalid search term");
