@@ -20,8 +20,9 @@ function sourceResource(metadata){
   if(typeof id!=="string"||!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(id))deny("resource identifier");
   let url;
   try{url=new URL(metadata.resourceUrl);}catch{deny("resource URL");}
+  const exactResourcePath="/dataset/"+ALIAS.exactDatasetSlug+"/resource/"+id;
   if(url.origin!==ORIGIN||url.username||url.password||url.search||url.hash||
-    !url.pathname.startsWith("/dataset/"+ALIAS.exactDatasetSlug+"/resource/"+id))deny("source URL");
+    !(url.pathname===exactResourcePath||url.pathname.startsWith(exactResourcePath+"/")))deny("source URL");
   return url.toString();
 }
 export function createNhsbsaGlobalSampleBridge({authorize,now=()=>Date.now()}={}){
@@ -34,6 +35,14 @@ export function createNhsbsaGlobalSampleBridge({authorize,now=()=>Date.now()}={}
       if(!alias||alias.existingSourceId!=="nhsbsa.epd"||alias.jurisdiction!=="GB-ENG"||
         alias.discoveryOnly!==true||alias.customerVisible!==false||
         alias.productionDataAdmitted!==false)deny("private source alias");
+      const candidate=registry.find(x=>x?.candidateKey===candidateKey);
+      let publisherUrl;
+      try{publisherUrl=new URL(candidate?.url);}catch{deny("registry publisher URL");}
+      if(publisherUrl.origin!==ORIGIN||
+        publisherUrl.pathname!=="/dataset/"+ALIAS.exactDatasetSlug||
+        publisherUrl.search||publisherUrl.hash||publisherUrl.username||publisherUrl.password){
+        deny("registry publisher URL");
+      }
       if(!metadata||typeof metadata.schemaVersion!=="string"||
         !/^epd-snomed-string-[a-z0-9-]{2,60}$/.test(metadata.schemaVersion))deny("SNOMED string version");
       const dates=monthlyPeriod(metadata.reportingPeriod);
