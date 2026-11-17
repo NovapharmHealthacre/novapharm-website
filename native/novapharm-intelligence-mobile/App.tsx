@@ -74,7 +74,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor={palette.canvas} />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <Text style={styles.brand}>NOVAPHARM</Text>
         <Text style={styles.heading}>Intelligence</Text>
