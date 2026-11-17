@@ -25,6 +25,42 @@ for (const app of adapted) {
   });
 }
 
+
+test("public CSS entrypoints and generated bundle keep the complete HIG web-adaptation stack", () => {
+  const entry = read("assets/css/novapharm.css");
+  const builder = read("scripts/build-css-bundle.mjs");
+  const bundle = read("assets/css/novapharm.bundle.css");
+  const ordered = [
+    "novapharm-hig-colours.css",
+    "symbol-system.css",
+    "apple-hig-layout.css",
+    "novapharm-hig-accessibility.css",
+    "novapharm-hig-materials.css",
+    "novapharm-apple-27-web-adaptation.css",
+    "novapharm-hig-motion.css",
+    "rtl-localization.css",
+    "apple-web-navigation.css",
+  ];
+  let priorEntry = -1;
+  let priorBuilder = -1;
+  let priorBundle = -1;
+  for (const sheet of ordered) {
+    const importMarker = `@import url("./${sheet}")`;
+    const builderMarker = `"${sheet}"`;
+    const bundleMarker = `Source: ${sheet}`;
+    const entryAt = entry.indexOf(importMarker);
+    const builderAt = builder.indexOf(builderMarker);
+    const bundleAt = bundle.indexOf(bundleMarker);
+    assert.ok(entryAt > priorEntry, `Public CSS is missing or misorders ${sheet}`);
+    assert.ok(builderAt > priorBuilder, `Bundle builder is missing or misorders ${sheet}`);
+    assert.ok(bundleAt > priorBundle, `Published CSS bundle is missing or misorders ${sheet}`);
+    priorEntry = entryAt;
+    priorBuilder = builderAt;
+    priorBundle = bundleAt;
+  }
+});
+
+
 test("Founder retains its intentional dark identity, plus common symbols and motion", () => {
   const layout = read("apps/founder/app/layout.tsx");
   const styles = read("apps/founder/app/base.css");
