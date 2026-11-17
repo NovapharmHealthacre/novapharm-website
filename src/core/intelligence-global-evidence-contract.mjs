@@ -63,6 +63,7 @@ export function buildEvaluationEnvelope({ plan, normalized, raw, grant, captured
   const rawSha256 = createHash("sha256").update(rawSerialized, "utf8").digest("hex");
   return Object.freeze({
     ...normalized,
+    domain: plan.domain,
     purpose: EVALUATION_PURPOSE,
     retrievedAt: when.toISOString(),
     responseSha256: rawSha256,
