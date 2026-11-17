@@ -8,6 +8,8 @@ on:
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'src/core/intelligence-global-canonical-candidates.mjs'
       - 'scripts/test-intelligence-global-canonical-candidates.mjs'
+      - 'scripts/test-intelligence-global-source-registry.mjs'
+      - 'docs/intelligence/global-source-candidate-v2.schema.json'
       - 'docs/intelligence/global-source-enterprise-controls-20261117.md'
       - 'scripts/test-intelligence-global-source-gateway.mjs'
       - 'docs/intelligence/global-pharma-sources-20261117.json'
@@ -33,11 +35,13 @@ jobs:
           node --check src/core/intelligence-global-evidence-contract.mjs
           node --check src/core/intelligence-global-canonical-candidates.mjs
           node --check scripts/test-intelligence-global-canonical-candidates.mjs
+          node --check scripts/test-intelligence-global-source-registry.mjs
           node --check scripts/test-intelligence-global-source-gateway.mjs
       - name: Test upstream read-denial, source schema and 22-workspace catalogue
         run: |
           node --test scripts/test-intelligence-global-source-gateway.mjs
           node --test scripts/test-intelligence-global-canonical-candidates.mjs
+          node --test scripts/test-intelligence-global-source-registry.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
 
   mobile-bundle-preflight:
