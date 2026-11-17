@@ -145,7 +145,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
           });
           assert.ok(wordmarkAppearance.width >= 120, label + ": footer wordmark is not visibly sized");
           assert.equal(wordmarkAppearance.loading, "eager", label + ": footer logo fetch remains deferred");
-          assert.match(wordmarkAppearance.background ?? "", /rgba?\\(0,\\s*0,\\s*0,\\s*0\\)/,
+          assert.match(wordmarkAppearance.background ?? "", /rgba?\(0,\s*0,\s*0,\s*0\)/,
             label + ": legacy white card still surrounds footer brand");
           assert.ok(wordmarkAppearance.padding.every((value) => value === "0px"),
             label + ": footer brand retains boxed padding");
