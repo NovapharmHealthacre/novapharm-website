@@ -18,6 +18,16 @@ export const sourcePlans = Object.freeze({
     path: "/api/v2/studies",
     documentation: "https://clinicaltrials.gov/data-api/api"
   }),
+  "ca-health-canada-dpd": Object.freeze({
+    country: "CA", domain: "regulatory", origin: "https://health-products.canada.ca",
+    path: "/api/drug/drugproduct/",
+    documentation: "https://health-products.canada.ca/api/documentation/dpd-documentation-en.html"
+  }),
+  "global-europepmc": Object.freeze({
+    country: "GLOBAL", domain: "literature", origin: "https://www.ebi.ac.uk",
+    path: "/europepmc/webservices/rest/search",
+    documentation: "https://dev.europepmc.org/RestfulWebService"
+  }),
   "es-aemps-cima": Object.freeze({
     country: "ES", domain: "authorisation", origin: "https://cima.aemps.es",
     path: "/cima/rest/medicamentos",
@@ -47,6 +57,15 @@ export function buildGovSourcePlan({ sourceId, term, limit = 5 }) {
     url.searchParams.set("query.term", query);
     url.searchParams.set("pageSize", String(limit));
     url.searchParams.set("format", "json");
+  } else if (sourceId === "ca-health-canada-dpd") {
+    url.searchParams.set("brandname", query);
+    url.searchParams.set("lang", "en");
+    url.searchParams.set("type", "json");
+  } else if (sourceId === "global-europepmc") {
+    url.searchParams.set("query", query);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("pageSize", String(limit));
+    url.searchParams.set("resultType", "lite");
   } else if (sourceId === "es-aemps-cima") {
     url.searchParams.set("nombre", query);
     url.searchParams.set("pagina", "1");
@@ -102,6 +121,20 @@ export function normaliseGovSourceResult(plan, data) {
       localId: safeString(record.protocolSection?.identificationModule?.nctId),
       label: safeString(record.protocolSection?.identificationModule?.briefTitle),
       provenanceDomain: "ClinicalTrials.gov"
+    }));
+  } else if (plan.sourceId === "ca-health-canada-dpd") {
+    if (!Array.isArray(data)) throw new Error("Unexpected source schema");
+    rows = data.map((record) => ({
+      localId: safeString(record.drug_identification_number),
+      label: safeString(record.brand_name),
+      provenanceDomain: "Health Canada DPD"
+    }));
+  } else if (plan.sourceId === "global-europepmc") {
+    if (!Array.isArray(data?.resultList?.result)) throw new Error("Unexpected source schema");
+    rows = data.resultList.result.map((record) => ({
+      localId: safeString(record.id),
+      label: safeString(record.title),
+      provenanceDomain: "Europe PMC"
     }));
   } else if (plan.sourceId === "es-aemps-cima") {
     if (!Array.isArray(data?.resultados)) throw new Error("Unexpected source schema");
