@@ -1,5 +1,5 @@
 {
-  "schema": "novapharm.intelligence.global-source-candidates.v1",
+  "schema": "novapharm.intelligence.global-source-candidates.v2",
   "reviewDate": "2026-11-17",
   "scope": "Discovery register only; not licensed, ingested, tested or deployed",
   "statusDefinitions": {
@@ -28,7 +28,15 @@
       "mode": "API",
       "note": "Global coverage is incomplete and not equivalent to country approval",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-us-clinicaltrials-gov",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -39,7 +47,15 @@
       "mode": "API",
       "note": "Full-text reuse rights vary",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-europe-pmc",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -50,7 +66,15 @@
       "mode": "API",
       "note": "Publisher reuse rights differ from indexing rights",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-ncbi-pubmed",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -61,7 +85,15 @@
       "mode": "API",
       "note": "Not clinical efficacy or approval",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-chembl",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -72,7 +104,15 @@
       "mode": "API",
       "note": "Chemical equivalence is not product equivalence",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-pubchem",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -83,7 +123,15 @@
       "mode": "API",
       "note": "HS-level trade is not molecule/pack sales",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-un-comtrade",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -94,7 +142,15 @@
       "mode": "API",
       "note": "Legal validity and exclusivity need country-specific review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-epo-ops",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -105,7 +161,15 @@
       "mode": "API-review",
       "note": "Legacy OData announced end-2025; verify current replacement before integration",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-who-global-health-observatory",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Global",
@@ -116,7 +180,15 @@
       "mode": "Restricted/API",
       "note": "Contract and purposes must be assessed; reporting counts are not incidence",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "global-global-who-umc-vigiaccess",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -127,7 +199,15 @@
       "mode": "Beta API",
       "note": "FHIR R5 beta; register and check coverage, use terms and country marketing status",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-european-union-eea-ema-pms-public-api",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -138,7 +218,15 @@
       "mode": "Restricted/API",
       "note": "MAH/NCA submission API, not general public read feed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-european-union-eea-ema-esmp",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -149,7 +237,15 @@
       "mode": "API",
       "note": "Requires healthcare and product matching; not wholesale net prices",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-european-union-eea-ted",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -160,7 +256,15 @@
       "mode": "API/Download",
       "note": "England not UK-wide; retrospective, not current stock",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-united-kingdom-nhsbsa-english-prescribing-dataset",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -171,7 +275,15 @@
       "mode": "Portal",
       "note": "No official public bulk API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-united-kingdom-mhra-products",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -182,7 +294,15 @@
       "mode": "Download",
       "note": "Daily XML listed; check update and reuse terms",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-ireland-hpra-authorised-medicines",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -193,7 +313,15 @@
       "mode": "Download",
       "note": "National extract; no inference of prescription volumes",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-france-ansm-bdpm",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -204,7 +332,15 @@
       "mode": "Download-review",
       "note": "Official insurer CSV, 2014–2025; review 2025 regional anomaly notice",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-france-open-medic",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -215,7 +351,15 @@
       "mode": "API",
       "note": "Review AEMPS terms and versioned schema",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-spain-aemps-cima",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -226,7 +370,15 @@
       "mode": "Download",
       "note": "Reports and tables have distinct grains and update cycles",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-italy-aifa-osmed-and-authorised-lists",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -237,7 +389,15 @@
       "mode": "Portal/Restricted",
       "note": "Full datasets and services may require registration/payment",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-germany-bfarm-amice-pharmnet-bund",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -248,7 +408,15 @@
       "mode": "Download",
       "note": "Weekly data availability reported; verify exact current feed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-netherlands-meb-medicines-evaluation-board",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -259,7 +427,15 @@
       "mode": "Portal/Download",
       "note": "Limited national reimbursement perspective",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-netherlands-gip-databank",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -270,7 +446,15 @@
       "mode": "API-review",
       "note": "SAM web service has onboarding/usage terms; assess endpoints",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-belgium-famhp-sam",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -281,7 +465,15 @@
       "mode": "API",
       "note": "Package-level API; price effective periods and price type must be kept",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-denmark-medicinpriser-api",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -292,7 +484,15 @@
       "mode": "Restricted/API",
       "note": "Fass industry-operated and not automatically free commercial use",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-sweden-fass-and-tlv",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -303,7 +503,15 @@
       "mode": "API",
       "note": "Assess coverage, licensing and Norwegian codes",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-norway-dmp-medicine-fhir-service",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -314,7 +522,15 @@
       "mode": "Portal/Download",
       "note": "API not verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-finland-fimea",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -325,7 +541,15 @@
       "mode": "API",
       "note": "Not complete retail market or all prescriptions",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-poland-nfz-drug-program-statistics",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -336,7 +560,15 @@
       "mode": "Portal",
       "note": "Official public API not independently validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-poland-urpl",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -347,7 +579,15 @@
       "mode": "Download",
       "note": "Follow dataset licence and avoid implying stock from distribution",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-czechia-sukl",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -358,7 +598,15 @@
       "mode": "Portal/Download",
       "note": "No publicly documented general API confirmed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-austria-basg",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -369,7 +617,15 @@
       "mode": "Download",
       "note": "Separate BAG reimbursement catalogue required for pricing",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-switzerland-swissmedic",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -380,7 +636,15 @@
       "mode": "API/Download",
       "note": "SNS transparency subset; verify API access and licensing",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-portugal-infarmed-sns-transparencia",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -391,7 +655,15 @@
       "mode": "Portal",
       "note": "No verified public API",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-hungary-nngyk-ogyei",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -402,7 +674,15 @@
       "mode": "Portal/Download",
       "note": "Regular data lists may describe special recognition pathways, not total market",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-ukraine-state-expert-center-register",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -413,7 +693,15 @@
       "mode": "Download/Portal",
       "note": "No unconditional public general API verified; review update and jurisdiction rules",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-russia-ministry-of-health-grls",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -424,7 +712,15 @@
       "mode": "Discovery",
       "note": "Specific programmatic source not yet verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-greece-eof",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -435,7 +731,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-romania-anmdmr",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -446,7 +750,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-bulgaria-bda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -457,7 +769,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-croatia-halmed",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -468,7 +788,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-slovenia-jazmp",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -479,7 +807,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-slovakia-sukl",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -490,7 +826,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-estonia-state-agency-of-medicines",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -501,7 +845,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-latvia-state-agency-of-medicines",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -512,7 +864,15 @@
       "mode": "Discovery",
       "note": "No national feed validated in this review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-lithuania-state-medicines-control-agency",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -523,7 +883,15 @@
       "mode": "Discovery",
       "note": "No public API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-serbia-alims",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Europe",
@@ -534,7 +902,15 @@
       "mode": "Portal",
       "note": "No verified public medicines REST API",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "europe-turkiye-titck",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "North America",
@@ -545,7 +921,15 @@
       "mode": "API",
       "note": "FDA authorisation, NDC listing and current marketing are distinct concepts",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "north-america-united-states-fda-openfda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "North America",
@@ -556,7 +940,15 @@
       "mode": "API",
       "note": "Medicare population subset; not complete US market",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "north-america-united-states-cms-data",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "North America",
@@ -567,7 +959,15 @@
       "mode": "API",
       "note": "Country-specific bilingual product records",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "north-america-canada-health-canada-drug-product-database",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "North America",
@@ -578,7 +978,15 @@
       "mode": "API",
       "note": "Reporting counts not event rates",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "north-america-canada-canada-vigilance",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "North America",
@@ -589,7 +997,15 @@
       "mode": "Portal/Download",
       "note": "Public general API not confirmed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "north-america-mexico-cofepris",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -600,7 +1016,15 @@
       "mode": "Download",
       "note": "Separate datasets; keep CMED ceiling price classifications",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-brazil-anvisa-and-cmed",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -611,7 +1035,15 @@
       "mode": "Portal/Download",
       "note": "Some national open CSV downloads are historical",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-argentina-anmat",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -622,7 +1054,15 @@
       "mode": "API/Portal",
       "note": "Procurement API may require an access key",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-chile-isp-and-chilecompra",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -633,7 +1073,15 @@
       "mode": "API/Portal",
       "note": "Socrata price API; authorised product registry is separate",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-colombia-invima-and-sismed",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -644,7 +1092,15 @@
       "mode": "Portal/Download",
       "note": "No verified public programmable medicine API",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-peru-digemid",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -655,7 +1111,15 @@
       "mode": "Portal",
       "note": "Machine API not verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-ecuador-arcsa",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Latin America",
@@ -666,7 +1130,15 @@
       "mode": "Discovery",
       "note": "No official public medicine API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "latin-america-uruguay-ministry-of-public-health",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -677,7 +1149,15 @@
       "mode": "Portal",
       "note": "Public open medicine records API not confirmed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-india-cdsco-sugam",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -688,7 +1168,15 @@
       "mode": "Portal",
       "note": "No public API contract verified; ceiling price is not realized sales",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-india-nppa-pharma-sahi-daam",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -699,7 +1187,15 @@
       "mode": "Access-review",
       "note": "Launched in June 2026; public API and commercial reuse access not verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-india-abdm-drug-registry",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -710,7 +1206,15 @@
       "mode": "Portal",
       "note": "No open official programmatic feed verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-india-ctri",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -721,7 +1225,15 @@
       "mode": "Portal",
       "note": "No official public bulk drug API independently verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-china-nmpa",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -732,7 +1244,15 @@
       "mode": "Portal/Download",
       "note": "Separate MHLW NDB sources, national data rights review required",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-japan-pmda-mhlw",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -743,7 +1263,15 @@
       "mode": "API",
       "note": "Access key/registration and endpoint-specific licence review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-south-korea-mfds-openapi",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -754,7 +1282,15 @@
       "mode": "API",
       "note": "Claims universe and timeframe must be specified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-south-korea-hira",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -765,7 +1301,15 @@
       "mode": "API/Download",
       "note": "Validate OpenAPI route and current endpoint version",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-taiwan-tfda-and-nhi",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -776,7 +1320,15 @@
       "mode": "API/Download",
       "note": "Official dataset APIs; dataset version and licence by item",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-singapore-hsa-data-gov-sg",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -787,7 +1339,15 @@
       "mode": "Download",
       "note": "Official Parquet downloads; specifically NOT accessible through OpenAPI",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-malaysia-npra-kkmnow",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -798,7 +1358,15 @@
       "mode": "API-review",
       "note": "Check actual catalogue service authentication and license",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-indonesia-bpom-satu-data",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -809,7 +1377,15 @@
       "mode": "API-review",
       "note": "A listed web service exists; validate freshness and current documentation",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-thailand-thai-fda-data-go-th",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -820,7 +1396,15 @@
       "mode": "Portal",
       "note": "Public machine API unverified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-vietnam-drug-administration-of-vietnam",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -831,7 +1415,15 @@
       "mode": "Portal",
       "note": "No official open medicines REST verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-philippines-fda-philippines",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -842,7 +1434,15 @@
       "mode": "Portal",
       "note": "Public API unverified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-pakistan-drap",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -853,7 +1453,15 @@
       "mode": "FHIR-review",
       "note": "Some terminology ValueSet expansions are unsupported; confirm licensing and endpoints",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-bangladesh-dgda-dghs-fhir",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -864,7 +1472,15 @@
       "mode": "Portal",
       "note": "No public API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-nepal-dda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Asia Pacific",
@@ -875,7 +1491,15 @@
       "mode": "Portal",
       "note": "Some published registered-medicine lists are stale; freshness warning mandatory",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "asia-pacific-sri-lanka-nmra",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Oceania",
@@ -886,7 +1510,15 @@
       "mode": "Download",
       "note": "Different TGA dataset release frequencies",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "oceania-australia-tga-artg",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Oceania",
@@ -897,7 +1529,15 @@
       "mode": "API",
       "note": "API rate and monthly scope constraints; not all Australian pharmaceutical use",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "oceania-australia-pbs",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Oceania",
@@ -908,7 +1548,15 @@
       "mode": "Download/Restricted",
       "note": "Licensing differs between medicines and subsidised lists",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "oceania-new-zealand-medsafe-nzulm",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -919,7 +1567,15 @@
       "mode": "Download/Portal",
       "note": "Serialization and track-and-trace interfaces are not public stock feeds",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-saudi-arabia-sfda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -930,7 +1586,15 @@
       "mode": "API/Access-review",
       "note": "API marketplace access process must be completed; EDE is relevant authority",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-united-arab-emirates-mohap-ede",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -941,7 +1605,15 @@
       "mode": "Portal/Download",
       "note": "No official open REST independently verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-israel-ministry-of-health-medicines-register",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -952,7 +1624,15 @@
       "mode": "Download/API-review",
       "note": "Catalog metadata/API does not prove fresh record-level price feed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-jordan-jfda-open-data",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -963,7 +1643,15 @@
       "mode": "Portal/Download",
       "note": "No general medicine API confirmed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-oman-ministry-of-health",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -974,7 +1662,15 @@
       "mode": "Portal",
       "note": "Official public API not verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-qatar-ministry-of-public-health",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -985,7 +1681,15 @@
       "mode": "Discovery",
       "note": "Specific dataset/endpoint not validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-bahrain-nhra",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Middle East",
@@ -996,7 +1700,15 @@
       "mode": "Discovery",
       "note": "Specific dataset/endpoint not validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "middle-east-kuwait-ministry-of-health",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1007,7 +1719,15 @@
       "mode": "Portal/Download",
       "note": "National registrations independent of private price data",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-south-africa-sahpra",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1018,7 +1738,15 @@
       "mode": "Download",
       "note": "Not transaction prices; prices effective by date and version",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-south-africa-department-of-health-sep",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1029,7 +1757,15 @@
       "mode": "Portal",
       "note": "No unrestricted public data API validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-nigeria-nafdac-greenbook",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1040,7 +1776,15 @@
       "mode": "Portal",
       "note": "No official public machine API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-kenya-ppb",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1051,7 +1795,15 @@
       "mode": "Discovery",
       "note": "Validate official register URL and access terms",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-ghana-fda-ghana",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1062,7 +1814,15 @@
       "mode": "Portal",
       "note": "No official public API verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-tanzania-tmda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1073,7 +1833,15 @@
       "mode": "Portal",
       "note": "Programmatic access not independently verified",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-rwanda-rwanda-fda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1084,7 +1852,15 @@
       "mode": "Download",
       "note": "Commercial re-use and currency/effective dates require review",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-morocco-open-data-ammps",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1095,7 +1871,15 @@
       "mode": "Portal",
       "note": "No official general API confirmed",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-egypt-egyptian-drug-authority",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1106,7 +1890,15 @@
       "mode": "Discovery",
       "note": "Specific current dataset not validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-algeria-ministry-of-pharmaceutical-industry",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1117,7 +1909,15 @@
       "mode": "Discovery",
       "note": "Specific current dataset not validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-ethiopia-efda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     },
     {
       "region": "Africa",
@@ -1128,7 +1928,16 @@
       "mode": "Discovery",
       "note": "Specific current dataset not validated",
       "rightsStatus": "not-reviewed",
-      "integrationStatus": "candidate-only"
+      "integrationStatus": "candidate-only",
+      "candidateKey": "africa-uganda-nda",
+      "authorityVerification": "pending",
+      "termsReview": "pending",
+      "verifiedOn": null,
+      "licenceEvidenceId": null,
+      "allowedUses": [],
+      "dataAdmission": "not-admitted",
+      "activeAdapterId": null
     }
-  ]
+  ],
+  "candidateIdentityRule": "slug(region,country,provider): stable registry key; not an active integration id"
 }
