@@ -30,3 +30,21 @@ test("native app is isolated from existing npm workspace and leaves app ids to s
   assert.equal(expo.ios.bundleIdentifier, undefined);
   assert.equal(expo.android.package, undefined);
 });
+
+test("enterprise preview uses virtualized source browsing with adaptive layout", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(app, /FlatList/);
+  assert.match(app, /numColumns=\{twoColumns \? 2 : 1\}/);
+  assert.match(app, /sourceRegions\.map/);
+  assert.match(app, /accessibilityRole="tab"/);
+  assert.match(app, /minHeight: 44/);
+  assert.match(app, /No live medicine data/);
+  assert.match(app, /productionAccepted|Not connected|not approved/i);
+});
+test("no source candidate is silently represented as verified market facts", () => {
+  const candidates = JSON.parse(read("docs/intelligence/global-pharma-sources-20261117.json"));
+  assert.equal(candidates.sources.filter((s) => s.integrationStatus !== "candidate-only").length, 0);
+  assert.equal(candidates.sources.filter((s) => s.rightsStatus !== "not-reviewed").length, 0);
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.doesNotMatch(app, /sourceRegister\.sources\.map\(.*fetch/);
+});
