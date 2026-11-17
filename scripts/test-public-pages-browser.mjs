@@ -793,6 +793,17 @@ for (const [engineName, browserType] of engines) {
               `${engineName} ${viewport.name} ${route.path}: serious/critical accessibility violations`
             );
 
+            // Route interactions (notably privacy consent) can scroll to a
+            // control. Snapshot the same page origin in Chromium and WebKit,
+            // rather than comparing unrelated scroll positions.
+            await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+            const snapshotOrigin = await page.evaluate(() => ({
+              x: Math.round(window.scrollX),
+              y: Math.round(window.scrollY)
+            }));
+            assert.deepEqual(snapshotOrigin, { x: 0, y: 0 },
+              `${engineName} ${viewport.name} ${route.path}: screenshot must start at document origin`);
+
             const directory = path.join(artifactRoot, engineName, viewport.name);
             await mkdir(directory, { recursive: true });
             await page.screenshot({
