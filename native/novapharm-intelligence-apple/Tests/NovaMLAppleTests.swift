@@ -56,6 +56,26 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertThrowsError(try NovaL0ResearchMath.deterministicGate(logAlpha: 0, gamma: 0))
     }
 
+    func testL0ResearchCandidateFailsClosedWithFeatureParity() throws {
+        let candidate = NovaL0ResearchCandidate(
+            format: "nova-l0-sparse-linear-candidate-v1",
+            releaseStatus: "research-only",
+            productionApproved: false, customerVisible: false,
+            featureNames: ["demand", "stock", "lead_time"],
+            coefficients: [2, 0, 2], bias: 3, nonZeroCount: 2
+        )
+        XCTAssertEqual(try candidate.score(features: ["lead_time": 4, "demand": 5, "stock": 99]), 21)
+        XCTAssertThrowsError(try candidate.score(features: ["demand": 5, "stock": 99]))
+        XCTAssertThrowsError(try candidate.score(features: ["demand": .nan, "stock": 1, "lead_time": 4]))
+        let forbidden = NovaL0ResearchCandidate(
+            format: candidate.format, releaseStatus: candidate.releaseStatus,
+            productionApproved: true, customerVisible: false,
+            featureNames: candidate.featureNames, coefficients: candidate.coefficients,
+            bias: candidate.bias, nonZeroCount: candidate.nonZeroCount
+        )
+        XCTAssertThrowsError(try forbidden.score(features: ["demand": 5, "stock": 99, "lead_time": 4]))
+    }
+
     #if os(macOS)
     func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
         let permit = NovaTrainingPermit(
