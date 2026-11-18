@@ -75,3 +75,35 @@ test("all 24 publisher-described Signals v3 tables are registered, but only thre
   }
   assert.equal(signalsV3TableByName("../raw_messages.csv"), null);
 });
+
+test("untrusted table names and accessor-bearing records always fail closed", () => {
+  const name = "share_of_messages_by_topic_country_month.csv";
+  const candidate = {month:"2026-09-01",country:"GB",topic:"Writing",share_of_messages:0.4};
+  for (const untrusted of ["__proto__", "constructor", "toString", "hasOwnProperty", null, {}, 7]) {
+    const decision = assessSignalsAggregateRow(untrusted, candidate);
+    assert.equal(decision.status, "blocked");
+    assert.equal(decision.executionEnabled, false);
+  }
+  let getterCalled = false;
+  const accessor = {
+    get month() { getterCalled = true; throw Error("untrusted getter must not run"); },
+    country:"GB", topic:"Writing", share_of_messages:0.4
+  };
+  assert.equal(assessSignalsAggregateRow(name, accessor).status, "blocked");
+  assert.equal(getterCalled, false, "admission must never invoke untrusted accessors");
+  const proposal = base();
+  Object.defineProperty(proposal, "sourceId", {
+    get() { getterCalled = true; throw Error("untrusted getter must not run"); },
+    enumerable: true
+  });
+  assert.equal(assessSignalsResearchProposal(proposal).status, "blocked");
+  assert.equal(getterCalled, false);
+  const hidden = {...candidate};
+  Object.defineProperty(hidden, "hidden_prompt", {value:"PRIVATE", enumerable:false});
+  assert.equal(assessSignalsAggregateRow(name, hidden).status, "blocked");
+  const symbol = {...candidate, [Symbol("private")]: "PRIVATE"};
+  assert.equal(assessSignalsAggregateRow(name, symbol).status, "blocked");
+  const hostile = new Proxy({}, {getPrototypeOf(){throw Error("hostile proxy");}});
+  assert.equal(assessSignalsResearchProposal(hostile).status, "blocked");
+  assert.equal(assessSignalsAggregateRow(name, hostile).status, "blocked");
+});
