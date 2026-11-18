@@ -6,6 +6,8 @@ import {
   EXPECTED_SOURCE_COUNT, EXPECTED_NATIONAL_COUNTRIES, EXPECTED_GROUPS
 } from "../src/core/intelligence-country-release-ledger.mjs";
 
+import { COUNTRY_ISO2, SOURCE_GROUP_CODES, requireCountryOrGroupCode } from "../src/core/intelligence-country-iso-identifiers.mjs";
+
 const source = JSON.parse(readFileSync(new URL(
   "../docs/intelligence/global-pharma-sources-20261117.json", import.meta.url
 ), "utf8")).sources;
@@ -177,4 +179,27 @@ test("ledger is immutable at each level and contains no record-level patient or 
   assert.ok(Object.isFrozen(ledger.countries[0].nextSteps));
   assert.ok(!JSON.stringify(ledger).includes("apiKey"));
   assert.ok(!JSON.stringify(ledger).includes("accessToken"));
+});
+
+
+test("ISO 3166-1 identities are exact for all 77 national jurisdictions, never EU/Global", () => {
+  assert.equal(Object.keys(COUNTRY_ISO2).length, 77);
+  assert.equal(Object.values(COUNTRY_ISO2).filter(code => /^[A-Z]{2}$/.test(code)).length, 77);
+  assert.equal(new Set(Object.values(COUNTRY_ISO2)).size, 77);
+  assert.equal(requireCountryOrGroupCode("United Kingdom"), "GB");
+  assert.equal(requireCountryOrGroupCode("Türkiye"), "TR");
+  assert.equal(requireCountryOrGroupCode("South Korea"), "KR");
+  assert.equal(requireCountryOrGroupCode("Taiwan"), "TW");
+  assert.equal(requireCountryOrGroupCode("South Africa"), "ZA");
+  assert.equal(requireCountryOrGroupCode("Global"), "GLOBAL");
+  assert.equal(requireCountryOrGroupCode("European Union / EEA"), "EU-EEA");
+  assert.equal(Object.keys(SOURCE_GROUP_CODES).length, 2);
+  assert.throws(() => requireCountryOrGroupCode("Atlantis"), /Unknown/);
+  assert.throws(() => requireCountryOrGroupCode("__proto__"), /Unknown/);
+  for (const item of ledger.sourceRows) {
+    assert.equal(item.countryCode, requireCountryOrGroupCode(item.country));
+  }
+  for (const item of ledger.countries) {
+    assert.equal(item.countryCode, requireCountryOrGroupCode(item.country));
+  }
 });
