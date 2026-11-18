@@ -228,3 +228,23 @@ test("per-country engineering percentages are reproducible, bounded and never pr
   assert.equal(ledger.countries.find(c => c.country === "Canada").engineeringMilestonePercent, 30);
   assert.equal(ledger.countries.find(c => c.country === "India").engineeringMilestonePercent, 20);
 });
+
+
+test("source candidates cannot silently move between countries or publishers", () => {
+  const tamper = [
+    (s) => { s[0].country = "Spain"; },
+    (s) => { s[0].region = "Europe"; },
+    (s) => { s[0].provider = "Another trial publisher"; },
+    (s) => { s.find(x => x.country === "India").country = "Singapore"; },
+    (s) => { s.find(x => x.country === "Australia").provider = "Another PBS vendor"; }
+  ];
+  for (const mutate of tamper) {
+    const registry = candidates();
+    mutate(registry);
+    assert.throws(
+      () => buildCountryReleaseLedger(registry),
+      /source region, country or publisher identity does not match candidate key/
+    );
+  }
+  assert.equal(buildCountryReleaseLedger(source).totalSources, 101);
+});
