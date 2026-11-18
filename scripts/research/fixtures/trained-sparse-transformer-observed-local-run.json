@@ -1,0 +1,98 @@
+{
+  "contract": "novapharm.intelligence.offline-sparse-transformer-experiment.v1",
+  "classification": "synthetic-local-research-only",
+  "model": {
+    "kind": "trained-1-block-2-head-attention",
+    "seed": 117,
+    "trainSteps": 220,
+    "parameters": 2282,
+    "nonzeroParameters": 2076,
+    "weightsSha256": "faf643f22932b7d935258535bac496c16851bbe378f5749a032f3653aaaf043a",
+    "pruning": "attention-weight-magnitude",
+    "pruneFraction": 0.2
+  },
+  "data": {
+    "kind": "generated-non-pharmaceutical",
+    "train": 512,
+    "calibration": 128,
+    "holdout": 256,
+    "sha256": "b2598f594fc35ec3d75e7c3bf0697d203d165c1372cb2a8f1c610c3e549c1b41"
+  },
+  "evaluation": {
+    "baselineLoss": 0.00008897692168829963,
+    "baselineAccuracy": 1,
+    "prunedLoss": 0.00008905748109100387,
+    "prunedAccuracy": 1,
+    "isolatedCircuitLoss": 0.00009764483547769487,
+    "isolatedCircuitAccuracy": 1,
+    "ablatedLoss": 4.706462860107422,
+    "ablatedAccuracy": 0.4921875,
+    "headAblatedLosses": [
+      0.00009679462527856231,
+      0.00010579296940704808
+    ],
+    "keptHeadIndex": 1
+  },
+  "candidateArtifact": {
+    "schemaVersion": "npi.sparse-circuit.v1",
+    "model": {
+      "identifier": "toy-trained-attention",
+      "revision": "synthetic-v1",
+      "weightsSha256": "faf643f22932b7d935258535bac496c16851bbe378f5749a032f3653aaaf043a",
+      "access": "weights-and-activations"
+    },
+    "task": {
+      "identifier": "synthetic-keyword-class",
+      "datasetSha256": "b2598f594fc35ec3d75e7c3bf0697d203d165c1372cb2a8f1c610c3e549c1b41"
+    },
+    "circuit": {
+      "nodes": [
+        {
+          "id": "synthetic-token",
+          "kind": "embedding-channel"
+        },
+        {
+          "id": "head-1",
+          "kind": "attention-channel"
+        },
+        {
+          "id": "cls-readout",
+          "kind": "residual-write"
+        }
+      ],
+      "edges": [
+        {
+          "from": "synthetic-token",
+          "to": "head-1",
+          "weight": 0.17030204832553864
+        },
+        {
+          "from": "head-1",
+          "to": "cls-readout",
+          "weight": 0.17413760721683502
+        }
+      ]
+    },
+    "evaluation": {
+      "baselineLoss": 0.00008897692168829963,
+      "circuitLoss": 0.00009764483547769487,
+      "ablatedLoss": 4.706462860107422,
+      "sampleCount": 256,
+      "holdout": true,
+      "ablation": "mean"
+    },
+    "provenance": {
+      "runId": "toy-transformer-seed-117",
+      "implementationRevision": "offline-pytorch-v1",
+      "evaluatedAt": "2026-11-18T03:42:58Z"
+    }
+  },
+  "assurance": {
+    "independentReproduction": false,
+    "rightsApproved": false,
+    "mechanisticExplanationVerified": false,
+    "productionEligible": false,
+    "clinicalUsePermitted": false
+  },
+  "limits": "Not a full weight-sparse transformer, causal circuit ground truth, pharma dataset, model safety assessment or published paper replication."
+}
