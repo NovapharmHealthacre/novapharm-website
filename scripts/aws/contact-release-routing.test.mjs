@@ -158,3 +158,23 @@ test("country release-ledger is private-only and cannot dispatch the corporate A
     assert.match(source, /found_ml=true/);
   }
 });
+
+test("all 101-country scope proposal paths remain private-only in both AWS/public selectors", () => {
+  const scopePaths = [
+    ".github/workflows/intelligence-country-101-scope-audit.yml",
+    "docs/intelligence/country-101-scope-proposal-20261118.json",
+    "docs/intelligence/country-101-scope-proposal-20261118.md",
+    "scripts/test-intelligence-country-101-scope-proposal.mjs"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\\$changed" in\\s*\\n\\s*([^\\n]+)/)?.[1];
+    assert.ok(classifier, file + " must have a real changed-file Bash case");
+    const privatePaths = new Set(classifier.split("|"));
+    for (const path of scopePaths) {
+      assert.ok(privatePaths.has(path), file + " would publish scope-only research: " + path);
+    }
+    assert.ok(source.includes("found_ml=true"), file + " must mark the matched research paths private");
+    assert.ok(source.includes("private_only=true"), file + " must preserve the restrictive default");
+  }
+});
