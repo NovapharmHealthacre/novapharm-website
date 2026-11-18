@@ -10,8 +10,8 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     summary: "Design and review dataset, training and evaluation plans before any model is approved.",
     appleTechnology: "Create ML",
     platform: "macOS training companion required",
-    capabilities: ["Dataset rights and consent review", "Training, validation and holdout split", "Model metadata and versioning", "Error analysis and accountable sign-off"],
-    requirements: ["Licensed or otherwise authorised non-patient training data", "Leakage-safe, representative evaluation", "Independent Quality and Security approval", "Signed native model-training release"]
+    capabilities: ["Dataset rights and consent review", "Training, validation and holdout split", "Model metadata and versioning", "Error analysis and accountable sign-off", "Research-only L0 hard-concrete feature gates with dense-baseline comparison"],
+    requirements: ["Licensed or otherwise authorised non-patient training data", "Leakage-safe, representative evaluation", "Independent Quality and Security approval", "Signed native model-training release", "Measured active-feature sparsity, held-out error, model lineage and hardware latency"]
   },
   {
     slug: "nova-core-runtime",
@@ -19,7 +19,7 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     summary: "Prepare a registry-controlled on-device prediction path without fabricating live model results.",
     appleTechnology: "Core ML",
     platform: "Signed iOS, iPadOS or macOS app required",
-    capabilities: ["Approved model package and input schema", "Device-local prediction", "Latency, drift and error assessment", "Immediate fallback to source records"],
+    capabilities: ["Approved model package and input schema", "Device-local prediction", "Latency, drift and error assessment", "Sparse-model artifact integrity and dense-versus-pruned benchmark", "Immediate fallback to source records"],
     requirements: ["Signed and approved model artifact", "Explicit per-use-case model rights", "Device and OS compatibility tests", "Human review for any consequential result"]
   },
   {
