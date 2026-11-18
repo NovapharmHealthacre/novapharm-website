@@ -1,6 +1,7 @@
 package com.novapharm.intelligence.research
 
 import org.json.JSONObject
+import org.json.JSONException
 
 /**
  * Android display-only contract for an authorised research service response.
@@ -21,8 +22,12 @@ data class NovaSparseCircuitSummary(
 object NovaSparseCircuitReader {
     @Throws(IllegalArgumentException::class)
     fun readResearchSummary(json: String): NovaSparseCircuitSummary {
-        require(json.length <= 32_768) { "Unsupported summary size" }
-        val value = JSONObject(json)
+        require(json.isNotEmpty() && json.length <= 32_768) { "Unsupported summary size" }
+        val value = try {
+            JSONObject(json)
+        } catch (_: JSONException) {
+            throw IllegalArgumentException("Unsupported research summary")
+        }
         val expectedKeys = setOf(
             "schemaVersion", "valid", "status", "modelId", "taskId",
             "nodeCount", "edgeCount", "lossDeltaCircuitVsBaseline",
@@ -41,6 +46,9 @@ object NovaSparseCircuitReader {
         require(value.get("productionEligible") == false)
         require(value.get("clinicalUsePermitted") == false)
         require(value.optString("ablation") == "mean")
+        require(value.get("nodeCount") is Int)
+        require(value.get("edgeCount") is Int)
+        require(value.get("sampleCount") is Int)
         val nodes = value.getInt("nodeCount")
         val edges = value.getInt("edgeCount")
         val examples = value.getInt("sampleCount")
@@ -50,6 +58,8 @@ object NovaSparseCircuitReader {
         val baseline = value.getDouble("lossDeltaCircuitVsBaseline")
         val ablated = value.getDouble("lossDeltaAblatedVsCircuit")
         require(baseline.isFinite() && ablated.isFinite())
+        require(value.get("modelId") is String)
+        require(value.get("taskId") is String)
         val modelId = value.getString("modelId")
         val taskId = value.getString("taskId")
         require(modelId.matches(Regex("[A-Za-z0-9][A-Za-z0-9._:-]{0,95}")))
