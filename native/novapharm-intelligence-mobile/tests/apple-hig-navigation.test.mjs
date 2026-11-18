@@ -24,10 +24,10 @@ test("compact iOS/Android navigation has four clear persistent sections", () => 
 });
 
 test("mobile candidate uses readable default content typography and supports system scaling", () => {
-  assert.match(app, /description: \\{ color: palette.secondary, fontSize: 17, lineHeight: 26/);
-  assert.match(app, /sectionIntro: \\{ fontSize: 17, color: palette.secondary, lineHeight: 26/);
-  assert.match(app, /navLabel: \\{ fontSize: 14, fontWeight: "600"/);
-  assert.match(app, /const largeText = fontScale >= 1\\.4/);
+  assert.match(app, /description: \{ color: palette.secondary, fontSize: 17, lineHeight: 26/);
+  assert.match(app, /sectionIntro: \{ fontSize: 17, color: palette.secondary, lineHeight: 26/);
+  assert.match(app, /navLabel: \{ fontSize: 14, fontWeight: "600"/);
+  assert.match(app, /const largeText = fontScale >= 1\.4/);
 });
 
 test("More retains accessible review, research and account entry points", () => {
