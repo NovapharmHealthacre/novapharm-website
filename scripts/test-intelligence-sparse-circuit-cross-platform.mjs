@@ -16,7 +16,8 @@ test("sparse-circuit assurance is exposed only through the existing protected No
   assert.match(data, /Open weights and activations are required/);
   assert.match(data, /rights-admitted source records/);
   assert.match(app, /aria-labelledby="nova-ml-sparse-circuits"/);
-  assert.match(app, /no model experiment connected/i);
+  assert.match(data, /no model experiment connected/i);
+  assert.match(app, /No inspected model/);
   assert.match(app, /causal proof/);
   assert.match(app, /methodGates\.map/);
   assert.doesNotMatch(app, /\bfetch\(|localStorage|sessionStorage|indexedDB|model\.predict/);
