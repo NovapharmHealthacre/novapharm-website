@@ -1,7 +1,7 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
-import { professionalError, protectedMutation } from "../lib/gateway";
+import { type FormEvent, useEffect, useState } from "react";
+import { gatewayJson, professionalError, protectedMutation } from "../lib/gateway";
 import styles from "./clip-visual-search.module.css";
 
 type VisualCandidate = Readonly<{
@@ -12,6 +12,12 @@ type VisualCandidate = Readonly<{
   sourceUrl: string;
   status: "unverified_visual_match";
 }>;
+type VisualReadiness = Readonly<{
+  contract: "novapharm.intelligence.visual-search.v1";
+  enabled: boolean;
+  state: "disabled" | "configured_candidate_not_verified";
+}>;
+
 type VisualResponse = Readonly<{
   contract: "novapharm.intelligence.visual-search.v1";
   query: string;
@@ -37,12 +43,34 @@ function approvedSourceUrl(value: string): boolean {
 export function ClipVisualSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<readonly VisualCandidate[]>([]);
-  const [status, setStatus] = useState("Research candidate: disabled until independently approved and configured.");
+  const [status, setStatus] = useState("Checking private research availability…");
   const [pending, setPending] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void gatewayJson<VisualReadiness>("v1/intelligence/visual/readiness")
+      .then((readiness) => {
+        if (!active) return;
+        const configured = readiness.contract === "novapharm.intelligence.visual-search.v1" &&
+          readiness.enabled === true && readiness.state === "configured_candidate_not_verified";
+        setEnabled(configured);
+        setStatus(configured
+          ? "Private research candidate configured. Actual model availability and source rights remain separately gated."
+          : "Research candidate disabled. No model queries are available.");
+      })
+      .catch(() => {
+        if (active) {
+          setEnabled(false);
+          setStatus("Private visual research is unavailable.");
+        }
+      });
+    return () => { active = false; };
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending) return;
+    if (pending || !enabled) return;
     setPending(true);
     setResults([]);
     setStatus("Checking the private visual catalogue…");
@@ -83,9 +111,9 @@ export function ClipVisualSearch() {
           autoComplete="off"
           spellCheck={false}
           required
-          disabled={pending}
+          disabled={pending || !enabled}
         />
-        <button type="submit" disabled={pending || query.trim().length < 3}>{pending ? "Searching…" : "Find candidate images"}</button>
+        <button type="submit" disabled={!enabled || pending || query.trim().length < 3}>{pending ? "Searching…" : "Find candidate images"}</button>
       </div>
     </form>
     <p role="status" aria-live="polite" className={styles.status}>{status}</p>
