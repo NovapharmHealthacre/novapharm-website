@@ -142,22 +142,50 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
     params = int(sum(p.numel() for p in pruned.parameters()))
     nonzero = int(sum(torch.count_nonzero(p).item() for p in pruned.parameters()))
     digest = hashlib.sha256()
-    for part in (calibration, holdout):
+    for part in (train, calibration, holdout):
         for tensor in part:
             digest.update(tensor.cpu().numpy().tobytes())
+    weights_sha256 = weight_digest(pruned)
+    dataset_sha256 = digest.hexdigest()
+    head_width = DIM // HEADS
+    selected_head = f"head-{kept}"
+    qkv_magnitude = float(pruned.qkv.weight.detach().reshape(3, HEADS, head_width, DIM)[:, kept].abs().mean())
+    projection_magnitude = float(pruned.proj.weight.detach()[:, kept * head_width: (kept + 1) * head_width].abs().mean())
+    assert qkv_magnitude > 0 and projection_magnitude > 0
+    artifact = {
+        "schemaVersion": "npi.sparse-circuit.v1",
+        "model": {"identifier": "toy-trained-attention", "revision": "synthetic-v1",
+                  "weightsSha256": weights_sha256, "access": "weights-and-activations"},
+        "task": {"identifier": "synthetic-keyword-class", "datasetSha256": dataset_sha256},
+        "circuit": {"nodes": [
+            {"id": "synthetic-token", "kind": "embedding-channel"},
+            {"id": selected_head, "kind": "attention-channel"},
+            {"id": "cls-readout", "kind": "residual-write"}
+        ], "edges": [
+            {"from": "synthetic-token", "to": selected_head, "weight": qkv_magnitude},
+            {"from": selected_head, "to": "cls-readout", "weight": projection_magnitude}
+        ]},
+        "evaluation": {"baselineLoss": base_loss, "circuitLoss": circuit_loss,
+                       "ablatedLoss": ablated_loss, "sampleCount": holdout_size,
+                       "holdout": True, "ablation": "mean"},
+        "provenance": {"runId": f"toy-transformer-seed-{SEED}",
+                       "implementationRevision": "offline-pytorch-v1",
+                       "evaluatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")}
+    }
     result = {
         "contract": "novapharm.intelligence.offline-sparse-transformer-experiment.v1",
         "classification": "synthetic-local-research-only",
         "model": {"kind": "trained-1-block-2-head-attention", "seed": SEED, "trainSteps": steps,
-                  "parameters": params, "nonzeroParameters": nonzero, "weightsSha256": weight_digest(pruned),
+                  "parameters": params, "nonzeroParameters": nonzero, "weightsSha256": weights_sha256,
                   "pruning": "attention-weight-magnitude", "pruneFraction": prune_fraction},
         "data": {"kind": "generated-non-pharmaceutical", "train": train_size,
-                 "calibration": len(calibration[1]), "holdout": holdout_size, "sha256": digest.hexdigest()},
+                 "calibration": len(calibration[1]), "holdout": holdout_size, "sha256": dataset_sha256},
         "evaluation": {"baselineLoss": base_loss, "baselineAccuracy": base_accuracy,
                        "prunedLoss": pruned_loss, "prunedAccuracy": pruned_accuracy,
                        "isolatedCircuitLoss": circuit_loss, "isolatedCircuitAccuracy": circuit_accuracy,
                        "ablatedLoss": ablated_loss, "ablatedAccuracy": ablated_accuracy,
                        "headAblatedLosses": head_drop_losses, "keptHeadIndex": kept},
+        "candidateArtifact": artifact,
         "assurance": {"independentReproduction": False, "rightsApproved": False,
                       "mechanisticExplanationVerified": False, "productionEligible": False,
                       "clinicalUsePermitted": False},
@@ -165,6 +193,7 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
     }
     assert all(math.isfinite(x) for x in [base_loss,pruned_loss,circuit_loss,ablated_loss,*head_drop_losses])
     assert params > nonzero > 0
+    assert artifact["evaluation"]["ablatedLoss"] > artifact["evaluation"]["circuitLoss"]
     assert all(v is False for v in result["assurance"].values())
     return result
 
