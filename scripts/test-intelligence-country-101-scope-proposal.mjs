@@ -91,7 +91,7 @@ test("duplicate or existing national country cannot inflate proposed 101-country
   const changed=structuredClone(proposal);
   changed.proposedCountries[0].country="United States";
   assert.throws(()=>auditCountry101Proposal(registry,changed),/already exists/);
-  changed.proposedCountries[0].country=changed.proposedCountries[1].country;
+  changed.proposedCountries[0]=structuredClone(changed.proposedCountries[1]);
   assert.throws(()=>auditCountry101Proposal(registry,changed),/Duplicate proposed country/);
 });
 
