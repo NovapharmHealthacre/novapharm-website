@@ -186,3 +186,19 @@ test("one-sided code, strength, form or manufacturer must not be reported as an 
     assert.equal(result.canPublish,false);
   }
 });
+
+test("visual name, text-in-image name and paired-code evidence cannot substitute for missing modality",()=>{
+  for(const overrides of [
+    {visionMedicineName:""},
+    {imageTextMedicineName:""},
+    {visionMedicineName:"",imageTextMedicineName:""}
+  ]) {
+    const result=assessMultimodalEvidence({...sample,...overrides});
+    assert.equal(result.status,"insufficient_evidence");
+    assert.ok(result.signals.includes("incomplete_multimodal_name_pair"));
+    assert.equal(result.reviewRequired,true);
+    assert.equal(result.identityVerified,false);
+    assert.equal(result.canPublish,false);
+    assert.equal(result.clinicalUseAllowed,false);
+  }
+});
