@@ -129,3 +129,32 @@ test("CIMA clock must be valid, monotonic and within bounded observation window"
   }),/invalid observation clock/);
  }
 });
+
+
+test("official publisher failures reveal only fixed DNS, TLS, timeout or network categories",async()=>{
+  const cases=[
+    ["UND_ERR_CONNECT_TIMEOUT","timeout"],
+    ["ETIMEDOUT","timeout"],
+    ["ENOTFOUND","dns"],
+    ["EAI_AGAIN","dns"],
+    ["CERT_HAS_EXPIRED","tls"],
+    ["UNABLE_TO_VERIFY_LEAF_SIGNATURE","tls"],
+    ["ECONNRESET","network"],
+    ["ENETUNREACH","network"],
+    ["UNTRUSTED_CUSTOM_ERROR_CODE","network-or-policy"]
+  ];
+  for(const [code,category] of cases){
+    const secret="PRIVATE_TRANSPORT_PASSWORD_123";
+    const error=Object.assign(new Error(secret),{
+      cause:Object.assign(new Error(secret),{code})
+    });
+    await assert.rejects(
+      probeCimaPublicMedicine({
+        now:()=>NOW,transport:async()=>{throw error}
+      }),
+      e=>e instanceof Error &&
+        e.message==="CIMA public source observation denied: official publisher connection unavailable ("+category+")" &&
+        !e.message.includes(secret)
+    );
+  }
+});
