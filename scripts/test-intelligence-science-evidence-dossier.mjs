@@ -89,6 +89,8 @@ test("protected web and native Science methods display unverified publisher and 
   assert.match(web, /entry\.retractionCorrectionStatus/);
   assert.match(web, /entry\.validationTrack/);
   assert.match(native, /entry\.retractionCorrectionStatus/);
+  assert.match(web, /scienceMethods\.claimIntegrityPolicy\.requiredStages\.map/);
+  assert.match(native, /scienceMethods\.claimIntegrityPolicy\.requiredStages\.map/);
   assert.match(native, /entry\.validationTrack/);
   assert.doesNotMatch(web + native, /OPENAI_API_KEY|secret_key|api\.openai\.com|fetch\(/);
 });
