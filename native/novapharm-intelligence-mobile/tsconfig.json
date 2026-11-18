@@ -9,6 +9,8 @@
     "App.tsx",
     "index.ts",
     "../../apps/portal/data/intelligence-workspaces.ts",
-    "../../docs/intelligence/global-pharma-sources-20261117.json"
+    "../../docs/intelligence/global-pharma-sources-20261117.json",
+    "CountryDirectoryScreen.tsx",
+    "../../docs/intelligence/country-101-client-catalog-20261118.json"
   ]
 }
