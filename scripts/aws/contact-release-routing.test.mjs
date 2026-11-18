@@ -225,3 +225,31 @@ test("country-specific source-only adapters cannot unintentionally dispatch publ
     assert.match(source, /found_ml=true/);
   }
 });
+
+test("101-country web and Expo catalogue paths are private-only; no backend server bypass", () => {
+  const candidatePaths = [
+    ".github/workflows/intelligence-country-web-mobile-parity.yml",
+    "docs/intelligence/country-101-client-catalog-20261118.json",
+    "scripts/generate-intelligence-country-client-catalog.mjs",
+    "scripts/test-intelligence-country-client-catalog.mjs",
+    "apps/portal/components/country-source-coverage.tsx",
+    "apps/portal/components/medicines-intelligence.tsx",
+    "native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx"
+  ];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, workflow+" missing active source classifier");
+    const patterns = line.split("|");
+    for (const p of candidatePaths) {
+      assert.ok(patterns.includes(p) ||
+        (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
+        (p.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-apple/*") === false &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        workflow+" could publish candidate-only country metadata: "+p);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Real protected server changes must retain independent production acceptance");
+  }
+});
