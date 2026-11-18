@@ -14,6 +14,14 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 
 The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, and a **virtualized**, searchable and region-filtered global source list. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
+## CLIP visual-research workspace (source-only)
+
+The current Expo iOS/Android preview includes a **Visual** research screen and shared `clip-research.ts` contract. It is purposefully visible but disabled: `CLIP_MOBILE_RELEASE.enabled === false`. The prompt cannot be entered or submitted; no session or image data is collected, no native image picker/weights are bundled, and the app makes **no CLIP or external API requests**. The parser independently validates future board-only visual-search responses, discards model-confidence or identity claims and rejects local/private/credentialed source URLs.
+
+The server-side / web and Swift/Kotlin proof-of-concept remains in [CLIP PR #822](https://github.com/NovapharmHealthacre/novapharm-website/pull/822). The Expo app does not automatically embed the Swift Package or Kotlin JVM adapter. Connecting the protected backend requires a reviewed system-browser OIDC authorization code + PKCE/MFA flow, device-bound and revocable session handling, CSRF support, private-runtime readiness and separate legal/quality/security approvals. See [CLIP production acceptance #827](https://github.com/NovapharmHealthacre/novapharm-website/issues/827). Do not mark an Expo bundle as a signed iOS/Android release or as operational CLIP inference.
+
+The preview can be checked without signing or model weights by running `npm run test:contracts`; use Node.js 24 for the zero-dependency TypeScript contract test and follow with `npm run typecheck` and actual-device accessibility acceptance. The isolated package remains unbuilt and unsigned until its application identities, data rights, auth design and release controls are independently accepted.
+
 ## Release blockers
 
 - Approved Intelligence mobile product identity/logo and iOS/Android store identifiers.
