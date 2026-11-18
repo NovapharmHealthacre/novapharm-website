@@ -171,3 +171,59 @@ test("stable independently rechecked intake remains unpublished and cannot self-
  assert.equal(result.manifest.canPublish,false);
  assert.throws(()=>assertGlobalIntakeCustomerReady(result),/rejected/);
 });
+
+
+test("file intake never discloses internal authorization failure details at either rights check",async()=>{
+ const secret="PRIVATE_AUTHORISER_CREDENTIAL_MUST_NOT_LEAK";
+ for(const failOnCall of [1,2]){
+  let calls=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{
+    if(++calls===failOnCall)throw new Error(secret);
+    return permit(ctx);
+   },
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: trusted authorizer unavailable" &&
+   !error.message.includes(secret));
+  assert.equal(calls,failOnCall);
+ }
+});
+
+test("file intake redacts failing server-clock callbacks and does not return evidence",async()=>{
+ const secret="PRIVATE_CLOCK_ADAPTER_CONFIGURATION_MUST_NOT_LEAK";
+ for(const failOnRead of [1,2]){
+  let ticks=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx),
+   now:()=>{
+    if(++ticks===failOnRead)throw new Error(secret);
+    return FIXED_NOW;
+   }
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: server clock" &&
+   !error.message.includes(secret));
+  assert.equal(ticks,failOnRead);
+ }
+});
+
+test("file intake samples the first permit clock only after trusted async authorization",async()=>{
+ let authorized=false,ticks=0,authorizations=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+  authorize:async ctx=>{authorized=true;authorizations++;return permit(ctx);},
+  now:()=>{
+   assert.equal(authorized,true,"The first clock read must follow authorization");
+   ticks++;
+   return FIXED_NOW;
+  }
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(authorizations,2);
+ assert.equal(ticks,2);
+ assert.equal(result.canPublish,false);
+ assert.equal(result.productionAccepted,false);
+});
