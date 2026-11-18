@@ -61,12 +61,18 @@ export function assessMultimodalBenchmark(input) {
     });
   };
   const dimensions=(map)=>Object.freeze([...map].sort(([a],[b])=>a.localeCompare(b)).map(([key,c])=>Object.freeze({key,...metrics(c)})));
+  // Silence is not evidence: an attack type missing from caller-supplied data
+  // MUST be represented explicitly rather than disappearing from the report.
+  const unmeasuredScenarios = Object.freeze([...scenarios].filter(s => !byScenario.has(s)).sort());
   return Object.freeze({
     contract:"novapharm.intelligence.multimodal-benchmark-metadata.v1",
     context:"Unverified caller-supplied aggregate experimental metadata; NOT model validation",
     total:metrics(overall),
     byScenario:dimensions(byScenario),
     byCountry:dimensions(byCountry),
+    plannedScenarioCount:scenarios.size,
+    unmeasuredScenarios,
+    allPlannedScenariosRepresented:unmeasuredScenarios.length===0,
     modelExecuted:false, independentlyVerified:false, licensedSourceRightsVerified:false,
     tenantAuthorised:false, productionAccepted:false, canPublish:false,
     clinicalUseAllowed:false, decisionReady:false
