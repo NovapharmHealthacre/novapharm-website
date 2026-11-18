@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { inspectGovernedModelFeature as inspect, MODEL_MICROSCOPE_CONTRACT } from "../src/core/ai/model-microscope.mjs";
 const now = Date.parse("2026-11-18T08:00:00Z");
@@ -110,4 +111,24 @@ test("artifacts never self-certify independent authorization or expose grant ide
   assert.equal(Object.hasOwn(result, "rightsGrantId"), false);
   assert.equal(Object.hasOwn(result, "authorizationGrantId"), false);
   assert.equal(Object.hasOwn(result, "patientName"), false);
+});
+
+test("the public-facing response exactly matches a restrictive review schema", async () => {
+  const schema = JSON.parse(readFileSync(new URL("../docs/intelligence/model-microscope-inspection-v1.schema.json", import.meta.url), "utf8"));
+  const value = await inspect({ request: scope, now, ...deps() });
+  assert.equal(schema.additionalProperties, false);
+  assert.deepEqual(Object.keys(value).sort(), schema.required.slice().sort());
+  assert.deepEqual(Object.keys(schema.properties).sort(), schema.required.slice().sort());
+  for (const [key, constraints] of Object.entries(schema.properties)) {
+    if (Object.hasOwn(constraints, "const")) assert.equal(value[key], constraints.const, key);
+    if (constraints.type === "string") {
+      assert.equal(typeof value[key], "string", key);
+      if (constraints.pattern) assert.match(value[key], new RegExp(constraints.pattern), key);
+      if (constraints.maxLength) assert.ok(value[key].length <= constraints.maxLength, key);
+    }
+  }
+  for (const key of ["rawTensor", "imageBytes", "embedding", "patientName", "rightsGrantId", "authorizationGrantId"]) {
+    assert.ok(!Object.hasOwn(schema.properties, key), key);
+    assert.ok(!Object.hasOwn(value, key), key);
+  }
 });
