@@ -178,3 +178,15 @@ test("Apple guidance map and live release gates are documented", () => {
   assert.match(doc, /on-device-only recognition/);
   assert.match(doc, /video\/action classification/i);
 });
+
+test("every referenced Nova ML CSS module class has a declared type and a concrete stylesheet selector", () => {
+  const panel = source("apps/portal/components/nova-ml-workspaces.tsx");
+  const css = source("apps/portal/components/nova-ml-workspaces.module.css");
+  const declaration = source("apps/portal/components/nova-ml-workspaces.module.css.d.ts");
+  const used = new Set([...panel.matchAll(/\\bstyles\\.([A-Za-z][A-Za-z0-9]*)/g)].map(match => match[1]));
+  assert.ok(used.size >= 20, "expected the complete Nova ML workspace style surface");
+  for (const key of used) {
+    assert.match(css, new RegExp("\\\\." + key + "(?![A-Za-z0-9_-])"), "missing stylesheet selector: " + key);
+    assert.match(declaration, new RegExp("\\\\b" + key + ": string;"), "missing typed CSS-module class: " + key);
+  }
+});
