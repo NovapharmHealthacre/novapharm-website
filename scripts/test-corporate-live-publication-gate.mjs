@@ -39,3 +39,8 @@ test("a source-only CI policy repair is included in private publication denylist
     assert.ok(publisher.includes("scripts/test-corporate-live-publication-gate.mjs"));
   }
 });
+
+test("changes to the publication-gate tests themselves trigger pull-request acceptance", () => {
+  assert.ok(source.includes("- 'scripts/test-corporate-live-publication-gate.mjs'"));
+  assert.match(source, /pull_request:\s*\n\s*paths:/);
+});
