@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue, modelMicroscopeInspectionStages } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -52,6 +52,9 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <h2 id="model-microscope-registry">Model inspection registry</h2>
       <p className={styles.boundary} role="status"><strong>No approved inspection artifacts available.</strong> This interface does not load model weights, compute neuron activations, generate feature images, retrieve OpenAI model internals or call any outside service. A verified, protected backend and approved non-patient artifacts are required before an inspector can display observations.</p>
       <p className={styles.helper}>Planned research selection: model and version, network layer, feature identifier, evaluation dataset reference, visualisation provenance and falsifiable feature hypothesis. Inspection results must remain non-publishable and cannot justify medical or commercial decisions.</p>
+      <ol className={styles.capabilities} aria-label="Model inspection research stages">{modelMicroscopeInspectionStages.map((stage, index) =>
+        <li key={stage.id}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p><strong>{stage.title}</strong></p><p>{stage.summary}</p><p className={styles.helper}>Required: {stage.requiredEvidence}</p><small>Not operational</small></li>
+      )}</ol>
       <p className={styles.reference}>Research basis: <a href="https://openai.com/index/microscope/">OpenAI Microscope</a>; <a href="https://distill.pub/2017/feature-visualization/">Feature Visualization</a>; <a href="https://distill.pub/2020/circuits/zoom-in/">Introduction to Circuits</a>.</p>
     </section> : null}
     <section className={styles.section} aria-labelledby="nova-ml-capabilities">
