@@ -135,3 +135,25 @@ test("parsed records are bounded to five previews, all rows counted", () => {
   assert.equal(result.totalDataRows, 22);
   assert.equal(result.validIdentityRows, 22);
 });
+
+
+test("HSA bulk rechecks revocation and licence version after parsing, never returning rows", async () => {
+  const bytes = csv(row());
+  for (const update of [
+    (ctx) => grant(ctx, { revokedAt: "2026-11-18T07:00:00Z" }),
+    (ctx) => grant(ctx, { receiptId: "new-receipt" }),
+    (ctx) => grant(ctx, { rightsVersion: "new-version" }),
+    (ctx) => grant(ctx, { licenseId: "new-licence" }),
+    (ctx) => grant(ctx, { tenantId: "another-tenant" }),
+    () => { throw new Error("authorizer disconnected"); }
+  ]) {
+    let calls = 0;
+    const evaluator = createHsaBulkCandidateEvaluator({
+      authorize: async (ctx) => (++calls === 1 ? grant(ctx) : update(ctx)),
+      now: () => NOW
+    });
+    await assert.rejects(evaluator.evaluate({ tenantId: "tenantA", bytes }),
+      /HSA bulk candidate rejected: source rights (revoked|rotated|unavailable) after validation/);
+    assert.equal(calls, 2);
+  }
+});
