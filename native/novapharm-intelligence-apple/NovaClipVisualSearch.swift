@@ -40,6 +40,23 @@ private final class NovaClipNoRedirectDelegate: NSObject, URLSessionTaskDelegate
 public struct NovaClipVisualSearch {
     private let trustedPortalOrigin: URL
 
+    /// Same nonclinical public-image attribution boundary as the protected server.
+    /// Source links are opened only after a separate signed-app user action.
+    static func sourceAllowed(_ url: URL) -> Bool {
+        guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              parts.scheme == "https",
+              let host = parts.host?.lowercased(), host.contains("."),
+              !host.contains(":"), !host.allSatisfy({ $0.isNumber || $0 == "." }),
+              host != "localhost", !host.hasSuffix(".localhost"),
+              !host.hasSuffix(".local"), !host.hasSuffix(".internal"),
+              parts.user == nil, parts.password == nil, parts.fragment == nil,
+              (parts.port == nil || parts.port == 443),
+              url.absoluteString.count <= 2048 else {
+            return false
+        }
+        return true
+    }
+
     /// Must originate from signed, app-controlled configuration, not pasted URLs.
     public init(trustedPortalOrigin: URL) throws {
         guard trustedPortalOrigin.scheme == "https",
@@ -61,7 +78,8 @@ public struct NovaClipVisualSearch {
         session: URLSession
     ) async throws -> NovaClipVisualResponse {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count >= 3, trimmed.count <= 240, !csrfToken.isEmpty,
+        guard trimmed.count >= 3, trimmed.count <= 240,
+              csrfToken.range(of: #"^[A-Za-z0-9_-]{16,256}$"#, options: .regularExpression) != nil,
               !trimmed.unicodeScalars.contains(where: { $0.value < 32 || $0.value == 127 }) else {
             throw NovaClipVisualError.invalidQuery
         }
@@ -86,12 +104,12 @@ public struct NovaClipVisualSearch {
               Set(result.results.map(\.assetId)).count == result.results.count,
               result.results.enumerated().allSatisfy({ index, candidate in
                   candidate.rank == index + 1 &&
-                  !candidate.assetId.isEmpty && candidate.assetId.count <= 120 &&
-                  !candidate.title.isEmpty && candidate.title.count <= 200 &&
-                  !candidate.rightsReference.isEmpty &&
-                  candidate.sourceUrl.scheme == "https" &&
-                  candidate.sourceUrl.user == nil && candidate.sourceUrl.password == nil &&
-                  candidate.sourceUrl.fragment == nil &&
+                  candidate.assetId.range(of: #"^[A-Za-z0-9._:-]{1,120}$"#, options: .regularExpression) != nil &&
+                  !candidate.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                  candidate.title.count <= 200 &&
+                  !candidate.rightsReference.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                  candidate.rightsReference.count <= 240 &&
+                  Self.sourceAllowed(candidate.sourceUrl) &&
                   candidate.status == "unverified_visual_match"
               }) else {
             throw NovaClipVisualError.invalidResponse
