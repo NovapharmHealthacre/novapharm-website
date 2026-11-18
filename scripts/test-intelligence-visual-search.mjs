@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { searchApprovedVisualCatalogue, visualSearchReadiness } from "../src/core/intelligence-visual-search.mjs";
+import { probeVisualSearchReadiness, searchApprovedVisualCatalogue, visualSearchReadiness } from "../src/core/intelligence-visual-search.mjs";
 
 const configured = {
   NPI_CLIP_ENABLED: "true",
@@ -165,4 +165,29 @@ test("streamed private inference rejects oversized content before consuming all 
     { statusCode: 503 }
   );
   assert.ok(consumed <= 4, "More chunks were consumed after exceeding the 32KB limit.");
+});
+
+test("CLIP readiness requires real private model health, never the env flag alone", async () => {
+  let calls = 0;
+  const fake = async (url, init) => {
+    calls += 1;
+    assert.equal(String(url), "http://127.0.0.1:8767/healthz");
+    assert.equal(init.headers.Authorization, `Bearer ${configured.NPI_CLIP_SERVICE_TOKEN}`);
+    return { ok: true, json: async () => ({ status: "ready" }) };
+  };
+  assert.equal((await probeVisualSearchReadiness({}, fake)).state, "disabled");
+  assert.equal(calls, 0);
+  const healthy = await probeVisualSearchReadiness(configured, fake);
+  assert.equal(healthy.enabled, true);
+  assert.equal(healthy.state, "private_runtime_ready");
+  assert.equal(calls, 1);
+  for (const backend of [
+    async () => ({ ok: false }),
+    async () => ({ ok: true, json: async () => ({ status: "initialising" }) }),
+    async () => { throw new Error("service offline"); }
+  ]) {
+    const state = await probeVisualSearchReadiness(configured, backend);
+    assert.equal(state.enabled, false);
+    assert.equal(state.state, "unavailable");
+  }
 });
