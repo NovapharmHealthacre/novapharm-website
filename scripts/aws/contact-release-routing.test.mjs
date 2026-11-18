@@ -301,8 +301,21 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
     for (const path of higPrivatePaths) {
       assert.ok(patterns.includes(path), file + " missing exact HIG research path: " + path);
     }
-    for (const [label, group] of [["PR855", pr855Changes], ["PR854", pr854Changes], ["routing repair", policyRepairChanges]]) {
+    for (const [label, group] of [["PR855", pr855Changes], ["PR854", pr854Changes]]) {
       assert.ok(group.every(covers), file + " would incorrectly publish AWS contact for " + label);
+    }
+    // Release-control files live in a deliberately neutral case. They cannot
+    // independently declare a private-only commit, but are safe when an
+    // independently reviewed private source/document path also changed.
+    const neutralLine = source.split("\n").find((line) =>
+      line.includes("scripts/aws/contact-release-routing.test.mjs") && line.trim().endsWith(")"));
+    assert.ok(neutralLine, file + " must retain the neutral publisher-guard clause");
+    const neutralPatterns = neutralLine.trim().replace(/\)$/, "").split("|");
+    const policySource = "docs/design/apple-hig-172-topic-adoption-20261118.md";
+    assert.ok(covers(policySource), file + " must classify the repair's private source evidence");
+    for (const changed of policyRepairChanges.filter((value) => value !== policySource)) {
+      assert.ok(neutralPatterns.includes(changed),
+        file + " must keep publisher policy change neutral, not unclassified: " + changed);
     }
     assert.equal(covers(publicChange), false, file + " must not suppress genuine public CSS releases");
     assert.equal(covers("assets/js/contact-production.js"), false, file + " must not suppress real contact changes");
