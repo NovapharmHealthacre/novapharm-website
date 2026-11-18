@@ -5,7 +5,9 @@ import { assessMultimodalEvidence, type MultimodalReviewResult } from "../../../
 
 const defaults = {
   sourceReference: "", country: "", visionMedicineName: "", imageTextMedicineName: "",
-  referenceProductCode: "", observedProductCode: ""
+  referenceProductCode: "", observedProductCode: "",
+  referenceStrength: "", observedStrength: "", referenceDoseForm: "", observedDoseForm: "",
+  referenceManufacturer: "", observedManufacturer: ""
 };
 
 export function MultimodalReviewPanel() {
@@ -32,7 +34,13 @@ export function MultimodalReviewPanel() {
         ["visionMedicineName","Visual-model medicine name candidate"],
         ["imageTextMedicineName","Text-in-image medicine name candidate"],
         ["referenceProductCode","Reference product code (optional)"],
-        ["observedProductCode","Observed product code (optional)"]
+        ["observedProductCode","Observed product code (optional)"],
+        ["referenceStrength","Reference strength (optional)"],
+        ["observedStrength","Observed strength (optional)"],
+        ["referenceDoseForm","Reference dose form (optional)"],
+        ["observedDoseForm","Observed dose form (optional)"],
+        ["referenceManufacturer","Reference manufacturer (optional)"],
+        ["observedManufacturer","Observed manufacturer (optional)"]
       ] as const).map(([key,label])=><label key={key} style={{display:"grid",gap:5,fontSize:14}}>
         <span style={{fontWeight:600}}>{label}</span>
         <input type="text" maxLength={240} value={fields[key]} onChange={(e)=>change(key,e.currentTarget.value)}
