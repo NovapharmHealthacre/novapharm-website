@@ -28,6 +28,11 @@ try {
   assert.equal(readiness.science.status, "research_design_only");
   assert.equal(readiness.science.designedWorkflows, 6);
   assert.equal(readiness.science.canonicalWorkspacesCovered, 22);
+  assert.equal(readiness.science.reviewedExternalResearchReferences, 9);
+  assert.equal(readiness.science.cataloguedTransferableResearchMethods, 7);
+  assert.equal(readiness.science.discoveryIndexes, 2);
+  assert.equal(readiness.science.scientificFindingsIndependentlyReproduced, false);
+  assert.equal(readiness.science.continuousScienceFeedConnected, false);
   assert.equal(readiness.science.gptRosalindResearchApiApprovalVerified, false);
   assert.equal(readiness.science.modelConnected, false);
   assert.equal(readiness.science.restrictedResearchModelCustomerUsePermitted, false);
