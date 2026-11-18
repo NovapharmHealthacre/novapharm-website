@@ -221,6 +221,18 @@ export function buildCountryReleaseLedger(registry) {
     })))
   }));
   const mergedCount = sourceRows.filter(x => x.adapterContractMerged).length;
+  const nationalSources = sourceRows.filter(x => x.groupType === "NATIONAL").length;
+  const euSources = sourceRows.filter(x => x.country === EEA).length;
+  const globalSources = sourceRows.filter(x => x.country === GLOBAL).length;
+  const advertisedApiSources = sourceRows.filter(x =>
+    x.advertisedMode.includes("API")).length;
+  const advertisedDownloadOnlySources = sourceRows.filter(x =>
+    x.advertisedMode.includes("Download") &&
+    !x.advertisedMode.includes("API")).length;
+  if (nationalSources !== 89 || euSources !== 3 || globalSources !== 9 ||
+      advertisedApiSources !== 35 || advertisedDownloadOnlySources !== 26) {
+    fail("source category allocation differs from country discovery baseline");
+  }
   return Object.freeze({
     contract: COUNTRY_LEDGER_CONTRACT,
     scope: "SOURCE_DISCOVERY_AND_SOURCE_ONLY_CODE_NOT_PRODUCTION",
@@ -228,6 +240,15 @@ export function buildCountryReleaseLedger(registry) {
     nationalCountries: nationalCount,
     supranationalAndGlobalGroups: groupsCount,
     jurisdictionLabels: countries.length,
+    nationalSourceCandidates: nationalSources,
+    euEeaGroupSourceCandidates: euSources,
+    globalGroupSourceCandidates: globalSources,
+    sourceAdvertisedModeCounts: Object.freeze({
+      apiRelated: advertisedApiSources,
+      downloadRelatedWithoutApi: advertisedDownloadOnlySources,
+      portalDiscoveryOrOther: sourceRows.length -
+        advertisedApiSources - advertisedDownloadOnlySources
+    }),
     sourceCandidateRegistrationPercent: 100,
     sourceOnlyAdapterCount: mergedCount,
     sourceOnlyAdapterCoveragePercent: Number((100 * mergedCount / sourceRows.length).toFixed(2)),
