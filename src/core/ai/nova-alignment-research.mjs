@@ -35,7 +35,14 @@ function casesArray(value, min = 1) {
   if (!Array.isArray(value) || value.length < min || value.length > maxCases) throw reject();
   return value;
 }
-const receipt = (kind, result) => Object.freeze({
+function deepFreeze(value) {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    for (const entry of Object.values(value)) deepFreeze(entry);
+    Object.freeze(value);
+  }
+  return value;
+}
+const receipt = (kind, result) => deepFreeze({
   contract: "novapharm.intelligence.nova-alignment-research.v1",
   kind,
   researchOnly: true,
