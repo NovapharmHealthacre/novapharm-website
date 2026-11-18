@@ -22,6 +22,10 @@ jobs:
     name: Spain AEMPS CIMA live national registration and safety contracts
     runs-on: ubuntu-24.04
     timeout-minutes: 8
+    env:
+      # Node 24 uses existing trusted HTTP(S)_PROXY/NO_PROXY only if present.
+      # No proxy URL, credential, or new network service is introduced here.
+      NODE_USE_ENV_PROXY: '1'
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
