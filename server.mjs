@@ -85,6 +85,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
+import { searchApprovedVisualCatalogue, visualSearchReadiness } from "./src/core/intelligence-visual-search.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -1017,6 +1018,26 @@ export async function handleRequest(request, response) {
         privateReviewEnabled: true,
       }));
       return;
+    }
+
+    // Non-clinical, board-only research candidate. Separate approved deployment required.
+    if (pathname === "/api/v1/intelligence/visual/readiness" && request.method === "GET") {
+      if (!await rateLimit(request, "clip-visual-readiness", 20, 60 * 1000)) return json(response, 429, { error: "Too many requests." });
+      if (!await scopedAuthentication(request, response, ["board"])) return;
+      return json(response, 200, visualSearchReadiness());
+    }
+
+    if (pathname === "/api/v1/intelligence/visual/search" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "clip-visual-search", 5, 60 * 1000)) return json(response, 429, { error: "Visual retrieval rate limit reached." });
+      if (!await scopedAuthentication(request, response, ["board"])) return;
+      let body;
+      try { body = JSON.parse((await readRawBody(request, 4096)).toString("utf8")); }
+      catch (error) {
+        if (error.statusCode === 413) throw error;
+        return json(response, 400, { error: "A bounded JSON search request is required." });
+      }
+      return json(response, 200, await searchApprovedVisualCatalogue(body));
     }
 
     if (pathname === "/api/v1/intelligence/readiness" && request.method === "GET") {
