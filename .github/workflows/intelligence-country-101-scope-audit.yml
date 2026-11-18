@@ -7,6 +7,9 @@ on:
       - 'docs/intelligence/country-101-scope-proposal-20261118.json'
       - 'docs/intelligence/country-101-scope-proposal-20261118.md'
       - 'scripts/test-intelligence-country-101-scope-proposal.mjs'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
       - '.github/workflows/intelligence-country-101-scope-audit.yml'
   workflow_dispatch:
 
@@ -32,4 +35,5 @@ jobs:
       - name: Syntax and negative-test country/source distinction
         run: |
           node --check scripts/test-intelligence-country-101-scope-proposal.mjs
-          node --test scripts/test-intelligence-country-101-scope-proposal.mjs
+          node --check scripts/aws/contact-release-routing.test.mjs
+          node --test scripts/test-intelligence-country-101-scope-proposal.mjs scripts/aws/contact-release-routing.test.mjs
