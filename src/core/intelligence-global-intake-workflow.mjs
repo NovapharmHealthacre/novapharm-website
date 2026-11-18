@@ -60,11 +60,13 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
 
       // Authorize BEFORE parsing raw content or making any quarantine record.
       const authorisedAt=now();
-      if(!Number.isFinite(authorisedAt))reject("server clock");
-      const decision=await authorize({
+      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
+      // Keep the scope immutable and identical on the initial and final rights checks.
+      const rightsScope=Object.freeze({
         tenantId,sourceId,country:plan.country,domain:plan.domain,
         purpose:"internal-evaluation"
       });
+      const decision=await authorize(rightsScope);
       const grant=assertInternalEvaluationPermit({
         permit:decision,sourceId,tenantId,country:plan.country,
         domain:plan.domain,now:authorisedAt
@@ -98,6 +100,21 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       const pageQuality=assessGlobalSourcePageQuality({
         sourceId,raw,normalized,manifest,limit
       });
+      // The quarantine payload is still in memory only. Recheck rights after
+      // parsing and evidence preparation, before allowing any result to leave.
+      // A grant can be revoked, replaced or expire during an async evaluation.
+      const finalDecision=await authorize(rightsScope);
+      const evaluatedAt=now();
+      if(!Number.isSafeInteger(evaluatedAt)||evaluatedAt<authorisedAt||
+         evaluatedAt>=Date.parse(grant.validUntil))reject("source rights expired during evaluation");
+      const finalGrant=assertInternalEvaluationPermit({
+        permit:finalDecision,sourceId,tenantId,country:plan.country,
+        domain:plan.domain,now:evaluatedAt
+      });
+      if(finalGrant.receiptId!==grant.receiptId||
+         finalGrant.licenseId!==grant.licenseId||
+         finalGrant.rightsVersion!==grant.rightsVersion||
+         finalGrant.validUntil!==grant.validUntil)reject("source rights changed during evaluation");
       return Object.freeze({
         contract:EVALUATION_CONTRACT,
         tenantId,
