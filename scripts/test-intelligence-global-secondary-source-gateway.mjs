@@ -186,6 +186,9 @@ test("revoked, changed or unavailable source rights after transport block previe
     (ctx) => authGrant(ctx, { revokedAt: "2026-11-18T07:00:00Z" }),
     (ctx) => authGrant(ctx, { receiptId: "different-rights-receipt" }),
     (ctx) => authGrant(ctx, { rightsVersion: "rights-v2" }),
+    // A still-valid, silently shortened or extended expiry is a new grant.
+    (ctx) => authGrant(ctx, { validUntil: "2026-11-18T07:30:00.000Z" }),
+    (ctx) => authGrant(ctx, { validUntil: "2026-11-18T08:30:00.000Z" }),
     (ctx) => authGrant(ctx, { licenseId: "different-licence" }),
     (ctx) => authGrant(ctx, { tenantId: "other-tenant" }),
     () => { throw new Error("backend rights service unavailable"); }
