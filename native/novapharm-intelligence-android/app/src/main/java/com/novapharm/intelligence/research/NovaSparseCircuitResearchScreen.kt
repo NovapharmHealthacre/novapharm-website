@@ -52,6 +52,7 @@ object NovaSparseCircuitResearchScreen {
             line("Evaluation samples: ${summary.sampleCount}", 15f)
             line("Evaluation deltas are descriptive and do not prove a causal explanation.", 15f)
         }
+        line("A trained synthetic attention experiment exists offline, but no model is downloaded, run or connected to this Android research view.", 14f)
         line("A qualified reviewer must confirm licences, held-out evaluation, ablations and provenance before release.", 14f)
         scroll.addView(column)
         return scroll

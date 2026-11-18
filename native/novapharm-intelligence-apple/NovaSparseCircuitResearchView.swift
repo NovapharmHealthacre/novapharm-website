@@ -42,6 +42,10 @@ public struct NovaSparseCircuitResearchView: View {
                     .font(.body)
             }
 
+            Text("An offline trained attention experiment exists on generated tokens only. It is not downloaded or executed by this native view.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
             Text("A qualified reviewer must independently confirm model rights, source rights, held-out evaluation, ablation controls and provenance before any release.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)

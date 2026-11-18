@@ -114,6 +114,15 @@ export const novaMlSparseCircuitAssurance = Object.freeze({
   classification: "non-clinical, non-operational",
   modelPolicy: "Open weights and activations are required; API-only and deterministic retrieval systems are not eligible for circuit inspection.",
   releasePolicy: "The inspector never grants production, customer, commercial, regulatory or clinical authority.",
+  offlineExperiment: {
+    name: "Trained synthetic attention intervention",
+    description: "A separate offline CPU experiment trains a tiny two-head attention model on generated binary tokens, prunes attention weights and measures an isolated head against a calibration-mean ablation.",
+    sample: "256 generated holdout cases; no medicines or private data",
+    isolatedAccuracy: "100% on this intentionally simple synthetic task",
+    ablatedAccuracy: "49.2% after isolating and mean-ablating the selected head",
+    status: "Local repeat verified; independent research reproduction and CI still required",
+    limitation: "This does not validate a production model, reproduce OpenAI's experiments, establish causal circuit ground truth or approve any pharmaceutical conclusion."
+  },
   methodGates: [
     { name: "Internal access", detail: "Verify model weights, activations, architecture, licence and version before claiming circuit access." },
     { name: "Causal experiments", detail: "Replicate sparsification, pruning, mean ablation, necessity and sufficiency on an independent held-out set." },

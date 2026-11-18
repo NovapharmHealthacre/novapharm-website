@@ -54,6 +54,27 @@ This is **not an OpenAI transformer checkpoint, not learned weight sparsificatio
 
 The JSON response schema `docs/intelligence/npi-sparse-circuit-summary-v1.schema.json` is shared across the web validator and future native clients; a summary is intentionally marked `mechanisticExplanationVerified=false`, `productionEligible=false` and `clinicalUsePermitted=false`.
 
+## Locally trained two-head transformer-family attention experiment (synthetic only)
+
+The research branch now includes `scripts/research/tiny-sparse-transformer-experiment.py`, an **offline CPU PyTorch model-training and intervention runner**. It trains a one-block, two-head attention classifier on generated binary token sequences; magnitude-prunes its attention projection weights; independently evaluates a generated holdout; identifies a useful head; isolates that head; and performs calibration-mean ablation on the retained head **while keeping removed heads at zero**. The result is an auditable exercise of trained neural attention, circuit isolation, and intervention measurement—not merely a fixed-weight formula.
+
+A direct local run with PyTorch 2.10.0+cpu (fixed seed 117, 220 steps, 512 synthetic training samples, 128 calibration samples, 256 holdout samples, 20% attention-projection magnitude pruning) observed 100% isolated-head classification accuracy on the intentionally easy generated task, and 49.21875% after controlled mean ablation. Isolated-head cross-entropy was approximately 0.00009764 and controlled-ablation cross-entropy approximately 4.71594572. A second direct CPU run before the final isolation correction produced exactly matching numeric output; the corrected intervention was executed and its observed output recorded. These are **internal synthetic observations only**, not an independent reproduction or a clinical/model-safety claim.
+
+The local runner emits an `npi.sparse-circuit.v1` metadata candidate with hashes of the local model weights and generated data, measured edge-weight magnitude proxies, and actual evaluation time. `scripts/research/validate-trained-sparse-transformer-report.mjs` accepts only a narrowly defined generated-data report and passes the candidate through the shared fail-closed Node validator, emitting a sanitized summary suitable for read-only native contracts. It rejects hidden inputs, inconsistent hashes/metrics, and any asserted production, clinical, independent-reproduction or licensing approval. The output **does not cryptographically attest** the run, the reviewer, or the rights status.
+
+Reproduction and checks:
+
+```sh
+python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+python scripts/research/tiny-sparse-transformer-experiment.py > /tmp/npi-tiny-attention.json
+node scripts/research/validate-trained-sparse-transformer-report.mjs < /tmp/npi-tiny-attention.json
+node --test scripts/test-intelligence-trained-sparse-transformer-report.mjs
+```
+
+A separate pinned GitHub Actions workflow `.github/workflows/intelligence-sparse-transformer-experiment.yml` is intended to retrain the generated model twice, compare reproducibility, and verify that the shared contract emits only unverified non-authorizing metadata; CI execution, macOS and Android compilation and real-device testing remain separate gates.
+
+**Important methodology limits:** The model is a one-block attention classifier trained on artificial vocabulary and a trivially learnable binary label, not an L0-trained weight-sparse language model, OpenAI's benchmark model, a validated complete mechanistic circuit, or a medicine knowledge model. Individual attention heads may be redundant; isolated-head ablation shows a change under an intervention, not ground-truth explanations for arbitrary real models. The graph's positive edge magnitudes are inspectable weight statistics, **not calibrated causal strengths**. No private information is accessed and there are no production model weights, customer APIs or signed mobile apps.
+
 ## Production gates (all outstanding)
 
 Source rights and model rights are independent release prerequisites: no schema validation, app build or successful ablation can grant either right. All experiments must remain within documented licences, tenant boundaries and human-reviewed purposes.

@@ -75,6 +75,17 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <div><dt>Safety boundary</dt><dd>Research review only</dd></div>
       </dl>
       <p>{novaMlSparseCircuitAssurance.releasePolicy}</p>
+      <div className={styles.contractItem} role="group" aria-labelledby="nova-ml-synthetic-research-heading">
+        <h3 id="nova-ml-synthetic-research-heading">{novaMlSparseCircuitAssurance.offlineExperiment.name}</h3>
+        <p>{novaMlSparseCircuitAssurance.offlineExperiment.description}</p>
+        <dl className={styles.facts}>
+          <div><dt>Sample</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.sample}</dd></div>
+          <div><dt>Isolated circuit</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.isolatedAccuracy}</dd></div>
+          <div><dt>Mean ablation</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.ablatedAccuracy}</dd></div>
+        </dl>
+        <p className={styles.helper}>{novaMlSparseCircuitAssurance.offlineExperiment.status}. {novaMlSparseCircuitAssurance.offlineExperiment.limitation}</p>
+      </div>
+
       <dl className={styles.contractGrid}>{novaMlSparseCircuitAssurance.methodGates.map((gate) =>
         <div key={gate.name} className={styles.contractItem}><dt>{gate.name}</dt><dd>{gate.detail}</dd></div>
       )}</dl>
