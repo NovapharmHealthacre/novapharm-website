@@ -43,6 +43,16 @@ test('redirect with accessible heading and main fallback also passes', () => {
   assert.equal(r.report.results[0].h1, 1);
   assert.equal(r.report.results[0].main, 1);
 });
+test('only the reviewed same-origin RTL bootstrap is allowed on a redirect', () => {
+  const allowed = redirect.replace('</head>', '<script src="/assets/js/rtl-localization.js"></script></head>');
+  assert.equal(verify(allowed).status, 0);
+  const unapproved = redirect.replace('</head>', '<script src="https://example.com/x.js"></script></head>');
+  const invalid = verify(unapproved);
+  assert.notEqual(invalid.status, 0);
+  assert.match(invalid.report.results[0].problems.join(' '), /unapproved scripts/);
+  const injected = redirect.replace('</head>', '<script>alert(1)</script></head>');
+  assert.notEqual(verify(injected).status, 0);
+});
 test('external redirect fails closed', () => {
   const r = verify(redirect.replace('0; url=/services/', '0; url=https://example.com/'));
   assert.notEqual(r.status, 0);
