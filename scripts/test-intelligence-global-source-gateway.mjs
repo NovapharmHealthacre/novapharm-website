@@ -229,3 +229,61 @@ test("an approved source receipt cannot return records if the grant expires or c
     assert.equal(ticks,2);
   }
 });
+
+
+test("source grants revoked or replaced during upstream fetch are denied before any evidence is returned", async () => {
+  const transitions = [
+    {revokedAt:"2026-11-17T16:30:00.000Z"},
+    {rightsStatus:"pending"},
+    {tenantId:"tenant2"},
+    {receiptId:"receipt-test-002"},
+    {licenseId:"lic-test-002"},
+    {rightsVersion:"rights-v2"},
+    {validUntil:"2026-11-17T17:45:00.000Z"}
+  ];
+  for (const changed of transitions) {
+    let authorizations = 0;
+    let reads = 0;
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit({
+        ...context, ...(++authorizations === 1 ? {} : changed)
+      }),
+      now: () => TEST_NOW,
+      transport: async () => {
+        reads++;
+        return new Response(JSON.stringify({
+          studies:[{protocolSection:{identificationModule:{
+            nctId:"NCT01234567",briefTitle:"Synthetic fixture"
+          }}}]
+        }),{headers:{"content-type":"application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /not approved|changed during evaluation/,
+      JSON.stringify(changed)
+    );
+    assert.equal(reads,1,"The original permit allowed the test-only transport");
+    assert.equal(authorizations,2,"Rights must be independently rechecked after fetch");
+  }
+});
+
+test("stable, revalidated source grant remains internal-only after a successful lookup", async () => {
+  let authorizations = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => {authorizations++;return permit(context);},
+    now: () => TEST_NOW,
+    transport: async () => new Response(JSON.stringify({
+      studies:[{protocolSection:{identificationModule:{
+        nctId:"NCT01234567",briefTitle:"Synthetic fixture"
+      }}}]
+    }),{headers:{"content-type":"application/json"}})
+  });
+  const result = await reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  });
+  assert.equal(authorizations,2);
+  assert.equal(result.canPublish,false);
+  assert.equal(result.clinicalDecisionReady,false);
+  assert.equal(result.rightsReceiptId,"receipt-test-001");
+});
