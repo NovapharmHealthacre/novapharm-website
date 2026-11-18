@@ -48,6 +48,10 @@ This review candidate deliberately **does not** install CLIP weights or publish 
 
 **Status reporting:** a green source contract does not prove a model, hosted API, native build, external data rights, regulated validation or live customer rollout.
 
+## Quantitative evaluation reporting (non-authoritative source candidate)
+
+The new `src/core/intelligence-multimodal-benchmark-metadata.mjs` accepts only anonymous IDs, two ground-truth categories (`match`, `non_match`), one of nine fixed perturbation conditions, ISO-style two-letter country labels and model output classes (`match`, `non_match`, `abstain`). It rejects free text, extra fields, malformed labels and missing/duplicate predictions. It computes false matches with two explicit denominators, decision coverage, abstention and correct decisions, broken down by country and perturbation class, with `null` when a denominator is zero. No original label, image, prompt or case ID is returned. **The input ground truth is caller supplied and unverified; these are research bookkeeping metrics, not model performance acceptance**. Independent blind adjudication, source rights, licensed image holdout and sign-off remain required in #825. There is no model call or production switch.
+
 ## Extended bibliography (22 entries supplied, 21 unique studies)
 
 The comprehensive paper-by-paper research-control mapping is in [multimodal-22-reference-engineering-matrix-20261118.md](./multimodal-22-reference-engineering-matrix-20261118.md). Items 15 and 22 repeat Crawford & Paglen (2019), so they produce **one** dataset-governance requirement, not two separate algorithms.
