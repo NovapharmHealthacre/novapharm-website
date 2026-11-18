@@ -47,6 +47,8 @@ export function reviewSignalsCsvText(table, text) {
   const metadata = signalsV3TableByName(table);
   const expected = [...metadata.dimensions, metadata.metric];
   let recordCount = 0;
+  // The published data grain is one unique time/grouping tuple per table.
+  const observedGrains = new Set();
   try {
     let sawHeader = false;
     for (const row of rows(text.replace(/^\uFEFF/, ""))) {
@@ -67,6 +69,9 @@ export function reviewSignalsCsvText(table, text) {
       }
       const result = assessSignalsAggregateRow(table, record);
       if (result.status !== "review-only") return deny("unapproved-record");
+      const grain = JSON.stringify(metadata.dimensions.map(dimension => record[dimension]));
+      if (observedGrains.has(grain)) return deny("duplicate-grain");
+      observedGrains.add(grain);
     }
     if (!sawHeader || recordCount === 0) return deny("empty-csv");
   } catch (error) {
