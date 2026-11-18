@@ -16,6 +16,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
   const [review, setReview] = useState<readonly string[]>([]);
   if (!module) return null;
   const complete = gates.every((gate) => review.includes(gate.id));
+  const isModelMicroscope = kind === "nova-model-microscope";
   const guidance = novaMlExperienceGuidance[kind];
   const designRows = [
     ["Role", guidance.role],
@@ -41,12 +42,18 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <p className={styles.lead}>{module.summary}</p>
       <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. Native execution requires a separately approved Apple application and deployment.</p>
       <dl className={styles.facts}>
-        <div><dt>Apple integration</dt><dd>{module.appleTechnology}</dd></div>
+        <div><dt>{isModelMicroscope ? "Research methodology" : "Apple integration"}</dt><dd>{module.appleTechnology}</dd></div>
         <div><dt>Runtime</dt><dd>{module.platform}</dd></div>
         <div><dt>Decision authority</dt><dd>Human review only</dd></div>
       </dl>
     </header>
 
+    {isModelMicroscope ? <section className={styles.section} aria-labelledby="model-microscope-registry">
+      <h2 id="model-microscope-registry">Model inspection registry</h2>
+      <p className={styles.boundary} role="status"><strong>No approved inspection artifacts available.</strong> This interface does not load model weights, compute neuron activations, generate feature images, retrieve OpenAI model internals or call any outside service. A verified, protected backend and approved non-patient artifacts are required before an inspector can display observations.</p>
+      <p className={styles.helper}>Planned research selection: model and version, network layer, feature identifier, evaluation dataset reference, visualisation provenance and falsifiable feature hypothesis. Inspection results must remain non-publishable and cannot justify medical or commercial decisions.</p>
+      <p className={styles.reference}>Research basis: <a href="https://openai.com/index/microscope/">OpenAI Microscope</a>; <a href="https://distill.pub/2017/feature-visualization/">Feature Visualization</a>; <a href="https://distill.pub/2020/circuits/zoom-in/">Introduction to Circuits</a>.</p>
+    </section> : null}
     <section className={styles.section} aria-labelledby="nova-ml-capabilities">
       <h2 id="nova-ml-capabilities">Planned capabilities</h2>
       <p className={styles.helper}>These are product contracts, not currently available prediction or training operations.</p>
