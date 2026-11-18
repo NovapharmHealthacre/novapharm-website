@@ -434,4 +434,4 @@ function createStyles(palette: MobilePalette) {
 
 const lightStyles = createStyles(mobileLightPalette);
 const darkStyles = createStyles(mobileDarkPalette);
-const ThemeContext = createContext({ styles: lightStyles, palette: mobileLightPalette });
+const ThemeContext = createContext<{ styles: ReturnType<typeof createStyles>; palette: MobilePalette }>({ styles: lightStyles, palette: mobileLightPalette });
