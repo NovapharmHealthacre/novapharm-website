@@ -241,3 +241,29 @@ test("country release-ledger is private-only and cannot dispatch the corporate A
     assert.match(source, /found_ml=true/);
   }
 });
+
+
+test("new secondary-source contracts remain private-only and never trigger unrelated AWS publication", () => {
+  const paths = [
+  ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+  "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+  "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+  "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-global-secondary-source-gateway.mjs",
+  "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, file + " must classify private research source paths");
+    const privateRules = new Set(classifier.split("|"));
+    for (const path of paths) {
+      assert.ok(privateRules.has(path), file + " would trigger unrelated public release for " + path);
+    }
+    for (const genuinePublicPath of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(privateRules.has(genuinePublicPath), false);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
