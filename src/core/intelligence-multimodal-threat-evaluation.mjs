@@ -51,7 +51,11 @@ export const multimodalSyntheticProbes = Object.freeze([
     overrides:{}, expectedStatus:"human_review_required", signal:null }),
   Object.freeze({ id:"no_candidates", theme:"interpretability", paperNumbers:[3,5,7,8,9,10,11,12,19],
     overrides:{visionMedicineName:"",imageTextMedicineName:"",observedProductCode:""}, expectedStatus:"insufficient_evidence", signal:"candidate_evidence_missing" })
-]);
+].map((probe) => Object.freeze({
+  ...probe,
+  paperNumbers: Object.freeze(probe.paperNumbers),
+  overrides: Object.freeze(probe.overrides)
+})));
 
 /**
  * Safe offline regression signals only: all probes use fake names and return
