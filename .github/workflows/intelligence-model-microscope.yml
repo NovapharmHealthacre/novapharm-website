@@ -21,6 +21,7 @@ on:
       - "scripts/test-nova-ml-private-ingress.mjs"
       - "native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs"
       - "native/novapharm-intelligence-mobile/App.tsx"
+      - "native/novapharm-intelligence-mobile/metro.config.cjs"
       - "docs/intelligence/model-microscope-research-to-product-20261118.md"
       - ".github/workflows/intelligence-model-microscope.yml"
   workflow_dispatch:
