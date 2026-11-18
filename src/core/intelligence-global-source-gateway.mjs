@@ -201,11 +201,15 @@ export function normaliseGovSourceResult(plan, data) {
       provenanceDomain: "PubChem CID discovery"
     }));
   } else if (plan.sourceId === "pl-nfz-drug-program") {
-    if (!Array.isArray(data?.data)) throw new Error("Unexpected source schema");
-    // NFZ uses JSON API response envelopes and may nest a grouped data array.
-    const groups = data.data.flatMap((entry) =>
-      Array.isArray(entry?.data) ? entry.data : [entry]
-    );
+    // Official NFZ response is { meta, links, data: { sums, data: [...] } }.
+    // Flat arrays and guessed nested shapes are not the documented contract.
+    if (!data || typeof data !== "object" ||
+        Array.isArray(data) || Array.isArray(data.errors) ||
+        !data.data || Array.isArray(data.data) ||
+        !Array.isArray(data.data.data)) {
+      throw new Error("Unexpected source schema");
+    }
+    const groups = data.data.data;
     rows = groups.map((entry) => {
       const value = entry?.attributes && typeof entry.attributes === "object" ? entry.attributes : entry;
       return {
