@@ -33,7 +33,23 @@
     "totalOriginalWorkbookLinks": 207,
     "additionalOwnerRequestedMapkitLinks": 3,
     "totalTrackedLinkTargets": 210,
-    "workbookSourceReview": "Workbook direct-article-anchor and supporting-resource rows read exactly from the two named workbook tabs. Their URLs and descriptions are user-supplied, not proof that anchor sections exist on current live Apple pages."
+    "workbookSourceReview": "Workbook direct-article-anchor and supporting-resource rows read exactly from the two named workbook tabs. Their URLs and descriptions are user-supplied, not proof that anchor sections exist on current live Apple pages.",
+    "workbookTenTabsRead": true,
+    "workbookSixSectionSheetRowsCrossChecked": 172,
+    "workbookAllModulesRowsCrossChecked": 172,
+    "workbookVsCsvFieldMismatches": 0,
+    "workbookCrossCheckFields": [
+      "Section",
+      "Subsection",
+      "Topic",
+      "Type",
+      "Description",
+      "Priority",
+      "Platforms",
+      "URL",
+      "Markdown"
+    ],
+    "workbookFullReviewCaveat": "All 10 workbook parsed sheets read and both 172-row tables and 6 section views fieldwise matched to owner CSV. This is an inventory/metadata audit, not official full-text HIG review, native device acceptance or audit of archive contents."
   },
   "topics": [
     {
