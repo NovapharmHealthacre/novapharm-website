@@ -1,11 +1,8 @@
 // Local, non-executing OpenAI Signals CSV preview. No network, DB, user log or file write.
 import { assessSignalsAggregateRow, signalsApprovedTables } from "./intelligence-openai-signals.mjs";
+import { signalsV3TableByName } from "./openai-signals-v3-table-registry.mjs";
 
-const TABLE_COLUMNS = Object.freeze({
-  "share_of_messages_by_topic_country_month.csv": ["month", "country", "topic", "share_of_messages"],
-  "share_of_messages_by_country_quarter_rank.csv": ["quarter", "country", "rank"],
-  "share_of_messages_by_work_related_ask_do_express_month.csv": ["month", "work_related", "ask_do_express", "share_of_messages"]
-});
+// Preview headers are sourced from the verified 24-table registry; no duplicate schema definitions.
 const MAX_CSV_BYTES = 8 * 1024 * 1024;
 const MAX_RECORDS = 100000;
 const MAX_FIELD_BYTES = 256;
@@ -47,7 +44,8 @@ export function reviewSignalsCsvText(table, text) {
   if (!signalsApprovedTables.includes(table)) return deny("unapproved-table");
   if (typeof text !== "string") return deny("invalid-csv");
   if (text.length > MAX_CSV_BYTES || text.includes("\0")) return deny("unsafe-csv");
-  const expected = TABLE_COLUMNS[table];
+  const metadata = signalsV3TableByName(table);
+  const expected = [...metadata.dimensions, metadata.metric];
   let recordCount = 0;
   try {
     let sawHeader = false;
