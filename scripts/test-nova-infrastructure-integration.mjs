@@ -37,3 +37,29 @@ test("the implementation does not assert production deployment or require creden
   assert.match(doc, /No new billable AWS\/Azure resources/);
   assert.doesNotMatch(worker, /process\.env|fetch\(|http|child_process|exec\(/);
 });
+
+test("standing Intelligence governance registers bind future ML changes to fail-closed owner constraints", () => {
+  const constraints = JSON.parse(source("config/intelligence/owner-production-constraints.json"));
+  const systemCard = source("docs/ai-system-card.md");
+  const riskRegister = source("docs/ai-risk-register.md");
+  const designStandard = source("docs/architecture/deep-learning-infrastructure-20261118.md");
+  assert.equal(constraints.productionSignoff, "not_granted");
+  assert.equal(constraints.initialInfrastructureBudget.monthlyCapGbp, 0);
+  assert.equal(constraints.initialInfrastructureBudget.newChargeableResourceProvisioning, false);
+  assert.equal(constraints.productionPermissions.activatePublicCustomerAccess, false);
+  assert.match(systemCard, /non-executing, review-only candidate/);
+  assert.match(systemCard, /deep-learning-infrastructure-20261118\.md/);
+  assert.match(riskRegister, /Unexpected GPU\/CPU spend/);
+  assert.match(riskRegister, /Cross-border transfer through region failover/);
+  assert.match(riskRegister, /three source-only adapters/i);
+  assert.match(designStandard, /The server is authoritative/);
+  for (const workflow of [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml"
+  ]) {
+    const text = source(workflow);
+    for (const path of ["docs/ai-system-card.md", "docs/ai-risk-register.md", "src/ai/compute-admission.mjs"]) {
+      assert.ok(text.includes(path), "Missing private-only guard: " + workflow + " " + path);
+    }
+  }
+});
