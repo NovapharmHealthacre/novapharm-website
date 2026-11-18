@@ -12,7 +12,7 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
 
-The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, an offline **Multimodal Review** tab using the shared web/mobile evidence-conflict contract, a shared **Inspect** tab describing the five-stage non-operational Model Microscope research lifecycle, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
+The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, an offline **Multimodal Review** tab and a separate **Research** tab covering sparse circuits and Nova ML alignment methods, plus an **Inspect** tab for the explicitly non-operational Model Microscope using the shared web/mobile evidence-conflict contract, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
 ## Sparse-circuit research preview
 
@@ -41,6 +41,11 @@ Twelve deterministic synthetic probes provide CI regression against misleading t
 
 No camera permission, CLIP/ResNet model, OCR, native ML inference, external call, training data, production authentication or patient-data processing is enabled in this source preview.
 
+## Nova ML research preview — 18 November 2026
+
+The **Research** tab reads the existing protected web catalogue from `apps/portal/data/nova-ml-modules.ts` and presents five explicitly unverified research methods: L₀ hard-concrete sparsity, reward-model proxy overoptimisation, critique assistance, instruction conformance and synthetic long-horizon simulation. It also lists the four native-model workspaces as **not enabled**.
+
+No model inference, on-device PyTorch/Core ML/LiteRT, patient data, auth, server API, private evidence, source licences or operational action is performed. No synthetic score is presented as live, and the view does not establish scientific, clinical or commercial validity. Source-only math and governance tests live in PRs #823 and #826; real authorised native inference needs a separately signed and tested app, registered model, data rights and production approval. Run `npm run test:contracts` and the isolated iOS/Android bundle preflight before considering an app build. This is not an app-store release.
 
 ## Model Microscope research preview
 
