@@ -40,3 +40,9 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 ## Human accountability
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
+
+## Model interpretability extension (source-only candidate, 18 November 2026)
+
+The proposed `Nova Model Microscope` extends the **protected** Intelligence research experience, not public Search & Ask. It reuses the verified board route family and introduces five shared web/iOS/Android **planning** stages. It has no approved inspectable model, real feature/activation service, admitted visualizations, signed mobile package or deployed API. A future protected Node adapter must fail closed for any unverified tenant/model/source grant and must obtain separate independent rights/provenance and non-patient review before projecting bounded metadata. Any generated feature hypothesis is research-only, non-publishable and cannot ground a clinical, regulatory, safety or commercial decision.
+
+The canonical 22 pharmaceutical evidence workspaces remain source-first and do not acquire ML inspection capabilities by virtue of this prototype. Public and protected AI system cards should remain separately versioned before any production activation.

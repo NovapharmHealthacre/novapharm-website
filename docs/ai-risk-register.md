@@ -18,6 +18,8 @@
 | Accessibility failure | Search dialog and navigator | Native modal dialog, labelled controls, status region, keyboard controls, no simulated typing | Browser and assistive-technology variation | Manual keyboard and screen-reader acceptance |
 | False forecasting or traceability claim | Public content | Roadmap-only language and claims scanner | Marketing copy may regress later | Automated claim gate and evidence owner |
 | Ollama exposure | Internal development | Loopback HTTP host allowlist and production rejection | Local machine compromise remains possible | Local developer security and model review |
+| False model-feature explanations | Nova Model Microscope research candidate | Explicit hypothesis-only labels, five-stage model review, non-decision projection | Visualizations and saliency can mislead; no inspectable models admitted | Independent ML Research and Quality reviewers |
+| Inspection artifact leakage or rights bypass | Protected web, future iOS/Android | Independent scoped authorizer and evidence-verifier contract; no patient inputs or raw tensors in response | The callbacks are not a deployed security service; rights, signatures, redaction and tenant sessions require independent proof | Information Security, Privacy and data owner |
 
 ## Stop conditions
 

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://novapharmhealthcare.com/schemas/model-microscope-inspection-v1.schema.json",
+  "$id": "urn:novapharm:schemas:model-microscope-inspection-v1",
   "title": "Nova Model Microscope reviewed candidate response",
   "description": "Non-publishable read-only candidate metadata. Not permission, model inference or source-evidence admission.",
   "type": "object",
