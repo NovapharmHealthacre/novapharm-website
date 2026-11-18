@@ -25,7 +25,8 @@ let package = Package(
                 "NovaLanguageIntelligence.swift",
                 "NovaSpeechIntelligence.swift",
                 "NovaResearchAppIntent.swift",
-                "NovaSparseCircuitReader.swift"
+                "NovaSparseCircuitReader.swift",
+                "NovaSparseCircuitResearchView.swift"
             ]
         ),
         .testTarget(
