@@ -9,6 +9,31 @@ const readJSON = name=>JSON.parse(readFileSync(new URL("../docs/intelligence/"+n
 const sourceRegistry=readJSON("global-pharma-sources-20261117.json");
 const proposal=readJSON("country-101-scope-proposal-20261118.json");
 const nationalLedger=buildProposedCountry101Ledger(sourceRegistry,proposal);
+const research=readJSON("country-101-new-24-publisher-research-20261118.json");
+if(research.contract!=="novapharm.intelligence.24-national-publisher-research-leads.v1" ||
+  research.leads?.length!==24 || research.commercialAndAiReuseApproved!==false ||
+  research.apiConnectionsEnabled!==false || research.medicineRecordsIncluded!==false ||
+  research.customerPublishedCountries!==0)throw new Error("Unexpected research-lead admission claim");
+const researchByCountry=new Map();
+for(const lead of research.leads){
+  if(!lead || typeof lead!=="object" || !/^[A-Z]{2}$/.test(lead.iso2) ||
+    researchByCountry.has(lead.iso2) || typeof lead.publisherName!=="string" ||
+    lead.publisherName.trim().length<3 || !lead.referenceUrl ||
+    typeof lead.leadType!=="string" || typeof lead.caveat!=="string" ||
+    lead.caveat.trim().length<20 || lead.apiEndpoint!==null ||
+    lead.apiValidated!==false || lead.rightsStatus!=="not-reviewed" ||
+    lead.dataAdmission!=="not-admitted" || lead.customerLive!==false ||
+    lead.sourceDiscovery!=="official-reference-identified-not-integrated"){
+    throw new Error("Unapproved or malformed research lead");
+  }
+  const url=new URL(lead.referenceUrl);
+  if(url.protocol!=="https:" || url.username || url.password || url.hash || url.port ||
+    !/^[a-z0-9.-]+$/i.test(url.hostname) || url.hostname==="localhost"){
+    throw new Error("Research lead reference URL not approved for offline metadata");
+  }
+  researchByCountry.set(lead.iso2,lead);
+}
+if(researchByCountry.size!==24)throw new Error("Not all 24 research jurisdictions have a publisher lead");
 const sourcesByCountry=new Map();
 for(const source of sourceRegistry.sources){
   const items=sourcesByCountry.get(source.country)||[];
@@ -18,6 +43,12 @@ for(const source of sourceRegistry.sources){
 const entries=nationalLedger.countryRows.map(row=>{
   const sources=sourcesByCountry.get(row.country)||[];
   if(sources.length!==row.sourceCandidateCount)throw new Error("National source count mismatch: "+row.country);
+  const isNew=row.scopeOrigin==="PROPOSED_RESEARCH_COUNTRY";
+  const lead=researchByCountry.get(row.countryCode)||null;
+  if((isNew&&!lead)||(!isNew&&lead)||
+    (lead&&(lead.country!==row.country||lead.region!==row.region||lead.iso2!==row.countryCode))) {
+    throw new Error("Research lead identity/scope does not match 101-country ledger: "+row.country);
+  }
   const candidateSources=sources.map(s=>{
     if(s.rightsStatus!=="not-reviewed"||s.integrationStatus!=="candidate-only"||
       s.activeAdapterId!==null||s.dataAdmission!=="not-admitted"||
@@ -42,6 +73,14 @@ const entries=nationalLedger.countryRows.map(row=>{
     scopeOrigin:row.scopeOrigin,
     candidateSourceCount:row.sourceCandidateCount,
     candidateSources,
+    publisherResearchLead:lead ? {
+      publisherName:lead.publisherName,
+      referenceUrl:lead.referenceUrl,
+      leadType:lead.leadType,
+      caveat:lead.caveat,
+      status:"publisher-reference-only-not-integrated",
+      rightsStatus:"not-reviewed"
+    } : null,
     datasetAdmission:"not-admitted",
     commercialAndAiReuseApproved:false,
     customerLive:false,
