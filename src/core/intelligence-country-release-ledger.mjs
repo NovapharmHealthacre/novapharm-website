@@ -5,6 +5,8 @@
  * ingested medicine records, clinical validation or live customer access.
  */
 import { sourcePlans } from "./intelligence-global-source-gateway.mjs";
+import { secondarySourcePlans } from "./intelligence-global-secondary-source-gateway.mjs";
+import { AU_PBS_SOURCE_ID, createPbsScheduleCandidateEvaluator } from "./intelligence-au-pbs-schedule-quarantine.mjs";
 import { COUNTRY_ISO2, requireCountryOrGroupCode } from "./intelligence-country-iso-identifiers.mjs";
 import { assertExactCountrySourceCoverage } from "./intelligence-country-source-baseline.mjs";
 
@@ -31,7 +33,10 @@ const KNOWN_SOURCE_BINDINGS = Object.freeze({
   "europe-poland-nfz-drug-program-statistics": "pl-nfz-drug-program",
   "north-america-united-states-fda-openfda": "us-fda-drugsfda",
   "north-america-canada-health-canada-drug-product-database": "ca-health-canada-dpd",
-  "europe-spain-aemps-cima": "es-aemps-cima"
+  "europe-spain-aemps-cima": "es-aemps-cima",
+  "asia-pacific-singapore-hsa-data-gov-sg": "sg-hsa-products",
+  "europe-united-kingdom-nhsbsa-english-prescribing-dataset": "gb-nhsbsa-dataset-catalogue",
+  "oceania-australia-pbs": AU_PBS_SOURCE_ID
 });
 const GATES = Object.freeze([
   "AUTHORITATIVE_PUBLISHER_AND_ENDPOINT_VERIFIED",
@@ -143,7 +148,14 @@ export function buildCountryReleaseLedger(registry) {
       ? KNOWN_SOURCE_BINDINGS[input.candidateKey] : null;
     // Trust only the adapter catalogue imported from committed source code;
     // callers cannot inject fake release plans or claim a PR was merged.
-    const merged = Boolean(expectedAdapter && own(sourcePlans, expectedAdapter));
+    // Count independently merged bounded API/candidate-catalogue code and PBS
+    // offline schedule parsers. Never treat any of them as a real data grant.
+    const merged = Boolean(expectedAdapter && (
+      own(sourcePlans, expectedAdapter) ||
+      own(secondarySourcePlans, expectedAdapter) ||
+      (expectedAdapter === AU_PBS_SOURCE_ID &&
+       typeof createPbsScheduleCandidateEvaluator === "function")
+    ));
     const route = sourceRoute(input.mode);
     const extra = [];
     // Hybrid interfaces are not mutually exclusive: an API/Portal source
