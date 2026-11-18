@@ -31,7 +31,7 @@ test("query bounds and returned source validation are enforced", async () => {
   const fetchImpl = async (_url, init) => {
     assert.equal(init.method, "POST");
     assert.equal(init.headers.Authorization, `Bearer ${configured.NPI_CLIP_SERVICE_TOKEN}`);
-    return { ok: true, json: async () => ({
+    return { ok: true, text: async () => JSON.stringify({
       contract: "novapharm.intelligence.visual-search.v1",
       results: [{ assetId: "pack-01", title: "Approved public carton", rightsReference: "rights:1", sourceUrl: "https://novapharmhealthcare.com/products/" }]
     }) };
@@ -43,7 +43,7 @@ test("query bounds and returned source validation are enforced", async () => {
   assert.equal("confidence" in output.results[0], false);
   await assert.rejects(searchApprovedVisualCatalogue({ query: "x" }, configured, fetchImpl), /3 to 240/);
   await assert.rejects(searchApprovedVisualCatalogue({ query: "approved", limit: 99 }, configured, fetchImpl), /Limit/);
-  await assert.rejects(searchApprovedVisualCatalogue({ query: "approved" }, configured, async () => ({ ok: true, json: async () => ({
+  await assert.rejects(searchApprovedVisualCatalogue({ query: "approved" }, configured, async () => ({ ok: true, text: async () => JSON.stringify({
     contract: "novapharm.intelligence.visual-search.v1",
     results: [{ assetId: "p", title: "Unsafe", rightsReference: "r", sourceUrl: "http://localhost/image" }]
   }) })), /not enabled|unavailable/);
@@ -95,7 +95,7 @@ test("upstream cannot inject duplicate images, credentialed URLs, fragments or f
   ]) {
     await assert.rejects(searchApprovedVisualCatalogue({ query: "public carton", limit: 5 }, configured, async () => ({
       ok: true,
-      json: async () => ({ contract: "novapharm.intelligence.visual-search.v1", results: items })
+      text: async () => JSON.stringify({ contract: "novapharm.intelligence.visual-search.v1", results: items })
     })), { statusCode: 503 });
   }
 });
@@ -127,4 +127,18 @@ test("shared versioned CLIP contract is inherited across web, iOS, Android and g
   assert.ok(read("services/clip/rights.py").includes("rightsExpiryDate"));
   assert.ok(read("services/clip/serve.py").includes("valid_expiry"));
   assert.ok(read("services/clip/build_index.py").includes("validate_public_asset"));
+});
+
+test("private model response must be below 32 KB and valid JSON", async () => {
+  await assert.rejects(searchApprovedVisualCatalogue({ query: "approved artwork" }, configured, async () => ({
+    ok: true, headers: { get: () => "40000" }, text: async () => {
+      throw new Error("Large responses must be rejected before body read");
+    }
+  })), { statusCode: 503 });
+  await assert.rejects(searchApprovedVisualCatalogue({ query: "approved artwork" }, configured, async () => ({
+    ok: true, headers: { get: () => null }, text: async () => "x".repeat(40_000)
+  })), { statusCode: 503 });
+  await assert.rejects(searchApprovedVisualCatalogue({ query: "approved artwork" }, configured, async () => ({
+    ok: true, text: async () => "not json"
+  })), { statusCode: 503 });
 });
