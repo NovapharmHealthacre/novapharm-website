@@ -20,8 +20,10 @@ export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, dom
   if (!permit || typeof permit !== "object" || Array.isArray(permit)) {
     throw new Error("Source rights are not approved");
   }
-  const issued = Date.parse(permit.issuedAt);
-  const expires = Date.parse(permit.validUntil);
+  // Validate types before Date.parse: even a Symbol or object supplied by a
+  // malformed authority adapter must fail closed with the same denial.
+  const issued = typeof permit.issuedAt === "string" ? Date.parse(permit.issuedAt) : NaN;
+  const expires = typeof permit.validUntil === "string" ? Date.parse(permit.validUntil) : NaN;
   if (permit.decision !== "approved" ||
     permit.rightsStatus !== "approved" ||
     permit.sourceId !== sourceId ||

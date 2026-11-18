@@ -235,7 +235,10 @@ test("invalid trusted clocks and noncanonical permit timestamps reject before an
     { issuedAt: "2026-11-17T16:00:00+00:00" },
     { validUntil: "2026-11-17T18:00:00+00:00" },
     { issuedAt: "2026-11-31T16:00:00.000Z" },
-    { issuedAt: 1234 }
+    { issuedAt: 1234 },
+    { issuedAt: Symbol("bad-identity-date") },
+    { validUntil: Symbol("bad-expiration-date") },
+    { validUntil: { toString: () => { throw Error("untrusted coercion"); } } }
   ]) {
     const reader = createGovSourceReader({
       authorize: async context => permit({ ...context, ...changes }),
