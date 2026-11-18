@@ -3,6 +3,8 @@ export interface PublicSecurityPolicyInput {
   readonly secureTransport: boolean;
   readonly indexable: boolean;
   readonly connectSources?: readonly string[];
+  /** Enabled only on a token-configured, protected geography route. */
+  readonly mapKitJs?: boolean;
 }
 
 export interface PublicSecurityPolicy {
@@ -19,17 +21,18 @@ function safeSource(value: string): string {
 
 export function buildPublicSecurityPolicy(input: PublicSecurityPolicyInput): PublicSecurityPolicy {
   if (!/^[A-Za-z0-9+/=]{20,}$/.test(input.nonce)) throw new Error("CSP nonce must be cryptographically strong base64");
-  const connectSources = ["'self'", ...(input.connectSources ?? []).map(safeSource)];
+  const connectSources = ["'self'", ...(input.connectSources ?? []).map(safeSource),
+    ...(input.mapKitJs ? ["https://*.apple-mapkit.com"] : [])];
   const directives = [
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self' mailto:",
-    `script-src 'self' 'nonce-${input.nonce}' 'strict-dynamic'`,
+    `script-src 'self' 'nonce-${input.nonce}' 'strict-dynamic'${input.mapKitJs ? " 'wasm-unsafe-eval' https://cdn.apple-mapkit.com" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self'",
+    `img-src 'self' data: blob:${input.mapKitJs ? " https://*.apple-mapkit.com https://*.mzstatic.com" : ""}`,
+    `font-src 'self'${input.mapKitJs ? " https://*.apple-mapkit.com" : ""}`,
     `connect-src ${connectSources.join(" ")}`,
     "media-src 'self'",
     "worker-src 'self' blob:",
