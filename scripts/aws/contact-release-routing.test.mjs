@@ -277,7 +277,7 @@ test("inherited 2026-11-18 sparse-circuit research files stay private-only after
       "scripts/test-intelligence-trained-sparse-transformer-report.mjs",
       "src/ai/model-registry.mjs",
       "src/core/ai/model-registry.mjs",
-      "src/core/intelligence-sparse-circuit-assurance.mjs)"
+      "src/core/intelligence-sparse-circuit-assurance.mjs"
   ];
   for (const name of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
     const workflow = get(name);
