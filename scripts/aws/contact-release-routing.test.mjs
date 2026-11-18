@@ -267,3 +267,30 @@ test("new secondary-source contracts remain private-only and never trigger unrel
     assert.match(source, /found_ml=true/);
   }
 });
+
+
+test("Bash publisher classifiers close only after every private source path; no dangling case alternation", () => {
+  const required = [
+    ".github/workflows/intelligence-country-release-gates.yml",
+    "src/core/intelligence-country-release-ledger.mjs",
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const text = get(file);
+    const classifier = text.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(classifier, file + " missing case classifier");
+    assert.ok(classifier.endsWith(")"), file + " Bash pattern must close at end of case arm");
+    assert.equal(classifier.indexOf(")"), classifier.length - 1,
+      file + " cannot append a private source after Bash pattern closure");
+    const rules = new Set(classifier.slice(0, -1).split("|"));
+    for (const path of required) assert.ok(rules.has(path), file + " lacks private source rule: " + path);
+    for (const publicPath of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(rules.has(publicPath), false, file + " must not suppress genuine public release");
+    }
+  }
+});
