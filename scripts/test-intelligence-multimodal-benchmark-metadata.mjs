@@ -31,6 +31,13 @@ test("calculates error denominators with false matches and abstentions separatel
   assert.equal(o.total.decisionCoverage,0.75);
   assert.deepEqual(o.byScenario.map(x=>x.key),["clean","low-light","typographic-overlay"]);
   assert.deepEqual(o.byCountry.map(x=>x.key),["GB","IN"]);
+  assert.equal(o.plannedScenarioCount,9);
+  assert.equal(o.allPlannedScenariosRepresented,false);
+  assert.deepEqual(o.unmeasuredScenarios,[
+    "adversarial-patch","blur","distribution-shift",
+    "lookalike-pack","occlusion","translation"
+  ]);
+  assert.ok(Object.isFrozen(o.unmeasuredScenarios));
   assert.equal(o.byScenario.find(x=>x.key==="typographic-overlay").counts.falseMatch,1);
   assert.equal(o.byCountry.find(x=>x.key==="IN").counts.abstainOnMatch,1);
 });
@@ -89,4 +96,21 @@ test("order-independent aggregate output excludes case identifiers and raw predi
   assert.ok(!serial.includes("case_a001"));
   assert.ok(!serial.includes("case_d004"));
   assert.doesNotMatch(serial,/"productionAccepted":true|"canPublish":true/u);
+});
+
+test("even perfect reported results cannot confer rights, approval or cover untested attacks",()=>{
+  const allCorrect = [
+    {caseId:"case_a001",predicted:"match"},
+    {caseId:"case_b002",predicted:"non_match"},
+    {caseId:"case_c003",predicted:"match"},
+    {caseId:"case_d004",predicted:"non_match"}
+  ];
+  const result = evaluate({predictions:allCorrect});
+  assert.equal(result.total.correctDecisionPerAllCases,1);
+  assert.equal(result.total.falseMatchPerNonMatchingCase,0);
+  assert.equal(result.allPlannedScenariosRepresented,false);
+  assert.equal(result.unmeasuredScenarios.includes("adversarial-patch"),true);
+  for(const key of ["modelExecuted","independentlyVerified","licensedSourceRightsVerified","tenantAuthorised","productionAccepted","canPublish","clinicalUseAllowed","decisionReady"]){
+    assert.equal(result[key],false,key);
+  }
 });
