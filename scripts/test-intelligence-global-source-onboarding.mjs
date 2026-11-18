@@ -68,3 +68,25 @@ test("registry tampering and fake rights approval cannot self-create an API conn
   assert.throws(()=>buildGlobalSourceOnboardingCoverage(duplicate),/duplicate candidate/);
   assert.throws(()=>assertAllCountriesLive(coverage),/cannot be asserted/);
 });
+
+test("unreviewed source registry rejects private and malformed HTTPS hosts", () => {
+  const unsafeUrls = [
+    "https://127.0.0.1/admin",
+    "https://0177.0.0.1/metadata",
+    "https://[::1]/private",
+    "https://localhost/preview",
+    "https://dataset.local/private",
+    "https://service.internal/private",
+    "https://dataset.example.test/data",
+    "https://official.gov:8443/preview",
+    "https://-bad.gov/data",
+    "https://bad-.gov/data",
+    "https://gov..example/data"
+  ];
+  for (const url of unsafeUrls) {
+    const tampered = registry.map((entry, i) => i === 0 ? { ...entry, url } : entry);
+    assert.throws(() => buildGlobalSourceOnboardingCoverage(tampered),
+      /untrusted source reference (host|URL)/, url);
+  }
+  assert.equal(buildGlobalSourceOnboardingCoverage(registry).totalSourceCandidates, 101);
+});
