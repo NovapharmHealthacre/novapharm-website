@@ -46,7 +46,7 @@ jobs:
           node --test scripts/test-intelligence-global-canonical-candidates.mjs
           node --test scripts/test-intelligence-global-source-registry.mjs
           node --test scripts/test-intelligence-global-source-aliases.mjs
-          node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
+          node --test native/novapharm-intelligence-mobile/tests/*.test.mjs
 
   mobile-bundle-preflight:
     name: iOS/Android candidate typecheck and offline bundle preflight
