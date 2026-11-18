@@ -9,7 +9,12 @@
       "name": "NovaPharm public evidence search",
       "version": "1.0.0",
       "licence": "NovaPharm-owned",
-      "paths": ["assets/js/ai-search.js", "src/ai/search-controller.mjs", "src/ai/policy-engine.mjs", "src/ai/citation-resolver.mjs"]
+      "paths": [
+        "assets/js/ai-search.js",
+        "src/ai/search-controller.mjs",
+        "src/ai/policy-engine.mjs",
+        "src/ai/citation-resolver.mjs"
+      ]
     },
     {
       "type": "model",
@@ -46,7 +51,11 @@
       "name": "NovaPharm protected AI gateway",
       "version": "1.0.0",
       "licence": "NovaPharm-owned",
-      "paths": ["src/core/ai/ai-gateway.mjs", "src/core/ai/use-case-registry.mjs", "src/core/ai/policy-service.mjs"]
+      "paths": [
+        "src/core/ai/ai-gateway.mjs",
+        "src/core/ai/use-case-registry.mjs",
+        "src/core/ai/policy-service.mjs"
+      ]
     },
     {
       "type": "optional-development-integration",
@@ -56,6 +65,22 @@
       "path": "src/core/ai/provider-ollama.mjs",
       "bundledModel": false,
       "productionEnabled": false
+    },
+    {
+      "type": "source-only-research",
+      "name": "Nova L0 hard-concrete research source",
+      "version": "0.1.0-research",
+      "licence": "NovaPharm-owned adapter source; referenced paper is a method, not a model licence",
+      "paths": [
+        "tooling/python/nova_l0_sparsity.py",
+        "packages/medicines-intelligence/src/l0-sparsity.ts",
+        "native/novapharm-intelligence-apple/NovaL0ResearchMath.swift",
+        "native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt"
+      ],
+      "bundledModel": false,
+      "productionEnabled": false,
+      "optionalResearchDependency": "PyTorch (version and licence to be pinned/reviewed in an independently approved training environment)",
+      "noWeightsOrCustomerData": true
     }
   ],
   "thirdPartyRuntimeAiLibraries": [],
