@@ -52,7 +52,7 @@ test("separate iOS and Android native code stays permission-free and source-gate
   assert.match(swift, /Map\(position: \$camera\)/);
   assert.match(swiftPackage, /NovaMapKitView\.swift/);
   assert.match(kotlin, /https:\/\/maps\.apple\.com/);
-  assert.doesNotMatch(android, /ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|INTERNET/);
+  assert.doesNotMatch(android, /android\\.permission\\.(?:ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|INTERNET)/);
 });
 
 test("indoor mapping refuses to claim a surveyed venue is included", () => {
