@@ -46,6 +46,10 @@ class RightsTests(unittest.TestCase):
             {"sourceUrl": "https://attacker@novapharmhealthcare.com/"},
             {"sourceUrl": "https://novapharmhealthcare.com/#fragment"},
             {"sourceUrl": "https://novapharmhealthcare.com:8443/"},
+            {"sourceUrl": "https://127.0.0.1/public/"},
+            {"sourceUrl": "https://localhost/public/"},
+            {"sourceUrl": "https://docs.internal/public/"},
+            {"sourceUrl": "https://[::1]/public/"},
         ):
             with self.subTest(change=change):
                 with self.assertRaises(ValueError):
