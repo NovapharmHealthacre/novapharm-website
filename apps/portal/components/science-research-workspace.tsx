@@ -1,6 +1,7 @@
 "use client";
 
 import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
+import { intelligenceWorkspaceBySlug } from "../data/intelligence-workspaces";
 import styles from "./science-research-workspace.module.css";
 
 /**
@@ -29,12 +30,19 @@ export function ScienceResearchWorkspace() {
           <p className={styles["pending"]}>Planning only · Human review required</p>
           <h4>Evidence gates</h4>
           <ul>{workflow.requirements.map((item) => <li key={item}>{item}</li>)}</ul>
+          <h4>Related Intelligence workspaces</h4>
+          <nav className={styles["relatedLinks"]} aria-label={`Related workspaces for ${workflow.title}`}>
+            {workflow.linkedWorkspaces.map((slug) => {
+              const workspace = intelligenceWorkspaceBySlug.get(slug);
+              return workspace ? <a key={slug} href={`/portal/executive-platform/medicines-intelligence/${slug}/`} className={styles["relatedLink"]}>{workspace.title} · {workspace.state === "gated" ? "Gated" : "Read-only foundation"}</a> : null;
+            })}
+          </nav>
         </article>)}
       </div>
     </section>
     <section className={styles["bottom"]} aria-labelledby="science-gates-title">
       <h2 id="science-gates-title">Production release remains gated.</h2>
-      <p>Access to restricted science models (including GPT-Rosalind) requires separate OpenAI eligibility and API approval. Evidence permissions, qualified scientists, regulated validation and independently verified iOS/Android security must also be established. Neither this screen nor the public OpenAI Science page is an API connection.</p>
+      <p>Access to restricted science models (including GPT-Rosalind) requires separate OpenAI eligibility and API approval. Evidence permissions, qualified scientists, regulated validation and independently verified iOS/Android security must also be established. GPT-Rosalind API access is restricted to approved internal research and is not permitted for customer-facing commercial products. Neither this screen nor the public OpenAI Science page is an API connection.</p>
       <a href="https://openai.com/science/" target="_blank" rel="noopener noreferrer">OpenAI Science — external research reference</a>
     </section>
   </section>;
