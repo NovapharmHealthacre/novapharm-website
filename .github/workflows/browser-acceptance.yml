@@ -106,7 +106,7 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -124,8 +124,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
+      # Ubuntu mirrors exceeded 600s on Nov 18 before tests; retain all suites with a bounded 1200s install.
       - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
+        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
       - name: Install Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Build legacy rollback shell used only by the isolated workflow harness
