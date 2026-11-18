@@ -233,3 +233,42 @@ test("all 516 topic/platform applicability decisions fail closed until source-sp
     "Full-text completion must be backed by article-level evidence for all 172 topics");
   }
 });
+
+
+test("30 exact user workbook anchors and 5 supporting Apple resources remain independently gated", () => {
+  assert.equal(tracker.inPageAnchors.length, 30);
+  assert.equal(tracker.supportingResources.length, 5);
+  assert.equal(tracker.meta.ownerWorkbookAnchors, 30);
+  assert.equal(tracker.meta.ownerWorkbookSupportingResources, 5);
+  assert.equal(tracker.meta.totalOriginalWorkbookLinks, 207);
+  assert.equal(tracker.meta.totalTrackedLinkTargets, 210);
+  const articleURLs = new Set(tracker.topics.map(x => x.url));
+  const targets = new Set(tracker.topics.map(x => x.markdown));
+  for (const [index, anchor] of tracker.inPageAnchors.entries()) {
+    assert.equal(anchor.sourceRowIndex, index);
+    assert.ok(anchor.section && anchor.article && anchor.heading && anchor.sourceDescription);
+    assert.equal(anchor.sectionVerified, false, "Anchors are indexed, not independently page-verified");
+    assert.ok(articleURLs.has(anchor.parentUrl), "Workbook anchor parent missing: " + anchor.url);
+    assert.equal(anchor.url.split("#")[0], anchor.parentUrl);
+    assert.ok(anchor.url.split("#")[1]?.length, "Workbook anchor needs a section fragment");
+    assert.ok(!targets.has(anchor.url), "Duplicate anchor URL");
+    targets.add(anchor.url);
+  }
+  for (const [index, resource] of tracker.supportingResources.entries()) {
+    assert.equal(resource.sourceRowIndex, index);
+    assert.ok(resource.name && resource.sourcePurpose);
+    assert.equal(resource.sourceVerified, false, "Supporting resource URL requires separate review");
+    assert.match(resource.url, /^https:\/\/developer\.apple\.com\//);
+    assert.ok(!targets.has(resource.url), "Duplicate supporting link");
+    targets.add(resource.url);
+  }
+  for (const source of [
+    "https://developer.apple.com/documentation/mapkit",
+    "https://developer.apple.com/documentation/mapkitjs",
+    "https://register.apple.com/resources/imdf/"
+  ]) {
+    assert.ok(!targets.has(source), "Duplicate extended MapKit/IMDF URL");
+    targets.add(source);
+  }
+  assert.equal(targets.size, 210);
+});
