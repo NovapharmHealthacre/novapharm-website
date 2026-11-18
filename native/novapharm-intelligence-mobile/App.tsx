@@ -266,7 +266,10 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
-          {screen === "science" && <ScienceResearchMobile />}
+          {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
+            const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
+            if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
+          }} />}
           {screen === "account" && (
             <>
               <SectionHeading title="Enterprise access" detail="Identity and data availability are independent permission decisions." />
