@@ -5,6 +5,8 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { SCIENCE_WORKFLOW_IDS, SCIENCE_COMMON_GUARDRAILS, planScienceResearchReview, assertScienceProductionReady, scienceGovernanceForWorkspace, assessRosalindResearchBoundary } from "../src/core/intelligence-science-research-contract.mjs";
 import { workspaceCapabilityDependencies } from "../src/core/intelligence-22-workspace-readiness.mjs";
+import { createOpenAiZdrProvider } from "../src/core/ai/provider-openai-zdr.mjs";
+import { configuredInternalProvider, internalModelRegister } from "../src/core/ai/model-registry.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(path.join(root, p), "utf8");
@@ -132,4 +134,28 @@ test("private release readiness reports Science as unverified for every Intellig
   assert.match(source, /restrictedResearchModelCustomerUsePermitted: false/);
   assert.match(source, /canonicalWorkspacesCovered: 22/);
   assert.match(regression, /readiness\.science\.scientificAiProductionCertified/);
+});
+
+test("actual NOVA model gateway explicitly rejects Rosalind and does not register it for commercial use", () => {
+  assert.ok(internalModelRegister.every((entry) => entry.id !== "gpt-6-rosalind"));
+  const testApiKey = "test-placeholder-only-not-a-secret";
+  assert.throws(
+    () => createOpenAiZdrProvider({
+      apiKey: testApiKey,
+      model: "gpt-6-rosalind",
+      endpoint: "https://eu.api.openai.com",
+      productionApproved: true,
+      euZdrApproved: true,
+      fetchImplementation: () => { throw new Error("No external request permitted"); }
+    }),
+    (error) => error.code === "nova_model_not_approved" && error.statusCode === 400
+  );
+  assert.throws(() => configuredInternalProvider({
+    INTERNAL_AI_PROVIDER: "openai-zdr",
+    OPENAI_API_KEY: testApiKey,
+    NOVAPHARM_NOVA_MODEL: "gpt-6-rosalind",
+    NOVAPHARM_OPENAI_EU_API_ORIGIN: "https://eu.api.openai.com",
+    NOVAPHARM_NOVA_PRODUCTION_APPROVED: "true",
+    NOVAPHARM_OPENAI_EU_ZDR_APPROVED: "true"
+  }), (error) => error.code === "nova_model_not_approved");
 });
