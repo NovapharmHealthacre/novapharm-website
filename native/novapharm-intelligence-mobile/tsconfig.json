@@ -9,6 +9,9 @@
     "App.tsx",
     "index.ts",
     "../../apps/portal/data/intelligence-workspaces.ts",
-    "../../docs/intelligence/global-pharma-sources-20261117.json"
+    "../../docs/intelligence/global-pharma-sources-20261117.json",
+    "ScienceResearchMobile.tsx",
+    "../../docs/intelligence/science-research-capabilities-20261118.json",
+    "../../docs/intelligence/openai-science-methods-20261118.json"
   ]
 }
