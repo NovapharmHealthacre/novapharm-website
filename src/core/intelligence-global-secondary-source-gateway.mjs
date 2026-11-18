@@ -193,9 +193,41 @@ export function createSecondarySourceReader({
       if (completedAt < issuedAt || completedAt >= Date.parse(grant.validUntil)) {
         throw new Error("Evaluation rights expired during upstream request");
       }
+      // Re-evaluate the authoritative backend grant *after* transport, not just
+      // expiry. A revocation or rights-version rotation mid-request must block
+      // return even for a syntactically valid data page.
+      let postPermit;
+      try {
+        postPermit = await authorize({
+          sourceId, tenantId, purpose: "internal-evaluation",
+          domain: plan.domain, country: plan.country
+        });
+      } catch {
+        throw new Error("Source rights revoked during upstream request");
+      }
+      let reviewedAt;
+      try { reviewedAt = trustedMillis(now()); }
+      catch { throw new Error("Source rights revoked during upstream request"); }
+      if (reviewedAt < completedAt || reviewedAt >= Date.parse(grant.validUntil)) {
+        throw new Error("Source rights revoked during upstream request");
+      }
+      let stillApproved;
+      try {
+        stillApproved = assertInternalEvaluationPermit({
+          permit: postPermit, sourceId, tenantId,
+          domain: plan.domain, country: plan.country, now: reviewedAt
+        });
+      } catch {
+        throw new Error("Source rights revoked during upstream request");
+      }
+      if (stillApproved.receiptId !== grant.receiptId ||
+          stillApproved.licenseId !== grant.licenseId ||
+          stillApproved.rightsVersion !== grant.rightsVersion) {
+        throw new Error("Source rights changed during upstream request");
+      }
       return buildEvaluationEnvelope({
         plan, normalized: normaliseSecondarySourceResult(plan, raw),
-        raw, grant, capturedAt: completedAt
+        raw, grant: stillApproved, capturedAt: reviewedAt
       });
     }
   });
