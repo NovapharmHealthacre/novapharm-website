@@ -26,7 +26,14 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 0
+    "platformsAssessed": 0,
+    "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
+    "ownerWorkbookAnchors": 30,
+    "ownerWorkbookSupportingResources": 5,
+    "totalOriginalWorkbookLinks": 207,
+    "additionalOwnerRequestedMapkitLinks": 3,
+    "totalTrackedLinkTargets": 210,
+    "workbookSourceReview": "Workbook direct-article-anchor and supporting-resource rows read exactly from the two named workbook tabs. Their URLs and descriptions are user-supplied, not proof that anchor sections exist on current live Apple pages."
   },
   "topics": [
     {
@@ -5532,6 +5539,345 @@
           "rationale": null
         }
       }
+    }
+  ],
+  "inPageAnchors": [
+    {
+      "sourceRowIndex": 0,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Purpose",
+      "sourceDescription": "Design decisions should serve a meaningful purpose.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Purpose",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 1,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Agency",
+      "sourceDescription": "Help people stay in control and reverse mistakes.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Agency",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 2,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Responsibility",
+      "sourceDescription": "Build trust, safety, privacy and transparency.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Responsibility",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 3,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Familiarity",
+      "sourceDescription": "Use recognizable patterns and conventions.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Familiarity",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 4,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Flexibility",
+      "sourceDescription": "Adapt to diverse needs and contexts.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Flexibility",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 5,
+      "section": "Getting started",
+      "article": "Design principles",
+      "heading": "Simplicity",
+      "sourceDescription": "Prioritise clarity; remove unnecessary UI.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Simplicity",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 6,
+      "section": "Foundations",
+      "article": "Accessibility",
+      "heading": "Vision",
+      "sourceDescription": "Make content usable with low vision or without sight.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility#Vision",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 7,
+      "section": "Foundations",
+      "article": "App icons",
+      "heading": "Layer design",
+      "sourceDescription": "Build app icon layers for depth and platform treatments.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons#Layer-design",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 8,
+      "section": "Foundations",
+      "article": "App icons",
+      "heading": "Icon formats",
+      "sourceDescription": "Review icon format options.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons#Icon-formats",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 9,
+      "section": "Foundations",
+      "article": "Branding",
+      "heading": "Best practices",
+      "sourceDescription": "Apply brand color, type and tone selectively.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/branding#Best-practices",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/branding",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 10,
+      "section": "Foundations",
+      "article": "Color",
+      "heading": "Best practices",
+      "sourceDescription": "Color consistency and variant testing.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/color#Best-practices",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 11,
+      "section": "Foundations",
+      "article": "Color",
+      "heading": "Inclusive color",
+      "sourceDescription": "Avoid relying on color alone to convey meaning.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/color#Inclusive-color",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 12,
+      "section": "Foundations",
+      "article": "Color",
+      "heading": "System colors",
+      "sourceDescription": "System semantic color roles and variants.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/color#System-colors",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 13,
+      "section": "Foundations",
+      "article": "Color",
+      "heading": "Color management",
+      "sourceDescription": "Color profile and rendering practices.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/color#Color-management",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 14,
+      "section": "Foundations",
+      "article": "Color",
+      "heading": "Liquid Glass color",
+      "sourceDescription": "Tint and contrast in system glass treatments.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/color#Liquid-Glass-color",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 15,
+      "section": "Foundations",
+      "article": "Layout",
+      "heading": "Visual hierarchy",
+      "sourceDescription": "Order, alignment and grouping of UI elements.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Visual-hierarchy",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 16,
+      "section": "Foundations",
+      "article": "Layout",
+      "heading": "Adaptability",
+      "sourceDescription": "Respond to screen sizes, safe areas and localization.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Adaptability",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 17,
+      "section": "Foundations",
+      "article": "Layout",
+      "heading": "Size classes",
+      "sourceDescription": "Handle compact and regular space classes.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Size-classes",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 18,
+      "section": "Foundations",
+      "article": "Materials",
+      "heading": "Liquid Glass",
+      "sourceDescription": "Use glass selectively for controls and navigation.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/materials#Liquid-Glass",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/materials",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 19,
+      "section": "Foundations",
+      "article": "Materials",
+      "heading": "Standard materials",
+      "sourceDescription": "Content-layer differentiation and legibility.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/materials#Standard-materials",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/materials",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 20,
+      "section": "Foundations",
+      "article": "SF Symbols",
+      "heading": "Rendering modes",
+      "sourceDescription": "Monochrome, hierarchical, palette and multicolor modes.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols#Rendering-modes",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 21,
+      "section": "Foundations",
+      "article": "SF Symbols",
+      "heading": "Custom symbols",
+      "sourceDescription": "Create compliant custom symbols when needed.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols#Custom-symbols",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 22,
+      "section": "Foundations",
+      "article": "Typography",
+      "heading": "Ensuring legibility",
+      "sourceDescription": "Readable text and minimum size guidance.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Ensuring-legibility",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 23,
+      "section": "Foundations",
+      "article": "Typography",
+      "heading": "Conveying hierarchy",
+      "sourceDescription": "Meaningful text weights and sizes.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Conveying-hierarchy",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 24,
+      "section": "Foundations",
+      "article": "Typography",
+      "heading": "Using system fonts",
+      "sourceDescription": "Use SF and New York typography sensibly.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Using-system-fonts",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 25,
+      "section": "Foundations",
+      "article": "Typography",
+      "heading": "Supporting Dynamic Type",
+      "sourceDescription": "Respect accessible user text size choices.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Supporting-Dynamic-Type",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 26,
+      "section": "Foundations",
+      "article": "Writing",
+      "heading": "Getting started",
+      "sourceDescription": "Choose an appropriate, consistent app voice.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/writing#Getting-started",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/writing",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 27,
+      "section": "Foundations",
+      "article": "Writing",
+      "heading": "Best practices",
+      "sourceDescription": "Write clear actions, errors and empty states.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/writing#Best-practices",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/writing",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 28,
+      "section": "Components",
+      "article": "Buttons",
+      "heading": "Content",
+      "sourceDescription": "Button labels and meaning.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/buttons#Content",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/buttons",
+      "sectionVerified": false
+    },
+    {
+      "sourceRowIndex": 29,
+      "section": "Technologies",
+      "article": "Siri",
+      "heading": "Shortcuts and suggestions",
+      "sourceDescription": "Make app commands useful with Siri and shortcuts.",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/siri#Shortcuts-and-suggestions",
+      "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/siri",
+      "sectionVerified": false
+    }
+  ],
+  "supportingResources": [
+    {
+      "sourceRowIndex": 0,
+      "name": "Apple Design Resources",
+      "sourcePurpose": "Platform templates, materials and UI kits",
+      "url": "https://developer.apple.com/design/resources/",
+      "sourceVerified": false
+    },
+    {
+      "sourceRowIndex": 1,
+      "name": "Apple Fonts",
+      "sourcePurpose": "Official SF and NY font downloads and reference",
+      "url": "https://developer.apple.com/fonts/",
+      "sourceVerified": false
+    },
+    {
+      "sourceRowIndex": 2,
+      "name": "SF Symbols",
+      "sourcePurpose": "Browse SF Symbols app and symbol resources",
+      "url": "https://developer.apple.com/sf-symbols/",
+      "sourceVerified": false
+    },
+    {
+      "sourceRowIndex": 3,
+      "name": "Icon Composer",
+      "sourcePurpose": "Create layered Apple platform app icons",
+      "url": "https://developer.apple.com/icon-composer/",
+      "sourceVerified": false
+    },
+    {
+      "sourceRowIndex": 4,
+      "name": "Apple Accessibility Nutrition Labels",
+      "sourcePurpose": "Disclose app accessibility support",
+      "url": "https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels",
+      "sourceVerified": false
     }
   ]
 }
