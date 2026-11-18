@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs'
       - 'scripts/test-intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs'
       - 'docs/intelligence/australia-pbs-public-candidate-20261118.md'
       - '.github/workflows/intelligence-au-pbs-offline-contracts.yml'
   workflow_dispatch:
@@ -27,6 +29,8 @@ jobs:
       - name: Parse offline evidence contract
         run: |
           node --check src/core/intelligence-au-pbs-schedule-quarantine.mjs
+          node --check src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs
           node --check scripts/test-intelligence-au-pbs-schedule-quarantine.mjs
+          node --check scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs
       - name: Run rights, authenticity, source status and identity tests
-        run: node --test scripts/test-intelligence-au-pbs-schedule-quarantine.mjs
+        run: node --test scripts/test-intelligence-au-pbs-schedule-quarantine.mjs scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs
