@@ -21,8 +21,9 @@ import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intellige
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
+import { novaMlSparseCircuitAssurance } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "review" | "visual" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "review" | "research" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -43,6 +44,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
   { screen: "review", label: "Review" },
+  { screen: "research", label: "Research" },
   { screen: "visual", label: "Visual" },
   { screen: "account", label: "Account" }
 ];
@@ -269,6 +271,35 @@ export default function App() {
             </>
           )}
           {screen === "review" && <MultimodalReviewScreen />}
+
+          {screen === "research" && (
+            <>
+              <SectionHeading
+                title={novaMlSparseCircuitAssurance.title}
+                detail="Research-only candidate. No live model inference, clinical decision or production activation."
+              />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Unverified research candidate</Text>
+                <Text style={styles.description}>{novaMlSparseCircuitAssurance.offlineExperiment.description}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.sample}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.isolatedAccuracy}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.ablatedAccuracy}</Text>
+                <Text style={styles.description}>{novaMlSparseCircuitAssurance.offlineExperiment.limitation}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.status}</Text>
+              </View>
+              <SectionHeading title="Independent release requirements" detail={novaMlSparseCircuitAssurance.releasePolicy} />
+              {novaMlSparseCircuitAssurance.methodGates.map((gate) => (
+                <View key={gate.name} style={styles.requirement}>
+                  <Text style={styles.cardTitle}>{gate.name}</Text>
+                  <Text style={styles.description}>{gate.detail}</Text>
+                </View>
+              ))}
+              <Text style={styles.meta}>
+                This screen reads bundled, non-sensitive governance metadata only.
+                No model weights, pharmaceutical data, patient imagery, external requests or verification receipts are loaded.
+              </Text>
+            </>
+          )}
           {screen === "visual" && (
             <>
               <SectionHeading
