@@ -94,12 +94,19 @@ function officialCandidateSlug(value) {
   return value.normalize("NFKD").replace(/\p{M}/gu, "")
     .toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
 }
+function cleanDescription(value, maxChars) {
+  return typeof value === "string" && value.trim().length > 0 &&
+    value.length <= maxChars &&
+    !/[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u.test(value);
+}
 function cleanSource(input) {
   if (!input || typeof input !== "object" || Array.isArray(input) ||
       !RE_KEY.test(input.candidateKey || "") ||
-      typeof input.country !== "string" || !input.country.trim() || input.country.length > 100 ||
-      typeof input.region !== "string" || !input.region.trim() || input.region.length > 70 ||
-      typeof input.provider !== "string" || !input.provider.trim() || input.provider.length > 180 ||
+      !cleanDescription(input.country, 100) ||
+      !cleanDescription(input.region, 70) ||
+      !cleanDescription(input.provider, 180) ||
+      !cleanDescription(input.domains, 240) ||
+      !cleanDescription(input.note, 240) ||
       !MODES.has(input.mode) ||
       input.rightsStatus !== "not-reviewed" || input.integrationStatus !== "candidate-only" ||
       input.dataAdmission !== "not-admitted" || input.activeAdapterId !== null ||
