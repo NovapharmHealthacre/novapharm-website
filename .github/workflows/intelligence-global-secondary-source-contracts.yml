@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   secondary-source-safety:
-    name: Five additional national/global API contracts, deny-first verification
+    name: Singapore HSA and UK NHSBSA catalogue contracts, deny-first verification
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
