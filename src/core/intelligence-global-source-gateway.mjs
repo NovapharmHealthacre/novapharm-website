@@ -112,7 +112,7 @@ async function readJsonBounded(response) {
 // Never mutate an authority-issued medicine identifier by truncating it.
 // Unusable upstream fields are omitted from the evaluation-only candidate
 // and must be flagged as incomplete by the separate page-quality review.
-const UNSAFE_SOURCE_CHARS = /[\\u0000-\\u001f\\u007f\\u200b-\\u200f\\u202a-\\u202e\\u2066-\\u2069\\ufeff]/u;
+const UNSAFE_SOURCE_CHARS = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/u;
 function safeString(value, maxLength = 240) {
   return typeof value === "string" &&
     value.length > 0 && value.length <= maxLength &&
