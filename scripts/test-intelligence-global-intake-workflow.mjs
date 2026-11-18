@@ -116,8 +116,61 @@ test("native IDs are preserved for Canadian DPD, with no country translation",as
  assert.equal(result.canPublish,false);
 });
 
+test("offline intake suppresses trusted authorizer and clock adapter exceptions", async()=>{
+  const marker="SECRET_INTERNAL_SERVICE_CONNECTION";
+  const bad=async()=>{throw Error(marker);};
+  const calls=[
+    createGlobalSourceIntakeEvaluator({authorize:bad,now:()=>FIXED_NOW}),
+    createGlobalSourceIntakeEvaluator({authorize:async c=>permit(c),now:()=>{throw Error(marker);}})
+  ];
+  for(const evaluator of calls){
+    await assert.rejects(evaluator.evaluate(request),error=>error instanceof Error &&
+      /Global source intake rejected/.test(error.message) && !error.message.includes(marker));
+  }
+});
 
-test("file-based source intake refuses revoked, replaced and cross-tenant rights after parsing",async()=>{
+
+test("source-intake clock is sampled after trusted backend authorization",async()=>{
+ let approved=false,reads=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async context=>{approved=true;return permit(context);},
+   now:()=>{assert.equal(approved,true,"clock must follow asynchronous authorization");reads++;return FIXED_NOW;}
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(reads,3,"Initial clock, quarantine clock, and final rights clock must all be sampled");
+ assert.equal(result.evidence.canPublish,false);
+ assert.equal(result.evidence.retrievedAt,"2026-11-17T19:00:00.000Z");
+});
+
+test("offline source intake denies expiry and regressed/invalid server clocks after authorization",async()=>{
+ const expires=Date.parse("2026-11-17T20:00:00.000Z");
+ for(const badClock of [expires,expires+1,FIXED_NOW-1,NaN,undefined,Infinity,null,FIXED_NOW+0.5]){
+   let ticks=0;
+   const evaluator=createGlobalSourceIntakeEvaluator({
+     authorize:async context=>permit(context),
+     now:()=>++ticks===1?FIXED_NOW:badClock
+   });
+   await assert.rejects(evaluator.evaluate(request),
+     /Global source intake rejected: permit expired or server clock/);
+   assert.equal(ticks,2);
+ }
+});
+
+test("offline source intake refuses malformed initial clock before parsing upstream content",async()=>{
+ for(const badClock of [-1,NaN,null,Infinity,FIXED_NOW+0.5]){
+   let ticks=0;
+   const evaluator=createGlobalSourceIntakeEvaluator({
+     authorize:async context=>permit(context),
+     now:()=>{ticks++;return badClock;}
+   });
+   await assert.rejects(evaluator.evaluate({...request,rawBytes:Buffer.from("<raw untrusted>")}),
+     /Global source intake rejected: server clock/);
+   assert.equal(ticks,1);
+ }
+});
+
+
+test("file-based intake rejects revoked, replaced or cross-tenant rights after quarantine evaluation",async()=>{
  const transitions=[
   {rightsStatus:"pending"},
   {revokedAt:"2026-11-17T18:45:00.000Z"},
@@ -135,51 +188,47 @@ test("file-based source intake refuses revoked, replaced and cross-tenant rights
    now:()=>FIXED_NOW
   });
   await assert.rejects(evaluator.evaluate(request),/not approved|changed during evaluation/);
-  assert.equal(authorizations,2,"A completed quarantine may return only after renewed rights verification");
+  assert.equal(authorizations,2,"Source rights must be rechecked after quarantine preparation");
  }
 });
 
-test("file-based intake refuses expiry, invalid clocks and clock rollback at the final rights gate",async()=>{
- const invalidFinalTimes=[
-  Date.parse("2026-11-17T20:00:00.000Z"),
-  Date.parse("2026-11-17T20:00:00.001Z"),
-  FIXED_NOW-1,NaN,undefined,-1
- ];
- for(const finalTime of invalidFinalTimes){
+test("file-based intake rejects expired, invalid, or regressed final server clocks",async()=>{
+ const expiry=Date.parse("2026-11-17T20:00:00.000Z");
+ for(const finalClock of [expiry,expiry+1,FIXED_NOW-1,NaN,undefined,-1]){
   let ticks=0,authorizations=0;
   const evaluator=createGlobalSourceIntakeEvaluator({
    authorize:async ctx=>{authorizations++;return permit(ctx);},
-   now:()=>++ticks===1?FIXED_NOW:finalTime
+   now:()=>++ticks===3?finalClock:FIXED_NOW
   });
-  await assert.rejects(evaluator.evaluate(request),/expired during evaluation/);
-  assert.equal(ticks,2);
+  await assert.rejects(evaluator.evaluate(request),/source rights expired during evaluation/);
+  assert.equal(ticks,3);
   assert.equal(authorizations,2);
  }
 });
 
-test("stable independently rechecked intake remains unpublished and cannot self-admit",async()=>{
- let calls=0;
+test("stable twice-authorised intake remains quarantined and never self-publishes",async()=>{
+ let authorizations=0;
  const evaluator=createGlobalSourceIntakeEvaluator({
-  authorize:async ctx=>{calls++;return permit(ctx);},
+  authorize:async ctx=>{authorizations++;return permit(ctx);},
   now:()=>FIXED_NOW
  });
  const result=await evaluator.evaluate(request);
- assert.equal(calls,2);
+ assert.equal(authorizations,2);
+ assert.equal(result.sourceRightsReceipt,"rights-receipt-001");
  assert.equal(result.canPublish,false);
  assert.equal(result.productionAccepted,false);
- assert.equal(result.evidence.clinicalDecisionReady,false);
  assert.equal(result.manifest.canPublish,false);
+ assert.equal(result.evidence.clinicalDecisionReady,false);
  assert.throws(()=>assertGlobalIntakeCustomerReady(result),/rejected/);
 });
 
-
-test("file intake never discloses internal authorization failure details at either rights check",async()=>{
- const secret="PRIVATE_AUTHORISER_CREDENTIAL_MUST_NOT_LEAK";
- for(const failOnCall of [1,2]){
+test("file-based intake never exposes trusted authorizer or clock adapter secret errors",async()=>{
+ for(const failingAuthorization of [1,2]){
+  const secret="PRIVATE_AUTHORISER_CREDENTIAL_MUST_NOT_LEAK";
   let calls=0;
   const evaluator=createGlobalSourceIntakeEvaluator({
    authorize:async ctx=>{
-    if(++calls===failOnCall)throw new Error(secret);
+    if(++calls===failingAuthorization)throw new Error(secret);
     return permit(ctx);
    },
    now:()=>FIXED_NOW
@@ -188,18 +237,15 @@ test("file intake never discloses internal authorization failure details at eith
    error instanceof Error &&
    error.message==="Global source intake rejected: trusted authorizer unavailable" &&
    !error.message.includes(secret));
-  assert.equal(calls,failOnCall);
+  assert.equal(calls,failingAuthorization);
  }
-});
-
-test("file intake redacts failing server-clock callbacks and does not return evidence",async()=>{
- const secret="PRIVATE_CLOCK_ADAPTER_CONFIGURATION_MUST_NOT_LEAK";
- for(const failOnRead of [1,2]){
+ for(const failingClock of [1,2,3]){
+  const secret="PRIVATE_CLOCK_ADAPTER_CONFIGURATION_MUST_NOT_LEAK";
   let ticks=0;
   const evaluator=createGlobalSourceIntakeEvaluator({
    authorize:async ctx=>permit(ctx),
    now:()=>{
-    if(++ticks===failOnRead)throw new Error(secret);
+    if(++ticks===failingClock)throw new Error(secret);
     return FIXED_NOW;
    }
   });
@@ -207,23 +253,6 @@ test("file intake redacts failing server-clock callbacks and does not return evi
    error instanceof Error &&
    error.message==="Global source intake rejected: server clock" &&
    !error.message.includes(secret));
-  assert.equal(ticks,failOnRead);
+  assert.equal(ticks,failingClock);
  }
-});
-
-test("file intake samples the first permit clock only after trusted async authorization",async()=>{
- let authorized=false,ticks=0,authorizations=0;
- const evaluator=createGlobalSourceIntakeEvaluator({
-  authorize:async ctx=>{authorized=true;authorizations++;return permit(ctx);},
-  now:()=>{
-   assert.equal(authorized,true,"The first clock read must follow authorization");
-   ticks++;
-   return FIXED_NOW;
-  }
- });
- const result=await evaluator.evaluate(request);
- assert.equal(authorizations,2);
- assert.equal(ticks,2);
- assert.equal(result.canPublish,false);
- assert.equal(result.productionAccepted,false);
 });
