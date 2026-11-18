@@ -1,11 +1,27 @@
-# NovaPharm Intelligence — Android sparse-circuit research adapter
+# NovaPharm Intelligence — Android sparse-circuit research prototype
 
-This is a **source-only Kotlin candidate**, not an Android app, APK, signed AAB, Play Store submission, running screen, or production integration.
+**Status: offline Android application prototype, not a production NovaPharm app.** This prototype contains no model, real pharmaceutical data, patient information, sign-in, network permission, licensed source data or production API. An Android debug build is not a signed Play Store release or customer service.
 
-- `NovaSparseCircuitReader.kt` parses a bounded **unverified** server-generated summary for read-only display.
-- Uses Android's `org.json`; does not fetch, execute, train or inspect models on-device.
-- It is deliberately incapable of granting rights, customer access, AI inference, source ingestion or clinical decisions.
-- Do not treat JSON flags as trusted: production integration must bind a response to an authenticated and authorised service session, verify integrity and use server-controlled entitlement checks.
-- A real Android Studio/Gradle project, Kotlin/JVM tests, UI, device testing, app signing and release review are **not present here** and must be completed separately.
+## Implementation
 
-Contract implementation and boundaries: `../../src/core/intelligence-sparse-circuit-assurance.mjs` and `../../docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md`.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt` — bounded, exact-schema JSON parser for an independently supplied **unverified** research summary. It denies unknown fields, forged production/clinical flags, invalid IDs, counts or non-finite metrics.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt` — accessible read-only Android View with NovaPharm's restrained white/graphite visual hierarchy, research disclaimer and no automatic data capture.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt` — offline launcher showing the **no evidence connected** state. It intentionally does not fetch a summary.
+- `app/src/main/AndroidManifest.xml` — no INTERNET, camera, audio, location or storage permissions; backups and cleartext disabled.
+- `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
+- `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
+
+From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
+
+```sh
+cd native/novapharm-intelligence-android
+gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
+```
+
+The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
+
+## Future production integration
+
+A signed NovaPharm Intelligence Android app must provide independently authenticated, revocable, server-owned tenant and source permissions; it must verify a versioned service response over TLS, supply explicitly authorised research summaries to the view, and support user correction and abandonment without storing private research records. This prototype intentionally does none of those operations. JSON fields are **not authorisation** and a structurally valid summary is **not causal verification**. There is no built-in model weight access or inference.
+
+Corresponding shared web research contract: `../../src/core/intelligence-sparse-circuit-assurance.mjs`. Research analysis and release gates: `../../docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md`.
