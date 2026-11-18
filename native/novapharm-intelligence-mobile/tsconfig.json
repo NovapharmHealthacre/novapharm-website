@@ -9,6 +9,8 @@
     "App.tsx",
     "index.ts",
     "../../apps/portal/data/intelligence-workspaces.ts",
-    "../../docs/intelligence/global-pharma-sources-20261117.json"
+    "../../docs/intelligence/global-pharma-sources-20261117.json",
+    "SignalsResearchScreen.tsx",
+    "../../apps/portal/data/nova-signals-research.ts"
   ]
 }
