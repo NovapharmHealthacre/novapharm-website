@@ -63,3 +63,27 @@ test("multilingual medicine names remain distinguishable, not erased as ASCII", 
   assert.equal(result.status,"conflicting_candidates");
   assert.ok(result.signals.includes("vision_text_name_conflict"));
 });
+
+test("never silently truncate identifiers, including 241-character spoofed suffixes", () => {
+  const long = "X".repeat(240) + "Y";
+  const result = assessMultimodalEvidence({ ...sample, observedProductCode:long });
+  assert.equal(result.status, "blocked");
+  assert.ok(result.signals.includes("invalid_or_oversized_input"));
+  assert.equal(JSON.stringify(result).includes(long), false);
+});
+
+test("reject spoofed/invisible text and non-string inputs", () => {
+  for (const value of ["A\u202eB", "A\u200bB", { text:"Example" }, ["Example"]]) {
+    const result = assessMultimodalEvidence({...sample, imageTextMedicineName:value});
+    assert.equal(result.status, "blocked");
+    assert.ok(result.signals.includes("invalid_or_oversized_input"));
+  }
+});
+
+test("product identifiers retain punctuation and case; semantics cannot waive code mismatch", () => {
+  const result = assessMultimodalEvidence({
+    ...sample, referenceProductCode:"AB/000123", observedProductCode:"AB-000123"
+  });
+  assert.equal(result.status,"conflicting_candidates");
+  assert.ok(result.signals.includes("product_code_conflict"));
+});
