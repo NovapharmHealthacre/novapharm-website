@@ -62,3 +62,16 @@ test("web and iOS/Android private previews expose one non-live governed model mi
   assert.match(mobile, /No approved model inspections/);
   assert.doesNotMatch(mobile, /fetch\(|AsyncStorage|SecureStore|access_token/);
 });
+
+test("web and mobile share five not-operational inspection stages without a model runtime", () => {
+  const catalog = read("apps/portal/data/nova-ml-modules.ts");
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  for (const stage of ["model-registry", "feature-evidence", "circuit-hypotheses", "failure-analysis", "review-export"]) {
+    assert.match(catalog, new RegExp('id: "' + stage + '"'));
+  }
+  assert.match(catalog, /state: "not-operational"/);
+  assert.match(web, /modelMicroscopeInspectionStages\.map/);
+  assert.match(mobile, /modelMicroscopeInspectionStages\.map/);
+  assert.doesNotMatch(mobile, /src\/core\/ai\/model-microscope|fetch\(|URLSession|Authorization:/);
+});
