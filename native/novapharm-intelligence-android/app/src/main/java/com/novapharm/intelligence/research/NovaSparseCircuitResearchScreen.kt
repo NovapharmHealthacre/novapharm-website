@@ -30,7 +30,9 @@ object NovaSparseCircuitResearchScreen {
                 setPadding(0, 0, 0, (12 * resources.displayMetrics.density).toInt())
                 if (heading) {
                     setTypeface(typeface, android.graphics.Typeface.BOLD)
-                    accessibilityHeading = true
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        accessibilityHeading = true
+                    }
                 }
             }
             column.addView(text)
