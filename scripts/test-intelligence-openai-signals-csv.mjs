@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { reviewSignalsCsvText } from "../src/ai/intelligence-openai-signals-csv.mjs";
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { constants, mkdirSync, mkdtempSync, renameSync, rmSync, symlinkSync, truncateSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 test("approved Signals v3 aggregate CSV has an inspectable, never imported preview", () => {
   const csv = "month,country,topic,share_of_messages\n2026-09-01,GB,Technical help,0.42\n2026-09-01,IN,Writing,0.3\n";
@@ -50,4 +56,63 @@ test("local preview rejects duplicate publisher time/grouping grain and future-d
   assert.equal(reviewSignalsCsvText("share_of_messages_by_topic_country_month.csv",distinct).status,"review-only");
   const outOfWindow = "month,country,topic,share_of_messages\n2099-01-01,GB,Writing,0.5\n";
   assert.equal(reviewSignalsCsvText("share_of_messages_by_topic_country_month.csv",outOfWindow).status,"blocked");
+});
+
+test("CLI reads a bounded regular file, rejects mismatched digest and never prints data values", () => {
+  const dir = mkdtempSync(join(tmpdir(), "signals-cli-"));
+  const table = "share_of_messages_by_topic_country_month.csv";
+  const path = join(dir, table);
+  const cli = fileURLToPath(new URL("./data/review-openai-signals-csv.mjs", import.meta.url));
+  const csv = "month,country,topic,share_of_messages\n2026-09-01,GB,Writing,0.4\n";
+  const run = (digest) => spawnSync(process.execPath, [cli, table, path, ...(digest ? [digest] : [])],
+    { encoding: "utf8", timeout: 15000, maxBuffer: 1024 * 1024 });
+  try {
+    writeFileSync(path, csv);
+    const digest = createHash("sha256").update(csv).digest("hex");
+    const good = run(digest);
+    assert.equal(good.status, 0, good.stderr);
+    const preview = JSON.parse(good.stdout);
+    assert.equal(preview.status, "review-only");
+    assert.equal(preview.recordCount, 1);
+    assert.equal(preview.sha256, digest);
+    assert.equal(preview.persisted, false);
+    assert.equal(preview.productionApproved, false);
+    assert.ok(!good.stdout.includes("Writing"));
+    const bad = run("0".repeat(64));
+    assert.equal(bad.status, 2);
+    assert.equal(JSON.parse(bad.stdout).status, "blocked");
+    assert.ok(!bad.stdout.includes("Writing"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("CLI rejects symlinks, directories, and oversized local inputs without leaking rows", () => {
+  const dir = mkdtempSync(join(tmpdir(), "signals-filetypes-"));
+  const table = "share_of_messages_by_topic_country_month.csv";
+  const path = join(dir, table);
+  const cli = fileURLToPath(new URL("./data/review-openai-signals-csv.mjs", import.meta.url));
+  const run = () => spawnSync(process.execPath, [cli, table, path],
+    { encoding: "utf8", timeout: 15000, maxBuffer: 1024 * 1024 });
+  const blocked = () => {
+    const response = run();
+    assert.equal(response.status, 2, response.stderr);
+    assert.equal(JSON.parse(response.stdout).status, "blocked");
+    assert.ok(!response.stdout.includes("PRIVATE"));
+  };
+  try {
+    mkdirSync(path);
+    blocked();
+    rmSync(path, { recursive: true, force: true });
+    writeFileSync(path, "PRIVATE");
+    truncateSync(path, 8 * 1024 * 1024 + 1);
+    blocked();
+    if (constants.O_NOFOLLOW) {
+      renameSync(path, join(dir, "source.csv"));
+      symlinkSync(join(dir, "source.csv"), path);
+      blocked();
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

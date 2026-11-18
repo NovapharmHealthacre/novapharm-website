@@ -1,9 +1,42 @@
 #!/usr/bin/env node
 // Manual local file review only; no network, file writes, warehouse import or stdout data rows.
 import { createHash } from "node:crypto";
-import { readFileSync, statSync } from "node:fs";
+import { closeSync, constants, fstatSync, openSync, readSync } from "node:fs";
 import { basename } from "node:path";
 import { reviewSignalsCsvText } from "../../src/ai/intelligence-openai-signals-csv.mjs";
+
+const MAX_LOCAL_BYTES = 8 * 1024 * 1024;
+
+// Open once, then inspect and read only that file descriptor. Checking a path
+// with statSync followed by readFileSync(path) is susceptible to a TOCTOU swap.
+// O_NOFOLLOW prevents symlinks where supported, and O_NONBLOCK avoids hanging
+// while opening a non-regular file such as a FIFO.
+function readBoundedLocalFile(filename) {
+  const flags = constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0);
+  const fd = openSync(filename, flags);
+  try {
+    const before = fstatSync(fd);
+    if (!before.isFile() || before.size < 0 || before.size > MAX_LOCAL_BYTES) {
+      throw Error("unapproved-local-file");
+    }
+    // Read at most MAX_LOCAL_BYTES + 1, including if the file grows after fstat.
+    const buffer = Buffer.allocUnsafe(MAX_LOCAL_BYTES + 1);
+    let count = 0;
+    while (count < buffer.length) {
+      const n = readSync(fd, buffer, count, buffer.length - count, null);
+      if (n === 0) break;
+      count += n;
+    }
+    if (count > MAX_LOCAL_BYTES) throw Error("unapproved-local-file");
+    const after = fstatSync(fd);
+    if (!after.isFile() || after.size !== before.size || after.mtimeMs !== before.mtimeMs) {
+      throw Error("local-file-changed-during-review");
+    }
+    return buffer.subarray(0, count);
+  } finally {
+    closeSync(fd);
+  }
+}
 
 const [table, filename, expectedDigest] = process.argv.slice(2);
 if (!table || !filename || basename(filename) !== table) {
@@ -11,9 +44,7 @@ if (!table || !filename || basename(filename) !== table) {
   process.exit(2);
 }
 try {
-  const stat = statSync(filename);
-  if (!stat.isFile() || stat.size > 8 * 1024 * 1024) throw Error("unapproved-local-file");
-  const bytes = readFileSync(filename);
+  const bytes = readBoundedLocalFile(filename);
   const sha256 = createHash("sha256").update(bytes).digest("hex");
   if (expectedDigest && (!/^[a-f0-9]{64}$/.test(expectedDigest) || expectedDigest !== sha256)) throw Error("checksum-mismatch");
   const value = reviewSignalsCsvText(table, bytes.toString("utf8"));
