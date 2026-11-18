@@ -3,10 +3,22 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
-// A literal-host test intentionally denies the hostname anywhere in candidate
-// source, including nested URL strings and prefix/suffix lookalikes. Unlike a
-// URL regex, it cannot accidentally accept a host merely by partial matching.
-const hasUnapprovedBlobHost = source => source.includes("openaipublic.blob.core.windows.net");
+// Discover every URL scheme independently, including nested URLs in query text.
+// Always compare the *parsed hostname* rather than a substring of the full URL:
+// unrelated domains may contain the same characters in their paths or names.
+// No network request occurs during this static source-code governance check.
+const hasUnapprovedBlobHost = source => {
+  for (const match of source.matchAll(/\b(?:https?|blob):\/\//gi)) {
+    const candidate = source.slice(match.index).split(/[\s"'`<>\\);,\]}]/, 1)[0];
+    try {
+      if (new URL(candidate).hostname === "openaipublic.blob.core.windows.net") return true;
+    } catch {
+      // Malformed text cannot be an approved remote model source.
+      // The separate test below rejects all model-loading/network APIs.
+    }
+  }
+  return false;
+};
 
 test("upstream provenance, licence discrepancy and independent weights rights remain documented", () => {
   const review = read("docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md");
@@ -38,12 +50,17 @@ test("research code does not fetch or deserialize upstream executable model obje
   }
 });
 
-test("blob-host denial covers nested links, alternate schemes and lookalikes", () => {
+test("URL host governance rejects actual forbidden hosts, including nested links", () => {
   for (const text of [
     "https://openaipublic.blob.core.windows.net/model.pkl",
     "https://evil.example/?next=https://openaipublic.blob.core.windows.net/model.pkl",
+    "blob://openaipublic.blob.core.windows.net/checkpoint",
+    "HTTPS://OPENAIPUBLIC.BLOB.CORE.WINDOWS.NET/model.pkl"
+  ]) assert.equal(hasUnapprovedBlobHost(text), true, text);
+  for (const text of [
     "https://openaipublic.blob.core.windows.net.evil.example/model.pkl",
-    "blob://openaipublic.blob.core.windows.net/checkpoint"
-  ]) assert.equal(hasUnapprovedBlobHost(text), true);
-  assert.equal(hasUnapprovedBlobHost("https://unrelated.example/approved.json"), false);
+    "https://evilopenaipublic.blob.core.windows.net/model.pkl",
+    "https://unrelated.example/openaipublic.blob.core.windows.net/model.pkl",
+    "https://unrelated.example/approved.json"
+  ]) assert.equal(hasUnapprovedBlobHost(text), false, text);
 });
