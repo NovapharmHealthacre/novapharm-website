@@ -15,6 +15,10 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-24.04
+    # Playwright 1.61.1 and Ubuntu Noble are preinstalled in this vendor image.
+    # Avoid slow Ubuntu apt mirrors; do NOT skip Chromium/WebKit or Axe tests.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -34,18 +38,12 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # External Ubuntu package mirrors timed out at 600s on Nov 18; preserve full browser suite with bounded 1200s install.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Verify preinstalled exact Playwright runtime
+        run: |
+          test -d /ms-playwright
+          test "$(npx playwright --version)" = "Version 1.61.1"
+          test -n "$(find /ms-playwright -maxdepth 1 -name 'chromium-*' -print -quit)"
+          test -n "$(find /ms-playwright -maxdepth 1 -name 'webkit-*' -print -quit)"
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
       - name: Run complete route, viewport and Axe matrix
