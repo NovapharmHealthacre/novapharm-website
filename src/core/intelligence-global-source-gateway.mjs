@@ -174,7 +174,7 @@ export function normaliseGovSourceResult(plan, data) {
  * The returned approval is only suitable for internal evaluation, never display.
  */
 export function createGovSourceReader({ authorize, transport = globalThis.fetch, now = () => Date.now() } = {}) {
-  if (typeof authorize !== "function" || typeof transport !== "function") {
+  if (typeof authorize !== "function" || typeof transport !== "function" || typeof now !== "function") {
     throw new Error("Trusted authorizer and transport are required");
   }
   return Object.freeze({
@@ -183,10 +183,18 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         throw new Error("Invalid tenant context");
       }
-      const permission = await authorize({
-        sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
+      const rightsScope = Object.freeze({
+        sourceId, tenantId, purpose: "internal-evaluation",
+        domain: plan.domain, country: plan.country
       });
-      const grantedAt = now();
+      let permission;
+      try { permission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
+      // Capture trusted time after asynchronous authorization; never
+      // evaluate an expired grant against a stale pre-call timestamp.
+      let grantedAt;
+      try { grantedAt = now(); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       const grant = assertInternalEvaluationPermit({
         permit: permission, sourceId, tenantId,
         domain: plan.domain, country: plan.country, now: grantedAt
@@ -200,9 +208,32 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
         signal: AbortSignal.timeout(TIMEOUT_MS)
       });
       const raw = await readJsonBounded(response);
+      // Authorisation is rechecked after transport, not just before it:
+      // rights may be revoked or replaced during a slow source response.
+      let refreshedPermission;
+      try { refreshedPermission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
+      let capturedAt;
+      try { capturedAt = now(); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
+      // Prevent any invalid clock or permit expiry from returning a preview.
+      if (!Number.isSafeInteger(capturedAt) || capturedAt < grantedAt ||
+          capturedAt >= Date.parse(grant.validUntil)) {
+        throw new Error("Source rights are no longer approved");
+      }
+      const refreshedGrant = assertInternalEvaluationPermit({
+        permit: refreshedPermission, sourceId, tenantId,
+        domain: plan.domain, country: plan.country, now: capturedAt
+      });
+      if (refreshedGrant.receiptId !== grant.receiptId ||
+          refreshedGrant.licenseId !== grant.licenseId ||
+          refreshedGrant.rightsVersion !== grant.rightsVersion ||
+          refreshedGrant.validUntil !== grant.validUntil) {
+        throw new Error("Source rights changed during evaluation");
+      }
       const normalized = normaliseGovSourceResult(plan, raw);
       return buildEvaluationEnvelope({
-        plan, normalized, raw, grant, capturedAt: now()
+        plan, normalized, raw, grant, capturedAt
       });
     }
   });
