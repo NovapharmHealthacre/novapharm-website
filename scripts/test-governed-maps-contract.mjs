@@ -27,6 +27,7 @@ test("authorised geography consumes accepted postcode centroid and renders no fa
   assert.match(map, /cdn\.apple-mapkit\.com\/mk\/6\/mapkit\.core\.js/);
   assert.match(map, /showsUserLocation: false/);
   assert.match(map, /recorded coordinates/);
+  assert.match(map, /clusteringIdentifier: `novapharm-\$\{point\.kind\}`/);
   assert.doesNotMatch(map, /navigator\.geolocation|getCurrentPosition|watchPosition/);
   assert.doesNotMatch(map, /routes|estimatedArrival|drivingDistance/);
 });
