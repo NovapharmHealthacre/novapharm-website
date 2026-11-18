@@ -16,6 +16,11 @@ test("compact iOS/Android navigation has four clear persistent sections", () => 
   assert.match(app, /accessibilityRole="tab"/);
   assert.match(app, /accessibilityState=\{\{ selected: active \}\}/);
   assert.match(app, /minHeight: 52/);
+  assert.match(app, /const \{ width, fontScale \} = useWindowDimensions\(\)/);
+  assert.match(app, /const largeText = fontScale >= 1\.4/);
+  assert.match(app, /width >= 760 && !largeText/);
+  assert.match(app, /navigationLarge: \{ flexWrap: "wrap" \}/);
+  assert.match(app, /navItemLarge: \{ flex: 0, flexBasis: "46%", minHeight: 56/);
 });
 
 test("More retains accessible review, research and account entry points", () => {
