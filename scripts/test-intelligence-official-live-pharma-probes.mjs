@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import {
   OFFICIAL_LIVE_PROBE_PLANS, validateOfficialLiveSample,
   probeOfficialPublicPharmaSource
@@ -166,4 +167,23 @@ test("invalid, future, rolled-back or stale clock fails closed",async()=>{
   await assert.rejects(probeOfficialPublicPharmaSource("us-fda-drugsfda",{
     now:42
   }),/invalid trusted transport or clock/);
+});
+
+
+test("both real upstream probes resolve to their original national registry publisher, never global aliases", () => {
+  const source = JSON.parse(readFileSync(
+    new URL("../docs/intelligence/global-pharma-sources-20261117.json",import.meta.url),
+    "utf8"
+  )).sources;
+  for (const [id,plan] of Object.entries(OFFICIAL_LIVE_PROBE_PLANS)) {
+    const match = source.filter(x=>x.candidateKey===plan.registryCandidateKey);
+    assert.equal(match.length,1,id);
+    assert.equal(match[0].country,plan.jurisdiction==="US"?"United States":"Singapore");
+    assert.equal(match[0].region,plan.jurisdiction==="US"?"North America":"Asia Pacific");
+    assert.ok(match[0].mode.includes("API"));
+    assert.equal(match[0].rightsStatus,"not-reviewed");
+    assert.equal(match[0].integrationStatus,"candidate-only");
+    assert.equal(match[0].dataAdmission,"not-admitted");
+    assert.equal(match[0].activeAdapterId,null);
+  }
 });
