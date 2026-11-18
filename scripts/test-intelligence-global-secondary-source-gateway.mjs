@@ -7,6 +7,8 @@ import {
 } from "../src/core/intelligence-global-secondary-source-gateway.mjs";
 
 const NOW = Date.parse("2026-11-18T07:00:00.000Z");
+const HSA_DATASET = "d_767279312753558cbf19d48344577084";
+const HSA_FIELDS = Object.freeze([{ id: "LicenceNo" }, { id: "Productname" }]);
 const sample = (sourceId = "sg-hsa-products", term = "Apixaban", limit = 5) =>
   buildSecondarySourcePlan({ sourceId, term, limit });
 const authGrant = (ctx, overrides = {}) => ({
@@ -67,7 +69,7 @@ test("invalid source IDs, query controls, bypasses and oversized pages fail befo
 
 test("country-local medicine codes and global research identifiers never become publishable", () => {
   const sg = normaliseSecondarySourceResult(sample("sg-hsa-products"), {
-    success: true, result: { records: [
+    success: true, result: { resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [
       { LicenceNo: "SIN00001P", Productname: "Example 1 mg" },
       { LicenceNo: "\u202eSIN999", Productname: "Spoofed" },
       { LicenceNo: "SIN00002P", Productname: "a".repeat(241) }
@@ -114,7 +116,7 @@ test("mock-authorized internal HSA read is bounded and non-publishable", async (
     transport: async (url, config) => {
       requestConfig = config;
       assert.equal(new URL(url).hostname, "data.gov.sg");
-      return json({ success: true, result: { records: [
+      return json({ success: true, result: { resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [
         { LicenceNo: "SIN00001P", Productname: "Test pack" }
       ] } });
     },
@@ -137,7 +139,7 @@ test("a grant that expires while the request executes cannot return results", as
   let clocks = [NOW, Date.parse("2026-11-18T08:00:00Z")];
   const reader = createSecondarySourceReader({
     authorize: async (ctx) => authGrant(ctx),
-    transport: async () => json({ success: true, result: { records: [{ LicenceNo: "SIN00001P", Productname: "Test medicine" }] } }),
+    transport: async () => json({ success: true, result: { resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [{ LicenceNo: "SIN00001P", Productname: "Test medicine" }] } }),
     now: () => clocks.shift()
   });
   await assert.rejects(
@@ -177,7 +179,7 @@ test("invalid server clocks and malformed upstream media/stream fail closed", as
 
 
 test("revoked, changed or unavailable source rights after transport block preview", async () => {
-  const payload = { success: true, result: { records: [
+  const payload = { success: true, result: { resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [
     { LicenceNo: "SIN00001P", Productname: "Test medicinal product" }
   ] } };
   const secondDecisions = [
@@ -208,7 +210,7 @@ test("invalid trusted clock after completed fetch blocks result before delivery"
   let calls = 0;
   const reader = createSecondarySourceReader({
     authorize: async (ctx) => authGrant(ctx),
-    transport: async () => json({success: true, result: {records: [
+    transport: async () => json({success: true, result: {resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [
       { LicenceNo: "SIN00001P", Productname: "Test" }
     ]}}),
     now: () => (++calls === 3 ? NaN : NOW)
@@ -217,4 +219,26 @@ test("invalid trusted clock after completed fetch blocks result before delivery"
     reader.read({ sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA" }),
     /Source rights revoked during upstream request/
   );
+});
+
+
+test("Singapore HSA responses must attest the exact national dataset and required columns", () => {
+  const plan = sample("sg-hsa-products");
+  const example = { LicenceNo: "SIN00001P", Productname: "Test medicinal product" };
+  const valid = { success: true, result: {
+    resource_id: HSA_DATASET, fields: HSA_FIELDS, records: [example]
+  }};
+  const ok = normaliseSecondarySourceResult(plan, valid);
+  assert.equal(ok.records[0].localId, "SIN00001P");
+  const bad = [
+    { ...valid, result: { ...valid.result, resource_id: "d_otherdataset" } },
+    { ...valid, result: { ...valid.result, resource_id: undefined } },
+    { ...valid, result: { ...valid.result, fields: [] } },
+    { ...valid, result: { ...valid.result, fields: [{id:"LicenceNo"}] } },
+    { ...valid, result: { ...valid.result, fields: [{id:"Productname"}] } },
+    { ...valid, result: { ...valid.result, records: Array(11).fill(example) } }
+  ];
+  for (const raw of bad) {
+    assert.throws(() => normaliseSecondarySourceResult(plan, raw), /Unexpected HSA resource identity or schema/);
+  }
 });
