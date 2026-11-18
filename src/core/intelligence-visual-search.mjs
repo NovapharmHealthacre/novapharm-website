@@ -80,7 +80,7 @@ export async function searchApprovedVisualCatalogue(
     let source;
     try { source = new URL(item.sourceUrl); } catch { throw unavailable(); }
     if (source.protocol !== "https:" || !source.hostname || source.username || source.password ||
-        source.port && source.port !== "443" || source.hash) throw unavailable();
+        (source.port !== "" && source.port !== "443") || source.hash) throw unavailable();
     return { rank: index + 1, assetId: item.assetId, title: item.title, rightsReference: item.rightsReference, sourceUrl: source.href, status: "unverified_visual_match" };
   });
   return {
