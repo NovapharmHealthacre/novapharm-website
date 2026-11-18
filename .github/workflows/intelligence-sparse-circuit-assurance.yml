@@ -8,6 +8,8 @@ on:
       - "src/core/ai/model-registry.mjs"
       - "src/ai/model-registry.mjs"
       - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
+      - "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs"
+      - "scripts/research/toy-sparse-circuit-intervention.mjs"
       - "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
       - "apps/portal/components/nova-ml-workspaces.tsx"
       - "apps/portal/data/nova-ml-modules.ts"
@@ -38,4 +40,4 @@ jobs:
         with:
           node-version: "22"
       - name: Validate deterministic research-only contract
-        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs
+        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs scripts/test-intelligence-sparse-circuit-toy-intervention.mjs
