@@ -13,10 +13,14 @@ test("only authenticated board sessions can reach live public pharmaceutical sou
   const block = server.slice(begin,end);
   const auth = block.indexOf('scopedAuthentication(request, response, ["board"])');
   const flag = block.indexOf('NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED !== "true"');
+  const sourceAllowlist = block.indexOf("Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)");
+  const quota = block.indexOf('rateLimit(request, "official-public-live-source-probe"');
   const fetch = block.indexOf("await probeOfficialPublicPharmaSource(sourceId)");
-  assert.ok(block.includes("rateLimit(request,"));
   assert.ok(auth >= 0);
   assert.ok(flag > auth,"Default-off feature flag must be checked after independent session validation");
+  assert.ok(sourceAllowlist > flag,"Only opted-in board requests can validate source identity");
+  assert.ok(quota > sourceAllowlist,"Unauthenticated, disabled or invalid-source requests cannot exhaust the scarce publisher-call quota");
+  assert.ok(fetch > quota,"Official outbound fetch must remain behind a strict rate limit");
   assert.ok(fetch > flag,"Network must be impossible before board auth and feature approval");
   assert.ok(block.includes("Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)"));
   assert.ok(block.includes("return json(response, 400"));
