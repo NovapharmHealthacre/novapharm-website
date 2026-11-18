@@ -11,6 +11,7 @@ Run `swift test --package-path native/novapharm-intelligence-apple` from a **mac
 * `NovaLanguageIntelligence.swift`: local Natural Language recognition and word tokenization of a separately approved public excerpt. Rejects unapproved or oversized inputs; withholds guessed language for short snippets. No raw text is retained by this adapter.
 * `NovaSpeechIntelligence.swift`: opt-in Speech transcription of one user-picked local audio file only, after the system Speech authorization is already granted. Enforces `supportsOnDeviceRecognition` and `requiresOnDeviceRecognition = true`; rejects any language/device combination that needs network recognition. The calling app must cancel the returned `SFSpeechRecognitionTask` when requested and must never auto-save a transcript.
 * `NovaResearchAppIntent.swift`: read-only App Intent that can foreground a signed app. It never exports authorised research records to Siri, Shortcuts or Spotlight.
+* `NovaSparseCircuitReader.swift`: reads a strictly non-authorising, unverified sparse-circuit research summary. This is **not** model inspection, mechanistic explanation proof, inference, signed attestation or an iOS app view. The shared server-side candidate contract is in `src/core/intelligence-sparse-circuit-assurance.mjs`.
 
 See [APP_PRIVACY_CHECKLIST.md](APP_PRIVACY_CHECKLIST.md) for native permission, retention, revocation, application governance and Xcode test requirements.
 
