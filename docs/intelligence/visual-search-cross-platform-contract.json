@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "contract": "novapharm.intelligence.visual-search.v1",
+  "scope": "private_nonclinical_research_only",
+  "releaseState": "source_candidate_disabled",
+  "allowedSources": "independently_rights_approved_public_images_only",
+  "allowedScopes": [
+    "board"
+  ],
+  "http": {
+    "portalPath": "/gateway/v1/intelligence/visual/search",
+    "apiPath": "/api/v1/intelligence/visual/search",
+    "method": "POST",
+    "csrfRequired": true,
+    "noCredentialsInUrls": true,
+    "noRedirects": true,
+    "limitMin": 1,
+    "limitMax": 10,
+    "queryMinLength": 3,
+    "queryMaxLength": 240
+  },
+  "result": {
+    "status": "unverified_visual_match",
+    "rankIsNotConfidence": true,
+    "sourceAttributionRequired": true,
+    "rightsReferenceRequired": true,
+    "humanReviewRequired": true,
+    "similarityIsNotEvidence": true,
+    "productIdentityVerified": false,
+    "regulatoryStatusVerified": false
+  },
+  "platforms": {
+    "web": "protected Next.js Nova Device Intelligence candidate",
+    "ios": "Swift package candidate, not signed app",
+    "android": "Gradle Kotlin/JVM adapter candidate, not APK or Play release"
+  },
+  "prohibited": [
+    "patient images and prescriptions",
+    "personal health data",
+    "medicine or dose identification",
+    "counterfeit or batch authentication",
+    "regulatory approval determination",
+    "autonomous supplier, supply, clinical or financial decisions",
+    "public model inference or unapproved image ingestion"
+  ],
+  "infrastructure": {
+    "enabledByDefault": false,
+    "loopbackOnly": true,
+    "modelWeightsBundled": false,
+    "publicImageIndexBundled": false,
+    "separateReleaseEvidenceRequired": true
+  }
+}
