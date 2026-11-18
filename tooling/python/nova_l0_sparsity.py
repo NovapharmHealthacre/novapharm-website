@@ -36,7 +36,7 @@ class HardConcreteFeatureGates(nn.Module):
         self.temperature = temperature
         self.gamma = gamma
         self.zeta = zeta
-        self.log_alpha = nn.Parameter(torch.full((feature_count,), initial_log_alpha))
+        self.log_alpha = nn.Parameter(torch.full((feature_count,), float(initial_log_alpha), dtype=torch.float32))
 
     def forward(self) -> Tensor:
         if self.training:
