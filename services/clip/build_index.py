@@ -2,20 +2,24 @@
 
 Do not run for patient records, supplier documents or assets without signed rights.
 Input manifest: {"assets":[{"assetId","title","sourceUrl","rightsReference",
-  "rightsApproved":true,"publicAssetOnly":true,"localPath","imageSha256"}]}.
+  "rightsApproved":true,"publicAssetOnly":true,"rightsStatus":"active",\n  "rightsExpiryDate":"YYYY-MM-DD","localPath","imageSha256"}]}.
 All images must be files supplied by authorised operators; never remote URLs.
 """
 import argparse
 import hashlib
 import json
 from pathlib import Path
-from urllib.parse import urlparse
+from rights import validate_public_asset
 
 CONTRACT = "novapharm.intelligence.visual-search.v1"
 
 
 def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    hash_state = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            hash_state.update(chunk)
+    return hash_state.hexdigest()
 
 
 def build(manifest_path, model_path, output_path):
@@ -34,22 +38,14 @@ def build(manifest_path, model_path, output_path):
     indexed = []
     used = set()
     for item in assets:
-        if item.get("rightsApproved") is not True or item.get("publicAssetOnly") is not True:
-            raise ValueError("An asset lacks an independent source-rights approval.")
-        identifier = item.get("assetId", "")
-        source_url = item.get("sourceUrl", "")
-        parsed = urlparse(source_url)
-        if not isinstance(identifier, str) or not identifier or identifier in used or len(identifier) > 120 or not all(c.isalnum() or c in "._:-" for c in identifier):
-            raise ValueError("Duplicate or invalid asset identifier.")
-        if parsed.scheme != "https" or not parsed.netloc or parsed.username or parsed.password:
-            raise ValueError("Sources must have a rights-verified HTTPS URL.")
-        if not item.get("rightsReference") or not item.get("title") or len(item["title"]) > 200:
-            raise ValueError("Missing rights reference or asset label.")
+        validate_public_asset(item, seen=used)
+        identifier = item["assetId"]
+        source_url = item["sourceUrl"]
         image_path = Path(item.get("localPath", ""))
         if not image_path.is_absolute() or not image_path.is_file() or image_path.stat().st_size > 8_000_000:
             raise ValueError("Image must be an approved local file under 8MB.")
-        expected_hash = item.get("imageSha256", "")
-        if not isinstance(expected_hash, str) or digest(image_path) != expected_hash.lower():
+        expected_hash = item["imageSha256"]
+        if digest(image_path) != expected_hash:
             raise ValueError("Source image digest is missing or incorrect.")
         Image.MAX_IMAGE_PIXELS = 12_000_000
         with Image.open(image_path) as image:
@@ -63,9 +59,9 @@ def build(manifest_path, model_path, output_path):
             "assetId": identifier, "title": item["title"],
             "sourceUrl": source_url, "rightsReference": item["rightsReference"],
             "rightsApproved": True, "publicAssetOnly": True,
-            "vector": vector.tolist()
+            "rightsStatus": "active", "rightsExpiryDate": item["rightsExpiryDate"],
+            "sourceImageSha256": item["imageSha256"], "vector": vector.tolist()
         })
-        used.add(identifier)
     output = {"contract": CONTRACT, "modelSha256": digest(model_path), "assets": indexed}
     target = Path(output_path)
     target.parent.mkdir(parents=True, exist_ok=True)
