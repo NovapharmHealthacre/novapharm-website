@@ -92,3 +92,14 @@ test("protected web and native Science methods display unverified publisher and 
   assert.match(native, /entry\.validationTrack/);
   assert.doesNotMatch(web + native, /OPENAI_API_KEY|secret_key|api\.openai\.com|fetch\(/);
 });
+
+test("native typecheck explicitly includes Science and source registries", () => {
+  const config = JSON.parse(readFileSync(
+    new URL("../native/novapharm-intelligence-mobile/tsconfig.json", import.meta.url), "utf8"
+  ));
+  assert.ok(config.include.includes("ScienceResearchMobile.tsx"));
+  assert.ok(config.include.includes("../../docs/intelligence/science-research-capabilities-20261118.json"));
+  assert.ok(config.include.includes("../../docs/intelligence/openai-science-methods-20261118.json"));
+  assert.equal(config.compilerOptions.noEmit, true);
+  assert.equal(config.compilerOptions.strict, true);
+});
