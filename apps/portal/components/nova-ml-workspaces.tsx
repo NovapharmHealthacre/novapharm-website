@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { inspectSyntheticFeature } from "../../../src/core/ai/model-microscope-synthetic-reference.mjs";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue, modelMicroscopeInspectionStages } from "../data/nova-ml-modules";
+import { modelMicroscopeInspectionStages, type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -11,6 +11,8 @@ const gates = [
   { id: "evaluation", title: "Evaluation and limitations", detail: "Representative holdout, failures, bias, drift and fallback criteria are tested." },
   { id: "signoff", title: "Human release authority", detail: "The accountable owner has approved deployment and its rollback plan." }
 ] as const;
+
+const syntheticPixelIds = Object.freeze(Array.from({ length: 16 }, (_, index) => `pixel-r${Math.floor(index / 4)}-c${index % 4}`));
 
 export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }>) {
   const module = novaMlWorkspaceCatalogue.find((entry) => entry.slug === kind);
@@ -61,13 +63,14 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <h3>Interactive synthetic feature reference</h3>
         <p>This optional demonstration runs a tiny first-party 4 × 4 neural network entirely in this browser. It is not a NovaPharm pharmaceutical model, a verified explanation, or an approved model artifact.</p>
         <button className={styles.reset} type="button" onClick={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>Run synthetic reference</button>
-        {syntheticExample ? <div className={styles.syntheticResult} role="group" aria-label="Synthetic feature-maximization result">
+        {syntheticExample ? <figure className={styles.syntheticResult}>
+          <figcaption>First-party synthetic feature-maximization result</figcaption>
           <div className={styles.syntheticGrid} role="img" aria-label="Synthetic grayscale four by four input feature grid">
-            {syntheticExample.optimizedGrid.flat().map((value, index) => <span key={index} className={styles.syntheticPixel} style={{ backgroundColor: "rgba(29, 29, 31, " + value + ")" }} />)}
+            {syntheticExample.optimizedGrid.flat().map((value, index) => <span key={syntheticPixelIds[index]} className={styles.syntheticPixel} style={{ backgroundColor: `rgba(29, 29, 31, ${value})` }} />)}
           </div>
           <p>Initial activation: {syntheticExample.initialActivation} · Maximized activation: {syntheticExample.finalActivation}</p>
           <p><strong>Synthetic only.</strong> No patient data, medicine prediction, model download or external request.</p>
-        </div> : null}
+        </figure> : null}
       </div>
       <p className={styles.reference}>Research basis: <a href="https://openai.com/index/microscope/">OpenAI Microscope</a>; <a href="https://distill.pub/2017/feature-visualization/">Feature Visualization</a>; <a href="https://distill.pub/2020/circuits/zoom-in/">Introduction to Circuits</a>.</p>
     </section> : null}
@@ -103,7 +106,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         </label>)}
       </fieldset>
       <div className={styles.reviewStatus} role="status" aria-live="polite">
-        <strong>{complete ? "Preparation checklist marked complete" : String(review.length) + " of " + String(gates.length) + " preparation items selected"}</strong>
+        <strong>{complete ? "Preparation checklist marked complete" : `${review.length} of ${gates.length} preparation items selected`}</strong>
         <p>{complete ? "This is a local planning state only. It does not verify evidence, confer approval, enable models or unlock a production feature." : "All proposed capabilities remain disabled until independently verified, owner-approved and deployed in a native companion."}</p>
       </div>
       <button type="button" className={styles.reset} onClick={() => setReview([])} disabled={review.length === 0}>Clear selections</button>
