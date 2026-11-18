@@ -89,7 +89,7 @@ test("country-local medicine codes and global research identifiers never become 
 
 test("unexpected upstream schemas never yield medicine evidence", () => {
   for (const sourceId of Object.keys(secondarySourcePlans)) {
-    assert.throws(() => normaliseSecondarySourceResult(sample(sourceId), {}), /Unexpected source schema/);
+    assert.throws(() => normaliseSecondarySourceResult(sample(sourceId), {}), /Unexpected (?:source schema|HSA resource identity or schema)/);
   }
 });
 
