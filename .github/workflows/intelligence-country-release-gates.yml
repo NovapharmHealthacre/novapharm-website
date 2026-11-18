@@ -51,6 +51,11 @@ jobs:
           const fs = require("node:fs");
           const d = JSON.parse(fs.readFileSync("artifacts/country-release-ledger/readiness.json","utf8"));
           if (d.nationalCountries !== 77 || d.totalSources !== 101 ||
+              d.nationalSourceCandidates !== 89 ||
+              d.euEeaGroupSourceCandidates !== 3 || d.globalGroupSourceCandidates !== 9 ||
+              d.sourceAdvertisedModeCounts.apiRelated !== 35 ||
+              d.sourceAdvertisedModeCounts.downloadRelatedWithoutApi !== 26 ||
+              d.sourceAdvertisedModeCounts.portalDiscoveryOrOther !== 40 ||
               d.verifiedLicensedSources !== 0 || d.verifiedProductionCountries !== 0 ||
               d.countries.length !== 79 || d.countries.some(x => !x.countryCode ||
                 x.engineeringMilestonePercent > 40 || x.verifiedProductionCompletionPercent !== 0) ||
