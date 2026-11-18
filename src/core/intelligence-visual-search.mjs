@@ -42,9 +42,14 @@ function normaliseQuery(query) {
   return clean;
 }
 export async function searchApprovedVisualCatalogue(
-  { query, limit = 5 } = {}, environment = process.env, fetchImpl = globalThis.fetch
+  input = {}, environment = process.env, fetchImpl = globalThis.fetch
 ) {
   const { origin, secret } = validateConfiguration(environment);
+  if (!input || typeof input !== "object" || Array.isArray(input) ||
+      Object.keys(input).some(key => !["query", "limit"].includes(key))) {
+    throw Object.assign(new Error("Unexpected visual search request fields."), { statusCode: 400 });
+  }
+  const { query, limit = 5 } = input;
   const clean = normaliseQuery(query);
   if (!Number.isInteger(limit) || limit < 1 || limit > 10) {
     throw Object.assign(new Error("Limit must be between 1 and 10."), { statusCode: 400 });
@@ -64,14 +69,18 @@ export async function searchApprovedVisualCatalogue(
   let payload;
   try { payload = await response.json(); } catch { throw unavailable(); }
   if (payload?.contract !== CONTRACT || !Array.isArray(payload.results) || payload.results.length > limit) throw unavailable();
+  const seen = new Set();
   const results = payload.results.map((item, index) => {
     if (!item || !/^[a-zA-Z0-9._:-]{1,120}$/.test(item.assetId) ||
         typeof item.title !== "string" || !item.title.trim() || item.title.length > 200 ||
         typeof item.rightsReference !== "string" || !item.rightsReference.trim() ||
-        typeof item.sourceUrl !== "string") throw unavailable();
+        typeof item.sourceUrl !== "string" || item.rightsReference.length > 240 ||
+        seen.has(item.assetId)) throw unavailable();
+    seen.add(item.assetId);
     let source;
     try { source = new URL(item.sourceUrl); } catch { throw unavailable(); }
-    if (source.protocol !== "https:" || source.username || source.password) throw unavailable();
+    if (source.protocol !== "https:" || !source.hostname || source.username || source.password ||
+        source.port && source.port !== "443" || source.hash) throw unavailable();
     return { rank: index + 1, assetId: item.assetId, title: item.title, rightsReference: item.rightsReference, sourceUrl: source.href, status: "unverified_visual_match" };
   });
   return {
