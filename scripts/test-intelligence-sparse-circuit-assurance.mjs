@@ -1,4 +1,5 @@
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import {
   CIRCUIT_ARTIFACT_VERSION,
@@ -126,4 +127,29 @@ test("rejects separately connected components and invalid calendar dates", () =>
   const typed=candidate();
   typed.model.weightsSha256={toString:()=> "a".repeat(64)};
   assert.equal(inspectSparseCircuitCandidate(typed).valid,false);
+});
+
+test("versioned unverified research summary matches the shared web and native schema", () => {
+  const schema=JSON.parse(readFileSync(
+    new URL("../docs/intelligence/npi-sparse-circuit-summary-v1.schema.json", import.meta.url),
+    "utf8"
+  ));
+  const result=inspectSparseCircuitCandidate(candidate());
+  assert.equal(result.valid,true);
+  assert.equal(schema.additionalProperties,false);
+  assert.equal(schema.$id,"urn:novapharm:intelligence:sparse-circuit-summary:v1");
+  assert.deepEqual(Object.keys(result).sort(),schema.required.slice().sort());
+  assert.deepEqual(Object.keys(schema.properties).sort(),schema.required.slice().sort());
+  for (const [key, definition] of Object.entries(schema.properties)) {
+    if (Object.hasOwn(definition, "const")) assert.equal(result[key],definition.const);
+    if (definition.type === "string") {
+      assert.equal(typeof result[key], "string");
+      assert.match(result[key],new RegExp(definition.pattern));
+    }
+    if (definition.type === "integer") {
+      assert.ok(Number.isSafeInteger(result[key]));
+      assert.ok(result[key] >= definition.minimum && result[key] <= definition.maximum);
+    }
+    if (definition.type === "number") assert.ok(typeof result[key] === "number" && Number.isFinite(result[key]));
+  }
 });
