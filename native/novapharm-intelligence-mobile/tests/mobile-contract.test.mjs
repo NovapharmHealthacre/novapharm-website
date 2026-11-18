@@ -48,3 +48,30 @@ test("no source candidate is silently represented as verified market facts", () 
   const app = read("native/novapharm-intelligence-mobile/App.tsx");
   assert.doesNotMatch(app, /sourceRegister\.sources\.map\(.*fetch/);
 });
+
+test("Signals/Whisper/Triton research is a visible fifth tab in the iOS/Android prototype", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
+  const shared = read("apps/portal/data/nova-signals-research.ts");
+  assert.match(app, /type Screen = .*"research"/);
+  assert.match(app, /\{ screen: "research", label: "Research" \}/);
+  assert.match(app, /screen === "research" && <SignalsResearchScreen\s*\/>/);
+  assert.match(screen, /novaSignalsResearchSources/);
+  assert.match(screen, /novaSignalsResearchGroups/);
+  assert.match(screen, /accessibilityRole="link"/);
+  assert.match(screen, /accessibilityState=\{\{ expanded \}\}/);
+  assert.match(screen, /minimumHeight: 44|minHeight: 44/);
+  assert.match(screen, /No OpenAI account access, patient data, voice capture/);
+  assert.match(screen, /only three are candidates/);
+  assert.equal((shared.match(/id: "[a-z0-9-]+", group:/g) ?? []).length, 15);
+  assert.equal((shared.match(/url: "https:\/\/(?:openai\.com|cdn\.openai\.com)\//g) ?? []).length, 15);
+  assert.doesNotMatch(screen + app, /fetch\(|XMLHttpRequest|WebSocket\(|getUserMedia|expo-av|Audio\.Recording|SecureStore|openAIKey/i);
+});
+test("research browser opens only curated original OpenAI links after a tap", () => {
+  const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
+  assert.match(screen, /\^https:\\/\\/\(\?:openai\\\.com\|cdn\\\.openai\\\.com\)\\\//);
+  assert.match(screen, /if \(!validSourceUrl\(url\)\)/);
+  assert.match(screen, /onPress=\{\(\) => \{ void openSource\(source\.url\); \}\}/);
+  assert.match(screen, /Linking\.openURL\(url\)/);
+  assert.match(screen, /catch \{/);
+});
