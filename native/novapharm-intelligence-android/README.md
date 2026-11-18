@@ -1,29 +1,34 @@
-# Nova ML Android research adapter — not an Android application
+# NovaPharm Intelligence — Android sparse-circuit research prototype
 
-This folder contains a **pure Kotlin hard-concrete reference implementation** and a dependency-free synthetic test. There is no Android Studio project, Gradle application, Android package, release signing, Play Store build, embedded pharmaceutical model, trained weights or customer-facing interface in this repository. This source **must not be represented as an installed or live Android app**.
+**Status: offline Android application prototype, not a production NovaPharm app.** This prototype contains no model, real pharmaceutical data, patient information, sign-in, network permission, licensed source data or production API. An Android debug build is not a signed Play Store release or customer service.
 
-Use after connecting an independently reviewed NovaPharm Intelligence Android app repository and its signed release manifest:
+## Implementation
 
-1. Keep model training in an approved, private, audited training workflow; do not train or accept models from untrusted app input.
-2. For Android on-device inference, evaluate Google's current [LiteRT guidance](https://developer.android.com/ai/custom) and approved conversion/quantisation. The Kotlin reference math alone is **not** LiteRT inference, a trained model or proof of latency benefit.
-3. Require signed model identity/version, verified source licences and rights, immutable feature schema and preprocessing, tenant-scoped access to sensitive business features, provenance, temporal holdout, subgroup tests, drift alarms and revocation.
-4. Benchmark actual CPU/GPU/NPU devices against a dense baseline. Unstructured weight zeros **do not guarantee** speedups; structured feature/channel sparsity and supported deployment kernels are preferred.
-5. Keep feature disabled and customer-facing prediction calls unavailable until independent model, security, privacy, regulatory and product approval. For clinical/safety decisions, a separate regulated-system assessment is required.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt` — bounded, exact-schema JSON parser for an independently supplied **unverified** research summary. It denies unknown fields, forged production/clinical flags, invalid IDs, counts or non-finite metrics.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt` — accessible read-only Android View with NovaPharm's restrained white/graphite visual hierarchy, research disclaimer and no automatic data capture.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt` — offline launcher showing the **no evidence connected** state. It intentionally does not fetch a summary.
+- `app/src/main/AndroidManifest.xml` — no INTERNET, camera, audio, location or storage permissions; backups and cleartext disabled.
+- `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
+- `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
 
-Offline Kotlin test (with a separately installed Kotlin compiler):
+From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
 
 ```sh
-kotlinc native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt -include-runtime -d /tmp/nova-l0-test.jar
-java -jar /tmp/nova-l0-test.jar
+cd native/novapharm-intelligence-android
+gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 ```
 
-## Research candidate schema
+The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
 
-The Kotlin source also contains `NovaL0ResearchCandidate.score` for deterministic testing of the same versioned sparse-linear artifact consumed by the TypeScript and Swift research sources. This offline function rejects wrong feature keys, duplicate or malformed names, non-finite values, incorrect nonzero counts and any claim of production or customer activation. It is **not** an Android ML runtime, signed app, LiteRT conversion, or user-facing prediction feature. Test with synthetic vector: demand=5, stock=99, lead_time=4; coefficients=(2,0,2), bias=3; expected score=21.
+## Future production integration
 
-## Compute-admission research candidate
+A signed NovaPharm Intelligence Android app must provide independently authenticated, revocable, server-owned tenant and source permissions; it must verify a versioned service response over TLS, supply explicitly authorised research summaries to the view, and support user correction and abandonment without storing private research records. This prototype intentionally does none of those operations. JSON fields are **not authorisation** and a structurally valid summary is **not causal verification**. There is no built-in model weight access or inference.
 
-This directory contains **Kotlin source only**, not a Gradle/Android project or a signed Android application. It is an initial portable Android policy adapter based on the shared non-executing Nova ML compute contract.
+Corresponding shared web research contract: `../../src/core/intelligence-sparse-circuit-assurance.mjs`. Research analysis and release gates: `../../docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md`.
+
+## Separate compute-admission Kotlin policy adapter
+
+The directory also includes a non-executing standalone Kotlin compute-admission adapter independent of the Gradle research shell. It does not activate compute, upload information or authorize customer services.
 
 The file `NovaComputePlan.kt` checks candidate workload metadata against bounded resources, region, privacy and estimated cost. Its only positive result is `review-only`; `executionEnabled` is always `false`. It does **not** upload data, train models, access the camera, authenticate a user, manage cloud credentials, make clinical decisions or schedule jobs.
 
@@ -39,3 +44,22 @@ java -jar /tmp/novapharm-android-compute-tests.jar
 The signed future Android application must integrate this candidate with its own authenticated API client, Android application lifecycle, device tests, release/Play Store signing, accessibility and local secure storage. Client validation is never an authorization boundary; job approval and budget limits belong to a trusted backend. No billable cloud infrastructure is provisioned.
 
 See `docs/architecture/deep-learning-infrastructure-20261118.md` for architecture and deployment gates.
+
+## Offline L0 hard-concrete reference math
+
+Offline Kotlin test (with a separately installed Kotlin compiler):
+
+```sh
+kotlinc native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt -include-runtime -d /tmp/nova-l0-test.jar
+java -jar /tmp/nova-l0-test.jar
+```
+
+## Research candidate schema
+
+The Kotlin source also contains `NovaL0ResearchCandidate.score` for deterministic testing of the same versioned sparse-linear artifact consumed by the TypeScript and Swift research sources. This offline function rejects wrong feature keys, duplicate or malformed names, non-finite values, incorrect nonzero counts and any claim of production or customer activation. It is **not** an Android ML runtime, signed app, LiteRT conversion, or user-facing prediction feature. Test with synthetic vector: demand=5, stock=99, lead_time=4; coefficients=(2,0,2), bias=3; expected score=21.
+
+This separate Kotlin research-only scorer does not activate a model, access pharmaceutical data, change the standalone sparse-circuit Android prototype or constitute a signed customer release. Device benchmarks, licence review and independent quality approval remain mandatory.
+
+## Separate offline alignment receipt
+
+The independent `src/main/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceipt.kt` test candidate is source-only and is not wired to the Android sparse-circuit application. It is a deterministic denial contract, not a production model, data-rights check or signed Android service. See `ALIGNMENT_RESEARCH_README.md` for synthetic tests and independent approval gates.

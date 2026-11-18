@@ -75,6 +75,28 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertTrue(denied.reasons.contains("budget-not-approved"))
     }
 
+    #if os(macOS)
+    func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
+        let permit = NovaTrainingPermit(
+            sourceRightsApproved: false,
+            privacyReviewApproved: false,
+            independentHoldoutApproved: false,
+            trainingDatasetVersion: "",
+            licenceReference: "",
+            minimumHoldoutAccuracy: 1,
+            fixedValidationRatio: 0.2,
+            fixedValidationSeed: 42,
+            classBalanceAndLeakageReviewed: false
+        )
+        XCTAssertThrowsError(try trainNovaPublicTextClassifier(
+            trainingCSV: URL(fileURLWithPath: "/tmp/forbidden-training.csv"),
+            independentHoldoutCSV: URL(fileURLWithPath: "/tmp/forbidden-holdout.csv"),
+            outputModelURL: URL(fileURLWithPath: "/tmp/forbidden-model.mlmodel"),
+            permit: permit
+        ))
+    }
+    #endif
+
     func testL0HardConcreteResearchMathAndInvalidInputs() throws {
         let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
         XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
@@ -135,25 +157,51 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertThrowsError(try fakeTruth.validateForResearchDisplay())
     }
 
-    #if os(macOS)
-    func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
-        let permit = NovaTrainingPermit(
-            sourceRightsApproved: false,
-            privacyReviewApproved: false,
-            independentHoldoutApproved: false,
-            trainingDatasetVersion: "",
-            licenceReference: "",
-            minimumHoldoutAccuracy: 1,
-            fixedValidationRatio: 0.2,
-            fixedValidationSeed: 42,
-            classBalanceAndLeakageReviewed: false
-        )
-        XCTAssertThrowsError(try trainNovaPublicTextClassifier(
-            trainingCSV: URL(fileURLWithPath: "/tmp/forbidden-training.csv"),
-            independentHoldoutCSV: URL(fileURLWithPath: "/tmp/forbidden-holdout.csv"),
-            outputModelURL: URL(fileURLWithPath: "/tmp/forbidden-model.mlmodel"),
-            permit: permit
+    func testSparseCircuitReaderIsDisplayOnlyAndFailClosed() throws {
+        let base: [String: Any] = [
+            "schemaVersion": "npi.sparse-circuit.v1",
+            "valid": true,
+            "status": "unverified-research-candidate",
+            "modelId": "experiment-1",
+            "taskId": "quote-classification",
+            "nodeCount": 2,
+            "edgeCount": 1,
+            "lossDeltaCircuitVsBaseline": 0.01,
+            "lossDeltaAblatedVsCircuit": 0.56,
+            "sampleCount": 128,
+            "ablation": "mean",
+            "mechanisticExplanationVerified": false,
+            "productionEligible": false,
+            "clinicalUsePermitted": false
+        ]
+        let data = try JSONSerialization.data(withJSONObject: base)
+        let summary = try NovaSparseCircuitReader.readResearchSummary(data)
+        XCTAssertEqual(summary.status, "unverified-research-candidate")
+        XCTAssertFalse(summary.productionEligible)
+
+        var forged = base
+        forged["productionEligible"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["mechanisticExplanationVerified"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["sampleCount"] = 1_000_001
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["nodeCount"] = 90000
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
         ))
     }
-    #endif
+
 }

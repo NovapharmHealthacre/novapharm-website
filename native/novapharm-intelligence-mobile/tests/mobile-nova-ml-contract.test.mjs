@@ -11,10 +11,12 @@ test("Expo preview shares all five offline Nova ML methods with protected web me
   const ui = read("native/novapharm-intelligence-mobile/App.tsx");
   const catalogue = read("apps/portal/data/nova-ml-modules.ts");
   assert.match(ui, /novaMlAlignmentResearchMethods/);
+  assert.match(ui, /novaMlSparseCircuitAssurance/);
+  assert.match(ui, /<MultimodalReviewScreen/);
   assert.match(ui, /novaMlSparseResearchMethod/);
   assert.match(ui, /novaMlWorkspaceCatalogue/);
   assert.match(ui, /title="Nova ML research"/);
-  assert.match(ui, /screen: "research", label: "Nova ML"/);
+  assert.match(ui, /screen: "research", label: "Research"/);
   assert.match(catalogue, /export const novaMlSparseResearchMethod/);
   assert.match(catalogue, /export const novaMlAlignmentResearchMethods/);
   assert.equal((catalogue.match(/id: "(reward_proxy_sweep|critique_assistance|instruction_conformance|offline_multiagent_scenario_scoreboard)"/g) ?? []).length, 4);

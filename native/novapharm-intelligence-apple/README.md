@@ -11,6 +11,7 @@ Run `swift test --package-path native/novapharm-intelligence-apple` from a **mac
 * `NovaLanguageIntelligence.swift`: local Natural Language recognition and word tokenization of a separately approved public excerpt. Rejects unapproved or oversized inputs; withholds guessed language for short snippets. No raw text is retained by this adapter.
 * `NovaSpeechIntelligence.swift`: opt-in Speech transcription of one user-picked local audio file only, after the system Speech authorization is already granted. Enforces `supportsOnDeviceRecognition` and `requiresOnDeviceRecognition = true`; rejects any language/device combination that needs network recognition. The calling app must cancel the returned `SFSpeechRecognitionTask` when requested and must never auto-save a transcript.
 * `NovaResearchAppIntent.swift`: read-only App Intent that can foreground a signed app. It never exports authorised research records to Siri, Shortcuts or Spotlight.
+* `NovaSparseCircuitReader.swift`: reads a strictly non-authorising, unverified sparse-circuit research summary. This is **not** model inspection, mechanistic explanation proof, inference, signed attestation or an iOS app view. The shared server-side candidate contract is in `src/core/intelligence-sparse-circuit-assurance.mjs`.
 
 See [APP_PRIVACY_CHECKLIST.md](APP_PRIVACY_CHECKLIST.md) for native permission, retention, revocation, application governance and Xcode test requirements.
 
@@ -23,3 +24,7 @@ Use [Apple Create ML](https://developer.apple.com/documentation/createml), [Core
 `NovaL0ResearchMath.swift` is a research-only numeric reference implementing the ICLR 2018 hard-concrete gate equation and an offline, bounded `NovaL0ResearchCandidate` scorer. It enforces the common `nova-l0-sparse-linear-candidate-v1` contract and rejects any candidate with production/customer flags enabled, malformed feature names, mismatched schemas or non-finite values. The XCTest suite uses synthetic examples.
 
 It does **not** bundle a model, perform training, authorise medicine inputs or invoke Core ML. In a future signed iOS app, a separately reviewed compiled model and signed native release manifest must still pass `NovaCoreMLRuntime` gates; the research scorer is not a substitute. See `docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md` for the shared API/Android parity and independent release requirements.
+
+## Alignment research display receipt
+
+The additional `NovaAlignmentResearchReceipt.swift` exposes only an offline negative-claim receipt for research review; it cannot grant independent ground-truth, data rights, customer visibility, clinical use, model weights or production activation. The source-only tests verify rejection of forged release claims. See `docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md`.
