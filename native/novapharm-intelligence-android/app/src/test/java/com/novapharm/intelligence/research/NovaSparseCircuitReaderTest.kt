@@ -69,6 +69,7 @@ class NovaSparseCircuitReaderTest {
             candidate().put("nodeCount", -5),
             candidate().put("edgeCount", 999999),
             candidate().put("sampleCount", 0),
+            candidate().put("sampleCount", 1_000_001),
             candidate().put("ablation", "uncontrolled")
         )
         for (item in bads) {

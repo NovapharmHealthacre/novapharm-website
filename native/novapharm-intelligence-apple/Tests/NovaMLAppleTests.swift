@@ -101,6 +101,12 @@ final class NovaMLAppleTests: XCTestCase {
         ))
 
         forged = base
+        forged["sampleCount"] = 1_000_001
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
         forged["nodeCount"] = 90000
         XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
             JSONSerialization.data(withJSONObject: forged)

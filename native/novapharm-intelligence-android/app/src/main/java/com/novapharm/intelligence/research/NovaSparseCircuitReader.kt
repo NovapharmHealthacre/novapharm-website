@@ -52,7 +52,7 @@ object NovaSparseCircuitReader {
         val nodes = value.getInt("nodeCount")
         val edges = value.getInt("edgeCount")
         val examples = value.getInt("sampleCount")
-        require(nodes in 1..2000 && edges in 1..8000 && examples > 0)
+        require(nodes in 1..2000 && edges in 1..8000 && examples in 1..1_000_000)
         require(value.get("lossDeltaCircuitVsBaseline") is Number)
         require(value.get("lossDeltaAblatedVsCircuit") is Number)
         val baseline = value.getDouble("lossDeltaCircuitVsBaseline")

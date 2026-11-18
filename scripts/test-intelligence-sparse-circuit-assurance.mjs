@@ -76,7 +76,7 @@ test("duplicate, unknown and oversized node lists reject", () => {
 test("invalid metrics and assertions about evaluation reject", () => {
   for (const patch of [
     {baselineLoss:-1},{circuitLoss:Infinity},{ablatedLoss:NaN},
-    {sampleCount:0},{sampleCount:1.5},{holdout:false},
+    {sampleCount:0},{sampleCount:1.5},{sampleCount:1_000_001},{holdout:false},
     {ablation:"none"}
   ]) {const c=candidate();Object.assign(c.evaluation,patch);assert.equal(inspectSparseCircuitCandidate(c).valid,false);}
 });

@@ -50,7 +50,7 @@ public struct NovaSparseCircuitReader {
               summary.status == "unverified-research-candidate",
               summary.nodeCount > 0, summary.nodeCount <= 2_000,
               summary.edgeCount > 0, summary.edgeCount <= 8_000,
-              summary.sampleCount > 0,
+              summary.sampleCount > 0, summary.sampleCount <= 1_000_000,
               summary.ablation == "mean",
               summary.lossDeltaCircuitVsBaseline.isFinite,
               summary.lossDeltaAblatedVsCircuit.isFinite,

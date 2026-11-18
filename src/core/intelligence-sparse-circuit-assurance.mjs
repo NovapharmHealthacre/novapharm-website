@@ -156,6 +156,7 @@ export function inspectSparseCircuitCandidate(artifact) {
     !finiteNonNegative(artifact.evaluation.ablatedLoss) ||
     !Number.isSafeInteger(artifact.evaluation.sampleCount) ||
     artifact.evaluation.sampleCount < 1 ||
+    artifact.evaluation.sampleCount > 1_000_000 ||
     artifact.evaluation.holdout !== true ||
     artifact.evaluation.ablation !== "mean"
   )) errors.push("evaluation.invalid_metrics");
