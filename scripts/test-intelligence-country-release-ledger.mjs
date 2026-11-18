@@ -248,3 +248,23 @@ test("source candidates cannot silently move between countries or publishers", (
   }
   assert.equal(buildCountryReleaseLedger(source).totalSources, 101);
 });
+
+
+test("untrusted registry display metadata cannot smuggle hidden characters or fake domains", () => {
+  const edits=[
+    x => { x[0].provider += "\u202e"; },
+    x => { x[0].provider += "\n"; },
+    x => { x[0].region = "Global\u200b"; },
+    x => { x[0].domains += "\u2066"; },
+    x => { x[0].domains = null; },
+    x => { x[0].domains = "A".repeat(241); },
+    x => { x[0].note += "\r"; },
+    x => { x[0].note = ""; },
+    x => { x[0].note = "<fake-link>" + "\n"; }
+  ];
+  for(const change of edits){
+    const rows=candidates();
+    change(rows);
+    assert.throws(()=>buildCountryReleaseLedger(rows), /Country release ledger rejected/);
+  }
+});
