@@ -1,0 +1,97 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  CIRCUIT_ARTIFACT_VERSION,
+  inspectSparseCircuitCandidate
+} from "../src/core/intelligence-sparse-circuit-assurance.mjs";
+
+const digest = "a".repeat(64);
+function candidate() {
+  return {
+    schemaVersion: CIRCUIT_ARTIFACT_VERSION,
+    model: {identifier:"demo-sparse-model",revision:"v1",weightsSha256:digest,access:"weights-and-activations"},
+    task: {identifier:"quote-classification",datasetSha256:digest},
+    circuit: {
+      nodes: [{id:"n1",kind:"mlp-neuron"},{id:"n2",kind:"residual-write"}],
+      edges: [{from:"n1",to:"n2",weight:0.2}]
+    },
+    evaluation: {
+      baselineLoss:0.12,circuitLoss:0.13,ablatedLoss:0.69,
+      sampleCount:128,holdout:true,ablation:"mean"
+    },
+    provenance: {
+      runId:"experiment-1",implementationRevision:"commit-abc",
+      evaluatedAt:"2026-11-18T00:00:00Z"
+    }
+  };
+}
+test("bounded valid research candidate never approves production or clinical use", () => {
+  const result = inspectSparseCircuitCandidate(candidate());
+  assert.equal(result.valid,true);
+  assert.equal(result.status,"unverified-research-candidate");
+  assert.equal(result.nodeCount,2);
+  assert.equal(result.edgeCount,1);
+  assert.equal(result.mechanisticExplanationVerified,false);
+  assert.equal(result.productionEligible,false);
+  assert.equal(result.clinicalUsePermitted,false);
+  assert.equal(Object.isFrozen(result),true);
+  assert.equal("weightsSha256" in result,false);
+});
+test("malformed artifacts reject without echoing raw content", () => {
+  for (const input of [null,[],{},{"patientName":"private"},{
+    ...candidate(),patientName:"PRIVATE PATIENT"
+  }]) {
+    const r = inspectSparseCircuitCandidate(input);
+    assert.equal(r.valid,false);
+    assert.equal(r.productionEligible,false);
+    assert.ok(!JSON.stringify(r).includes("PRIVATE"));
+  }
+});
+test("unknown fields cannot carry prompts, tokens, PHI or source rights", () => {
+  const c=candidate(); c.circuit.nodes[0].patientText="PRIVATE";
+  assert.equal(inspectSparseCircuitCandidate(c).valid,false);
+  const d=candidate(); d.provenance.approvedForProduction=true;
+  assert.equal(inspectSparseCircuitCandidate(d).valid,false);
+});
+test("all edges reference unique known nodes with nonzero finite weights", () => {
+  for(const edge of [
+    {from:"unknown",to:"n2",weight:1},
+    {from:"n1",to:"n1",weight:1},
+    {from:"n1",to:"n2",weight:0},
+    {from:"n1",to:"n2",weight:Infinity},
+    {from:"n1",to:"n2",weight:NaN}
+  ]) {const c=candidate();c.circuit.edges=[edge];assert.equal(inspectSparseCircuitCandidate(c).valid,false);}
+  const c=candidate();c.circuit.edges.push({...c.circuit.edges[0]});
+  assert.equal(inspectSparseCircuitCandidate(c).valid,false);
+});
+test("duplicate, unknown and oversized node lists reject", () => {
+  const c=candidate();c.circuit.nodes[1].id="n1";
+  assert.equal(inspectSparseCircuitCandidate(c).valid,false);
+  const d=candidate();d.circuit.nodes[1].kind="fiction";
+  assert.equal(inspectSparseCircuitCandidate(d).valid,false);
+  const e=candidate();e.circuit.nodes=Array.from({length:2001},(_,i)=>({id:`n${i}`,kind:"mlp-neuron"}));
+  assert.equal(inspectSparseCircuitCandidate(e).valid,false);
+});
+test("invalid metrics and assertions about evaluation reject", () => {
+  for (const patch of [
+    {baselineLoss:-1},{circuitLoss:Infinity},{ablatedLoss:NaN},
+    {sampleCount:0},{sampleCount:1.5},{holdout:false},
+    {ablation:"none"}
+  ]) {const c=candidate();Object.assign(c.evaluation,patch);assert.equal(inspectSparseCircuitCandidate(c).valid,false);}
+});
+test("requires inspectable weights, provenance hashes and valid time", () => {
+  const c=candidate();c.model.access="api-only";
+  assert.equal(inspectSparseCircuitCandidate(c).valid,false);
+  const d=candidate();d.task.datasetSha256="not-a-sha";
+  assert.equal(inspectSparseCircuitCandidate(d).valid,false);
+  for(const date of ["tomorrow","2026-11-18","2026-99-99T00:00:00Z"]) {
+    const t=candidate();t.provenance.evaluatedAt=date;
+    assert.equal(inspectSparseCircuitCandidate(t).valid,false);
+  }
+});
+test("input remains unchanged and no user-supplied flags can elevate status", () => {
+  const c=candidate();const before=JSON.stringify(c);
+  inspectSparseCircuitCandidate(c);
+  assert.equal(JSON.stringify(c),before);
+  assert.equal(inspectSparseCircuitCandidate({...c,productionEligible:true}).valid,false);
+});
