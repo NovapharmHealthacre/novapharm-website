@@ -190,3 +190,44 @@ test("future-dated public PBS schedules fail even if untrusted source labels the
   );
   assert.equal(authCalls, 1, "Never return embargoed data even if first grant is valid");
 });
+
+
+test("trusted authorizer and clock errors are masked at every PBS evaluation stage", async () => {
+  const secret = "SECRET_INTERNAL_AUTHORISATION_CREDENTIAL";
+  let clocks = 0;
+  const noRights = createPbsScheduleCandidateEvaluator({
+    authorize: async () => { throw Error(secret); },
+    now: () => { clocks++; return NOW; }
+  });
+  await assert.rejects(noRights.evaluate({tenantId:"tenantA",bytes:bytes()}), err =>
+    err.message === "PBS schedule quarantine rejected: source rights unavailable before parse" &&
+    !err.message.includes(secret));
+  assert.equal(clocks, 0, "No clock or parsing follows failed initial authorisation");
+
+  for (let failAt = 1; failAt <= 3; failAt++) {
+    let ticks = 0, rightsCalls = 0;
+    const evaluator = createPbsScheduleCandidateEvaluator({
+      authorize: async ctx => { rightsCalls++; return permit(ctx); },
+      now: () => {
+        if (++ticks === failAt) throw Error(secret);
+        return NOW;
+      }
+    });
+    await assert.rejects(evaluator.evaluate({tenantId:"tenantA",bytes:bytes()}), err =>
+      err.message === "PBS schedule quarantine rejected: invalid trusted server time" &&
+      !err.message.includes(secret));
+    assert.equal(rightsCalls, failAt === 3 ? 2 : 1);
+  }
+});
+
+test("server timestamps exceeding JavaScript Date range are rejected before calendar conversion", async () => {
+  for (let failAt = 1; failAt <= 3; failAt++) {
+    let tick = 0;
+    const evaluator = createPbsScheduleCandidateEvaluator({
+      authorize: async ctx => permit(ctx),
+      now: () => (++tick === failAt ? Number.MAX_SAFE_INTEGER : NOW)
+    });
+    await assert.rejects(evaluator.evaluate({tenantId:"tenantA",bytes:bytes()}),
+      /PBS schedule quarantine rejected: invalid trusted server time/);
+  }
+});

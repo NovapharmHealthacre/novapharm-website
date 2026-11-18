@@ -17,7 +17,7 @@ const LIMIT_ROWS = 1000;
 const PREVIEW_ROWS = 5;
 const fail = (message) => { throw new Error("PBS schedule quarantine rejected: " + message); };
 const safeClock = (value) => {
-  if (!Number.isSafeInteger(value) || value < 0) fail("invalid trusted server time");
+  if (!Number.isSafeInteger(value) || value < 0 || value > 8_640_000_000_000_000) fail("invalid trusted server time");
   return value;
 };
 const safeCode = (value) => {
@@ -110,13 +110,21 @@ export function createPbsScheduleCandidateEvaluator({ authorize, now = () => Dat
         sourceId: AU_PBS_SOURCE_ID, tenantId,
         purpose: "internal-evaluation", country: "AU", domain: "reimbursement"
       };
-      const initial = await authorize(binding);
-      const startedAt = safeClock(now());
-      const grant = assertInternalEvaluationPermit({ permit: initial, ...binding, now: startedAt });
+      let initial;
+      try { initial = await authorize(binding); }
+      catch { fail("source rights unavailable before parse"); }
+      let startedAt;
+      try { startedAt = safeClock(now()); }
+      catch { fail("invalid trusted server time"); }
+      let grant;
+      try { grant = assertInternalEvaluationPermit({ permit: initial, ...binding, now: startedAt }); }
+      catch { fail("source rights not approved before parse"); }
       if (format !== "application/json" && format !== "text/csv") fail("unknown source media type");
       const sample = format === "text/csv"
         ? evaluatePbsScheduleCsv(bytes) : evaluatePbsScheduleJson(bytes);
-      const parsedAt = safeClock(now());
+      let parsedAt;
+      try { parsedAt = safeClock(now()); }
+      catch { fail("invalid trusted server time"); }
       // Even a forged "Published" flag cannot introduce a future embargoed
       // schedule into a public-only evaluation. All rows were ordered earlier.
       if (sample.latestCandidateEffectiveDate > new Date(parsedAt).toISOString().slice(0,10)) {
@@ -128,7 +136,9 @@ export function createPbsScheduleCandidateEvaluator({ authorize, now = () => Dat
       let subsequent;
       try { subsequent = await authorize(binding); }
       catch { fail("source rights unavailable after parse"); }
-      const end = safeClock(now());
+      let end;
+      try { end = safeClock(now()); }
+      catch { fail("invalid trusted server time"); }
       if (end < parsedAt || end >= Date.parse(grant.validUntil)) fail("rights expired after parse");
       let reviewed;
       try {
