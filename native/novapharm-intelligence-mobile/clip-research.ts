@@ -73,8 +73,9 @@ export function parseClipResearchResponse(input: unknown): ClipResearchResponse 
   if (!record(input) || input.contract !== CLIP_CONTRACT ||
       input.humanReviewRequired !== true || input.similarityIsNotEvidence !== true ||
       input.regulatoryStatusVerified !== false || input.productIdentityVerified !== false ||
-      typeof input.query !== "string" || !Array.isArray(input.results) ||
-      input.results.length > 5) {
+      typeof input.query !== "string" || input.query.trim().length < 3 ||
+      input.query.length > 240 || /[\\x00-\\x1f\\x7f]/.test(input.query) ||
+      !Array.isArray(input.results) || input.results.length > 5) {
     throw new Error("Unverified private visual-research response.");
   }
   const seen = new Set<string>();
