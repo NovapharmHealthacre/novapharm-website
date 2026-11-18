@@ -44,38 +44,6 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
-    func testL0HardConcreteResearchMathAndInvalidInputs() throws {
-        let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
-        XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
-        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 0), 0.5, accuracy: 1e-12)
-        XCTAssertEqual(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0.5), 0.5, accuracy: 1e-12)
-        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: -1000), 0)
-        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 1000), 1)
-        XCTAssertThrowsError(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0))
-        XCTAssertThrowsError(try NovaL0ResearchMath.activationProbability(logAlpha: .nan))
-        XCTAssertThrowsError(try NovaL0ResearchMath.deterministicGate(logAlpha: 0, gamma: 0))
-    }
-
-    func testL0ResearchCandidateFailsClosedWithFeatureParity() throws {
-        let candidate = NovaL0ResearchCandidate(
-            format: "nova-l0-sparse-linear-candidate-v1",
-            releaseStatus: "research-only",
-            productionApproved: false, customerVisible: false,
-            featureNames: ["demand", "stock", "lead_time"],
-            coefficients: [2, 0, 2], bias: 3, nonZeroCount: 2
-        )
-        XCTAssertEqual(try candidate.score(features: ["lead_time": 4, "demand": 5, "stock": 99]), 21)
-        XCTAssertThrowsError(try candidate.score(features: ["demand": 5, "stock": 99]))
-        XCTAssertThrowsError(try candidate.score(features: ["demand": .nan, "stock": 1, "lead_time": 4]))
-        let forbidden = NovaL0ResearchCandidate(
-            format: candidate.format, releaseStatus: candidate.releaseStatus,
-            productionApproved: true, customerVisible: false,
-            featureNames: candidate.featureNames, coefficients: candidate.coefficients,
-            bias: candidate.bias, nonZeroCount: candidate.nonZeroCount
-        )
-        XCTAssertThrowsError(try forbidden.score(features: ["demand": 5, "stock": 99, "lead_time": 4]))
-    }
-
     func testComputePlannerCannotEnableExecutionOrAllowPersonalDataOrGPUCost() {
         let digest = "sha256:" + String(repeating: "a", count: 64)
         let proposal = NovaComputeProposal(
@@ -128,4 +96,84 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
     #endif
+
+    func testL0HardConcreteResearchMathAndInvalidInputs() throws {
+        let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
+        XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 0), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0.5), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: -1000), 0)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 1000), 1)
+        XCTAssertThrowsError(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0))
+        XCTAssertThrowsError(try NovaL0ResearchMath.activationProbability(logAlpha: .nan))
+        XCTAssertThrowsError(try NovaL0ResearchMath.deterministicGate(logAlpha: 0, gamma: 0))
+    }
+
+    func testL0ResearchCandidateFailsClosedWithFeatureParity() throws {
+        let candidate = NovaL0ResearchCandidate(
+            format: "nova-l0-sparse-linear-candidate-v1",
+            releaseStatus: "research-only",
+            productionApproved: false, customerVisible: false,
+            featureNames: ["demand", "stock", "lead_time"],
+            coefficients: [2, 0, 2], bias: 3, nonZeroCount: 2
+        )
+        XCTAssertEqual(try candidate.score(features: ["lead_time": 4, "demand": 5, "stock": 99]), 21)
+        XCTAssertThrowsError(try candidate.score(features: ["demand": 5, "stock": 99]))
+        XCTAssertThrowsError(try candidate.score(features: ["demand": .nan, "stock": 1, "lead_time": 4]))
+        let forbidden = NovaL0ResearchCandidate(
+            format: candidate.format, releaseStatus: candidate.releaseStatus,
+            productionApproved: true, customerVisible: false,
+            featureNames: candidate.featureNames, coefficients: candidate.coefficients,
+            bias: candidate.bias, nonZeroCount: candidate.nonZeroCount
+        )
+        XCTAssertThrowsError(try forbidden.score(features: ["demand": 5, "stock": 99, "lead_time": 4]))
+    }
+
+    func testSparseCircuitReaderIsDisplayOnlyAndFailClosed() throws {
+        let base: [String: Any] = [
+            "schemaVersion": "npi.sparse-circuit.v1",
+            "valid": true,
+            "status": "unverified-research-candidate",
+            "modelId": "experiment-1",
+            "taskId": "quote-classification",
+            "nodeCount": 2,
+            "edgeCount": 1,
+            "lossDeltaCircuitVsBaseline": 0.01,
+            "lossDeltaAblatedVsCircuit": 0.56,
+            "sampleCount": 128,
+            "ablation": "mean",
+            "mechanisticExplanationVerified": false,
+            "productionEligible": false,
+            "clinicalUsePermitted": false
+        ]
+        let data = try JSONSerialization.data(withJSONObject: base)
+        let summary = try NovaSparseCircuitReader.readResearchSummary(data)
+        XCTAssertEqual(summary.status, "unverified-research-candidate")
+        XCTAssertFalse(summary.productionEligible)
+
+        var forged = base
+        forged["productionEligible"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["mechanisticExplanationVerified"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["sampleCount"] = 1_000_001
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["nodeCount"] = 90000
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+    }
+
 }
