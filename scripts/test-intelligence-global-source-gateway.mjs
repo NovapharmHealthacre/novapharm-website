@@ -350,3 +350,66 @@ test("trusted source clock must never move backwards after an approved read", as
     now: "not a clock"
   }), /Trusted authorizer and transport/);
 });
+
+
+test("source-rights reader redacts backend authorizer failures at both rights gates", async () => {
+  const secret = "PRIVATE_RIGHTS_PROVIDER_TOKEN_MUST_NOT_LEAK";
+  for (const failingCall of [1, 2]) {
+    let authorizations = 0;
+    let upstreamReads = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => {
+        if (++authorizations === failingCall) throw new Error(secret);
+        return permit(context);
+      },
+      now: () => TEST_NOW,
+      transport: async () => {
+        upstreamReads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection: {identificationModule: {
+            nctId: "NCT01234567", briefTitle: "Synthetic private-data fixture"
+          }}}]
+        }), {headers: {"content-type": "application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1"}),
+      error => error instanceof Error &&
+        error.message === "Source rights authorizer unavailable" &&
+        !error.message.includes(secret)
+    );
+    assert.equal(authorizations, failingCall);
+    assert.equal(upstreamReads, failingCall - 1);
+  }
+});
+
+test("source-rights reader redacts trusted clock callback failures at both rights gates", async () => {
+  const secret = "PRIVATE_CLOCK_BACKEND_CONFIGURATION_MUST_NOT_LEAK";
+  for (const failingRead of [1, 2]) {
+    let ticks = 0;
+    let upstreamReads = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => permit(context),
+      now: () => {
+        if (++ticks === failingRead) throw new Error(secret);
+        return TEST_NOW;
+      },
+      transport: async () => {
+        upstreamReads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection: {identificationModule: {
+            nctId: "NCT01234567", briefTitle: "Synthetic private-data fixture"
+          }}}]
+        }), {headers: {"content-type": "application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1"}),
+      error => error instanceof Error &&
+        error.message === "Source rights trusted clock unavailable" &&
+        !error.message.includes(secret)
+    );
+    assert.equal(ticks, failingRead);
+    assert.equal(upstreamReads, failingRead - 1);
+  }
+});
