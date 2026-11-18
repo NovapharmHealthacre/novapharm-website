@@ -24,6 +24,19 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertThrowsError(try NovaCoreMLRuntime().predict(permit: permit, inputs: [:]))
     }
 
+    func testCLIPClientRejectsRedirectableOrInjectedOrigins() throws {
+        let invalid = [
+            "https://portal.novapharmhealthcare.com:8443/",
+            "https://portal.novapharmhealthcare.com/?redirect=1",
+            "https://portal.novapharmhealthcare.com/#fragment",
+            "https://user@portal.novapharmhealthcare.com/",
+            "https://portal.novapharmhealthcare.com/evil"
+        ]
+        for text in invalid {
+            XCTAssertThrowsError(try NovaClipVisualSearch(trustedPortalOrigin: URL(string: text)!))
+        }
+    }
+
     func testNaturalLanguageRejectsUnapprovedOrUnattributedText() throws {
         let permit = NovaLanguagePermit(
             trustedSourceApproved: false,
