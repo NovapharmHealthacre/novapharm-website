@@ -52,6 +52,8 @@ The shared output deliberately forces `mechanisticExplanationVerified=false`, `p
 
 This is **not an OpenAI transformer checkpoint, not learned weight sparsification, not model training, not production inference, and not external validation**. There is no real medicine dataset, patient record, supplier price or licensed-source ingestion. Its deliberately easy synthetic held-out examples do not establish performance or causal faithfulness on any real model. Its purpose is to catch regressions in the intervention measurement and artifact boundary before an independently authorised experiment is designed.
 
+The fixed-weight smoke test additionally runs two explicit negative controls: toggling a zero-weight nuisance input must leave the prediction loss unchanged (delta 0), while scoring the same output against deliberately inverted labels produces error 1. These are regression checks against a vacuous intervention test, not evidence of general causal faithfulness.
+
 The JSON response schema `docs/intelligence/npi-sparse-circuit-summary-v1.schema.json` is shared across the web validator and future native clients; a summary is intentionally marked `mechanisticExplanationVerified=false`, `productionEligible=false` and `clinicalUsePermitted=false`.
 
 ## Locally trained two-head transformer-family attention experiment (synthetic only)

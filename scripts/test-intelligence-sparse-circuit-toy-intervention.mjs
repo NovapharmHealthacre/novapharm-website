@@ -11,6 +11,9 @@ test("synthetic mean ablation changes a deliberately simple quote-feature result
   assert.equal(run.candidateSummary.valid, true);
   assert.equal(run.candidateSummary.lossDeltaCircuitVsBaseline, 0);
   assert.equal(run.candidateSummary.lossDeltaAblatedVsCircuit, 0.25);
+  assert.equal(run.negativeControls.distractorControlDelta, 0);
+  assert.equal(run.negativeControls.invertedLabelLoss, 1);
+  assert.equal(Object.isFrozen(run.negativeControls), true);
   assert.equal(run.candidateSummary.nodeCount, 3);
   assert.equal(run.candidateSummary.edgeCount, 2);
 });
@@ -26,4 +29,13 @@ test("synthetic smoke result is deterministic and permanently non-authorising", 
   assert.equal("patientData" in first, false);
   assert.equal(Object.isFrozen(first), true);
   assert.match(first.limitation, /No transformer training/);
+});
+
+test("irrelevant feature perturbation is a genuine negative control", () => {
+  const run = runToySparseCircuitIntervention();
+  assert.equal(run.negativeControls.distractorControlDelta, 0);
+  assert.equal(run.negativeControls.invertedLabelLoss, 1);
+  assert.ok(run.candidateSummary.lossDeltaAblatedVsCircuit >
+    run.negativeControls.distractorControlDelta);
+  assert.equal(run.candidateSummary.productionEligible, false);
 });

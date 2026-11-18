@@ -58,6 +58,19 @@ export function runToySparseCircuitIntervention() {
   const baselineLoss = mse(holdout, baseline);
   const circuitLoss = mse(holdout, item => intervention(item, { mean: calibrationMean, ablate: false }));
   const ablatedLoss = mse(holdout, item => intervention(item, { mean: calibrationMean, ablate: true }));
+  // Placebo: toggle the irrelevant nuisance bit while retaining the label
+  // feature. A valid fixed-weight toy must be invariant to this perturbation.
+  const distractorPerturbedLoss = mse(holdout, item => baseline({
+    quote: item.quote,
+    distractor: 1 - item.distractor
+  }));
+  const distractorControlDelta = distractorPerturbedLoss - baselineLoss;
+  // Complemented labels are an intentionally wrong answer key, not validation.
+  const invertedLabelLoss = holdout.reduce((total, item) =>
+    total + (baseline(item) - (1 - item.quote)) ** 2, 0) / holdout.length;
+  if (distractorControlDelta !== 0 || invertedLabelLoss !== 1 || ablatedLoss <= circuitLoss) {
+    throw new Error("Synthetic intervention or negative-control invariants failed.");
+  }
 
   const candidate = {
     schemaVersion: CIRCUIT_ARTIFACT_VERSION,
@@ -100,6 +113,7 @@ export function runToySparseCircuitIntervention() {
     calibrationSamples: calibration.length,
     holdoutSamples: holdout.length,
     calibrationMean,
+    negativeControls: Object.freeze({ distractorControlDelta, invertedLabelLoss }),
     candidateSummary: summary,
     limitation: "No transformer training, independently verified circuits, real-world model behaviour, rights approval or clinical safety."
   });
