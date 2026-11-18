@@ -13,27 +13,6 @@ const MAX_RESULTS = 10;
 const TIMEOUT_MS = 6000;
 
 export const secondarySourcePlans = Object.freeze({
-  "global-ncbi-pubmed": Object.freeze({
-    country: "GLOBAL", domain: "literature",
-    origin: "https://eutils.ncbi.nlm.nih.gov",
-    path: "/entrez/eutils/esearch.fcgi",
-    candidateKey: "global-global-ncbi-pubmed",
-    documentation: "https://www.ncbi.nlm.nih.gov/books/NBK25500/"
-  }),
-  "global-chembl": Object.freeze({
-    country: "GLOBAL", domain: "compound-research",
-    origin: "https://www.ebi.ac.uk",
-    path: "/chembl/api/data/molecule/search.json",
-    candidateKey: "global-global-chembl",
-    documentation: "https://www.ebi.ac.uk/chembl/api/data/docs"
-  }),
-  "global-pubchem": Object.freeze({
-    country: "GLOBAL", domain: "chemistry",
-    origin: "https://pubchem.ncbi.nlm.nih.gov",
-    path: "/rest/pug/compound/name/",
-    candidateKey: "global-global-pubchem",
-    documentation: "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest"
-  }),
   "sg-hsa-products": Object.freeze({
     country: "SG", domain: "regulatory",
     origin: "https://data.gov.sg",
@@ -83,19 +62,6 @@ export function buildSecondarySourcePlan({ sourceId, term, limit = 5 } = {}) {
   const query = validTerm(term);
   const url = new URL(source.path, source.origin);
   switch (sourceId) {
-    case "global-ncbi-pubmed":
-      url.searchParams.set("db", "pubmed");
-      url.searchParams.set("term", query);
-      url.searchParams.set("retmode", "json");
-      url.searchParams.set("retmax", String(limit));
-      break;
-    case "global-chembl":
-      url.searchParams.set("q", query);
-      url.searchParams.set("limit", String(limit));
-      break;
-    case "global-pubchem":
-      url.pathname = source.path + encodeURIComponent(query) + "/cids/JSON";
-      break;
     case "sg-hsa-products":
       url.searchParams.set("resource_id", "d_767279312753558cbf19d48344577084");
       url.searchParams.set("q", query);
@@ -124,27 +90,6 @@ export function normaliseSecondarySourceResult(plan, data) {
   }
   let rows;
   switch (plan.sourceId) {
-    case "global-ncbi-pubmed":
-      if (!Array.isArray(data?.esearchresult?.idlist)) throw new Error("Unexpected source schema");
-      rows = data.esearchresult.idlist.map((id) => ({
-        localId: id,
-        label: "PubMed indexed record matching " + plan.term
-      }));
-      break;
-    case "global-chembl":
-      if (!Array.isArray(data?.molecules)) throw new Error("Unexpected source schema");
-      rows = data.molecules.map((m) => ({
-        localId: m?.molecule_chembl_id,
-        label: m?.pref_name || "ChEMBL molecule " + m?.molecule_chembl_id
-      }));
-      break;
-    case "global-pubchem":
-      if (!Array.isArray(data?.IdentifierList?.CID)) throw new Error("Unexpected source schema");
-      rows = data.IdentifierList.CID.map((cid) => ({
-        localId: Number.isSafeInteger(cid) && cid > 0 ? String(cid) : null,
-        label: "PubChem CID for query " + plan.term
-      }));
-      break;
     case "sg-hsa-products":
       if (data?.success !== true || !Array.isArray(data?.result?.records)) {
         throw new Error("Unexpected source schema");
