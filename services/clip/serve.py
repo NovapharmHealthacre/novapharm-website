@@ -8,6 +8,7 @@ import hashlib
 import hmac
 import json
 import os
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from rights import validate_public_asset, valid_expiry
@@ -21,7 +22,8 @@ def approved_file(path_key, sha_key):
     if not filename or not Path(filename).is_absolute() or len(expected) != 64 or any(c not in "0123456789abcdef" for c in expected):
         raise RuntimeError("Required preapproved asset configuration is missing.")
     path = Path(filename).resolve(strict=True)
-    if not path.is_file() or path.stat().st_size > 2_000_000_000:
+    max_bytes = 256_000_000 if path_key == "NPI_CLIP_INDEX_PATH" else 2_000_000_000
+    if not path.is_file() or path.stat().st_size > max_bytes:
         raise RuntimeError("Invalid model or index file.")
     hash_state = hashlib.sha256()
     with path.open("rb") as stream:
@@ -74,6 +76,7 @@ def prepare():
 
 def make_handler(runtime):
     token, model, torch, clip, assets, embeddings = runtime
+    inference_slots = threading.BoundedSemaphore(value=2)
 
     class Handler(BaseHTTPRequestHandler):
         server_version = "NovaVisualPrivate"
@@ -119,19 +122,24 @@ def make_handler(runtime):
                     raise ValueError("Invalid limit")
             except (ValueError, TypeError, json.JSONDecodeError):
                 return self.send_json(400, {"error": "Invalid query"})
-            with torch.inference_mode():
-                encoded = model.encode_text(clip.tokenize([query.strip()], truncate=True)).float()[0]
-                encoded /= encoded.norm().clamp_min(1e-12)
-                similarities = embeddings @ encoded
-                ranks = [
-                    index for index in torch.argsort(similarities, descending=True).tolist()
-                    if assets[index]["rightsStatus"] == "active"
-                    and valid_expiry(assets[index]["rightsExpiryDate"])
-                ][:limit]
-            results = [{"assetId": assets[i]["assetId"], "title": assets[i]["title"],
-                        "rightsReference": assets[i]["rightsReference"], "sourceUrl": assets[i]["sourceUrl"]}
-                       for i in ranks]
-            return self.send_json(200, {"contract": CONTRACT, "results": results})
+            if not inference_slots.acquire(blocking=False):
+                return self.send_json(429, {"error": "Visual research capacity is temporarily unavailable."})
+            try:
+                with torch.inference_mode():
+                    encoded = model.encode_text(clip.tokenize([query.strip()], truncate=True)).float()[0]
+                    encoded /= encoded.norm().clamp_min(1e-12)
+                    similarities = embeddings @ encoded
+                    ranks = [
+                        index for index in torch.argsort(similarities, descending=True).tolist()
+                        if assets[index]["rightsStatus"] == "active"
+                        and valid_expiry(assets[index]["rightsExpiryDate"])
+                    ][:limit]
+                results = [{"assetId": assets[i]["assetId"], "title": assets[i]["title"],
+                            "rightsReference": assets[i]["rightsReference"], "sourceUrl": assets[i]["sourceUrl"]}
+                           for i in ranks]
+                return self.send_json(200, {"contract": CONTRACT, "results": results})
+            finally:
+                inference_slots.release()
 
     return Handler
 
