@@ -82,3 +82,9 @@ An approved inspection record now requires **three distinct SHA-256 digests** â€
 ### Independently signed research evidence (source-only)
 
 `src/core/ai/model-microscope-signed-evidence.mjs` introduces a deterministic **Ed25519** signed-receipt verifier that an approved private backend can use as the independent `verifyEvidence` callback. It binds tenant, actor, model/version/layer/feature, source dataset, evaluation, source/provenance digest, visualization digest, model artifact digest and grant references, plus distinct reviewer and rights approver. Receipts are short-lived (maximum five minutes), fail closed on signature tampering and are not returned to web or mobile clients. Tests generate ephemeral local signing keys and cover forged, stale, mis-scoped and self-approved receipts. **No live trust anchor, verified external issuer, production signing private key or real signed source has been provisioned.** A public-key signature alone does not create legal model or data rights.
+
+### Executable synthetic neural-network reference
+
+The isolated source module `src/core/ai/model-microscope-synthetic-reference.mjs` implements a first-party fixed 4Ã—4-input, three-feature, two-circuit ReLU neural network. It calculates actual forward activations and analytic input gradients, then performs bounded projected gradient ascent to produce deterministic synthetic feature-maximization grids.
+
+The dedicated tests verify reproducibility, finite-difference gradients, invalid-input rejection and permanent non-publishability. This reference is **not** a pharmaceutical model, trained dataset, OpenAI API, approved production model, live medical inference or rights admission. It is intentionally not connected to the protected customer-facing inspection service or mobile inference runtimes. It establishes a locally executable mathematical smoke test for model interpretability without creating false clinical claims.

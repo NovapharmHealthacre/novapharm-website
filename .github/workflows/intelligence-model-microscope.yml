@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "src/core/ai/model-microscope.mjs"
+      - "src/core/ai/model-microscope-synthetic-reference.mjs"
+      - "scripts/test-nova-model-microscope-synthetic-reference.mjs"
       - "src/core/ai/model-microscope-signed-evidence.mjs"
       - "scripts/test-nova-model-microscope-signed-evidence.mjs"
       - "docs/intelligence/model-microscope-inspection-v1.schema.json"
@@ -36,5 +38,7 @@ jobs:
       - run: node --check src/core/ai/model-microscope.mjs
       - run: node --check src/core/ai/model-microscope-signed-evidence.mjs
       - run: node --test scripts/test-nova-model-microscope.mjs scripts/test-nova-model-microscope-signed-evidence.mjs
+      - run: node --check src/core/ai/model-microscope-synthetic-reference.mjs
+      - run: node --test scripts/test-nova-model-microscope-synthetic-reference.mjs
       - run: node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
       - run: node --test scripts/test-nova-ml-apple-adaptation.mjs scripts/test-nova-ml-private-ingress.mjs
