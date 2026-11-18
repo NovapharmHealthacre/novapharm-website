@@ -72,9 +72,33 @@ export async function searchApprovedVisualCatalogue(
   if (!Number.isFinite(declaredLength) || declaredLength < 0 || declaredLength > 32_768) throw unavailable();
   let payload;
   try {
-    const body = await response.text();
-    if (Buffer.byteLength(body, "utf8") > 32_768) throw unavailable();
-    payload = JSON.parse(body);
+    const stream = response.body;
+    let raw;
+    if (stream && typeof stream.getReader === "function") {
+      const reader = stream.getReader();
+      const chunks = [];
+      let count = 0;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (!(value instanceof Uint8Array)) throw unavailable();
+          count += value.byteLength;
+          if (count > 32_768) throw unavailable();
+          chunks.push(value);
+        }
+        raw = Buffer.concat(chunks).toString("utf8");
+      } finally {
+        await reader.cancel().catch(() => {});
+        reader.releaseLock();
+      }
+    } else {
+      // Only simple in-process test doubles take this branch. Real fetch responses
+      // always provide a byte stream so they are interrupted at the size limit.
+      raw = await response.text();
+      if (Buffer.byteLength(raw, "utf8") > 32_768) throw unavailable();
+    }
+    payload = JSON.parse(raw);
   } catch { throw unavailable(); }
   if (payload?.contract !== CONTRACT || !Array.isArray(payload.results) || payload.results.length > limit) throw unavailable();
   const seen = new Set();
