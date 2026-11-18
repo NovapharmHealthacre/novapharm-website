@@ -19,8 +19,9 @@ import {
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { CLIP_MOBILE_RELEASE } from "./clip-research";
 
-type Screen = "overview" | "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -40,6 +41,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "visual", label: "Visual" },
   { screen: "account", label: "Account" }
 ];
 const pilotSlugs = new Set([
@@ -262,6 +264,49 @@ export default function App() {
                 <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
               ))}
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
+            </>
+          )}
+          {screen === "visual" && (
+            <>
+              <SectionHeading
+                title="Visual catalogue research"
+                detail="OpenAI CLIP research candidate. English text-to-approved-public-image retrieval is not enabled in the unsigned mobile preview."
+              />
+              <View style={styles.card} accessible accessibilityLabel="CLIP visual research disabled. Authentication and licensed private inference unavailable.">
+                <Text style={styles.cardTitle}>Research candidate · not connected</Text>
+                <Text style={styles.description}>
+                  No model weights, image catalogue, external visual API or uploaded images are included.
+                  A signed board-only session, protected gateway, licensed artwork, independent
+                  quality evaluation and verified private model runtime are required.
+                </Text>
+                <Text style={styles.meta}>
+                  Contract: {CLIP_MOBILE_RELEASE.contract} · Runtime: {CLIP_MOBILE_RELEASE.state}
+                </Text>
+              </View>
+              <TextInput
+                accessibilityLabel="Public-image CLIP query unavailable before signed app and board-only gateway approval"
+                editable={false}
+                placeholder="Describe approved public artwork"
+                placeholderTextColor={palette.tertiary}
+                style={styles.input}
+                value=""
+              />
+              <Text style={styles.meta}>
+                Search disabled until independent mobile identity, CSRF, source-rights and
+                model-service release evidence is accepted. Similarity cannot establish
+                medicine identity, strength, authenticity, safety or regulatory status.
+              </Text>
+              <View style={styles.rule} />
+              <SectionHeading title="Enterprise activation gates" />
+              {[
+                "Signed iOS/Android app with secure board session, MFA and revocation",
+                "Licensed public-image index and audited source-rights expiry",
+                "Independent CLIP lookalike, strength and out-of-domain evaluation",
+                "Approved private runtime, exact-host gateway and fail-closed rollback",
+                "Protected device and accessibility acceptance before distribution"
+              ].map((item) => (
+                <View key={item} style={styles.requirement}><Text style={styles.description}>{item}</Text></View>
+              ))}
             </>
           )}
           {screen === "account" && (
