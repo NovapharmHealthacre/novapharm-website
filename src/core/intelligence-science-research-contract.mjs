@@ -10,15 +10,8 @@ import { workspaceCapabilityDependencies } from "./intelligence-22-workspace-rea
  * Science workflow is only a future design. No UI route can be used as proof of
  * permission to invoke a restricted research model or to publish findings.
  */
-export const SCIENCE_COMMON_GUARDRAILS = Object.freeze([
-  "independent_tenant_and_role_authorisation",
-  "source_specific_scientific_and_ai_use_rights",
-  "immutable_provenance_and_retraction_review",
-  "reproducibility_and_falsifiable_counterevidence",
-  "qualified_human_scientific_review",
-  "no_customer_facing_restricted_model_access",
-  "no_clinical_or_regulatory_auto_decision"
-]);
+export { SCIENCE_COMMON_GUARDRAILS } from "./intelligence-science-research-principles.mjs";
+import { SCIENCE_COMMON_GUARDRAILS } from "./intelligence-science-research-principles.mjs";
 
 export function scienceGovernanceForWorkspace(slug) {
   if (typeof slug !== "string" || !Object.hasOwn(workspaceCapabilityDependencies, slug)) {
