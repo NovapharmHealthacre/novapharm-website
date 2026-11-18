@@ -178,7 +178,8 @@ export function createHsaBulkCandidateEvaluator({ authorize, now = () => Date.no
       }
       if (grant.receiptId !== rechecked.receiptId ||
           grant.licenseId !== rechecked.licenseId ||
-          grant.rightsVersion !== rechecked.rightsVersion) {
+          grant.rightsVersion !== rechecked.rightsVersion ||
+          grant.validUntil !== rechecked.validUntil) {
         fail("source rights rotated after validation");
       }
       const digest = createHash("sha256").update(bytes).digest("hex");
