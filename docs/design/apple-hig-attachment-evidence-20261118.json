@@ -16,7 +16,11 @@
     },
     "crosscheckedAgainst": "docs/design/apple-hig-172-topic-acceptance-register.json",
     "allFullTextReviewed": false,
-    "allImplemented": false
+    "allImplemented": false,
+    "articleSectionAnchors": 30,
+    "appleSupportingResourceLinks": 5,
+    "totalIndexedLinkRecords": 207,
+    "allSupplementalArticleTextReviewed": false
   },
   "attachments": [
     {
@@ -63,10 +67,10 @@
       "sizeBytes": 36129,
       "group": "guideline_index",
       "kind": "reference_spreadsheet",
-      "inspectionLevel": "file_metadata_only",
+      "inspectionLevel": "workbook_content_reviewed",
       "sha256": null,
       "archiveEntries": null,
-      "findings": "Spreadsheet file metadata only; CSV content compared to HIG register separately",
+      "findings": "Ten tabs reviewed as extracted content: Overview, All modules (172 HIG pages), six section tabs, Inside article links (30 distinct section anchors), Apple resources (5 supporting links); this is an index, not an exhaustive audit of linked article bodies.",
       "usePolicy": "reference_only",
       "integrationVerified": false,
       "requiresFurtherReview": true
@@ -435,5 +439,351 @@
       "integrationVerified": false,
       "requiresFurtherReview": true
     }
-  ]
+  ],
+  "supplementalLinks": {
+    "articleSectionAnchors": [
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Purpose",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Purpose",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Agency",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Agency",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Responsibility",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Responsibility",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Familiarity",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Familiarity",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Flexibility",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Flexibility",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Getting started",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
+        "anchor": "Simplicity",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles#Simplicity",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
+        "anchor": "Vision",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility#Vision",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+        "anchor": "Layer-design",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons#Layer-design",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+        "anchor": "Icon-formats",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons#Icon-formats",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/branding",
+        "anchor": "Best-practices",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/branding#Best-practices",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+        "anchor": "Best-practices",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/color#Best-practices",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+        "anchor": "Inclusive-color",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/color#Inclusive-color",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+        "anchor": "System-colors",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/color#System-colors",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+        "anchor": "Color-management",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/color#Color-management",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/color",
+        "anchor": "Liquid-Glass-color",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/color#Liquid-Glass-color",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+        "anchor": "Visual-hierarchy",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Visual-hierarchy",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+        "anchor": "Adaptability",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Adaptability",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/layout",
+        "anchor": "Size-classes",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/layout#Size-classes",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/materials",
+        "anchor": "Liquid-Glass",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/materials#Liquid-Glass",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/materials",
+        "anchor": "Standard-materials",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/materials#Standard-materials",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols",
+        "anchor": "Rendering-modes",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols#Rendering-modes",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols",
+        "anchor": "Custom-symbols",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols#Custom-symbols",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+        "anchor": "Ensuring-legibility",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Ensuring-legibility",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+        "anchor": "Conveying-hierarchy",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Conveying-hierarchy",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+        "anchor": "Using-system-fonts",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Using-system-fonts",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/typography",
+        "anchor": "Supporting-Dynamic-Type",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/typography#Supporting-Dynamic-Type",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/writing",
+        "anchor": "Getting-started",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/writing#Getting-started",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Foundations",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/writing",
+        "anchor": "Best-practices",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/writing#Best-practices",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Components",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/buttons",
+        "anchor": "Content",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/buttons#Content",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      },
+      {
+        "section": "Technologies",
+        "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/siri",
+        "anchor": "Shortcuts-and-suggestions",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/siri#Shortcuts-and-suggestions",
+        "source": "Owner supplied HIG XLSX / Inside article links",
+        "articleTextReviewed": false,
+        "anchorVerifiedInOfficialArticle": false,
+        "implementation": "not_verified"
+      }
+    ],
+    "appleSupportingResources": [
+      {
+        "name": "Apple Design Resources",
+        "url": "https://developer.apple.com/design/resources/",
+        "source": "Owner supplied HIG XLSX / Apple resources",
+        "fullTermsReviewed": false,
+        "approvedForEmbedding": false,
+        "implementation": "not_verified"
+      },
+      {
+        "name": "Apple Fonts",
+        "url": "https://developer.apple.com/fonts/",
+        "source": "Owner supplied HIG XLSX / Apple resources",
+        "fullTermsReviewed": false,
+        "approvedForEmbedding": false,
+        "implementation": "not_verified"
+      },
+      {
+        "name": "SF Symbols",
+        "url": "https://developer.apple.com/sf-symbols/",
+        "source": "Owner supplied HIG XLSX / Apple resources",
+        "fullTermsReviewed": false,
+        "approvedForEmbedding": false,
+        "implementation": "not_verified"
+      },
+      {
+        "name": "Icon Composer",
+        "url": "https://developer.apple.com/icon-composer/",
+        "source": "Owner supplied HIG XLSX / Apple resources",
+        "fullTermsReviewed": false,
+        "approvedForEmbedding": false,
+        "implementation": "not_verified"
+      },
+      {
+        "name": "Apple Accessibility Nutrition Labels",
+        "url": "https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels",
+        "source": "Owner supplied HIG XLSX / Apple resources",
+        "fullTermsReviewed": false,
+        "approvedForEmbedding": false,
+        "implementation": "not_verified"
+      }
+    ]
+  }
 }
