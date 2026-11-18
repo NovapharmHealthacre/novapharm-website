@@ -20,11 +20,8 @@ const muted = "#515154";
 function CountryCard({ country, wide }: { country: Country; wide: boolean }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <View style={[styles.card, wide && styles.cardWide]} accessible accessibilityLabel={
-      country.country + ", " + country.region + ". " + country.candidateSourceCount +
-      " unapproved candidate sources. No licensed customer data."
-    }>
-      <Text style={styles.name}>{country.country}</Text>
+    <View style={[styles.card, wide && styles.cardWide]}>
+      <Text style={styles.name} accessibilityRole="header">{country.country}</Text>
       <Text style={styles.context}>{country.iso2} · {country.region}</Text>
       <Text style={styles.state}>{country.candidateSourceCount ? "Candidate sources only" : "National source research needed"}</Text>
       <Text style={styles.description}>{country.candidateSourceCount
