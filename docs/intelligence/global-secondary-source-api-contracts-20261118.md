@@ -33,6 +33,22 @@ expired receipts from generating previews. A successful synthetic test can only 
 - No API secrets, subscriptions, data sales licence, AWS connection, real client authentication,
   regulator approval or customer/data release is created.
 
+
+## Offline Singapore HSA full CSV candidate
+
+The official HSA dataset also has a CSV file (about 5.5k rows / 1.3 MB in the 2026 publisher listing). The separate `intelligence-singapore-hsa-bulk-candidate.mjs` module provides an **offline-only** candidate validator that accepts trusted server-supplied bytes, not an upstream download URL. It requires the same independent source/tenant/country/domain/purpose evaluation receipt **before processing**.
+
+- Validates exact publisher-documented 12 column names, UTF-8, quoted commas and escaped quotes, CSV row widths, and bounds of **16 MiB / 30,000 rows / 4,096 characters per field**.
+- Preserves HSA `LicenceNo` strings verbatim, quarantines invalid identity records, flags duplicate licence identifiers, counts all rows, and exposes at most five non-publishable identity previews.
+- SHA-256 hashes the supplied file bytes and re-checks trusted time/rights expiry after parsing.
+- Explicitly sets file authenticity, publication date verification, national completeness, commercial/clinical decision use, production acceptance and customer access to **false**. Synthetic rights receipts are tests only.
+- This is **not a completed full-file ingestion pipeline**: no download/streaming scheduler, source-authenticated signed release, schema mapping to the national medicine graph, durable staging, independent legal permission or private Atlas deployment exists.
+
+```
+node --check src/core/intelligence-singapore-hsa-bulk-candidate.mjs
+node --test scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs
+```
+
 ## Verification
 
 Run using Node 24 at the repository root:
