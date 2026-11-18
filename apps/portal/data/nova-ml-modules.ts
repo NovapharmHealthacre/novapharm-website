@@ -134,3 +134,15 @@ export const novaMlAlignmentResearchMethods = Object.freeze([
     approval: "No trained agent, approved simulator, autonomous WMS or inventory release."
   }
 ] as const);
+
+/**
+ * Shared web/Expo research metadata only. Never interpreted as a live
+ * candidate model manifest or permission to run inference on a device.
+ */
+export const novaMlSparseResearchMethod = Object.freeze({
+  id: "l0_sparse_feature_gates",
+  title: "L₀ sparse feature gates",
+  researchStatus: "Offline mathematical research",
+  summary: "Evaluate hard-concrete sparsification and exact-zero model candidates under separately governed, nonclinical research tests.",
+  approval: "No licensed training dataset, independently validated model, signed mobile inference package, production API or customer release."
+} as const);
