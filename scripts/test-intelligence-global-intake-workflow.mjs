@@ -137,7 +137,7 @@ test("source-intake clock is sampled after trusted backend authorization",async(
    now:()=>{assert.equal(approved,true,"clock must follow asynchronous authorization");reads++;return FIXED_NOW;}
  });
  const result=await evaluator.evaluate(request);
- assert.equal(reads,2);
+ assert.equal(reads,3,"Initial clock, quarantine clock, and final rights clock must all be sampled");
  assert.equal(result.evidence.canPublish,false);
  assert.equal(result.evidence.retrievedAt,"2026-11-17T19:00:00.000Z");
 });
@@ -166,5 +166,93 @@ test("offline source intake refuses malformed initial clock before parsing upstr
    await assert.rejects(evaluator.evaluate({...request,rawBytes:Buffer.from("<raw untrusted>")}),
      /Global source intake rejected: server clock/);
    assert.equal(ticks,1);
+ }
+});
+
+
+test("file-based intake rejects revoked, replaced or cross-tenant rights after quarantine evaluation",async()=>{
+ const transitions=[
+  {rightsStatus:"pending"},
+  {revokedAt:"2026-11-17T18:45:00.000Z"},
+  {tenantId:"tenant-beta"},
+  {country:"US"},
+  {receiptId:"rights-receipt-002"},
+  {licenseId:"license-internal-v2"},
+  {rightsVersion:"rights-review-v2"},
+  {validUntil:"2026-11-17T19:45:00.000Z"}
+ ];
+ for(const changed of transitions){
+  let authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx,++authorizations===1?{}:changed),
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),/not approved|changed during evaluation/);
+  assert.equal(authorizations,2,"Source rights must be rechecked after quarantine preparation");
+ }
+});
+
+test("file-based intake rejects expired, invalid, or regressed final server clocks",async()=>{
+ const expiry=Date.parse("2026-11-17T20:00:00.000Z");
+ for(const finalClock of [expiry,expiry+1,FIXED_NOW-1,NaN,undefined,-1]){
+  let ticks=0,authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{authorizations++;return permit(ctx);},
+   now:()=>++ticks===3?finalClock:FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),/source rights expired during evaluation/);
+  assert.equal(ticks,3);
+  assert.equal(authorizations,2);
+ }
+});
+
+test("stable twice-authorised intake remains quarantined and never self-publishes",async()=>{
+ let authorizations=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+  authorize:async ctx=>{authorizations++;return permit(ctx);},
+  now:()=>FIXED_NOW
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(authorizations,2);
+ assert.equal(result.sourceRightsReceipt,"rights-receipt-001");
+ assert.equal(result.canPublish,false);
+ assert.equal(result.productionAccepted,false);
+ assert.equal(result.manifest.canPublish,false);
+ assert.equal(result.evidence.clinicalDecisionReady,false);
+ assert.throws(()=>assertGlobalIntakeCustomerReady(result),/rejected/);
+});
+
+test("file-based intake never exposes trusted authorizer or clock adapter secret errors",async()=>{
+ for(const failingAuthorization of [1,2]){
+  const secret="PRIVATE_AUTHORISER_CREDENTIAL_MUST_NOT_LEAK";
+  let calls=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{
+    if(++calls===failingAuthorization)throw new Error(secret);
+    return permit(ctx);
+   },
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: trusted authorizer unavailable" &&
+   !error.message.includes(secret));
+  assert.equal(calls,failingAuthorization);
+ }
+ for(const failingClock of [1,2,3]){
+  const secret="PRIVATE_CLOCK_ADAPTER_CONFIGURATION_MUST_NOT_LEAK";
+  let ticks=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx),
+   now:()=>{
+    if(++ticks===failingClock)throw new Error(secret);
+    return FIXED_NOW;
+   }
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: server clock" &&
+   !error.message.includes(secret));
+  assert.equal(ticks,failingClock);
  }
 });
