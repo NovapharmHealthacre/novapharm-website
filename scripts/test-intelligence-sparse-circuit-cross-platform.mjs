@@ -62,3 +62,15 @@ test("real customer and clinical release must remain explicitly excluded", () =>
   assert.match(plan, /source rights/);
   assert.match(plan, /not deployed/i);
 });
+
+test("registered AI providers never claim sparse circuit access or causal verification", async () => {
+  const { internalModelRegister } = await import("../src/core/ai/model-registry.mjs");
+  const { PUBLIC_SEMANTIC_MODEL } = await import("../src/ai/model-registry.mjs");
+  assert.equal(internalModelRegister.length >= 3, true);
+  for (const model of internalModelRegister) {
+    assert.equal(model.mechanisticCircuitVerified, false);
+    assert.notEqual(model.mechanisticCircuitAccess, "verified");
+  }
+  assert.equal(PUBLIC_SEMANTIC_MODEL.sparseCircuitsApplicable, false);
+  assert.equal(PUBLIC_SEMANTIC_MODEL.mechanisticCircuitVerified, false);
+});
