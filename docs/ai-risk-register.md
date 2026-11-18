@@ -37,3 +37,16 @@ These are **source-stage mitigations only**, not evidence that production cloud 
 | Unsafe promotion into pharmaceutical decisions | Review-only local verdict and no job runner | Explicit risk classification, qualified human sign-off, rollback and product-specific regulatory review | Quality, Clinical and Regulatory |
 
 **Stop condition:** deny a release if training can be initiated from the public site or a mobile client, if a client-selected budget/region can bypass a trusted backend, if model/data rights are missing, or if source-only tests are misrepresented as production activation.
+
+## OpenAI Signals and research engineering risk extension — 18 November 2026
+
+| Risk | Implemented source-only prevention | Production release prerequisite | Accountable owner |
+| --- | --- | --- | --- |
+| Improper re-use of OpenAI or user-level data | Three allowlisted Signals aggregate table schemas; reject arbitrary CSV fields, raw prompts and personal data; CC BY 4.0 attribution documented | Inspect actual downloaded archive/version and source licence; verify provenance, dataset grain, DP caveats, time coverage and accurate citation | Data Governance / Privacy |
+| Invalid inference from usage statistics | Research UI explicitly distinguishes consumer adoption from enterprise, pharmaceutical demand, ROI and clinical quality | Domain-specific validation, comparator, correct denominators, human QA and no inappropriate demographic profiling | Research / Quality |
+| AI automation bias or role escalation | Evidence reading and policy decisions are review-only, not execution, with fixed no-autonomy flag | Separate scope-gated action approval, reviewer receipts, qualified clinical/regulatory sign-off and rollback | Security / Regulatory |
+| Inadvertent audio collection / transcript leakage | No audio capture, upload, local recording, model loading or transcription implemented | Explicit opt-in file/permission, rights-cleared model, language/error review, sensitive-data policy and deletion controls | Privacy / Mobile |
+| Premature GPU execution or custom kernel use | No Triton, GPU runtime, training scheduler or paid resources in this candidate | Hardware and correctness benchmark, bounded compute, trusted budget enforcement, portable fallback and no patient data by default | Technology / Finance |
+| Mistaking GitHub tests for production activation | README, research UI and CI label source-only maturity | Signed image/device artifacts, actual deployment receipts, authorised user tests and independent release sign-off | Engineering / Security |
+
+**Stop conditions:** unapproved source copying, withheld licence attribution, individual or patient inference from aggregated consumer data, raw voice or message access, automatic regulated decisions, cloud spending, public-route exposure or claims that an inactive model is running.
