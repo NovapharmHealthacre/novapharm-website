@@ -99,6 +99,32 @@ export function inspectSparseCircuitCandidate(artifact) {
         if (pairs.has(pair)) errors.push("edge.duplicate");
         pairs.add(pair);
       }
+      // Transformer computation is a feed-forward DAG. Cyclic or disconnected
+      // directed graphs cannot be represented as an accepted circuit candidate.
+      // This is structural checking only: it does not verify causal faithfulness.
+      if (errors.length === 0) {
+        const adjacency = new Map([...ids].map(id => [id, []]));
+        const incoming = new Map([...ids].map(id => [id, 0]));
+        const incident = new Set();
+        for (const edge of edges) {
+          adjacency.get(edge.from).push(edge.to);
+          incoming.set(edge.to, incoming.get(edge.to) + 1);
+          incident.add(edge.from);
+          incident.add(edge.to);
+        }
+        if (incident.size !== ids.size) errors.push("circuit.disconnected_node");
+        const queue = [...ids].filter(id => incoming.get(id) === 0);
+        let visited = 0;
+        for (let index = 0; index < queue.length; index += 1) {
+          const id = queue[index];
+          visited += 1;
+          for (const next of adjacency.get(id)) {
+            incoming.set(next, incoming.get(next) - 1);
+            if (incoming.get(next) === 0) queue.push(next);
+          }
+        }
+        if (visited !== ids.size) errors.push("circuit.cycle");
+      }
     }
   }
 
