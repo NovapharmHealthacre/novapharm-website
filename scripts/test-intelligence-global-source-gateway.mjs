@@ -205,3 +205,27 @@ test("the independent grant checker also fails closed on a NaN or missing clock"
   }
   assert.equal(assertInternalEvaluationPermit({...args,now:TEST_NOW}).receiptId,"receipt-test-001");
 });
+
+test("an approved source receipt cannot return records if the grant expires or clock fails during the upstream fetch", async () => {
+  const expiredAt = Date.parse("2026-11-17T18:00:00.000Z");
+  for (const afterFetch of [expiredAt, expiredAt + 1, NaN, undefined]) {
+    let reads = 0;
+    let ticks = 0;
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit(context),
+      now: () => (++ticks === 1 ? TEST_NOW : afterFetch),
+      transport: async () => {
+        reads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection:{identificationModule:{nctId:"NCT01234567",briefTitle:"Synthetic fixture"}}}]
+        }), {headers:{"content-type":"application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /no longer approved/
+    );
+    assert.equal(reads,1,"Grant is valid before fetch; data must still be withheld on expiry");
+    assert.equal(ticks,2);
+  }
+});
