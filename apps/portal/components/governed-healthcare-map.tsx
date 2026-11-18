@@ -99,6 +99,8 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         script.src = mapkitUrl;
         script.async = true;
         script.crossOrigin = "anonymous";
+        // MapKit JS supports nonce-based CSP; read only the non-secret page nonce.
+        script.nonce = document.querySelector<HTMLScriptElement>("script[nonce]")?.nonce ?? "";
         script.dataset.callback = "__novaGovernedMapsReady";
         script.dataset.libraries = "map,annotations";
         script.dataset.token = token;
