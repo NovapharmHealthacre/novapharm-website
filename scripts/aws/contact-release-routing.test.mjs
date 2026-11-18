@@ -60,6 +60,8 @@ test("public publisher skips AWS and Pages for private Nova ML-only pushes but p
   assert.match(publisher, /needs: release_scope/);
   assert.match(publisher, /needs\.release_scope\.outputs\.release_needed == 'true'/);
   assert.match(publisher, /found_ml=false/);
+  assert.ok(dispatcher.includes(".github/workflows/browser-acceptance.yml"), "private dispatcher must classify .github/workflows/browser-acceptance.yml");
+  assert.ok(publisher.includes(".github/workflows/browser-acceptance.yml"), "private publisher must classify .github/workflows/browser-acceptance.yml");
   assert.match(publisher, /private_only=true/);
   assert.match(publisher, /changed_paths=\$\(git diff --name-only/);
   assert.match(publisher, /release_needed=false/);
