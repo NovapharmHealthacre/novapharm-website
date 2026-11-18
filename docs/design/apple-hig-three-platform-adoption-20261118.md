@@ -100,3 +100,15 @@ pixel-perfect native tab-bar implementation or device accessibility test.
 Do not assert 100% platform readiness, source-data coverage, Apple endorsement
 or live integration from passing source-level checks. Confirm independently
 approved release evidence, protected services, operational and device tests.
+
+## Additional applied guidance — system appearance for Expo iOS and Android
+
+The mobile candidate previously forced `userInterfaceStyle: light`, displayed a fixed light status bar, and hard-coded white/graphite text in the research form. These were concrete deviations from [Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility), [Typography](https://developer.apple.com/design/human-interface-guidelines/typography), and [Color](https://developer.apple.com/design/human-interface-guidelines/color) when a device uses dark appearance.
+
+The scoped correction adds shared original `appearance.ts` semantic tokens (canvas, grouped, raised, border, primary, secondary, tertiary, accent), adopts `useColorScheme()`, and rebuilds the app and research-form styles consistently with the scheme. It also updates the status-bar text style, keeps the selected tab and region state readable, and sets a 17-point source search input while preserving screen-reader labels. A WCAG relative-luminance regression checks at least **4.5:1** for all canvas text roles, the accent and inverse selected navigation, and **3:1** for form/control boundaries, in *both* palettes. Corporate light red remains `#E3120B`, while dark content uses a higher-contrast equivalent to preserve its visual role.
+
+Expo SDK 58 uses `userInterfaceStyle: automatic` and requires `expo-system-ui` for Android's automatic style. The isolated Expo candidate now declares the official `~58.0.7` package and config plugin. The app does not add Apple-owned font binaries, SF Symbols artwork, native Apple-exclusive APIs to Android, proprietary icons, network calls, medical records or model inference.
+
+**Not accepted as live:** Although CI can verify JavaScript/TypeScript, palette calculations, source contracts and offline iOS/Android bundles, real-device iOS dark/Light appearance, TalkBack/VoiceOver, Android system bars, 200% font scaling, keyboard/gesture accessibility and signed store distributions remain separate and require device-level proof. App configuration changes require a fresh native build; Expo source export cannot prove the plugin has installed native runtime assets. No AWS access or production data/identity changes are involved.
+
+References: https://docs.expo.dev/versions/v58.0.0/sdk/system-ui/ ; https://docs.expo.dev/develop/user-interface/color-themes/ .
