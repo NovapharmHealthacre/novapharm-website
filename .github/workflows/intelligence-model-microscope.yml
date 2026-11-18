@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "src/core/ai/model-microscope.mjs"
+      - "docs/intelligence/model-microscope-inspection-v1.schema.json"
       - "scripts/test-nova-model-microscope.mjs"
       - "apps/portal/data/nova-ml-modules.ts"
       - "apps/portal/components/nova-ml-workspaces.tsx"
