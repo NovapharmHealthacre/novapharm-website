@@ -194,12 +194,27 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
         signal: AbortSignal.timeout(TIMEOUT_MS)
       });
       const raw = await readJsonBounded(response);
+      // Authorisation is rechecked after transport, not just before it:
+      // rights may be revoked or replaced during a slow source response.
+      const refreshedPermission = await authorize({
+        sourceId, tenantId, purpose: "internal-evaluation",
+        domain: plan.domain, country: plan.country
+      });
       const capturedAt = now();
-      // Recheck the trusted clock and previously approved grant after the
-      // network call. An evaluation must not return data on an expired grant.
+      // Prevent any invalid clock or permit expiry from returning a preview.
       if (!Number.isSafeInteger(capturedAt) || capturedAt < 0 ||
           capturedAt >= Date.parse(grant.validUntil)) {
         throw new Error("Source rights are no longer approved");
+      }
+      const refreshedGrant = assertInternalEvaluationPermit({
+        permit: refreshedPermission, sourceId, tenantId,
+        domain: plan.domain, country: plan.country, now: capturedAt
+      });
+      if (refreshedGrant.receiptId !== grant.receiptId ||
+          refreshedGrant.licenseId !== grant.licenseId ||
+          refreshedGrant.rightsVersion !== grant.rightsVersion ||
+          refreshedGrant.validUntil !== grant.validUntil) {
+        throw new Error("Source rights changed during evaluation");
       }
       const normalized = normaliseGovSourceResult(plan, raw);
       return buildEvaluationEnvelope({
