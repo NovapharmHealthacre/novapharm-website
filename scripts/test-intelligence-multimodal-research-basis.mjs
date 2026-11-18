@@ -47,6 +47,7 @@ test("offline synthetic regression suite covers all papers without making an ima
   for(const field of ["neuralNetworkTested","imageAttacksExecuted","realPatientOrProductRecordsUsed","modelRobustnessVerified","productionAccepted","canPublish"]){
     assert.equal(report[field],false,field);
   }
+  assert.ok(multimodalSyntheticProbes.every(p=>Object.isFrozen(p) && Object.isFrozen(p.paperNumbers) && Object.isFrozen(p.overrides)));
   const allMapped = new Set(multimodalSyntheticProbes.flatMap(x=>x.paperNumbers));
   assert.deepEqual(allMapped,unique);
   assert.ok(multimodalSyntheticProbes.every(p =>
