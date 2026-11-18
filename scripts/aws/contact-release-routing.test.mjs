@@ -216,30 +216,6 @@ test("sparse-circuit PR #816 source-only merge skips public AWS contact dispatch
   }
 });
 
-test("private enterprise readiness artifacts cannot dispatch the unrelated public contact publisher", () => {
-  const files = [
-    "src/core/intelligence-enterprise-readiness.mjs",
-    "scripts/audit-intelligence-enterprise-readiness.mjs",
-    "scripts/test-intelligence-enterprise-readiness.mjs",
-    "docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md",
-    ".github/workflows/intelligence-enterprise-readiness.yml"
-  ];
-  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
-  const publisher = get("publish-aws-contact-production.yml");
-  for (const path of files) {
-    assert.ok(dispatcher.includes("|" + path + "|"), "contact dispatcher must treat source-only audit as private: " + path);
-    assert.ok(publisher.includes("|" + path + "|"), "public publisher must treat source-only audit as private: " + path);
-  }
-  // A risk-register entry is a meaningful protected ML source change, so the
-  // existing found_ml=true & private_only=true condition can safely deny publication.
-  assert.ok(dispatcher.includes("|docs/ai-risk-register.md|"));
-  assert.ok(publisher.includes("|docs/ai-risk-register.md|"));
-  assert.match(dispatcher, /found_ml=true/);
-  assert.match(publisher, /release_needed=false/);
-  // Publisher policy-only changes remain neutral, not an automatic private exemption.
-  assert.match(publisher, /A publisher policy-only update must not be silently skipped/);
-});
-
 test("L0 and alignment research-only source merges cannot accidentally publish AWS or Pages", () => {
   const researchSources = [
     ".github/workflows/intelligence-global-mobile-contracts.yml",
@@ -281,4 +257,28 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
     assert.ok(!cases.includes("packages/medicines-intelligence/src/index.ts"));
     assert.ok(!cases.includes("packages/medicines-intelligence/*"));
   }
+});
+
+test("private enterprise readiness artifacts cannot dispatch the unrelated public contact publisher", () => {
+  const files = [
+    "src/core/intelligence-enterprise-readiness.mjs",
+    "scripts/audit-intelligence-enterprise-readiness.mjs",
+    "scripts/test-intelligence-enterprise-readiness.mjs",
+    "docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md",
+    ".github/workflows/intelligence-enterprise-readiness.yml"
+  ];
+  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
+  const publisher = get("publish-aws-contact-production.yml");
+  for (const path of files) {
+    assert.ok(dispatcher.includes("|" + path + "|"), "contact dispatcher must treat source-only audit as private: " + path);
+    assert.ok(publisher.includes("|" + path + "|"), "public publisher must treat source-only audit as private: " + path);
+  }
+  // A risk-register entry is a meaningful protected ML source change, so the
+  // existing found_ml=true & private_only=true condition can safely deny publication.
+  assert.ok(dispatcher.includes("|docs/ai-risk-register.md|"));
+  assert.ok(publisher.includes("|docs/ai-risk-register.md|"));
+  assert.match(dispatcher, /found_ml=true/);
+  assert.match(publisher, /release_needed=false/);
+  // Publisher policy-only changes remain neutral, not an automatic private exemption.
+  assert.match(publisher, /A publisher policy-only update must not be silently skipped/);
 });
