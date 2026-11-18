@@ -132,3 +132,20 @@ test("the public-facing response exactly matches a restrictive review schema", a
     assert.ok(!Object.hasOwn(value, key), key);
   }
 });
+
+test("interpretability is registered as a non-operational model use case with risk and licence gates", () => {
+  const read = (path) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
+  const register = JSON.parse(read("docs/ai-use-case-register.json"));
+  const item = register.roadmapOnly.find((entry) => entry.id === "model-feature-interpretability");
+  assert.ok(item);
+  assert.equal(item.maturity, "source-only-not-operational");
+  assert.match(item.prohibitedUse, /medical|regulatory|commercial/i);
+  assert.match(item.requiredData, /licensed|inspectable/i);
+  assert.match(read("docs/ai-risk-register.md"), /False model-feature explanations/);
+  assert.match(read("docs/ai-model-licence-review.md"), /does not authorize access to OpenAI model internals/);
+  assert.match(read("docs/ai-system-card.md"), /no approved inspectable model/i);
+  const models = JSON.parse(read("docs/ai-model-register.json"));
+  const evidenceVector = models.models.find((entry) => entry.id === "novapharm-evidence-vector-v1");
+  assert.match(evidenceVector.implementation, /no neural weights/i);
+  assert.ok(!models.models.some((entry) => entry.id === "model-microscope-live"));
+});

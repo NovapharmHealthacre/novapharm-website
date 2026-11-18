@@ -4,6 +4,11 @@ on:
     paths:
       - "src/core/ai/model-microscope.mjs"
       - "docs/intelligence/model-microscope-inspection-v1.schema.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-risk-register.md"
+      - "docs/ai-model-licence-review.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-model-register.json"
       - "scripts/test-nova-model-microscope.mjs"
       - "apps/portal/data/nova-ml-modules.ts"
       - "apps/portal/components/nova-ml-workspaces.tsx"
