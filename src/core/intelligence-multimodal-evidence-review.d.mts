@@ -8,6 +8,12 @@ export type MultimodalReviewInput = Readonly<{
   imageTextMedicineName?: string;
   referenceProductCode?: string;
   observedProductCode?: string;
+  referenceStrength?: string;
+  observedStrength?: string;
+  referenceDoseForm?: string;
+  observedDoseForm?: string;
+  referenceManufacturer?: string;
+  observedManufacturer?: string;
 }>;
 export type MultimodalReviewStatus = "blocked" | "conflicting_candidates" | "insufficient_evidence" | "human_review_required";
 export type MultimodalReviewResult = Readonly<{
