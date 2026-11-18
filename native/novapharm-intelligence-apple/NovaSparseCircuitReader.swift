@@ -27,7 +27,7 @@ public struct NovaSparseCircuitReader {
     // Data must already have come from an authenticated, authorised app service.
     // Decoding is NOT authentication, signature verification or model validation.
     public static func readResearchSummary(_ data: Data) throws -> NovaSparseCircuitSummary {
-        public let summary = try JSONDecoder().decode(NovaSparseCircuitSummary.self, from: data)
+        let summary = try JSONDecoder().decode(NovaSparseCircuitSummary.self, from: data)
         guard summary.schemaVersion == "npi.sparse-circuit.v1",
               summary.valid,
               summary.status == "unverified-research-candidate",
