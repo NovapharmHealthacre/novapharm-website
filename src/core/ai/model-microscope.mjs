@@ -71,8 +71,14 @@ async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loa
     fail("missing, mismatched or expired authorisation");
   }
 
+  // Snapshot verified authorization fields before invoking awaited adapters.
+  // The original grant can be mutated during storage or independent review.
+  const approvedGrant = Object.freeze({
+    grantId: grant.grantId,
+    expiresAt: grant.expiresAt
+  });
   const record = await callTrusted(loadRecord, Object.freeze({ ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])) }), "protected artifact unavailable");
-  if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired while loading artifact");
+  if (Date.parse(approvedGrant.expiresAt) <= readClock()) fail("authorisation expired while loading artifact");
   if (!record || !sameScope(record, scopedRequest) ||
       record.privacyClass !== "approved_non_patient" ||
       record.rightsReview !== "approved" ||
@@ -115,9 +121,9 @@ async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loa
     provenanceSha256: approvedRecord.provenanceSha256,
     visualizationSha256: approvedRecord.visualizationSha256,
     modelArtifactSha256: approvedRecord.modelArtifactSha256,
-    authorizationGrantId: grant.grantId
+    authorizationGrantId: approvedGrant.grantId
   }), "independent verifier unavailable");
-  if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired during independent verification");
+  if (Date.parse(approvedGrant.expiresAt) <= readClock()) fail("authorisation expired during independent verification");
   if (!verification || !sameScope(verification, scopedRequest) ||
       verification.provenanceSha256 !== approvedRecord.provenanceSha256 ||
       verification.visualizationSha256 !== approvedRecord.visualizationSha256 ||
@@ -125,7 +131,7 @@ async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loa
       verification.datasetRef !== approvedRecord.datasetRef ||
       verification.evaluationRef !== approvedRecord.evaluationRef ||
       verification.rightsGrantId !== approvedRecord.rightsGrantId ||
-      verification.authorizationGrantId !== grant.grantId ||
+      verification.authorizationGrantId !== approvedGrant.grantId ||
       verification.reviewState !== "independently_verified" ||
       verification.modelRightsApproved !== true ||
       verification.datasetRightsApproved !== true ||

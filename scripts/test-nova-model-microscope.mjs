@@ -286,3 +286,44 @@ test("malformed scope and untrusted artifact or verifier accessors cannot disclo
     );
   }
 });
+
+test("authorizer cannot extend or swap validated grant fields after storage begins", async () => {
+  let clock = now;
+  const originalExpiry = Date.parse("2026-11-18T08:00:01.000Z");
+  const mutableGrant = { ...authorised, expiresAt: new Date(originalExpiry).toISOString() };
+  let loads = 0, checks = 0;
+  await assert.rejects(inspect({
+    request: scope,
+    now: () => clock,
+    authorizeRead: async () => mutableGrant,
+    loadRecord: async () => {
+      loads++;
+      clock = now + 2000;
+      mutableGrant.expiresAt = authorised.expiresAt;
+      mutableGrant.grantId = "changed-after-storage";
+      return record;
+    },
+    verifyEvidence: async () => { checks++; return verified; }
+  }), /authorisation expired while loading artifact/);
+  assert.equal(loads, 1);
+  assert.equal(checks, 0);
+});
+
+test("independent verification is bound to the original approved grant ID", async () => {
+  const mutableGrant = { ...authorised };
+  let seen;
+  const output = await inspect({
+    request: scope, now,
+    authorizeRead: async () => mutableGrant,
+    loadRecord: async () => {
+      mutableGrant.grantId = "replaced-with-later-grant";
+      return record;
+    },
+    verifyEvidence: async request => {
+      seen = request.authorizationGrantId;
+      return verified;
+    }
+  });
+  assert.equal(seen, authorised.grantId);
+  assert.equal(output.canPublish, false);
+});

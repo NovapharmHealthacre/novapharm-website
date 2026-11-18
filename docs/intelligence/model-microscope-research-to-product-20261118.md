@@ -122,3 +122,7 @@ The signed-receipt verifier now catches exceptions caused by malformed input obj
 ### Authorization timing and hostile input isolation
 
 The protected inspection reader now evaluates grant expiry **after** the asynchronous authorizer finishes and **before** the first protected record lookup. Subsequent server-clock samples must be safe integer milliseconds and cannot regress. Its public boundary suppresses unexpected errors from hostile getters on request, grant, artifact or evidence objects while retaining explicit deny reasons for ordinary invalid inputs. Offline adversarial regression tests assert that expiry during authorization produces **zero artifact loads** and private exception text never crosses the reader boundary. This is a research-only source contract, not a deployed identity provider, key service or authorization grant.
+
+### Immutable authorization grant checkpoint
+
+After authorization returns, the inspector snapshots the validated short-lived expiry and grant identifier before any awaited protected artifact loader or independent verifier. An authorization adapter cannot extend its own approval window or replace a grant ID while other callbacks execute. Regression tests explicitly mutate both fields during asynchronous loading and assert expiry denial before the verifier; a separate case verifies that the independent evidence callback receives the original grant identity. This is a source-only isolation invariant, not proof of a live authorization service.
