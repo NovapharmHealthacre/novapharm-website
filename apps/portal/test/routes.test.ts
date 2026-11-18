@@ -37,7 +37,7 @@ test("area landing routes are canonical and unknown routes fail closed", () => {
   assert.equal(resolvePortalView("/public-data/"), null);
 });
 
-test("Medicines Intelligence has eight governed nested views and rejects every other child route", () => {
+test("Medicines Intelligence retains eight legacy views plus a protected Science research extension", () => {
   for (const subview of medicinesIntelligenceSubviews) {
     const view = resolvePortalView(`/portal/executive-platform/medicines-intelligence/${subview}/`);
     assert.equal(view?.kind, "module");
@@ -46,7 +46,20 @@ test("Medicines Intelligence has eight governed nested views and rejects every o
       assert.equal(view.subview, subview);
     }
   }
-  assert.equal(new Set(medicinesIntelligenceSubviews).size, 8);
+  const legacy = [
+    "medicine-search", "geography", "prescribers", "pharmacies",
+    "forecasts", "opportunities", "campaigns", "data-sources",
+  ];
+  assert.deepEqual(medicinesIntelligenceSubviews.slice(0, 8), legacy);
+  assert.equal(medicinesIntelligenceSubviews[8], "science-lab");
+  assert.equal(new Set(medicinesIntelligenceSubviews).size, 9);
+  const science = resolvePortalView("/portal/executive-platform/medicines-intelligence/science-lab/");
+  assert.equal(science?.kind, "module");
+  if (science?.kind === "module") {
+    assert.equal(science.module.code, "executive.nhs-data");
+    assert.equal(science.module.area, "executive", "Science must inherit board-level SSR protection");
+    assert.equal(science.subview, "science-lab");
+  }
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/unapproved-view/"), null);
   assert.equal(resolvePortalView("/portal/executive-platform/nhs-data/"), null);
 });
