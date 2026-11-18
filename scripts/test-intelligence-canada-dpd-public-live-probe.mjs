@@ -66,7 +66,7 @@ test("one official DIN result stays a SHA-256 and time receipt, not customer med
       "customerCountryLive","canPublish","rawDrugRecordsRetained"
     ])assert.equal(result[f],false,f);
     assert.ok(!JSON.stringify(result).includes("SINEQUAN"));
-    assert.ok(!JSON.stringify(result).includes("00326925\\""));
+    assert.ok(!JSON.stringify(result).includes("drug_identification_number"));
     assert.ok(Object.isFrozen(result));
   }
 });
