@@ -39,12 +39,19 @@ class NovaClipVisualSearch(private val portalOrigin: String) {
     /** Must be invoked off the Android UI thread by an already authenticated app.
      *  Authentication and refresh belong to the signed app. Never persist or log cookies.
      */
-    fun search(query: String, csrfToken: String, sessionCookie: String): List<VisualCandidate> {
+    fun search(query: String, csrfToken: String, cookieHeader: String): List<VisualCandidate> {
         val clean = query.trim()
         require(clean.length in 3..240 && clean.none { it.code < 32 || it.code == 127 })
         require(csrfToken.length in 16..256 && csrfToken.all { it.isLetterOrDigit() || it == '-' || it == '_' })
-        require(sessionCookie.startsWith("np_session=") && sessionCookie.length <= 4096 &&
-                sessionCookie.all { it.code in 32..126 })
+        // Both cookies are required by the actual API: np_session authenticates,
+        // while np_csrf must exactly match the X-CSRF-Token header.
+        require(cookieHeader.length in 30..4096 && cookieHeader.all { it.code in 32..126 })
+        val pairs = cookieHeader.split(';').map { it.trim() }
+        require(pairs.size == 2 && pairs.all { it.contains('=') })
+        val cookieValues = pairs.map { it.substringBefore('=') to it.substringAfter('=') }.toMap()
+        require(cookieValues.size == 2 &&
+                cookieValues["np_session"]?.isNotBlank() == true &&
+                cookieValues["np_csrf"] == csrfToken)
         val url = URL("$portalOrigin/gateway/v1/intelligence/visual/search")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
@@ -56,7 +63,7 @@ class NovaClipVisualSearch(private val portalOrigin: String) {
         connection.setRequestProperty("Content-Type", "application/json")
         connection.setRequestProperty("Accept", "application/json")
         connection.setRequestProperty("X-CSRF-Token", csrfToken)
-        connection.setRequestProperty("Cookie", sessionCookie)
+        connection.setRequestProperty("Cookie", cookieHeader)
         try {
             val request = JSONObject().put("query", clean).put("limit", 5)
             connection.outputStream.use { it.write(request.toString().toByteArray(Charsets.UTF_8)) }
