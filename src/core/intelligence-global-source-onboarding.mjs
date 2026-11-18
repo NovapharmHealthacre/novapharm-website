@@ -54,6 +54,19 @@ function cleanCandidate(candidate){
   if(url.protocol!=="https:"||url.username||url.password||url.hash||!url.hostname){
     deny("untrusted source reference URL");
   }
+  // Discovery metadata must not normalize private, loopback, literal-IP or
+  // local-development destinations into an ostensibly trusted HTTPS source.
+  // Source activation still requires separate publisher and legal review.
+  const hostname = url.hostname.toLowerCase();
+  const labels = hostname.split(".");
+  if (url.port || labels.length < 2 ||
+      !/^[a-z0-9.-]+$/u.test(hostname) ||
+      labels.some(label => !label || label.startsWith("-") || label.endsWith("-")) ||
+      /^\\d+\\.\\d+\\.\\d+\\.\\d+$/u.test(hostname) ||
+      hostname.startsWith("[") ||
+      ["localhost","local","internal","test","invalid","example","onion"].includes(labels.at(-1))) {
+    deny("untrusted source reference host");
+  }
 }
 function routeFromMode(mode){
   if(mode.includes("Restricted")||mode.includes("Access-review")||mode==="FHIR-review")return "ACCESS_OR_INTERFACE_REVIEW";
