@@ -32,7 +32,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "discovery",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "geometry-counterexample",
@@ -56,7 +61,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "formal",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "theoretical-physics-derivation",
@@ -80,7 +90,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "formal",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "medicinal-chemistry-lab",
@@ -105,7 +120,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "experimental",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "protein-bioprocess-optimization",
@@ -130,7 +150,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "experimental",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "immunology-mechanism-investigation",
@@ -155,7 +180,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "experimental",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "rare-disease-reanalysis",
@@ -180,7 +210,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "clinical_research",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "codex-scientific-simulation",
@@ -205,7 +240,12 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "computational",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     },
     {
       "id": "openai-science-newsroom",
@@ -229,7 +269,36 @@
       "sourceReviewed": true,
       "independentNovaPharmReplication": false,
       "sourceRightsForAiIngestionApproved": false,
-      "clinicalOrCommercialUseApproved": false
+      "clinicalOrCommercialUseApproved": false,
+      "validationTrack": "discovery",
+      "publisherClaimVerification": "not_independently_assessed",
+      "retractionCorrectionStatus": "not_checked",
+      "primaryStudyEvidenceInspected": false,
+      "approvedResearchDatasetAvailable": false
     }
-  ]
+  ],
+  "claimIntegrityPolicy": {
+    "validationTracks": [
+      "discovery",
+      "formal",
+      "experimental",
+      "clinical_research",
+      "computational"
+    ],
+    "requiredStages": [
+      "source_identity",
+      "legal_rights",
+      "source_corrections",
+      "provenance",
+      "independent_method_validation",
+      "conflicts_and_uncertainty",
+      "qualified_review",
+      "release_review"
+    ],
+    "stagesIndependentlyVerified": 0,
+    "customerScientificClaimEnabled": false,
+    "automaticallyPromotePublisherReport": false,
+    "privateClinicalDataIngestionEnabled": false,
+    "indexCanServeAsPrimaryEvidence": false
+  }
 }
