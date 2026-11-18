@@ -1,0 +1,180 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import {
+  buildCountryReleaseLedger, assertAllCountrySourcesLive,
+  EXPECTED_SOURCE_COUNT, EXPECTED_NATIONAL_COUNTRIES, EXPECTED_GROUPS
+} from "../src/core/intelligence-country-release-ledger.mjs";
+
+const source = JSON.parse(readFileSync(new URL(
+  "../docs/intelligence/global-pharma-sources-20261117.json", import.meta.url
+), "utf8")).sources;
+const ledger = buildCountryReleaseLedger(source);
+const candidates = () => source.map(x => ({ ...x }));
+
+test("all 101 distinct regulator/research source candidates are represented exactly once", () => {
+  assert.equal(ledger.totalSources, EXPECTED_SOURCE_COUNT);
+  assert.equal(ledger.sourceRows.length, source.length);
+  assert.deepEqual(
+    new Set(ledger.sourceRows.map(x => x.candidateKey)),
+    new Set(source.map(x => x.candidateKey))
+  );
+  assert.equal(ledger.sourceCandidateRegistrationPercent, 100);
+  assert.equal(ledger.jurisdictionLabels, 79);
+  assert.equal(ledger.countries.reduce((n,c) => n + c.candidateSourceCount, 0), 101);
+  assert.equal(ledger.countries.length, 79);
+  assert.equal(ledger.nationalCountries, EXPECTED_NATIONAL_COUNTRIES);
+  assert.equal(ledger.supranationalAndGlobalGroups, EXPECTED_GROUPS);
+});
+
+test("all 77 country names are included; EU/EEA and Global are NOT fictitious countries", () => {
+  const national = ledger.countries.filter(x => x.groupType === "NATIONAL");
+  assert.equal(national.length, 77);
+  const expected = [
+    "United Kingdom","Ireland","France","Spain","Italy","Germany",
+    "Netherlands","Belgium","Denmark","Sweden","Norway","Finland",
+    "Poland","Czechia","Austria","Switzerland","Portugal","Hungary",
+    "Ukraine","Russia","Greece","Romania","Bulgaria","Croatia",
+    "Slovenia","Slovakia","Estonia","Latvia","Lithuania","Serbia","Türkiye",
+    "United States","Canada","Mexico",
+    "Brazil","Argentina","Chile","Colombia","Peru","Ecuador","Uruguay",
+    "India","China","Japan","South Korea","Taiwan","Singapore","Malaysia",
+    "Indonesia","Thailand","Vietnam","Philippines","Pakistan","Bangladesh",
+    "Nepal","Sri Lanka",
+    "Australia","New Zealand",
+    "Saudi Arabia","United Arab Emirates","Israel","Jordan","Oman","Qatar",
+    "Bahrain","Kuwait",
+    "South Africa","Nigeria","Kenya","Ghana","Tanzania","Rwanda",
+    "Morocco","Egypt","Algeria","Ethiopia","Uganda"
+  ];
+  assert.equal(expected.length, 77);
+  assert.deepEqual(
+    national.map(x => x.country).sort(),
+    [...expected].sort()
+  );
+  const groups = ledger.countries.filter(x => x.groupType !== "NATIONAL");
+  assert.deepEqual(groups.map(x => x.country).sort(), ["European Union / EEA", "Global"]);
+});
+
+test("source coverage by region agrees with all original source rows, never counts codes as national integration", () => {
+  const expected = {
+    "Global": 9,
+    "Europe": 38,
+    "North America": 5,
+    "Latin America": 7,
+    "Asia Pacific": 19,
+    "Oceania": 3,
+    "Middle East": 8,
+    "Africa": 12
+  };
+  const actual = Object.fromEntries(Object.keys(expected).map(region => [
+    region, ledger.sourceRows.filter(x => x.region === region).length
+  ]));
+  assert.deepEqual(actual, expected);
+  assert.equal(ledger.sourceOnlyAdapterCount, 5);
+  assert.equal(ledger.sourceOnlyAdapterCoveragePercent, 4.95);
+  const codes = ledger.sourceRows.filter(x => x.adapterContractMerged);
+  assert.deepEqual(new Set(codes.map(x => x.country)),
+    new Set(["Global", "Spain", "Canada", "United States"]));
+  assert.equal(codes.filter(x => x.country === "Global").length, 2);
+  assert.equal(codes.filter(x => x.groupType === "NATIONAL").length, 3);
+});
+
+test("one and every source and country fails closed against production activation", () => {
+  for (const item of ledger.sourceRows) {
+    assert.equal(item.canPublish, false);
+    assert.equal(item.liveConnectionVerified, false);
+    assert.equal(item.sourceRightsVerified, false);
+    assert.equal(item.nationalMedicineIdentityReconciled, false);
+    assert.equal(item.tenantIsolatedProductionAccessVerified, false);
+    assert.equal(item.commercialAndAiReuseVerified, false);
+    assert.equal(item.verifiedCompletionPercent, 0);
+    assert.ok(item.remainingReleaseGates.length >= 7);
+    assert.ok(item.nextStep.length >= 20);
+  }
+  for (const country of ledger.countries) {
+    assert.equal(country.customerEnabled, false);
+    assert.equal(country.verifiedProductionCompletionPercent, 0);
+    assert.equal(country.releaseDecision, "BLOCKED_PENDING_ALL_SOURCE_SPECIFIC_GATES");
+    assert.equal(country.nextSteps.length, country.candidateSourceCount);
+  }
+  assert.deepEqual([
+    ledger.verifiedLicensedSources,
+    ledger.verifiedIngestedSources,
+    ledger.verifiedProductionSources,
+    ledger.verifiedProductionCountries
+  ], [0,0,0,0]);
+  assert.throws(() => assertAllCountrySourcesLive(ledger), /unverified/);
+});
+
+test("routes give country-specific next actions, not a generic fake API-for-everyone", () => {
+  const by = (s) => ledger.countries.find(x => x.country === s);
+  assert.equal(by("India").candidateSourceCount, 4);
+  assert.equal(by("France").candidateSourceCount, 2);
+  assert.equal(by("United Kingdom").candidateSourceCount, 2);
+  assert.equal(by("South Africa").candidateSourceCount, 2);
+  const uk = ledger.sourceRows.find(x => x.country === "United Kingdom" && x.provider.includes("MHRA"));
+  assert.equal(uk.route, "OFFICIAL_PORTAL_EXPORT_REVIEW");
+  const singapore = ledger.sourceRows.find(x => x.country === "Singapore");
+  assert.equal(singapore.route, "DOCUMENTED_API_VERIFICATION_AND_ADAPTER");
+  const india = ledger.sourceRows.find(x => x.country === "India" && x.provider.includes("ABDM"));
+  assert.equal(india.route, "ACCESS_AND_REGULATORY_APPROVAL");
+  assert.ok(india.remainingReleaseGates.includes("OFFICIAL_AUTHENTICATED_ACCESS_OR_VENDOR_APPROVAL"));
+  const greece = ledger.sourceRows.find(x => x.country === "Greece");
+  assert.equal(greece.route, "PUBLISHER_DISCOVERY");
+  const ukSource = ledger.sourceRows.find(x => x.country === "United Kingdom" && x.provider.includes("MHRA"));
+  assert.ok(ukSource.remainingReleaseGates.includes("OFFICIAL_EXPORT_CONFIRMED_NO_PORTAL_SCRAPING_ASSUMED"));
+  const australia = by("Australia");
+  assert.equal(australia.candidateSourceCount, 2);
+  assert.ok(australia.nextSteps.some(x => x.source.includes("PBS")));
+});
+
+test("candidate metadata and caller-supplied fake source rights cannot promote any country", () => {
+  const bads = [
+    (s) => { s[0].rightsStatus = "approved"; },
+    (s) => { s[0].integrationStatus = "live"; },
+    (s) => { s[0].dataAdmission = "admitted"; },
+    (s) => { s[0].activeAdapterId = "approved"; },
+    (s) => { s[0].allowedUses = ["commercial-ai-redistribution"]; },
+    (s) => { s[0].authorityVerification = "approved"; },
+    (s) => { s[0].candidateKey = "__proto__"; },
+    (s) => { s[0].url = "http://official.example/path"; },
+    (s) => { s[0].url = "https://127.0.0.1/metadata"; },
+    (s) => { s[0].url = "https://example.local/metadata"; },
+    (s) => { s[0].url = "https://user:password@example.gov/path"; },
+    (s) => { s[0].mode = "API_LIVE"; },
+    (s) => { s[1].candidateKey = s[0].candidateKey; }
+  ];
+  for (const tamper of bads) {
+    const altered = candidates();
+    tamper(altered);
+    assert.throws(() => buildCountryReleaseLedger(altered), /Country release ledger rejected/);
+  }
+  assert.throws(() => buildCountryReleaseLedger(source.slice(1)), /expected immutable/);
+  assert.throws(() => buildCountryReleaseLedger(null), /expected immutable/);
+  assert.throws(() => buildCountryReleaseLedger(source, {releasedPlans: null}), /expected immutable/);
+});
+
+test("only exact released source plans are counted; candidate status never becomes customer visible", () => {
+  const noAdapters = buildCountryReleaseLedger(source, { releasedPlans: {} });
+  assert.equal(noAdapters.sourceOnlyAdapterCount, 0);
+  assert.equal(noAdapters.verifiedProductionCountries, 0);
+  assert.equal(noAdapters.sourceCandidateRegistrationPercent, 100);
+  const fakeAdapters = buildCountryReleaseLedger(source, {
+    releasedPlans: { "global-clinicaltrials": {}, "not-registered": {} }
+  });
+  assert.equal(fakeAdapters.sourceOnlyAdapterCount, 1);
+  assert.equal(fakeAdapters.verifiedLicensedSources, 0);
+  assert.equal(fakeAdapters.verifiedProductionCountries, 0);
+});
+
+test("ledger is immutable at each level and contains no record-level patient or API material", () => {
+  assert.ok(Object.isFrozen(ledger));
+  assert.ok(Object.isFrozen(ledger.sourceRows));
+  assert.ok(Object.isFrozen(ledger.countries));
+  assert.ok(Object.isFrozen(ledger.countries[0]));
+  assert.ok(Object.isFrozen(ledger.sourceRows[0].remainingReleaseGates));
+  assert.ok(Object.isFrozen(ledger.countries[0].nextSteps));
+  assert.ok(!JSON.stringify(ledger).includes("apiKey"));
+  assert.ok(!JSON.stringify(ledger).includes("accessToken"));
+});
