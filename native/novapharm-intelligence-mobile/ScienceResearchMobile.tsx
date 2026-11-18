@@ -3,9 +3,10 @@
  * No model, upstream API, credentials, patient records or protected data.
  */
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
+import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 
 const color = { ink: "#1D1D1F", secondary: "#424245", border: "#D2D2D7", grouped: "#F5F5F7", accent: "#E3120B" };
 
@@ -38,6 +39,24 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         })}
       </View>
     )}
+    <Text style={styles.sectionTitle} accessibilityRole="header">Research methods and sources</Text>
+    <Text style={styles.description}>{scienceMethods.scientificMethodologyCount} research methods and {scienceMethods.discoveryIndexCount} discovery indexes reviewed on {scienceMethods.reviewedAt}. Reference only; no independent NovaPharm replication.</Text>
+    {scienceMethods.methods.map((entry) =>
+      <View style={styles.card} key={entry.id}>
+        <Text style={styles.methodTag}>{entry.sourceType === "reference_index" ? "DISCOVERY INDEX" : "RESEARCH EXAMPLE"} · {entry.publishedAt ?? "Updated website"}</Text>
+        <Text style={styles.cardTitle} accessibilityRole="header">{entry.title}</Text>
+        <Text style={styles.description}>{entry.reportedFinding}</Text>
+        <Text style={styles.smallHeading}>Transferable method</Text>
+        <Text style={styles.description}>{entry.transferablePattern}</Text>
+        <Text style={styles.smallHeading}>Limits</Text>
+        <Text style={styles.description}>{entry.limitations}</Text>
+        <Pressable accessibilityRole="link" accessibilityLabel={`Read original OpenAI source: ${entry.title}`}
+          style={styles.sourceLink} onPress={() => { void Linking.openURL(entry.sourceUrl); }}>
+          <Text style={styles.sourceLinkLabel}>Read original source</Text>
+        </Pressable>
+        <Text style={styles.sourceDisclaimer}>Opens external browser on request · No Science model or dataset connected</Text>
+      </View>
+    )}
     <Text style={styles.footer}>OpenAI Science is a public research reference, not an API. GPT-Rosalind API use is limited to separately approved internal research and cannot be offered to customers. Source licences and release approvals remain separate.</Text>
   </View>;
 }
@@ -59,5 +78,9 @@ const styles = StyleSheet.create({
   requirement: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 4 },
   relatedButton: { minHeight: 44, justifyContent: "center", borderWidth: 1, borderColor: color.border, borderRadius: 9, paddingHorizontal: 12, marginTop: 7 },
   relatedText: { fontSize: 12, color: color.ink, lineHeight: 19, fontWeight: "600" },
+  methodTag: { color: color.accent, marginBottom: 10, fontSize: 11, fontWeight: "700", lineHeight: 17 },
+  sourceLink: { minHeight: 44, marginTop: 14, alignSelf: "flex-start", justifyContent: "center" },
+  sourceLinkLabel: { fontSize: 13, fontWeight: "700", textDecorationLine: "underline", color: color.ink },
+  sourceDisclaimer: { fontSize: 11, lineHeight: 16, marginTop: 4, color: color.secondary },
   footer: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 18 }
 });
