@@ -39,6 +39,14 @@ test("exactly 22 canonical routes, five repository foundations and 17 dependency
   });
   assert.deepEqual(new Set(output.workspaces.map(x => x.slug)), new Set(catalogue.map(x => x.slug)));
   assert.ok(output.workspaces.every(x => x.productionAccepted === false && x.customerAccessible === false));
+  // Multimodal is a shared design contract, not a new route or approval.
+  assert.ok(output.workspaces.every(x =>
+    x.multimodalResearchPolicy?.workspaceSlug === x.slug &&
+    x.multimodalResearchPolicy.state === "research_plan_only" &&
+    x.multimodalResearchPolicy.modelInferenceEnabled === false &&
+    x.multimodalResearchPolicy.productionAccepted === false &&
+    x.multimodalResearchPolicy.canPublish === false &&
+    x.multimodalResearchPolicy.decisionReady === false));
   assert.equal(output.productionLive, false);
   assert.equal(output.customerReleaseApproved, false);
   assert.equal(output.sourceCountsIndependentlyAttested, false);
