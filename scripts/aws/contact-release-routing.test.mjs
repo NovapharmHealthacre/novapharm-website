@@ -118,3 +118,44 @@ test("all 101-source onboarding and rights-only files are private and cannot dis
   assert.match(dispatch, /skip=true/);
   assert.match(publish, /release_needed=false/);
 });
+
+
+test("Science research-only files must not trigger AWS or public Pages publication", () => {
+  const sciencePaths = [
+    ".github/workflows/intelligence-science-research-contracts.yml",
+    "docs/intelligence/openai-science-integration-20261118.md",
+    "docs/intelligence/openai-science-methods-20261118.json",
+    "docs/intelligence/science-research-capabilities-20261118.json",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx",
+    "native/novapharm-intelligence-mobile/tsconfig.json",
+    "scripts/package-unified-estate.mjs",
+    "scripts/test-intelligence-22-workspace-readiness.mjs",
+    "scripts/test-intelligence-readiness.mjs",
+    "scripts/test-intelligence-science-evidence-dossier.mjs",
+    "scripts/test-intelligence-science-methodology.mjs",
+    "scripts/test-intelligence-science-research.mjs",
+    "scripts/test-unified-release-artifacts.mjs",
+    "src/core/intelligence-22-workspace-readiness.mjs",
+    "src/core/intelligence-release-readiness.mjs",
+    "src/core/intelligence-science-evidence-dossier.mjs",
+    "src/core/intelligence-science-methodology.mjs",
+    "src/core/intelligence-science-research-contract.mjs",
+    "src/core/intelligence-science-research-principles.mjs"
+];
+  for (const name of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(name);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, name + " missing changed-file classifier");
+    const allowlist = new Set(classifier.split("|"));
+    for (const path of sciencePaths) {
+      assert.ok(allowlist.has(path), name + " missing private Science file: " + path);
+    }
+    assert.ok(allowlist.has("apps/portal/*"), name + " must classify Science app modules");
+    assert.match(source, /found_ml=true/);
+    assert.match(source, /private_only=true/);
+  }
+});
