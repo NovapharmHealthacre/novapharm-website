@@ -8,6 +8,7 @@ import {
 } from "../src/core/intelligence-country-release-ledger.mjs";
 
 import { COUNTRY_ISO2, SOURCE_GROUP_CODES, requireCountryOrGroupCode } from "../src/core/intelligence-country-iso-identifiers.mjs";
+import { EXPECTED_COUNTRY_SOURCE_KEYS, assertExactCountrySourceCoverage } from "../src/core/intelligence-country-source-baseline.mjs";
 
 const source = JSON.parse(readFileSync(new URL(
   "../docs/intelligence/global-pharma-sources-20261117.json", import.meta.url
@@ -266,5 +267,60 @@ test("untrusted registry display metadata cannot smuggle hidden characters or fa
     const rows=candidates();
     change(rows);
     assert.throws(()=>buildCountryReleaseLedger(rows), /Country release ledger rejected/);
+  }
+});
+
+
+test("pinned national baseline accounts for every required source, not just 77 names or 101 slots", () => {
+  const evidence = assertExactCountrySourceCoverage(source);
+  assert.deepEqual(evidence, {
+    baselineVersion: "2026-11-17",
+    nationalCountries: 77,
+    jurisdictions: 79,
+    sources: 101,
+    exactSourceKeysPresent: true,
+    sourceRightsReviewed: false,
+    customerLiveCountriesVerified: 0
+  });
+  assert.ok(Object.isFrozen(EXPECTED_COUNTRY_SOURCE_KEYS));
+  assert.equal(Object.keys(EXPECTED_COUNTRY_SOURCE_KEYS).length, 79);
+  assert.equal(
+    Object.values(EXPECTED_COUNTRY_SOURCE_KEYS).reduce((sum, keys) => sum + keys.length, 0),
+    101
+  );
+  for (const [country, keys] of Object.entries(EXPECTED_COUNTRY_SOURCE_KEYS)) {
+    assert.ok(Object.isFrozen(keys), country);
+    assert.ok(keys.length >= 1, country);
+    const observed = source.filter(s => s.country === country).map(s => s.candidateKey);
+    assert.deepEqual(observed.slice().sort(), keys.slice().sort(), country);
+  }
+  assert.equal(EXPECTED_COUNTRY_SOURCE_KEYS.India.length, 4);
+  assert.equal(EXPECTED_COUNTRY_SOURCE_KEYS["United Kingdom"].length, 2);
+  assert.equal(EXPECTED_COUNTRY_SOURCE_KEYS["European Union / EEA"].length, 3);
+  assert.equal(EXPECTED_COUNTRY_SOURCE_KEYS.Global.length, 9);
+  assert.equal(EXPECTED_COUNTRY_SOURCE_KEYS.Australia.length, 2);
+});
+
+test("cannot replace one source with a plausible new authority and still claim full country coverage", () => {
+  const replacements = [
+    [ "India", "CDSCO / SUGAM", "Alternative Indian national authority" ],
+    [ "United Kingdom", "MHRA Products", "Fictional UK medicines register" ],
+    [ "Australia", "PBS", "Fictional schedule supplier" ],
+    [ "Global", "ChEMBL", "Other global compounds provider" ],
+    [ "European Union / EEA", "TED", "Other EU procurement source" ]
+  ];
+  for (const [country, original, replacement] of replacements) {
+    const amended = candidates();
+    const row = amended.find(x => x.country === country &&
+      x.provider.toLowerCase().includes(original.toLowerCase()));
+    assert.ok(row, original);
+    row.provider = replacement;
+    const slug = value => value.normalize("NFKD").replace(/\p{M}/gu, "")
+      .toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
+    row.candidateKey = [row.region,row.country,row.provider].map(slug).join("-");
+    assert.equal(amended.length, 101);
+    assert.equal(new Set(amended.map(x => x.country)).size, 79);
+    assert.throws(() => buildCountryReleaseLedger(amended),
+      /Country coverage baseline rejected: source key missing, replaced or duplicated/);
   }
 });
