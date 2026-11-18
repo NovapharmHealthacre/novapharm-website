@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   View
 } from "react-native";
+import { inspectSyntheticFeature } from "../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import { novaMlWorkspaceCatalogue, modelMicroscopeInspectionStages } from "../../apps/portal/data/nova-ml-modules";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
@@ -130,6 +131,7 @@ export default function App() {
   const twoColumns = width >= 760;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
 
@@ -152,7 +154,7 @@ export default function App() {
     <View style={styles.notice}>
       <Text style={styles.noticeTitle}>Research preview · private and unconnected</Text>
       <Text style={styles.noticeText}>
-        No live medicine data, customer session, payments, external API calls or AI inference is enabled.
+        No live medicine data, customer session, payments, external API calls or production AI inference is enabled.
         Every source needs independent rights and data acceptance.
       </Text>
     </View>
@@ -274,6 +276,19 @@ export default function App() {
                 <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
                 <Text style={styles.meta}>Private source-only preview · Zero inference · Zero network requests · No patient data</Text>
               </View>
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Synthetic model reference</Text>
+                <Text style={styles.description}>Run a locally defined 4 × 4 neural-network feature demonstration. It is not an approved medicine model, clinical explanation or live AI service.</Text>
+                <Pressable accessibilityRole="button" accessibilityLabel="Run synthetic neuron feature reference" style={styles.syntheticButton} onPress={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>
+                  <Text style={styles.syntheticButtonLabel}>Run synthetic reference</Text>
+                </Pressable>
+                {syntheticExample ? <View accessible accessibilityLabel="Synthetic four by four feature grid, no medical data" style={styles.syntheticGrid}>
+                  {syntheticExample.optimizedGrid.map((line, row) => <View key={row} style={styles.syntheticRow}>
+                    {line.map((value, column) => <View key={column} style={[styles.syntheticPixel, { backgroundColor: "rgba(29,29,31," + value + ")" }]} />)}
+                  </View>)}
+                  <Text style={styles.meta}>Initial activation {syntheticExample.initialActivation} · Maximized {syntheticExample.finalActivation}. Synthetic only.</Text>
+                </View> : null}
+              </View>
               <SectionHeading title="Interpretability research lifecycle" />
               {modelMicroscopeInspectionStages.map((stage) => (
                 <View key={stage.id} style={styles.card}>
@@ -356,6 +371,11 @@ const styles = StyleSheet.create({
   backText: { color: palette.primary, fontSize: 14, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
+  syntheticButton: { backgroundColor: palette.primary, minHeight: 46, borderRadius: 10, paddingHorizontal: 14, alignItems: "center", justifyContent: "center", alignSelf: "flex-start", marginTop: 14 },
+  syntheticButtonLabel: { color: palette.canvas, fontSize: 13, fontWeight: "600" },
+  syntheticGrid: { marginTop: 14, alignSelf: "flex-start", gap: 5 },
+  syntheticRow: { flexDirection: "row", gap: 5 },
+  syntheticPixel: { width: 40, height: 40, borderColor: palette.border, borderWidth: 1, borderRadius: 4 },
   navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
   navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },
   navItemActive: { backgroundColor: palette.primary },

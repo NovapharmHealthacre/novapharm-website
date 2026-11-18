@@ -73,5 +73,17 @@ test("web and mobile share five not-operational inspection stages without a mode
   assert.match(catalog, /state: "not-operational"/);
   assert.match(web, /modelMicroscopeInspectionStages\.map/);
   assert.match(mobile, /modelMicroscopeInspectionStages\.map/);
-  assert.doesNotMatch(mobile, /src\/core\/ai\/model-microscope|fetch\(|URLSession|Authorization:/);
+  assert.doesNotMatch(mobile, /src\/core\/ai\/model-microscope\.mjs|model-microscope-signed-evidence\.mjs|fetch\(|URLSession|Authorization:/);
+});
+
+test("protected web and offline mobile both expose only the first-party synthetic feature reference", () => {
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(web, /inspectSyntheticFeature/);
+  assert.match(web, /Run synthetic reference/);
+  assert.match(mobile, /inspectSyntheticFeature/);
+  assert.match(mobile, /Run synthetic reference/);
+  assert.match(web, /Synthetic only/);
+  assert.match(mobile, /Synthetic only/);
+  assert.doesNotMatch(mobile, /model-microscope-signed-evidence\.mjs|model-microscope\.mjs|fetch\(/);
 });

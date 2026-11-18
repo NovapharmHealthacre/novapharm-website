@@ -30,3 +30,7 @@ Brand tokens follow NovaPharm's light-first white/graphite interface, restrained
 ## Model Microscope research preview
 
 The Inspect tab shares `modelMicroscopeInspectionStages` from `apps/portal/data/nova-ml-modules.ts` with the protected web Intelligence research view. It is not a native inferencing runtime, does not embed an OpenAI Microscope browser, and does not communicate with model internals. The server-side `src/core/ai/model-microscope.mjs` contract is not imported into the client, preventing Node-only authorization and evidence logic from entering mobile bundles. No live model selection or evidence visualisation is advertised.
+
+### Optional synthetic microscope demo
+
+The Inspect tab includes an explicitly labelled, user-initiated, locally computed first-party 4×4 toy-network example. It makes no network request or medicine prediction, uses no private records, and cannot unlock any production model. The same synthetic feature-maximization implementation is used in the protected web preview. Real model inspection still requires separate rights, signed evidence, authenticated services and release gates.

@@ -151,3 +151,10 @@
   color: var(--nova-muted);
   line-height: 1.55;
 }
+
+.syntheticPanel { border-top: 1px solid var(--nova-divider); padding-top: 20px; margin-top: 22px; }
+.syntheticPanel h3 { margin: 0 0 8px; font-size: 1rem; }
+.syntheticPanel p { max-width: 66ch; color: var(--nova-muted); }
+.syntheticResult { margin-top: 16px; }
+.syntheticGrid { display: grid; width: min(100%, 242px); grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px; border: 1px solid var(--nova-divider); border-radius: 9px; }
+.syntheticPixel { aspect-ratio: 1; border: 1px solid #dadadd; border-radius: 4px; }

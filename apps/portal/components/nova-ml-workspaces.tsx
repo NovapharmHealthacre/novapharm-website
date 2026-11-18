@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { inspectSyntheticFeature } from "../../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue, modelMicroscopeInspectionStages } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
@@ -14,6 +15,7 @@ const gates = [
 export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }>) {
   const module = novaMlWorkspaceCatalogue.find((entry) => entry.slug === kind);
   const [review, setReview] = useState<readonly string[]>([]);
+  const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   if (!module) return null;
   const complete = gates.every((gate) => review.includes(gate.id));
   const isModelMicroscope = kind === "nova-model-microscope";
@@ -55,6 +57,18 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <ol className={styles.capabilities} aria-label="Model inspection research stages">{modelMicroscopeInspectionStages.map((stage, index) =>
         <li key={stage.id}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p><strong>{stage.title}</strong></p><p>{stage.summary}</p><p className={styles.helper}>Required: {stage.requiredEvidence}</p><small>Not operational</small></li>
       )}</ol>
+      <div className={styles.syntheticPanel}>
+        <h3>Interactive synthetic feature reference</h3>
+        <p>This optional demonstration runs a tiny first-party 4 × 4 neural network entirely in this browser. It is not a NovaPharm pharmaceutical model, a verified explanation, or an approved model artifact.</p>
+        <button className={styles.reset} type="button" onClick={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>Run synthetic reference</button>
+        {syntheticExample ? <div className={styles.syntheticResult} role="group" aria-label="Synthetic feature-maximization result">
+          <div className={styles.syntheticGrid} role="img" aria-label="Synthetic grayscale four by four input feature grid">
+            {syntheticExample.optimizedGrid.flat().map((value, index) => <span key={index} className={styles.syntheticPixel} style={{ backgroundColor: "rgba(29, 29, 31, " + value + ")" }} />)}
+          </div>
+          <p>Initial activation: {syntheticExample.initialActivation} · Maximized activation: {syntheticExample.finalActivation}</p>
+          <p><strong>Synthetic only.</strong> No patient data, medicine prediction, model download or external request.</p>
+        </div> : null}
+      </div>
       <p className={styles.reference}>Research basis: <a href="https://openai.com/index/microscope/">OpenAI Microscope</a>; <a href="https://distill.pub/2017/feature-visualization/">Feature Visualization</a>; <a href="https://distill.pub/2020/circuits/zoom-in/">Introduction to Circuits</a>.</p>
     </section> : null}
     <section className={styles.section} aria-labelledby="nova-ml-capabilities">
