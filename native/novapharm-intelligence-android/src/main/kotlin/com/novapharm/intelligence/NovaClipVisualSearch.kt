@@ -1,10 +1,13 @@
 package com.novapharm.intelligence
 
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import org.json.JSONObject
 
-/** SDK candidate only. No APK, Android Studio project or production sign-in is included. */
+/** Source-only private research adapter. Not an APK, medical classifier or sign-in service. */
 data class VisualCandidate(
     val rank: Int,
     val assetId: String,
@@ -16,46 +19,72 @@ data class VisualCandidate(
 class NovaClipVisualSearch(private val portalOrigin: String) {
     init {
         require(portalOrigin == "https://portal.novapharmhealthcare.com") {
-            "Only the signed-app NovaPharm portal origin is allowed"
+            "The signed app must use the canonical NovaPharm portal only."
         }
     }
 
-    /** Run on an IO dispatcher; never on the Android main thread.
-     *  The caller provides its pre-existing authenticated, CSRF-bound cookie session.
-     *  Do not persist raw queries or copy cookies into logs, analytics or URLs.
+    /** Read a bounded HTTP response. Never load arbitrary-sized model responses into memory. */
+    private fun readBounded(input: InputStream): String {
+        val output = ByteArrayOutputStream()
+        val buffer = ByteArray(4096)
+        while (true) {
+            val length = input.read(buffer)
+            if (length < 0) break
+            require(output.size() + length <= 32_768) { "Response exceeded approved limit." }
+            output.write(buffer, 0, length)
+        }
+        return output.toString(Charsets.UTF_8.name())
+    }
+
+    /** Must be invoked off the Android UI thread by an already authenticated app.
+     *  Authentication and refresh belong to the signed app. Never persist or log cookies.
      */
     fun search(query: String, csrfToken: String, sessionCookie: String): List<VisualCandidate> {
         val clean = query.trim()
         require(clean.length in 3..240 && clean.none { it.code < 32 || it.code == 127 })
-        require(csrfToken.isNotBlank() && sessionCookie.isNotBlank())
+        require(csrfToken.length in 16..256 && csrfToken.all { it.isLetterOrDigit() || it == '-' || it == '_' })
+        require(sessionCookie.startsWith("np_session=") && sessionCookie.length <= 4096 &&
+                sessionCookie.all { it.code in 32..126 })
         val url = URL("$portalOrigin/gateway/v1/intelligence/visual/search")
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "POST"
         connection.connectTimeout = 5000
         connection.readTimeout = 8000
         connection.instanceFollowRedirects = false
+        connection.useCaches = false
         connection.doOutput = true
         connection.setRequestProperty("Content-Type", "application/json")
+        connection.setRequestProperty("Accept", "application/json")
         connection.setRequestProperty("X-CSRF-Token", csrfToken)
         connection.setRequestProperty("Cookie", sessionCookie)
         try {
             val request = JSONObject().put("query", clean).put("limit", 5)
             connection.outputStream.use { it.write(request.toString().toByteArray(Charsets.UTF_8)) }
-            if (connection.responseCode != 200) throw IllegalStateException("Visual retrieval is unavailable")
-            val payload = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-            require(payload.length <= 32768)
+            if (connection.responseCode != 200 || connection.url.toString() != url.toString()) {
+                throw IllegalStateException("Private visual retrieval unavailable.")
+            }
+            val payload = connection.inputStream.use { readBounded(it) }
             val body = JSONObject(payload)
             require(body.getString("contract") == "novapharm.intelligence.visual-search.v1")
             require(body.getBoolean("humanReviewRequired") && body.getBoolean("similarityIsNotEvidence"))
             require(!body.getBoolean("regulatoryStatusVerified") && !body.getBoolean("productIdentityVerified"))
-            val results = body.getJSONArray("results")
-            require(results.length() <= 5)
-            return (0 until results.length()).map { i ->
-                val row = results.getJSONObject(i)
+            val rows = body.getJSONArray("results")
+            require(rows.length() <= 5)
+            val seen = mutableSetOf<String>()
+            return (0 until rows.length()).map { index ->
+                val row = rows.getJSONObject(index)
                 val source = row.getString("sourceUrl")
-                require(URL(source).protocol == "https" && row.getString("status") == "unverified_visual_match")
-                VisualCandidate(row.getInt("rank"), row.getString("assetId"), row.getString("title"),
-                    row.getString("rightsReference"), source)
+                val parsed = URI(source)
+                require(parsed.scheme == "https" && parsed.host != null &&
+                        parsed.userInfo == null && parsed.fragment == null &&
+                        parsed.port in setOf(-1, 443))
+                val assetId = row.getString("assetId")
+                val title = row.getString("title")
+                val rights = row.getString("rightsReference")
+                require(assetId.matches(Regex("[A-Za-z0-9._:-]{1,120}")) && seen.add(assetId))
+                require(title.isNotBlank() && title.length <= 200 && rights.isNotBlank() && rights.length <= 240)
+                require(row.getInt("rank") == index + 1 && row.getString("status") == "unverified_visual_match")
+                VisualCandidate(index + 1, assetId, title, rights, source)
             }
         } finally {
             connection.disconnect()
