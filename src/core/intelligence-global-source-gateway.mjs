@@ -313,9 +313,18 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
           refreshedGrant.validUntil !== grant.validUntil) {
         throw new Error("Source rights changed during evaluation");
       }
+      // The reauthorisation service itself may take time. Never stamp an
+      // evidence preview with a clock sampled before that service completed.
+      let finalAt;
+      try { finalAt = now(); }
+      catch { throw new Error("Invalid evaluation envelope"); }
+      if (!Number.isSafeInteger(finalAt) || finalAt < capturedAt ||
+          finalAt >= Date.parse(refreshedGrant.validUntil)) {
+        throw new Error("Invalid evaluation envelope");
+      }
       const normalized = normaliseGovSourceResult(plan, raw);
       return buildEvaluationEnvelope({
-        plan, normalized, raw, grant: refreshedGrant, capturedAt
+        plan, normalized, raw, grant: refreshedGrant, capturedAt: finalAt
       });
     }
   });
