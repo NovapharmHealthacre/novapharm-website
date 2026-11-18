@@ -1,6 +1,6 @@
 /**
  * Native AI integration programme for the existing protected Intelligence portal.
- * These are four separate, gated extensions, NOT additions to the canonical
+ * Four Apple-specific extensions plus one separately governed model research candidate; NOT additions to the canonical
  * 22 medicine research workspaces and NOT claims of Apple SDK execution on web.
  */
 export const novaMlWorkspaceCatalogue = Object.freeze([
