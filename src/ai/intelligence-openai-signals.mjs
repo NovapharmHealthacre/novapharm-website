@@ -34,25 +34,32 @@ const COUNTRY = /^[A-Z]{2}$/;
 // OpenAI Signals v3.0 sample covers July 2024–September 2026; dates are UTC labels.
 const MONTH_START = "2024-07-01", MONTH_END = "2026-09-01";
 const QUARTER_START = "2024-07-01", QUARTER_END = "2026-07-01";
-// Accept records/proposals with plain own data properties only. Reject accessor,
-// symbol, prototype-inherited and malformed Proxy inputs without invoking getters.
-const plain = value => {
+// Copy own plain data descriptors into an inert null-prototype snapshot.
+// Do not read caller-owned getters or Proxy get traps during validation.
+function snapshotPlainData(value) {
   try {
-    if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+    if (value === null || typeof value !== "object" || Array.isArray(value)) return null;
     const prototype = Object.getPrototypeOf(value);
-    if (prototype !== Object.prototype && prototype !== null) return false;
-    return Reflect.ownKeys(value).every(key => typeof key === "string" &&
-      Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), "value"));
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const snapshot = Object.create(null);
+    for (const key of Reflect.ownKeys(value)) {
+      if (typeof key !== "string") return null;
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !Object.hasOwn(descriptor, "value")) return null;
+      snapshot[key] = descriptor.value;
+    }
+    return snapshot;
   } catch {
-    return false;
+    return null;
   }
-};
+}
 function answer(reasons) {
   const unique = [...new Set(reasons)];
   return Object.freeze({ status: unique.length ? "blocked" : "review-only", executionEnabled: false, reasons: Object.freeze(unique) });
 }
-export function assessSignalsResearchProposal(value) {
-  if (!plain(value)) return answer(["invalid-proposal"]);
+export function assessSignalsResearchProposal(untrustedValue) {
+  const value = snapshotPlainData(untrustedValue);
+  if (!value) return answer(["invalid-proposal"]);
   const reasons = [];
   if (Reflect.ownKeys(value).some(key => !KEYS.has(key))) reasons.push("unexpected-fields");
   if (!SOURCE_SET.has(value.sourceId)) reasons.push("unregistered-source");
@@ -67,11 +74,12 @@ export function assessSignalsResearchProposal(value) {
   return answer(reasons);
 }
 // Only validates public, *already aggregated* CSV rows. No user prompts or raw transcripts.
-export function assessSignalsAggregateRow(table, row) {
+export function assessSignalsAggregateRow(table, untrustedRow) {
   // Never traverse Object.prototype for "__proto__", "constructor", etc.
   if (typeof table !== "string" || !Object.hasOwn(FIELDS, table)) return answer(["unapproved-table"]);
   const fields = FIELDS[table];
-  if (!plain(row)) return answer(["invalid-record"]);
+  const row = snapshotPlainData(untrustedRow);
+  if (!row) return answer(["invalid-record"]);
   const reasons = [];
   if (Reflect.ownKeys(row).some(key => !fields.includes(key)) || fields.some(key => !Object.hasOwn(row, key))) reasons.push("unexpected-fields");
   if ("month" in row && (typeof row.month !== "string" || !MONTH.test(row.month) || row.month < MONTH_START || row.month > MONTH_END)) reasons.push("invalid-month");
