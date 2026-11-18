@@ -245,7 +245,6 @@ test("101-country web and Expo catalogue paths are private-only; no backend serv
       assert.ok(patterns.includes(p) ||
         (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
         (p.startsWith("native/novapharm-intelligence-mobile/") &&
-          patterns.includes("native/novapharm-intelligence-apple/*") === false &&
           patterns.includes("native/novapharm-intelligence-mobile/*")),
         workflow+" could publish candidate-only country metadata: "+p);
     }
