@@ -15,7 +15,13 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-24.04
+    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
+    # while preserving Chromium, WebKit and all existing acceptance tests.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     strategy:
       fail-fast: false
       matrix:
@@ -34,17 +40,9 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu mirrors can be slow. Keep a finite 20-minute dependency window without skipping browsers.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
+      # Both browsers must be present before real accessibility, Lighthouse
+      # and role/viewport acceptance. Do not disable or mock either engine.
+      - name: Verify Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
@@ -62,7 +60,13 @@ jobs:
   secure-portal:
     name: Secure portal and role-boundary acceptance
     runs-on: ubuntu-24.04
+    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
+    # while preserving Chromium, WebKit and all existing acceptance tests.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -73,17 +77,9 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu mirrors can be slow. Keep a finite 20-minute dependency window without skipping browsers.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
+      # Both browsers must be present before real accessibility, Lighthouse
+      # and role/viewport acceptance. Do not disable or mock either engine.
+      - name: Verify Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
