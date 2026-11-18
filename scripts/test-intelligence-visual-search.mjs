@@ -145,3 +145,24 @@ test("private model response must be below 32 KB and valid JSON", async () => {
     ok: true, text: async () => "not json"
   })), { statusCode: 503 });
 });
+
+test("streamed private inference rejects oversized content before consuming all chunks", async () => {
+  let consumed = 0;
+  const response = {
+    ok: true,
+    headers: { get: () => null },
+    body: new ReadableStream({
+      pull(controller) {
+        consumed += 1;
+        controller.enqueue(new Uint8Array(16_384));
+        if (consumed >= 20) controller.close();
+      }
+    }),
+    text: async () => { throw new Error("Stream-capable responses must never be read unbounded"); }
+  };
+  await assert.rejects(
+    searchApprovedVisualCatalogue({ query: "approved public artwork" }, configured, async () => response),
+    { statusCode: 503 }
+  );
+  assert.ok(consumed <= 4, "More chunks were consumed after exceeding the 32KB limit.");
+});
