@@ -146,8 +146,12 @@ export function buildCountryReleaseLedger(registry) {
     const merged = Boolean(expectedAdapter && own(sourcePlans, expectedAdapter));
     const route = sourceRoute(input.mode);
     const extra = [];
-    if (route === "ACCESS_AND_REGULATORY_APPROVAL") extra.push(EXTRA_GATES.ACCESS);
-    if (route === "OFFICIAL_PORTAL_EXPORT_REVIEW") extra.push(EXTRA_GATES.PORTAL);
+    // Hybrid interfaces are not mutually exclusive: an API/Portal source
+    // retains its portal-export gate, and Portal/Restricted needs BOTH gates.
+    if (input.mode.includes("Restricted") ||
+        input.mode.includes("Access-review") ||
+        input.mode === "FHIR-review") extra.push(EXTRA_GATES.ACCESS);
+    if (input.mode.includes("Portal")) extra.push(EXTRA_GATES.PORTAL);
     return Object.freeze({
       candidateKey: input.candidateKey,
       region: input.region,
