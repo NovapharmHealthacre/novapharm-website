@@ -87,3 +87,10 @@ test("protected web and offline mobile both expose only the first-party syntheti
   assert.match(mobile, /Synthetic only/);
   assert.doesNotMatch(mobile, /model-microscope-signed-evidence\.mjs|model-microscope\.mjs|fetch\(/);
 });
+
+test("Expo recognizes shared first-party mjs reference in both platform bundles", () => {
+  const metro = read("native/novapharm-intelligence-mobile/metro.config.cjs");
+  assert.match(metro, /sourceExts/);
+  assert.match(metro, /"mjs"/);
+  assert.match(metro, /watchFolders/);
+});
