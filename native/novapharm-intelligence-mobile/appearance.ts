@@ -24,4 +24,3 @@ export const mobileDarkPalette = Object.freeze({
   accent: "#FF6961"
 });
 
-export type MobilePalette = { readonly [K in keyof typeof mobileLightPalette]: string };
