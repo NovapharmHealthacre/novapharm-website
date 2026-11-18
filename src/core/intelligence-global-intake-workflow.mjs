@@ -58,13 +58,20 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       if(!dataset)reject("unregistered source");
       if(!metadata||typeof metadata!=="object"||Array.isArray(metadata))reject("metadata");
 
-      // Authorize BEFORE parsing raw content or making any quarantine record.
-      const authorisedAt=now();
-      if(!Number.isFinite(authorisedAt))reject("server clock");
-      const decision=await authorize({
+      // Authorize BEFORE reading source bytes or creating a quarantine record.
+      // Sample trusted server time AFTER asynchronous authorisation, so a grant
+      // expiring while the callback runs cannot be accepted using stale time.
+      const rightsScope=Object.freeze({
         tenantId,sourceId,country:plan.country,domain:plan.domain,
         purpose:"internal-evaluation"
       });
+      let decision;
+      try{decision=await authorize(rightsScope);}
+      catch{reject("trusted authorizer unavailable");}
+      let authorisedAt;
+      try{authorisedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
       const grant=assertInternalEvaluationPermit({
         permit:decision,sourceId,tenantId,country:plan.country,
         domain:plan.domain,now:authorisedAt
@@ -98,6 +105,25 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       const pageQuality=assessGlobalSourcePageQuality({
         sourceId,raw,normalized,manifest,limit
       });
+      // The quarantine payload is still in memory only. Recheck rights after
+      // parsing and evidence preparation, before allowing any result to leave.
+      // A grant can be revoked, replaced or expire during an async evaluation.
+      let finalDecision;
+      try{finalDecision=await authorize(rightsScope);}
+      catch{reject("trusted authorizer unavailable");}
+      let evaluatedAt;
+      try{evaluatedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(evaluatedAt)||evaluatedAt<authorisedAt||
+         evaluatedAt>=Date.parse(grant.validUntil))reject("source rights expired during evaluation");
+      const finalGrant=assertInternalEvaluationPermit({
+        permit:finalDecision,sourceId,tenantId,country:plan.country,
+        domain:plan.domain,now:evaluatedAt
+      });
+      if(finalGrant.receiptId!==grant.receiptId||
+         finalGrant.licenseId!==grant.licenseId||
+         finalGrant.rightsVersion!==grant.rightsVersion||
+         finalGrant.validUntil!==grant.validUntil)reject("source rights changed during evaluation");
       return Object.freeze({
         contract:EVALUATION_CONTRACT,
         tenantId,
