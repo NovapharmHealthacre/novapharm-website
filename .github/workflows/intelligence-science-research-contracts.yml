@@ -25,6 +25,12 @@ on:
       - '.github/workflows/intelligence-science-research-contracts.yml'
   workflow_dispatch:
 
+# Discard obsolete Science checks when another commit is pushed to this PR.
+# This reduces queue churn while preserving the latest exact-head run.
+concurrency:
+  group: science-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
