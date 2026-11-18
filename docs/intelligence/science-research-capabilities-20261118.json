@@ -19,6 +19,11 @@
         "Verified publication identifiers and copyright/AI-use permissions",
         "Article-level provenance, retraction and freshness checks",
         "Human scientific review before conclusions"
+      ],
+      "linkedWorkspaces": [
+        "evidence",
+        "medicine-search",
+        "biotech-intelligence"
       ]
     },
     {
@@ -29,6 +34,11 @@
         "Source-approved immutable input snapshot",
         "Reproducible code, parameters and validation outputs",
         "Independent statistical review and audit"
+      ],
+      "linkedWorkspaces": [
+        "observed-market",
+        "forecasts",
+        "reports"
       ]
     },
     {
@@ -39,6 +49,10 @@
         "Validated model applicability and scientific boundary",
         "Approved software and data licence",
         "Specialist review and external validation"
+      ],
+      "linkedWorkspaces": [
+        "biotech-intelligence",
+        "decision-workspace"
       ]
     },
     {
@@ -49,6 +63,11 @@
         "Individually verified upstream APIs and permitted reuse",
         "Server-side tenant/source/purpose restrictions",
         "No mobile API keys; immutable intake and revocation"
+      ],
+      "linkedWorkspaces": [
+        "regulatory-intelligence",
+        "identity",
+        "evidence"
       ]
     },
     {
@@ -59,6 +78,10 @@
         "Documented alternative hypotheses and uncertainty",
         "Qualified human approval of experiment design",
         "Controlled lab execution and independent replication"
+      ],
+      "linkedWorkspaces": [
+        "decision-workspace",
+        "biotech-intelligence"
       ]
     },
     {
@@ -69,6 +92,10 @@
         "Approved source and document permissions",
         "Attributable references and versioned review",
         "Human editorial, regulatory and release approval"
+      ],
+      "linkedWorkspaces": [
+        "reports",
+        "decision-workspace"
       ]
     }
   ],
@@ -87,6 +114,22 @@
     "Bounded server-side execution with audit and budget ceilings",
     "Independent scientific and safety evaluation",
     "Human approval and publication permissions",
-    "iOS and Android device, privacy, accessibility and signing verification"
-  ]
+    "iOS and Android device, privacy, accessibility and signing verification",
+    "Restricted GPT-Rosalind models are internal-only: never enable customer-facing or external commercial API use"
+  ],
+  "accessPolicy": {
+    "modelFamily": "GPT-Rosalind",
+    "researchModelCandidate": "gpt-6-rosalind",
+    "modelCandidateStatus": "not_requested_or_verified_by_this_repository",
+    "researchTierApprovalRequired": true,
+    "apiOrganizationApprovalSeparatelyRequired": true,
+    "restrictedToApprovedInternalResearch": true,
+    "customerFacingApiUsePermitted": false,
+    "externalCommercialApiUsePermitted": false,
+    "appMayEnableModelFromMetadata": false,
+    "safetyAndQualifiedHumanReviewRequired": true,
+    "discoveryTierDoesNotGrantResearchTier": true,
+    "guidanceReference": "https://help.openai.com/en/articles/20001193-gpt-rosalind-for-life-sciences-research",
+    "safetyReference": "https://deploymentsafety.openai.com/gpt-rosalind-6"
+  }
 }
