@@ -1,12 +1,19 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { COUNTRY_ISO2 } from "../src/core/intelligence-country-iso-identifiers.mjs";
 
 const root = new URL("../", import.meta.url);
 const registry = JSON.parse(readFileSync(new URL("docs/intelligence/global-pharma-sources-20261117.json", root), "utf8"));
 const proposal = JSON.parse(readFileSync(new URL("docs/intelligence/country-101-scope-proposal-20261118.json", root), "utf8"));
 const directoryOrigins = new Set(["www.ema.europa.eu","www.paho.org","www.who.int","risp.auda-nepad.org"]);
 const normalized = value => String(value).normalize("NFKC").trim().toLocaleLowerCase("en");
+const EXPANSION_ISO2 = Object.freeze({
+  Cyprus:"CY",Iceland:"IS",Liechtenstein:"LI",Luxembourg:"LU",Malta:"MT",
+  Bolivia:"BO","Costa Rica":"CR","Dominican Republic":"DO",Guatemala:"GT",Panama:"PA",Paraguay:"PY",
+  Armenia:"AM",Cambodia:"KH",Georgia:"GE",Mongolia:"MN",Myanmar:"MM",
+  Botswana:"BW",Cameroon:"CM","Côte d’Ivoire":"CI",Namibia:"NA",Senegal:"SN",Tunisia:"TN",Zambia:"ZM",Zimbabwe:"ZW"
+});
 
 export function auditCountry101Proposal(baseline, plan) {
   assert.equal(baseline.schema,"novapharm.intelligence.global-source-candidates.v2");
@@ -19,6 +26,13 @@ export function auditCountry101Proposal(baseline, plan) {
   const existing = new Set(countryLabels.filter(x=>!plan.baselineNonCountryGroups.includes(x)).map(normalized));
   assert.equal(existing.size,plan.baselineNationalCountries);
   assert.equal(existing.size,77,"Existing 77-country source baseline must be separately preserved");
+  assert.equal(Object.keys(COUNTRY_ISO2).length,77,"Canonical ISO registry must cover baseline countries");
+  const baselineCodes = new Set(Object.values(COUNTRY_ISO2));
+  assert.equal(baselineCodes.size,77,"Baseline ISO identities cannot duplicate");
+  for(const country of Object.keys(COUNTRY_ISO2)) {
+    assert.ok(existing.has(normalized(country)),"Canonical country identity is missing from source registry: "+country);
+  }
+  assert.equal(Object.keys(EXPANSION_ISO2).length,24,"24 new names require independent immutable ISO mapping");
   assert.equal(plan.targetDistinctNationalCountries,101);
   assert.ok(Array.isArray(plan.proposedCountries));
   assert.equal(plan.proposedCountries.length,24,"The geographic scope gap must be exactly 24 nations");
@@ -31,6 +45,9 @@ export function auditCountry101Proposal(baseline, plan) {
     assert.ok(!existing.has(key),"Proposed country already exists in baseline: "+entry.country);
     assert.ok(!keys.has(key),"Duplicate proposed country: "+entry.country);keys.add(key);
     assert.match(entry.iso2,/^[A-Z]{2}$/u);
+    assert.ok(!baselineCodes.has(entry.iso2),"Proposed ISO code already used by a baseline country: "+entry.iso2);
+    assert.ok(Object.hasOwn(EXPANSION_ISO2,entry.country),"Unapproved country replacement");
+    assert.equal(entry.iso2,EXPANSION_ISO2[entry.country],"Country name and ISO code mismatch");
     assert.ok(!codes.has(entry.iso2),"Duplicate ISO code: "+entry.iso2);codes.add(entry.iso2);
     assert.ok(Object.hasOwn(counters,entry.region),"Unsupported region");
     counters[entry.region]++;
@@ -103,5 +120,11 @@ test("count and ISO spoofing cannot silently reclassify 101 candidate sources as
   }
   const changed=structuredClone(proposal);
   changed.proposedCountries[0].iso2=changed.proposedCountries[1].iso2;
-  assert.throws(()=>auditCountry101Proposal(registry,changed),/Duplicate ISO code/);
+  assert.throws(()=>auditCountry101Proposal(registry,changed),/(Duplicate ISO code|Country name and ISO code mismatch)/);
+  const baselineCollision=structuredClone(proposal);
+  baselineCollision.proposedCountries[0].iso2="GB";
+  assert.throws(()=>auditCountry101Proposal(registry,baselineCollision),/already used by a baseline country/);
+  const wrongIso=structuredClone(proposal);
+  wrongIso.proposedCountries[0].iso2="ZZ";
+  assert.throws(()=>auditCountry101Proposal(registry,wrongIso),/Country name and ISO code mismatch/);
 });
