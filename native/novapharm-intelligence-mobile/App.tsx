@@ -18,9 +18,10 @@ import {
   View
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 
-type Screen = "overview" | "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "research" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -40,6 +41,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "research", label: "Nova ML" },
   { screen: "account", label: "Account" }
 ];
 const pilotSlugs = new Set([
@@ -262,6 +264,42 @@ export default function App() {
                 <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
               ))}
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
+            </>
+          )}
+          {screen === "research" && (
+            <>
+              <SectionHeading
+                title="Nova ML research"
+                detail="One shared method catalogue for web, iOS and Android. This is an offline educational preview, not model inference."
+              />
+              <View style={styles.card} accessible>
+                <Text style={styles.cardTitle}>Research only · Not production approved</Text>
+                <Text style={styles.description}>
+                  L₀ sparsity, reward overoptimisation, critiques, instruction evaluation and long-horizon simulation
+                  are unverified research foundations. No model weights, clinical predictions, independent ground truth,
+                  source-rights grants, customer session or network service is available here.
+                </Text>
+              </View>
+              {[novaMlSparseResearchMethod, ...novaMlAlignmentResearchMethods].map((method) => (
+                <View key={method.id} style={styles.card} accessible accessibilityLabel={method.title + ". " + method.researchStatus + ". " + method.approval}>
+                  <Text style={styles.cardTitle}>{method.title}</Text>
+                  <Text style={styles.description}>{method.summary}</Text>
+                  <Text style={styles.meta}>{method.researchStatus}</Text>
+                  <Text style={styles.description}>{method.approval}</Text>
+                </View>
+              ))}
+              <View style={styles.rule} />
+              <SectionHeading
+                title="Native model programme"
+                detail="The four protected Nova ML workspaces need separate mobile identity, licensing, signed model and device approval."
+              />
+              {novaMlWorkspaceCatalogue.map((item) => (
+                <View key={item.slug} style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Text style={styles.description}>{item.summary}</Text>
+                  <Text style={styles.meta}>{item.platform} · Not enabled in this preview</Text>
+                </View>
+              ))}
             </>
           )}
           {screen === "account" && (
