@@ -1,1 +1,16 @@
-rootProject.name = "novapharm-intelligence-android-clip-candidate"
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "NovaPharmIntelligenceResearch"
+include(":app")

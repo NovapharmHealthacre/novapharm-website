@@ -81,6 +81,44 @@ test("canonical contact publication verifies health and rejected anonymous acces
   assert.ok(canonical.includes("! grep -Fq 'data-email-enquiry-form'"));
 });
 
+
+test("all 101-source onboarding and rights-only files are private and cannot dispatch AWS or Pages", () => {
+  const protectedSourceFiles = [
+    ".github/workflows/browser-acceptance.yml",
+    ".github/workflows/intelligence-global-101-onboarding.yml",
+    "docs/intelligence/global-101-source-integration-matrix-20261118.md",
+    "scripts/test-intelligence-global-intake-workflow.mjs",
+    "scripts/test-intelligence-global-source-gateway.mjs",
+    "scripts/test-intelligence-global-source-onboarding.mjs",
+    "src/core/intelligence-global-evidence-contract.mjs",
+    "src/core/intelligence-global-intake-quality.mjs",
+    "src/core/intelligence-global-intake-workflow.mjs",
+    "src/core/intelligence-global-source-gateway.mjs",
+    "src/core/intelligence-global-source-onboarding.mjs"
+  ];
+  for (const workflow of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(workflow);
+    // Check the actual source classification case, not a comment or a test name.
+    const caseLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(caseLine, workflow + " must classify individual changed paths");
+    for (const path of protectedSourceFiles) {
+      assert.ok(caseLine.split("|").includes(path),
+        workflow + " missing private source protection: " + path);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  assert.ok(dispatch.includes("scripts/aws/contact-release-routing.test.mjs"));
+  assert.ok(publish.includes("scripts/aws/contact-release-routing.test.mjs"));
+  assert.match(dispatch, /skip=true/);
+  assert.match(publish, /release_needed=false/);
+});
+
 test("private-only corporate live CI trigger repairs cannot dispatch public AWS releases", () => {
   const dispatch = get("dispatch-approved-aws-contact-release.yml");
   const publish = get("publish-aws-contact-production.yml");
@@ -93,4 +131,87 @@ test("private-only corporate live CI trigger repairs cannot dispatch public AWS 
   }
   assert.match(dispatch, /private_only=true/);
   assert.match(publish, /release_needed=false/);
+});
+
+test("sparse-circuit PR #816 source-only merge skips public AWS contact dispatch and publisher", () => {
+  // Pin the exact files changed by this nonclinical research release.
+  // A missing path must fail CI before merging to main: the unconditional
+  // main-push dispatcher would otherwise enter an AWS contact health/dispatch path.
+  const privatePaths = [
+    ".github/workflows/intelligence-sparse-circuit-assurance.yml",
+    ".github/workflows/intelligence-sparse-transformer-experiment.yml",
+    ".github/workflows/nova-ml-native-apple.yml",
+    ".github/workflows/nova-sparse-circuit-android.yml",
+    "apps/portal/components/nova-ml-workspaces.tsx",
+    "apps/portal/data/nova-ml-modules.ts",
+    "docs/ai-risk-register.md",
+    "docs/architecture/nova-scientific-intelligence-programme.md",
+    "docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md",
+    "docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md",
+    "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json",
+    "native/novapharm-intelligence-android/README.md",
+    "native/novapharm-intelligence-android/app/build.gradle.kts",
+    "native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt",
+    "native/novapharm-intelligence-android/app/src/main/res/values/strings.xml",
+    "native/novapharm-intelligence-android/app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt",
+    "native/novapharm-intelligence-android/build.gradle.kts",
+    "native/novapharm-intelligence-android/gradle.properties",
+    "native/novapharm-intelligence-android/settings.gradle.kts",
+    "native/novapharm-intelligence-apple/NovaSparseCircuitReader.swift",
+    "native/novapharm-intelligence-apple/NovaSparseCircuitResearchView.swift",
+    "native/novapharm-intelligence-apple/Package.swift",
+    "native/novapharm-intelligence-apple/README.md",
+    "native/novapharm-intelligence-apple/Tests/NovaMLAppleTests.swift",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/README.md",
+    "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs",
+    "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json",
+    "scripts/research/tiny-sparse-transformer-experiment.py",
+    "scripts/research/toy-sparse-circuit-intervention.mjs",
+    "scripts/research/validate-trained-sparse-transformer-report.mjs",
+    "scripts/test-intelligence-sparse-circuit-assurance.mjs",
+    "scripts/test-intelligence-sparse-circuit-cross-platform.mjs",
+    "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs",
+    "scripts/test-intelligence-sparse-circuit-upstream-governance.mjs",
+    "scripts/test-intelligence-trained-sparse-transformer-report.mjs",
+    "src/ai/model-registry.mjs",
+    "src/core/ai/model-registry.mjs",
+    "src/core/intelligence-sparse-circuit-assurance.mjs"
+  ];
+  const privateOnlyPublisherFiles = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  for (const filename of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(filename);
+    const firstCase = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(firstCase, filename + " must classify each exact changed path");
+    const protectedPatterns = firstCase.trim().replace(/\)$/, "").split("|");
+    const covers = (path) => protectedPatterns.some((p) =>
+      p === path || (p.endsWith("/*") && path.startsWith(p.slice(0, -1)))
+    );
+    for (const path of privatePaths) {
+      assert.ok(covers(path), filename + " would permit AWS contact verification on " + path);
+    }
+    for (const path of [
+      "assets/js/contact-production.js",
+      "products/nutraxin/index.html",
+      "scripts/build-site.mjs",
+      "assets/css/novapharm.bundle.css"
+    ]) {
+      assert.equal(covers(path), false, filename + " must preserve genuine public release for " + path);
+    }
+    for (const path of privateOnlyPublisherFiles) {
+      assert.ok(source.includes(path), filename + " must account for its own release-control updates: " + path);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
 });

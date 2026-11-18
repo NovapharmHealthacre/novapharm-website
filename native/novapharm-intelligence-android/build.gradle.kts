@@ -1,25 +1,5 @@
+// Pinned research-only Android build baseline; no production signing keys.
 plugins {
-    kotlin("jvm") version "2.2.21"
-}
-
-group = "com.novapharm.intelligence"
-version = "0.1.0"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    // JSON is built in to Android; this dependency supplies it for JVM SDK tests.
-    implementation("org.json:json:20260814")
-    testImplementation(kotlin("test-junit5"))
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-tasks.test {
-    useJUnitPlatform()
+    id("com.android.application") version "8.7.3" apply false
+    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
 }

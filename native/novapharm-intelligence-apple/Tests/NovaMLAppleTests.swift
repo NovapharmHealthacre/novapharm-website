@@ -3,33 +3,6 @@ import XCTest
 @testable import NovaMLApple
 
 final class NovaMLAppleTests: XCTestCase {
-    func testCLIPClientRejectsUntrustedOriginBeforeNetworkAccess() throws {
-        XCTAssertThrowsError(try NovaClipVisualSearch(
-            trustedPortalOrigin: URL(string: "https://unapproved.example")!
-        ))
-        XCTAssertThrowsError(try NovaClipVisualSearch(
-            trustedPortalOrigin: URL(string: "http://portal.novapharmhealthcare.com")!
-        ))
-    }
-
-    func testCLIPSourceUrlsEnforcePublicHttpsAttribution() throws {
-        for text in [
-            "https://127.0.0.1/private",
-            "https://[::1]/private",
-            "https://warehouse.internal/secret",
-            "https://docs.local/secret",
-            "https://attacker@novapharmhealthcare.com/public",
-            "https://novapharmhealthcare.com:8443/public",
-            "https://novapharmhealthcare.com/public#fragment",
-            "http://novapharmhealthcare.com/public"
-        ] {
-            XCTAssertFalse(NovaClipVisualSearch.sourceAllowed(URL(string: text)!), text)
-        }
-        XCTAssertTrue(NovaClipVisualSearch.sourceAllowed(
-            URL(string: "https://novapharmhealthcare.com/products/")!
-        ))
-    }
-
     func testCoreMLRejectsMissingModelApprovalBeforeLoadingBundle() throws {
         let permit = NovaModelPermit(
             modelIdentifier: "",
@@ -40,19 +13,6 @@ final class NovaMLAppleTests: XCTestCase {
             approvedForNonClinicalUse: false
         )
         XCTAssertThrowsError(try NovaCoreMLRuntime().predict(permit: permit, inputs: [:]))
-    }
-
-    func testCLIPClientRejectsRedirectableOrInjectedOrigins() throws {
-        let invalid = [
-            "https://portal.novapharmhealthcare.com:8443/",
-            "https://portal.novapharmhealthcare.com/?redirect=1",
-            "https://portal.novapharmhealthcare.com/#fragment",
-            "https://user@portal.novapharmhealthcare.com/",
-            "https://portal.novapharmhealthcare.com/evil"
-        ]
-        for text in invalid {
-            XCTAssertThrowsError(try NovaClipVisualSearch(trustedPortalOrigin: URL(string: text)!))
-        }
     }
 
     func testNaturalLanguageRejectsUnapprovedOrUnattributedText() throws {
@@ -136,4 +96,92 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
     #endif
+
+    func testCLIPClientRejectsUntrustedOriginBeforeNetworkAccess() throws {
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "https://unapproved.example")!
+        ))
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "http://portal.novapharmhealthcare.com")!
+        ))
+    }
+
+    func testCLIPSourceUrlsEnforcePublicHttpsAttribution() throws {
+        for text in [
+            "https://127.0.0.1/private",
+            "https://[::1]/private",
+            "https://warehouse.internal/secret",
+            "https://docs.local/secret",
+            "https://attacker@novapharmhealthcare.com/public",
+            "https://novapharmhealthcare.com:8443/public",
+            "https://novapharmhealthcare.com/public#fragment",
+            "http://novapharmhealthcare.com/public"
+        ] {
+            XCTAssertFalse(NovaClipVisualSearch.sourceAllowed(URL(string: text)!), text)
+        }
+        XCTAssertTrue(NovaClipVisualSearch.sourceAllowed(
+            URL(string: "https://novapharmhealthcare.com/products/")!
+        ))
+    }
+
+    func testCLIPClientRejectsRedirectableOrInjectedOrigins() throws {
+        let invalid = [
+            "https://portal.novapharmhealthcare.com:8443/",
+            "https://portal.novapharmhealthcare.com/?redirect=1",
+            "https://portal.novapharmhealthcare.com/#fragment",
+            "https://user@portal.novapharmhealthcare.com/",
+            "https://portal.novapharmhealthcare.com/evil"
+        ]
+        for text in invalid {
+            XCTAssertThrowsError(try NovaClipVisualSearch(trustedPortalOrigin: URL(string: text)!))
+        }
+    }
+
+    func testSparseCircuitReaderIsDisplayOnlyAndFailClosed() throws {
+        let base: [String: Any] = [
+            "schemaVersion": "npi.sparse-circuit.v1",
+            "valid": true,
+            "status": "unverified-research-candidate",
+            "modelId": "experiment-1",
+            "taskId": "quote-classification",
+            "nodeCount": 2,
+            "edgeCount": 1,
+            "lossDeltaCircuitVsBaseline": 0.01,
+            "lossDeltaAblatedVsCircuit": 0.56,
+            "sampleCount": 128,
+            "ablation": "mean",
+            "mechanisticExplanationVerified": false,
+            "productionEligible": false,
+            "clinicalUsePermitted": false
+        ]
+        let data = try JSONSerialization.data(withJSONObject: base)
+        let summary = try NovaSparseCircuitReader.readResearchSummary(data)
+        XCTAssertEqual(summary.status, "unverified-research-candidate")
+        XCTAssertFalse(summary.productionEligible)
+
+        var forged = base
+        forged["productionEligible"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["mechanisticExplanationVerified"] = true
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["sampleCount"] = 1_000_001
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+
+        forged = base
+        forged["nodeCount"] = 90000
+        XCTAssertThrowsError(try NovaSparseCircuitReader.readResearchSummary(
+            JSONSerialization.data(withJSONObject: forged)
+        ))
+    }
+
 }

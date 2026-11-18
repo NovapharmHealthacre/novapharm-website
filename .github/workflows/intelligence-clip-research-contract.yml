@@ -60,6 +60,6 @@ jobs:
         with:
           gradle-version: "8.14.3"
       - name: Compile Kotlin adapter and run fail-closed tests
-        run: gradle -p native/novapharm-intelligence-android test --no-daemon
+        run: gradle -p native/novapharm-intelligence-android/clipResearch test --no-daemon
       - name: Record Android boundary
         run: echo "JVM adapter tests do not certify Android packaging, network-security configuration, signing, authentication or physical devices."

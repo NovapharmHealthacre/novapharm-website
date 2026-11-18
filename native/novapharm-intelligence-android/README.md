@@ -1,21 +1,34 @@
-# NovaPharm Intelligence Android — CLIP and compute-admission source adapters
+# NovaPharm Intelligence — Android sparse-circuit research prototype
 
-**Status: source candidate only; disabled by default.** This directory now contains a Gradle **Kotlin/JVM testable library** and fail-closed unit tests. It does **not** contain an Android application module, APK, manifest, signed package, Play Store release, approved identity bridge, authorised model, or production server.
+**Status: offline Android application prototype, not a production NovaPharm app.** This prototype contains no model, real pharmaceutical data, patient information, sign-in, network permission, licensed source data or production API. An Android debug build is not a signed Play Store release or customer service.
 
-The `NovaClipVisualSearch.kt` adapter uses `https://portal.novapharmhealthcare.com/gateway/v1/intelligence/visual/search` exclusively and accepts only signed-app-managed sessions from the existing protected portal architecture. It denies redirects, limits input and response sizes, validates request/cookie material and returns unverified image candidates only.
+## Implementation
 
-To test the Kotlin code locally with a Gradle 8.14.3 installation and JDK 17:
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt` — bounded, exact-schema JSON parser for an independently supplied **unverified** research summary. It denies unknown fields, forged production/clinical flags, invalid IDs, counts or non-finite metrics.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt` — accessible read-only Android View with NovaPharm's restrained white/graphite visual hierarchy, research disclaimer and no automatic data capture.
+- `app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt` — offline launcher showing the **no evidence connected** state. It intentionally does not fetch a summary.
+- `app/src/main/AndroidManifest.xml` — no INTERNET, camera, audio, location or storage permissions; backups and cleartext disabled.
+- `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
+- `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
+
+From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
 
 ```sh
-gradle -p native/novapharm-intelligence-android test --no-daemon
+cd native/novapharm-intelligence-android
+gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 ```
 
-The GitHub `Intelligence CLIP research contract` job runs this build, separately from native Apple package tests. JVM compilation does **not** prove that Android signing, Play distribution, device TLS policies, live Cognito identity, CSRF refresh or secure cookie storage are complete. A real app must establish those lifecycle controls before passing any user session to the adapter.
+The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
 
-No camera permission, model weights, patient/medical imagery, private supplier files, background capture or third-party model host is permitted. The model server remains OFF unless a separate, independently verified and legally cleared private research pilot is approved. See `services/clip/README.md` and `docs/intelligence/visual-search-cross-platform-contract.json`.
+## Future production integration
 
+A signed NovaPharm Intelligence Android app must provide independently authenticated, revocable, server-owned tenant and source permissions; it must verify a versioned service response over TLS, supply explicitly authorised research summaries to the view, and support user correction and abandonment without storing private research records. This prototype intentionally does none of those operations. JSON fields are **not authorisation** and a structurally valid summary is **not causal verification**. There is no built-in model weight access or inference.
 
-## Compute-admission candidate (review only)
+Corresponding shared web research contract: `../../src/core/intelligence-sparse-circuit-assurance.mjs`. Research analysis and release gates: `../../docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md`.
+
+## Separate compute-admission Kotlin policy adapter
+
+The directory also includes a non-executing standalone Kotlin compute-admission adapter independent of the Gradle research shell. It does not activate compute, upload information or authorize customer services.
 
 The file `NovaComputePlan.kt` checks candidate workload metadata against bounded resources, region, privacy and estimated cost. Its only positive result is `review-only`; `executionEnabled` is always `false`. It does **not** upload data, train models, access the camera, authenticate a user, manage cloud credentials, make clinical decisions or schedule jobs.
 
@@ -31,3 +44,9 @@ java -jar /tmp/novapharm-android-compute-tests.jar
 The signed future Android application must integrate this candidate with its own authenticated API client, Android application lifecycle, device tests, release/Play Store signing, accessibility and local secure storage. Client validation is never an authorization boundary; job approval and budget limits belong to a trusted backend. No billable cloud infrastructure is provisioned.
 
 See `docs/architecture/deep-learning-infrastructure-20261118.md` for architecture and deployment gates.
+
+## Isolated CLIP Kotlin/JVM research adapter
+
+CLIP is a separate, **source-only and unconnected** Kotlin/JVM adapter, not an Android APK, application sign-in, model runtime or clinical service. This offline source-test build intentionally uses `clipResearch/settings.gradle.kts` and `clipResearch/build.gradle.kts` **independently** of the pinned Android `:app` project so its JVM compiler and dependencies never replace the sparse-circuit prototype's Gradle configuration. Its source sets reference `../src/main/kotlin` and `../src/test/kotlin` containing `NovaClipVisualSearch.kt` and denial tests.
+
+With JDK 17 and Gradle 8.14.3 available, run `gradle -p native/novapharm-intelligence-android/clipResearch test --no-daemon`. The existing `gradle -p native/novapharm-intelligence-android :app:testDebugUnitTest :app:assembleDebug` remains independent. CLIP code is **not** packaged automatically into that APK. A future Android release must separately verify authenticated/CSRF-bound sessions, network security, source rights, app identity, physical-device accessibility, signing and Play distribution before integration. See [CLIP enterprise acceptance #827](https://github.com/NovapharmHealthacre/novapharm-website/issues/827).

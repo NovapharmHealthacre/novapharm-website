@@ -1,7 +1,7 @@
 # Trusted AI Risk Register
 
 **Status:** implemented controls and residual-risk record
-**Reviewed:** 18 November 2026 (CLIP and compute-admission candidate risks)
+**Reviewed:** 18 November 2026 (CLIP, sparse-circuit and compute-admission source risks)
 **Owners:** Technology, Information Security, Privacy, Quality and Corporate Communications
 
 | Risk | Applies to | Implemented control | Residual risk | Required owner |
@@ -22,6 +22,7 @@
 | Image-rights expiration or revocation | Offline visual catalogue | Expiry/revocation metadata, per-asset SHA-256, checksum-bound index, runtime exclusion of expired images | Rights record still needs independent legal attestation and operator-triggered index rebuild on external revocation | Legal, Privacy and source rights owner |
 | Cross-platform authentication and redirect risk | Web/iOS/Android CLIP clients | Exact protected BFF path; board scope; CSRF; no-redirect native clients; secure origin; bounded payloads; no direct weights or model hosts | Signed app session, physical-device validation and tenant proof not yet present | Identity and Information Security |
 | Pretrained image model compromise | Private Python research service | Local-only model path, SHA-256, loopback token and default-off flag; no remote downloads | Pinned model files and third-party ML dependencies must be independently reviewed; no approved artifact yet | ML platform owner and supply-chain security |
+| False mechanistic-circuit explanation | NOVA sparse-circuit research and model governance (added 18 November 2026) | Existing provider/model registries explicitly deny verified neural-circuit access; shared exact-schema research artifact inspector rejects forged approvals and malformed graphs; protected web and native views label results unverified and non-clinical | Well-formed metadata, pruning results or ablation deltas are not independent causal verification; over-reliance on a future experiment remains possible | AI research lead, independent evaluator, Security, Quality and Regulatory before any release |
 
 ## Stop conditions
 
