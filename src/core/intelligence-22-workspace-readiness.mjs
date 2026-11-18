@@ -49,6 +49,17 @@ export const intelligenceSourceEvidenceKeys = Object.freeze([
   "ingestionRuns", "evidenceManifests", "auditEvents",
 ]);
 
+/** Parseable dates such as February 30 silently roll forward in V8. Require exact UTC round-trip. */
+function isCanonicalSnapshotUtc(value) {
+  if (typeof value !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/u.test(value)) return false;
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return false;
+  const normalized = value.replace(/(?:\.(\d{1,3}))?Z$/u,
+    (_, ms) => "." + (ms ?? "").padEnd(3, "0") + "Z");
+  return new Date(parsed).toISOString() === normalized;
+}
+
 const capabilityNames = new Set(Object.keys(capabilityRequirements));
 const pilotSet = new Set(firstMedicinePilotWorkspaces);
 const dependencies = Object.entries(workspaceCapabilityDependencies);
@@ -79,9 +90,7 @@ export function assessIntelligence22Workspaces({
       !Array.isArray(capabilityReport.capabilities) || capabilityReport.capabilities.length !== 6 ||
       capabilityReport.productionLive !== false ||
       capabilityReport.customerReleaseApproved !== false ||
-      typeof sourceSnapshotAt !== "string" ||
-      !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u.test(sourceSnapshotAt) ||
-      !Number.isFinite(Date.parse(sourceSnapshotAt)) ||
+      !isCanonicalSnapshotUtc(sourceSnapshotAt) ||
       !sourceCounts || typeof sourceCounts !== "object" || Array.isArray(sourceCounts)) {
     throw new Error("Invalid private Intelligence workspace implementation assessment.");
   }
