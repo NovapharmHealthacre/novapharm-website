@@ -8,7 +8,9 @@ import { assessMultimodalEvidence, type MultimodalReviewResult } from "../../src
 
 const fieldsInitial = {
   sourceReference: "", country: "", visionMedicineName: "", imageTextMedicineName: "",
-  referenceProductCode: "", observedProductCode: ""
+  referenceProductCode: "", observedProductCode: "",
+  referenceStrength: "", observedStrength: "", referenceDoseForm: "", observedDoseForm: "",
+  referenceManufacturer: "", observedManufacturer: ""
 };
 type Key = keyof typeof fieldsInitial;
 const labels: ReadonlyArray<readonly [Key, string]> = [
@@ -16,7 +18,13 @@ const labels: ReadonlyArray<readonly [Key, string]> = [
   ["visionMedicineName","Visual-model medicine name candidate"],
   ["imageTextMedicineName","Image-text medicine name candidate"],
   ["referenceProductCode","Reference product code (optional)"],
-  ["observedProductCode","Observed product code (optional)"]
+  ["observedProductCode","Observed product code (optional)"],
+  ["referenceStrength","Reference strength (optional)"],
+  ["observedStrength","Observed strength (optional)"],
+  ["referenceDoseForm","Reference dose form (optional)"],
+  ["observedDoseForm","Observed dose form (optional)"],
+  ["referenceManufacturer","Reference manufacturer (optional)"],
+  ["observedManufacturer","Observed manufacturer (optional)"]
 ];
 export function MultimodalReviewScreen() {
   const [fields, setFields] = useState(fieldsInitial);
