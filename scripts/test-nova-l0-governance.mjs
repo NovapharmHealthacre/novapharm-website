@@ -33,6 +33,15 @@ test("AI risk, use-case, and SBOM registers deny unsupported customer or regulat
   assert.ok(component.paths.some((path) => path.endsWith("/l0-sparsity.ts")));
 });
 
+test("AI system card and risk register exclude sparse models from approved production", () => {
+  const systemCard = file("docs/ai-system-card.md");
+  const risk = file("docs/ai-risk-register.md");
+  assert.match(systemCard, /research-only L0 sparsity boundary/i);
+  assert.match(systemCard, /no approved trained weights/i);
+  assert.match(risk, /false sparse-model assurance/i);
+  assert.match(risk, /source-only/i);
+});
+
 test("shared TypeScript adapter remains offline and rejects unreviewed model activation", () => {
   const source = file("packages/medicines-intelligence/src/l0-sparsity.ts");
   for (const phrase of ["l0ActivationProbability", "l0DeterministicGate", "l0SampleGate", "compileL0SparseLinearCandidate", "scoreL0SparseLinearCandidate", 'releaseStatus: "research-only"', "productionApproved: false", "customerVisible: false"]) {
