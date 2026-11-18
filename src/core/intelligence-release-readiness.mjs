@@ -1,6 +1,7 @@
 import { all, nowIso, one } from "../data/database.mjs";
 import { internalAiGatewayStatus } from "./ai/ai-gateway.mjs";
 import { capabilityRequirements, sharedCapabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json" with { type: "json" };
 import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
 function requireExecutive(context) {
@@ -66,6 +67,11 @@ export async function intelligenceReleaseReadiness(context, environment = proces
       status: "research_design_only",
       designedWorkflows: 6,
       canonicalWorkspacesCovered: 22,
+      reviewedExternalResearchReferences: scienceMethods.sourceCount,
+      cataloguedTransferableResearchMethods: scienceMethods.scientificMethodologyCount,
+      discoveryIndexes: scienceMethods.discoveryIndexCount,
+      scientificFindingsIndependentlyReproduced: false,
+      continuousScienceFeedConnected: false,
       modelConnected: false,
       newScienceDataIngested: false,
       gptRosalindResearchApiApprovalVerified: false,
