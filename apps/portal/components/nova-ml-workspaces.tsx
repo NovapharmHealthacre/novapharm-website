@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inspectSyntheticFeature } from "../../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
-import { modelMicroscopeInspectionStages, type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { modelMicroscopeInspectionStages, type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
 
@@ -101,6 +101,37 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <div key={item.title} className={styles.contractItem}><dt>{item.title}</dt><dd>{item.detail}</dd></div>
       )}</dl>
       <p className={styles.reference}>Architecture reference: <a href="https://openai.com/index/infrastructure-for-deep-learning/">OpenAI — Infrastructure for deep learning (2016)</a>. Any compute activation requires independent security, rights, cost and infrastructure approval.</p>
+    </section>
+
+    <section className={styles.section} aria-labelledby="nova-ml-sparse-circuits">
+      <h2 id="nova-ml-sparse-circuits">{novaMlSparseCircuitAssurance.title}</h2>
+      <p className={styles.boundary} role="note"><strong>{novaMlSparseCircuitAssurance.status}.</strong>
+        No inspected model, circuit discovery, causal proof, sparse-model inference or production activation is connected to this workspace. This is an independently gated research contract, not a model result.
+      </p>
+      <p className={styles.helper}>{novaMlSparseCircuitAssurance.modelPolicy}</p>
+      <dl className={styles.facts}>
+        <div><dt>Artifact schema</dt><dd>{novaMlSparseCircuitAssurance.contract}</dd></div>
+        <div><dt>Purpose</dt><dd>{novaMlSparseCircuitAssurance.classification}</dd></div>
+        <div><dt>Safety boundary</dt><dd>Research review only</dd></div>
+      </dl>
+      <p>{novaMlSparseCircuitAssurance.releasePolicy}</p>
+      <section className={styles.contractItem} aria-labelledby="nova-ml-synthetic-research-heading">
+        <h3 id="nova-ml-synthetic-research-heading">{novaMlSparseCircuitAssurance.offlineExperiment.name}</h3>
+        <p>{novaMlSparseCircuitAssurance.offlineExperiment.description}</p>
+        <dl className={styles.facts}>
+          <div><dt>Sample</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.sample}</dd></div>
+          <div><dt>Isolated circuit</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.isolatedAccuracy}</dd></div>
+          <div><dt>Mean ablation</dt><dd>{novaMlSparseCircuitAssurance.offlineExperiment.ablatedAccuracy}</dd></div>
+        </dl>
+        <p className={styles.helper}>{novaMlSparseCircuitAssurance.offlineExperiment.status}. {novaMlSparseCircuitAssurance.offlineExperiment.limitation}</p>
+      </section>
+
+      <dl className={styles.contractGrid}>{novaMlSparseCircuitAssurance.methodGates.map((gate) =>
+        <div key={gate.name} className={styles.contractItem}><dt>{gate.name}</dt><dd>{gate.detail}</dd></div>
+      )}</dl>
+      <p className={styles.reference}>Research references: {novaMlSparseCircuitAssurance.references.map((reference, index) =>
+        <span key={reference.href}>{index > 0 ? " · " : ""}<a href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label}</a></span>
+      )}</p>
     </section>
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">
