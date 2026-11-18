@@ -159,20 +159,18 @@ test("candidate metadata and caller-supplied fake source rights cannot promote a
   }
   assert.throws(() => buildCountryReleaseLedger(source.slice(1)), /expected immutable/);
   assert.throws(() => buildCountryReleaseLedger(null), /expected immutable/);
-  assert.throws(() => buildCountryReleaseLedger(source, {releasedPlans: null}), /expected immutable/);
 });
 
-test("only exact released source plans are counted; candidate status never becomes customer visible", () => {
-  const noAdapters = buildCountryReleaseLedger(source, { releasedPlans: {} });
-  assert.equal(noAdapters.sourceOnlyAdapterCount, 0);
-  assert.equal(noAdapters.verifiedProductionCountries, 0);
-  assert.equal(noAdapters.sourceCandidateRegistrationPercent, 100);
-  const fakeAdapters = buildCountryReleaseLedger(source, {
-    releasedPlans: { "global-clinicaltrials": {}, "not-registered": {} }
+test("caller-supplied fake adapters cannot inflate committed code or production status", () => {
+  const unchanged = buildCountryReleaseLedger(source, {
+    releasedPlans: { "invented-live-source": {}, "global-clinicaltrials": {} },
+    verifiedProductionCountries: 77,
+    canPublish: true
   });
-  assert.equal(fakeAdapters.sourceOnlyAdapterCount, 1);
-  assert.equal(fakeAdapters.verifiedLicensedSources, 0);
-  assert.equal(fakeAdapters.verifiedProductionCountries, 0);
+  assert.equal(unchanged.sourceOnlyAdapterCount, Object.keys(sourcePlans).length);
+  assert.equal(unchanged.verifiedLicensedSources, 0);
+  assert.equal(unchanged.verifiedProductionCountries, 0);
+  assert.equal(unchanged.sourceCandidateRegistrationPercent, 100);
 });
 
 test("ledger is immutable at each level and contains no record-level patient or API material", () => {
