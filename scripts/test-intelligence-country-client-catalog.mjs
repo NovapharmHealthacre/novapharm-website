@@ -32,7 +32,7 @@ test("web, Android and iOS share exactly 101 scoped country candidates with zero
     assert.equal(c.customerLive,false);
     assert.equal(c.commercialAndAiReuseApproved,false);
     assert.equal(c.verifiedProductionCompletionPercent,0);
-    assert.equal(c.coverage,"source-candidates-only");
+    assert.equal(c.coverage,c.candidateSourceCount===0 ? "research-geography-only" : "source-candidates-only");
     assert.equal(c.candidateSourceCount,c.candidateSources.length);
     const expected=registry.sources.filter(s=>s.country===c.country);
     assert.deepEqual(c.candidateSources.map(s=>s.candidateKey),expected.map(s=>s.candidateKey));
