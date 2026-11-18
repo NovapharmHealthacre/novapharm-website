@@ -18,6 +18,23 @@ class NovaClipVisualSearchTest {
     }
 
     @Test
+    fun enforcesPublicAttributionSourceLinks() {
+        for (source in listOf(
+            "http://novapharmhealthcare.com/public",
+            "https://127.0.0.1/private",
+            "https://[::1]/private",
+            "https://gateway.internal/private",
+            "https://docs.local/private",
+            "https://user@novapharmhealthcare.com/public",
+            "https://novapharmhealthcare.com:8443/public",
+            "https://novapharmhealthcare.com/public#fragment"
+        )) {
+            kotlin.test.assertFalse(NovaClipVisualSearch.sourceAllowed(source), source)
+        }
+        kotlin.test.assertTrue(NovaClipVisualSearch.sourceAllowed("https://novapharmhealthcare.com/products/"))
+    }
+
+    @Test
     fun rejectsMalformedQueriesWithoutNetwork() {
         val client = NovaClipVisualSearch("https://portal.novapharmhealthcare.com")
         for (query in listOf("", "x", "bad\u0000query", "a".repeat(241))) {
