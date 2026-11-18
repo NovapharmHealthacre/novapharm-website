@@ -1,9 +1,15 @@
 name: Intelligence mobile and global source candidate contracts
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:
       - 'native/novapharm-intelligence-mobile/**'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'docs/ai-use-case-register.json'
       - 'src/core/intelligence-global-source-gateway.mjs'
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'src/core/intelligence-global-canonical-candidates.mjs'
@@ -15,6 +21,10 @@ on:
       - 'docs/intelligence/global-source-enterprise-controls-20261117.md'
       - 'scripts/test-intelligence-global-source-gateway.mjs'
       - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - 'scripts/check-syntax.mjs'
       - '.github/workflows/intelligence-global-mobile-contracts.yml'
   workflow_dispatch:
 
@@ -31,6 +41,8 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
+      - name: Prove CLIP research-only candidate merges cannot dispatch AWS contact publication
+        run: node --test scripts/aws/contact-release-routing.test.mjs
       - name: Check governed backend candidate syntax
         run: |
           node --check src/core/intelligence-global-source-gateway.mjs

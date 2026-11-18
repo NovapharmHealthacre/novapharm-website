@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
 
@@ -58,6 +58,17 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
     </section>
 
     {(kind === "nova-device-intelligence" || kind === "nova-core-runtime") && <MultimodalReviewPanel />}
+
+    {(kind === "nova-ml-studio" || kind === "nova-generative-assist") && <section className={styles.section} aria-labelledby="nova-ml-alignment-research">
+      <h2 id="nova-ml-alignment-research">AI alignment research programme</h2>
+      <p className={styles.helper}>Source-only research directions. No model, rewards, critiques, training, operational actions or customer predictions run on this page.</p>
+      <dl className={styles.contractGrid}>{novaMlAlignmentResearchMethods.map((method) =>
+        <div className={styles.contractItem} key={method.id}>
+          <dt>{method.title}</dt>
+          <dd>{method.summary} {method.approval}</dd>
+        </div>
+      )}</dl>
+    </section>}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
       <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>

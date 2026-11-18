@@ -21,7 +21,7 @@ import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intellige
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
-import { novaMlSparseCircuitAssurance } from "../../apps/portal/data/nova-ml-modules";
+import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
 type Screen = "overview" | "workspaces" | "sources" | "review" | "research" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
@@ -298,6 +298,39 @@ export default function App() {
                 This screen reads bundled, non-sensitive governance metadata only.
                 No model weights, pharmaceutical data, patient imagery, external requests or verification receipts are loaded.
               </Text>
+              <View style={styles.rule} />
+              <SectionHeading
+                title="Nova ML research"
+                detail="One shared method catalogue for web, iOS and Android. This is an offline educational preview, not model inference."
+              />
+              <View style={styles.card} accessible>
+                <Text style={styles.cardTitle}>Research only · Not production approved</Text>
+                <Text style={styles.description}>
+                  L₀ sparsity, reward overoptimisation, critiques, instruction evaluation and long-horizon simulation
+                  are unverified research foundations. No model weights, clinical predictions, independent ground truth,
+                  source-rights grants, customer session or network service is available here.
+                </Text>
+              </View>
+              {[novaMlSparseResearchMethod, ...novaMlAlignmentResearchMethods].map((method) => (
+                <View key={method.id} style={styles.card} accessible accessibilityLabel={method.title + ". " + method.researchStatus + ". " + method.approval}>
+                  <Text style={styles.cardTitle}>{method.title}</Text>
+                  <Text style={styles.description}>{method.summary}</Text>
+                  <Text style={styles.meta}>{method.researchStatus}</Text>
+                  <Text style={styles.description}>{method.approval}</Text>
+                </View>
+              ))}
+              <View style={styles.rule} />
+              <SectionHeading
+                title="Native model programme"
+                detail="The four protected Nova ML workspaces need separate mobile identity, licensing, signed model and device approval."
+              />
+              {novaMlWorkspaceCatalogue.map((item) => (
+                <View key={item.slug} style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Text style={styles.description}>{item.summary}</Text>
+                  <Text style={styles.meta}>{item.platform} · Not enabled in this preview</Text>
+                </View>
+              ))}
             </>
           )}
           {screen === "visual" && (

@@ -9,6 +9,7 @@
     "App.tsx",
     "index.ts",
     "../../apps/portal/data/intelligence-workspaces.ts",
+    "../../apps/portal/data/nova-ml-modules.ts",
     "../../docs/intelligence/global-pharma-sources-20261117.json"
   ]
 }
