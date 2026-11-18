@@ -7,6 +7,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
+import { ScienceResearchWorkspace } from "./science-research-workspace";
 import styles from "./medicines-intelligence.module.css";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
@@ -206,6 +207,7 @@ const navigationGroups = [
     items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
   })),
   { label: "Nova ML · Apple companion", items: novaMlWorkspaceCatalogue.map((module) => [module.slug, module.title, `${novaMlBaseRoute}${module.slug}/`] as const) },
+  { label: "Scientific research", items: [["science-lab", "Science research", `${baseRoute}science-lab/`] as const] },
 ];
 
 const emptyFilters: AnalyticsFilters = {
@@ -684,6 +686,7 @@ function PlatformOverview({ analytics, detail, headingLevel = 1, snapshot }: Rea
 export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStatus, snapshot, subview, user }: MedicinesIntelligenceProps) {
   const current = subview ?? "overview";
   const isNovaMlView = isNovaMlWorkspaceSlug(current);
+  const isStandaloneResearchView = isNovaMlView || current === "science-lab";
   // Preserve bookmarked legacy tools without adding them to the 22 canonical workspace menu.
   const legacyTitles: Readonly<Record<string, string>> = {
     prescribers: "Prescribing",
@@ -783,7 +786,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (isNovaMlView) return;
+    if (isStandaloneResearchView) return;
     function handleSearchShortcut(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -801,12 +804,12 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     }
     window.addEventListener("keydown", handleSearchShortcut);
     return () => window.removeEventListener("keydown", handleSearchShortcut);
-  }, [isNovaMlView]);
+  }, [isStandaloneResearchView]);
 
   // Restore an authorised medicine selection on workspace deep links. The server
   // validates both the session and the exact medicine identifier on each request.
   useEffect(() => {
-    if (isNovaMlView) return;
+    if (isStandaloneResearchView) return;
     const medicineId = new URLSearchParams(window.location.search).get("medicineId");
     if (!medicineId || !/^medicine-[a-f0-9]{32}$/u.test(medicineId)) return;
     let active = true;
@@ -834,7 +837,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     };
     void restore();
     return () => { active = false; };
-  }, [isNovaMlView]);
+  }, [isStandaloneResearchView]);
 
   function changeFilter(key: keyof AnalyticsFilters, value: string) {
     setFilters((currentFilters) => {
@@ -897,12 +900,12 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   }
 
   useEffect(() => {
-    if (isNovaMlView) return;
+    if (isStandaloneResearchView) return;
     const query = searchText.trim();
     if (query.length < 2) return;
     const timer = window.setTimeout(() => { void runMedicineSearch(query); }, 400);
     return () => window.clearTimeout(timer);
-  }, [searchText, runMedicineSearch, isNovaMlView]);
+  }, [searchText, runMedicineSearch, isStandaloneResearchView]);
 
   function searchMedicine(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1024,6 +1027,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "forecasts") central = <UnavailableEvidence title="Forecasts" statement="No forecast is displayed because an identity catalogue is not a demand history and cannot support a truthful forecast by itself." requirements={["Leakage-safe historical fact series", "Recorded training and feature cutoffs", "Backtests against accepted baselines", "Uncertainty intervals and owner acceptance"]} />;
   else if (current === "opportunities") central = <UnavailableEvidence title="Commercial opportunities" statement="No pharmacy or medicine is ranked without measured demand, distance, uncertainty and approved commercial evidence." requirements={["Accepted demand facts", "Governed medicine-to-pharmacy eligibility rules", "Versioned transparent score components", "Commercial and Regulatory approval"]} />;
   else if (current === "evidence") central = <ClinicalTrialsDiscovery />;
+  else if (current === "science-lab") central = <ScienceResearchWorkspace />;
   else if (current === "biotech-intelligence") central = <ClinicalTrialsDiscovery context="biotech" />;
   else if (current === "signals") central = <ProfessionalWorkspace kind="signals" detail={detail} analytics={analytics} />;
   else if (current === "medicine-tape" || current === "market-structure" || current === "pricing-reimbursement") {
@@ -1047,25 +1051,25 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   return <main className={`${styles.shell} medicines-intelligence`}>
     <aside id="medicines-navigation-panel" className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
       <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p>{menuOpen ? <button ref={focusNavigationClose} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button> : null}</div>
-      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail && !isNovaMlWorkspaceSlug(key) ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
+      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail && !isNovaMlWorkspaceSlug(key) && key !== "science-lab" ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
     {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }} /> : null}
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
         <button ref={menuToggleRef} className={styles.mobileMenu} type="button" aria-expanded={menuOpen} aria-controls="medicines-navigation-panel" onClick={() => setMenuOpen(true)}>Navigation</button>
-        {isNovaMlView ? <p className={styles.novaMlToolbarTitle}>Nova ML <span>Model governance and Apple companion</span></p> : <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchHelpId} aria-controls={searchResponse ? searchResultsId : undefined} title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" spellCheck={false} value={searchText} onChange={(event) => changeMedicineSearch(event.currentTarget.value)} placeholder="Search current medicines, brands or BNF codes" required />{searchText ? <button type="button" onClick={clearMedicineSearch} aria-label="Clear medicine search">Clear</button> : null}<button type="submit" disabled={busy}>Search</button></form><p id={searchHelpId} className={styles.srOnly}>Search only the current authorised medicine identity register. Matches refine as you type after two characters. No search history is saved or displayed.</p>
+        {isStandaloneResearchView ? <p className={styles.novaMlToolbarTitle}>{isNovaMlView ? "Nova ML" : "Nova Science"} <span>{isNovaMlView ? "Model governance and Apple companion" : "Scientific research planning"}</span></p> : <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchHelpId} aria-controls={searchResponse ? searchResultsId : undefined} title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" spellCheck={false} value={searchText} onChange={(event) => changeMedicineSearch(event.currentTarget.value)} placeholder="Search current medicines, brands or BNF codes" required />{searchText ? <button type="button" onClick={clearMedicineSearch} aria-label="Clear medicine search">Clear</button> : null}<button type="submit" disabled={busy}>Search</button></form><p id={searchHelpId} className={styles.srOnly}>Search only the current authorised medicine identity register. Matches refine as you type after two characters. No search history is saved or displayed.</p>
           {searchResponse ? <section id={searchResultsId} className={`${styles.searchResults} medicine-search-results`} aria-label="Current authorised medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>{searchResponse.catalogueState === "no_current_repository_identities" ? "This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion." : "No current BNF identity matched. Try a generic, brand, product or BNF code."}</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
         </search>}
-        <div className={styles.topActions}>{!isNovaMlView ? <><span>Latest accepted period</span><button ref={filterToggleRef} type="button" aria-expanded={filtersOpen} aria-controls="medicines-context-panel" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button></> : null}<button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
+        <div className={styles.topActions}>{!isStandaloneResearchView ? <><span>Latest accepted period</span><button ref={filterToggleRef} type="button" aria-expanded={filtersOpen} aria-controls="medicines-context-panel" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button></> : null}<button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
       </header>
-      <div className={styles.liveRegion}><p className="workflow-status" aria-live="polite">{parentStatus}</p>{!isNovaMlView ? <><p className="medicine-search-status" role="status" aria-live="polite">{searchStatus}</p><p role="status" aria-live="polite">{analyticsStatus}</p></> : null}</div>
-      {!isNovaMlView ? <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div> : null}
-      <div className={isNovaMlView ? styles.novaMlCanvas : styles.workspaceGrid}>
-        <section className={styles.central}>{central}{!isNovaMlView ? <section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section> : null}</section>
-        {!isNovaMlView ? <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2>{filtersOpen ? <button ref={focusFiltersClose} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button> : null}</div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside> : null}
+      <div className={styles.liveRegion}><p className="workflow-status" aria-live="polite">{parentStatus}</p>{!isStandaloneResearchView ? <><p className="medicine-search-status" role="status" aria-live="polite">{searchStatus}</p><p role="status" aria-live="polite">{analyticsStatus}</p></> : null}</div>
+      {!isStandaloneResearchView ? <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div> : null}
+      <div className={isStandaloneResearchView ? styles.novaMlCanvas : styles.workspaceGrid}>
+        <section className={styles.central}>{central}{!isStandaloneResearchView ? <section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section> : null}</section>
+        {!isStandaloneResearchView ? <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2>{filtersOpen ? <button ref={focusFiltersClose} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button> : null}</div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside> : null}
       </div>
-      {!isNovaMlView && filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }} /> : null}
+      {!isStandaloneResearchView && filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }} /> : null}
     </section>
   </main>;
 }
