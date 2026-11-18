@@ -38,7 +38,7 @@ export const multimodalSyntheticProbes = Object.freeze([
   Object.freeze({ id:"supplier_attribution_mismatch", theme:"governance", paperNumbers:[15,16],
     overrides:{observedManufacturer:"Different Manufacturer"}, expectedStatus:"conflicting_candidates", signal:"manufacturer_conflict" }),
   Object.freeze({ id:"bidi_spoof", theme:"adversarial", paperNumbers:[4,21],
-    overrides:{imageTextMedicineName:"Example\\u202e Alpha"}, expectedStatus:"blocked", signal:"invalid_or_oversized_input" }),
+    overrides:{imageTextMedicineName:"Example\u202e Alpha"}, expectedStatus:"blocked", signal:"invalid_or_oversized_input" }),
   Object.freeze({ id:"unbounded_input", theme:"adversarial", paperNumbers:[6,21],
     overrides:{imageTextMedicineName:"X".repeat(241)}, expectedStatus:"blocked", signal:"invalid_or_oversized_input" }),
   Object.freeze({ id:"provenance_missing", theme:"governance", paperNumbers:[15,16],
