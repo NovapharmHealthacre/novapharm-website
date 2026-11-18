@@ -1,0 +1,40 @@
+name: Intelligence CLIP research contract
+on:
+  pull_request:
+    paths:
+      - "services/clip/**"
+      - "src/core/intelligence-visual-search.mjs"
+      - "scripts/test-intelligence-visual-search.mjs"
+      - "apps/portal/app/gateway/**"
+      - "apps/portal/components/clip-visual-search*"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - ".github/workflows/intelligence-clip-research-contract.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Prove default-off, origin-denial, schema and role contracts
+        run: node --test scripts/test-intelligence-visual-search.mjs
+      - name: Inspect Node syntax without runtime activation
+        run: |
+          node --check server.mjs
+          node --check src/core/intelligence-visual-search.mjs
+      - name: Compile isolated Python sources without loading models or network access
+        run: |
+          python3 -m py_compile services/clip/serve.py services/clip/build_index.py
+      - name: Guard against bundled model and secret material
+        run: |
+          if find services/clip native/novapharm-intelligence-android -type f \
+             \( -name '*.pt' -o -name '*.pth' -o -name '*.onnx' -o -name '*.mlmodel' -o -name '*.mlmodelc' \) | grep -q .; then
+            echo "Bundled model artifact is forbidden"; exit 1
+          fi
