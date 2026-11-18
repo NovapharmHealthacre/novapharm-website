@@ -15,7 +15,7 @@ type VisualCandidate = Readonly<{
 type VisualReadiness = Readonly<{
   contract: "novapharm.intelligence.visual-search.v1";
   enabled: boolean;
-  state: "disabled" | "configured_candidate_not_verified";
+  state: "disabled" | "configured_candidate_not_verified" | "private_runtime_ready" | "unavailable";
 }>;
 
 type VisualResponse = Readonly<{
@@ -53,10 +53,10 @@ export function ClipVisualSearch() {
       .then((readiness) => {
         if (!active) return;
         const configured = readiness.contract === "novapharm.intelligence.visual-search.v1" &&
-          readiness.enabled === true && readiness.state === "configured_candidate_not_verified";
+          readiness.enabled === true && readiness.state === "private_runtime_ready";
         setEnabled(configured);
         setStatus(configured
-          ? "Private research candidate configured. Actual model availability and source rights remain separately gated."
+          ? "Private CLIP runtime is responsive; results remain unverified research candidates requiring human review."
           : "Research candidate disabled. No model queries are available.");
       })
       .catch(() => {
