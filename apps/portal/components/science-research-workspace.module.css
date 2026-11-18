@@ -18,6 +18,10 @@
 .pending { color: #595961; background: #f5f5f7; border-radius: 8px; padding: 9px 10px; font-size: 12px; font-weight: 600; }
 .card h4 { margin: 20px 0 9px; font-size: 12px; }
 .card ul { margin: 0; padding-left: 18px; color: #515154; font-size: 13px; line-height: 1.7; }
+.relatedLinks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.relatedLink { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; border: 1px solid #d2d2d7; color: #1d1d1f; background: #fff; font-size: 12px; line-height: 1.35; border-radius: 9px; text-decoration: none; font-weight: 550; }
+.relatedLink:hover { background: #f5f5f7; }
+.relatedLink:focus-visible { outline: 3px solid #e3120b; outline-offset: 3px; }
 .bottom { background: #f5f5f7; padding: 26px; border-radius: 15px; margin-top: 28px; }
 .bottom p { max-width: 800px; font-size: 14px; color: #424245; line-height: 1.65; }
 .bottom a { color: #1d1d1f; text-underline-offset: 3px; font-weight: 600; }
