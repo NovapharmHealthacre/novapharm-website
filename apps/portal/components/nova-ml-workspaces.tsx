@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { inspectSyntheticFeature } from "../../../src/core/ai/model-microscope-synthetic-reference.mjs";
+import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { modelMicroscopeInspectionStages, type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
