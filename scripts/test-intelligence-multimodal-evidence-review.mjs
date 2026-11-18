@@ -127,3 +127,41 @@ test("oversized new pharmaceutical identity fields are also refused", () => {
   assert.equal(result.status, "blocked");
   assert.ok(result.signals.includes("invalid_or_oversized_input"));
 });
+
+test("rejects prototype-inherited consent and accessor-side effects",()=>{
+  const inherited = Object.assign(Object.create({
+    userInitiated:true,nonSensitiveMaterialConfirmed:true,purpose:"catalogue-research"
+  }),{
+    sourceReference:"synthetic",country:"GB",
+    visionMedicineName:"Example",imageTextMedicineName:"Example"
+  });
+  let readCount=0;
+  const accessor={...sample};
+  Object.defineProperty(accessor,"visionMedicineName",{
+    enumerable:true,get:()=>{readCount++;return "Example";}
+  });
+  const extras={...sample,modelInferenceApproved:true};
+  for(const value of [inherited,accessor,extras]){
+    const result=assessMultimodalEvidence(value);
+    assert.equal(result.status,"blocked");
+    assert.equal(result.canPublish,false);
+    assert.ok(result.signals.includes("invalid_or_oversized_input"));
+  }
+  assert.equal(readCount,0,"Unsafe user-defined getters must never execute");
+});
+
+test("unknown metadata, including private fields and phantom model rights, cannot be silently ignored",()=>{
+  for(const injected of [
+    {patientName:"private"},
+    {sourceRightsVerified:true},
+    {verifiedRegulatoryStatus:true},
+    {modelConfidence:0.99999}
+  ]){
+    const result=assessMultimodalEvidence({...sample,...injected});
+    assert.equal(result.status,"blocked");
+    assert.equal(result.identityVerified,false);
+    assert.equal(result.sourceRightsVerified,false);
+    assert.equal(result.decisionReady,false);
+    assert.ok(result.signals.includes("invalid_or_oversized_input"));
+  }
+});
