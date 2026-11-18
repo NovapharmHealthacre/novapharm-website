@@ -105,7 +105,10 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # Official Playwright 1.61.1 Noble image avoids timed-out Ubuntu apt mirrors.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -116,17 +119,12 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Verify preinstalled Chromium and WebKit binaries
+        run: |
+          test -d /ms-playwright
+          test "$(npx playwright --version)" = "Version 1.61.1"
+          test -n "$(find /ms-playwright -maxdepth 1 -name 'chromium-*' -print -quit)"
+          test -n "$(find /ms-playwright -maxdepth 1 -name 'webkit-*' -print -quit)"
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
       - name: Start synthetic non-production runtime
