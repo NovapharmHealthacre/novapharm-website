@@ -1,0 +1,4 @@
+# Install only in an isolated, owner-approved private environment.
+# Torch wheels and their platform-specific dependencies must be pinned via an audited lock.
+Pillow==11.3.0
+git+https://github.com/openai/CLIP.git@d05afc436d78f1c48dc0dbf8e5980a9d471f35f6
