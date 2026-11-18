@@ -69,6 +69,8 @@ def build(manifest_path, model_path, output_path, approved_root, expected_model_
         with Image.open(image_path) as image:
             if image.format not in ("PNG", "JPEG"):
                 raise ValueError("Only local PNG/JPEG images are permitted.")
+            if image.width < 1 or image.height < 1 or image.width * image.height > 12_000_000:
+                raise ValueError("Image resolution exceeds the nonclinical catalogue limit.")
             pixels = preprocess(image.convert("RGB")).unsqueeze(0)
         with torch.inference_mode():
             vector = model.encode_image(pixels).float()[0]
