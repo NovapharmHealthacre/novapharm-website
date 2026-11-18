@@ -23,6 +23,24 @@ class NovaClipVisualSearch(private val portalOrigin: String) {
         }
     }
 
+    companion object {
+        /** Source attribution is HTTPS-only and must never point to local/private endpoints. */
+        internal fun sourceAllowed(source: String): Boolean {
+            if (source.length > 2048) return false
+            val parsed = try { URI(source) } catch (_: Exception) { return false }
+            val host = parsed.host?.lowercase()?.trimEnd('.') ?: return false
+            return parsed.scheme == "https" &&
+                host.contains('.') && !host.contains(':') &&
+                !host.all { it.isDigit() || it == '.' } &&
+                host != "localhost" &&
+                !host.endsWith(".localhost") &&
+                !host.endsWith(".local") &&
+                !host.endsWith(".internal") &&
+                parsed.userInfo == null && parsed.fragment == null &&
+                (parsed.port == -1 || parsed.port == 443)
+        }
+    }
+
     /** Read a bounded HTTP response. Never load arbitrary-sized model responses into memory. */
     private fun readBounded(input: InputStream): String {
         val output = ByteArrayOutputStream()
@@ -81,10 +99,7 @@ class NovaClipVisualSearch(private val portalOrigin: String) {
             return (0 until rows.length()).map { index ->
                 val row = rows.getJSONObject(index)
                 val source = row.getString("sourceUrl")
-                val parsed = URI(source)
-                require(parsed.scheme == "https" && parsed.host != null &&
-                        parsed.userInfo == null && parsed.fragment == null &&
-                        parsed.port in setOf(-1, 443))
+                require(sourceAllowed(source))
                 val assetId = row.getString("assetId")
                 val title = row.getString("title")
                 val rights = row.getString("rightsReference")
