@@ -90,6 +90,9 @@ test("upstream cannot inject duplicate images, credentialed URLs, fragments or f
     [good, good],
     [{ ...good, sourceUrl: "https://attacker@novapharmhealthcare.com/products/" }],
     [{ ...good, sourceUrl: "https://novapharmhealthcare.com/products/#hidden" }],
+    [{ ...good, sourceUrl: "https://127.0.0.1/admin" }],
+    [{ ...good, sourceUrl: "https://[::1]/admin" }],
+    [{ ...good, sourceUrl: "https://warehouse.internal/records" }],
     [{ ...good, assetId: "../secrets" }],
     [{ ...good, rightsReference: "" }]
   ]) {
