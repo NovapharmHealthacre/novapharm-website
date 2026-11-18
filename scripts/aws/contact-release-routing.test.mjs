@@ -27,7 +27,12 @@ test("approved public main pushes retain immutable AWS contact release while pri
     "docs/architecture/deep-learning-infrastructure-20261118.md",
     "docs/ai-system-card.md",
     "docs/ai-risk-register.md",
-    ".github/workflows/nova-ml-infrastructure-contract.yml"
+    ".github/workflows/nova-ml-infrastructure-contract.yml",
+    "src/ai/intelligence-openai-signals.mjs",
+    "scripts/test-intelligence-openai-signals.mjs",
+    "scripts/test-intelligence-signals-integration.mjs",
+    "docs/intelligence/openai-signals-whisper-triton-integration-20261118.md",
+    ".github/workflows/intelligence-openai-signals.yml"
   ]) {
     assert.ok(dispatcher.includes(path), "dispatcher must exclude protected ML-only change: " + path);
     assert.ok(get("publish-aws-contact-production.yml").includes(path), "publisher must exclude protected ML-only change: " + path);
