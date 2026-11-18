@@ -16,7 +16,7 @@ export const ES_CIMA_PROBE = Object.freeze({
   recordsRequested:1
 });
 const MAX_BYTES=65536;
-const DEADLINE_MS=8000;
+const DEADLINE_MS=20000;
 const fail=reason=>{throw new Error("CIMA public source observation denied: "+reason);};
 const text=(x,max=300)=>typeof x==="string" && x.length>0 &&
   x.length<=max && !/[\p{Cc}\p{Cf}\p{Cs}]/u.test(x);
