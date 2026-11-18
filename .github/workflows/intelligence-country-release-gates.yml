@@ -11,6 +11,7 @@ on:
       - 'src/core/intelligence-global-source-gateway.mjs'
       - 'scripts/test-intelligence-country-release-ledger.mjs'
       - 'scripts/render-intelligence-country-release-ledger.mjs'
+      - 'src/core/intelligence-country-markdown-cell.mjs'
       - '.github/workflows/intelligence-country-release-gates.yml'
   workflow_dispatch:
 
@@ -40,6 +41,7 @@ jobs:
           node --check src/core/intelligence-country-source-baseline.mjs
           node --check scripts/test-intelligence-country-release-ledger.mjs
           node --check scripts/render-intelligence-country-release-ledger.mjs
+          node --check src/core/intelligence-country-markdown-cell.mjs
       - name: Verify all 77 national, EU/EEA, Global and 101 source requirements
         run: node --test scripts/test-intelligence-country-release-ledger.mjs
       - name: Generate country evidence report without network or customer publication

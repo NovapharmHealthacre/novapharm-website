@@ -5,6 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { buildCountryReleaseLedger } from "../src/core/intelligence-country-release-ledger.mjs";
+import { escapeMarkdownTableCell } from "../src/core/intelligence-country-markdown-cell.mjs";
 
 const registry = JSON.parse(readFileSync(new URL(
   "../docs/intelligence/global-pharma-sources-20261117.json", import.meta.url
@@ -17,7 +18,7 @@ if (format.length !== 1 || !["--markdown", "--json"].includes(format[0])) {
 if (format[0] === "--json") {
   process.stdout.write(JSON.stringify(report, null, 2) + "\n");
 } else {
-  const esc = value => String(value).replace(/\|/gu, "\\|").replace(/\r?\n/gu, " ");
+
   const line = [];
   line.push("# NovaPharm Intelligence: 101-source country integration evidence ledger");
   line.push("");
@@ -36,7 +37,7 @@ if (format[0] === "--json") {
     line.push("| " + [c.region,c.country,c.countryCode,c.candidateSourceCount,
       c.codedAdapterCandidateCount,c.engineeringMilestonePercent + "%",
       c.verifiedProductionCompletionPercent + "%",
-      actions].map(esc).join(" | ") + " |");
+      actions].map(escapeMarkdownTableCell).join(" | ") + " |");
   }
   line.push("");
   line.push("No value in this report can self-grant source access, approve a licence, admit evidence, activate native applications or publish to the customer.");

@@ -9,6 +9,7 @@ import {
 
 import { COUNTRY_ISO2, SOURCE_GROUP_CODES, requireCountryOrGroupCode } from "../src/core/intelligence-country-iso-identifiers.mjs";
 import { EXPECTED_COUNTRY_SOURCE_KEYS, assertExactCountrySourceCoverage } from "../src/core/intelligence-country-source-baseline.mjs";
+import { escapeMarkdownTableCell } from "../src/core/intelligence-country-markdown-cell.mjs";
 
 const source = JSON.parse(readFileSync(new URL(
   "../docs/intelligence/global-pharma-sources-20261117.json", import.meta.url
@@ -413,4 +414,18 @@ test("all 77 nations have local source candidates and 12 EU/global sources stay 
   });
   assert.ok(Object.isFrozen(ledger.sourceAdvertisedModeCounts));
   assert.equal(ledger.countries.filter(x => x.customerEnabled).length, 0);
+});
+
+
+test("country Markdown table renderer escapes backslashes before pipes and HTML metacharacters", () => {
+  const slash = "\\";
+  const raw = "Authority" + slash + "|Fake column <script> & report > 0";
+  const escaped = escapeMarkdownTableCell(raw);
+  assert.equal(escaped, "Authority" + slash.repeat(3) +
+    "|Fake column &lt;script&gt; &amp; report &gt; 0");
+  assert.equal(escapeMarkdownTableCell("two|columns"), "two" + slash + "|columns");
+  assert.equal(escapeMarkdownTableCell("path" + slash + "name"),
+    "path" + slash.repeat(2) + "name");
+  assert.equal(escapeMarkdownTableCell("A\r\nB\nC\rD\u2028E\u2029F"), "A B C D E F");
+  assert.equal(escapeMarkdownTableCell(101), "101");
 });
