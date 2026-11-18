@@ -1,7 +1,7 @@
 "use client";
 
-import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
 import scienceMethods from "../../../docs/intelligence/openai-science-methods-20261118.json";
+import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
 import { intelligenceWorkspaceBySlug } from "../data/intelligence-workspaces";
 import styles from "./science-research-workspace.module.css";
 
