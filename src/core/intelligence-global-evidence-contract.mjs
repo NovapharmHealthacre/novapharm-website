@@ -12,40 +12,58 @@ export const EVIDENCE_STATE = "unreconciled_upstream_preview";
 
 const isId = (value) => typeof value === "string" &&
   /^[A-Za-z0-9][A-Za-z0-9_:.@-]{1,127}$/.test(value);
+const utcIso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
+const canonicalUtc = value => typeof value === "string" && utcIso.test(value) &&
+  Number.isFinite(Date.parse(value)) && new Date(Date.parse(value)).toISOString() === value;
 
-export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, domain, country, now }) {
+function assertInternalEvaluationPermitInner({ permit, sourceId, tenantId, domain, country, now }) {
   if (!permit || typeof permit !== "object" || Array.isArray(permit)) {
     throw new Error("Source rights are not approved");
   }
-  const issued = Date.parse(permit.issuedAt);
-  const expires = Date.parse(permit.validUntil);
-  if (permit.decision !== "approved" ||
-    permit.rightsStatus !== "approved" ||
-    permit.sourceId !== sourceId ||
-    permit.tenantId !== tenantId ||
-    permit.country !== country ||
-    permit.domain !== domain ||
-    permit.purpose !== EVALUATION_PURPOSE ||
-    !Array.isArray(permit.allowedUses) ||
-    !permit.allowedUses.includes(EVALUATION_PURPOSE) ||
-    !isId(permit.receiptId) ||
-    !isId(permit.licenseId) ||
-    !isId(permit.rightsVersion) ||
-    // A bad or absent server clock must never cause NaN comparisons to
-    // bypass expiry, not-before or revocation checks.
+  // Read every potentially mutable authority field exactly once, then
+  // validate and project ONLY the immutable snapshot.
+  const names = ["decision","rightsStatus","sourceId","tenantId","country",
+    "domain","purpose","allowedUses","receiptId","licenseId","rightsVersion",
+    "issuedAt","validUntil","revokedAt"];
+  const fields = Object.fromEntries(names.map(name=>[name,permit[name]]));
+  if (Array.isArray(fields.allowedUses)) fields.allowedUses = Object.freeze([...fields.allowedUses]);
+  const approved = Object.freeze(fields);
+  // Validate types before Date.parse: even a Symbol or object supplied by a
+  // malformed authority adapter must fail closed with the same denial.
+  const issued = typeof approved.issuedAt === "string" ? Date.parse(approved.issuedAt) : NaN;
+  const expires = typeof approved.validUntil === "string" ? Date.parse(approved.validUntil) : NaN;
+  if (approved.decision !== "approved" ||
+    approved.rightsStatus !== "approved" ||
+    approved.sourceId !== sourceId ||
+    approved.tenantId !== tenantId ||
+    approved.country !== country ||
+    approved.domain !== domain ||
+    approved.purpose !== EVALUATION_PURPOSE ||
+    !Array.isArray(approved.allowedUses) ||
+    !approved.allowedUses.includes(EVALUATION_PURPOSE) ||
+    !isId(approved.receiptId) ||
+    !isId(approved.licenseId) ||
+    !isId(approved.rightsVersion) ||
     !Number.isSafeInteger(now) || now < 0 ||
+    !canonicalUtc(approved.issuedAt) || !canonicalUtc(approved.validUntil) ||
     !Number.isFinite(issued) || !Number.isFinite(expires) ||
     issued > now || expires <= now || expires <= issued ||
     expires - issued > 24 * 60 * 60 * 1000 ||
-    permit.revokedAt != null) {
+    approved.revokedAt != null) {
     throw new Error("Source rights are not approved");
   }
   return Object.freeze({
-    receiptId: permit.receiptId,
-    licenseId: permit.licenseId,
-    rightsVersion: permit.rightsVersion,
+    receiptId: approved.receiptId,
+    licenseId: approved.licenseId,
+    rightsVersion: approved.rightsVersion,
     validUntil: new Date(expires).toISOString()
   });
+}
+
+/** Deny even malicious authority object accessors without backend detail leakage. */
+export function assertInternalEvaluationPermit(input) {
+  try { return assertInternalEvaluationPermitInner(input); }
+  catch { throw new Error("Source rights are not approved"); }
 }
 
 export function buildEvaluationEnvelope({ plan, normalized, raw, grant, capturedAt }) {
@@ -56,7 +74,9 @@ export function buildEvaluationEnvelope({ plan, normalized, raw, grant, captured
       normalized.jurisdiction !== plan.country ||
       !Array.isArray(normalized.records) ||
       !grant || !isId(grant.receiptId) ||
-      !Number.isFinite(when.getTime())) {
+      !canonicalUtc(grant.validUntil) ||
+      !Number.isFinite(when.getTime()) ||
+      when.getTime() >= Date.parse(grant.validUntil)) {
     throw new Error("Invalid evaluation envelope");
   }
   const rawSerialized = JSON.stringify(raw);
