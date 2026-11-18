@@ -123,7 +123,7 @@ The official [Apple Maps HIG](https://developer.apple.com/design/human-interface
 
 ### Original attachment and source-index audit inventory
 
-**Metadata evidence:** 24 uniquely named Apple-related resources visible in the uploaded conversation/Library inventory (20 original DMG/ZIP uploads, the later IMDF ZIP and three HIG index files). Listed names and sizes are metadata only; this audit has **not opened, mounted, executed, unpacked or licensed** any supplied DMG or ZIP. The CSV's 172 metadata records were actually read and reconciled. The Markdown index was read; the workbook's parsed overview was sampled, but not every spreadsheet tab was revalidated. Never call these resources installed, operational, byte-inspected or rights-approved merely because they are listed.
+**Metadata evidence:** 24 uniquely named Apple-related resources visible in the uploaded conversation/Library inventory (20 original DMG/ZIP uploads, the later IMDF ZIP and three HIG index files). Listed names and sizes are metadata only; this audit has **not opened, mounted, executed, unpacked or licensed** any supplied DMG or ZIP. The CSV's 172 metadata records were actually read and reconciled. The Markdown index was read; all ten workbook sheets' parsed text was retrieved, and its 30-link anchor and five-link supporting-resource tabs were reconciled; the other sheet content has not received an independent row-by-row audit. Never call these resources installed, operational, byte-inspected or rights-approved merely because they are listed.
 
 | Original attachment | Role | Actual inspection state |
 | --- | --- | --- |
@@ -150,7 +150,7 @@ The official [Apple Maps HIG](https://developer.apple.com/design/human-interface
 | `IMDF.zip` | Indoor Mapping Data Format reference | bytes not opened; provenance and licence unverified |
 | `Apple_HIG_Complete_Sectionwise_Index_2026-11-18.csv` | User-supplied HIG source index | 172/172 metadata rows read and reconciled |
 | `Apple_HIG_Sectionwise_Guide_2026-11-18.md` | User-supplied HIG source index | section map read; summaries are interpretive |
-| `Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx` | User-supplied HIG source index | parsed overview sampled; remaining workbook tabs unverified |
+| `Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx` | User-supplied HIG source index | 10 parsed sheet texts retrieved; 30 anchors/5 resources parsed, full workbook cross-check still pending |
 
 **Remaining asset prerequisites:** For every archive, independently inspect a local raw copy in a capable isolated environment; inventory its files, signatures/hashes, manifests, README and licence/redistribution terms; scan for unexpected executable/network instructions and confirm platform applicability. Escalate any asset with no proven redistribution rights. Keep all downloadable Apple-owned binary assets out of this GitHub change and public website. Where a tool is macOS-only, do the audit on a Mac instead of treating a Linux parse error as evidence of safety.
 
