@@ -53,6 +53,7 @@ export function ScienceResearchWorkspace() {
           <p><strong>What was reported</strong> {entry.reportedFinding}</p>
           <p><strong>NovaPharm method</strong> {entry.transferablePattern}</p>
           <p><strong>Limits</strong> {entry.limitations}</p>
+          <p><strong>Scientific verification</strong> {entry.validationTrack.replaceAll("_", " ")} track · External publisher claim not independently verified · Retractions/corrections: {entry.retractionCorrectionStatus.replaceAll("_", " ")}</p>
           <h4>Checks before use</h4>
           <ul>{entry.validationRequirements.map((requirement) => <li key={requirement}>{requirement}</li>)}</ul>
           <div className={styles["methodFooter"]}>
