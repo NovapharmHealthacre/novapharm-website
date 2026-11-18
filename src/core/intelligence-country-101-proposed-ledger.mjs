@@ -19,8 +19,11 @@ const COUNTRY_REGION = Object.freeze({
   "Armenia":"Asia","Cambodia":"Asia","Georgia":"Asia","Mongolia":"Asia","Myanmar":"Asia",
   "Botswana":"Africa","Cameroon":"Africa","Côte d’Ivoire":"Africa","Namibia":"Africa","Senegal":"Africa","Tunisia":"Africa","Zambia":"Africa","Zimbabwe":"Africa"
 });
-const REGION_AUTHORITIES = Object.freeze({
-  Europe:"www.ema.europa.eu",Americas:"www.paho.org",Asia:"www.who.int",Africa:"risp.auda-nepad.org"
+const REGION_DIRECTORY = Object.freeze({
+  Europe:"https://www.ema.europa.eu/en/partners-networks/eu-partners/eu-member-states/national-competent-authorities-human",
+  Americas:"https://www.paho.org/en/pan-american-network-drug-regulatory-harmonization-pandrh-0/members-pandrh-network",
+  Asia:"https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+  Africa:"https://risp.auda-nepad.org/all-nras.php"
 });
 const EXPECTED_ENTRY_KEYS = Object.freeze([
   "apiEndpoint","apiValidated","authorityDirectory","country","customerCountryLive",
@@ -63,9 +66,7 @@ export function buildProposedCountry101Ledger(registry, plan) {
         entry.region!==COUNTRY_REGION[entry.country] ||
         Object.keys(entry).length!==EXPECTED_ENTRY_KEYS.length ||
         EXPECTED_ENTRY_KEYS.some(key=>!Object.hasOwn(entry,key)) ||
-        typeof entry.authorityDirectory!=="string" ||
-        !/^https:\/\/(?:www\.ema\.europa\.eu|www\.paho\.org|www\.who\.int|risp\.auda-nepad\.org)\//u.test(entry.authorityDirectory) ||
-        new URL(entry.authorityDirectory).hostname!==REGION_AUTHORITIES[entry.region] ||
+        entry.authorityDirectory!==REGION_DIRECTORY[entry.region] ||
         entry.apiEndpoint!==null || entry.apiValidated!==false ||
         entry.sourceDiscovery!=="pending" ||
         entry.rightsStatus!=="not-reviewed" ||
