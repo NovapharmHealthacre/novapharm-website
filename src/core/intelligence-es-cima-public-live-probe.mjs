@@ -20,6 +20,27 @@ export const ES_CIMA_PROBE = Object.freeze({
 const MAX_BYTES=65536;
 const DEADLINE_MS=20000;
 const fail=reason=>{throw new Error("CIMA public source observation denied: "+reason);};
+/**
+ * Exact allowlist of sanitized transport categories. The original exception
+ * text, hostname, proxy details and credentials never enter CI/log receipts.
+ */
+function publisherTransportFailure(error){
+  const causeCode=typeof error?.cause?.code==="string" ? error.cause.code :
+    typeof error?.code==="string" ? error.code : "";
+  if(["UND_ERR_CONNECT_TIMEOUT","UND_ERR_HEADERS_TIMEOUT","UND_ERR_BODY_TIMEOUT",
+    "ETIMEDOUT"].includes(causeCode) ||
+    error?.name==="AbortError" || error?.name==="TimeoutError"){
+    return "timeout";
+  }
+  if(["ENOTFOUND","EAI_AGAIN"].includes(causeCode))return "dns";
+  if(["CERT_HAS_EXPIRED","UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+    "DEPTH_ZERO_SELF_SIGNED_CERT","SELF_SIGNED_CERT_IN_CHAIN",
+    "ERR_TLS_CERT_ALTNAME_INVALID"].includes(causeCode))return "tls";
+  if(["ECONNREFUSED","ECONNRESET","ENETUNREACH","EHOSTUNREACH",
+    "UND_ERR_SOCKET"].includes(causeCode))return "network";
+  return "network-or-policy";
+}
+
 const text=(x,max=300)=>typeof x==="string" && x.length>0 &&
   x.length<=max && !/[\p{Cc}\p{Cf}\p{Cs}]/u.test(x);
 const nativeId=x=>typeof x==="string" && /^[0-9]{1,16}$/u.test(x);
@@ -106,7 +127,7 @@ export async function probeCimaPublicMedicine({
       headers:{accept:"application/json"},
       signal:AbortSignal.timeout(DEADLINE_MS)
     });
-  }catch{fail("official publisher connection unavailable")}
+  }catch(error){fail("official publisher connection unavailable ("+publisherTransportFailure(error)+")")}
   const data=await bounded(response);
   const sample=validateCimaMedicineSample(data.parsed);
   let finished;
@@ -210,7 +231,7 @@ export function createCimaLiveSourceQuarantineReader({
           headers:{accept:"application/json"},
           signal:AbortSignal.timeout(DEADLINE_MS)
         });
-      }catch{fail("official publisher connection unavailable");}
+      }catch(error){fail("official publisher connection unavailable ("+publisherTransportFailure(error)+")");}
       const body=await bounded(response);
       const sample=validateCimaMedicineSample(body.parsed);
       const afterFetch=clock();
