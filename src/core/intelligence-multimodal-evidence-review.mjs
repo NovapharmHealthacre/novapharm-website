@@ -62,6 +62,10 @@ export function assessMultimodalEvidence(input) {
   if (!values.sourceReference || !values.country) signals.push("provenance_missing");
   if (!values.visionMedicineName && !values.imageTextMedicineName && !values.observedProductCode)
     signals.push("candidate_evidence_missing");
+  // A lone visual name, lone text-in-image name, or product code alone is not a
+  // cross-modal comparison. It must never appear as completed human review.
+  if (!values.visionMedicineName || !values.imageTextMedicineName)
+    signals.push("incomplete_multimodal_name_pair");
 
   if (values.visionMedicineName && values.imageTextMedicineName &&
       comparable(values.visionMedicineName) !== comparable(values.imageTextMedicineName))
@@ -98,6 +102,7 @@ export function assessMultimodalEvidence(input) {
   const status = needsPurpose || invalidInput ? "blocked" :
     signals.some((s) => s.endsWith("_conflict")) ? "conflicting_candidates" :
     signals.includes("provenance_missing") || signals.includes("candidate_evidence_missing") ||
+    signals.includes("incomplete_multimodal_name_pair") ||
     signals.includes("incomplete_critical_attribute_pair")
       ? "insufficient_evidence" : "human_review_required";
 
