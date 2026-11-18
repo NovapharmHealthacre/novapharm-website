@@ -36,7 +36,7 @@ export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, dom
     !isId(permit.receiptId) ||
     !isId(permit.licenseId) ||
     !isId(permit.rightsVersion) ||
-    !Number.isFinite(now) ||
+    !Number.isSafeInteger(now) || now < 0 ||
     !canonicalUtc(permit.issuedAt) || !canonicalUtc(permit.validUntil) ||
     !Number.isFinite(issued) || !Number.isFinite(expires) ||
     issued > now || expires <= now || expires <= issued ||

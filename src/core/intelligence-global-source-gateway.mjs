@@ -145,8 +145,13 @@ async function readJsonBounded(response) {
   catch { throw new Error("Invalid upstream JSON"); }
 }
 
-function safeString(value) {
-  return typeof value === "string" ? value.slice(0, 240) : null;
+// Never truncate an authority-issued medicine identifier. Preserve the exact
+// source bytes or exclude unsafe candidate fields for independent review.
+// Unicode control, invisible and bidi override characters may spoof identities.
+const UNSAFE_SOURCE_CHARS = /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/u;
+function safeString(value, maxLength = 240) {
+  return typeof value === "string" && value.length > 0 &&
+    value.length <= maxLength && !UNSAFE_SOURCE_CHARS.test(value) ? value : null;
 }
 
 export function normaliseGovSourceResult(plan, data) {
@@ -154,42 +159,42 @@ export function normaliseGovSourceResult(plan, data) {
   if (plan.sourceId === "us-fda-drugsfda") {
     if (!Array.isArray(data?.results)) throw new Error("Unexpected source schema");
     rows = data.results.map((record) => ({
-      localId: safeString(record.application_number),
+      localId: safeString(record.application_number, 120),
       label: safeString(record.products?.[0]?.brand_name),
       provenanceDomain: "US FDA Drugs@FDA"
     }));
   } else if (plan.sourceId === "global-clinicaltrials") {
     if (!Array.isArray(data?.studies)) throw new Error("Unexpected source schema");
     rows = data.studies.map((record) => ({
-      localId: safeString(record.protocolSection?.identificationModule?.nctId),
+      localId: safeString(record.protocolSection?.identificationModule?.nctId, 120),
       label: safeString(record.protocolSection?.identificationModule?.briefTitle),
       provenanceDomain: "ClinicalTrials.gov"
     }));
   } else if (plan.sourceId === "ca-health-canada-dpd") {
     if (!Array.isArray(data)) throw new Error("Unexpected source schema");
     rows = data.map((record) => ({
-      localId: safeString(record.drug_identification_number),
+      localId: safeString(record.drug_identification_number, 120),
       label: safeString(record.brand_name),
       provenanceDomain: "Health Canada DPD"
     }));
   } else if (plan.sourceId === "global-europepmc") {
     if (!Array.isArray(data?.resultList?.result)) throw new Error("Unexpected source schema");
     rows = data.resultList.result.map((record) => ({
-      localId: safeString(record.id),
+      localId: safeString(record.id, 120),
       label: safeString(record.title),
       provenanceDomain: "Europe PMC"
     }));
   } else if (plan.sourceId === "global-pubmed") {
     if (!Array.isArray(data?.esearchresult?.idlist)) throw new Error("Unexpected source schema");
     rows = data.esearchresult.idlist.map((id) => ({
-      localId: safeString(id),
+      localId: safeString(id, 120),
       label: safeString(id),
       provenanceDomain: "NCBI PubMed ESearch (PMID only)"
     }));
   } else if (plan.sourceId === "global-chembl") {
     if (!Array.isArray(data?.molecules)) throw new Error("Unexpected source schema");
     rows = data.molecules.map((record) => ({
-      localId: safeString(record.molecule_chembl_id),
+      localId: safeString(record.molecule_chembl_id, 120),
       label: safeString(record.pref_name) || safeString(record.molecule_chembl_id),
       provenanceDomain: "ChEMBL molecule search"
     }));
@@ -213,7 +218,7 @@ export function normaliseGovSourceResult(plan, data) {
     rows = groups.map((entry) => {
       const value = entry?.attributes && typeof entry.attributes === "object" ? entry.attributes : entry;
       return {
-        localId: safeString(value?.["active-substance-code"]),
+        localId: safeString(value?.["active-substance-code"], 120),
         label: safeString(value?.["active-substance-name"]),
         provenanceDomain: "NFZ drug-program reimbursement (substance identity only)"
       };
@@ -221,7 +226,7 @@ export function normaliseGovSourceResult(plan, data) {
   } else if (plan.sourceId === "es-aemps-cima") {
     if (!Array.isArray(data?.resultados)) throw new Error("Unexpected source schema");
     rows = data.resultados.map((record) => ({
-      localId: safeString(record.nregistro),
+      localId: safeString(record.nregistro, 120),
       label: safeString(record.nombre),
       provenanceDomain: "AEMPS CIMA"
     }));
@@ -283,6 +288,12 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       let capturedAt;
       try { capturedAt = now(); }
       catch { throw new Error("Invalid evaluation envelope"); }
+      // A grant expiring while reading may not return an internal evaluation.
+      // Validate clock shape again; Date coercion is never authorization.
+      if (!Number.isSafeInteger(capturedAt) || capturedAt < 0 ||
+          capturedAt >= Date.parse(grant.validUntil)) {
+        throw new Error("Invalid evaluation envelope");
+      }
       return buildEvaluationEnvelope({
         plan, normalized, raw, grant, capturedAt
       });
