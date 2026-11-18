@@ -1,0 +1,72 @@
+name: Nova ML alignment research and mobile boundary contracts
+
+on:
+  pull_request:
+    paths:
+      - "src/core/ai/nova-alignment-research.mjs"
+      - "scripts/test-nova-alignment-research.mjs"
+      - "scripts/test-nova-alignment-governance.mjs"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "docs/ai-risk-register.md"
+      - "docs/ai-system-card.md"
+      - ".github/workflows/nova-ml-alignment-research.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/core/ai/nova-alignment-research.mjs"
+      - "scripts/test-nova-alignment-research.mjs"
+      - "scripts/test-nova-alignment-governance.mjs"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "docs/ai-risk-register.md"
+      - "docs/ai-system-card.md"
+      - ".github/workflows/nova-ml-alignment-research.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-alignment-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Pure offline numerical and governance tests
+        run: node --test scripts/test-nova-alignment-research.mjs scripts/test-nova-alignment-governance.mjs scripts/test-nova-independent-review.mjs scripts/test-nova-research-evaluation.mjs scripts/test-nova-ml-apple-adaptation.mjs
+      - name: Check JSON syntax and production constraints remain unapproved
+        run: |
+          node -e "const fs = require('node:fs'); for(const p of ['docs/ai-use-case-register.json','docs/ai-dependency-and-model-sbom.json']) JSON.parse(fs.readFileSync(p,'utf8')); const c=JSON.parse(fs.readFileSync('config/intelligence/owner-production-constraints.json','utf8')); if(c.productionSignoff!=='not_granted'||c.initialInfrastructureBudget.monthlyCapGbp!==0) process.exit(1)"
+      - name: No new model service, runtime permissions, or connected datasets
+        run: echo "Source-only. No model weights, clinical use, authenticated API, browser inference, cloud spend, native app or physical-device validation."
+
+  kotlin-research-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Check compiler availability
+        run: |
+          command -v kotlinc
+          kotlinc -version
+          java -version
+      - name: Compile and test standalone native receipt (not an Android app)
+        run: |
+          kotlinc \
+            native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceipt.kt \
+            native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceiptTest.kt \
+            -include-runtime -d "$RUNNER_TEMP/nova-alignment-research.jar"
+          java -jar "$RUNNER_TEMP/nova-alignment-research.jar"
