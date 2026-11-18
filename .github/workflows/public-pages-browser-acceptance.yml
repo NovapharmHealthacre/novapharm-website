@@ -79,11 +79,24 @@ permissions:
 
 jobs:
   rendered-public-estate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    # Match the locked Playwright 1.61.1 release and avoid slow public Ubuntu apt mirrors.
+    # Keep the real Chromium/WebKit and all subsequent accessibility/visual assertions.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+    timeout-minutes: 35
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - name: Check out exact public release source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Trust exact checked-out Git workspace in browser image
+        shell: bash
+        run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - name: Use Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -93,15 +106,22 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Marketplace stock DOM and image audit regression
         run: node --test scripts/test-marketplace-stock-dom-stability.mjs
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit binaries (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      # Image contains native browser system dependencies; no apt install or cache needed.
+      # Fail the job if the image and package-lock browser revisions drift.
+      - name: Assert locked Chromium and WebKit binaries are present
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Build safe public-only estate
         run: npm run build:public-only
       - name: Serve generated public estate
