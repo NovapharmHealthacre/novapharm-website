@@ -80,3 +80,41 @@ test("canonical contact publication verifies health and rejected anonymous acces
   assert.match(canonical, /data-live-b2b-enquiry-form/);
   assert.ok(canonical.includes("! grep -Fq 'data-email-enquiry-form'"));
 });
+
+
+test("all 101-source onboarding and rights-only files are private and cannot dispatch AWS or Pages", () => {
+  const protectedSourceFiles = [
+    ".github/workflows/browser-acceptance.yml",
+    ".github/workflows/intelligence-global-101-onboarding.yml",
+    "docs/intelligence/global-101-source-integration-matrix-20261118.md",
+    "scripts/test-intelligence-global-intake-workflow.mjs",
+    "scripts/test-intelligence-global-source-gateway.mjs",
+    "scripts/test-intelligence-global-source-onboarding.mjs",
+    "src/core/intelligence-global-evidence-contract.mjs",
+    "src/core/intelligence-global-intake-quality.mjs",
+    "src/core/intelligence-global-intake-workflow.mjs",
+    "src/core/intelligence-global-source-gateway.mjs",
+    "src/core/intelligence-global-source-onboarding.mjs"
+  ];
+  for (const workflow of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(workflow);
+    // Check the actual source classification case, not a comment or a test name.
+    const caseLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(caseLine, workflow + " must classify individual changed paths");
+    for (const path of protectedSourceFiles) {
+      assert.ok(caseLine.split("|").includes(path),
+        workflow + " missing private source protection: " + path);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  assert.ok(dispatch.includes("scripts/aws/contact-release-routing.test.mjs"));
+  assert.ok(publish.includes("scripts/aws/contact-release-routing.test.mjs"));
+  assert.match(dispatch, /skip=true/);
+  assert.match(publish, /release_needed=false/);
+});
