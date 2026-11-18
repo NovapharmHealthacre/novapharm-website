@@ -164,7 +164,10 @@ test("all 101-country scope proposal paths remain private-only in both AWS/publi
     ".github/workflows/intelligence-country-101-scope-audit.yml",
     "docs/intelligence/country-101-scope-proposal-20261118.json",
     "docs/intelligence/country-101-scope-proposal-20261118.md",
-    "scripts/test-intelligence-country-101-scope-proposal.mjs"
+    "scripts/test-intelligence-country-101-scope-proposal.mjs",
+    "src/core/intelligence-country-101-proposed-ledger.mjs",
+    "scripts/test-intelligence-country-101-proposed-ledger.mjs",
+    "scripts/render-intelligence-country-101-proposed-ledger.mjs"
   ];
   for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
     const source = get(file);
