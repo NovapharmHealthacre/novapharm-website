@@ -60,3 +60,42 @@ test("web and API routes stay board-scoped and exact-allowlisted", () => {
   assert.ok(!portal.includes("v1\\/intelligence\\/visual\\/.*"));
   assert.ok(server.includes("requireCsrf(request)"));
 });
+
+test("unsupported client payloads fail before any model invocation", async () => {
+  let called = false;
+  const remote = async () => {
+    called = true;
+    return { ok: false };
+  };
+  const invalid = [
+    null,
+    [],
+    "query",
+    { query: "public carton", accessType: "admin" },
+    { query: { text: "public carton" } },
+    { query: "public carton", limit: 0 },
+    { query: "public carton", limit: 1.5 },
+    { query: "public carton", limit: "5" },
+    { query: "public carton\u0000hidden" }
+  ];
+  for (const input of invalid) {
+    await assert.rejects(searchApprovedVisualCatalogue(input, configured, remote), { statusCode: 400 });
+  }
+  assert.equal(called, false, "invalid requests must never reach the private model service");
+});
+
+test("upstream cannot inject duplicate images, credentialed URLs, fragments or fake model confidence", async () => {
+  const good = { assetId: "pack-01", title: "Approved carton", rightsReference: "rights:1", sourceUrl: "https://novapharmhealthcare.com/products/" };
+  for (const items of [
+    [good, good],
+    [{ ...good, sourceUrl: "https://attacker@novapharmhealthcare.com/products/" }],
+    [{ ...good, sourceUrl: "https://novapharmhealthcare.com/products/#hidden" }],
+    [{ ...good, assetId: "../secrets" }],
+    [{ ...good, rightsReference: "" }]
+  ]) {
+    await assert.rejects(searchApprovedVisualCatalogue({ query: "public carton", limit: 5 }, configured, async () => ({
+      ok: true,
+      json: async () => ({ contract: "novapharm.intelligence.visual-search.v1", results: items })
+    })), { statusCode: 503 });
+  }
+});
