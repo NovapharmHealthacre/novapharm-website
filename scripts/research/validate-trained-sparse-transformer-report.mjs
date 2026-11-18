@@ -44,7 +44,7 @@ const DATA_FIELDS = ["kind", "train", "calibration", "holdout", "sha256"];
 const METRICS = [
   "baselineLoss", "baselineAccuracy", "prunedLoss", "prunedAccuracy",
   "isolatedCircuitLoss", "isolatedCircuitAccuracy", "ablatedLoss",
-  "ablatedAccuracy", "headAblatedLosses", "keptHeadIndex"
+  "ablatedAccuracy", "calibrationHeadAblatedLosses", "keptHeadIndex"
 ];
 const ASSERTIONS = [
   "independentReproduction", "rightsApproved",
@@ -84,9 +84,9 @@ export function inspectTrainedSparseTransformerReport(report) {
       evaluation.isolatedCircuitLoss, evaluation.ablatedLoss].every(n => n >= 0) &&
     [evaluation.baselineAccuracy, evaluation.prunedAccuracy,
       evaluation.isolatedCircuitAccuracy, evaluation.ablatedAccuracy].every(n => n >= 0 && n <= 1) &&
-    Array.isArray(evaluation.headAblatedLosses) &&
-    evaluation.headAblatedLosses.length === 2 &&
-    evaluation.headAblatedLosses.every(n => finite(n) && n >= 0) &&
+    Array.isArray(evaluation.calibrationHeadAblatedLosses) &&
+    evaluation.calibrationHeadAblatedLosses.length === 2 &&
+    evaluation.calibrationHeadAblatedLosses.every(n => finite(n) && n >= 0) &&
     count(evaluation.keptHeadIndex, 0, 1));
   denyUnless(ASSERTIONS.every(key => assurance[key] === false));
   const checked = inspectSparseCircuitCandidate(candidateArtifact);

@@ -131,7 +131,7 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
     for h in range(HEADS):
         mask = [1.0] * HEADS
         mask[h] = 0
-        head_drop_losses.append(metric(pruned, holdout, head_mask=mask, head_mean=mean)[0])
+        head_drop_losses.append(metric(pruned, calibration, head_mask=mask, head_mean=mean)[0])
     # Retain the head whose mean ablation most increases the loss.
     kept = int(torch.tensor(head_drop_losses).argmax().item())
     circuit_mask = [0.0] * HEADS
@@ -190,7 +190,7 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
                        "prunedLoss": pruned_loss, "prunedAccuracy": pruned_accuracy,
                        "isolatedCircuitLoss": circuit_loss, "isolatedCircuitAccuracy": circuit_accuracy,
                        "ablatedLoss": ablated_loss, "ablatedAccuracy": ablated_accuracy,
-                       "headAblatedLosses": head_drop_losses, "keptHeadIndex": kept},
+                       "calibrationHeadAblatedLosses": head_drop_losses, "keptHeadIndex": kept},
         "candidateArtifact": artifact,
         "assurance": {"independentReproduction": False, "rightsApproved": False,
                       "mechanisticExplanationVerified": False, "productionEligible": False,

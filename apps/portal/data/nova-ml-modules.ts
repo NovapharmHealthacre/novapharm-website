@@ -116,7 +116,7 @@ export const novaMlSparseCircuitAssurance = Object.freeze({
   releasePolicy: "The inspector never grants production, customer, commercial, regulatory or clinical authority.",
   offlineExperiment: {
     name: "Trained synthetic attention intervention",
-    description: "A separate offline CPU experiment trains a tiny two-head attention model on generated binary tokens, prunes attention weights and measures an isolated head against a calibration-mean ablation.",
+    description: "A separate offline CPU experiment trains a tiny two-head attention model on generated binary tokens, selects the circuit head on calibration examples only, then evaluates the isolated head and mean ablation on an untouched synthetic holdout.",
     sample: "256 generated holdout cases; no medicines or private data",
     isolatedAccuracy: "100% on this intentionally simple synthetic task",
     ablatedAccuracy: "49.2% after isolating and mean-ablating the selected head",

@@ -42,6 +42,7 @@ test("contradicted model rights, hidden private fields and altered hash cannot b
     report => { report.patient = {name:"PRIVATE-NEVER-OUTPUT"}; },
     report => { report.candidateArtifact.sourceToken = "PRIVATE-NEVER-OUTPUT"; },
     report => { report.model.weightsSha256 = "a".repeat(64); },
+    report => { report.evaluation.headAblatedLosses = [0, 0]; },
     report => { report.candidateArtifact.provenance.implementationRevision = "sha256:" + "0".repeat(64); },
     report => { report.candidateArtifact.provenance.runId = "unrelated-run"; },
     report => { report.data.sha256 = "b".repeat(64); },
@@ -88,4 +89,16 @@ test("CLI rejects oversized and forged requests without leaking their contents",
     assert.match(p.stderr, /report rejected/i);
     assert.doesNotMatch(p.stderr, /VERY-PRIVATE/);
   }
+});
+
+test("head-selection uses calibration rather than held-out examples", () => {
+  const script = readFileSync(
+    new URL("./research/tiny-sparse-transformer-experiment.py", import.meta.url),
+    "utf8"
+  );
+  assert.match(script, /head_drop_losses\.append\(metric\(pruned, calibration,/);
+  assert.doesNotMatch(script, /head_drop_losses\.append\(metric\(pruned, holdout,/);
+  const report = fixture();
+  assert.equal(report.evaluation.calibrationHeadAblatedLosses.length, 2);
+  assert.equal("headAblatedLosses" in report.evaluation, false);
 });

@@ -27,11 +27,11 @@
     "isolatedCircuitAccuracy": 1,
     "ablatedLoss": 4.715945720672607,
     "ablatedAccuracy": 0.4921875,
-    "headAblatedLosses": [
-      0.00009679462527856231,
-      0.00010579296940704808
-    ],
-    "keptHeadIndex": 1
+    "keptHeadIndex": 1,
+    "calibrationHeadAblatedLosses": [
+      0.00009584614599589258,
+      0.00010380620369687676
+    ]
   },
   "candidateArtifact": {
     "schemaVersion": "npi.sparse-circuit.v1",
@@ -83,8 +83,8 @@
     },
     "provenance": {
       "runId": "toy-transformer-117-220-512-256",
-      "implementationRevision": "sha256:341ffa682104da0973944a4ff2ae4725592e939a7260324b08d0c61aac54e819",
-      "evaluatedAt": "2026-11-18T03:53:48Z"
+      "implementationRevision": "sha256:8daeb3ada53104a3a69e094da7f8bb52c632a4f14341aa24dde42363b041366c",
+      "evaluatedAt": "2026-11-18T04:12:09Z"
     }
   },
   "assurance": {
