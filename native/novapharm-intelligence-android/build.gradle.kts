@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     // JSON is built in to Android; this dependency supplies it for JVM SDK tests.
-    implementation("org.json:json:20250517")
+    implementation("org.json:json:20260814")
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
 }
