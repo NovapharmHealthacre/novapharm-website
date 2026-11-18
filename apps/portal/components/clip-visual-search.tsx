@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { professionalError, protectedMutation } from "../lib/gateway";
 import styles from "./clip-visual-search.module.css";
 
