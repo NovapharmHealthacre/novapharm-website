@@ -34,10 +34,10 @@ for (const file of files) {
   try {
     // Node 24's --check path can parse the unstripped TypeScript source,
     // even when --experimental-strip-types is supplied. Explicitly strip
-    // type-only syntax, then ask Node to parse the resulting ES module.
-    // Real TypeScript type safety remains enforced by the workspace typecheck.
+    // and parameter-property/enum syntax, then ask Node to parse the ES module.
+    // "transform" supports legitimate TypeScript parameter properties that\n    // strip-only mode rejects; real type safety remains a TypeScript typecheck.
     const typescript = file.endsWith(".ts");
-    const source = typescript ? stripTypeScriptTypes(readFileSync(file, "utf8"), { mode: "strip" }) : undefined;
+    const source = typescript ? stripTypeScriptTypes(readFileSync(file, "utf8"), { mode: "transform" }) : undefined;
     const arguments_ = typescript ? ["--input-type=module", "--check"] : ["--check", file];
     const result = spawnSync(process.execPath, arguments_, { encoding: "utf8", input: source });
     if (result.status !== 0) failures.push(`${relative(root, file)}\n${result.stderr || result.stdout}`);
