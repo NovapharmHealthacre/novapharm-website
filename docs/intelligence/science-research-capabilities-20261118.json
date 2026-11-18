@@ -1,0 +1,135 @@
+{
+  "contract": "novapharm.intelligence.science-workflow-catalog.v1",
+  "status": "research_design_only",
+  "sourceReference": "https://openai.com/science/",
+  "sourceReferenceType": "external_research_capability_reference_not_api",
+  "claims": {
+    "modelConnected": false,
+    "scientificDataIngested": false,
+    "clinicalDecisionEnabled": false,
+    "productionApproved": false,
+    "customerPublishable": false
+  },
+  "workflows": [
+    {
+      "id": "literature-evidence",
+      "title": "Literature & evidence",
+      "description": "Review publications, trials and source disagreements with attributable references.",
+      "requirements": [
+        "Verified publication identifiers and copyright/AI-use permissions",
+        "Article-level provenance, retraction and freshness checks",
+        "Human scientific review before conclusions"
+      ],
+      "linkedWorkspaces": [
+        "evidence",
+        "medicine-search",
+        "biotech-intelligence"
+      ]
+    },
+    {
+      "id": "data-code",
+      "title": "Data analysis & code",
+      "description": "Plan reproducible analysis of approved structured research datasets and computational notebooks.",
+      "requirements": [
+        "Source-approved immutable input snapshot",
+        "Reproducible code, parameters and validation outputs",
+        "Independent statistical review and audit"
+      ],
+      "linkedWorkspaces": [
+        "observed-market",
+        "forecasts",
+        "reports"
+      ]
+    },
+    {
+      "id": "scientific-modelling",
+      "title": "Scientific modelling",
+      "description": "Scope computational chemistry, molecular and biological models for qualified research teams.",
+      "requirements": [
+        "Validated model applicability and scientific boundary",
+        "Approved software and data licence",
+        "Specialist review and external validation"
+      ],
+      "linkedWorkspaces": [
+        "biotech-intelligence",
+        "decision-workspace"
+      ]
+    },
+    {
+      "id": "research-connectors",
+      "title": "Research tool connections",
+      "description": "Map scientific databases, literature identifiers and reference managers to governed adapters.",
+      "requirements": [
+        "Individually verified upstream APIs and permitted reuse",
+        "Server-side tenant/source/purpose restrictions",
+        "No mobile API keys; immutable intake and revocation"
+      ],
+      "linkedWorkspaces": [
+        "regulatory-intelligence",
+        "identity",
+        "evidence"
+      ]
+    },
+    {
+      "id": "hypotheses-experiments",
+      "title": "Hypotheses & experiments",
+      "description": "Track testable research questions, disconfirming evidence and human-reviewed experiment proposals.",
+      "requirements": [
+        "Documented alternative hypotheses and uncertainty",
+        "Qualified human approval of experiment design",
+        "Controlled lab execution and independent replication"
+      ],
+      "linkedWorkspaces": [
+        "decision-workspace",
+        "biotech-intelligence"
+      ]
+    },
+    {
+      "id": "research-operations",
+      "title": "Research operations",
+      "description": "Prepare draft study briefs, grant outlines, manuscript plans and evidence-led research reporting.",
+      "requirements": [
+        "Approved source and document permissions",
+        "Attributable references and versioned review",
+        "Human editorial, regulatory and release approval"
+      ],
+      "linkedWorkspaces": [
+        "reports",
+        "decision-workspace"
+      ]
+    }
+  ],
+  "specialisms": [
+    "Medicinal chemistry",
+    "Drug discovery",
+    "Genomics",
+    "Proteins and molecular structures",
+    "Clinical trial evidence",
+    "Regulatory science"
+  ],
+  "releaseGates": [
+    "Verified private Cognito/MFA session and tenant",
+    "Approved pharmaceutical scientific data and AI-use rights",
+    "Research model/API eligibility and account approval where applicable",
+    "Bounded server-side execution with audit and budget ceilings",
+    "Independent scientific and safety evaluation",
+    "Human approval and publication permissions",
+    "iOS and Android device, privacy, accessibility and signing verification",
+    "Restricted GPT-Rosalind models are internal-only: never enable customer-facing or external commercial API use"
+  ],
+  "accessPolicy": {
+    "modelFamily": "GPT-Rosalind",
+    "researchModelCandidate": "gpt-6-rosalind",
+    "modelCandidateStatus": "not_requested_or_verified_by_this_repository",
+    "researchTierApprovalRequired": true,
+    "apiOrganizationApprovalSeparatelyRequired": true,
+    "restrictedToApprovedInternalResearch": true,
+    "customerFacingApiUsePermitted": false,
+    "externalCommercialApiUsePermitted": false,
+    "appMayEnableModelFromMetadata": false,
+    "safetyAndQualifiedHumanReviewRequired": true,
+    "discoveryTierDoesNotGrantResearchTier": true,
+    "guidanceReference": "https://help.openai.com/en/articles/20001193-gpt-rosalind-for-life-sciences-research",
+    "safetyReference": "https://deploymentsafety.openai.com/gpt-rosalind-6"
+  }
+}
