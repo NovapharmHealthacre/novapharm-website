@@ -32,3 +32,18 @@ The paper examines CLIP RN50x4 interpretable feature activations, dataset exampl
 ## Release acceptance
 
 Require exact commit CI (web typecheck, Expo TS/bundle preflight, Node tests), device accessibility and security acceptance, licensed evidence, official identity reconciliation benchmark, privacy assessment, documented threat/typographic attacks, genuine two-tenant denial/revocation tests and signed owner acceptance. This commit does **not** change cloud services, source rights, product availability, or publication state.
+
+## Shared 22-workspace "DNA" boundary
+
+The non-executable `src/core/intelligence-multimodal-workspace-policy.mjs` enumerates exactly the 22 canonical Intelligence workspace slugs and declares a research-purpose boundary for every one. `src/core/intelligence-22-workspace-readiness.mjs` now returns the corresponding `multimodalResearchPolicy` per workspace. This is a **shared readiness contract**, NOT 22 deployed multimodal applications. Every policy has `modelInferenceEnabled:false`, `productionAccepted:false`, `customerAccessible:false`, `canPublish:false` and `decisionReady:false`, with independent source-rights and tenant-authority requirements.
+
+To prevent future regression, the dedicated CI must:
+- Verify exact parity with the canonical 22 workspace slugs and reject unknown or prototype-polluted slugs.
+- Run the existing 22-workspace readiness acceptance tests in addition to the multimodal conflict and mobile/portal wiring tests.
+- Refuse silent truncation (above 240 characters), invisible/bidirectional format marks and non-string model labels.
+- Preserve leading zeroes, punctuation and case of jurisdiction-specific product identifiers instead of treating semantic closeness as identical registration identity.
+- Recheck code, mobile bundle and protected portal lint/build gates at the exact final commit.
+
+This review candidate deliberately **does not** install CLIP weights or publish inferred image matches. Real OCR/model evaluation needs a labelled, licensed holdout and counterfactual packaging overlays (e.g. printed distractor words), independently reviewed per country, language, strength, dose form, manufacturer and image modality. Track class-wise false identity merges, abstention, calibrations and model drift; never convert a visual score into a clinical confidence or regulated product status.
+
+**Status reporting:** a green source contract does not prove a model, hosted API, native build, external data rights, regulated validation or live customer rollout.
