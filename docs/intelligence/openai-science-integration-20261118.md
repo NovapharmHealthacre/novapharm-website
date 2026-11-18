@@ -58,3 +58,32 @@ The 101 national/global source entries are metadata candidates, not 101 connecte
 - Real model output safety/evidence evaluation, abstention and unsupported-citation tests, protected red-team.
 - Web browser and native device accessibility, Android TalkBack/iOS VoiceOver, keyboard/focus, RTL, small screens.
 - Exact-head CI, protected API and staging smoke tests, verified app signing, store review and public deployment separately.
+
+
+## 18 November 2026: Nine reviewed OpenAI source URLs, seven research methods
+
+The user supplied ten URL occurrences: one immunology URL appeared twice. The deduplicated **nine** references and original URLs are frozen in `docs/intelligence/openai-science-methods-20261118.json`. Of these, **seven** are research examples and **two** are changing discovery indexes (OpenAI homepage and Science newsroom). Nothing is scraped, auto-subscribed, or executed from these websites. The Science newsroom's changing articles must be separately re-reviewed before their methods can be used. A visible reference is not a licence to copy full text into model context or train models.
+
+| Original report | Valid transferable research pattern | Evidence/scope that must *not* be inferred |
+| --- | --- | --- |
+| [Unit distance counterexample](https://openai.com/index/model-disproves-discrete-geometry-conjecture/) | Explicit proof obligations and external expert verification | Not biological correctness, automatic theorem proving in NovaPharm or new drug efficacy |
+| [Gluon preprint](https://openai.com/index/new-result-theoretical-physics/) | Domain assumptions, independent symbolic derivation, check simple known cases | Not peer-reviewed pharmaceutical prediction or transferable particle-physics model |
+| [AI medicinal chemist](https://openai.com/index/ai-chemist-improves-reaction/) | Qualified-human-gated question → experimental proposal → recorded observations → bench replication | Not unrestricted autonomous wet-lab tools, generalized chemistry/manufacturing yield or clinical translation |
+| [Cell-free protein optimization](https://openai.com/index/gpt-5-lowers-protein-synthesis-cost/) | Measured baseline, explicit cost denominators, held-out experimental validation, iterative learning | Reported 40% reduction in studied system is **not** a NovaPharm saving, guaranteed manufacturing outcome or generalized result across proteins |
+| [T-cell immunology research](https://openai.com/index/gpt-5-immunology-mystery/) | Alternative mechanisms, disconfirming findings, specialist plausibility review | Not a validated therapy, individual patient diagnosis or proved treatment mechanism |
+| [Rare disease reanalysis](https://openai.com/index/diagnose-rare-childhood-diseases/) | Expert-reviewed, evidence-linked candidate prioritisation and knowledge reanalysis | OpenAI model did not diagnose patients; study's 18 expert-confirmed cases out of 376 are not NovaPharm model performance or consent for using records |
+| [Codex black-hole simulations](https://openai.com/index/using-codex-to-simulate-black-holes/) | Numerical regression testing, reproducible code, known-case comparisons and independent code review | Not acceptance of generated code without tests or valid drug/clinical simulations |
+| [OpenAI homepage](https://openai.com/) | Dated external research discovery reference only | Not an API, model permission, continuous feed or research validation |
+| [OpenAI Science news](https://openai.com/news/science/) | Manually curated science publication discovery | Not a connected automatically updating live data feed |
+
+### What was implemented in code
+- **Source registry:** Nine unique references, publication dates where applicable, source types, method IDs, original publication URLs, limitations, linked canonical workspaces, required verification, and machine-readable `false` values for independent replication, source AI-use approval and clinical/commercial use.
+- **Controlled scientific planning:** `src/core/intelligence-science-methodology.mjs` accepts only recognized source IDs, exact canonical workspace slugs and bounded opaque subject identifiers, and rejects wrong-workspace references and free-text inputs. It does **not** issue model API calls, execute laboratory protocols, admit research data, certify results or activate clinical use.
+- **Web and mobile:** Protected Science web screen and offline iOS/Android candidate display the same nine source references with a strict reported-finding vs. application-vs.-limitation separation; user-initiated original links open source websites (native: external browser only).
+- **Platform-wide DNA:** Source-rights, human evaluation, independent reproducibility, retraction review, audit and no autonomous clinical/regulatory decisions remain shared immutable guardrails on all 22 canonical Intelligence workspace readiness contracts.
+- **Verification:** Dedicated Node tests enforce nine unique URLs, seven research methods, two evolving discovery indexes, cross-platform UI references, workspace mappings, no false model/lab/customer promotion, and the separate 22-workspace readiness controls.
+
+### Deployment and scientific acceptance boundaries
+These are *reference and application design patterns*, not operational scientific APIs. No access has been obtained from OpenAI, Ginkgo Bioworks, Molecule.one, a health-care provider or a scientific data publisher on the basis of reading a research story. The studies are author/publisher reports; NovaPharm has not independently reproduced their findings. Onboard future public-domain/official life-sciences sources only with field-level rights, record-level provenance, non-patient test datasets and secure backend adapters. Clinical/patient/genomic work would need separate legal, privacy, ethics, regulatory, safety and specialist acceptance.
+
+User-specified `https://openai.com` and `https://openai.com/news/science/` are changing web indexes rather than static research papers. The registry snapshot was reviewed 18 November 2026 and does not imply current future news accuracy. No background polling, autonomous chemistry, genomic diagnosis, open-ended simulation or patient-facing model use was enabled.
