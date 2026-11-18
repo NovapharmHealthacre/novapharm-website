@@ -384,3 +384,103 @@ test("an expired or invalid second clock withholds already fetched internal sour
     assert.equal(network, 1);
   }
 });
+
+
+test("all nine source gateway contracts require stable rights after transport, not only at request start", async () => {
+  const payload = { studies: [{
+    protocolSection: { identificationModule: {
+      nctId: "NCT01234567", briefTitle: "Synthetic internal fixture"
+    } }
+  }] };
+  const changes = [
+    { revokedAt: "2026-11-17T16:30:00.000Z" },
+    { rightsStatus: "not-reviewed" },
+    { country: "ES" },
+    { tenantId: "anotherTenant" },
+    { receiptId: "receipt-test-999" },
+    { licenseId: "lic-test-999" },
+    { rightsVersion: "rights-v999" },
+    { validUntil: "2026-11-17T17:30:00.000Z" }
+  ];
+  for (const modification of changes) {
+    let grants = 0, outgoing = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => permit({
+        ...context, ...(++grants === 1 ? {} : modification)
+      }),
+      now: () => TEST_NOW,
+      transport: async () => {
+        outgoing++;
+        return new Response(JSON.stringify(payload), {
+          headers: { "content-type": "application/json" }
+        });
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /Source rights (are not approved|changed during evaluation)/,
+      JSON.stringify(modification)
+    );
+    assert.equal(grants, 2);
+    assert.equal(outgoing, 1);
+  }
+});
+
+test("expanded nine-source gateway refuses a clock rollback and any source-rights outage after fetch", async () => {
+  const response = () => new Response(JSON.stringify({
+    studies: [{protocolSection:{identificationModule:{
+      nctId:"NCT01234567",briefTitle:"Synthetic"
+    }}}]
+  }), {headers:{"content-type":"application/json"}});
+  let calls=0;
+  const reader = createGovSourceReader({
+    authorize: async ctx => {calls++;return permit(ctx);},
+    now: (() => {let n=0;return()=>++n===1 ? TEST_NOW : TEST_NOW-1000;})(),
+    transport:async()=>response()
+  });
+  await assert.rejects(reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  }), /Invalid evaluation envelope/);
+  assert.equal(calls,1,"Rollback must fail even before the second rights service call");
+
+  const secret="SHOULD_NOT_LEAK_RIGHTS_BACKEND_CREDENTIAL";
+  let count=0;
+  const unavailable = createGovSourceReader({
+    authorize:async ctx => {
+      if(++count===1)return permit(ctx);
+      throw new Error(secret);
+    },
+    now:()=>TEST_NOW,transport:async()=>response()
+  });
+  await assert.rejects(unavailable.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  }),err=>err instanceof Error && err.message==="Source rights are not approved" &&
+    !err.message.includes(secret));
+  assert.equal(count,2);
+
+  assert.throws(()=>createGovSourceReader({
+    authorize:async()=>permit(),
+    transport:async()=>response(),
+    now:"invalid clock"
+  }),/Trusted authorizer and transport/);
+});
+
+test("stable double-authorisation still produces only a non-publishable evidence envelope", async () => {
+  let authorizations=0;
+  const reader=createGovSourceReader({
+    authorize:async ctx=>{authorizations++;return permit(ctx);},
+    now:()=>TEST_NOW,
+    transport:async()=>new Response(JSON.stringify({
+      studies:[{protocolSection:{identificationModule:{
+        nctId:"NCT01234567",briefTitle:"Synthetic"
+      }}}]
+    }),{headers:{"content-type":"application/json"}})
+  });
+  const result=await reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  });
+  assert.equal(authorizations,2);
+  assert.equal(result.canPublish,false);
+  assert.equal(result.rightsReceiptId,"receipt-test-001");
+  assert.equal(result.publishDecision,"DENIED_UNTIL_INDEPENDENT_DATA_ADMISSION");
+});
