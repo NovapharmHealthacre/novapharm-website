@@ -130,3 +130,7 @@ After authorization returns, the inspector snapshots the validated short-lived e
 ### One-time authorization field capture
 
 To close a second confirmed authorization race, the inspector captures every identity, permission and expiration field exactly once from the authorizer's returned object **before** validating it. Subsequent grant checks and independent evidence bindings refer only to that immutable snapshot. This prevents a malicious or faulty getter from returning one expiry during validation and a longer expiry at evidence projection. A regression test uses a changing-accessor grant; it must be sampled exactly once and denied when the original expiry lapses. The source-only contract does not confer authorization from a deployed service.
+
+### Immutable request capture before ID validation
+
+The protected inspector now copies tenant, actor, model, version, layer, feature and requested purpose values **once**, freezes them, and validates that same snapshot before authorizing. This closes a confirmed case where changing request getters passed ID validation and then substituted an invalid feature identifier in the response. Regression tests cover both valid-then-invalid and invalid-then-valid getters, ensuring one read per field and no authorization or storage access for the initially invalid scope. This remains a source-only boundary requiring real protected session validation in production.

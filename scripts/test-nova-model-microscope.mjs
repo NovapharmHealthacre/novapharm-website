@@ -347,3 +347,48 @@ test("changing authorization getters cannot extend a short grant after validatio
   assert.equal(loads, 1);
   assert.equal(verifications, 0);
 });
+
+test("changing request getters cannot bypass scoped ID validation", async () => {
+  let reads = 0, authorizations = 0, loads = 0;
+  const unstable = new Proxy({ ...scope }, {
+    get(target, key) {
+      if (key === "featureId") {
+        reads++;
+        return reads === 1 ? scope.featureId : "invalid feature with spaces";
+      }
+      return Reflect.get(target, key);
+    }
+  });
+  // The first captured value is valid, the getter is never read again.
+  const result = await inspect({
+    request: unstable, now,
+    authorizeRead: async selection => {
+      authorizations++;
+      assert.equal(selection.featureId, scope.featureId);
+      return authorised;
+    },
+    loadRecord: async () => { loads++; return record; },
+    verifyEvidence: async () => verified
+  });
+  assert.equal(reads, 1);
+  assert.equal(authorizations, 1);
+  assert.equal(loads, 1);
+  assert.equal(result.featureId, scope.featureId);
+
+  reads = 0;
+  const initiallyInvalid = new Proxy({ ...scope }, {
+    get(target, key) {
+      if (key === "featureId") return ++reads === 1 ? "invalid feature with spaces" : scope.featureId;
+      return Reflect.get(target, key);
+    }
+  });
+  await assert.rejects(inspect({
+    request: initiallyInvalid, now,
+    authorizeRead: async () => { authorizations++; return authorised; },
+    loadRecord: async () => { loads++; return record; },
+    verifyEvidence: async () => verified
+  }), /invalid scoped request/);
+  assert.equal(reads, 1);
+  assert.equal(authorizations, 1, "no authorization for malformed initial scope");
+  assert.equal(loads, 1, "no additional artifact loading for malformed scope");
+});

@@ -40,10 +40,14 @@ function requireRequest(request) {
  * No client-provided approval fields are examined.
  */
 async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loadRecord, verifyEvidence, now = Date.now }) {
-  requireRequest(request);
-  // Pin the authorized scope before invoking asynchronous adapters. The caller
-  // cannot mutate request identity halfway through a protected read.
-  const scopedRequest = Object.freeze({ ...Object.fromEntries(keys.map(key => [key, request[key]])), purpose: MODEL_MICROSCOPE_PURPOSE });
+  // Capture each identity and purpose value exactly once, THEN validate
+  // the immutable snapshot. Accessors must not pass a check and subsequently
+  // substitute an invalid or different scope during authorization.
+  const scopedRequest = Object.freeze({
+    ...Object.fromEntries(keys.map(key => [key, request?.[key]])),
+    purpose: request?.purpose
+  });
+  requireRequest(scopedRequest);
   let previousClock = null;
   const readClock = () => {
     let tick;
