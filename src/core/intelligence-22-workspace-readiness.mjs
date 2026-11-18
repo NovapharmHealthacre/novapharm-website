@@ -10,6 +10,7 @@
  * medicine is the cross-workspace integration prerequisite in issue #497.
  */
 import { capabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import { assessMultimodalWorkspacePolicy } from "./intelligence-multimodal-workspace-policy.mjs";
 
 export const workspaceCapabilityDependencies = Object.freeze({
   "medicine-search": Object.freeze(["medicine_knowledge_graph", "data_operations_governance", "enterprise_operations"]),
@@ -136,6 +137,8 @@ export function assessIntelligence22Workspaces({
       implementationState: blockers.length
         ? (workspace.state === "existing-read-only" ? "repository_read_only_foundation" : "dependency_gated")
         : "candidate_requires_independent_runtime_acceptance",
+      // Shared multimodal decision boundary, not permission to enable image inference.
+      multimodalResearchPolicy: assessMultimodalWorkspacePolicy(workspace.slug),
       independentRuntimeAcceptanceVerified: false,
       productionAccepted: false,
       customerAccessible: false,
