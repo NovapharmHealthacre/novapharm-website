@@ -1,7 +1,7 @@
 # Trusted AI Risk Register
 
 **Status:** implemented controls and residual-risk record
-**Reviewed:** 22 July 2026
+**Reviewed:** 18 November 2026 (CLIP candidate risks added)
 **Owners:** Technology, Information Security, Privacy, Quality and Corporate Communications
 
 | Risk | Applies to | Implemented control | Residual risk | Required owner |
@@ -18,6 +18,10 @@
 | Accessibility failure | Search dialog and navigator | Native modal dialog, labelled controls, status region, keyboard controls, no simulated typing | Browser and assistive-technology variation | Manual keyboard and screen-reader acceptance |
 | False forecasting or traceability claim | Public content | Roadmap-only language and claims scanner | Marketing copy may regress later | Automated claim gate and evidence owner |
 | Ollama exposure | Internal development | Loopback HTTP host allowlist and production rejection | Local machine compromise remains possible | Local developer security and model review |
+| CLIP product-image false match | Nova Device Intelligence private research | Source-only, disabled by default; candidate ranks without confidence, identity, strength, clinical or regulatory assertions; manual source check | Lookalike packs and near-identical strengths can be dangerously confused | Quality and clinical-risk reviewer before any pilot |
+| Image-rights expiration or revocation | Offline visual catalogue | Expiry/revocation metadata, per-asset SHA-256, checksum-bound index, runtime exclusion of expired images | Rights record still needs independent legal attestation and operator-triggered index rebuild on external revocation | Legal, Privacy and source rights owner |
+| Cross-platform authentication and redirect risk | Web/iOS/Android CLIP clients | Exact protected BFF path; board scope; CSRF; no-redirect native clients; secure origin; bounded payloads; no direct weights or model hosts | Signed app session, physical-device validation and tenant proof not yet present | Identity and Information Security |
+| Pretrained image model compromise | Private Python research service | Local-only model path, SHA-256, loopback token and default-off flag; no remote downloads | Pinned model files and third-party ML dependencies must be independently reviewed; no approved artifact yet | ML platform owner and supply-chain security |
 
 ## Stop conditions
 
