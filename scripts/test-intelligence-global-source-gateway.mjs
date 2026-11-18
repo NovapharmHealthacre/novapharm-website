@@ -263,3 +263,19 @@ test("a permit expiring during fetch cannot produce an evaluation envelope", asy
   await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /Invalid evaluation envelope/);
   assert.equal(calls, 1);
 });
+
+test("trusted source authorizer, upstream transport and clock failures suppress internal details", async () => {
+  const secret = "SECRET_PRIVATE_SOURCE_PROVIDER_CREDENTIAL";
+  const bad = async () => { throw new Error(secret); };
+  for (const reader of [
+    createGovSourceReader({ authorize: bad, transport: async () => { throw Error("should not reach"); }, now: () => TEST_NOW }),
+    createGovSourceReader({ authorize: async context => permit(context), transport: bad, now: () => TEST_NOW }),
+    createGovSourceReader({ authorize: async context => permit(context), transport: bad, now: () => { throw Error(secret); } })
+  ]) {
+    await assert.rejects(
+      reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }),
+      (error) => error instanceof Error && !error.message.includes(secret) &&
+        /not approved|Upstream unavailable/.test(error.message)
+    );
+  }
+});

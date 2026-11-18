@@ -115,3 +115,16 @@ test("native IDs are preserved for Canadian DPD, with no country translation",as
  assert.equal(result.evidence.records[0].localId,"00001234");
  assert.equal(result.canPublish,false);
 });
+
+test("offline intake suppresses trusted authorizer and clock adapter exceptions", async()=>{
+  const marker="SECRET_INTERNAL_SERVICE_CONNECTION";
+  const bad=async()=>{throw Error(marker);};
+  const calls=[
+    createGlobalSourceIntakeEvaluator({authorize:bad,now:()=>FIXED_NOW}),
+    createGlobalSourceIntakeEvaluator({authorize:async c=>permit(c),now:()=>{throw Error(marker);}})
+  ];
+  for(const evaluator of calls){
+    await assert.rejects(evaluator.evaluate(request),error=>error instanceof Error &&
+      /Global source intake rejected/.test(error.message) && !error.message.includes(marker));
+  }
+});
