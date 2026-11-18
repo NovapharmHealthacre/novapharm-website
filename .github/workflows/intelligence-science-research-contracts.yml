@@ -6,6 +6,9 @@ on:
       - 'docs/intelligence/science-research-capabilities-20261118.json'
       - 'docs/intelligence/openai-science-integration-20261118.md'
       - 'src/core/intelligence-science-research-contract.mjs'
+      - 'src/core/intelligence-science-research-principles.mjs'
+      - 'src/core/intelligence-22-workspace-readiness.mjs'
+      - 'scripts/test-intelligence-22-workspace-readiness.mjs'
       - 'apps/portal/data/routes.ts'
       - 'apps/portal/components/medicines-intelligence.tsx'
       - 'apps/portal/components/science-research-workspace.tsx'
@@ -31,7 +34,9 @@ jobs:
       - name: Check module syntax and validate science data
         run: |
           node --check src/core/intelligence-science-research-contract.mjs
+          node --check src/core/intelligence-science-research-principles.mjs
+          node --check src/core/intelligence-22-workspace-readiness.mjs
           node --check scripts/test-intelligence-science-research.mjs
           node -e "const x=require('./docs/intelligence/science-research-capabilities-20261118.json');if(x.workflows.length!==6)process.exit(1)"
       - name: Run scientific research contracts
-        run: node --test scripts/test-intelligence-science-research.mjs
+        run: node --test scripts/test-intelligence-science-research.mjs scripts/test-intelligence-22-workspace-readiness.mjs
