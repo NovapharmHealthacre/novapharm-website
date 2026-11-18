@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  assessRewardProxySweep, evaluateCritiqueAssistance,
+  assessRewardProxySweep, evaluateRewardScalingForm, calculateBestOfNKl, evaluateCritiqueAssistance,
   evaluateInstructionConformance, assessOfflineScenarioRollouts
 } from "../src/core/ai/nova-alignment-research.mjs";
 
@@ -36,6 +36,23 @@ test("reward sweep reports insufficient evidence if proxy and independent scores
   ] });
   receipt(result);
   assert.equal(result.independentDeterioratedAfterPeak, false);
+});
+
+test("published best-of-n KL and BoN/RL scaling equations are illustrative, not fitted", () => {
+  assert.equal(calculateBestOfNKl(1), 0);
+  assert.ok(Math.abs(calculateBestOfNKl(2) - (Math.log(2) - 0.5)) < 1e-12);
+  const bon = evaluateRewardScalingForm({ method: "best_of_n", kl: 4, alpha: 5, beta: 1 });
+  receipt(bon);
+  assert.equal(bon.illustrativeGoldRewardDelta, 6);
+  assert.equal(bon.coefficientsVerified, false);
+  const rl = evaluateRewardScalingForm({ method: "reinforcement_learning", kl: 1, alpha: 5, beta: 1 });
+  receipt(rl);
+  assert.equal(rl.illustrativeGoldRewardDelta, 5);
+  assert.equal(evaluateRewardScalingForm({ method: "reinforcement_learning", kl: 0, alpha: 2, beta: 1 }).illustrativeGoldRewardDelta, 0);
+  assert.throws(() => evaluateRewardScalingForm({ method: "best_of_n", kl: -1, alpha: 5, beta: 1 }));
+  assert.throws(() => evaluateRewardScalingForm({ method: "best_of_n", kl: 4, alpha: 5, beta: -1 }));
+  assert.throws(() => evaluateRewardScalingForm({ method: "unknown", kl: 4, alpha: 5, beta: 1 }));
+  assert.throws(() => calculateBestOfNKl(1.5));
 });
 
 test("critique assessment measures proposed vs independent adjudication claims without verification", () => {
