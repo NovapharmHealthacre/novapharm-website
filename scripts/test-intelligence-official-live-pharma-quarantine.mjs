@@ -139,7 +139,8 @@ test("unverified release metadata cannot create a quarantined source snapshot",a
     {publishedOn:"2030-01-01"},
     {observationEnd:"2030-01-01"},
     {observationStart:"2026-08-08"},
-    {schemaVersion:"bad/path"}
+    {schemaVersion:"bad/path"},
+    {publishedOn:"2026-08-08",observationEnd:"2026-08-08"}
   ]){
     let calls=0;
     const instance=reader({
@@ -202,5 +203,28 @@ test("quarantine does not accept expired clocks or rollback during network and r
     await assert.rejects(instance.evaluate({
       sourceId:"us-fda-drugsfda",tenantId:"tenantA"
     }),/Official live source probe rejected:/);
+  }
+});
+
+
+test("FDA publisher-declared last_updated date must exactly bind the trusted release snapshot",async()=>{
+  let authorizations=0;
+  const original=payload("us-fda-drugsfda");
+  const changed={...original,meta:{...original.meta,last_updated:"2026-08-08"}};
+  const evaluator=reader({
+    authorize:async ctx=>{authorizations++;return grant(ctx);},
+    transport:async()=>JSON_RESPONSE(changed)
+  });
+  await assert.rejects(evaluator.evaluate({
+    sourceId:"us-fda-drugsfda",tenantId:"tenantA"
+  }),/official FDA dataset revision differs from release inventory/);
+  assert.equal(authorizations,1);
+  for(const date of ["tomorrow","2026-02-30","2026-8-7","2030-00-01","2026-08-07\u202e"]){
+    const bad={...original,meta:{...original.meta,last_updated:date}};
+    await assert.rejects(reader({
+      transport:async()=>JSON_RESPONSE(bad)
+    }).evaluate({
+      sourceId:"us-fda-drugsfda",tenantId:"tenantA"
+    }),/US FDA application response schema mismatch/);
   }
 });
