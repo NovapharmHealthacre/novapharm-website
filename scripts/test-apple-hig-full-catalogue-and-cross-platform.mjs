@@ -48,22 +48,22 @@ test("all 172 source links remain classified without false readiness claims", ()
 });
 
 test("Portal search and account commands offer 44px interaction targets", () => {
-  assert.match(rule(".search-close"), /width:\\s*44px;\\s*height:\\s*44px;/);
-  assert.match(rule(".user-summary"), /grid-template-columns:\\s*auto 44px;/);
-  assert.match(rule(".user-summary button"), /width:\\s*44px;\\s*height:\\s*44px;/);
-  assert.match(rule(".icon-command"), /min-height:\\s*44px;/);
-  assert.match(css, /:focus-visible\\s*\\{[^}]*outline:/);
+  assert.match(rule(".search-close"), /width:\s*44px;\s*height:\s*44px;/);
+  assert.match(rule(".user-summary"), /grid-template-columns:\s*auto 44px;/);
+  assert.match(rule(".user-summary button"), /width:\s*44px;\s*height:\s*44px;/);
+  assert.match(rule(".icon-command"), /min-height:\s*44px;/);
+  assert.match(css, /:focus-visible\s*\{[^}]*outline:/);
 });
 
 test("offline iOS/Android research form improves readable text and screen-reader status", () => {
-  assert.match(mobile, /paragraph:\\{fontSize:16,lineHeight:24/);
-  assert.match(mobile, /label:\\{fontSize:16,fontWeight:"600"/);
-  assert.match(mobile, /checkboxText:\\{flex:1,fontSize:16,lineHeight:24/);
-  assert.match(mobile, /input:\\{[^}]*fontSize:17/);
+  assert.match(mobile, /paragraph:\{fontSize:16,lineHeight:24/);
+  assert.match(mobile, /label:\{fontSize:16,fontWeight:"600"/);
+  assert.match(mobile, /checkboxText:\{flex:1,fontSize:16,lineHeight:24/);
+  assert.match(mobile, /input:\{[^}]*fontSize:17/);
   assert.match(mobile, /accessibilityRole="checkbox"/);
-  assert.match(mobile, /accessibilityState=\\{\\{checked:consent\\}\\}/);
+  assert.match(mobile, /accessibilityState=\{\{checked:consent\}\}/);
   assert.match(mobile, /accessibilityLiveRegion="polite"/);
   assert.match(mobile, /Do not enter patient or confidential information/);
   assert.match(mobile, /does not verify medicine identity/);
-  assert.doesNotMatch(mobile, /fetch\\(|Authorization:|client_secret|access_token/);
+  assert.doesNotMatch(mobile, /fetch\(|Authorization:|client_secret|access_token/);
 });
