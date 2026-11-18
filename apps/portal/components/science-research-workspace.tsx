@@ -15,11 +15,11 @@ export function ScienceResearchWorkspace() {
       <p className={styles.intro}>A unified research environment for literature, scientific data, modelling and investigation planning. Each capability is a controlled design candidate, not a live scientific AI service.</p>
       <p className={styles.state}>Research architecture · No model connected · No source ingested</p>
     </header>
-    <div className={styles.metrics} role="group" aria-label="Research readiness">
+    <section className={styles.metrics} aria-label="Research readiness">
       <div><strong>{catalog.workflows.length}</strong><span>Designed research workflows</span></div>
       <div><strong>0</strong><span>Connected research models</span></div>
       <div><strong>0</strong><span>Approved new science datasets</span></div>
-    </div>
+    </section>
     <section aria-labelledby="science-workflows-title">
       <div className={styles.sectionHeading}><h2 id="science-workflows-title">Research workspaces</h2><p>Built on the existing evidence and rights architecture, without creating unsupported scientific claims.</p></div>
       <div className={styles.grid}>
