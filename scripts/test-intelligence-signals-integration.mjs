@@ -21,7 +21,7 @@ test("the protected Nova ML view actually includes the Signals and technical evi
   assert.match(catalogue, /Whisper/);
   assert.match(catalogue, /Triton/);
 });
-test("all 15 registered references have human-limited use and primary source links", () => {
+test("all 15 registered references have human-limited use and primary source links", async () => {
   const catalogue = read("apps/portal/data/nova-signals-research.ts");
   const { signalsRegisteredSources } = await import("../src/ai/intelligence-openai-signals.mjs");
   for (const id of signalsRegisteredSources) assert.ok(catalogue.includes('id: "' + id + '"'), id);
@@ -53,7 +53,7 @@ test("source document is candid about non-deployment, attribution and owner cons
   const owner = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
   assert.match(doc, /CC BY 4\.0/);
   assert.match(doc, /No Signals dataset bytes imported/);
-  assert.match(doc, /not an individual/);
+  assert.match(doc, /Individual data excludes enterprise/i);
   assert.match(doc, /not a live/i);
   assert.equal(owner.productionSignoff, "not_granted");
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
