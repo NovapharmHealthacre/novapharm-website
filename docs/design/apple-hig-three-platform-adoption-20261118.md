@@ -67,7 +67,10 @@ Authoritative references:
 The previously six-way, fixed-width bottom bar crowded labels on narrow screens.
 The Expo candidate now keeps **four** labelled, stable top-level routes —
 Overview, Workspaces, Sources and More — with Review, Research and Account
-available as accessible, 56-point-minimum actions in More. When a nested route
+available as accessible, 56-point-minimum actions in More. At larger system
+text scales (fontScale >= 1.4), the four navigation choices wrap into two
+rows and the source directory falls back to one column even on wide screens.
+When a nested route
 is open, the More tab retains selected semantics. Every route is still reachable.
 No bundled Apple assets, web-authentication, live data, model inference or payment
 service is activated.
