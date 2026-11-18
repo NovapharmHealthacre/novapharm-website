@@ -38,7 +38,7 @@ const entries=nationalLedger.countryRows.map(row=>{
     country:row.country,
     iso2:row.countryCode,
     region:row.region,
-    coverage:"source-candidates-only",
+    coverage:row.scopeOrigin==="PROPOSED_RESEARCH_COUNTRY" ? "research-geography-only" : "source-candidates-only",
     scopeOrigin:row.scopeOrigin,
     candidateSourceCount:row.sourceCandidateCount,
     candidateSources,
