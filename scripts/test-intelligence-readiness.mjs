@@ -32,6 +32,11 @@ try {
   assert.equal(readiness.science.cataloguedTransferableResearchMethods, 7);
   assert.equal(readiness.science.discoveryIndexes, 2);
   assert.equal(readiness.science.scientificFindingsIndependentlyReproduced, false);
+  assert.equal(readiness.science.researchEvidenceDossierTemplateDefined, true);
+  assert.equal(readiness.science.scientificDossierStagesRequired.length, 8);
+  assert.equal(readiness.science.scientificDossierStagesIndependentlyVerified, 0);
+  assert.equal(readiness.science.publisherClaimsVerified, false);
+  assert.equal(readiness.science.sourceRetractionsOrCorrectionsChecked, false);
   assert.equal(readiness.science.continuousScienceFeedConnected, false);
   assert.equal(readiness.science.gptRosalindResearchApiApprovalVerified, false);
   assert.equal(readiness.science.modelConnected, false);
