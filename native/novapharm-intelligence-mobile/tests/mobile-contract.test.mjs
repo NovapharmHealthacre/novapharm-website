@@ -62,5 +62,10 @@ test("iOS/Android preview uses the same offline multimodal conflict gate as prot
   assert.match(webWorkspace, /<MultimodalReviewPanel/);
   assert.match(core, /canPublish: false/);
   assert.match(core, /identityVerified: false/);
+  for (const requiredField of ["referenceStrength", "observedStrength", "referenceDoseForm", "observedDoseForm", "referenceManufacturer", "observedManufacturer"]) {
+    assert.ok(mobilePanel.includes(requiredField), "Mobile review missing " + requiredField);
+    assert.ok(webPanel.includes(requiredField), "Web review missing " + requiredField);
+    assert.ok(core.includes(requiredField), "Shared policy missing " + requiredField);
+  }
   assert.doesNotMatch(mobilePanel, /fetch\(|AsyncStorage|SecureStore|Camera|ImagePicker|access_token/);
 });
