@@ -324,3 +324,39 @@ test("cannot replace one source with a plausible new authority and still claim f
       /Country coverage baseline rejected: source key missing, replaced or duplicated/);
   }
 });
+
+
+test("hybrid API/portal/restricted countries retain every required source access gate", () => {
+  const needsPortal = source.filter(x => x.mode.includes("Portal"));
+  const needsAccess = source.filter(x =>
+    x.mode.includes("Restricted") || x.mode.includes("Access-review") ||
+    x.mode === "FHIR-review");
+  assert.ok(needsPortal.length >= 20);
+  assert.ok(needsAccess.length >= 5);
+  for (const original of needsPortal) {
+    const candidate = ledger.sourceRows.find(x => x.candidateKey === original.candidateKey);
+    assert.ok(candidate, original.candidateKey);
+    assert.ok(candidate.remainingReleaseGates.includes(
+      "OFFICIAL_EXPORT_CONFIRMED_NO_PORTAL_SCRAPING_ASSUMED"
+    ), original.country + " " + original.mode);
+  }
+  for (const original of needsAccess) {
+    const candidate = ledger.sourceRows.find(x => x.candidateKey === original.candidateKey);
+    assert.ok(candidate.remainingReleaseGates.includes(
+      "OFFICIAL_AUTHENTICATED_ACCESS_OR_VENDOR_APPROVAL"
+    ), original.country + " " + original.mode);
+  }
+  const germany = ledger.sourceRows.find(x =>
+    x.country === "Germany" && x.advertisedMode === "Portal/Restricted");
+  assert.ok(germany);
+  assert.ok(germany.remainingReleaseGates.includes(
+    "OFFICIAL_EXPORT_CONFIRMED_NO_PORTAL_SCRAPING_ASSUMED"));
+  assert.ok(germany.remainingReleaseGates.includes(
+    "OFFICIAL_AUTHENTICATED_ACCESS_OR_VENDOR_APPROVAL"));
+  for(const country of ["Chile", "Colombia"]) {
+    const hybrid = ledger.sourceRows.find(x =>
+      x.country === country && x.advertisedMode === "API/Portal");
+    assert.ok(hybrid.remainingReleaseGates.includes(
+      "OFFICIAL_EXPORT_CONFIRMED_NO_PORTAL_SCRAPING_ASSUMED"), country);
+  }
+});
