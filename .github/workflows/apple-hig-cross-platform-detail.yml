@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       remote_check:
-        description: 'Check all 172 official Apple HIG Markdown URLs plus MapKit, MapKit JS and IMDF (network only)'
+        description: 'Check 172 HIG article URLs, 30 section anchors, 5 Apple resources and 3 MapKit/IMDF URLs'
         required: false
         type: boolean
         default: false
@@ -45,7 +45,7 @@ jobs:
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
 
   remote-apple-link-audit:
-    name: Manual Apple HIG URL reachability evidence (not guideline review)
+    name: Manual Apple HIG 210-URL and section-anchor audit (not guideline review)
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.remote_check }}
     runs-on: ubuntu-24.04
     timeout-minutes: 18
@@ -56,13 +56,13 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Verify exact 175 Apple link URLs, recording all results
+      - name: Verify exact 210 links, including actual Markdown section-anchor headings
         run: HIG_VERIFY_LIVE_LINKS=1 node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Preserve the full URL-health evidence (including failures)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: apple-hig-175-link-reachability-${{ github.sha }}
+          name: apple-hig-210-link-reachability-${{ github.sha }}
           path: artifacts/apple-hig-link-health/report.json
           if-no-files-found: warn
           retention-days: 30
