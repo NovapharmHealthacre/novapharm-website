@@ -208,7 +208,7 @@ test("Polish NFZ keeps active-substance codes and does not manufacture price or 
   const plan = buildGovSourcePlan({ sourceId: "pl-nfz-drug-program", term: "Apixaban" });
   const result = normaliseGovSourceResult(plan, {
     meta: { count: 1, page: 1 },
-    data: [{ data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM", refund: 2500 }] }]
+    data: { sums: { refund: 2500 }, data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM", refund: 2500 }] }
   });
   assert.equal(result.records[0].localId, "010203");
   assert.equal(result.records[0].label, "APIXABANUM");
@@ -219,6 +219,12 @@ test("Polish NFZ keeps active-substance codes and does not manufacture price or 
   assert.equal(Object.hasOwn(result.records[0], "price"), false);
   assert.equal(result.dataState, "unreconciled_upstream_preview");
   assert.throws(() => normaliseGovSourceResult(plan, {wrong:[]}), /Unexpected source schema/);
+  // Old test fixtures incorrectly assumed a top-level array. Real NFZ examples
+  // require data.sums + data.data; rejecting this prevents silent empty pages.
+  assert.throws(() => normaliseGovSourceResult(plan, {
+    data: [{ data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM" }] }]
+  }), /Unexpected source schema/);
+  assert.throws(() => normaliseGovSourceResult(plan, {data: {sums: {}, data: {}}}), /Unexpected source schema/);
 });
 
 test("invalid trusted clocks and noncanonical permit timestamps reject before any outgoing request", async () => {
