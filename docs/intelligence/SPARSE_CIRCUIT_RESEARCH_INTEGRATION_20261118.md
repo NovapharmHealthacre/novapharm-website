@@ -46,6 +46,14 @@ The shared output deliberately forces `mechanisticExplanationVerified=false`, `p
 - **Supply, Forecasts and Regulatory:** eventual model-behaviour diagnostics could complement independent forecast calibration, source citations and human validation, but must not replace them.
 - **Web + mobile clients:** one structured, rights-approved server response and platform-specific read-only presentations; no trusted security logic in the UI.
 
+## Reproducible offline intervention smoke (synthetic only)
+
+`scripts/research/toy-sparse-circuit-intervention.mjs` provides a **deterministic, fixed-weight, one-hidden-layer ReLU demonstration** of the evaluation pipeline. It generates two tiny synthetic binary-feature sample sets in memory, computes the sparse readout, then mean-ablates the one relevant feature using the calibration-set mean. The independent-script output is passed through the shared fail-closed `npi.sparse-circuit.v1` validator. CI executes `scripts/test-intelligence-sparse-circuit-toy-intervention.mjs` and checks that the baseline-to-circuit squared-loss delta is 0 while mean ablation increases squared loss by 0.25.
+
+This is **not an OpenAI transformer checkpoint, not learned weight sparsification, not model training, not production inference, and not external validation**. There is no real medicine dataset, patient record, supplier price or licensed-source ingestion. Its deliberately easy synthetic held-out examples do not establish performance or causal faithfulness on any real model. Its purpose is to catch regressions in the intervention measurement and artifact boundary before an independently authorised experiment is designed.
+
+The JSON response schema `docs/intelligence/npi-sparse-circuit-summary-v1.schema.json` is shared across the web validator and future native clients; a summary is intentionally marked `mechanisticExplanationVerified=false`, `productionEligible=false` and `clinicalUsePermitted=false`.
+
 ## Production gates (all outstanding)
 
 Source rights and model rights are independent release prerequisites: no schema validation, app build or successful ablation can grant either right. All experiments must remain within documented licences, tenant boundaries and human-reviewed purposes.
