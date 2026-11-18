@@ -17,7 +17,12 @@
     "limitMin": 1,
     "limitMax": 10,
     "queryMinLength": 3,
-    "queryMaxLength": 240
+    "queryMaxLength": 240,
+    "readinessPath": "/gateway/v1/intelligence/visual/readiness",
+    "readinessRequiresAuthenticatedLoopbackHealth": true,
+    "readinessRequiresPrivateToken": true,
+    "readinessConfiguredFlagAloneIsInsufficient": true,
+    "readinessUnavailableFailsClosed": true
   },
   "result": {
     "status": "unverified_visual_match",
@@ -48,6 +53,7 @@
     "loopbackOnly": true,
     "modelWeightsBundled": false,
     "publicImageIndexBundled": false,
-    "separateReleaseEvidenceRequired": true
+    "separateReleaseEvidenceRequired": true,
+    "requiresLivePrivateHealthProbeForUiEnablement": true
   }
 }
