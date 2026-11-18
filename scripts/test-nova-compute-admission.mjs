@@ -59,3 +59,36 @@ test("never echo secret-bearing proposal values or grant execution", () => {
   assert.ok(resultWithPrototype.reasons.includes("invalid-proposal"));
   assert.ok(Object.isFrozen(resultWithPrototype.reasons));
 });
+
+test("untrusted metadata and malformed policies fail closed without invoking getters", () => {
+  let invoked = 0;
+  const accessor = Object.defineProperty(valid(), "purpose", {
+    get() { invoked++; throw Error("do not invoke caller-owned accessor"); }, enumerable: true
+  });
+  const result = assessComputeProposal(accessor);
+  assert.equal(result.status, "blocked");
+  assert.ok(result.reasons.includes("invalid-proposal"));
+  assert.equal(invoked, 0);
+  const hidden = Object.defineProperty(valid(), "privateNote", { value: "PRIVATE", enumerable: false });
+  assert.equal(assessComputeProposal(hidden).status, "blocked");
+  const symbol = { ...valid(), [Symbol("secret")]: "PRIVATE" };
+  assert.equal(assessComputeProposal(symbol).status, "blocked");
+  const hostile = new Proxy({}, {getPrototypeOf(){throw Error("hostile proxy");}});
+  assert.equal(assessComputeProposal(hostile).status, "blocked");
+  const malformedPolicy = Object.defineProperty({}, "allowedRegions", {
+    get() { invoked++; throw Error("never run policy accessor"); }, enumerable: true
+  });
+  const deniedPolicy = assessComputeProposal(valid(), malformedPolicy);
+  assert.equal(deniedPolicy.status, "blocked");
+  assert.ok(deniedPolicy.reasons.includes("invalid-policy"));
+  assert.equal(invoked, 0);
+  assert.equal(assessComputeProposal(valid(), null).status, "blocked");
+  assert.ok(assessComputeProposal(valid(), { allowedRegions: [] }).reasons.includes("invalid-region-policy"));
+  assert.ok(assessComputeProposal(valid(), { maximumBudgetGbp: -1 }).reasons.includes("invalid-budget-policy"));
+  assert.ok(assessComputeProposal(valid(), { maliciousOverride: true }).reasons.includes("unexpected-policy-fields"));
+  const arrayWithGetter = ["eu-west-2"];
+  Object.defineProperty(arrayWithGetter, "0", { get() { invoked++; throw Error("do not read regions getter"); } });
+  assert.ok(assessComputeProposal(valid(), { allowedRegions: arrayWithGetter }).reasons.includes("invalid-region-policy"));
+  assert.equal(invoked, 0);
+  assert.equal(assessComputeProposal(valid(), { allowedRegions: ["eu-west-2"], maximumBudgetGbp: 0 }).status, "review-only");
+});
