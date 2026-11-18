@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -54,6 +54,17 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <li key={capability}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p>{capability}</p></li>
       )}</ol>
     </section>
+
+    {(kind === "nova-ml-studio" || kind === "nova-generative-assist") && <section className={styles.section} aria-labelledby="nova-ml-alignment-research">
+      <h2 id="nova-ml-alignment-research">AI alignment research programme</h2>
+      <p className={styles.helper}>Source-only research directions. No model, rewards, critiques, training, operational actions or customer predictions run on this page.</p>
+      <dl className={styles.contractGrid}>{novaMlAlignmentResearchMethods.map((method) =>
+        <div className={styles.contractItem} key={method.id}>
+          <dt>{method.title}</dt>
+          <dd>{method.summary} {method.approval}</dd>
+        </div>
+      )}</dl>
+    </section>}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
       <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
