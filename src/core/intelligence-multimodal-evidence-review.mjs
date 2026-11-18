@@ -71,6 +71,16 @@ export function assessMultimodalEvidence(input) {
       values.referenceProductCode !== values.observedProductCode)
     signals.push("product_code_conflict");
 
+  // A reference without an observed code/strength/form/manufacturer (or the
+  // reverse) is missing evidence, not a non-conflicting identity comparison.
+  const incompleteCriticalPair = [
+    ["referenceProductCode", "observedProductCode"],
+    ["referenceStrength", "observedStrength"],
+    ["referenceDoseForm", "observedDoseForm"],
+    ["referenceManufacturer", "observedManufacturer"]
+  ].some(([left, right]) => Boolean(values[left]) !== Boolean(values[right]));
+  if (incompleteCriticalPair) signals.push("incomplete_critical_attribute_pair");
+
   // Packaging matches are never identity proof. Compare independent attributes
   // conservatively; even equivalent abbreviations require reviewer reconciliation.
   for (const [left, right, signal] of [
@@ -87,7 +97,8 @@ export function assessMultimodalEvidence(input) {
   // match, regulatory decision, pharmacovigilance conclusion or rights approval.
   const status = needsPurpose || invalidInput ? "blocked" :
     signals.some((s) => s.endsWith("_conflict")) ? "conflicting_candidates" :
-    signals.includes("provenance_missing") || signals.includes("candidate_evidence_missing")
+    signals.includes("provenance_missing") || signals.includes("candidate_evidence_missing") ||
+    signals.includes("incomplete_critical_attribute_pair")
       ? "insufficient_evidence" : "human_review_required";
 
   return Object.freeze({
