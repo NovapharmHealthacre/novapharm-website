@@ -149,7 +149,7 @@ test("unverified release metadata cannot create a quarantined source snapshot",a
     });
     await assert.rejects(instance.evaluate({
       sourceId:"us-fda-drugsfda",tenantId:"tenantA"
-    }),/publisher release metadata/);
+    }),/(publisher release metadata|official FDA dataset revision)/);
     assert.equal(calls,1,"Invalid metadata cannot reach the final rights decision");
   }
 });
