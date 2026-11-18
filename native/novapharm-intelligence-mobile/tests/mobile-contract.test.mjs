@@ -73,13 +73,15 @@ test("iOS/Android preview uses the same offline multimodal conflict gate as prot
 });
 
 
-test("Signals/Whisper/Triton research is an additional review-only tab in the iOS/Android prototype", () => {
+test("Signals/Whisper/Triton research shares the sparse-circuit review tab in the iOS/Android prototype", () => {
   const app = read("native/novapharm-intelligence-mobile/App.tsx");
   const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
   const shared = read("apps/portal/data/nova-signals-research.ts");
   assert.match(app, /type Screen = .*"research"/);
   assert.match(app, /\{ screen: "research", label: "Research" \}/);
-  assert.match(app, /screen === "research" && <SignalsResearchScreen\s*\/>/);
+  assert.match(app, /screen === "research" && \(/);
+  assert.match(app, /<SignalsResearchScreen\s*\/>/);
+  assert.match(app, /novaMlSparseCircuitAssurance/);
   assert.match(screen, /novaSignalsResearchSources/);
   assert.match(screen, /novaSignalsResearchGroups/);
   assert.match(screen, /accessibilityRole="link"/);

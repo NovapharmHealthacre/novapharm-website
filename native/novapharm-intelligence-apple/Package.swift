@@ -26,6 +26,8 @@ let package = Package(
                 "NovaSpeechIntelligence.swift",
                 "NovaResearchAppIntent.swift",
                 "NovaComputePlan.swift",
+                "NovaSparseCircuitReader.swift",
+                "NovaSparseCircuitResearchView.swift",
                 "NovaSignalsResearch.swift"
             ]
         ),

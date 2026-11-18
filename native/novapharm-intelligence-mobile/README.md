@@ -14,7 +14,9 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 
 The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, an offline **Multimodal Review** tab using the shared web/mobile evidence-conflict contract, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
-**Source coverage is not activated:** 101 source candidates span 79 geography labels including `Global` and `European Union / EEA`, leaving 77 distinct country/territory labels. These are not rights-approved national API integrations; the Overview identifies them as unverified candidates.
+## Sparse-circuit research preview
+
+The private Expo iOS/Android preview includes a **Research** tab backed by the same `novaMlSparseCircuitAssurance` governance register as the protected web interface. It displays the offline synthetic experiment, explicit nonclinical limitations, and independent release gates. It **does not** load a trained model, execute inference, fetch a server response, access a patient record, authenticate a user, or store data. The research tab is a static source preview, not a shipped mobile feature or clinical/production certification.
 
 ## Release blockers
 
@@ -42,7 +44,7 @@ No camera permission, CLIP/ResNet model, OCR, native ML inference, external call
 
 ## New research tab (iOS/Android prototype)
 
-The unsigned Expo application now has an additional **Research** tab backed by the same read-only `apps/portal/data/nova-signals-research.ts` source register proposed for the protected web ML workspace. It presents fifteen OpenAI study and technology references, supports category filtering, shows each study's NovaPharm application and explicit limitation, and launches original `openai.com` or `cdn.openai.com` references **only after a user taps a link**. No report bytes, CSV data, OpenAI credentials, patient inputs, microphone access, AI inference or GPU workload are included.
+The unsigned Expo application now shares the existing **Research** tab backed by the same read-only `apps/portal/data/nova-signals-research.ts` source register proposed for the protected web ML workspace. The sparse-circuit review remains a separate, offline panel in the same tab. The Signals panel presents fifteen OpenAI study and technology references, supports category filtering, shows each study's NovaPharm application and explicit limitation, and launches original `openai.com` or `cdn.openai.com` references **only after a user taps a link**. No report bytes, CSV data, OpenAI credentials, patient inputs, microphone access, AI inference or GPU workload are included.
 
 This is **not** a live API integration, native iOS/Android app signing, imported Signals dataset or AI assistant. The linked 2026 Signals v3 dictionary enumerates 24 data tables; in the accompanying source-only research candidate only three aggregate tables have a bounded local, non-persistent preview parser, while the other 21 remain metadata-only. The mobile screen displays this limitation without importing data.
 

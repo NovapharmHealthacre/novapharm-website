@@ -1,0 +1,134 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import test from "node:test";
+import { inspectTrainedSparseTransformerReport } from "./research/validate-trained-sparse-transformer-report.mjs";
+
+const fixture = () => JSON.parse(readFileSync(
+  new URL("./research/fixtures/trained-sparse-transformer-observed-local-run.json", import.meta.url),
+  "utf8"
+));
+const copy = value => JSON.parse(JSON.stringify(value));
+
+test("an actual trained synthetic model observation maps to the same unverified native display contract", () => {
+  const report = fixture();
+  const summary = inspectTrainedSparseTransformerReport(report);
+  assert.equal(summary.schemaVersion, "npi.sparse-circuit.v1");
+  assert.equal(summary.valid, true);
+  assert.equal(summary.modelId, "toy-trained-attention");
+  assert.equal(summary.taskId, "synthetic-keyword-class");
+  assert.equal(summary.nodeCount, 3);
+  assert.equal(summary.edgeCount, 2);
+  assert.equal(summary.sampleCount, 256);
+  assert.ok(summary.lossDeltaAblatedVsCircuit > 4);
+  assert.equal(summary.status, "unverified-research-candidate");
+  assert.equal(summary.productionEligible, false);
+  assert.equal(summary.clinicalUsePermitted, false);
+  assert.equal(summary.mechanisticExplanationVerified, false);
+  assert.deepEqual(Object.keys(summary).sort(), [
+    "schemaVersion", "valid", "status", "modelId", "taskId",
+    "nodeCount", "edgeCount", "lossDeltaCircuitVsBaseline",
+    "lossDeltaAblatedVsCircuit", "sampleCount", "ablation",
+    "mechanisticExplanationVerified", "productionEligible",
+    "clinicalUsePermitted"
+  ].sort());
+});
+
+test("contradicted model rights, hidden private fields and altered hash cannot be smuggled into reports", () => {
+  const mutations = [
+    report => { report.assurance.rightsApproved = true; },
+    report => { report.assurance.productionEligible = true; },
+    report => { report.assurance.mechanisticExplanationVerified = true; },
+    report => { report.patient = {name:"PRIVATE-NEVER-OUTPUT"}; },
+    report => { report.candidateArtifact.sourceToken = "PRIVATE-NEVER-OUTPUT"; },
+    report => { report.model.weightsSha256 = "a".repeat(64); },
+    report => { report.evaluation.headAblatedLosses = [0, 0]; },
+    report => { report.candidateArtifact.provenance.implementationRevision = "sha256:" + "0".repeat(64); },
+    report => { report.candidateArtifact.provenance.runId = "unrelated-run"; },
+    report => { report.data.sha256 = "b".repeat(64); },
+    report => { report.evaluation.ablatedLoss = 0; },
+    report => { report.evaluation.keptHeadIndex = 13; },
+    report => { report.evaluation.keptHeadIndex = 0; report.candidateArtifact.circuit.nodes[1].id = "head-0"; report.candidateArtifact.circuit.edges[0].to = "head-0"; report.candidateArtifact.circuit.edges[1].from = "head-0"; },
+    report => { report.evaluation.calibrationHeadAblatedLosses = [3, 2]; },
+    report => { report.candidateArtifact.circuit.edges[0].from = "cls-readout"; },
+    report => { report.candidateArtifact.circuit.nodes[1].kind = "mlp-neuron"; },
+    report => { report.candidateArtifact.circuit.edges[0].weight = -1; },
+    report => { report.candidateArtifact.circuit.nodes.push({id:"extra-feature",kind:"residual-write"}); },
+    report => { report.candidateArtifact.evaluation.sampleCount = 1_000_001; },
+    report => { report.candidateArtifact.circuit.nodes[0].note = "PRIVATE-NEVER-OUTPUT"; }
+  ];
+  const original = fixture();
+  for (const mutate of mutations) {
+    const value = copy(original);
+    mutate(value);
+    assert.throws(() => inspectTrainedSparseTransformerReport(value), {
+      code: "npi_sparse_experiment_rejected"
+    });
+  }
+});
+
+test("CLI accepts a bounded offline report and emits no raw experiment data", () => {
+  const report = fixture();
+  const cli = new URL("./research/validate-trained-sparse-transformer-report.mjs", import.meta.url);
+  const processResult = spawnSync(process.execPath, [cli.pathname], {
+    input: JSON.stringify(report),
+    encoding: "utf8",
+    timeout: 20_000,
+    maxBuffer: 65_536
+  });
+  assert.equal(processResult.status, 0, processResult.stderr);
+  assert.deepEqual(JSON.parse(processResult.stdout), inspectTrainedSparseTransformerReport(report));
+  assert.doesNotMatch(processResult.stdout, /weightsSha256|patient|sourceToken|provenance|datasetSha256/);
+});
+
+test("CLI rejects oversized and forged requests without leaking their contents", () => {
+  const cli = new URL("./research/validate-trained-sparse-transformer-report.mjs", import.meta.url);
+  for (const report of [
+    JSON.stringify({...fixture(), patientName: "VERY-PRIVATE"}),
+    "Z".repeat(70_000)
+  ]) {
+    const p = spawnSync(process.execPath, [cli.pathname], {
+      input: report, encoding: "utf8", timeout: 20_000, maxBuffer: 65_536
+    });
+    assert.notEqual(p.status, 0);
+    assert.equal(p.stdout, "");
+    assert.match(p.stderr, /report rejected/i);
+    assert.doesNotMatch(p.stderr, /VERY-PRIVATE/);
+  }
+});
+
+test("CLI enforces raw UTF-8 byte bounds before decode, including exact boundary", () => {
+  const cli = new URL("./research/validate-trained-sparse-transformer-report.mjs", import.meta.url);
+  const valid = JSON.stringify(fixture());
+  const allowed = valid.padEnd(65_536, " ");
+  for (const [input, accepted] of [
+    [allowed, true],
+    [allowed + " ", false],
+    ["€".repeat(24_000), false],
+    [Buffer.concat([Buffer.from(valid.slice(0, 40)), Buffer.from([0xff]), Buffer.from(valid.slice(41))]), false]
+  ]) {
+    const result = spawnSync(process.execPath, [cli.pathname], {
+      input, encoding: "utf8", timeout: 20_000, maxBuffer: 65_536
+    });
+    if (accepted) {
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(JSON.parse(result.stdout).productionEligible, false);
+    } else {
+      assert.notEqual(result.status, 0);
+      assert.equal(result.stdout, "");
+      assert.match(result.stderr, /report rejected/i);
+    }
+  }
+});
+
+test("head-selection uses calibration rather than held-out examples", () => {
+  const script = readFileSync(
+    new URL("./research/tiny-sparse-transformer-experiment.py", import.meta.url),
+    "utf8"
+  );
+  assert.match(script, /head_drop_losses\.append\(metric\(pruned, calibration,/);
+  assert.doesNotMatch(script, /head_drop_losses\.append\(metric\(pruned, holdout,/);
+  const report = fixture();
+  assert.equal(report.evaluation.calibrationHeadAblatedLosses.length, 2);
+  assert.equal("headAblatedLosses" in report.evaluation, false);
+});
