@@ -546,3 +546,23 @@ test("malformed upstream trial and regulator identifiers do not become plausible
     assert.equal(result.canPublish,false,sourceId);
   }
 });
+
+test("source rights permit getters are single-read and malformed authority exceptions are masked", () => {
+  const ctx = {sourceId:"global-clinicaltrials",tenantId:"tenant1",domain:"clinical-trials",country:"GLOBAL",now:TEST_NOW};
+  const base=permit(ctx);
+  let receiptReads=0,expiryReads=0;
+  const dynamic=new Proxy(base,{get(target,key){
+    if(key==="receiptId")return ++receiptReads===1?base.receiptId:"receipt-swapped";
+    if(key==="validUntil")return ++expiryReads===1?base.validUntil:"2026-11-17T18:05:00.000Z";
+    return Reflect.get(target,key);
+  }});
+  const grant=assertInternalEvaluationPermit({...ctx,permit:dynamic});
+  assert.equal(grant.receiptId,base.receiptId);
+  assert.equal(grant.validUntil,base.validUntil);
+  assert.equal(receiptReads,1);
+  assert.equal(expiryReads,1);
+  const marker="SECRET_SOURCE_AUTHORITY_PRIVATE_KEY";
+  const hostile=new Proxy(base,{get(target,key){if(key==="rightsStatus")throw Error(marker);return Reflect.get(target,key)}});
+  assert.throws(()=>assertInternalEvaluationPermit({...ctx,permit:hostile}),
+    e=>e instanceof Error&&e.message==="Source rights are not approved"&&!e.message.includes(marker));
+});
