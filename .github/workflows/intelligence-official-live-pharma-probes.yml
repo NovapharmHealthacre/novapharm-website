@@ -6,6 +6,9 @@ on:
       - 'src/core/intelligence-official-live-pharma-probes.mjs'
       - 'scripts/test-intelligence-official-live-pharma-probes.mjs'
       - 'scripts/test-intelligence-official-live-pharma-server-gate.mjs'
+      - 'scripts/test-intelligence-official-live-pharma-quarantine.mjs'
+      - 'src/core/intelligence-source-snapshot-quarantine.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'server.mjs'
       - 'scripts/run-intelligence-official-live-pharma-probes.mjs'
       - 'docs/intelligence/official-live-pharma-probes-20261118.md'
@@ -36,9 +39,10 @@ jobs:
           node --check src/core/intelligence-official-live-pharma-probes.mjs
           node --check scripts/test-intelligence-official-live-pharma-probes.mjs
           node --check scripts/test-intelligence-official-live-pharma-server-gate.mjs
+          node --check scripts/test-intelligence-official-live-pharma-quarantine.mjs
           node --check server.mjs
           node --check scripts/run-intelligence-official-live-pharma-probes.mjs
-          node --test scripts/test-intelligence-official-live-pharma-probes.mjs scripts/test-intelligence-official-live-pharma-server-gate.mjs
+          node --test scripts/test-intelligence-official-live-pharma-probes.mjs scripts/test-intelligence-official-live-pharma-server-gate.mjs scripts/test-intelligence-official-live-pharma-quarantine.mjs
       - name: Read one real publisher record per source, not a customer release
         run: |
           mkdir -p artifacts/live-public-source-observations
