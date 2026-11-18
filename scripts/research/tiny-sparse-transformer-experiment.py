@@ -138,7 +138,11 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
     # Head 1/2 are the two inspectable attention components. Remove others,
     # then mean-ablate the retained head to measure its causal necessity.
     circuit_loss, circuit_accuracy = metric(pruned, holdout, head_mask=circuit_mask)
-    ablated_loss, ablated_accuracy = metric(pruned, holdout, head_mask=[0., 0.], head_mean=mean)
+    # Match the isolated subnetwork: removed heads remain zero, while the
+    # selected circuit head alone is replaced with its calibration mean.
+    circuit_mean = torch.zeros_like(mean)
+    circuit_mean[kept] = mean[kept]
+    ablated_loss, ablated_accuracy = metric(pruned, holdout, head_mask=[0., 0.], head_mean=circuit_mean)
     params = int(sum(p.numel() for p in pruned.parameters()))
     nonzero = int(sum(torch.count_nonzero(p).item() for p in pruned.parameters()))
     digest = hashlib.sha256()
