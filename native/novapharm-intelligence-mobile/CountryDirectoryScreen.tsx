@@ -27,6 +27,14 @@ function CountryCard({ country, wide }: { country: Country; wide: boolean }) {
       <Text style={styles.description}>{country.candidateSourceCount
         ? country.candidateSourceCount + " publisher reference(s). Licensing, ingestion and customer publication not approved."
         : "No country-level pharmaceutical dataset identified or admitted."}</Text>
+      {country.publisherResearchLead && (
+        <View style={styles.source}>
+          <Text style={styles.state}>Official publisher research lead · Not integrated</Text>
+          <Text style={styles.publisher}>{country.publisherResearchLead.publisherName}</Text>
+          <Text style={styles.sourceText}>{country.publisherResearchLead.leadType} · Rights not reviewed · No live medicine API</Text>
+          <Text style={styles.sourceText}>{country.publisherResearchLead.caveat}</Text>
+        </View>
+      )}
       {country.candidateSources.length > 0 && (
         <>
           <Pressable style={styles.action} accessibilityRole="button"
@@ -60,6 +68,8 @@ export function CountryDirectoryScreen() {
       if (filter === "research-only" && country.candidateSourceCount !== 0) return false;
       return !term || [
         country.country, country.iso2, country.region,
+        country.publisherResearchLead?.publisherName ?? "",
+        country.publisherResearchLead?.leadType ?? "",
         ...country.candidateSources.map((source) => source.provider + " " + source.domains)
       ].join(" ").normalize("NFKC").toLocaleLowerCase().includes(term);
     });
