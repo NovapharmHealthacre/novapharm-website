@@ -40,7 +40,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <p className={styles.eyebrow}>NOVAPHARM INTELLIGENCE / NOVA ML</p>
       <h1 id="nova-ml-workspace-heading">{module.title}</h1>
       <p className={styles.lead}>{module.summary}</p>
-      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. Native execution requires a separately approved Apple application and deployment.</p>
+      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. {isModelMicroscope ? "Any feature inspection additionally requires an independently verified private model-artifact service and explicit inspection rights." : "Native execution requires a separately approved Apple application and deployment."}</p>
       <dl className={styles.facts}>
         <div><dt>{isModelMicroscope ? "Research methodology" : "Apple integration"}</dt><dd>{module.appleTechnology}</dd></div>
         <div><dt>Runtime</dt><dd>{module.platform}</dd></div>
