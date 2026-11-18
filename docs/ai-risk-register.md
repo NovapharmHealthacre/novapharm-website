@@ -23,7 +23,7 @@
 
 This research is intentionally **not** an approved model or deployable inference route. The central model/use-case/SBOM registers identify its status and source. Time-dependent pharmaceutical feature selection must pass source-rights, leakage-safe holdouts, subgroup, drift and safety checks before any model proposal. Exact-zero weights alone do not establish interpretability, lower resource use or clinical validity.
 
-| False sparse-model assurance | Nova L0 hard-concrete research candidates | Source-only adapters, exact-zero gate tests, explicit no-model/no-release register and model feature-schema denial tests | Real datasets may carry leakage or bias; sparsity does not prove causal explanation, calibration or hardware acceleration | Model Risk, Quality, Security and data owners |
+**Additional risk — false sparse-model assurance:** Exact-zero gating and synthetic numerical acceptance do not prove model accuracy, explainability, calibrated uncertainty, lower latency, lawful source use, or production eligibility. The research remains source-only and must be reviewed by Model Risk, Quality, Security and data owners.
 
 ## Stop conditions
 
