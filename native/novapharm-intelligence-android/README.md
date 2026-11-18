@@ -1,7 +1,15 @@
-# NovaPharm Intelligence Android visual retrieval candidate
+# NovaPharm Intelligence Android — CLIP visual research adapter
 
-This is Kotlin **source only**, not an Android application, Gradle project, APK, Play Store build or active production integration.
+**Status: source candidate only; disabled by default.** This directory now contains a Gradle **Kotlin/JVM testable library** and fail-closed unit tests. It does **not** contain an Android application module, APK, manifest, signed package, Play Store release, approved identity bridge, authorised model, or production server.
 
-`NovaClipVisualSearch.kt` calls the existing private Portal BFF only after a trusted app-managed authenticated session has been established. It includes no model weights, no camera permission, no inference credentials and no analytics or persistence. The calling application must provide secure authentication, CSRF/session lifecycle, transport security, coroutine dispatching, cancellation, UI, accessible attribution, revoked-session handling and real-device tests.
+The `NovaClipVisualSearch.kt` adapter uses `https://portal.novapharmhealthcare.com/gateway/v1/intelligence/visual/search` exclusively and accepts only signed-app-managed sessions from the existing protected portal architecture. It denies redirects, limits input and response sizes, validates request/cookie material and returns unverified image candidates only.
 
-The API is disabled by default, limited to approved public product-image research and requires human verification. Do not pass patient photos, prescriptions or supplier/private records. Read `services/clip/README.md` and `docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md` before considering a private research pilot.
+To test the Kotlin code locally with a Gradle 8.14.3 installation and JDK 17:
+
+```sh
+gradle -p native/novapharm-intelligence-android test --no-daemon
+```
+
+The GitHub `Intelligence CLIP research contract` job runs this build, separately from native Apple package tests. JVM compilation does **not** prove that Android signing, Play distribution, device TLS policies, live Cognito identity, CSRF refresh or secure cookie storage are complete. A real app must establish those lifecycle controls before passing any user session to the adapter.
+
+No camera permission, model weights, patient/medical imagery, private supplier files, background capture or third-party model host is permitted. The model server remains OFF unless a separate, independently verified and legally cleared private research pilot is approved. See `services/clip/README.md` and `docs/intelligence/visual-search-cross-platform-contract.json`.
