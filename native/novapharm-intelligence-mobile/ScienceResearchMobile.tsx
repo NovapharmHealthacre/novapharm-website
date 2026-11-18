@@ -50,6 +50,8 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         <Text style={styles.description}>{entry.transferablePattern}</Text>
         <Text style={styles.smallHeading}>Limits</Text>
         <Text style={styles.description}>{entry.limitations}</Text>
+        <Text style={styles.smallHeading}>Independent research verification</Text>
+        <Text style={styles.description}>{entry.validationTrack.replaceAll("_", " ")} track · Publisher report not independently verified · Retractions/corrections: {entry.retractionCorrectionStatus.replaceAll("_", " ")}</Text>
         <Pressable accessibilityRole="link" accessibilityLabel={`Read original OpenAI source: ${entry.title}`}
           style={styles.sourceLink} onPress={() => { void Linking.openURL(entry.sourceUrl); }}>
           <Text style={styles.sourceLinkLabel}>Read original source</Text>
