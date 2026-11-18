@@ -122,7 +122,7 @@ export function inspectSparseCircuitCandidate(artifact) {
     !validIdentifier(artifact.provenance.runId) ||
     !validIdentifier(artifact.provenance.implementationRevision) ||
     typeof artifact.provenance.evaluatedAt !== "string" ||
-    !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$/.test(artifact.provenance.evaluatedAt) ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(artifact.provenance.evaluatedAt) ||
     !Number.isFinite(Date.parse(artifact.provenance.evaluatedAt))
   )) errors.push("provenance.invalid_metadata");
 
