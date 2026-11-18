@@ -18,3 +18,13 @@ See [APP_PRIVACY_CHECKLIST.md](APP_PRIVACY_CHECKLIST.md) for native permission, 
 **Do not ship these candidates directly.** The trusted app still needs signed app configuration, revocable session binding, privacy/rights attestation and Xcode/device compilation and tests. The model training permit and source approval inputs in the examples must come from trusted audited application services, not client-request booleans. Do not store an input, transcript or output unless its purpose, permissions and retention are separately approved.
 
 Use [Apple Create ML](https://developer.apple.com/documentation/createml), [Core ML](https://developer.apple.com/documentation/coreml), and [Foundation Models](https://developer.apple.com/documentation/foundationmodels) in the signed application. Apple Intelligence remains an Apple service; Nova ML is NovaPharm's own product architecture.
+
+## L0 hard-concrete sparse-model research
+
+`NovaL0ResearchMath.swift` is a research-only numeric reference implementing the ICLR 2018 hard-concrete gate equation and an offline, bounded `NovaL0ResearchCandidate` scorer. It enforces the common `nova-l0-sparse-linear-candidate-v1` contract and rejects any candidate with production/customer flags enabled, malformed feature names, mismatched schemas or non-finite values. The XCTest suite uses synthetic examples.
+
+It does **not** bundle a model, perform training, authorise medicine inputs or invoke Core ML. In a future signed iOS app, a separately reviewed compiled model and signed native release manifest must still pass `NovaCoreMLRuntime` gates; the research scorer is not a substitute. See `docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md` for the shared API/Android parity and independent release requirements.
+
+## Alignment research display receipt
+
+The additional `NovaAlignmentResearchReceipt.swift` exposes only an offline negative-claim receipt for research review; it cannot grant independent ground-truth, data rights, customer visibility, clinical use, model weights or production activation. The source-only tests verify rejection of forged release claims. See `docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md`.
