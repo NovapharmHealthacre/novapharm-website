@@ -281,7 +281,7 @@ test("trusted source authorizer, upstream transport and clock failures suppress 
     await assert.rejects(
       reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }),
       (error) => error instanceof Error && !error.message.includes(secret) &&
-        /not approved|Upstream unavailable/.test(error.message)
+        /Source rights (authorizer|trusted clock) unavailable|Upstream unavailable/.test(error.message)
     );
   }
 });
@@ -454,7 +454,7 @@ test("expanded nine-source gateway refuses a clock rollback and any source-right
   });
   await assert.rejects(unavailable.read({
     sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
-  }),err=>err instanceof Error && err.message==="Source rights are not approved" &&
+  }),err=>err instanceof Error && err.message==="Source rights authorizer unavailable" &&
     !err.message.includes(secret));
   assert.equal(count,2);
 
