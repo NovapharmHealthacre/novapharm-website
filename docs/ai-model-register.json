@@ -17,7 +17,9 @@
       "assetBytes": 3259,
       "dimensions": 384,
       "quantisation": "Sparse normalised decimal vectors; no neural weights or WASM",
-      "language": ["en-GB"],
+      "language": [
+        "en-GB"
+      ],
       "remoteModelLoading": false,
       "runtime": "Browser Web Worker",
       "redistributionRight": "Repository and generated asset may be distributed as part of NovaPharm's website",
@@ -58,9 +60,43 @@
       "redistributionRight": "No model redistribution is authorised",
       "modificationRight": "Adapter may be modified; model rights are model-specific",
       "attributionRequirement": "Model-specific",
-      "restrictions": ["Loopback HTTP only", "Disabled in NODE_ENV=production", "No committed model files", "No prompt-body logs"],
+      "restrictions": [
+        "Loopback HTTP only",
+        "Disabled in NODE_ENV=production",
+        "No committed model files",
+        "No prompt-body logs"
+      ],
       "securityStatus": "Development adapter implemented; activation requires owner decision and model review",
       "updatePolicy": "Pin and review any future local model before use"
+    },
+    {
+      "id": "novapharm-l0-hard-concrete-research-v0",
+      "name": "Nova L0 Hard-Concrete Sparsity Research",
+      "revision": "0.1.0-research",
+      "task": "Research-only differentiable sparsification and feature selection for non-clinical pharmaceutical analytics; no production forecast",
+      "implementation": "First-party PyTorch trainer reference, shared TypeScript offline scorer, Swift and Kotlin hard-concrete math",
+      "softwareLicence": "NovaPharm-owned source; PyTorch is optional for offline experiments and requires dependency/SBOM review",
+      "modelLicence": "Not applicable: no weights, trained model, model package or artefact has been approved",
+      "commercialUseStatus": "No model is approved for customer use or commercial inference",
+      "source": "tooling/python/nova_l0_sparsity.py",
+      "relatedSources": [
+        "packages/medicines-intelligence/src/l0-sparsity.ts",
+        "native/novapharm-intelligence-apple/NovaL0ResearchMath.swift",
+        "native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt"
+      ],
+      "remoteModelLoading": false,
+      "bundledModel": false,
+      "runtime": "Source-only research; no authenticated or public inference endpoint",
+      "securityStatus": "Experimental; feature inputs, data rights, independent validation, signed manifest and device approval are absent",
+      "customerVisible": false,
+      "productionApproved": false,
+      "restrictions": [
+        "No patient data, clinical decision or autonomous stock release",
+        "No rights or data acquisition implied",
+        "No customer prediction, AWS deployment, Core ML, LiteRT or model activation",
+        "Do not infer performance or interpretability from expected active feature count"
+      ],
+      "updatePolicy": "Train and evaluate against independently approved dense and simple baselines, register signed model + preprocessing artifact, verify rights and release gates, then plan a separate authorized deployment"
     }
   ]
 }

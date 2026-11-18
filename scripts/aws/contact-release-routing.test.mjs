@@ -216,6 +216,49 @@ test("sparse-circuit PR #816 source-only merge skips public AWS contact dispatch
   }
 });
 
+test("L0 and alignment research-only source merges cannot accidentally publish AWS or Pages", () => {
+  const researchSources = [
+    ".github/workflows/intelligence-global-mobile-contracts.yml",
+    ".github/workflows/nova-ml-alignment-research.yml",
+    ".github/workflows/nova-ml-l0-sparsity.yml",
+    "docs/ai-dependency-and-model-sbom.json",
+    "docs/ai-model-register.json",
+    "docs/ai-use-case-register.json",
+    "docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md",
+    "docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/README.md",
+    "native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs",
+    "native/novapharm-intelligence-mobile/tsconfig.json",
+    "packages/medicines-intelligence/src/l0-sparsity.ts",
+    "packages/medicines-intelligence/test/l0-sparsity.test.ts",
+    "scripts/test-nova-alignment-governance.mjs",
+    "scripts/test-nova-alignment-research.mjs",
+    "scripts/test-nova-l0-governance.mjs",
+    "src/core/ai/nova-alignment-research.mjs",
+    "tooling/python/nova_l0_sparsity.py",
+    "tooling/python/test_nova_l0_sparsity.py",
+  ];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const caseLine = source.split("\n").find((line) =>
+      line.includes("apps/portal/*|.github/workflows/browser-acceptance.yml|"));
+    assert.ok(caseLine, "no private classifier in " + workflow);
+    const cases = caseLine.trim().replace(/\)$/, "").split("|");
+    for (const path of researchSources) {
+      assert.ok(cases.includes(path), workflow + " would publish research-only change " + path);
+    }
+    // A future change to the shared exports barrel must fail closed to the public-publisher path.
+    assert.ok(source.includes("packages/medicines-intelligence/src/index.ts)"));
+    assert.ok(source.includes('export_diff=$(git diff --unified=0 "$GITHUB_SHA^1" "$GITHUB_SHA"'));
+    assert.ok(source.includes("if [ \"$export_diff\" = '+export * from \"./l0-sparsity.ts\";' ]; then"));
+    assert.ok(source.includes("private_only=false"));
+    assert.ok(source.includes("found_ml=true"));
+    assert.ok(!cases.includes("packages/medicines-intelligence/src/index.ts"));
+    assert.ok(!cases.includes("packages/medicines-intelligence/*"));
+  }
+});
+
 test("global secondary-source-only merges are excluded from AWS contact dispatch and public publisher", () => {
   // These exact files appeared in the source-only main merge f1546b7.
   // Both the ordinary dispatcher and the separately triggered publisher
