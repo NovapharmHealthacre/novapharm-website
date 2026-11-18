@@ -66,7 +66,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         {syntheticExample ? <figure className={styles.syntheticResult}>
           <figcaption>First-party synthetic feature-maximization result</figcaption>
           <div className={styles.syntheticGrid} role="img" aria-label="Synthetic grayscale four by four input feature grid">
-            {syntheticExample.optimizedGrid.flat().map((value, index) => <span key={syntheticPixelIds[index]} className={styles.syntheticPixel} style={{ backgroundColor: `rgba(29, 29, 31, ${value})` }} />)}
+            {syntheticPixelIds.map((pixelId, index) => <span key={pixelId} className={styles.syntheticPixel} style={{ backgroundColor: `rgba(29, 29, 31, ${syntheticExample.optimizedGrid.flat()[index] ?? 0})` }} />)}
           </div>
           <p>Initial activation: {syntheticExample.initialActivation} · Maximized activation: {syntheticExample.finalActivation}</p>
           <p><strong>Synthetic only.</strong> No patient data, medicine prediction, model download or external request.</p>
