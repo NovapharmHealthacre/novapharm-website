@@ -57,3 +57,43 @@ object NovaL0ResearchMath {
         return min(1.0, max(0.0, sigmoid((noise + logAlpha) / temperature) * (zeta - gamma) + gamma))
     }
 }
+
+/**
+ * Explicitly offline candidate; callers may not treat this class as a signed
+ * model manifest or as permission to expose predictions to customers.
+ */
+data class NovaL0ResearchCandidate(
+    val format: String,
+    val releaseStatus: String,
+    val productionApproved: Boolean,
+    val customerVisible: Boolean,
+    val featureNames: List<String>,
+    val coefficients: List<Double>,
+    val bias: Double,
+    val nonZeroCount: Int
+) {
+    fun score(features: Map<String, Double>): Double {
+        require(format == "nova-l0-sparse-linear-candidate-v1" &&
+            releaseStatus == "research-only" && !productionApproved && !customerVisible) {
+            "Research candidate metadata must remain non-production."
+        }
+        require(featureNames.isNotEmpty() && featureNames.size <= 4096 &&
+            coefficients.size == featureNames.size &&
+            featureNames.size == featureNames.toSet().size &&
+            featureNames.all { it.matches(Regex("^[a-z][a-z0-9_]{0,63}$")) } &&
+            features.keys == featureNames.toSet() &&
+            nonZeroCount == coefficients.count { it != 0.0 }) {
+            "Research candidate feature schema is invalid."
+        }
+        require(bias.isFinite() && coefficients.all { it.isFinite() } &&
+            features.values.all { it.isFinite() }) {
+            "Research candidate numeric data must be finite."
+        }
+        var result = bias
+        for (index in featureNames.indices) {
+            result += coefficients[index] * features.getValue(featureNames[index])
+            require(result.isFinite()) { "Research candidate score overflow." }
+        }
+        return result
+    }
+}
