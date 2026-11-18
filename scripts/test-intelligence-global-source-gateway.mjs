@@ -220,3 +220,43 @@ test("Polish NFZ keeps active-substance codes and does not manufacture price or 
   assert.equal(result.dataState, "unreconciled_upstream_preview");
   assert.throws(() => normaliseGovSourceResult(plan, {wrong:[]}), /Unexpected source schema/);
 });
+
+test("invalid trusted clocks and noncanonical permit timestamps reject before any outgoing request", async () => {
+  let outgoing = 0;
+  for (const clock of [NaN, Infinity, -Infinity, undefined, "2026-11-17T17:00:00.000Z"]) {
+    const reader = createGovSourceReader({
+      authorize: async context => permit(context),
+      now: () => clock,
+      transport: async () => { outgoing++; throw Error("transport must never run"); }
+    });
+    await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /not approved/);
+  }
+  for (const changes of [
+    { issuedAt: "2026-11-17T16:00:00+00:00" },
+    { validUntil: "2026-11-17T18:00:00+00:00" },
+    { issuedAt: "2026-11-31T16:00:00.000Z" },
+    { issuedAt: 1234 }
+  ]) {
+    const reader = createGovSourceReader({
+      authorize: async context => permit({ ...context, ...changes }),
+      now: () => TEST_NOW,
+      transport: async () => { outgoing++; throw Error("transport must never run"); }
+    });
+    await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /not approved/);
+  }
+  assert.equal(outgoing, 0);
+});
+
+test("a permit expiring during fetch cannot produce an evaluation envelope", async () => {
+  let calls = 0, clockReads = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => permit({ ...context, validUntil: "2026-11-17T17:01:00.000Z" }),
+    now: () => ++clockReads === 1 ? TEST_NOW : TEST_NOW + 61_000,
+    transport: async () => {
+      calls++;
+      return new Response(JSON.stringify({ studies: [{ protocolSection: { identificationModule: { nctId: "NCT00000001", briefTitle: "Synthetic" } } }] }), { headers: { "content-type": "application/json" } });
+    }
+  });
+  await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /Invalid evaluation envelope/);
+  assert.equal(calls, 1);
+});
