@@ -194,9 +194,16 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
         signal: AbortSignal.timeout(TIMEOUT_MS)
       });
       const raw = await readJsonBounded(response);
+      const capturedAt = now();
+      // Recheck the trusted clock and previously approved grant after the
+      // network call. An evaluation must not return data on an expired grant.
+      if (!Number.isSafeInteger(capturedAt) || capturedAt < 0 ||
+          capturedAt >= Date.parse(grant.validUntil)) {
+        throw new Error("Source rights are no longer approved");
+      }
       const normalized = normaliseGovSourceResult(plan, raw);
       return buildEvaluationEnvelope({
-        plan, normalized, raw, grant, capturedAt: now()
+        plan, normalized, raw, grant, capturedAt
       });
     }
   });
