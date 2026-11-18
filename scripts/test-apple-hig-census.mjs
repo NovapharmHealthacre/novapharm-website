@@ -32,6 +32,17 @@ test('exact same-domain noindex redirect with matching fallback passes', () => {
   assert.equal(r.status, 0);
   assert.equal(r.report.results[0].kind, 'legacy-redirect');
 });
+test('redirect with accessible heading and main fallback also passes', () => {
+  const semantic = redirect.replace(
+    '<body><p><a href="/services/">Continue to Services</a></p></body>',
+    '<body><main><h1>Services</h1><p><a href="/services/">Continue to Services</a></p></main></body>'
+  );
+  const r = verify(semantic);
+  assert.equal(r.status, 0);
+  assert.equal(r.report.results[0].kind, 'legacy-redirect');
+  assert.equal(r.report.results[0].h1, 1);
+  assert.equal(r.report.results[0].main, 1);
+});
 test('external redirect fails closed', () => {
   const r = verify(redirect.replace('0; url=/services/', '0; url=https://example.com/'));
   assert.notEqual(r.status, 0);
