@@ -141,6 +141,9 @@ export function buildCountryReleaseLedger(registry) {
       route,
       adapterContractId: merged ? expectedAdapter : null,
       adapterContractMerged: merged,
+      // Engineering milestone proxy: registry=20%, merged bounded adapter=+20%.
+      // No rights, data or deployment is inferred from this percentage.
+      engineeringMilestonePercent: merged ? 40 : 20,
       currentStatus: merged ? "SOURCE_ONLY_ADAPTER_NO_DATA" : "DISCOVERY_CANDIDATE_NO_DATA",
       sourceRightsVerified: false,
       liveConnectionVerified: false,
@@ -178,6 +181,8 @@ export function buildCountryReleaseLedger(registry) {
     sourceCandidateKeys: Object.freeze(sources.map(x => x.candidateKey)),
     sourceProviders: Object.freeze(sources.map(x => x.provider)),
     codedAdapterCandidateCount: sources.filter(x => x.adapterContractMerged).length,
+    engineeringMilestonePercent: Number((sources.reduce((sum, x) =>
+      sum + x.engineeringMilestonePercent, 0) / sources.length).toFixed(2)),
     sourceRightsVerified: false,
     liveConnectionsVerified: 0,
     acceptedDatasets: 0,
@@ -199,6 +204,8 @@ export function buildCountryReleaseLedger(registry) {
     sourceCandidateRegistrationPercent: 100,
     sourceOnlyAdapterCount: mergedCount,
     sourceOnlyAdapterCoveragePercent: Number((100 * mergedCount / sourceRows.length).toFixed(2)),
+    engineeringMilestonePercent: Number((sourceRows.reduce((sum,x) =>
+      sum + x.engineeringMilestonePercent, 0) / sourceRows.length).toFixed(2)),
     verifiedLicensedSources: 0,
     verifiedIngestedSources: 0,
     verifiedProductionSources: 0,
