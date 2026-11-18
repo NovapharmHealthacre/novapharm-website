@@ -26,3 +26,14 @@ Authority research directories (not grants, endpoints or verified country feeds)
 6. Admit a regulated snapshot only after audited rights and acceptance; certify protected staging, security, data quality, monitoring and rollback before customer release.
 
 **Release classification:** This proposal is non-customer and private-only. No workflow may deploy or publish based on these research-file changes. The 101-country *scope* target is not a 101-country *integration completion* claim.
+
+## Country-by-country status output (no source publication)
+
+This draft now derives **101 explicit national release rows** from two separate, pinned inputs: the original 77-country/101-source discovery register and the 24-country research-only proposal. No records are fabricated for countries without verified datasets.
+
+- `src/core/intelligence-country-101-proposed-ledger.mjs`: immutable, fail-closed country status, native ISO identity, zero approval and customer-live flags.
+- `scripts/render-intelligence-country-101-proposed-ledger.mjs --json`: auditable national release readiness in machine-readable form.
+- `scripts/render-intelligence-country-101-proposed-ledger.mjs --markdown`: owner-facing 101-country table with status and next evidence gate.
+- `scripts/test-intelligence-country-101-proposed-ledger.mjs`: negative tests reject fictional national rights, fabricated source entries, altered ISO/region/directory claims and accidental production classification.
+
+The dedicated pull-request audit must execute both the registry/release ledger and the AWS/public deployment-routing regression suite on the same exact GitHub commit. **New geography is not new regulatory source ingestion:** the 24 additional countries have 0 registered national datasets, 0 coded adapters and 0 verified customer-live coverage. The original 77-country ledger remains the canonical statement of existing 101 candidate source references, including the two supranational/global groups.
