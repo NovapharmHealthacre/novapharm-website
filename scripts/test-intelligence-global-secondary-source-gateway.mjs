@@ -172,3 +172,47 @@ test("invalid server clocks and malformed upstream media/stream fail closed", as
     }));
   }
 });
+
+
+test("revoked, changed or unavailable source rights after transport block preview", async () => {
+  const payload = { success: true, result: { records: [
+    { LicenceNo: "SIN00001P", Productname: "Test medicinal product" }
+  ] } };
+  const secondDecisions = [
+    (ctx) => authGrant(ctx, { revokedAt: "2026-11-18T07:00:00Z" }),
+    (ctx) => authGrant(ctx, { receiptId: "different-rights-receipt" }),
+    (ctx) => authGrant(ctx, { rightsVersion: "rights-v2" }),
+    (ctx) => authGrant(ctx, { licenseId: "different-licence" }),
+    (ctx) => authGrant(ctx, { tenantId: "other-tenant" }),
+    () => { throw new Error("backend rights service unavailable"); }
+  ];
+  for (const second of secondDecisions) {
+    let authorizations = 0, outgoing = 0;
+    const reader = createSecondarySourceReader({
+      authorize: async (ctx) => (++authorizations === 1 ? authGrant(ctx) : second(ctx)),
+      transport: async () => { outgoing++; return json(payload); },
+      now: () => NOW
+    });
+    await assert.rejects(
+      reader.read({ sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA" }),
+      /Source rights (revoked|changed) during upstream request/
+    );
+    assert.equal(authorizations, 2);
+    assert.equal(outgoing, 1);
+  }
+});
+
+test("invalid trusted clock after completed fetch blocks result before delivery", async () => {
+  let calls = 0;
+  const reader = createSecondarySourceReader({
+    authorize: async (ctx) => authGrant(ctx),
+    transport: async () => json({success: true, result: {records: [
+      { LicenceNo: "SIN00001P", Productname: "Test" }
+    ]}}),
+    now: () => (++calls === 3 ? NaN : NOW)
+  });
+  await assert.rejects(
+    reader.read({ sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA" }),
+    /Source rights revoked during upstream request/
+  );
+});
