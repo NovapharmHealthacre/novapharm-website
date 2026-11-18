@@ -71,8 +71,11 @@ export function verifySignedMicroscopeEvidence({ envelope, expected, trustedPubl
   const signature = Buffer.from(envelope.signature,"base64url");
   if (signature.byteLength !== 64 || signature.toString("base64url") !== envelope.signature) deny();
   try {
-    const publicKey = createPublicKey(key);
-    if (publicKey.asymmetricKeyType !== "ed25519" ||
+    // Node rejects wrapping an already-public KeyObject in createPublicKey().
+    // An operator must configure a public key only; never accept private keys.
+    if (key?.type === "private") deny();
+    const publicKey = key?.type === "public" ? key : createPublicKey(key);
+    if (publicKey.type !== "public" || publicKey.asymmetricKeyType !== "ed25519" ||
         !verifySignature(null,normalizedBytes(p),publicKey,signature)) deny();
   } catch { deny(); }
   // Return precisely the fields consumed by the independent verifier.
