@@ -48,3 +48,17 @@ test("no source candidate is silently represented as verified market facts", () 
   const app = read("native/novapharm-intelligence-mobile/App.tsx");
   assert.doesNotMatch(app, /sourceRegister\.sources\.map\(.*fetch/);
 });
+
+test("web and iOS/Android private previews expose one non-live governed model microscope", () => {
+  const modules = read("apps/portal/data/nova-ml-modules.ts");
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  const routes = read("apps/portal/data/routes.ts");
+  assert.match(modules, /slug: "nova-model-microscope"/);
+  assert.match(routes, /novaMlWorkspaceSlugs/);
+  assert.match(web, /No approved inspection artifacts available/);
+  assert.match(mobile, /Model Microscope/);
+  assert.match(mobile, /screen === "inspect"/);
+  assert.match(mobile, /No approved model inspections/);
+  assert.doesNotMatch(mobile, /fetch\(|AsyncStorage|SecureStore|access_token/);
+});
