@@ -10,6 +10,7 @@
  * medicine is the cross-workspace integration prerequisite in issue #497.
  */
 import { capabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import { assessMultimodalWorkspacePolicy } from "./intelligence-multimodal-workspace-policy.mjs";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json" with { type: "json" };
 import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
@@ -152,11 +153,14 @@ export function assessIntelligence22Workspaces({
           .map(item => item.validationTrack))]),
       scientificDossierRequiredStages: Object.freeze([...scienceMethods.claimIntegrityPolicy.requiredStages]),
       scientificDossierIndependentEvidenceAccepted: false,
+
       missingChecks: Object.freeze(blockers),
       // These are IMPLEMENTATION states, not claims of released function.
       implementationState: blockers.length
         ? (workspace.state === "existing-read-only" ? "repository_read_only_foundation" : "dependency_gated")
         : "candidate_requires_independent_runtime_acceptance",
+      // Shared multimodal decision boundary, not permission to enable image inference.
+      multimodalResearchPolicy: assessMultimodalWorkspacePolicy(workspace.slug),
       independentRuntimeAcceptanceVerified: false,
       productionAccepted: false,
       customerAccessible: false,

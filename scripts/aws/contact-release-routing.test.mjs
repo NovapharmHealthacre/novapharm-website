@@ -119,6 +119,20 @@ test("all 101-source onboarding and rights-only files are private and cannot dis
   assert.match(publish, /release_needed=false/);
 });
 
+test("private-only corporate live CI trigger repairs cannot dispatch public AWS releases", () => {
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  for (const path of [
+    ".github/workflows/corporate-live-full-acceptance.yml",
+    "scripts/test-corporate-live-publication-gate.mjs"
+  ]) {
+    assert.ok(dispatch.includes(path), "dispatcher guard missing " + path);
+    assert.ok(publish.includes(path), "publisher guard missing " + path);
+  }
+  assert.match(dispatch, /private_only=true/);
+  assert.match(publish, /release_needed=false/);
+});
+
 
 test("Science research-only files must not trigger AWS or public Pages publication", () => {
   const sciencePaths = [

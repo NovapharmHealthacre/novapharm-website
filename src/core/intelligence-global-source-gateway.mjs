@@ -257,15 +257,19 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         throw new Error("Invalid tenant context");
       }
+      // Only the trusted backend can supply a scope-bound rights receipt.
+      // Never expose upstream authorization failure details or credentials.
+      const rightsScope = Object.freeze({
+        sourceId, tenantId, purpose: "internal-evaluation",
+        domain: plan.domain, country: plan.country
+      });
       let permission;
-      try {
-        permission = await authorize({
-          sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
-        });
-      } catch { throw new Error("Source rights are not approved"); }
+      try { permission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
+      // The clock must be sampled after asynchronous authorization.
       let grantedAt;
       try { grantedAt = now(); }
-      catch { throw new Error("Source rights are not approved"); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       const grant = assertInternalEvaluationPermit({
         permit: permission, sourceId, tenantId,
         domain: plan.domain, country: plan.country, now: grantedAt
@@ -286,7 +290,7 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       catch { throw new Error("Upstream unavailable"); }
       let capturedAt;
       try { capturedAt = now(); }
-      catch { throw new Error("Invalid evaluation envelope"); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       // The source rights clock must remain valid and monotonic for the entire
       // request. The initial receipt alone is not proof against revocation.
       if (!Number.isSafeInteger(capturedAt) || capturedAt < grantedAt ||
@@ -294,12 +298,8 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
         throw new Error("Invalid evaluation envelope");
       }
       let postPermission;
-      try {
-        postPermission = await authorize({
-          sourceId, tenantId, purpose: "internal-evaluation",
-          domain: plan.domain, country: plan.country
-        });
-      } catch { throw new Error("Source rights are not approved"); }
+      try { postPermission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
       let refreshedGrant;
       try {
         refreshedGrant = assertInternalEvaluationPermit({
@@ -317,7 +317,7 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       // evidence preview with a clock sampled before that service completed.
       let finalAt;
       try { finalAt = now(); }
-      catch { throw new Error("Invalid evaluation envelope"); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       if (!Number.isSafeInteger(finalAt) || finalAt < capturedAt ||
           finalAt >= Date.parse(refreshedGrant.validUntil)) {
         throw new Error("Invalid evaluation envelope");
