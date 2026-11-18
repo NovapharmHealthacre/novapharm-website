@@ -11,6 +11,12 @@ on:
       - "native/novapharm-intelligence-apple/**"
       - "native/novapharm-intelligence-android/**"
       - "docs/architecture/deep-learning-infrastructure-20261118.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-risk-register.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - "scripts/aws/contact-release-routing.test.mjs"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
       - ".github/workflows/nova-ml-infrastructure-contract.yml"
   push:
     branches: [main]
@@ -22,6 +28,13 @@ on:
       - "apps/portal/data/nova-ml-infrastructure.ts"
       - "native/novapharm-intelligence-apple/**"
       - "native/novapharm-intelligence-android/**"
+      - "docs/architecture/deep-learning-infrastructure-20261118.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-risk-register.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - "scripts/aws/contact-release-routing.test.mjs"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
       - ".github/workflows/nova-ml-infrastructure-contract.yml"
 
 permissions:
