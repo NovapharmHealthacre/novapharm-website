@@ -30,3 +30,9 @@
 6. No new infrastructure spend or public subscriptions without separate approval.
 
 This task improves Australia source contract readiness but does NOT raise the verified number of production-integrated countries.
+
+## New offline publisher-format CSV candidate — 18 Nov 2026
+
+The PBS publisher explicitly supports CSV as well as JSON schedule data. The guarded evaluator now supports either `application/json` **synthetic candidate shape** or `text/csv` **candidate publisher-format schedule columns**. CSV additionally requires named `schedule_code`, `effective_date`, `publication_status`, and `revision_number` headers, retaining the original schedule code (including leading zeros) and revision text. It enforces a 512 KiB source limit, strict quote parsing, 1,000 rows maximum, no embargo/draft, and denies invalid dates, duplicate versions, malformed headers, unexpected columns/row width and expired/rotated authorisation. Both formats must pass the same independent pre/post internal-only rights verification; no public publisher call is made and neither format is clinically/commercially publishable.
+
+The CSV field names are informed by the PBS schedules data dictionary and official publisher statement that CSV data can be downloaded; no real file has been retrieved or approved as a contract fixture. The JSON `data` wrapper remains **unverified** and may need replacement after a permitted real snapshot. This is not a certified publisher endpoint or complete ingestion.
