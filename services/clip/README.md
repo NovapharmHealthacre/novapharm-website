@@ -32,6 +32,8 @@ NPI_CLIP_INDEX_SHA256=<exact 64-char index sha256>
 
 Never commit actual values, tokens, model weights, customer data or catalogue images. Install audited dependencies in an isolated environment; `requirements.txt` points at an immutable upstream CLIP source revision, but Torch's platform-specific wheel plus transitive packages must also be locked and audited before execution. Model weights must be separately acquired and their licence, provenance and redistribution rights reviewed. `clip.load(path)` must receive a LOCAL file, never a model name that triggers a download.
 
+Create a **separately approved** local manifest with each `assetId`, `title`, `sourceUrl`, `localPath`, `imageSha256`, `rightsReference`, `rightsApproved: true`, `publicAssetOnly: true`, `rightsStatus: "active"`, and `rightsExpiryDate: "YYYY-MM-DD"`. Rights must be authorised by Legal/Quality independent of the input manifest: a Boolean asserted by the image supplier is **not evidence of consent or a licence**. The index stores the source image hash and expiry to deny unapproved or expired entries. The service rechecks expiry at each search, but an **external revocation still requires immediate service disablement and a newly audited index**, because this offline candidate has no live revocation feed.
+
 Create a signed-off local manifest (source URL, authoritative owner, licence scope, expiry/revocation, checksum, asset rights ID), then run:
 
 ```sh
@@ -39,6 +41,7 @@ python3 services/clip/build_index.py --manifest /private/approved-manifest.json 
 sha256sum /private/clip-model.pt /private/clip-index.json
 python3 services/clip/serve.py
 node --test scripts/test-intelligence-visual-search.mjs
+python3 -m unittest discover -s services/clip -p 'test_*.py' -v
 ```
 
 Only a nonclinical research pilot may be considered after independent image-rights acceptance and a named Quality/Privacy/Security approval. Run domain-shift evaluation against a rights-cleared pharmaceutical corpus; measure precision@k, false-near-miss retrieval for different strengths, doses, dosage forms, contraindications, lookalike/soundalike risk, English-prompt sensitivity, multilingual abstention, out-of-distribution rejection, abuse, CSRF, tenancy and rollback. Never interpret cosine ranking as certainty or identity verification.
