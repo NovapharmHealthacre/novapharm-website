@@ -174,8 +174,14 @@ export function createCimaLiveSourceQuarantineReader({
       typeof receipt.tenantId==="string" &&
       receipt.manifest?.sourceKey===ES_CIMA_PROBE.sourceId &&
       receipt.manifest?.jurisdiction==="ES" &&
+      receipt.manifest?.datasetKey==="es-cima-medicine-detail" &&
+      receipt.manifest?.resourceId==="es-cima-nregistro-51347" &&
+      receipt.manifest?.resourceUrl===ES_CIMA_PROBE.url &&
+      receipt.manifest?.intakeState==="QUARANTINED_INTERNAL_EVALUATION" &&
       receipt.manifest?.canPublish===false &&
       receipt.manifest?.productionAccepted===false &&
+      receipt.sourceSampleQuarantined===true &&
+      receipt.legalCommercialAndAiUseRightsVerified===false &&
       receipt.productionAccepted===false && receipt.canPublish===false &&
       receipt.customerReadEnabled===false;
   }
