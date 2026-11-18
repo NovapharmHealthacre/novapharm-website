@@ -126,9 +126,16 @@ export function scoreL0SparseLinearCandidate(
       model.releaseStatus !== "research-only" ||
       model.productionApproved !== false ||
       model.customerVisible !== false ||
+      !Array.isArray(model.featureNames) ||
+      !Array.isArray(model.coefficients) ||
+      model.featureNames.length < 1 ||
+      model.featureNames.length > 4096 ||
+      model.featureNames.some((name) => typeof name !== "string" || !/^[a-z][a-z0-9_]{0,63}$/u.test(name)) ||
       Object.keys(features).length !== model.featureNames.length ||
       new Set(model.featureNames).size !== model.featureNames.length ||
-      model.featureNames.length !== model.coefficients.length) {
+      model.featureNames.length !== model.coefficients.length ||
+      model.coefficients.some((coefficient) => !Number.isFinite(coefficient)) ||
+      model.nonZeroCount !== model.coefficients.filter((coefficient) => coefficient !== 0).length) {
     throw new Error("Sparse candidate or feature schema is invalid.");
   }
   let result = validFinite(model.bias, "Bias");
