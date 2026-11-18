@@ -5,14 +5,18 @@ on:
     paths:
       - 'src/core/intelligence-multimodal-evidence-review.*'
       - 'src/core/intelligence-multimodal-workspace-policy.mjs'
+      - 'src/core/intelligence-multimodal-research-basis.*'
+      - 'src/core/intelligence-multimodal-threat-evaluation.mjs'
       - 'src/core/intelligence-22-workspace-readiness.mjs'
       - 'scripts/test-intelligence-multimodal-evidence-review.mjs'
       - 'scripts/test-intelligence-multimodal-workspace-policy.mjs'
+      - 'scripts/test-intelligence-multimodal-research-basis.mjs'
       - 'scripts/test-intelligence-22-workspace-readiness.mjs'
       - 'apps/portal/components/multimodal-review-panel.tsx'
       - 'apps/portal/components/nova-ml-workspaces.tsx'
       - 'native/novapharm-intelligence-mobile/**'
       - 'docs/intelligence/multimodal-neurons-adaptation-20261118.md'
+      - 'docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md'
       - 'docs/ai-risk-register.md'
       - 'docs/ai-system-card.md'
       - '.github/workflows/intelligence-multimodal-research-contracts.yml'
@@ -35,6 +39,9 @@ jobs:
         run: |
           node --check src/core/intelligence-multimodal-evidence-review.mjs
           node --check src/core/intelligence-multimodal-workspace-policy.mjs
+          node --check src/core/intelligence-multimodal-research-basis.mjs
+          node --check src/core/intelligence-multimodal-threat-evaluation.mjs
+          node --check scripts/test-intelligence-multimodal-research-basis.mjs
           node --check scripts/test-intelligence-multimodal-workspace-policy.mjs
           node --check scripts/test-intelligence-multimodal-evidence-review.mjs
           node --check native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
@@ -42,5 +49,6 @@ jobs:
         run: |
           node --test scripts/test-intelligence-multimodal-evidence-review.mjs
           node --test scripts/test-intelligence-multimodal-workspace-policy.mjs
+          node --test scripts/test-intelligence-multimodal-research-basis.mjs
           node --test scripts/test-intelligence-22-workspace-readiness.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
