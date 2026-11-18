@@ -272,7 +272,9 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
           signal: AbortSignal.timeout(TIMEOUT_MS)
         });
       } catch { throw new Error("Upstream unavailable"); }
-      const raw = await readJsonBounded(response);
+      let raw;
+      try { raw = await readJsonBounded(response); }
+      catch { throw new Error("Upstream unavailable"); }
       const normalized = normaliseGovSourceResult(plan, raw);
       let capturedAt;
       try { capturedAt = now(); }

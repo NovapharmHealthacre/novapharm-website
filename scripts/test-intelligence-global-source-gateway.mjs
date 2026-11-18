@@ -279,3 +279,30 @@ test("trusted source authorizer, upstream transport and clock failures suppress 
     );
   }
 });
+
+test("malformed upstream response objects and stream exceptions never leak backend details", async () => {
+  const secret = "SECRET_REMOTE_PROVIDER_AUTH_HEADER";
+  const responses = [
+    { ok: true, headers: { get: () => { throw Error(secret); } } },
+    { ok: true, headers: { get: () => "application/json" },
+      body: { getReader: () => { throw Error(secret); } } },
+    { ok: true, headers: { get: () => "application/json" },
+      body: { getReader: () => ({
+        read: async () => { throw Error(secret); },
+        cancel: async () => {},
+        releaseLock: () => {}
+      }) } }
+  ];
+  for (const response of responses) {
+    const reader = createGovSourceReader({
+      authorize: async ctx => permit(ctx),
+      now: () => TEST_NOW,
+      transport: async () => response
+    });
+    await assert.rejects(
+      reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }),
+      error => error instanceof Error && error.message === "Upstream unavailable" &&
+        !error.message.includes(secret)
+    );
+  }
+});
