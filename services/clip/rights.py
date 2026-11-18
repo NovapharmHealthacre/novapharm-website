@@ -4,6 +4,7 @@ These machine checks are necessary, not a replacement for independent rights sig
 No network requests, model imports or secret processing occur in this module.
 """
 from datetime import datetime, timezone, date
+from ipaddress import ip_address
 import re
 from urllib.parse import urlsplit
 
@@ -56,6 +57,15 @@ def validate_public_asset(item, *, indexed=False, seen=None, today=None):
         raise ValueError("Invalid public source URL.") from None
     if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password or parsed.fragment or port not in (None, 443):
         raise ValueError("Public sources require a verified HTTPS URL without credentials.")
+    host = parsed.hostname.lower().rstrip(".")
+    if host == "localhost" or host.endswith((".localhost", ".local", ".internal")) or "." not in host:
+        raise ValueError("Public image attribution cannot use a private source host.")
+    try:
+        ip_address(host)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("Public image attribution cannot use an IP literal.")
     fingerprint = item.get("sourceImageSha256" if indexed else "imageSha256")
     if not isinstance(fingerprint, str) or not SHA256.fullmatch(fingerprint):
         raise ValueError("Exact source image SHA256 is required.")
