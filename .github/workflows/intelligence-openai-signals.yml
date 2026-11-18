@@ -1,0 +1,63 @@
+name: OpenAI Signals and research cross-platform integration
+on:
+  pull_request:
+    paths:
+      - "src/ai/intelligence-openai-signals.mjs"
+      - "scripts/test-intelligence-openai-signals.mjs"
+      - "scripts/test-intelligence-signals-integration.mjs"
+      - "apps/portal/components/nova-signals-research.tsx"
+      - "apps/portal/components/nova-signals-research.module.css"
+      - "apps/portal/data/nova-signals-research.ts"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "docs/intelligence/openai-signals-whisper-triton-integration-20261118.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - ".github/workflows/intelligence-openai-signals.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/ai/intelligence-openai-signals.mjs"
+      - "scripts/test-intelligence-openai-signals.mjs"
+      - "scripts/test-intelligence-signals-integration.mjs"
+      - "apps/portal/components/nova-signals-research.tsx"
+      - "apps/portal/components/nova-signals-research.module.css"
+      - "apps/portal/data/nova-signals-research.ts"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "docs/intelligence/openai-signals-whisper-triton-integration-20261118.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - ".github/workflows/intelligence-openai-signals.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  research-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate evidence admission, aggregate schemas and protected web/native source contract
+        run: node --test scripts/test-intelligence-openai-signals.mjs scripts/test-intelligence-signals-integration.mjs
+      - name: Validate publisher safety for private research source
+        run: node --test scripts/aws/contact-release-routing.test.mjs
+  android-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install Kotlin CLI for source-only compatibility
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq kotlin
+      - name: Compile isolated Signals research denial tests
+        run: |
+          kotlinc native/novapharm-intelligence-android/NovaSignalsResearch.kt native/novapharm-intelligence-android/NovaSignalsResearchTest.kt -include-runtime -d /tmp/nova-signals-test.jar
+          java -jar /tmp/nova-signals-test.jar
+      - name: Release boundary
+        run: echo "Kotlin source compilation is not an Android APK, device test, app signing or approval to call a cloud AI service."
