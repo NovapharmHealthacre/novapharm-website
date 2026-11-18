@@ -1004,9 +1004,8 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/v1/intelligence/sources/official/public-live-probe" && request.method === "GET") {
       // Real official upstream HTTP is BOARD-ONLY, rate limited, and default-OFF.
       // The result contains only a hash/time/schema receipt, never medicine rows.
-      if (!await rateLimit(request, "official-public-live-source-probe", 2, 60 * 1000)) {
-        return json(response, 429, { error: "Official source probe rate limit reached." });
-      }
+      // Reject unauthenticated/disabled requests BEFORE consuming the scarce
+      // publisher-call quota; unauthenticated traffic must not throttle board review.
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
       if (process.env.NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED !== "true") {
@@ -1015,6 +1014,10 @@ export async function handleRequest(request, response) {
       const sourceId = url.searchParams.get("sourceId");
       if (!sourceId || !Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)) {
         return json(response, 400, { error: "Unsupported official pharmaceutical source." });
+      }
+      // Authorised requests remain bounded BEFORE any publisher transport.
+      if (!await rateLimit(request, "official-public-live-source-probe", 2, 60 * 1000)) {
+        return json(response, 429, { error: "Official source probe rate limit reached." });
       }
       try {
         const receipt = await probeOfficialPublicPharmaSource(sourceId);
