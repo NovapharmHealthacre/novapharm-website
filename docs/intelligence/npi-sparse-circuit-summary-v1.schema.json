@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://intelligence.novapharmhealthcare.com/contracts/npi-sparse-circuit-summary-v1.schema.json",
+  "$id": "urn:novapharm:intelligence:sparse-circuit-summary:v1",
   "title": "NovaPharm Intelligence sparse-circuit research summary (unverified)",
   "description": "Read-only research display contract. Structurally valid metadata never grants model, evidence, tenant, commercial, clinical or production rights.",
   "type": "object",
