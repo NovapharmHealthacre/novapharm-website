@@ -214,3 +214,21 @@ test("record mutation during independent verification never changes authorized r
   assert.equal(observed.modelArtifactSha256, record.modelArtifactSha256);
   assert.doesNotMatch(JSON.stringify(observed), /SECRET_UNREVIEWED|unapproved-dataset/);
 });
+
+test("trusted adapter and clock failures never disclose backend secrets or raw errors", async () => {
+  const marker = "SECRET_UPSTREAM_TOKEN_AND_INTERNAL_DATABASE_URI";
+  const secretError = () => { throw new Error(marker); };
+  for (const failing of ["authorizeRead", "loadRecord", "verifyEvidence"]) {
+    const callbacks = { ...deps(), [failing]: async () => secretError() };
+    await assert.rejects(
+      inspect({ request: scope, now, ...callbacks }),
+      (error) => error instanceof Error &&
+        /Model inspection denied:/.test(error.message) &&
+        !error.message.includes(marker)
+    );
+  }
+  await assert.rejects(
+    inspect({ request: scope, now: secretError, ...deps() }),
+    (error) => error instanceof Error && error.message === "Model inspection denied: invalid clock"
+  );
+});

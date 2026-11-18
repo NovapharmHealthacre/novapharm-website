@@ -110,3 +110,7 @@ The inspection reader snapshots the tenant/actor/model/version/layer/feature/pur
 ### Asynchronous record-mutation boundary
 
 Immediately after source-rights/PHI/schema preflight, the inspected artifact's approved metadata fields and SHA-256 identities are captured in a frozen, allow-listed snapshot **before** independently awaited verification. Both the signed-evidence comparison and final response use this snapshot so a mutable storage adapter cannot replace a checked hypothesis, dataset ref or digest while the verifier is running. Adversarial tests mutate the original loader record mid-verification and require the returned metadata to remain the approved snapshot. This does not substitute for an immutable production artifact store.
+
+### Sanitized protected-backend adapter errors
+
+All independently supplied authorization, artifact-loading and verification callbacks are invoked behind a fail-closed adapter boundary. Exceptions—including errors carrying internal database locations, tokens or private service details—are suppressed and converted into limited "Model inspection denied" errors. A failing injected clock is also sanitized. These are source-level contracts; real infrastructure still needs a separately authenticated service, controlled server-only logs and end-to-end auditability.

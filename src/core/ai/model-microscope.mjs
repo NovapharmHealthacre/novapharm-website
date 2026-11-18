@@ -13,6 +13,10 @@ const shaPattern = /^[a-f0-9]{64}$/u;
 const keys = ["tenantId", "actorId", "modelId", "modelVersion", "layerId", "featureId"];
 
 function fail(message) { throw new Error("Model inspection denied: " + message); }
+async function callTrusted(adapter, input, rejection) {
+  try { return await adapter(input); }
+  catch { fail(rejection); }
+}
 function validId(value) { return typeof value === "string" && idPattern.test(value); }
 function sameScope(value, request) {
   return keys.every((key) => value?.[key] === request[key]);
@@ -40,7 +44,9 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
   // cannot mutate request identity halfway through a protected read.
   const scopedRequest = Object.freeze({ ...Object.fromEntries(keys.map(key => [key, request[key]])), purpose: MODEL_MICROSCOPE_PURPOSE });
   const readClock = () => {
-    const tick = typeof now === "function" ? now() : now;
+    let tick;
+    try { tick = typeof now === "function" ? now() : now; }
+    catch { fail("invalid clock"); }
     if (!Number.isFinite(tick)) fail("invalid clock");
     return tick;
   };
@@ -50,7 +56,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
   const requestTime = readClock();
 
   // Permission MUST precede even the metadata lookup; client metadata is untrusted.
-  const grant = await authorizeRead(scopedRequest);
+  const grant = await callTrusted(authorizeRead, scopedRequest, "trusted authorizer unavailable");
   if (!grant || grant.allowed !== true || !sameScope(grant, scopedRequest) ||
       grant.purpose !== MODEL_MICROSCOPE_PURPOSE || grant.channel !== "protected_backend" ||
       !strictText(grant.grantId, 128) || typeof grant.expiresAt !== "string" ||
@@ -61,7 +67,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     fail("missing, mismatched or expired authorisation");
   }
 
-  const record = await loadRecord(Object.freeze({ ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])) }));
+  const record = await callTrusted(loadRecord, Object.freeze({ ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])) }), "protected artifact unavailable");
   if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired while loading artifact");
   if (!record || !sameScope(record, scopedRequest) ||
       record.privacyClass !== "approved_non_patient" ||
@@ -97,7 +103,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
   // A second, independent verifier confirms the immutable digest, model and
   // source rights, QA and reviewer separation. Neither client-supplied grants
   // nor a record's own approval flags can promote an artifact to verified.
-  const verification = await verifyEvidence(Object.freeze({
+  const verification = await callTrusted(verifyEvidence, Object.freeze({
     ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])),
     datasetRef: approvedRecord.datasetRef,
     evaluationRef: approvedRecord.evaluationRef,
@@ -106,7 +112,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     visualizationSha256: approvedRecord.visualizationSha256,
     modelArtifactSha256: approvedRecord.modelArtifactSha256,
     authorizationGrantId: grant.grantId
-  }));
+  }), "independent verifier unavailable");
   if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired during independent verification");
   if (!verification || !sameScope(verification, scopedRequest) ||
       verification.provenanceSha256 !== approvedRecord.provenanceSha256 ||
