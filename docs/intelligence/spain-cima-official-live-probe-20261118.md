@@ -39,3 +39,8 @@ The caller must supply all of the following trusted server-side dependencies: in
 A duplicate/revision comparator now rejects cross-tenant or wrong-source receipts and distinguishes new source candidates, duplicates and conflicting same-release medicine revisions. The new dedicated test file `scripts/test-intelligence-es-cima-live-quarantine.mjs` covers those scenarios and is mandatory in source-specific CI. Unit tests use synthetic rights and CIMA response fixtures and must not be interpreted as proof of publisher licensing or production availability.
 
 **Crucial date-provenance caveat:** a CIMA individual medicine response does not itself prove the exact publication date of a dataset release. Consequently the trusted release inventory's date fields are quarantined as asserted input, but `publisherReleaseDatesIndependentlyVerified` is always **false**. A genuine regulator-dated release receipt, legally approved commercial/AI rights, native product completeness checks, protected production deployment, and signed customer role tests are separate acceptance gates. Zero Spanish sources are customer-production-live.
+
+
+## Sanitized connectivity diagnostics
+
+For the exact public CIMA GET only, the source reader now groups transport failures into fixed **timeout**, **DNS**, **TLS**, **network**, or **network-or-policy** categories. It discards all raw exception strings, headers, proxy information and potential credentials. GitHub CI still fails when the actual publisher connection fails, instead of substituting a downloaded example or marking Spain live. Regression tests inject nine synthetic connection errors to ensure neither secrets nor unsafe raw error messages reach the logs.
