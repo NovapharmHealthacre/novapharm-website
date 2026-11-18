@@ -5,8 +5,8 @@
 import React from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
-import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
+import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 
 const color = { ink: "#1D1D1F", secondary: "#424245", border: "#D2D2D7", grouped: "#F5F5F7", accent: "#E3120B" };
 
