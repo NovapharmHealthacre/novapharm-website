@@ -3,6 +3,15 @@ import XCTest
 @testable import NovaMLApple
 
 final class NovaMLAppleTests: XCTestCase {
+    func testCLIPClientRejectsUntrustedOriginBeforeNetworkAccess() throws {
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "https://unapproved.example")!
+        ))
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "http://portal.novapharmhealthcare.com")!
+        ))
+    }
+
     func testCoreMLRejectsMissingModelApprovalBeforeLoadingBundle() throws {
         let permit = NovaModelPermit(
             modelIdentifier: "",
