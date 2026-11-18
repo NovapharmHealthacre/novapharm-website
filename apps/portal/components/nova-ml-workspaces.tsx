@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
-import styles from "./nova-ml-workspaces.module.css";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
+import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
   { id: "rights", title: "Data and model rights", detail: "Authorised source, licence, purpose and retention are documented." },
