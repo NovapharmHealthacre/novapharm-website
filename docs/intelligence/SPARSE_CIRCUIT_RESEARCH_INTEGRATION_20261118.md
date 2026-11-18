@@ -1,7 +1,7 @@
 # NovaPharm Intelligence — sparse-circuit interpretability research integration
 
 **Date:** 18 November 2026  
-**Status:** source-level research candidate, not deployed, not customer-facing, not clinical  
+**Status:** governed code and read-only UI candidates in draft PR #816; not merged, not deployed, not customer-facing, not clinical  
 **Scope:** shared NovaPharm Intelligence web/service artifact validation and iOS/Android read-only adapter candidates
 
 ## Research reviewed
@@ -29,9 +29,12 @@ The open-source Streamlit visualizer, PyTorch inference and model checkpoints ar
 |---|---|---|
 | Shared web/Node | `src/core/intelligence-sparse-circuit-assurance.mjs` | Deterministic shape checks for bounded mechanistic circuit candidates. No inference, data access, uploads or approvals. |
 | Regression | `scripts/test-intelligence-sparse-circuit-assurance.mjs` | Negative cases for unknown fields, payloads, malformed weights, duplicates, invalid metrics and forged release flags. |
-| iOS | `native/novapharm-intelligence-apple/NovaSparseCircuitReader.swift` | Display-only Swift decoding of the unverified research summary; no network or permissions. |
-| Android | `native/novapharm-intelligence-android/NovaSparseCircuitReader.kt` | Source-only Kotlin decoding candidate; no Gradle app or device proof. |
-| CI | `.github/workflows/intelligence-sparse-circuit-assurance.yml` | Node contract tests on review and main changes. |
+| iOS | `native/novapharm-intelligence-apple/NovaSparseCircuitReader.swift` and `NovaSparseCircuitResearchView.swift` | Public Swift package decoder and accessible read-only SwiftUI presentation; no network or permissions. No signed app. |
+| Android | `native/novapharm-intelligence-android/NovaSparseCircuitReader.kt` and `NovaSparseCircuitResearchScreen.kt` | Source-only Kotlin decoder and Android View candidate; no Gradle app or device proof. |
+| Web UI | `apps/portal/components/nova-ml-workspaces.tsx` and `apps/portal/data/nova-ml-modules.ts` | Methodology, rights, claims and approval boundaries presented inside the existing protected Nova ML workspace. No user data collection, model inference or new anonymous route. |
+| CI | `.github/workflows/intelligence-sparse-circuit-assurance.yml` | Node validator and cross-platform boundary/parity contract tests on review and main changes. |
+
+Circuit graph validation also rejects duplicate edges, unknown nodes, cycles and isolated nodes; this is purely structural and cannot establish a causal circuit.
 
 The shared output deliberately forces `mechanisticExplanationVerified=false`, `productionEligible=false` and `clinicalUsePermitted=false`. This is a metadata and structure validator only; it does not verify experiment results, digitally attest provenance, secure a transport or certify a model.
 
@@ -50,7 +53,7 @@ The shared output deliberately forces `mechanisticExplanationVerified=false`, `p
 3. Execute real pruning/mean-ablation research, compare unablated/pruned/ablated losses on independently held-out data and publish a reproducibility receipt with model/dataset/code hashes and a signed server-side attestation.
 4. Add a secured, rate-limited, tenant-authorised service route with audited writes, rejection paths, no client-supplied entitlements and no browsing of private raw tokens/weights.
 5. Implement web UI, real Swift iOS app view and Android Studio app view with a persistent “Unverified research” label, accessible graph fallback and no medical recommendations.
-6. Verify Swift package on Xcode/macOS, Kotlin Android app compile/tests, on-device behaviour, React/web regression, Chromium/WebKit and WCAG accessibility, data minimisation, performance and independent negative tests.
+6. Verify Swift package on Xcode/macOS, Kotlin Android app compile/tests (no Android Gradle project presently exists), on-device behaviour, React/web regression, Chromium/WebKit and WCAG accessibility, data minimisation, performance and independent negative tests.
 7. Perform owner/Quality/Regulatory/Security reviews and maintain existing production release gates; confirm exact deployed immutable SHA separately. Do **not** enable customers, billing, clinical use or production data merely because repository tests pass.
 
 **No production completion percentage is justified by this proposal.** A GitHub PR, passing Node tests or a Swift/Kotlin source file does not equal an installed mobile application or live website service.
