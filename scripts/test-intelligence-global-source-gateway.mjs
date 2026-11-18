@@ -511,3 +511,38 @@ test("source grant expiry while reauthorising is blocked at the final trusted cl
     assert.equal(calls,2,"Second rights service request was completed");
   }
 });
+
+
+// Reconciled regression coverage from PR #834; gateway denial is stricter on #830.
+test("upstream medicine identifiers remain lossless and unsafe/oversized fields are omitted rather than truncated", () => {
+  const plan = buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban", limit: 5 });
+  const fullId = "0".repeat(119) + "1";
+  const fullLabel = "A".repeat(240);
+  const data = [
+    { drug_identification_number: fullId, brand_name: fullLabel },
+    { drug_identification_number: "0".repeat(121), brand_name: "Invalid long ID" },
+    { drug_identification_number: "00012345", brand_name: "B".repeat(241) },
+    { drug_identification_number: "00012346", brand_name: "Alpha" + String.fromCharCode(0x202e) + "Beta" },
+    { drug_identification_number: "00012347" + String.fromCharCode(0x200b), brand_name: "Invisible ID" }
+  ];
+  const result = normaliseGovSourceResult(plan, data);
+  assert.equal(result.records.length, 1);
+  assert.equal(result.records[0].localId, fullId);
+  assert.equal(result.records[0].label, fullLabel);
+  assert.equal(result.canPublish, false);
+});
+
+test("malformed upstream trial and regulator identifiers do not become plausible truncated medicine facts", () => {
+  const cases = [
+    ["us-fda-drugsfda", {results:[{application_number:"X".repeat(121),products:[{brand_name:"Sample"}]}]}],
+    ["global-clinicaltrials", {studies:[{protocolSection:{identificationModule:{nctId:"NCT00000001" + String.fromCharCode(0x202e),briefTitle:"Study"}}}]}],
+    ["es-aemps-cima", {resultados:[{nregistro:"000123",nombre:"A".repeat(241)}]}],
+    ["global-europepmc", {resultList:{result:[{id:"12345678",title:"Example" + String.fromCharCode(0x200b)}]}}]
+  ];
+  for (const [sourceId, raw] of cases) {
+    const plan = buildGovSourcePlan({sourceId,term:"Apixaban",limit:5});
+    const result = normaliseGovSourceResult(plan,raw);
+    assert.deepEqual(result.records, [],sourceId);
+    assert.equal(result.canPublish,false,sourceId);
+  }
+});
