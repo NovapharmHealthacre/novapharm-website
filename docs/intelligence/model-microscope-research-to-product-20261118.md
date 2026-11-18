@@ -61,3 +61,16 @@ The independent verifier is an **interface contract**, not a deployed signature-
 ## Read-only response schema
 
 A strict, non-publishable projection is published for internal engineering at `docs/intelligence/model-microscope-inspection-v1.schema.json`. It lists exactly the metadata allowed to cross a future protected server boundary and excludes grants, image bytes, neurons/weights, input documents, patient information and raw tensors. CI compares the implementation's actual output to the same field inventory. A JSON schema is not evidence that the upstream artifact contains no personal data; that requires independent quality and privacy verification.
+
+## Exact inspectable-model inventory check
+
+The current registry was reviewed against `docs/ai-model-register.json` and `src/core/ai/model-registry.mjs`:
+
+| Existing NovaPharm item | What it actually is | Microscope neuron-inspection availability |
+| --- | --- | --- |
+| `novapharm-evidence-vector-v1` | Repository-owned deterministic sparse lexical retrieval, no neural weights | **Not applicable**; there are no hidden neural units to inspect |
+| `internal-provider-none` / `none` | Disabled production model provider | **Unavailable** |
+| `ollama-loopback` | Local development adapter, no model approved or bundled | **Unavailable** until a specific inspectable model, licence and tooling are independently approved |
+| `openai-zdr` | Approval-gated external AI adapter, not operational | **Unavailable**; a hosted inference API does not grant internal layer/neuron access |
+
+**Admitted inspectable model artifacts in this implementation: zero.** Do not use the existing sparse *lexical* retrieval model as evidence that an artificial neural network feature inspector exists. Future model IDs must be separately versioned, rights-reviewed and explicitly supported by the actual architecture-specific introspection runner; this PR contains no such runner.
