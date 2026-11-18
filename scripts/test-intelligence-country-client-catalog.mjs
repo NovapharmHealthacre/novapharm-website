@@ -79,6 +79,9 @@ test("same offline public-source catalogue is used on Expo iOS and Android, with
   assert.match(panel,/country-101-client-catalog-20261118\.json/);
   assert.match(panel,/\bFlatList\b/);
   assert.match(panel,/\baccessibilityLabel=/);
+  assert.match(panel,/<Text style=\{styles\.name\} accessibilityRole="header">/);
+  assert.doesNotMatch(panel,/<View style=\{\[styles\.card,[^\n]*\}\s+accessible\b/,
+    "An accessible parent card can hide its nested publisher button from assistive technology");
   assert.match(panel,/No live medicine records/);
   assert.doesNotMatch(panel,/\bfetch\s*\(|XMLHttpRequest|Authorization:|access_token|client_secret|SecureStore|AsyncStorage/i);
   const nativePackage=JSON.parse(read("native/novapharm-intelligence-mobile/package.json"));
