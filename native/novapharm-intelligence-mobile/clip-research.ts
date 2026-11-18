@@ -74,7 +74,7 @@ export function parseClipResearchResponse(input: unknown): ClipResearchResponse 
       input.humanReviewRequired !== true || input.similarityIsNotEvidence !== true ||
       input.regulatoryStatusVerified !== false || input.productIdentityVerified !== false ||
       typeof input.query !== "string" || input.query.trim().length < 3 ||
-      input.query.length > 240 || /[\\x00-\\x1f\\x7f]/.test(input.query) ||
+      input.query.length > 240 || Array.from(input.query).some((char) => char.codePointAt(0)! < 32 || char.codePointAt(0) === 127) ||
       !Array.isArray(input.results) || input.results.length > 5) {
     throw new Error("Unverified private visual-research response.");
   }
