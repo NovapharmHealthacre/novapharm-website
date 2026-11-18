@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { SCIENCE_WORKFLOW_IDS, planScienceResearchReview, assertScienceProductionReady } from "../src/core/intelligence-science-research-contract.mjs";
+import { SCIENCE_WORKFLOW_IDS, SCIENCE_COMMON_GUARDRAILS, planScienceResearchReview, assertScienceProductionReady, scienceGovernanceForWorkspace, assessRosalindResearchBoundary } from "../src/core/intelligence-science-research-contract.mjs";
+import { workspaceCapabilityDependencies } from "../src/core/intelligence-22-workspace-readiness.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(path.join(root, p), "utf8");
@@ -59,4 +60,58 @@ test("invalid or duplicate science references fail closed", () => {
   assert.throws(()=>planScienceResearchReview({ ...base,sourceRefs:["src-1", "has spaces"] }), /valid workflow/);
   assert.throws(()=>planScienceResearchReview({ ...base,sourceRefs:new Array(17).fill("a") }), /valid workflow/);
   assert.throws(()=>assertScienceProductionReady({ approved:true }), /independent backend/);
+});
+
+test("every Science workflow points only to canonical, protected Intelligence workspaces", () => {
+  const slugs = new Set(Object.keys(workspaceCapabilityDependencies));
+  assert.equal(slugs.size, 22);
+  const links = new Set();
+  for (const workflow of catalogue.workflows) {
+    assert.ok(workflow.linkedWorkspaces.length >= 2);
+    assert.equal(new Set(workflow.linkedWorkspaces).size, workflow.linkedWorkspaces.length);
+    for (const slug of workflow.linkedWorkspaces) {
+      assert.ok(slugs.has(slug), `Unknown science-to-Intelligence link: ${slug}`);
+      links.add(slug);
+    }
+  }
+  assert.ok(links.has("evidence"));
+  assert.ok(links.has("reports"));
+  assert.ok(links.has("biotech-intelligence"));
+  const web = read("apps/portal/components/science-research-workspace.tsx");
+  const native = read("native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx");
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(web, /linkedWorkspaces\.map/);
+  assert.match(native, /linkedWorkspaces\.map/);
+  assert.match(native, /onOpenWorkspace/);
+  assert.match(app, /setSelectedWorkspace\(workspace\)/);
+});
+test("scientific evidence and model-release guardrails apply to all 22 canonical modules", () => {
+  assert.ok(SCIENCE_COMMON_GUARDRAILS.includes("immutable_provenance_and_retraction_review"));
+  assert.ok(SCIENCE_COMMON_GUARDRAILS.includes("no_customer_facing_restricted_model_access"));
+  for (const slug of Object.keys(workspaceCapabilityDependencies)) {
+    const result = scienceGovernanceForWorkspace(slug);
+    assert.equal(result.workspaceSlug, slug);
+    assert.equal(result.scientificAiProductionCertified, false);
+    assert.equal(result.customerModelAccessApproved, false);
+    assert.equal(result.internalResearchModelAccessApproved, false);
+    assert.equal(result.humanScientificReviewRequired, true);
+    assert.deepEqual(result.requiredGuardrails, SCIENCE_COMMON_GUARDRAILS);
+  }
+  assert.throws(() => scienceGovernanceForWorkspace("science-lab"), /Unknown canonical/);
+  assert.throws(() => scienceGovernanceForWorkspace("__proto__"), /Unknown canonical/);
+});
+test("GPT-Rosalind-6 model reference never grants customer or unapproved internal access", () => {
+  assert.equal(catalogue.accessPolicy.researchModelCandidate, "gpt-6-rosalind");
+  assert.equal(catalogue.accessPolicy.customerFacingApiUsePermitted, false);
+  assert.equal(catalogue.accessPolicy.externalCommercialApiUsePermitted, false);
+  assert.equal(catalogue.accessPolicy.researchTierApprovalRequired, true);
+  for (const audience of ["customer", "external_commercial", "internal_research", "unspecified"]) {
+    const result = assessRosalindResearchBoundary({ audience, productionApproved:true, apiApproved:true });
+    assert.equal(result.modelCallAuthorised, false);
+    assert.equal(result.customerFacingUsePermitted, false);
+    assert.equal(result.externalCommercialUsePermitted, false);
+    assert.equal(result.approvedResearchTierVerified, false);
+  }
+  assert.equal(assessRosalindResearchBoundary({audience:"internal_research"}).internalAudienceCandidate, true);
+  assert.equal(assessRosalindResearchBoundary({audience:"customer"}).internalAudienceCandidate, false);
 });
