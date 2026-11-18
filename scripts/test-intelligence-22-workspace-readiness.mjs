@@ -106,3 +106,17 @@ test("missing or untrusted evidence, drift and forged release statuses fail clos
   }), /Invalid/);
   assert.throws(() => assess(counts, capabilityReport, catalogue.slice(0, 21)), /Invalid/);
 });
+
+test("all 22 readiness reports inherit fail-closed scientific safeguards", () => {
+  const report = assess();
+  assert.equal(report.workspaces.length, 22);
+  for (const workspace of report.workspaces) {
+    assert.equal(workspace.scientificResearch.contract, "novapharm.intelligence.science-readiness-boundary.v1");
+    assert.equal(workspace.scientificResearch.scientificAiProductionCertified, false);
+    assert.equal(workspace.scientificResearch.customerRestrictedModelAccessApproved, false);
+    assert.equal(workspace.scientificResearch.researchOutputReleaseApproved, false);
+    assert.equal(workspace.scientificResearch.clinicalDecisionReady, false);
+    assert.equal(workspace.scientificResearch.regulatoryDecisionReady, false);
+    assert.ok(workspace.scientificResearch.requiredGuardrails.includes("no_customer_facing_restricted_model_access"));
+  }
+});
