@@ -47,4 +47,15 @@ test("never echo secret-bearing proposal values or grant execution", () => {
   assert.equal(result.status, "blocked");
   assert.equal(result.executionEnabled, false);
   assert.ok(!serialized.includes("PRIVATE") && !serialized.includes("secret-patient-text"));
+  const validWithPrivatePayload = assessComputeProposal({ ...valid(), payload: { patient: "PRIVATE" } });
+  assert.equal(validWithPrivatePayload.status, "blocked");
+  assert.ok(validWithPrivatePayload.reasons.includes("unexpected-fields"));
+  assert.ok(!JSON.stringify(validWithPrivatePayload).includes("PRIVATE"));
+  assert.ok(reason({ datasetDigest: { toString() { throw new Error("untrusted"); } } }).includes("unversioned-dataset"));
+  assert.ok(reason({ modelDigest: 17 }).includes("unversioned-model"));
+  const inherited = Object.assign(Object.create({ untrusted: true }), valid());
+  const resultWithPrototype = assessComputeProposal(inherited);
+  assert.equal(resultWithPrototype.status, "blocked");
+  assert.ok(resultWithPrototype.reasons.includes("invalid-proposal"));
+  assert.ok(Object.isFrozen(resultWithPrototype.reasons));
 });
