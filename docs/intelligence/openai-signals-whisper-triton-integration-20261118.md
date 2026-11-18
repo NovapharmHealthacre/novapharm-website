@@ -52,3 +52,16 @@
 - Every new research module must have a source register, study design limitations, permitted use, no implied causality and a release-maturity statement.
 
 **Current maturity:** source-only integration candidate. No Signals dataset bytes imported; no live Signals API, Whisper endpoint, Triton GPU kernel, distributed training, user audio, app-store release or clinical AI service.
+
+## Offline CSV inspection CLI (implemented, no upload)
+
+The source-only review accepts an **already downloaded** local, unmodified CSV from one of the three approved v3 tables. It does not download a ZIP or enable a live API. After independent verification of the archive source and licence, the manual form is:
+
+```sh
+node scripts/data/review-openai-signals-csv.mjs \
+  share_of_messages_by_topic_country_month.csv \
+  /path/to/share_of_messages_by_topic_country_month.csv \
+  optional-expected-sha256-hex
+```
+
+This prints only status, table name, validated record count, local SHA-256 and clear `persisted:false`, `productionApproved:false` flags. Unexpected headers, raw-user fields, bad country/time/grain/metrics, formula-like cells, invalid quoting, oversized local files and missing rows are blocked. It never echoes data cells, persists records, changes cloud resources, or sends a report to external services. The independently verified archive and copyright/source checks must precede any subsequent human-approved data mart design.
