@@ -36,6 +36,8 @@ test("two distinct national API plans remain HTTPS origin/path allowlisted", () 
   }
   assert.equal(new URL(sample("sg-hsa-products").url).searchParams.get("resource_id"),
     "d_767279312753558cbf19d48344577084");
+  assert.deepEqual(JSON.parse(new URL(sample("sg-hsa-products").url).searchParams.get("q")),
+    { Productname: "Apixaban" });
 });
 
 test("every added API candidate has a corresponding source record without falsely activating it", () => {
