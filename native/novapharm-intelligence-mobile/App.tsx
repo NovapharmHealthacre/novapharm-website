@@ -274,7 +274,7 @@ export default function App() {
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>No approved model inspections</Text>
                 <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
-                <Text style={styles.meta}>Private source-only preview · Zero inference · Zero network requests · No patient data</Text>
+                <Text style={styles.meta}>Private source-only preview · Zero production inference · Zero network requests · No patient data</Text>
               </View>
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>Synthetic model reference</Text>
