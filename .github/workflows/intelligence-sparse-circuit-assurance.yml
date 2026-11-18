@@ -14,6 +14,8 @@ on:
       - "scripts/research/validate-trained-sparse-transformer-report.mjs"
       - "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json"
       - "scripts/test-intelligence-trained-sparse-transformer-report.mjs"
+      - "scripts/test-intelligence-sparse-circuit-upstream-governance.mjs"
+      - "docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md"
       - "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
       - "apps/portal/components/nova-ml-workspaces.tsx"
       - "apps/portal/data/nova-ml-modules.ts"
@@ -55,4 +57,4 @@ jobs:
         with:
           node-version: "22"
       - name: Validate deterministic research-only contract
-        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs scripts/test-intelligence-sparse-circuit-toy-intervention.mjs scripts/test-intelligence-trained-sparse-transformer-report.mjs
+        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs scripts/test-intelligence-sparse-circuit-toy-intervention.mjs scripts/test-intelligence-trained-sparse-transformer-report.mjs scripts/test-intelligence-sparse-circuit-upstream-governance.mjs

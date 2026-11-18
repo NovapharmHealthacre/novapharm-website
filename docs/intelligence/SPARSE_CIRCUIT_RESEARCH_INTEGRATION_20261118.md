@@ -77,6 +77,10 @@ A separate pinned GitHub Actions workflow `.github/workflows/intelligence-sparse
 
 **Important methodology limits:** The model is a one-block attention classifier trained on artificial vocabulary and a trivially learnable binary label, not an L0-trained weight-sparse language model, OpenAI's benchmark model, a validated complete mechanistic circuit, or a medicine knowledge model. Individual attention heads may be redundant; isolated-head ablation shows a change under an intervention, not ground-truth explanations for arbitrary real models. The graph's positive edge magnitudes are inspectable weight statistics, **not calibrated causal strengths**. No private information is accessed and there are no production model weights, customer APIs or signed mobile apps.
 
+## Upstream-source governance and executable-asset isolation
+
+The pinned upstream repository and its licence-metadata discrepancy, model/checkpoint rights split and unsafe pickle-deserialization boundary are documented in `SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md`. The research-only source regression prohibits network/model asset loading in NovaPharm's sparse-circuit runners, parsers and protected UI. No OpenAI checkpoints or visualization pickles have been imported.
+
 ## Production gates (all outstanding)
 
 Source rights and model rights are independent release prerequisites: no schema validation, app build or successful ablation can grant either right. All experiments must remain within documented licences, tenant boundaries and human-reviewed purposes.
