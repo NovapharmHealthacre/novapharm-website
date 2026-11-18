@@ -44,7 +44,10 @@ export function buildLocalIdentityCandidates(envelope) {
   const sourceRowKeys = new Set(["localId", "label", "provenanceDomain"]);
   return Object.freeze(envelope.records.map((record) => {
     if (!record || typeof record !== "object" || Array.isArray(record) ||
+        Object.getPrototypeOf(record) !== Object.prototype ||
+        !Object.hasOwn(record, "localId") || !Object.hasOwn(record, "label") ||
         Object.keys(record).some(key => !sourceRowKeys.has(key)) ||
+        Object.values(Object.getOwnPropertyDescriptors(record)).some(desc => !Object.hasOwn(desc, "value")) ||
         !isBounded(record.localId, 120) || !isBounded(record.label, 240) ||
         (record.provenanceDomain !== undefined && !isBounded(record.provenanceDomain, 100))) {
       throw new Error("Invalid source-local medicine identity");
