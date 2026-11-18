@@ -153,3 +153,8 @@ The official [Apple Maps HIG](https://developer.apple.com/design/human-interface
 | `Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx` | User-supplied HIG source index | parsed overview sampled; remaining workbook tabs unverified |
 
 **Remaining asset prerequisites:** For every archive, independently inspect a local raw copy in a capable isolated environment; inventory its files, signatures/hashes, manifests, README and licence/redistribution terms; scan for unexpected executable/network instructions and confirm platform applicability. Escalate any asset with no proven redistribution rights. Keep all downloadable Apple-owned binary assets out of this GitHub change and public website. Where a tool is macOS-only, do the audit on a Mac instead of treating a Linux parse error as evidence of safety.
+
+
+### Explicit 516 per-platform applicability decisions
+
+For all 172 individual HIG records the register now contains exactly three review slots (web, iOS, Android), **516 decisions total**, all initially `unassessed`. A requested platform label from the owner CSV is an initial categorisation, not an approval, code finding or applicability decision. Before any slot can become `applicable` or `not_applicable`, reviewers must read the complete relevant official Apple page, add article-level evidence and a source-specific rationale (20 characters minimum for schema enforcement). A `not_applicable` decision must explain why the product does not target that feature/platform, not merely omit the work. `applicable` is a scoped requirement, **never a claim of implementation**; true implementation still requires exact code/tests/real-device and deployment receipts. The test suite enforces this independently of human claims.
