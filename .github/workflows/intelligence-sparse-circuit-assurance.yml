@@ -10,6 +10,10 @@ on:
       - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
       - "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs"
       - "scripts/research/toy-sparse-circuit-intervention.mjs"
+      - "scripts/research/tiny-sparse-transformer-experiment.py"
+      - "scripts/research/validate-trained-sparse-transformer-report.mjs"
+      - "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json"
+      - "scripts/test-intelligence-trained-sparse-transformer-report.mjs"
       - "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
       - "apps/portal/components/nova-ml-workspaces.tsx"
       - "apps/portal/data/nova-ml-modules.ts"
@@ -20,7 +24,18 @@ on:
     branches: [main]
     paths:
       - "src/core/intelligence-sparse-circuit-assurance.mjs"
+      - "src/core/ai/model-registry.mjs"
+      - "src/ai/model-registry.mjs"
+      - "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json"
       - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
+      - "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
+      - "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs"
+      - "scripts/test-intelligence-trained-sparse-transformer-report.mjs"
+      - "scripts/research/**"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "apps/portal/data/nova-ml-modules.ts"
       - ".github/workflows/intelligence-sparse-circuit-assurance.yml"
 
 concurrency:
@@ -40,4 +55,4 @@ jobs:
         with:
           node-version: "22"
       - name: Validate deterministic research-only contract
-        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs scripts/test-intelligence-sparse-circuit-toy-intervention.mjs
+        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs scripts/test-intelligence-sparse-circuit-toy-intervention.mjs scripts/test-intelligence-trained-sparse-transformer-report.mjs
