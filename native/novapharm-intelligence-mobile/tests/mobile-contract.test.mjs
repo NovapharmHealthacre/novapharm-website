@@ -75,3 +75,22 @@ test("research browser opens only curated original OpenAI links after a tap", ()
   assert.match(screen, /Linking\.openURL\(url\)/);
   assert.match(screen, /catch \{/);
 });
+
+test("101 source candidates are not misrepresented as 101 live country integrations", () => {
+  const candidates = JSON.parse(read("docs/intelligence/global-pharma-sources-20261117.json"));
+  const labels = new Set(candidates.sources.map((source) => source.country));
+  const countryTerritoryLabels = new Set([...labels].filter(
+    (label) => label !== "Global" && label !== "European Union / EEA"
+  ));
+  assert.equal(candidates.sources.length, 101);
+  assert.equal(labels.size, 79);
+  assert.equal(countryTerritoryLabels.size, 77);
+  assert.ok(candidates.sources.every((source) =>
+    source.integrationStatus === "candidate-only" && source.dataAdmission === "not-admitted" &&
+    source.rightsStatus === "not-reviewed" && source.activeAdapterId === null));
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(app, /countryTerritoryCandidateLabels/);
+  assert.match(app, /Country\/territory labels \(unverified\)/);
+  assert.match(app, /Source entries are not verified country integrations/);
+  assert.doesNotMatch(app, /101 countries integrated|101 live countries|101 country APIs connected/i);
+});
