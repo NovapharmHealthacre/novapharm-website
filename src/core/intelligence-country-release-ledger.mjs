@@ -21,9 +21,13 @@ const MODES = new Set([
   "Access-review","FHIR-review","Download/Restricted",
   "API/Access-review","Download/API-review"
 ]);
-const SOURCE_PLANS_MERGED = Object.freeze({
+const KNOWN_SOURCE_BINDINGS = Object.freeze({
   "global-global-us-clinicaltrials-gov": "global-clinicaltrials",
   "global-global-europe-pmc": "global-europepmc",
+  "global-global-ncbi-pubmed": "global-pubmed",
+  "global-global-chembl": "global-chembl",
+  "global-global-pubchem": "global-pubchem",
+  "europe-poland-nfz-drug-program-statistics": "pl-nfz-drug-program",
   "north-america-united-states-fda-openfda": "us-fda-drugsfda",
   "north-america-canada-health-canada-drug-product-database": "ca-health-canada-dpd",
   "europe-spain-aemps-cima": "es-aemps-cima"
@@ -116,8 +120,8 @@ export function buildCountryReleaseLedger(registry, { releasedPlans = sourcePlan
     cleanSource(input);
     if (seen.has(input.candidateKey)) fail("duplicate source candidate");
     seen.add(input.candidateKey);
-    const expectedAdapter = own(SOURCE_PLANS_MERGED, input.candidateKey)
-      ? SOURCE_PLANS_MERGED[input.candidateKey] : null;
+    const expectedAdapter = own(KNOWN_SOURCE_BINDINGS, input.candidateKey)
+      ? KNOWN_SOURCE_BINDINGS[input.candidateKey] : null;
     const merged = Boolean(expectedAdapter && own(releasedPlans, expectedAdapter));
     const route = sourceRoute(input.mode);
     const extra = [];
