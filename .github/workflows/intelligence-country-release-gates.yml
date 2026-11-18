@@ -45,13 +45,15 @@ jobs:
           const d = JSON.parse(fs.readFileSync("artifacts/country-release-ledger/readiness.json","utf8"));
           if (d.nationalCountries !== 77 || d.totalSources !== 101 ||
               d.verifiedLicensedSources !== 0 || d.verifiedProductionCountries !== 0 ||
-              d.countries.length !== 79 || d.countries.some(x => !x.countryCode) ||
-              d.sourceRows.some(x => x.canPublish !== false)) {
+              d.countries.length !== 79 || d.countries.some(x => !x.countryCode ||
+                x.engineeringMilestonePercent > 40 || x.verifiedProductionCompletionPercent !== 0) ||
+              d.engineeringMilestonePercent > 40 ||
+              d.sourceRows.some(x => x.canPublish !== false || x.verifiedCompletionPercent !== 0)) {
             throw new Error("Unsafe or incomplete country release evidence");
           }
           NODE
       - name: Archive inspectable evidence; never a customer release
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: intelligence-country-release-ledger
           path: artifacts/country-release-ledger/
