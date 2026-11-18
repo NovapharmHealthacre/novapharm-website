@@ -4,7 +4,10 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-multimodal-evidence-review.*'
+      - 'src/core/intelligence-multimodal-workspace-policy.mjs'
+      - 'src/core/intelligence-22-workspace-readiness.mjs'
       - 'scripts/test-intelligence-multimodal-evidence-review.mjs'
+      - 'scripts/test-intelligence-multimodal-workspace-policy.mjs'
       - 'apps/portal/components/multimodal-review-panel.tsx'
       - 'apps/portal/components/nova-ml-workspaces.tsx'
       - 'native/novapharm-intelligence-mobile/**'
@@ -28,9 +31,13 @@ jobs:
       - name: Verify syntax
         run: |
           node --check src/core/intelligence-multimodal-evidence-review.mjs
+          node --check src/core/intelligence-multimodal-workspace-policy.mjs
+          node --check scripts/test-intelligence-multimodal-workspace-policy.mjs
           node --check scripts/test-intelligence-multimodal-evidence-review.mjs
           node --check native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
       - name: Run negative-case and cross-platform source contracts
         run: |
           node --test scripts/test-intelligence-multimodal-evidence-review.mjs
+          node --test scripts/test-intelligence-multimodal-workspace-policy.mjs
+          node --test scripts/test-intelligence-22-workspace-readiness.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
