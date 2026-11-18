@@ -26,3 +26,9 @@ The current navigation is deliberately a research preview: an Overview with six 
 Native/novapharm-intelligence-apple remains a separate Swift Package research prototype. It is not embedded automatically into this Expo app.
 
 Brand tokens follow NovaPharm's light-first white/graphite interface, restrained #E3120B accent and native platform fonts without bundling Apple font binaries.
+
+## Nova ML research preview — 18 November 2026
+
+The **Nova ML** tab reads the existing protected web catalogue from `apps/portal/data/nova-ml-modules.ts` and presents five explicitly unverified research methods: L₀ hard-concrete sparsity, reward-model proxy overoptimisation, critique assistance, instruction conformance and synthetic long-horizon simulation. It also lists the four native-model workspaces as **not enabled**.
+
+No model inference, on-device PyTorch/Core ML/LiteRT, patient data, auth, server API, private evidence, source licences or operational action is performed. No synthetic score is presented as live, and the view does not establish scientific, clinical or commercial validity. Source-only math and governance tests live in PRs #823 and #826; real authorised native inference needs a separately signed and tested app, registered model, data rights and production approval. Run `npm run test:contracts` and the isolated iOS/Android bundle preflight before considering an app build. This is not an app-store release.
