@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - 'docs/intelligence/77-country-101-source-complete-register-20261118.md'
       - 'src/core/intelligence-country-release-ledger.mjs'
       - 'src/core/intelligence-country-iso-identifiers.mjs'
       - 'src/core/intelligence-country-source-baseline.mjs'
