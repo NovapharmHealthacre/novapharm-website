@@ -106,3 +106,7 @@ It asserts that changing model-source bytes, visualization pixels, dataset refer
 ### Time-of-check/time-of-use protection
 
 The inspection reader snapshots the tenant/actor/model/version/layer/feature/purpose scope before any asynchronous authorizer call. It now rechecks short-lived grant expiry using a trusted clock after artifact loading and after independent evidence verification, so a request that has timed out during those operations cannot return stale research metadata. An injectable test clock provides deterministic expiry-race coverage; production uses the current server clock by default. No grant revocation implementation or production authenticated service is created by this check.
+
+### Asynchronous record-mutation boundary
+
+Immediately after source-rights/PHI/schema preflight, the inspected artifact's approved metadata fields and SHA-256 identities are captured in a frozen, allow-listed snapshot **before** independently awaited verification. Both the signed-evidence comparison and final response use this snapshot so a mutable storage adapter cannot replace a checked hypothesis, dataset ref or digest while the verifier is running. Adversarial tests mutate the original loader record mid-verification and require the returned metadata to remain the approved snapshot. This does not substitute for an immutable production artifact store.

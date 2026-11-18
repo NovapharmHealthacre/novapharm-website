@@ -81,27 +81,40 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
       !strictText(record.evaluationRef, 128)) {
     fail("unreviewed, unproven or incompatible artifact");
   }
-  // A second, independent verifier confirms the immutable digest, model and
-  // source rights, QA and reviewer separation. Neither client-supplied grants
-  // nor a record's own approval flags can promote an artifact to verified.
-  const verification = await verifyEvidence(Object.freeze({
-    ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])),
+  // Freeze the reviewed record fields before the independently awaited verifier.
+  // A loader must not be able to swap an already checked hypothesis, rights
+  // reference, or artifact digest during the asynchronous verification step.
+  const approvedRecord = Object.freeze({
+    architecture: record.architecture,
+    featureHypothesis: record.featureHypothesis,
     datasetRef: record.datasetRef,
     evaluationRef: record.evaluationRef,
     rightsGrantId: record.rightsGrantId,
     provenanceSha256: record.provenanceSha256,
     visualizationSha256: record.visualizationSha256,
-    modelArtifactSha256: record.modelArtifactSha256,
+    modelArtifactSha256: record.modelArtifactSha256
+  });
+  // A second, independent verifier confirms the immutable digest, model and
+  // source rights, QA and reviewer separation. Neither client-supplied grants
+  // nor a record's own approval flags can promote an artifact to verified.
+  const verification = await verifyEvidence(Object.freeze({
+    ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])),
+    datasetRef: approvedRecord.datasetRef,
+    evaluationRef: approvedRecord.evaluationRef,
+    rightsGrantId: approvedRecord.rightsGrantId,
+    provenanceSha256: approvedRecord.provenanceSha256,
+    visualizationSha256: approvedRecord.visualizationSha256,
+    modelArtifactSha256: approvedRecord.modelArtifactSha256,
     authorizationGrantId: grant.grantId
   }));
   if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired during independent verification");
   if (!verification || !sameScope(verification, scopedRequest) ||
-      verification.provenanceSha256 !== record.provenanceSha256 ||
-      verification.visualizationSha256 !== record.visualizationSha256 ||
-      verification.modelArtifactSha256 !== record.modelArtifactSha256 ||
-      verification.datasetRef !== record.datasetRef ||
-      verification.evaluationRef !== record.evaluationRef ||
-      verification.rightsGrantId !== record.rightsGrantId ||
+      verification.provenanceSha256 !== approvedRecord.provenanceSha256 ||
+      verification.visualizationSha256 !== approvedRecord.visualizationSha256 ||
+      verification.modelArtifactSha256 !== approvedRecord.modelArtifactSha256 ||
+      verification.datasetRef !== approvedRecord.datasetRef ||
+      verification.evaluationRef !== approvedRecord.evaluationRef ||
+      verification.rightsGrantId !== approvedRecord.rightsGrantId ||
       verification.authorizationGrantId !== grant.grantId ||
       verification.reviewState !== "independently_verified" ||
       verification.modelRightsApproved !== true ||
@@ -120,13 +133,13 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     modelVersion: scopedRequest.modelVersion,
     layerId: scopedRequest.layerId,
     featureId: scopedRequest.featureId,
-    architecture: record.architecture,
-    featureHypothesis: record.featureHypothesis,
-    datasetRef: record.datasetRef,
-    evaluationRef: record.evaluationRef,
-    provenanceSha256: record.provenanceSha256,
-    visualizationSha256: record.visualizationSha256,
-    modelArtifactSha256: record.modelArtifactSha256,
+    architecture: approvedRecord.architecture,
+    featureHypothesis: approvedRecord.featureHypothesis,
+    datasetRef: approvedRecord.datasetRef,
+    evaluationRef: approvedRecord.evaluationRef,
+    provenanceSha256: approvedRecord.provenanceSha256,
+    visualizationSha256: approvedRecord.visualizationSha256,
+    modelArtifactSha256: approvedRecord.modelArtifactSha256,
     explanationState: "hypothesis_only",
     authorisationChannel: "protected_backend",
     canPublish: false,

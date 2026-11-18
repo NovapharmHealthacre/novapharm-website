@@ -193,3 +193,24 @@ test("scope is immutable across asynchronous authorizer and record callbacks", a
   assert.equal(result.featureId, scope.featureId);
   assert.equal(mutable.featureId, "replaced-after-authorisation");
 });
+
+test("record mutation during independent verification never changes authorized response or digest", async () => {
+  const mutableRecord = { ...record };
+  const observed = await inspect({
+    request: scope, now,
+    authorizeRead: async () => authorised,
+    loadRecord: async () => mutableRecord,
+    verifyEvidence: async () => {
+      mutableRecord.architecture = "SECRET_UNREVIEWED_ARCHITECTURE";
+      mutableRecord.featureHypothesis = "SECRET_UNREVIEWED_HYPOTHESIS";
+      mutableRecord.datasetRef = "unapproved-dataset";
+      mutableRecord.modelArtifactSha256 = "0".repeat(64);
+      return verified;
+    }
+  });
+  assert.equal(observed.architecture, record.architecture);
+  assert.equal(observed.featureHypothesis, record.featureHypothesis);
+  assert.equal(observed.datasetRef, record.datasetRef);
+  assert.equal(observed.modelArtifactSha256, record.modelArtifactSha256);
+  assert.doesNotMatch(JSON.stringify(observed), /SECRET_UNREVIEWED|unapproved-dataset/);
+});
