@@ -36,3 +36,13 @@ The manually entered, non-sensitive research panel can flag differences in image
 Twelve deterministic synthetic probes provide CI regression against misleading text, spoofing, missing consent/provenance, label conflicts and false release claims; they **do not** simulate image attacks or constitute model evaluation. The full [22-reference engineering matrix](../../docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md) and release-blocker issue #825 govern subsequent licensed datasets, actual image-model benchmarking and iOS/Android on-device verification.
 
 No camera permission, CLIP/ResNet model, OCR, native ML inference, external call, training data, production authentication or patient-data processing is enabled in this source preview.
+
+## 101-country source coverage (web / Expo iOS / Expo Android)
+
+The Expo **Countries** tab now reads the **exact same immutable, non-sensitive candidate catalogue** as the protected web Data Sources view: `docs/intelligence/country-101-client-catalog-20261118.json`.
+
+The client matrix is generated from the independent 77-country/101-source release ledger plus the 24 additional country research proposals. It contains **101 countries**, **77 countries with one or more original candidate sources**, **24 geography-only country scopes**, and **zero approved/customer-live countries**. The legacy **Sources** tab still presents all 101 original source entries across national (89), EU/EEA (3) and Global (9) labels.
+
+This is bundled public reference **metadata**, not downloaded national medicine datasets. No direct regulator requests, credentials, protected backend authentication, licensed pharmaceutical records, medical recommendations or production deployment were added. The same Expo source runs on both iOS and Android, but **neither mobile binary is signed or distributed**. It is distinct from the separate native Swift/Kotlin research prototypes.
+
+Validate with `node scripts/generate-intelligence-country-client-catalog.mjs --check` and `node --test scripts/test-intelligence-country-client-catalog.mjs` from the repository root. Review privacy, regulatory reuse licences, authentication, tenant isolation, signed app IDs and actual source ingestion before enabling any live API.
