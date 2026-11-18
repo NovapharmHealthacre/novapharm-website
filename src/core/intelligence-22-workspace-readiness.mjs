@@ -10,6 +10,7 @@
  * medicine is the cross-workspace integration prerequisite in issue #497.
  */
 import { capabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json" with { type: "json" };
 import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
 export const workspaceCapabilityDependencies = Object.freeze({
@@ -133,6 +134,10 @@ export function assessIntelligence22Workspaces({
       priority: pilotSet.has(workspace.slug) ? "P0_first_accepted_medicine" : "P1_after_shared_pilot",
       capabilityDependencies: Object.freeze([...gates]),
       scientificResearch: SCIENCE_READINESS_BOUNDARY,
+      // Dated external research examples, not ingested/accepted medicine evidence.
+      scientificMethodReferences: Object.freeze(scienceMethods.methods.filter(
+        item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id)),
+      scientificMethodReferencesIndependentlyValidated: false,
       missingChecks: Object.freeze(blockers),
       // These are IMPLEMENTATION states, not claims of released function.
       implementationState: blockers.length
