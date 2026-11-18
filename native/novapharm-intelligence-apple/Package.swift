@@ -20,6 +20,8 @@ let package = Package(
             sources: [
                 "NovaCreateMLTrainer.swift",
                 "NovaCoreMLRuntime.swift",
+                "NovaL0ResearchMath.swift",
+                "NovaAlignmentResearchReceipt.swift",
                 "NovaFoundationModelsAssist.swift",
                 "NovaDocumentIntelligence.swift",
                 "NovaLanguageIntelligence.swift",
