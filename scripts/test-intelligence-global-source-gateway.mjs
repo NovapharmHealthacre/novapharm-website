@@ -287,3 +287,33 @@ test("stable, revalidated source grant remains internal-only after a successful 
   assert.equal(result.clinicalDecisionReady,false);
   assert.equal(result.rightsReceiptId,"receipt-test-001");
 });
+
+
+test("trusted source clock must never move backwards after an approved read", async () => {
+  const rollback = Date.parse("2026-11-17T16:59:59.000Z");
+  let reads = 0, clocks = 0, permissions = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => { permissions++; return permit(context); },
+    now: () => (++clocks === 1 ? TEST_NOW : rollback),
+    transport: async () => {
+      reads++;
+      return new Response(JSON.stringify({
+        studies: [{protocolSection:{identificationModule:{
+          nctId:"NCT01234567", briefTitle:"Synthetic only"
+        }}}]
+      }), {headers:{"content-type":"application/json"}});
+    }
+  });
+  await assert.rejects(
+    reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+    /no longer approved/
+  );
+  assert.equal(reads, 1, "One already-approved upstream test request was allowed");
+  assert.equal(permissions, 2, "Permit still rechecked after source read");
+  assert.equal(clocks, 2);
+  assert.throws(() => createGovSourceReader({
+    authorize:async context => permit(context),
+    transport:async()=>{ throw new Error("unused"); },
+    now: "not a clock"
+  }), /Trusted authorizer and transport/);
+});
