@@ -41,6 +41,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
+      # External Ubuntu package mirrors timed out at 600s on Nov 18; preserve full browser suite with bounded 1200s install.
       - name: Install Chromium and WebKit system dependencies (bounded)
         run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
       - name: Install Chromium and WebKit browsers (bounded)
@@ -123,6 +124,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
+      # Ubuntu mirrors exceeded 600s on Nov 18 before tests; retain all suites with a bounded 1200s install.
       - name: Install Chromium and WebKit system dependencies (bounded)
         run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
       - name: Install Chromium and WebKit browsers (bounded)

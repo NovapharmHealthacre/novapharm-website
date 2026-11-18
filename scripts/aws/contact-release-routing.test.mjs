@@ -19,7 +19,20 @@ test("approved public main pushes retain immutable AWS contact release while pri
   assert.match(dispatcher, /changed_any=true/);
   assert.match(dispatcher, /apps\/portal\/\*/);
   assert.match(dispatcher, /native\/novapharm-intelligence-apple\/\*/);
-  assert.match(dispatcher, /native\/novapharm-intelligence-mobile\/\*/);
+  for (const path of [
+    "src/ai/compute-admission.mjs",
+    "scripts/test-nova-compute-admission.mjs",
+    "scripts/test-nova-infrastructure-integration.mjs",
+    "native/novapharm-intelligence-android/*",
+    "docs/architecture/deep-learning-infrastructure-20261118.md",
+    "docs/ai-system-card.md",
+    "docs/ai-risk-register.md",
+    ".github/workflows/nova-ml-infrastructure-contract.yml"
+  ]) {
+    assert.ok(dispatcher.includes(path), "dispatcher must exclude protected ML-only change: " + path);
+    assert.ok(get("publish-aws-contact-production.yml").includes(path), "publisher must exclude protected ML-only change: " + path);
+  }
+
   assert.match(dispatcher, /scripts\/aws\/contact-release-routing\.test\.mjs/);
   for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
     assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
@@ -40,11 +53,6 @@ test("public publisher skips AWS and Pages for private Nova ML-only pushes but p
   assert.match(publisher, /found_ml=false/);
   assert.ok(dispatcher.includes(".github/workflows/browser-acceptance.yml"), "private dispatcher must classify .github/workflows/browser-acceptance.yml");
   assert.ok(publisher.includes(".github/workflows/browser-acceptance.yml"), "private publisher must classify .github/workflows/browser-acceptance.yml");
-  assert.ok(dispatcher.includes(".github/workflows/intelligence-global-mobile-contracts.yml"), "private dispatcher must classify .github/workflows/intelligence-global-mobile-contracts.yml");
-  assert.ok(publisher.includes(".github/workflows/intelligence-global-mobile-contracts.yml"), "private publisher must classify .github/workflows/intelligence-global-mobile-contracts.yml");
-  assert.match(publisher, /native\/novapharm-intelligence-mobile\/\*/);
-  assert.ok(dispatcher.includes("native/novapharm-intelligence-mobile/*"));
-  assert.ok(publisher.includes("native/novapharm-intelligence-mobile/*"));
   assert.match(publisher, /private_only=true/);
   assert.match(publisher, /changed_paths=\$\(git diff --name-only/);
   assert.match(publisher, /release_needed=false/);
@@ -71,4 +79,22 @@ test("canonical contact publication verifies health and rejected anonymous acces
   assert.doesNotMatch(canonical, /\.persisted == true and \.notificationAccepted == true/);
   assert.match(canonical, /data-live-b2b-enquiry-form/);
   assert.ok(canonical.includes("! grep -Fq 'data-email-enquiry-form'"));
+});
+test("private mobile source changes cannot trigger unrelated public AWS contact publishing", () => {
+  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
+  const publisher = get("publish-aws-contact-production.yml");
+  for (const candidate of [
+    "native/novapharm-intelligence-mobile/*",
+    ".github/workflows/intelligence-global-mobile-contracts.yml",
+    "src/ai/compute-admission.mjs",
+    "native/novapharm-intelligence-android/*",
+    ".github/workflows/nova-ml-infrastructure-contract.yml"
+  ]) {
+    assert.ok(dispatcher.includes(candidate), "dispatcher private-only guard missing " + candidate);
+    assert.ok(publisher.includes(candidate), "publisher private-only guard missing " + candidate);
+  }
+  assert.match(dispatcher, /changed_any=true/);
+  assert.match(dispatcher, /private_only=true/);
+  assert.match(publisher, /release_needed=false/);
+  assert.match(publisher, /release_needed=true/);
 });
