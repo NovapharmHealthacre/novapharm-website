@@ -251,7 +251,8 @@ export function createSecondarySourceReader({
       }
       if (stillApproved.receiptId !== grant.receiptId ||
           stillApproved.licenseId !== grant.licenseId ||
-          stillApproved.rightsVersion !== grant.rightsVersion) {
+          stillApproved.rightsVersion !== grant.rightsVersion ||
+          stillApproved.validUntil !== grant.validUntil) {
         throw new Error("Source rights changed during upstream request");
       }
       return buildEvaluationEnvelope({
