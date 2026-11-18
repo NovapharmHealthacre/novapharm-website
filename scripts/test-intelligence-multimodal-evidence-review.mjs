@@ -165,3 +165,24 @@ test("unknown metadata, including private fields and phantom model rights, canno
     assert.ok(result.signals.includes("invalid_or_oversized_input"));
   }
 });
+
+test("one-sided code, strength, form or manufacturer must not be reported as an ordinary review",()=>{
+  const baseline={
+    ...sample,
+    referenceStrength:"10 mg",observedStrength:"10 mg",
+    referenceDoseForm:"tablet",observedDoseForm:"tablet",
+    referenceManufacturer:"Example Lab",observedManufacturer:"Example Lab"
+  };
+  for(const field of [
+    "observedProductCode","referenceProductCode",
+    "observedStrength","referenceStrength",
+    "observedDoseForm","referenceDoseForm",
+    "observedManufacturer","referenceManufacturer"
+  ]){
+    const result=assessMultimodalEvidence({...baseline,[field]:""});
+    assert.equal(result.status,"insufficient_evidence",field);
+    assert.ok(result.signals.includes("incomplete_critical_attribute_pair"),field);
+    assert.equal(result.identityVerified,false);
+    assert.equal(result.canPublish,false);
+  }
+});
