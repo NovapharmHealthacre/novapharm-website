@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novapharmhealthcare.com/schemas/intelligence/global-source-candidate-v2.json",
+  "title": "NovaPharm Intelligence global source discovery registry v2",
+  "description": "Metadata-only source candidates; the presence of a regulator URL is never a dataset licence.",
+  "type": "object",
+  "required": [
+    "schema",
+    "reviewDate",
+    "sources",
+    "cautions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "novapharm.intelligence.global-source-candidates.v2"
+    },
+    "reviewDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "cautions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "candidateKey",
+          "region",
+          "country",
+          "provider",
+          "url",
+          "domains",
+          "mode",
+          "note",
+          "rightsStatus",
+          "integrationStatus",
+          "authorityVerification",
+          "termsReview",
+          "verifiedOn",
+          "licenceEvidenceId",
+          "allowedUses",
+          "dataAdmission",
+          "activeAdapterId"
+        ],
+        "properties": {
+          "candidateKey": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "minLength": 4
+          },
+          "region": {
+            "type": "string",
+            "minLength": 2
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 2
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "domains": {
+            "type": "string",
+            "minLength": 3
+          },
+          "mode": {
+            "type": "string",
+            "minLength": 3
+          },
+          "note": {
+            "type": "string",
+            "minLength": 3
+          },
+          "rightsStatus": {
+            "enum": [
+              "not-reviewed",
+              "rejected",
+              "approved",
+              "expired",
+              "revoked"
+            ]
+          },
+          "integrationStatus": {
+            "enum": [
+              "candidate-only",
+              "contract-tested",
+              "staging",
+              "production"
+            ]
+          },
+          "authorityVerification": {
+            "enum": [
+              "pending",
+              "verified",
+              "rejected"
+            ]
+          },
+          "termsReview": {
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "expired"
+            ]
+          },
+          "verifiedOn": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "licenceEvidenceId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "allowedUses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataAdmission": {
+            "enum": [
+              "not-admitted",
+              "quarantined",
+              "admitted",
+              "revoked"
+            ]
+          },
+          "activeAdapterId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}

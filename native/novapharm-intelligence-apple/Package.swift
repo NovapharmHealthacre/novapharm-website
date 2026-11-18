@@ -25,7 +25,8 @@ let package = Package(
                 "NovaDocumentIntelligence.swift",
                 "NovaLanguageIntelligence.swift",
                 "NovaSpeechIntelligence.swift",
-                "NovaResearchAppIntent.swift"
+                "NovaResearchAppIntent.swift",
+                "NovaComputePlan.swift"
             ]
         ),
         .testTarget(
