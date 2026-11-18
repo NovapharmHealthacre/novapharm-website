@@ -143,6 +143,9 @@ test("HSA bulk rechecks revocation and licence version after parsing, never retu
     (ctx) => grant(ctx, { revokedAt: "2026-11-18T07:00:00Z" }),
     (ctx) => grant(ctx, { receiptId: "new-receipt" }),
     (ctx) => grant(ctx, { rightsVersion: "new-version" }),
+    // Even an unexpired replacement clock is a different signed rights scope.
+    (ctx) => grant(ctx, { validUntil: "2026-11-18T07:35:00.000Z" }),
+    (ctx) => grant(ctx, { validUntil: "2026-11-18T08:35:00.000Z" }),
     (ctx) => grant(ctx, { licenseId: "new-licence" }),
     (ctx) => grant(ctx, { tenantId: "another-tenant" }),
     () => { throw new Error("authorizer disconnected"); }
