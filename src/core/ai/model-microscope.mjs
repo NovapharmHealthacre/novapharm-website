@@ -58,25 +58,30 @@ async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loa
   }
   // Permission MUST precede even the metadata lookup; client metadata is untrusted.
   const grant = await callTrusted(authorizeRead, scopedRequest, "trusted authorizer unavailable");
+  // Capture every grant field ONCE before validating the return value.
+  // A mutable authorizer object must never change its scope, identity or
+  // expiry between validation, storage and independent evidence review.
+  const approvedGrant = Object.freeze({
+    ...Object.fromEntries(keys.map(key => [key, grant?.[key]])),
+    allowed: grant?.allowed,
+    purpose: grant?.purpose,
+    channel: grant?.channel,
+    grantId: grant?.grantId,
+    expiresAt: grant?.expiresAt
+  });
   // Only sample grant validity after the asynchronous authorization returns.
   // A permit that timed out during the authorizer must never reach storage.
   const requestTime = readClock();
-  if (!grant || grant.allowed !== true || !sameScope(grant, scopedRequest) ||
-      grant.purpose !== MODEL_MICROSCOPE_PURPOSE || grant.channel !== "protected_backend" ||
-      !strictText(grant.grantId, 128) || typeof grant.expiresAt !== "string" ||
-      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(grant.expiresAt) ||
-      !Number.isFinite(Date.parse(grant.expiresAt)) || new Date(Date.parse(grant.expiresAt)).toISOString() !== grant.expiresAt ||
-      Date.parse(grant.expiresAt) <= requestTime ||
-      Date.parse(grant.expiresAt) - requestTime > 5 * 60 * 1000) {
+  if (!grant || approvedGrant.allowed !== true || !sameScope(approvedGrant, scopedRequest) ||
+      approvedGrant.purpose !== MODEL_MICROSCOPE_PURPOSE || approvedGrant.channel !== "protected_backend" ||
+      !strictText(approvedGrant.grantId, 128) || typeof approvedGrant.expiresAt !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(approvedGrant.expiresAt) ||
+      !Number.isFinite(Date.parse(approvedGrant.expiresAt)) || new Date(Date.parse(approvedGrant.expiresAt)).toISOString() !== approvedGrant.expiresAt ||
+      Date.parse(approvedGrant.expiresAt) <= requestTime ||
+      Date.parse(approvedGrant.expiresAt) - requestTime > 5 * 60 * 1000) {
     fail("missing, mismatched or expired authorisation");
   }
 
-  // Snapshot verified authorization fields before invoking awaited adapters.
-  // The original grant can be mutated during storage or independent review.
-  const approvedGrant = Object.freeze({
-    grantId: grant.grantId,
-    expiresAt: grant.expiresAt
-  });
   const record = await callTrusted(loadRecord, Object.freeze({ ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])) }), "protected artifact unavailable");
   if (Date.parse(approvedGrant.expiresAt) <= readClock()) fail("authorisation expired while loading artifact");
   if (!record || !sameScope(record, scopedRequest) ||

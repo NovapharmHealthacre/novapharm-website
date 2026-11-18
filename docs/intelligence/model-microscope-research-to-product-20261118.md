@@ -126,3 +126,7 @@ The protected inspection reader now evaluates grant expiry **after** the asynchr
 ### Immutable authorization grant checkpoint
 
 After authorization returns, the inspector snapshots the validated short-lived expiry and grant identifier before any awaited protected artifact loader or independent verifier. An authorization adapter cannot extend its own approval window or replace a grant ID while other callbacks execute. Regression tests explicitly mutate both fields during asynchronous loading and assert expiry denial before the verifier; a separate case verifies that the independent evidence callback receives the original grant identity. This is a source-only isolation invariant, not proof of a live authorization service.
+
+### One-time authorization field capture
+
+To close a second confirmed authorization race, the inspector captures every identity, permission and expiration field exactly once from the authorizer's returned object **before** validating it. Subsequent grant checks and independent evidence bindings refer only to that immutable snapshot. This prevents a malicious or faulty getter from returning one expiry during validation and a longer expiry at evidence projection. A regression test uses a changing-accessor grant; it must be sampled exactly once and denied when the original expiry lapses. The source-only contract does not confer authorization from a deployed service.

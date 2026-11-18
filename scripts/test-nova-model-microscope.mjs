@@ -327,3 +327,23 @@ test("independent verification is bound to the original approved grant ID", asyn
   assert.equal(seen, authorised.grantId);
   assert.equal(output.canPublish, false);
 });
+
+test("changing authorization getters cannot extend a short grant after validation", async () => {
+  let reads = 0, clock = now, loads = 0, verifications = 0;
+  const shortExpiry = new Date(now + 1000).toISOString();
+  const dynamicGrant = new Proxy({ ...authorised, expiresAt: shortExpiry }, {
+    get(target, key) {
+      if (key === "expiresAt") return ++reads === 1 ? shortExpiry : authorised.expiresAt;
+      return Reflect.get(target, key);
+    }
+  });
+  await assert.rejects(inspect({
+    request: scope, now: () => clock,
+    authorizeRead: async () => dynamicGrant,
+    loadRecord: async () => { loads++; clock = now + 2000; return record; },
+    verifyEvidence: async () => { verifications++; return verified; }
+  }), /authorisation expired while loading artifact/);
+  assert.equal(reads, 1, "the expiry field is read only once");
+  assert.equal(loads, 1);
+  assert.equal(verifications, 0);
+});
