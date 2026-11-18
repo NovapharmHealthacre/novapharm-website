@@ -60,3 +60,20 @@ The reader requires four independent, backend-injected services: a trusted tenan
 Additional regression coverage: `scripts/test-intelligence-official-live-pharma-quarantine.mjs` tests valid synthetic publisher response shapes, strict data release identity, fixed tenant controls, revoked and expired rights, fingerprinting, no source records in returned JSON, and failure if the authorised clock moves backwards.
 
 **This is a live-ingestion plumbing candidate for internal, strictly quarantined evaluation**, not a completed live production medicine database. The protected release inventory and actual commercial source licence review are not connected in the current AWS-disconnected session. No legal approval, full snapshot or customer admission can be inferred from the synthetic rights fixtures.
+
+
+## Official source-specific terms and throttling review (18 November 2026)
+
+**US FDA Drugs@FDA / openFDA**
+- The FDA licensing page: https://open.fda.gov/license/ states openFDA data is generally public-domain / CC0 and may be commercially reused, subject to site terms, third-party rights, privacy/publicity, patent and trademark exceptions. Its GMDN medical-device restrictions must not be assumed to license GMDN terminology, mapping or AI training.
+- The source API itself includes `meta.terms`, `meta.license`, `meta.last_updated`, and a disclaimer warning that API observations can be unvalidated for medical care. The live quarantine reader requires the specific `meta.last_updated` calendar date to match the independently supplied publisher-release `publishedOn` date exactly.
+- FDA data alone does not establish a medicine's current UK licence, actual market availability, price or clinical suitability.
+
+**Singapore HSA registered therapeutic products**
+- The specific publisher page https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view identifies HSA's **Listing of Registered Therapeutic Products (2026)**, 12 named columns, about 5,500 entries, **last updated 7 August 2026**, and an approximately six-month dataset refresh cadence. These facts are publisher-page descriptions; the one-row probe cannot certify full coverage or update freshness.
+- The same dataset page says **free for personal or commercial use under the Open Data Licence**. The full https://data.gov.sg/open-data-licence (or equivalent official https://developers.data.gov.sg/open-data-licence) should be retained in a dated, source-specific rights decision, including attribution, restrictions and permitted downstream/sub-licensing uses. Avoid assuming a blanket right to resell independent API access, to train models, or to reuse third-party material.
+- Publisher API rate guidance https://guide.data.gov.sg/developer-guide/api-overview/api-rate-limits states unauthenticated `datastore_search` access is **4 calls per 10 seconds** (higher tiers require API keys). The dedicated runner makes **one request per HSA probe, no retry**, and fails closed on 429. A real multi-tenant customer service requires a **distributed cross-instance rate budget** and approved production API key/tier rather than the present network-fingerprint limiter.
+- Query docs https://guide.data.gov.sg/developer-guide/dataset-apis/search-and-filter-within-dataset identify `resource_id`, `limit` and exact column-keyed JSON search syntax; dataset versions can change.
+- The dataset is **product-registration evidence**, not current inventory, dispensing, price or adverse-event incidence.
+
+**Approval boundary:** These are authoritative public statements and concrete legal review inputs, not a signed NovaPharm legal or clinical data-admission decision. Source rights and production admission remain unverified, even if the bounded public GET succeeds.
