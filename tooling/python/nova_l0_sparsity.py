@@ -87,7 +87,8 @@ class NovaL0SparseLinearRegressor(nn.Module):
             raise ValueError("Feature schema does not match trained model.")
         if any(not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", name) for name in feature_names):
             raise ValueError("Invalid feature name.")
-        if not bool(torch.isfinite(self.weights).all()) or not bool(torch.isfinite(self.bias)):
+        if (not bool(torch.isfinite(self.weights).all()) or not bool(torch.isfinite(self.bias))
+                or not bool(torch.isfinite(self.gates.log_alpha).all())):
             raise ValueError("Model parameters must be finite.")
         gate_values = self.gates()
         coefficients = (self.weights * gate_values).cpu().tolist()
