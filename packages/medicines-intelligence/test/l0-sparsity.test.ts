@@ -64,4 +64,9 @@ test("bad numerical values, malformed schemas and mutated release metadata fail 
   assert.throws(() => scoreL0SparseLinearCandidate(model, { other: 10 }));
   assert.throws(() => scoreL0SparseLinearCandidate(model, { demand: 1, extra: 2 }));
   assert.throws(() => scoreL0SparseLinearCandidate({ ...model, productionApproved: true } as unknown as typeof model, { demand: 1 }));
+  assert.throws(() => scoreL0SparseLinearCandidate({ ...model, nonZeroCount: 0 }, { demand: 1 }));
+  assert.throws(() => scoreL0SparseLinearCandidate({ ...model, featureNames: ["Demand"] }, { Demand: 1 }));
+  assert.throws(() => scoreL0SparseLinearCandidate({ ...model, coefficients: [Number.NaN] }, { demand: 1 }));
+  assert.throws(() => scoreL0SparseLinearCandidate({ ...model, customerVisible: true } as unknown as typeof model, { demand: 1 }));
+
 });
