@@ -49,3 +49,14 @@ The second command makes exactly two outbound public HTTP reads; never store sen
 ## Next actual integration steps
 
 After the exact-head CI passes, verify publisher legal terms for each data class, approve independent source-specific rights, build versioned controlled source ingestion into the protected data-admission pipeline, establish authorized per-tenant source access, and validate real staging and production end-to-end reads. Without connected AWS, protected deployment and authenticated customer access cannot be verified here.
+
+
+## New protected in-memory live-source quarantine path
+
+`createOfficialLivePharmaQuarantineReader` in `src/core/intelligence-official-live-pharma-probes.mjs` now connects the **actual official source HTTP response bytes** directly to the existing `buildSourceSnapshotQuarantine` contract for FDA and HSA, rather than stopping at a connectivity receipt. It still has **no public route, filesystem write or database write**.
+
+The reader requires four independent, backend-injected services: a trusted tenant/source/domain bound rights authorizer, a protected publisher release inventory (dataset ID, schema version and genuine publication/observation dates), a bounded official HTTP transport, and a trusted monotonic server clock. It verifies rights before the network call and **again after** quarantining the versioned raw sample; any revocation, licence/receipt/version rotation, expired grant or rollback denies the result. The untrusted source cannot pick its own dataset identity or invent source release dates. The resulting evidence contains a digest and **no medicine or patient records**, with `canPublish:false` and `productionAccepted:false`.
+
+Additional regression coverage: `scripts/test-intelligence-official-live-pharma-quarantine.mjs` tests valid synthetic publisher response shapes, strict data release identity, fixed tenant controls, revoked and expired rights, fingerprinting, no source records in returned JSON, and failure if the authorised clock moves backwards.
+
+**This is a live-ingestion plumbing candidate for internal, strictly quarantined evaluation**, not a completed live production medicine database. The protected release inventory and actual commercial source licence review are not connected in the current AWS-disconnected session. No legal approval, full snapshot or customer admission can be inferred from the synthetic rights fixtures.
