@@ -22,7 +22,7 @@ import sourceRegister from "../../docs/intelligence/global-pharma-sources-202611
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "review" | "research" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -42,9 +42,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
-  { screen: "review", label: "Review" },
-  { screen: "research", label: "Research" },
-  { screen: "account", label: "Account" }
+  { screen: "more", label: "More" }
 ];
 const pilotSlugs = new Set([
   "medicine-search", "medicine-overview", "identity",
@@ -109,7 +107,7 @@ function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (scree
   return (
     <View style={styles.navigation} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen;
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -268,6 +266,27 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
+          {screen === "more" && (
+            <>
+              <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
+              {([
+                { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
+                { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
+                { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
+              ] as const).map((item) => (
+                <Pressable
+                  key={item.screen}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label + ". " + item.detail}
+                  style={[styles.card, styles.moreAction]}
+                  onPress={() => changeScreen(item.screen)}
+                >
+                  <Text style={styles.cardTitle}>{item.label}</Text>
+                  <Text style={styles.description}>{item.detail}</Text>
+                </Pressable>
+              ))}
+            </>
+          )}
           {screen === "review" && <MultimodalReviewScreen />}
 
           {screen === "research" && (
@@ -376,6 +395,7 @@ const styles = StyleSheet.create({
   rule: { height: 1, backgroundColor: palette.border, marginVertical: 22 },
   groupTitle: { fontSize: 12, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
   card: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 16, marginBottom: 10 },
+  moreAction: { minHeight: 56, justifyContent: "center" },
   sourceCard: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15, marginBottom: 10 },
   sourceHalf: { flex: 1, minWidth: 0 },
   sourceRow: { gap: 10 },
