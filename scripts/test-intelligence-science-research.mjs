@@ -115,3 +115,11 @@ test("GPT-Rosalind-6 model reference never grants customer or unapproved interna
   assert.equal(assessRosalindResearchBoundary({audience:"internal_research"}).internalAudienceCandidate, true);
   assert.equal(assessRosalindResearchBoundary({audience:"customer"}).internalAudienceCandidate, false);
 });
+
+test("canonical science readiness principles are identical in cross-workspace reports", () => {
+  const source = read("src/core/intelligence-22-workspace-readiness.mjs");
+  const rules = read("src/core/intelligence-science-research-principles.mjs");
+  assert.match(source, /scientificResearch: SCIENCE_READINESS_BOUNDARY/);
+  assert.match(rules, /no_customer_facing_restricted_model_access/);
+  assert.match(rules, /reproducibility_and_falsifiable_counterevidence/);
+});
