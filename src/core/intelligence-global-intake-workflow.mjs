@@ -62,11 +62,8 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       if(!dataset)reject("unregistered source");
       if(!metadata||typeof metadata!=="object"||Array.isArray(metadata))reject("metadata");
 
-      // Authorize BEFORE parsing raw content or making any quarantine record.
-      let authorisedAt;
-      try{authorisedAt=now();}
-      catch{reject("server clock");}
-      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
+      // Authorize BEFORE parsing source bytes. Record the permit clock only
+      // AFTER the asynchronous backend decision returns, not before it.
       let decision;
       try{
         decision=await authorize({
@@ -74,13 +71,24 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
           purpose:"internal-evaluation"
         });
       }catch{reject("trusted authorizer unavailable");}
+      let authorisedAt;
+      try{authorisedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
       const grant=assertInternalEvaluationPermit({
         permit:decision,sourceId,tenantId,country:plan.country,
         domain:plan.domain,now:authorisedAt
       });
       const raw=decodeSourceBytes(rawBytes);
       const normalized=normaliseGovSourceResult(plan,raw);
-      const fetchedAt=new Date(authorisedAt).toISOString();
+      // The independent evaluator has no network call, but processing can
+      // still outlast a grant or observe a regressed/malformed server clock.
+      let capturedAt;
+      try{capturedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(capturedAt)||capturedAt<authorisedAt||
+        capturedAt>=Date.parse(grant.validUntil))reject("permit expired or server clock");
+      const fetchedAt=new Date(capturedAt).toISOString();
 
       // Publication/observation dates and version are supplied by a trusted
       // backend source release inventory, never guessed from HTTP response
@@ -102,7 +110,7 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
         bytes:rawBytes
       });
       const evidence=buildEvaluationEnvelope({
-        plan,normalized,raw,grant,capturedAt:authorisedAt
+        plan,normalized,raw,grant,capturedAt
       });
       const pageQuality=assessGlobalSourcePageQuality({
         sourceId,raw,normalized,manifest,limit
