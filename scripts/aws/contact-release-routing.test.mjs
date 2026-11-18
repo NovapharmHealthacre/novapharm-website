@@ -29,6 +29,7 @@ test("approved public main pushes retain immutable AWS contact release while pri
     "docs/ai-risk-register.md",
     ".github/workflows/nova-ml-infrastructure-contract.yml",
     "src/ai/intelligence-openai-signals.mjs",
+    "src/ai/openai-signals-v3-table-registry.mjs",
     "scripts/test-intelligence-openai-signals.mjs",
     "scripts/test-intelligence-signals-integration.mjs",
     "docs/intelligence/openai-signals-whisper-triton-integration-20261118.md",
