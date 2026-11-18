@@ -55,7 +55,8 @@ export function assessIntelligenceEnterpriseReadiness({ registry, constraints, m
   });
   const countryRows = [...byCountry.entries()].sort(([a], [b]) => a.localeCompare(b, "en")).map(([country, rows]) => ({
     country,
-    type: country === "Global" ? "cross-border-source-label" : "country-label",
+    type: country === "Global" ? "cross-border-source-label" :
+      country === "European Union / EEA" ? "regional-source-label" : "country-label",
     candidates: rows.length,
     rightsDeclaredReviewed: rows.reduce((n, x) => n + stat(x.declaredRightsReviewed), 0),
     productionIntegrationsDeclared: rows.reduce((n, x) => n + stat(x.declaredProductionIntegration), 0),
