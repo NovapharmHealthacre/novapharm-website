@@ -5,6 +5,9 @@ on:
     paths:
       - 'src/core/intelligence-es-cima-public-live-probe.mjs'
       - 'scripts/test-intelligence-es-cima-public-live-probe.mjs'
+      - 'scripts/test-intelligence-es-cima-live-quarantine.mjs'
+      - 'src/core/intelligence-source-snapshot-quarantine.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'scripts/run-intelligence-es-cima-public-live-probe.mjs'
       - 'docs/intelligence/spain-cima-official-live-probe-20261118.md'
       - '.github/workflows/intelligence-es-cima-public-live-probe.yml'
@@ -37,8 +40,9 @@ jobs:
         run: |
           node --check src/core/intelligence-es-cima-public-live-probe.mjs
           node --check scripts/test-intelligence-es-cima-public-live-probe.mjs
+          node --check scripts/test-intelligence-es-cima-live-quarantine.mjs
           node --check scripts/run-intelligence-es-cima-public-live-probe.mjs
-          node --test scripts/test-intelligence-es-cima-public-live-probe.mjs
+          node --test scripts/test-intelligence-es-cima-public-live-probe.mjs scripts/test-intelligence-es-cima-live-quarantine.mjs
       - name: Actual one-record official publisher HTTP read
         run: |
           mkdir -p artifacts/spain-cima-live
