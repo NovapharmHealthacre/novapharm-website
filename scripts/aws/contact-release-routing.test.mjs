@@ -440,9 +440,9 @@ test("Official pharmaceutical publisher probe source-only changes do not dispatc
     "publish-aws-contact-production.yml"
   ]) {
     const source = get(workflow);
-    const caseLine = source.match(/case "\\$changed" in\\s*\\n\\s*([^\\n]+)/)?.[1];
+    const caseLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(caseLine, workflow + " must have a release path classifier");
-    const patterns = caseLine.trim().replace(/\\)$/, "").split("|");
+    const patterns = caseLine.trim().replace(/\)$/, "").split("|");
     const protectedPath = path => patterns.some(pattern =>
       pattern === path || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0,-1)))
     );
@@ -463,14 +463,14 @@ test("Official pharmaceutical publisher probe source-only changes do not dispatc
         "mixed public changes must follow real publication acceptance");
     }
 
-    const branch = source.match(/server\\.mjs\\)\\s*\\n([\\s\\S]*?)\\n\\s*;;/)?.[1];
+    const branch = source.match(/server\.mjs\)\s*\n([\s\S]*?)\n\s*;;/)?.[1];
     assert.ok(branch, workflow + " must include exact guarded server special-case");
     assert.ok(branch.includes("56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2"), "pinned reviewed server SHA-256 required");
     assert.match(branch, /git diff --unified=0/);
     assert.match(branch, /sha256sum/);
     assert.match(branch, /found_ml=true/);
     assert.match(branch, /private_only=false/);
-    assert.ok(!/\\bserver\\.mjs\\|/.test(caseLine),
+    assert.ok(!/\bserver\.mjs\|/.test(caseLine),
       "shared server must not be in the main private-only path list");
   }
 });
