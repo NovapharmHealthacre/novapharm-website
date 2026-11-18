@@ -88,6 +88,12 @@ export function inspectTrainedSparseTransformerReport(report) {
     evaluation.calibrationHeadAblatedLosses.length === 2 &&
     evaluation.calibrationHeadAblatedLosses.every(n => finite(n) && n >= 0) &&
     count(evaluation.keptHeadIndex, 0, 1));
+  // Head selection is decided on calibration only; the final holdout must
+  // neither influence selection nor contradict the reported intervention.
+  const selectedFromCalibration =
+    evaluation.calibrationHeadAblatedLosses[0] >= evaluation.calibrationHeadAblatedLosses[1] ? 0 : 1;
+  denyUnless(evaluation.keptHeadIndex === selectedFromCalibration &&
+    evaluation.ablatedLoss > evaluation.isolatedCircuitLoss);
   denyUnless(ASSERTIONS.every(key => assurance[key] === false));
   const checked = inspectSparseCircuitCandidate(candidateArtifact);
   denyUnless(checked.valid && checked.modelId === "toy-trained-attention" &&
@@ -101,7 +107,20 @@ export function inspectTrainedSparseTransformerReport(report) {
     candidateArtifact.evaluation.baselineLoss === evaluation.baselineLoss &&
     candidateArtifact.evaluation.circuitLoss === evaluation.isolatedCircuitLoss &&
     candidateArtifact.evaluation.ablatedLoss === evaluation.ablatedLoss &&
-    candidateArtifact.circuit.nodes.some(node => node.id === "head-" + evaluation.keptHeadIndex) &&
+    candidateArtifact.circuit.nodes.length === 3 &&
+    candidateArtifact.circuit.edges.length === 2 &&
+    candidateArtifact.circuit.nodes[0].id === "synthetic-token" &&
+    candidateArtifact.circuit.nodes[0].kind === "embedding-channel" &&
+    candidateArtifact.circuit.nodes[1].id === "head-" + evaluation.keptHeadIndex &&
+    candidateArtifact.circuit.nodes[1].kind === "attention-channel" &&
+    candidateArtifact.circuit.nodes[2].id === "cls-readout" &&
+    candidateArtifact.circuit.nodes[2].kind === "residual-write" &&
+    candidateArtifact.circuit.edges[0].from === "synthetic-token" &&
+    candidateArtifact.circuit.edges[0].to === "head-" + evaluation.keptHeadIndex &&
+    candidateArtifact.circuit.edges[0].weight > 0 &&
+    candidateArtifact.circuit.edges[1].from === "head-" + evaluation.keptHeadIndex &&
+    candidateArtifact.circuit.edges[1].to === "cls-readout" &&
+    candidateArtifact.circuit.edges[1].weight > 0 &&
     !checked.mechanisticExplanationVerified && !checked.productionEligible && !checked.clinicalUsePermitted);
   return checked;
 }

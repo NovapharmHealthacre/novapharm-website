@@ -48,6 +48,12 @@ test("contradicted model rights, hidden private fields and altered hash cannot b
     report => { report.data.sha256 = "b".repeat(64); },
     report => { report.evaluation.ablatedLoss = 0; },
     report => { report.evaluation.keptHeadIndex = 13; },
+    report => { report.evaluation.keptHeadIndex = 0; report.candidateArtifact.circuit.nodes[1].id = "head-0"; report.candidateArtifact.circuit.edges[0].to = "head-0"; report.candidateArtifact.circuit.edges[1].from = "head-0"; },
+    report => { report.evaluation.calibrationHeadAblatedLosses = [3, 2]; },
+    report => { report.candidateArtifact.circuit.edges[0].from = "cls-readout"; },
+    report => { report.candidateArtifact.circuit.nodes[1].kind = "mlp-neuron"; },
+    report => { report.candidateArtifact.circuit.edges[0].weight = -1; },
+    report => { report.candidateArtifact.circuit.nodes.push({id:"extra-feature",kind:"residual-write"}); },
     report => { report.candidateArtifact.evaluation.sampleCount = 1_000_001; },
     report => { report.candidateArtifact.circuit.nodes[0].note = "PRIVATE-NEVER-OUTPUT"; }
   ];
