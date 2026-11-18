@@ -48,3 +48,17 @@ test("no source candidate is silently represented as verified market facts", () 
   const app = read("native/novapharm-intelligence-mobile/App.tsx");
   assert.doesNotMatch(app, /sourceRegister\.sources\.map\(.*fetch/);
 });
+
+test("Expo CLIP preview is a real iOS/Android screen but never claims live inference", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  const contract = read("native/novapharm-intelligence-mobile/clip-research.ts");
+  assert.match(app, /screen === "visual"/);
+  assert.match(app, /Visual catalogue research/);
+  assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
+  assert.match(app, /editable=\{false\}/);
+  assert.match(app, /Similarity cannot establish/);
+  assert.match(contract, /source_candidate_disabled/);
+  assert.match(contract, /modelRuntimeConnected: false/);
+  assert.doesNotMatch(app, /fetch\(|Authorization:|access_token|client_secret|WebView/);
+  assert.doesNotMatch(contract, /fetch\(|Authorization:|access_token|client_secret|AsyncStorage/);
+});
