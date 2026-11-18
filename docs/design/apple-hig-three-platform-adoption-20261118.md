@@ -70,6 +70,10 @@ Overview, Workspaces, Sources and More — with Review, Research and Account
 available as accessible, 56-point-minimum actions in More. At larger system
 text scales (fontScale >= 1.4), the four navigation choices wrap into two
 rows and the source directory falls back to one column even on wide screens.
+The text styles for descriptions and section introductions now use 17-point
+system-scalable defaults, with navigation labels at 14 points and status text
+at legible secondary sizes. Larger system text still requires actual
+VoiceOver/TalkBack and physical-device testing.
 When a nested route
 is open, the More tab retains selected semantics. Every route is still reachable.
 No bundled Apple assets, web-authentication, live data, model inference or payment
