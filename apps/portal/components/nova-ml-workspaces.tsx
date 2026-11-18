@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -61,6 +61,26 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <dl className={styles.contractGrid}>{designRows.map(([label, description]) =>
         <div key={label} className={styles.contractItem}><dt>{label}</dt><dd>{description}</dd></div>
       )}</dl>
+    </section>
+
+    <section className={styles.section} aria-labelledby="nova-ml-sparse-circuits">
+      <h2 id="nova-ml-sparse-circuits">{novaMlSparseCircuitAssurance.title}</h2>
+      <p className={styles.boundary} role="note"><strong>{novaMlSparseCircuitAssurance.status}.</strong>
+        No inspected model, circuit discovery, causal proof, sparse-model inference or production activation is connected to this workspace. This is an independently gated research contract, not a model result.
+      </p>
+      <p className={styles.helper}>{novaMlSparseCircuitAssurance.modelPolicy}</p>
+      <dl className={styles.facts}>
+        <div><dt>Artifact schema</dt><dd>{novaMlSparseCircuitAssurance.contract}</dd></div>
+        <div><dt>Purpose</dt><dd>{novaMlSparseCircuitAssurance.classification}</dd></div>
+        <div><dt>Safety boundary</dt><dd>Research review only</dd></div>
+      </dl>
+      <p>{novaMlSparseCircuitAssurance.releasePolicy}</p>
+      <dl className={styles.contractGrid}>{novaMlSparseCircuitAssurance.methodGates.map((gate) =>
+        <div key={gate.name} className={styles.contractItem}><dt>{gate.name}</dt><dd>{gate.detail}</dd></div>
+      )}</dl>
+      <p className={styles.reference}>Research references: {novaMlSparseCircuitAssurance.references.map((reference, index) =>
+        <span key={reference.href}>{index > 0 ? " · " : ""}<a href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label}</a></span>
+      )}</p>
     </section>
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">
