@@ -391,7 +391,7 @@ test("country-specific source-only adapters cannot unintentionally dispatch publ
     const source = get(workflow);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, workflow + " missing active source-only classifier");
-    const allowed = new Set(classifier.split("|"));
+    const allowed = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
     for (const path of countrySourcePaths) {
       assert.ok(allowed.has(path), workflow + " would publish private pharmaceutical source-only file: " + path);
     }
@@ -433,7 +433,7 @@ test("inherited 2026-11-18 sparse-circuit research files stay private-only after
     const workflow = get(name);
     const line = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(line, name + " must retain real Bash case classifier");
-    const patterns = line.split("|");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
     for (const file of inherited) {
       assert.ok(patterns.includes(file) ||
         (file.startsWith("native/novapharm-intelligence-mobile/") &&
@@ -459,7 +459,7 @@ test("101-country web and Expo catalogue paths are private-only; no backend serv
     const source = get(workflow);
     const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(line, workflow+" missing active source classifier");
-    const patterns = line.split("|");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
     for (const p of candidatePaths) {
       assert.ok(patterns.includes(p) ||
         (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
