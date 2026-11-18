@@ -13,6 +13,8 @@ const receipt = result => {
   assert.equal(result.independentGroundTruthVerified, false);
   assert.equal(result.dataRightsVerified, false);
   assert.equal(result.humanAdjudicationRequired, true);
+  assert.equal(Object.isFrozen(result), true);
+  assert.equal(Object.isFrozen(result.limitations), true);
 };
 
 test("reward overoptimization warns when proxy rises after independent peak declines", () => {
