@@ -3,12 +3,13 @@
  * No model, upstream API, credentials, patient records or protected data.
  */
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 
 const color = { ink: "#1D1D1F", secondary: "#424245", border: "#D2D2D7", grouped: "#F5F5F7", accent: "#E3120B" };
 
-export function ScienceResearchMobile() {
+export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
   return <View accessibilityLabel="Scientific research, offline planning preview" style={styles.container}>
     <Text style={styles.breadcrumb}>NOVAPHARM INTELLIGENCE / SCIENCE</Text>
     <Text style={styles.title} accessibilityRole="header">Science, grounded in evidence.</Text>
@@ -26,9 +27,18 @@ export function ScienceResearchMobile() {
         <Text style={styles.state}>Planning only · Human review required</Text>
         <Text style={styles.smallHeading}>Before activation</Text>
         {workflow.requirements.map((requirement) => <Text key={requirement} style={styles.requirement}>– {requirement}</Text>)}
+        <Text style={styles.smallHeading}>Related Intelligence workspaces</Text>
+        {workflow.linkedWorkspaces.map((slug) => {
+          const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
+          return workspace ? <Pressable key={slug} style={styles.relatedButton} accessibilityRole="button"
+            accessibilityLabel={`Review ${workspace.title} prerequisites, not enabled on mobile`}
+            onPress={() => onOpenWorkspace(slug)}>
+            <Text style={styles.relatedText}>{workspace.title} · {workspace.state === "gated" ? "Gated" : "Read-only foundation"}</Text>
+          </Pressable> : null;
+        })}
       </View>
     )}
-    <Text style={styles.footer}>OpenAI Science is a public research reference, not an API. Restricted model access, source licences and release approvals must be obtained separately.</Text>
+    <Text style={styles.footer}>OpenAI Science is a public research reference, not an API. GPT-Rosalind API use is limited to separately approved internal research and cannot be offered to customers. Source licences and release approvals remain separate.</Text>
   </View>;
 }
 
@@ -47,5 +57,7 @@ const styles = StyleSheet.create({
   state: { color: color.secondary, backgroundColor: color.grouped, padding: 10, fontSize: 12, marginTop: 14, borderRadius: 7 },
   smallHeading: { marginTop: 16, marginBottom: 6, fontSize: 12, fontWeight: "700", color: color.ink },
   requirement: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 4 },
+  relatedButton: { minHeight: 44, justifyContent: "center", borderWidth: 1, borderColor: color.border, borderRadius: 9, paddingHorizontal: 12, marginTop: 7 },
+  relatedText: { fontSize: 12, color: color.ink, lineHeight: 19, fontWeight: "600" },
   footer: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 18 }
 });
