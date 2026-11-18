@@ -63,7 +63,7 @@ test("CLI reads a bounded regular file, rejects mismatched digest and never prin
   const table = "share_of_messages_by_topic_country_month.csv";
   const path = join(dir, table);
   const cli = fileURLToPath(new URL("./data/review-openai-signals-csv.mjs", import.meta.url));
-  const csv = "month,country,topic,share_of_messages\\n2026-09-01,GB,Writing,0.4\\n";
+  const csv = "month,country,topic,share_of_messages\n2026-09-01,GB,Writing,0.4\n";
   const run = (digest) => spawnSync(process.execPath, [cli, table, path, ...(digest ? [digest] : [])],
     { encoding: "utf8", timeout: 15000, maxBuffer: 1024 * 1024 });
   try {
