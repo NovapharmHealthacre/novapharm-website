@@ -1,0 +1,40 @@
+name: Intelligence Australia PBS offline schedule quarantine
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs'
+      - 'scripts/test-intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs'
+      - 'docs/intelligence/australia-pbs-public-candidate-20261118.md'
+      - '.github/workflows/intelligence-au-pbs-offline-contracts.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  public-schedule-offline:
+    name: Australia PBS no-network monthly source contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Parse offline evidence contract
+        run: |
+          node --check src/core/intelligence-au-pbs-schedule-quarantine.mjs
+          node --check src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs
+          node --check scripts/test-intelligence-au-pbs-schedule-quarantine.mjs
+          node --check scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs
+      - name: Run rights, authenticity, source status and identity tests
+        run: node --test scripts/test-intelligence-au-pbs-schedule-quarantine.mjs scripts/test-intelligence-au-pbs-schedule-csv-quarantine.mjs
