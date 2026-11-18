@@ -115,3 +115,59 @@ test("native IDs are preserved for Canadian DPD, with no country translation",as
  assert.equal(result.evidence.records[0].localId,"00001234");
  assert.equal(result.canPublish,false);
 });
+
+
+test("file-based source intake refuses revoked, replaced and cross-tenant rights after parsing",async()=>{
+ const transitions=[
+  {rightsStatus:"pending"},
+  {revokedAt:"2026-11-17T18:45:00.000Z"},
+  {tenantId:"tenant-beta"},
+  {country:"US"},
+  {receiptId:"rights-receipt-002"},
+  {licenseId:"license-internal-v2"},
+  {rightsVersion:"rights-review-v2"},
+  {validUntil:"2026-11-17T19:45:00.000Z"}
+ ];
+ for(const changed of transitions){
+  let authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx,++authorizations===1?{}:changed),
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),/not approved|changed during evaluation/);
+  assert.equal(authorizations,2,"A completed quarantine may return only after renewed rights verification");
+ }
+});
+
+test("file-based intake refuses expiry, invalid clocks and clock rollback at the final rights gate",async()=>{
+ const invalidFinalTimes=[
+  Date.parse("2026-11-17T20:00:00.000Z"),
+  Date.parse("2026-11-17T20:00:00.001Z"),
+  FIXED_NOW-1,NaN,undefined,-1
+ ];
+ for(const finalTime of invalidFinalTimes){
+  let ticks=0,authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{authorizations++;return permit(ctx);},
+   now:()=>++ticks===1?FIXED_NOW:finalTime
+  });
+  await assert.rejects(evaluator.evaluate(request),/expired during evaluation/);
+  assert.equal(ticks,2);
+  assert.equal(authorizations,2);
+ }
+});
+
+test("stable independently rechecked intake remains unpublished and cannot self-admit",async()=>{
+ let calls=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+  authorize:async ctx=>{calls++;return permit(ctx);},
+  now:()=>FIXED_NOW
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(calls,2);
+ assert.equal(result.canPublish,false);
+ assert.equal(result.productionAccepted,false);
+ assert.equal(result.evidence.clinicalDecisionReady,false);
+ assert.equal(result.manifest.canPublish,false);
+ assert.throws(()=>assertGlobalIntakeCustomerReady(result),/rejected/);
+});
