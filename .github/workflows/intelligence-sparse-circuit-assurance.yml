@@ -1,0 +1,29 @@
+name: Intelligence sparse-circuit research contract
+
+on:
+  pull_request:
+    paths:
+      - "src/core/intelligence-sparse-circuit-assurance.mjs"
+      - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
+      - ".github/workflows/intelligence-sparse-circuit-assurance.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/core/intelligence-sparse-circuit-assurance.mjs"
+      - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
+      - ".github/workflows/intelligence-sparse-circuit-assurance.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  research-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate deterministic research-only contract
+        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs
