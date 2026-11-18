@@ -103,9 +103,9 @@ function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean })
   );
 }
 
-function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (screen: Screen) => void }) {
+function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSelect: (screen: Screen) => void; largeText: boolean }) {
   return (
-    <View style={styles.navigation} accessibilityRole="tablist">
+    <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
         const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "account"));
         return (
@@ -114,7 +114,7 @@ function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (scree
             accessibilityRole="tab"
             accessibilityLabel={tab.label}
             accessibilityState={{ selected: active }}
-            style={[styles.navItem, active && styles.navItemActive]}
+            style={[styles.navItem, largeText && styles.navItemLarge, active && styles.navItemActive]}
             onPress={() => onSelect(tab.screen)}
           >
             <Text style={[styles.navLabel, active && styles.navLabelActive]}>{tab.label}</Text>
@@ -126,8 +126,9 @@ function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (scree
 }
 
 export default function App() {
-  const { width } = useWindowDimensions();
-  const twoColumns = width >= 760;
+  const { width, fontScale } = useWindowDimensions();
+  const largeText = fontScale >= 1.4;
+  const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   const [query, setQuery] = useState("");
@@ -367,7 +368,7 @@ export default function App() {
           <View style={styles.endSpacing} />
         </ScrollView>
       )}
-      <Navigation selected={screen} onSelect={changeScreen} />
+      <Navigation selected={screen} onSelect={changeScreen} largeText={largeText} />
     </SafeAreaView>
   );
 }
@@ -419,7 +420,9 @@ const styles = StyleSheet.create({
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
   navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
+  navigationLarge: { flexWrap: "wrap" },
   navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },
+  navItemLarge: { flex: 0, flexBasis: "46%", minHeight: 56, minWidth: 0 },
   navItemActive: { backgroundColor: palette.primary },
   navLabel: { fontSize: 11, fontWeight: "600", color: palette.secondary, textAlign: "center" },
   navLabelActive: { color: palette.canvas }
