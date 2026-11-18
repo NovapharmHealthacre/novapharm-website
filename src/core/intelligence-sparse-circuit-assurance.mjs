@@ -56,7 +56,7 @@ export function inspectSparseCircuitCandidate(artifact) {
   if (modelOK && (
     !validIdentifier(artifact.model.identifier) ||
     !validIdentifier(artifact.model.revision) ||
-    !sha256.test(artifact.model.weightsSha256) ||
+    typeof artifact.model.weightsSha256 !== "string" || !sha256.test(artifact.model.weightsSha256) ||
     artifact.model.access !== "weights-and-activations"
   )) errors.push("model.invalid_metadata");
 
@@ -64,7 +64,7 @@ export function inspectSparseCircuitCandidate(artifact) {
     ["identifier", "datasetSha256"], "task", errors);
   if (taskOK && (
     !validIdentifier(artifact.task.identifier) ||
-    !sha256.test(artifact.task.datasetSha256)
+    typeof artifact.task.datasetSha256 !== "string" || !sha256.test(artifact.task.datasetSha256)
   )) errors.push("task.invalid_metadata");
 
   const graphOK = objectWithKeys(artifact.circuit, ["nodes", "edges"], "circuit", errors);
@@ -113,6 +113,25 @@ export function inspectSparseCircuitCandidate(artifact) {
           incident.add(edge.to);
         }
         if (incident.size !== ids.size) errors.push("circuit.disconnected_node");
+        // Weak connectivity is necessary for a single extracted circuit.
+        // A graph may be acyclic and have no isolated nodes yet still contain
+        // multiple unrelated components.
+        const neighbors = new Map([...ids].map(id => [id, []]));
+        for (const edge of edges) {
+          neighbors.get(edge.from).push(edge.to);
+          neighbors.get(edge.to).push(edge.from);
+        }
+        const reached = new Set();
+        const traversal = [nodes[0].id];
+        for (let i = 0; i < traversal.length; i += 1) {
+          const current = traversal[i];
+          if (reached.has(current)) continue;
+          reached.add(current);
+          for (const other of neighbors.get(current)) {
+            if (!reached.has(other)) traversal.push(other);
+          }
+        }
+        if (reached.size !== ids.size) errors.push("circuit.disconnected_components");
         const queue = [...ids].filter(id => incoming.get(id) === 0);
         let visited = 0;
         for (let index = 0; index < queue.length; index += 1) {
@@ -149,7 +168,10 @@ export function inspectSparseCircuitCandidate(artifact) {
     !validIdentifier(artifact.provenance.implementationRevision) ||
     typeof artifact.provenance.evaluatedAt !== "string" ||
     !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(artifact.provenance.evaluatedAt) ||
-    !Number.isFinite(Date.parse(artifact.provenance.evaluatedAt))
+    !Number.isFinite(Date.parse(artifact.provenance.evaluatedAt)) ||
+    (Number.isFinite(Date.parse(artifact.provenance.evaluatedAt)) &&
+      new Date(artifact.provenance.evaluatedAt).toISOString().slice(0, 19) !==
+      artifact.provenance.evaluatedAt.slice(0, 19))
   )) errors.push("provenance.invalid_metadata");
 
   if (errors.length) return reject(errors);
