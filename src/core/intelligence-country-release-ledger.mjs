@@ -87,6 +87,13 @@ function nextStep(source) {
       return "Identify an authoritative machine-readable source and legally permitted retrieval mechanism";
   }
 }
+function officialCandidateSlug(value) {
+  // Strictly bind the authority key to its own region, jurisdiction and
+  // publisher. A valid ISO country alone is insufficient if a candidate's
+  // original source is silently reassigned to a different country.
+  return value.normalize("NFKD").replace(/\p{M}/gu, "")
+    .toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
+}
 function cleanSource(input) {
   if (!input || typeof input !== "object" || Array.isArray(input) ||
       !RE_KEY.test(input.candidateKey || "") ||
@@ -100,6 +107,11 @@ function cleanSource(input) {
       input.licenceEvidenceId !== null ||
       !Array.isArray(input.allowedUses) || input.allowedUses.length !== 0) {
     fail("untrusted registry candidate or falsely promoted rights");
+  }
+  const expectedIdentity = [input.region, input.country, input.provider]
+    .map(officialCandidateSlug).join("-");
+  if (input.candidateKey !== expectedIdentity) {
+    fail("source region, country or publisher identity does not match candidate key");
   }
   validatedReference(input.url);
 }
