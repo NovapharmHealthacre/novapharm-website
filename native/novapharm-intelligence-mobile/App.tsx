@@ -8,7 +8,6 @@ import {
   FlatList,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -20,6 +19,7 @@ import {
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { mobileDarkPalette, mobileLightPalette, type MobilePalette } from "./appearance";
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
@@ -191,8 +191,9 @@ export default function App() {
   );
 
   return (
-    <ThemeContext.Provider value={{ styles, palette }}>
-      <SafeAreaView style={styles.root}>
+    <SafeAreaProvider>
+      <ThemeContext.Provider value={{ styles, palette }}>
+        <SafeAreaView style={styles.root} edges={["top", "right", "bottom", "left"]}>
       <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       <View style={styles.appHeader}>
         <Text style={styles.brand}>NOVAPHARM</Text>
@@ -370,8 +371,9 @@ export default function App() {
         </ScrollView>
       )}
       <Navigation selected={screen} onSelect={changeScreen} largeText={largeText} />
-      </SafeAreaView>
-    </ThemeContext.Provider>
+        </SafeAreaView>
+      </ThemeContext.Provider>
+    </SafeAreaProvider>
   );
 }
 
