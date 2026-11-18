@@ -45,7 +45,7 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     title: "Nova Model Microscope",
     summary: "Inspect independently reviewed, rights-cleared model features, layers and research hypotheses without disclosing weights, source samples or sensitive records.",
     appleTechnology: "OpenAI Microscope research principles (not an OpenAI API)",
-    platform: "Governed web research view and iOS/Android read-only preview",
+    platform: "Protected web authorization and signed iOS/Android builds required; source preview only",
     capabilities: ["Versioned model, layer and feature index", "Provenance-linked feature visualization hypotheses", "Researcher-reviewed circuit and failure hypotheses", "Explicit uncertainty, falsification and source-first fallback"],
     requirements: ["Introspection rights for the exact owned or licensed model", "Non-patient evaluation dataset and source rights", "Independent model review, artifact provenance and tenant-scoped authorization", "Signed inspection service, privacy tests and platform release"]
   }
@@ -120,3 +120,12 @@ export const novaMlExperienceGuidance = Object.freeze({
     fallback: "Always use original accepted medicine source evidence and accountable human review."
   }
 } as const);
+// Single source of truth shared by the protected web and both Expo platform previews.
+// These describe required research steps, not existing model observations.
+export const modelMicroscopeInspectionStages = Object.freeze([
+  { id: "model-registry", title: "Model identity", summary: "Resolve a licensed model, immutable version and supported layer taxonomy.", requiredEvidence: "Owner and permitted introspection interface", state: "not-operational" },
+  { id: "feature-evidence", title: "Feature observations", summary: "Associate a candidate neuron or feature with a rights-cleared evaluation snapshot.", requiredEvidence: "Versioned, non-patient dataset and reproducible visualization digest", state: "not-operational" },
+  { id: "circuit-hypotheses", title: "Circuit hypotheses", summary: "Separate possible feature interactions from verified causal or behavioral explanations.", requiredEvidence: "Independent method, counterexamples and falsification protocol", state: "not-operational" },
+  { id: "failure-analysis", title: "Failure analysis", summary: "Examine model instability, drift, spurious correlations and counterexamples.", requiredEvidence: "Leakage-safe evaluation and human reviewer evidence", state: "not-operational" },
+  { id: "review-export", title: "Governed review", summary: "Retain scoped approvals and prohibit automatic clinical, regulatory and commercial decisions.", requiredEvidence: "Signed provenance, least-privilege access, retention and audit acceptance", state: "not-operational" }
+] as const);
