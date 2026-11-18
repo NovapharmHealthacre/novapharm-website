@@ -45,6 +45,25 @@ The signed future Android application must integrate this candidate with its own
 
 See `docs/architecture/deep-learning-infrastructure-20261118.md` for architecture and deployment gates.
 
+## Offline L0 hard-concrete reference math
+
+Offline Kotlin test (with a separately installed Kotlin compiler):
+
+```sh
+kotlinc native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt -include-runtime -d /tmp/nova-l0-test.jar
+java -jar /tmp/nova-l0-test.jar
+```
+
+## Research candidate schema
+
+The Kotlin source also contains `NovaL0ResearchCandidate.score` for deterministic testing of the same versioned sparse-linear artifact consumed by the TypeScript and Swift research sources. This offline function rejects wrong feature keys, duplicate or malformed names, non-finite values, incorrect nonzero counts and any claim of production or customer activation. It is **not** an Android ML runtime, signed app, LiteRT conversion, or user-facing prediction feature. Test with synthetic vector: demand=5, stock=99, lead_time=4; coefficients=(2,0,2), bias=3; expected score=21.
+
+This separate Kotlin research-only scorer does not activate a model, access pharmaceutical data, change the standalone sparse-circuit Android prototype or constitute a signed customer release. Device benchmarks, licence review and independent quality approval remain mandatory.
+
+## Separate offline alignment receipt
+
+The independent `src/main/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceipt.kt` test candidate is source-only and is not wired to the Android sparse-circuit application. It is a deterministic denial contract, not a production model, data-rights check or signed Android service. See `ALIGNMENT_RESEARCH_README.md` for synthetic tests and independent approval gates.
+
 ## Isolated CLIP Kotlin/JVM research adapter
 
 CLIP is a separate, **source-only and unconnected** Kotlin/JVM adapter, not an Android APK, application sign-in, model runtime or clinical service. This offline source-test build intentionally uses `clipResearch/settings.gradle.kts` and `clipResearch/build.gradle.kts` **independently** of the pinned Android `:app` project so its JVM compiler and dependencies never replace the sparse-circuit prototype's Gradle configuration. Its source sets reference `../src/main/kotlin` and `../src/test/kotlin` containing `NovaClipVisualSearch.kt` and denial tests.

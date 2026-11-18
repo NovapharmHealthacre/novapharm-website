@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
-import { ClipVisualSearch } from "./clip-visual-search";
+import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
+import { ClipVisualSearch } from "./clip-visual-search";
 
 const gates = [
   { id: "rights", title: "Data and model rights", detail: "Authorised source, licence, purpose and retention are documented." },
@@ -42,7 +42,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <p className={styles.eyebrow}>NOVAPHARM INTELLIGENCE / NOVA ML</p>
       <h1 id="nova-ml-workspace-heading">{module.title}</h1>
       <p className={styles.lead}>{module.summary}</p>
-      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This view does not train models, invoke Core ML, access Apple Intelligence or upload files. Its CLIP research-search candidate remains disabled without separately approved private inference. Native execution requires a separately approved Apple application and deployment.</p>
+      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. Native execution requires a separately approved Apple application and deployment.</p>
       <dl className={styles.facts}>
         <div><dt>Apple integration</dt><dd>{module.appleTechnology}</dd></div>
         <div><dt>Runtime</dt><dd>{module.platform}</dd></div>
@@ -59,6 +59,18 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
     </section>
 
     {(kind === "nova-device-intelligence" || kind === "nova-core-runtime") && <MultimodalReviewPanel />}
+
+    {(kind === "nova-ml-studio" || kind === "nova-generative-assist") && <section className={styles.section} aria-labelledby="nova-ml-alignment-research">
+      <h2 id="nova-ml-alignment-research">AI alignment research programme</h2>
+      <p className={styles.helper}>Source-only research directions. No model, rewards, critiques, training, operational actions or customer predictions run on this page.</p>
+      <dl className={styles.contractGrid}>{novaMlAlignmentResearchMethods.map((method) =>
+        <div className={styles.contractItem} key={method.id}>
+          <dt>{method.title}</dt>
+          <dd>{method.summary} {method.approval}</dd>
+        </div>
+      )}</dl>
+    </section>}
+
     {kind === "nova-device-intelligence" ? <ClipVisualSearch /> : null}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">

@@ -88,6 +88,18 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   if (!isPermitted(path)) return Response.json({ error: "Portal gateway route is not available." }, { status: 404, headers: { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
   if ((path === "v1/intelligence/regulatory/us/fda-labels" || path === "v1/intelligence/tenders/uk/discovery" || path === "v1/intelligence/evidence/us/clinical-trials" || path === "v1/intelligence/readiness") && request.method !== "GET") return Response.json({ error: "The Intelligence evidence routes are read-only." }, { status: 405, headers: { "Allow": "GET", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
 
+  // Missing or invalid production API origins must deny safely instead of
+  // crashing with an internal 500 or revealing server configuration details.
+  let target: URL;
+  try {
+    target = new URL(`/api/${path}`, apiOrigin());
+  } catch {
+    return Response.json(
+      { error: "The secure service is temporarily unavailable. Please try again shortly." },
+      { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "30", "X-Robots-Tag": "noindex, nofollow, noarchive" } },
+    );
+  }
+  target.search = request.nextUrl.search;
   // CLIP is a board-only, CSRF-protected research candidate, never a public model endpoint.
   if (path === "v1/intelligence/visual/readiness" && request.method !== "GET")
     return Response.json({ error: "Readiness is read-only." }, { status: 405, headers: { "Cache-Control": "no-store", "Allow": "GET" } });

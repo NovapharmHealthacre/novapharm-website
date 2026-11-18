@@ -20,15 +20,17 @@ let package = Package(
             sources: [
                 "NovaCreateMLTrainer.swift",
                 "NovaCoreMLRuntime.swift",
+                "NovaL0ResearchMath.swift",
+                "NovaAlignmentResearchReceipt.swift",
                 "NovaFoundationModelsAssist.swift",
                 "NovaDocumentIntelligence.swift",
                 "NovaLanguageIntelligence.swift",
                 "NovaSpeechIntelligence.swift",
                 "NovaResearchAppIntent.swift",
-                "NovaClipVisualSearch.swift",
                 "NovaComputePlan.swift",
                 "NovaSparseCircuitReader.swift",
-                "NovaSparseCircuitResearchView.swift"
+                "NovaSparseCircuitResearchView.swift",
+                "NovaClipVisualSearch.swift"
             ]
         ),
         .testTarget(
