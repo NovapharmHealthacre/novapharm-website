@@ -109,3 +109,21 @@ test("rejects cyclic and isolated graph nodes without claiming causal validation
   assert.equal(isolatedResult.valid,false);
   assert.ok(isolatedResult.errors.includes("circuit.disconnected_node"));
 });
+
+test("rejects separately connected components and invalid calendar dates", () => {
+  const split=candidate();
+  split.circuit.nodes.push(
+    {id:"n3",kind:"mlp-neuron"},
+    {id:"n4",kind:"attention-channel"}
+  );
+  split.circuit.edges.push({from:"n3",to:"n4",weight:0.4});
+  const result=inspectSparseCircuitCandidate(split);
+  assert.equal(result.valid,false);
+  assert.ok(result.errors.includes("circuit.disconnected_components"));
+  const impossible=candidate();
+  impossible.provenance.evaluatedAt="2026-02-30T00:00:00Z";
+  assert.equal(inspectSparseCircuitCandidate(impossible).valid,false);
+  const typed=candidate();
+  typed.model.weightsSha256={toString:()=> "a".repeat(64)};
+  assert.equal(inspectSparseCircuitCandidate(typed).valid,false);
+});
