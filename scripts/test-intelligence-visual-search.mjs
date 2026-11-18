@@ -99,3 +99,32 @@ test("upstream cannot inject duplicate images, credentialed URLs, fragments or f
     })), { statusCode: 503 });
   }
 });
+
+test("shared versioned CLIP contract is inherited across web, iOS, Android and governed registries", () => {
+  const read = name => readFileSync(new URL("../" + name, import.meta.url), "utf8");
+  const spec = JSON.parse(read("docs/intelligence/visual-search-cross-platform-contract.json"));
+  const sources = [
+    "src/core/intelligence-visual-search.mjs",
+    "apps/portal/components/clip-visual-search.tsx",
+    "native/novapharm-intelligence-apple/NovaClipVisualSearch.swift",
+    "native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/NovaClipVisualSearch.kt"
+  ];
+  assert.equal(spec.contract, "novapharm.intelligence.visual-search.v1");
+  assert.equal(spec.releaseState, "source_candidate_disabled");
+  assert.equal(spec.result.productIdentityVerified, false);
+  assert.equal(spec.result.regulatoryStatusVerified, false);
+  assert.equal(spec.infrastructure.enabledByDefault, false);
+  for (const name of sources) {
+    assert.ok(read(name).includes(spec.contract), name + " must use exactly the governed response contract");
+    assert.ok(read(name).includes(spec.result.status), name + " must label unverified matches");
+  }
+  const modelRegistry = JSON.parse(read("docs/ai-model-register.json"));
+  const useCases = JSON.parse(read("docs/ai-use-case-register.json"));
+  assert.ok(modelRegistry.models.some(m => m.id === "openai-clip-private-research-candidate"));
+  assert.ok(useCases.implementedFoundations.some(m => m.id === "clip-approved-public-visual-retrieval" && m.maturity === "source-only-gated-not-live"));
+  const catalogue = read("apps/portal/data/nova-ml-modules.ts");
+  assert.ok(catalogue.includes("English text-to-approved-public-image CLIP research"));
+  assert.ok(read("services/clip/rights.py").includes("rightsExpiryDate"));
+  assert.ok(read("services/clip/serve.py").includes("valid_expiry"));
+  assert.ok(read("services/clip/build_index.py").includes("validate_public_asset"));
+});
