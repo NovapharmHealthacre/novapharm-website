@@ -178,3 +178,47 @@ test("all 101-country scope proposal paths remain private-only in both AWS/publi
     assert.ok(source.includes("private_only=true"), file + " must preserve the restrictive default");
   }
 });
+
+test("country-specific source-only adapters cannot unintentionally dispatch public Pages or AWS", () => {
+  // Exact paths from #838, #842, #846 and #847. Do NOT classify server.mjs
+  // from #844 as private: that real API entry point has separate deploy review.
+  const countrySourcePaths = [
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs",
+    ".github/workflows/intelligence-es-cima-public-live-probe.yml",
+    "docs/intelligence/spain-cima-official-live-probe-20261118.md",
+    "scripts/run-intelligence-es-cima-public-live-probe.mjs",
+    "scripts/test-intelligence-es-cima-live-quarantine.mjs",
+    "scripts/test-intelligence-es-cima-public-live-probe.mjs",
+    "src/core/intelligence-es-cima-public-live-probe.mjs",
+    ".github/workflows/intelligence-canada-dpd-public-live-source.yml",
+    "docs/intelligence/canada-dpd-public-live-source-20261118.md",
+    "scripts/run-intelligence-canada-dpd-public-live-probe.mjs",
+    "scripts/test-intelligence-canada-dpd-public-live-probe.mjs",
+    "src/core/intelligence-canada-dpd-public-live-probe.mjs",
+    ".github/workflows/intelligence-enterprise-readiness.yml",
+    "docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md",
+    "scripts/audit-intelligence-enterprise-readiness.mjs",
+    "scripts/test-intelligence-enterprise-readiness.mjs",
+    "src/core/intelligence-enterprise-readiness.mjs"
+  ];
+  assert.equal(new Set(countrySourcePaths).size, 22);
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, workflow + " missing active source-only classifier");
+    const allowed = new Set(classifier.split("|"));
+    for (const path of countrySourcePaths) {
+      assert.ok(allowed.has(path), workflow + " would publish private pharmaceutical source-only file: " + path);
+    }
+    assert.ok(allowed.has(".github/workflows/browser-acceptance.yml"));
+    assert.ok(allowed.has("docs/ai-risk-register.md"));
+    assert.ok(!allowed.has("server.mjs"), "The protected server entry point must not bypass deployment acceptance");
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
