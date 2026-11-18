@@ -25,6 +25,8 @@ test("approved public main pushes retain immutable AWS contact release while pri
     "scripts/test-nova-infrastructure-integration.mjs",
     "native/novapharm-intelligence-android/*",
     "docs/architecture/deep-learning-infrastructure-20261118.md",
+    "docs/ai-system-card.md",
+    "docs/ai-risk-register.md",
     ".github/workflows/nova-ml-infrastructure-contract.yml"
   ]) {
     assert.ok(dispatcher.includes(path), "dispatcher must exclude protected ML-only change: " + path);
