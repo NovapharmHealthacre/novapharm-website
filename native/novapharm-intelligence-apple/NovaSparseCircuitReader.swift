@@ -27,9 +27,26 @@ public struct NovaSparseCircuitReader {
     // Data must already have come from an authenticated, authorised app service.
     // Decoding is NOT authentication, signature verification or model validation.
     public static func readResearchSummary(_ data: Data) throws -> NovaSparseCircuitSummary {
+        guard data.count > 0 && data.count <= 32_768,
+              let raw = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw NovaSparseCircuitReadError.unsupportedOrUntrusted
+        }
+        let expectedKeys: Set<String> = [
+            "schemaVersion", "valid", "status", "modelId", "taskId",
+            "nodeCount", "edgeCount", "lossDeltaCircuitVsBaseline",
+            "lossDeltaAblatedVsCircuit", "sampleCount", "ablation",
+            "mechanisticExplanationVerified", "productionEligible",
+            "clinicalUsePermitted"
+        ]
+        guard Set(raw.keys) == expectedKeys else {
+            throw NovaSparseCircuitReadError.unsupportedOrUntrusted
+        }
         let summary = try JSONDecoder().decode(NovaSparseCircuitSummary.self, from: data)
+        let idPattern = "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
         guard summary.schemaVersion == "npi.sparse-circuit.v1",
               summary.valid,
+              summary.modelId.range(of: idPattern, options: .regularExpression) != nil,
+              summary.taskId.range(of: idPattern, options: .regularExpression) != nil,
               summary.status == "unverified-research-candidate",
               summary.nodeCount > 0, summary.nodeCount <= 2_000,
               summary.edgeCount > 0, summary.edgeCount <= 8_000,
