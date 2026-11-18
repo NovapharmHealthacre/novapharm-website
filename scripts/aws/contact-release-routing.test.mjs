@@ -19,6 +19,18 @@ test("approved public main pushes retain immutable AWS contact release while pri
   assert.match(dispatcher, /changed_any=true/);
   assert.match(dispatcher, /apps\/portal\/\*/);
   assert.match(dispatcher, /native\/novapharm-intelligence-apple\/\*/);
+  for (const path of [
+    "src/ai/compute-admission.mjs",
+    "scripts/test-nova-compute-admission.mjs",
+    "scripts/test-nova-infrastructure-integration.mjs",
+    "native/novapharm-intelligence-android/*",
+    "docs/architecture/deep-learning-infrastructure-20261118.md",
+    ".github/workflows/nova-ml-infrastructure-contract.yml"
+  ]) {
+    assert.ok(dispatcher.includes(path), "dispatcher must exclude protected ML-only change: " + path);
+    assert.ok(get("publish-aws-contact-production.yml").includes(path), "publisher must exclude protected ML-only change: " + path);
+  }
+
   assert.match(dispatcher, /scripts\/aws\/contact-release-routing\.test\.mjs/);
   for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
     assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
