@@ -23,7 +23,7 @@ import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "review" | "research" | "science" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -43,10 +43,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
-  { screen: "review", label: "Review" },
-  { screen: "research", label: "Research" },
-  { screen: "science", label: "Science" },
-  { screen: "account", label: "Account" }
+  { screen: "more", label: "More" }
 ];
 const pilotSlugs = new Set([
   "medicine-search", "medicine-overview", "identity",
@@ -107,18 +104,18 @@ function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean })
   );
 }
 
-function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (screen: Screen) => void }) {
+function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSelect: (screen: Screen) => void; largeText: boolean }) {
   return (
-    <View style={styles.navigation} accessibilityRole="tablist">
+    <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen;
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "science" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
             accessibilityRole="tab"
             accessibilityLabel={tab.label}
             accessibilityState={{ selected: active }}
-            style={[styles.navItem, active && styles.navItemActive]}
+            style={[styles.navItem, largeText && styles.navItemLarge, active && styles.navItemActive]}
             onPress={() => onSelect(tab.screen)}
           >
             <Text style={[styles.navLabel, active && styles.navLabelActive]}>{tab.label}</Text>
@@ -130,8 +127,9 @@ function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (scree
 }
 
 export default function App() {
-  const { width } = useWindowDimensions();
-  const twoColumns = width >= 760;
+  const { width, fontScale } = useWindowDimensions();
+  const largeText = fontScale >= 1.4;
+  const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   const [query, setQuery] = useState("");
@@ -270,6 +268,28 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
+          {screen === "more" && (
+            <>
+              <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
+              {([
+                { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
+                { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
+                { screen: "science", label: "Science research", detail: "Offline evidence and scientific-method review; no live model or medicine data" },
+                { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
+              ] as const).map((item) => (
+                <Pressable
+                  key={item.screen}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label + ". " + item.detail}
+                  style={[styles.card, styles.moreAction]}
+                  onPress={() => changeScreen(item.screen)}
+                >
+                  <Text style={styles.cardTitle}>{item.label}</Text>
+                  <Text style={styles.description}>{item.detail}</Text>
+                </Pressable>
+              ))}
+            </>
+          )}
           {screen === "review" && <MultimodalReviewScreen />}
           {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
             const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
@@ -354,7 +374,7 @@ export default function App() {
           <View style={styles.endSpacing} />
         </ScrollView>
       )}
-      <Navigation selected={screen} onSelect={changeScreen} />
+      <Navigation selected={screen} onSelect={changeScreen} largeText={largeText} />
     </SafeAreaView>
   );
 }
@@ -364,49 +384,52 @@ const styles = StyleSheet.create({
   appHeader: { paddingHorizontal: 24, paddingTop: 18, paddingBottom: 16, borderBottomWidth: 1, borderColor: palette.border },
   brand: { fontSize: 11, fontWeight: "700", letterSpacing: 1.8, color: palette.accent, marginBottom: 7 },
   appTitle: { fontSize: 29, lineHeight: 36, fontWeight: "700", letterSpacing: -0.7, color: palette.primary },
-  appSubtitle: { fontSize: 13, lineHeight: 19, color: palette.secondary, marginTop: 2 },
+  appSubtitle: { fontSize: 15, lineHeight: 22, color: palette.secondary, marginTop: 2 },
   list: { flex: 1 },
   content: { paddingHorizontal: 22, paddingBottom: 28 },
   contentLimit: { alignSelf: "center", width: "100%", maxWidth: 960 },
   notice: { marginTop: 20, marginBottom: 24, padding: 16, borderRadius: 13, backgroundColor: palette.grouped },
   noticeTitle: { color: palette.primary, fontSize: 14, fontWeight: "700", lineHeight: 20 },
-  noticeText: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
+  noticeText: { color: palette.secondary, fontSize: 17, lineHeight: 25, marginTop: 6 },
   sectionHeading: { marginBottom: 12 },
   sectionTitle: { fontSize: 23, lineHeight: 30, fontWeight: "700", color: palette.primary, letterSpacing: -0.4 },
-  sectionIntro: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 5 },
-  count: { color: palette.secondary, fontSize: 12, marginBottom: 12 },
+  sectionIntro: { fontSize: 17, color: palette.secondary, lineHeight: 26, marginTop: 5 },
+  count: { color: palette.secondary, fontSize: 14, marginBottom: 12 },
   metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 10 },
   metric: { flexGrow: 1, minWidth: 100, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15 },
   metricNumber: { fontSize: 26, fontWeight: "700", color: palette.primary, fontVariant: ["tabular-nums"] },
-  metricLabel: { fontSize: 12, color: palette.secondary, lineHeight: 18, marginTop: 4 },
+  metricLabel: { fontSize: 14, color: palette.secondary, lineHeight: 21, marginTop: 4 },
   rule: { height: 1, backgroundColor: palette.border, marginVertical: 22 },
-  groupTitle: { fontSize: 12, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
+  groupTitle: { fontSize: 14, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
   card: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 16, marginBottom: 10 },
+  moreAction: { minHeight: 56, justifyContent: "center" },
   sourceCard: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15, marginBottom: 10 },
   sourceHalf: { flex: 1, minWidth: 0 },
   sourceRow: { gap: 10 },
-  sourceCountry: { color: palette.secondary, fontSize: 12, marginTop: 4, lineHeight: 19 },
+  sourceCountry: { color: palette.secondary, fontSize: 14, marginTop: 4, lineHeight: 21 },
   sourceDivider: { marginTop: 12, backgroundColor: palette.border, height: 1 },
   rowBetween: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  cardTitle: { color: palette.primary, fontSize: 15, fontWeight: "600", lineHeight: 22, flexShrink: 1 },
-  cardAction: { color: palette.secondary, fontSize: 12, marginLeft: 10 },
-  description: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
-  meta: { color: palette.tertiary, fontSize: 12, lineHeight: 18, marginTop: 10 },
+  cardTitle: { color: palette.primary, fontSize: 17, fontWeight: "600", lineHeight: 25, flexShrink: 1 },
+  cardAction: { color: palette.secondary, fontSize: 14, marginLeft: 10 },
+  description: { color: palette.secondary, fontSize: 17, lineHeight: 26, marginTop: 6 },
+  meta: { color: palette.tertiary, fontSize: 14, lineHeight: 21, marginTop: 10 },
   input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, minHeight: 48, padding: 13, borderRadius: 10 },
   regionScroller: { flexGrow: 0, marginBottom: 15, marginTop: 12 },
   regionRow: { gap: 8, paddingBottom: 2 },
   regionOption: { minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderWidth: 1, borderColor: palette.border, borderRadius: 22 },
   regionSelected: { backgroundColor: palette.primary, borderColor: palette.primary },
-  regionLabel: { color: palette.primary, fontSize: 12, fontWeight: "600" },
+  regionLabel: { color: palette.primary, fontSize: 14, fontWeight: "600" },
   regionLabelSelected: { color: palette.canvas },
   noResults: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 16 },
   back: { minHeight: 44, alignSelf: "flex-start", justifyContent: "center", marginBottom: 15 },
-  backText: { color: palette.primary, fontSize: 14, fontWeight: "600" },
+  backText: { color: palette.primary, fontSize: 16, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
   navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
+  navigationLarge: { flexWrap: "wrap" },
   navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },
+  navItemLarge: { flex: 0, flexBasis: "46%", minHeight: 56, minWidth: 0 },
   navItemActive: { backgroundColor: palette.primary },
-  navLabel: { fontSize: 11, fontWeight: "600", color: palette.secondary, textAlign: "center" },
+  navLabel: { fontSize: 14, fontWeight: "600", color: palette.secondary, textAlign: "center" },
   navLabelActive: { color: palette.canvas }
 });
