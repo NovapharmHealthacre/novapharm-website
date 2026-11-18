@@ -128,47 +128,59 @@ test("NovaPharm design DNA includes every original Apple archive and all three s
 
 
 test("manual remote Apple link reachability audit (not article review)", { skip: process.env.HIG_VERIFY_LIVE_LINKS !== "1", timeout: 780000 }, async () => {
-  // Run only by explicit GitHub workflow_dispatch. A successful HTTP response
-  // proves link reachability, NEVER that the 172 guideline bodies were read.
+  // Explicit workflow_dispatch only. A 200 response or page hash is never
+  // evidence of full Apple guideline interpretation or platform readiness.
   const paths = [
     ...tracker.topics.map(item => item.markdown),
+    ...tracker.inPageAnchors.map(item => item.url),
+    ...tracker.supportingResources.map(item => item.url),
     "https://developer.apple.com/documentation/mapkit",
     "https://developer.apple.com/documentation/mapkitjs",
     "https://register.apple.com/resources/imdf/"
   ];
-  assert.equal(paths.length, 175);
-  assert.equal(new Set(paths).size, 175);
+  assert.equal(paths.length, 210);
+  assert.equal(new Set(paths).size, 210);
+  const normalizeHeading = (value) =>
+    value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const results = [];
   for (let offset = 0; offset < paths.length; offset += 4) {
     const batch = paths.slice(offset, offset + 4);
     const responses = await Promise.all(batch.map(async url => {
+      const requested = new URL(url);
+      const anchor = requested.hash ? decodeURIComponent(requested.hash.slice(1)) : "";
+      const fetchedUrl = anchor ? new URL(requested.pathname + ".md", requested.origin).toString() : url;
       try {
-        const response = await fetch(url, {
+        const response = await fetch(fetchedUrl, {
           redirect: "follow",
           headers: { Accept: "text/markdown, text/plain;q=0.9, */*;q=0.8" },
           signal: AbortSignal.timeout(12000)
         });
         const finalUrl = new URL(response.url);
         const approvedHost = ["developer.apple.com", "register.apple.com"].includes(finalUrl.hostname);
-        const markdownPage = url.endsWith(".md");
+        const markdownPage = fetchedUrl.endsWith(".md");
         const body = response.ok ? await response.text() : "";
         if (!response.ok) await response.body?.cancel();
         const { createHash } = await import("node:crypto");
-        const hasHeading = !markdownPage || /^#\s+\S/m.test(body);
+        const headings = markdownPage && body
+          ? body.split("\n").filter(line => /^#{1,6}\s+/.test(line))
+          : [];
+        const hasHeading = !markdownPage || headings.some(line => /^#\s+\S/.test(line));
+        const sectionFound = !anchor || headings.some(line =>
+          normalizeHeading(line.replace(/^#{1,6}\s+/, "")) === normalizeHeading(anchor));
         const state = !approvedHost ? "unexpected_redirect"
           : response.status === 404 || response.status === 410 ? "broken"
-          : response.ok && hasHeading ? "reachable"
-          : response.ok ? "unexpected_content" : "unverified_http";
-        // Store evidence hashes and section headings only, never Apple article
-        // content, Apple art, user data or proprietary downloads.
-        const headings = markdownPage && body
-          ? body.split("\n").filter(line => /^#{1,3}\s+/.test(line)).slice(0, 40).map(line => line.slice(0, 180))
-          : [];
-        return { url, finalUrl: response.url, state, status: response.status,
+          : !response.ok ? "unverified_http"
+          : !hasHeading ? "unexpected_content"
+          : !sectionFound ? "anchor_unverified" : "reachable";
+        // Preserve only status, hashes and headings, not full copyrighted pages.
+        return { url, fetchedUrl, finalUrl: response.url, anchor: anchor || null,
+          sectionFound, state, status: response.status,
           contentSha256: body ? createHash("sha256").update(body).digest("hex") : null,
-          bodyBytes: Buffer.byteLength(body), headings };
+          bodyBytes: Buffer.byteLength(body),
+          headings: headings.slice(0, 40).map(line => line.slice(0, 180)) };
       } catch (error) {
-        return { url, state: "unverified_network", error: String(error?.name || "request_error") };
+        return { url, fetchedUrl, state: "unverified_network",
+          error: String(error?.name || "request_error") };
       }
     }));
     results.push(...responses);
@@ -178,15 +190,15 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
   mkdirSync(dir, { recursive: true });
   const report = {
     checkedAt: new Date().toISOString(),
-    scope: "175 public Apple URL reachability only; neither full article review nor application conformance",
-    expected: 175,
+    scope: "210 Apple URL and section-anchor reachability checks; not full article review or application conformance",
+    expected: 210,
     reachable: results.filter(x => x.state === "reachable").length,
     results
   };
   writeFileSync(dir + "/report.json", JSON.stringify(report, null, 2) + "\n");
-  assert.equal(results.length, 175);
-  const uncertain = results.filter(x => x.state !== "reachable");
-  assert.deepEqual(uncertain, [], "Apple HIG remote reachability requires review of non-200 or blocked endpoints");
+  assert.equal(results.length, 210);
+  assert.deepEqual(results.filter(x => x.state !== "reachable"), [],
+    "Some original Apple URLs or article section anchors require human review");
 });
 
 
