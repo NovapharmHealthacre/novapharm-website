@@ -87,3 +87,43 @@ test("product identifiers retain punctuation and case; semantics cannot waive co
   assert.equal(result.status,"conflicting_candidates");
   assert.ok(result.signals.includes("product_code_conflict"));
 });
+
+test("equal image/text labels cannot conceal a different strength, form or manufacturer", () => {
+  for (const [field, observed, signal] of [
+    ["observedStrength", "20 mg", "strength_conflict"],
+    ["observedDoseForm", "capsule", "dose_form_conflict"],
+    ["observedManufacturer", "Other Manufacturer", "manufacturer_conflict"]
+  ]) {
+    const baseline = {
+      ...sample,
+      referenceStrength: "10 mg", observedStrength: "10 mg",
+      referenceDoseForm: "tablet", observedDoseForm: "tablet",
+      referenceManufacturer: "Example Manufacturer", observedManufacturer: "Example Manufacturer"
+    };
+    const result = assessMultimodalEvidence({ ...baseline, [field]: observed });
+    assert.equal(result.status, "conflicting_candidates");
+    assert.ok(result.signals.includes(signal));
+    assert.equal(result.identityVerified, false);
+    assert.equal(result.canPublish, false);
+  }
+});
+
+test("even all matching identity attributes do not authorize any identity decision", () => {
+  const result = assessMultimodalEvidence({
+    ...sample, referenceStrength: "10 mg", observedStrength: "10 mg",
+    referenceDoseForm: "tablet", observedDoseForm: "tablet",
+    referenceManufacturer: "Example Manufacturer", observedManufacturer: "Example Manufacturer"
+  });
+  assert.equal(result.status, "human_review_required");
+  assert.equal(result.identityVerified, false);
+  assert.equal(result.clinicalUseAllowed, false);
+  assert.equal(result.decisionReady, false);
+});
+
+test("oversized new pharmaceutical identity fields are also refused", () => {
+  const result = assessMultimodalEvidence({
+    ...sample, referenceStrength: "1".repeat(241)
+  });
+  assert.equal(result.status, "blocked");
+  assert.ok(result.signals.includes("invalid_or_oversized_input"));
+});
