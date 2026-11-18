@@ -95,3 +95,17 @@ test("input remains unchanged and no user-supplied flags can elevate status", ()
   assert.equal(JSON.stringify(c),before);
   assert.equal(inspectSparseCircuitCandidate({...c,productionEligible:true}).valid,false);
 });
+
+// A research graph must be a directed, non-isolated transformer computation.
+test("rejects cyclic and isolated graph nodes without claiming causal validation", () => {
+  const cycle=candidate();
+  cycle.circuit.edges.push({from:"n2",to:"n1",weight:0.1});
+  const cycleResult=inspectSparseCircuitCandidate(cycle);
+  assert.equal(cycleResult.valid,false);
+  assert.ok(cycleResult.errors.includes("circuit.cycle"));
+  const isolated=candidate();
+  isolated.circuit.nodes.push({id:"n3",kind:"mlp-neuron"});
+  const isolatedResult=inspectSparseCircuitCandidate(isolated);
+  assert.equal(isolatedResult.valid,false);
+  assert.ok(isolatedResult.errors.includes("circuit.disconnected_node"));
+});
