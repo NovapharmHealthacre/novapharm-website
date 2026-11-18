@@ -22,3 +22,26 @@
 ## Stop conditions
 
 Disable the affected capability if testing identifies a medical recommendation, unsupported regulatory or availability claim, private-source retrieval, role bypass, executable output, citation mismatch, public model prefetch, secret disclosure or critical accessibility barrier.
+
+## Multimodal candidate addendum — 18 November 2026 (PR #821)
+
+**Scope:** research-only, deterministic, offline name/strength/dose-form/manufacturer/product-code comparison for non-sensitive user-supplied text on protected web and Expo iOS/Android candidate. This is **not** CLIP inference, OCR, patient-document processing, approved AI/ML model deployment, or production data admission.
+
+| Risk | Current candidate mitigation | Remaining production gate |
+|---|---|---|
+| Typographic overlays and adversarial text | Explicit vision-versus-image-text mismatch signal, no automatic identity approval | Licensed image/packaging test set, typographic red-team benchmark and expert review |
+| Similar name with different strength/form/manufacturer | Independent exact critical-attribute comparisons; differences require review | Authority-verified identifiers and dated national medicine terminology |
+| Input truncation, invisible controls, bidi spoofing | Reject oversized, non-string and suspicious-format candidate fields | Independent threat analysis for scripts, OCR and filenames |
+| False certainty or model overreach | Always unverified, non-publishable and human-review-required; no inference provider | Validated calibrated abstention, labelled holdout and clinical intended-purpose review |
+| Tenant rights or private media leakage | No media capture, network or persistence in the research component; client flags never grant authority | Server-owned source/tenant/purpose rights, privacy assessment and revocation smoke |
+| Cross-platform drift | Shared ESM contract plus web/mobile parity tests and all 22 readiness workspaces | Exact-head CI, real iOS/Android device and protected web release acceptance |
+
+**Release authority:** CI passing the research contract alone is not permission to publish, ingest licensed records, train, activate models or deploy customer functions. See issue #825.
+,
+## Multimodal research extension — 18 November 2026 (PR #821)
+
+The protected web and source-only Expo iOS/Android candidates add an offline, dependency-free **deterministic review helper**, not a neural model. It accepts only manually supplied, explicitly confirmed non-sensitive candidate strings and returns an unverified comparison status. It never reads images, invokes a model, retains source data, grants rights, validates medicine identity, publishes records or makes a clinical/commercial/regulatory decision. It examines name, product code, strength, dosage form and manufacturer discrepancies without equating similarity with truth.
+
+Exactly 22 canonical Intelligence workspace-readiness reports also carry a non-executable multimodal research policy, with model inference off, source/tenant permission unspecified, customer release false and human oversight mandatory. These new candidate components do not alter the existing live public evidence-search implementation or assert that CLIP has been deployed.
+
+**Additional model-specific limitations:** typographic overlays, language/domain shifts, closely related packaging, counterfeit/lookalike products and domain-dependent visual activations invalidate any naive use of image-text similarity as identity. Model licensing, dataset governance, external benchmark, adversarial tests and physical-device acceptance are tracked in #825. This extension remains development-only even if the research tests pass.
