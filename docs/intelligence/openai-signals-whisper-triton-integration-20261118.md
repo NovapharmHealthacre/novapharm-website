@@ -65,3 +65,9 @@ node scripts/data/review-openai-signals-csv.mjs \
 ```
 
 This prints only status, table name, validated record count, local SHA-256 and clear `persisted:false`, `productionApproved:false` flags. Unexpected headers, raw-user fields, bad country/time/grain/metrics, formula-like cells, invalid quoting, oversized local files and missing rows are blocked. It never echoes data cells, persists records, changes cloud resources, or sends a report to external services. The independently verified archive and copyright/source checks must precede any subsequent human-approved data mart design.
+
+## Complete published table inventory vs. admitted data
+
+The exact version 3.0 PDF dictionary declares **24 CSV tables**. `src/ai/openai-signals-v3-table-registry.mjs` records the publisher-described name, dimension columns, metric type (`share_of_messages` or `rank`) and admission classification of all 24. **Three** are admitted for bounded, non-persistent local metadata/data-row preview; **21** remain metadata-only, including tables using inferred name-associated gender, age buckets, plan tier, O*NET occupation activity and geographic cuts. This is complete **source discovery**, not an assertion that all 24 are quality-assured, licensed for the intended use, imported or production available. The exact official ZIP was **not obtained** by this source change.
+
+The Node tests enforce 24 unique registry entries, three reviewable schemas, 21 denied schemas, immutable metadata and absence of execution permission; the publication filter prevents private dataset-policy changes from triggering the public corporate-site publisher. Model training, voice input, personal or patient inference, live external access and pharmaceutical demand forecasting remain prohibited.
