@@ -130,6 +130,11 @@ test("all 22 workspace readiness reports share the nine reviewed research method
     const expected = registry.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id);
     assert.deepEqual(workspace.scientificMethodReferences, expected);
     assert.equal(workspace.scientificMethodReferencesIndependentlyValidated, false);
+    assert.deepEqual(workspace.scientificMethodValidationTracks,
+      [...new Set(registry.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug))
+        .map(item => item.validationTrack))]);
+    assert.deepEqual(workspace.scientificDossierRequiredStages, registry.claimIntegrityPolicy.requiredStages);
+    assert.equal(workspace.scientificDossierIndependentEvidenceAccepted, false);
     assert.equal(workspace.scientificResearch.scientificAiProductionCertified, false);
     assert.equal(workspace.productionAccepted, false);
   }
