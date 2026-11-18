@@ -53,6 +53,10 @@ class HardConcreteResearchTests(unittest.TestCase):
             model.export_research_candidate(["stock", "stock"])
         with self.assertRaises(ValueError):
             model.export_research_candidate(["Demand", "stock"])
+        with torch.no_grad():
+            model.gates.log_alpha[0] = float("nan")
+        with self.assertRaisesRegex(ValueError, "finite"):
+            model.export_research_candidate(["demand", "stock"])
 
     def test_invalid_params_and_unapproved_dimensions(self):
         with self.assertRaises(ValueError):
