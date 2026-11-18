@@ -75,8 +75,6 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertTrue(denied.reasons.contains("budget-not-approved"))
     }
 
-    #if os(macOS)
-
     func testL0HardConcreteResearchMathAndInvalidInputs() throws {
         let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
         XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
