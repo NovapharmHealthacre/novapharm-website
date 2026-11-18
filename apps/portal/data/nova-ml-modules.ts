@@ -99,3 +99,30 @@ export const novaMlExperienceGuidance = Object.freeze({
     fallback: "Use the original published text and ordinary manual editing without any model call."
   }
 } as const);
+
+
+/**
+ * Shared Nova ML mechanistic interpretability policy.
+ * Informational only: a display or a model-vendor statement cannot establish
+ * that an actual causal circuit was discovered, independently reproduced or
+ * approved for pharmaceutical use.
+ */
+export const novaMlSparseCircuitAssurance = Object.freeze({
+  contract: "npi.sparse-circuit.v1",
+  title: "Sparse-circuit interpretability",
+  status: "Research candidate — no model experiment connected",
+  classification: "non-clinical, non-operational",
+  modelPolicy: "Open weights and activations are required; API-only and deterministic retrieval systems are not eligible for circuit inspection.",
+  releasePolicy: "The inspector never grants production, customer, commercial, regulatory or clinical authority.",
+  methodGates: [
+    { name: "Internal access", detail: "Verify model weights, activations, architecture, licence and version before claiming circuit access." },
+    { name: "Causal experiments", detail: "Replicate sparsification, pruning, mean ablation, necessity and sufficiency on an independent held-out set." },
+    { name: "Evidence separation", detail: "Keep model-internal circuits separate from the medicines knowledge graph and rights-admitted source records." },
+    { name: "Independent verification", detail: "Require a reviewer, reproducible hashes, uncertainty, failures and negative controls; metadata alone is never proof." },
+    { name: "Human authority", detail: "Do not infer medical safety or permit autonomous clinical, procurement, regulatory or financial decisions." }
+  ] as const,
+  references: [
+    { label: "OpenAI research", href: "https://openai.com/index/understanding-neural-networks-through-sparse-circuits/" },
+    { label: "Research implementation", href: "https://github.com/openai/circuit_sparsity" }
+  ] as const
+});
