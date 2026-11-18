@@ -84,3 +84,24 @@ test("distinct country/period/price classification produces distinct evidence fi
   assert.notEqual(base, fingerprintMarketFactCandidate({ ...market, periodEnd: "2026-10-30" }));
   assert.notEqual(base, fingerprintMarketFactCandidate({ ...market, price: { ...market.price, priceType: "ceiling" } }));
 });
+
+test("never silently promote multimodal model attributes as official regulatory identity rows", () => {
+  const clean = buildLocalIdentityCandidates({
+    ...envelope, records:[{localId:"00001234",label:"A product",provenanceDomain:"Health Canada DPD"}]
+  });
+  assert.equal(clean[0].canonicalProductId,null);
+  assert.equal(clean[0].mappingDecision,"unresolved");
+  for (const extra of [
+    {modelInferredMedicineName:"Different medicine"},
+    {modelConfidence:0.999},
+    {imageTextMedicineName:"Different medicine"},
+    {verifiedByMultimodalModel:true},
+    {canPublish:true},
+    {tenantAuthorised:true}
+  ]) {
+    assert.throws(()=>buildLocalIdentityCandidates({
+      ...envelope,
+      records:[{localId:"00001234",label:"A product",...extra}]
+    }),/Invalid source-local medicine identity/);
+  }
+});
