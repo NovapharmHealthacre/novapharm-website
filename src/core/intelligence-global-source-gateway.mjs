@@ -183,10 +183,18 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         throw new Error("Invalid tenant context");
       }
-      const permission = await authorize({
-        sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
+      const rightsScope = Object.freeze({
+        sourceId, tenantId, purpose: "internal-evaluation",
+        domain: plan.domain, country: plan.country
       });
-      const grantedAt = now();
+      let permission;
+      try { permission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
+      // Capture trusted time after asynchronous authorization; never
+      // evaluate an expired grant against a stale pre-call timestamp.
+      let grantedAt;
+      try { grantedAt = now(); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       const grant = assertInternalEvaluationPermit({
         permit: permission, sourceId, tenantId,
         domain: plan.domain, country: plan.country, now: grantedAt
@@ -202,11 +210,12 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       const raw = await readJsonBounded(response);
       // Authorisation is rechecked after transport, not just before it:
       // rights may be revoked or replaced during a slow source response.
-      const refreshedPermission = await authorize({
-        sourceId, tenantId, purpose: "internal-evaluation",
-        domain: plan.domain, country: plan.country
-      });
-      const capturedAt = now();
+      let refreshedPermission;
+      try { refreshedPermission = await authorize(rightsScope); }
+      catch { throw new Error("Source rights authorizer unavailable"); }
+      let capturedAt;
+      try { capturedAt = now(); }
+      catch { throw new Error("Source rights trusted clock unavailable"); }
       // Prevent any invalid clock or permit expiry from returning a preview.
       if (!Number.isSafeInteger(capturedAt) || capturedAt < grantedAt ||
           capturedAt >= Date.parse(grant.validUntil)) {
