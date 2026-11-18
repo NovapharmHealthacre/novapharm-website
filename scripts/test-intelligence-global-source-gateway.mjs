@@ -174,3 +174,242 @@ test("evaluation metadata fingerprint changes when raw source payload changes", 
   assert.notEqual(first.responseSha256, second.responseSha256);
   assert.equal(first.canPublish, false);
 });
+
+test("upstream medicine identifiers remain lossless and unsafe/oversized fields are omitted rather than truncated", () => {
+  const plan = buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban", limit: 5 });
+  const fullId = "0".repeat(119) + "1";
+  const fullLabel = "A".repeat(240);
+  const data = [
+    { drug_identification_number: fullId, brand_name: fullLabel },
+    { drug_identification_number: "0".repeat(121), brand_name: "Invalid long ID" },
+    { drug_identification_number: "00012345", brand_name: "B".repeat(241) },
+    { drug_identification_number: "00012346", brand_name: "Alpha" + String.fromCharCode(0x202e) + "Beta" },
+    { drug_identification_number: "00012347" + String.fromCharCode(0x200b), brand_name: "Invisible ID" }
+  ];
+  const result = normaliseGovSourceResult(plan, data);
+  assert.equal(result.records.length, 1);
+  assert.equal(result.records[0].localId, fullId);
+  assert.equal(result.records[0].label, fullLabel);
+  assert.equal(result.canPublish, false);
+});
+
+test("malformed upstream trial and regulator identifiers do not become plausible truncated medicine facts", () => {
+  const cases = [
+    ["us-fda-drugsfda", {results:[{application_number:"X".repeat(121),products:[{brand_name:"Sample"}]}]}],
+    ["global-clinicaltrials", {studies:[{protocolSection:{identificationModule:{nctId:"NCT00000001" + String.fromCharCode(0x202e),briefTitle:"Study"}}}]}],
+    ["es-aemps-cima", {resultados:[{nregistro:"000123",nombre:"A".repeat(241)}]}],
+    ["global-europepmc", {resultList:{result:[{id:"12345678",title:"Example" + String.fromCharCode(0x200b)}]}}]
+  ];
+  for (const [sourceId, raw] of cases) {
+    const plan = buildGovSourcePlan({sourceId,term:"Apixaban",limit:5});
+    const result = normaliseGovSourceResult(plan,raw);
+    assert.deepEqual(result.records, [],sourceId);
+    assert.equal(result.canPublish,false,sourceId);
+  }
+});
+
+test("missing, invalid or spoofed server clocks never authorize an upstream request", async () => {
+  let outgoing = 0;
+  for (const badNow of [NaN, undefined, null, Infinity, -Infinity, -1, "2026-11-17T17:00:00Z", {}, TEST_NOW + 0.5]) {
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit(context),
+      now: () => badNow,
+      transport: async () => {
+        outgoing++;
+        throw new Error("upstream request must not happen with invalid clock");
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /not approved/
+    );
+  }
+  assert.equal(outgoing, 0, "No network access on an invalid clock");
+});
+
+test("the independent grant checker also fails closed on a NaN or missing clock", () => {
+  const plan = buildGovSourcePlan({sourceId:"global-clinicaltrials",term:"Apixaban"});
+  const args = {
+    permit: permit(), sourceId:plan.sourceId, tenantId:"tenant1",
+    domain:plan.domain, country:plan.country
+  };
+  for(const badNow of [NaN,undefined,null,Infinity,-Infinity,-1,"bad-clock"]) {
+    assert.throws(()=>assertInternalEvaluationPermit({...args,now:badNow}),/not approved/);
+  }
+  assert.equal(assertInternalEvaluationPermit({...args,now:TEST_NOW}).receiptId,"receipt-test-001");
+});
+
+test("an approved source receipt cannot return records if the grant expires or clock fails during the upstream fetch", async () => {
+  const expiredAt = Date.parse("2026-11-17T18:00:00.000Z");
+  for (const afterFetch of [expiredAt, expiredAt + 1, NaN, undefined]) {
+    let reads = 0;
+    let ticks = 0;
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit(context),
+      now: () => (++ticks === 1 ? TEST_NOW : afterFetch),
+      transport: async () => {
+        reads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection:{identificationModule:{nctId:"NCT01234567",briefTitle:"Synthetic fixture"}}}]
+        }), {headers:{"content-type":"application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /no longer approved/
+    );
+    assert.equal(reads,1,"Grant is valid before fetch; data must still be withheld on expiry");
+    assert.equal(ticks,2);
+  }
+});
+
+
+test("source grants revoked or replaced during upstream fetch are denied before any evidence is returned", async () => {
+  const transitions = [
+    {revokedAt:"2026-11-17T16:30:00.000Z"},
+    {rightsStatus:"pending"},
+    {tenantId:"tenant2"},
+    {receiptId:"receipt-test-002"},
+    {licenseId:"lic-test-002"},
+    {rightsVersion:"rights-v2"},
+    {validUntil:"2026-11-17T17:45:00.000Z"}
+  ];
+  for (const changed of transitions) {
+    let authorizations = 0;
+    let reads = 0;
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit({
+        ...context, ...(++authorizations === 1 ? {} : changed)
+      }),
+      now: () => TEST_NOW,
+      transport: async () => {
+        reads++;
+        return new Response(JSON.stringify({
+          studies:[{protocolSection:{identificationModule:{
+            nctId:"NCT01234567",briefTitle:"Synthetic fixture"
+          }}}]
+        }),{headers:{"content-type":"application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /not approved|changed during evaluation/,
+      JSON.stringify(changed)
+    );
+    assert.equal(reads,1,"The original permit allowed the test-only transport");
+    assert.equal(authorizations,2,"Rights must be independently rechecked after fetch");
+  }
+});
+
+test("stable, revalidated source grant remains internal-only after a successful lookup", async () => {
+  let authorizations = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => {authorizations++;return permit(context);},
+    now: () => TEST_NOW,
+    transport: async () => new Response(JSON.stringify({
+      studies:[{protocolSection:{identificationModule:{
+        nctId:"NCT01234567",briefTitle:"Synthetic fixture"
+      }}}]
+    }),{headers:{"content-type":"application/json"}})
+  });
+  const result = await reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  });
+  assert.equal(authorizations,2);
+  assert.equal(result.canPublish,false);
+  assert.equal(result.clinicalDecisionReady,false);
+  assert.equal(result.rightsReceiptId,"receipt-test-001");
+});
+
+
+test("trusted source clock must never move backwards after an approved read", async () => {
+  const rollback = Date.parse("2026-11-17T16:59:59.000Z");
+  let reads = 0, clocks = 0, permissions = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => { permissions++; return permit(context); },
+    now: () => (++clocks === 1 ? TEST_NOW : rollback),
+    transport: async () => {
+      reads++;
+      return new Response(JSON.stringify({
+        studies: [{protocolSection:{identificationModule:{
+          nctId:"NCT01234567", briefTitle:"Synthetic only"
+        }}}]
+      }), {headers:{"content-type":"application/json"}});
+    }
+  });
+  await assert.rejects(
+    reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+    /no longer approved/
+  );
+  assert.equal(reads, 1, "One already-approved upstream test request was allowed");
+  assert.equal(permissions, 2, "Permit still rechecked after source read");
+  assert.equal(clocks, 2);
+  assert.throws(() => createGovSourceReader({
+    authorize:async context => permit(context),
+    transport:async()=>{ throw new Error("unused"); },
+    now: "not a clock"
+  }), /Trusted authorizer and transport/);
+});
+
+
+test("source-rights reader redacts backend authorizer failures at both rights gates", async () => {
+  const secret = "PRIVATE_RIGHTS_PROVIDER_TOKEN_MUST_NOT_LEAK";
+  for (const failingCall of [1, 2]) {
+    let authorizations = 0;
+    let upstreamReads = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => {
+        if (++authorizations === failingCall) throw new Error(secret);
+        return permit(context);
+      },
+      now: () => TEST_NOW,
+      transport: async () => {
+        upstreamReads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection: {identificationModule: {
+            nctId: "NCT01234567", briefTitle: "Synthetic private-data fixture"
+          }}}]
+        }), {headers: {"content-type": "application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1"}),
+      error => error instanceof Error &&
+        error.message === "Source rights authorizer unavailable" &&
+        !error.message.includes(secret)
+    );
+    assert.equal(authorizations, failingCall);
+    assert.equal(upstreamReads, failingCall - 1);
+  }
+});
+
+test("source-rights reader redacts trusted clock callback failures at both rights gates", async () => {
+  const secret = "PRIVATE_CLOCK_BACKEND_CONFIGURATION_MUST_NOT_LEAK";
+  for (const failingRead of [1, 2]) {
+    let ticks = 0;
+    let upstreamReads = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => permit(context),
+      now: () => {
+        if (++ticks === failingRead) throw new Error(secret);
+        return TEST_NOW;
+      },
+      transport: async () => {
+        upstreamReads++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection: {identificationModule: {
+            nctId: "NCT01234567", briefTitle: "Synthetic private-data fixture"
+          }}}]
+        }), {headers: {"content-type": "application/json"}});
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1"}),
+      error => error instanceof Error &&
+        error.message === "Source rights trusted clock unavailable" &&
+        !error.message.includes(secret)
+    );
+    assert.equal(ticks, failingRead);
+    assert.equal(upstreamReads, failingRead - 1);
+  }
+});
