@@ -1,3 +1,5 @@
+import { isIP } from "node:net";
+
 /**
  * Private, human-review-only CLIP retrieval adapter. Disabled without owner activation.
  * Browser/mobile clients must use their existing authenticated API/BFF, never this service.
@@ -85,8 +87,11 @@ export async function searchApprovedVisualCatalogue(
     seen.add(item.assetId);
     let source;
     try { source = new URL(item.sourceUrl); } catch { throw unavailable(); }
-    if (source.protocol !== "https:" || !source.hostname || source.username || source.password ||
-        (source.port !== "" && source.port !== "443") || source.hash) throw unavailable();
+    const host = source.hostname.replace(/^\[|\]$/g, "").replace(/\.$/, "").toLowerCase();
+    if (source.protocol !== "https:" || !host.includes(".") || isIP(host) !== 0 ||
+        host === "localhost" || /\.(?:localhost|local|internal)$/u.test(host) ||
+        source.username || source.password || (source.port !== "" && source.port !== "443") ||
+        source.hash) throw unavailable();
     return { rank: index + 1, assetId: item.assetId, title: item.title, rightsReference: item.rightsReference, sourceUrl: source.href, status: "unverified_visual_match" };
   });
   return {
