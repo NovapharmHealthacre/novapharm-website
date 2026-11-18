@@ -57,3 +57,7 @@ Microscope is **neural-network interpretability**, not laboratory microscopy, re
 | Public or anonymous access to web inspector | Inherits protected SSR session and board module scope | Exact deployed protected host, no-store anonymous denial, verified rollout receipt |
 
 The independent verifier is an **interface contract**, not a deployed signature-verification service or evidence of actual licensed datasets. No model artifact has been admitted by this PR. Production readiness cannot be calculated from source-code completion alone.
+
+## Read-only response schema
+
+A strict, non-publishable projection is published for internal engineering at `docs/intelligence/model-microscope-inspection-v1.schema.json`. It lists exactly the metadata allowed to cross a future protected server boundary and excludes grants, image bytes, neurons/weights, input documents, patient information and raw tensors. CI compares the implementation's actual output to the same field inventory. A JSON schema is not evidence that the upstream artifact contains no personal data; that requires independent quality and privacy verification.
