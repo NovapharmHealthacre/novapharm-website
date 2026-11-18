@@ -171,3 +171,22 @@ test("clock rollbacks, expiry and missing authenticated context fail closed", as
   });
   await assert.rejects(expired.evaluate({tenantId:"tenantA",bytes:b}),/expired during parse/);
 });
+
+
+test("future-dated public PBS schedules fail even if untrusted source labels them Published", async () => {
+  const future = bytes([sample({
+    schedule_code: "00043922",
+    effective_date: "2099-01-01",
+    publication_status: "Published"
+  })]);
+  let authCalls = 0;
+  const evaluator = createPbsScheduleCandidateEvaluator({
+    authorize: async ctx => { authCalls++; return permit(ctx); },
+    now: () => NOW
+  });
+  await assert.rejects(
+    evaluator.evaluate({tenantId:"tenantA", bytes:future}),
+    /future or embargoed public schedule/
+  );
+  assert.equal(authCalls, 1, "Never return embargoed data even if first grant is valid");
+});
