@@ -19,6 +19,12 @@
 | False forecasting or traceability claim | Public content | Roadmap-only language and claims scanner | Marketing copy may regress later | Automated claim gate and evidence owner |
 | Ollama exposure | Internal development | Loopback HTTP host allowlist and production rejection | Local machine compromise remains possible | Local developer security and model review |
 
+## L0 sparse-model research addendum — 18 November 2026
+
+This research is intentionally **not** an approved model or deployable inference route. The central model/use-case/SBOM registers identify its status and source. Time-dependent pharmaceutical feature selection must pass source-rights, leakage-safe holdouts, subgroup, drift and safety checks before any model proposal. Exact-zero weights alone do not establish interpretability, lower resource use or clinical validity.
+
+| False sparse-model assurance | Nova L0 hard-concrete research candidates | Source-only adapters, exact-zero gate tests, explicit no-model/no-release register and model feature-schema denial tests | Real datasets may carry leakage or bias; sparsity does not prove causal explanation, calibration or hardware acceleration | Model Risk, Quality, Security and data owners |
+
 ## Stop conditions
 
 Disable the affected capability if testing identifies a medical recommendation, unsupported regulatory or availability claim, private-source retrieval, role bypass, executable output, citation mismatch, public model prefetch, secret disclosure or critical accessibility barrier.
