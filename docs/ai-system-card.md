@@ -41,3 +41,6 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
 undefined
+## Scholarly source traceability — additional 22-reference programme
+
+The multimodal research basis now records 22 supplied citation positions, **21 unique publications**, seven planned evaluation dimensions and 12 synthetic string-based negative controls. See `docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md`. These tests do not execute images, train a model, measure actual robustness or grant data and tenant rights. Production inference remains disabled by design.
