@@ -40,3 +40,4 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 ## Human accountability
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
+undefined
