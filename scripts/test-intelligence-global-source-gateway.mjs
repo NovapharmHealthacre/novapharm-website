@@ -208,7 +208,7 @@ test("Polish NFZ keeps active-substance codes and does not manufacture price or 
   const plan = buildGovSourcePlan({ sourceId: "pl-nfz-drug-program", term: "Apixaban" });
   const result = normaliseGovSourceResult(plan, {
     meta: { count: 1, page: 1 },
-    data: [{ data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM", refund: 2500 }] }]
+    data: { sums: { refund: 2500 }, data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM", refund: 2500 }] }
   });
   assert.equal(result.records[0].localId, "010203");
   assert.equal(result.records[0].label, "APIXABANUM");
@@ -219,4 +219,96 @@ test("Polish NFZ keeps active-substance codes and does not manufacture price or 
   assert.equal(Object.hasOwn(result.records[0], "price"), false);
   assert.equal(result.dataState, "unreconciled_upstream_preview");
   assert.throws(() => normaliseGovSourceResult(plan, {wrong:[]}), /Unexpected source schema/);
+  // Old test fixtures incorrectly assumed a top-level array. Real NFZ examples
+  // require data.sums + data.data; rejecting this prevents silent empty pages.
+  assert.throws(() => normaliseGovSourceResult(plan, {
+    data: [{ data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM" }] }]
+  }), /Unexpected source schema/);
+  assert.throws(() => normaliseGovSourceResult(plan, {data: {sums: {}, data: {}}}), /Unexpected source schema/);
+});
+
+test("invalid trusted clocks and noncanonical permit timestamps reject before any outgoing request", async () => {
+  let outgoing = 0;
+  for (const clock of [NaN, Infinity, -Infinity, undefined, "2026-11-17T17:00:00.000Z"]) {
+    const reader = createGovSourceReader({
+      authorize: async context => permit(context),
+      now: () => clock,
+      transport: async () => { outgoing++; throw Error("transport must never run"); }
+    });
+    await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /not approved/);
+  }
+  for (const changes of [
+    { issuedAt: "2026-11-17T16:00:00+00:00" },
+    { validUntil: "2026-11-17T18:00:00+00:00" },
+    { issuedAt: "2026-11-31T16:00:00.000Z" },
+    { issuedAt: 1234 },
+    { issuedAt: Symbol("bad-identity-date") },
+    { validUntil: Symbol("bad-expiration-date") },
+    { validUntil: { toString: () => { throw Error("untrusted coercion"); } } }
+  ]) {
+    const reader = createGovSourceReader({
+      authorize: async context => permit({ ...context, ...changes }),
+      now: () => TEST_NOW,
+      transport: async () => { outgoing++; throw Error("transport must never run"); }
+    });
+    await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /not approved/);
+  }
+  assert.equal(outgoing, 0);
+});
+
+test("a permit expiring during fetch cannot produce an evaluation envelope", async () => {
+  let calls = 0, clockReads = 0;
+  const reader = createGovSourceReader({
+    authorize: async context => permit({ ...context, validUntil: "2026-11-17T17:01:00.000Z" }),
+    now: () => ++clockReads === 1 ? TEST_NOW : TEST_NOW + 61_000,
+    transport: async () => {
+      calls++;
+      return new Response(JSON.stringify({ studies: [{ protocolSection: { identificationModule: { nctId: "NCT00000001", briefTitle: "Synthetic" } } }] }), { headers: { "content-type": "application/json" } });
+    }
+  });
+  await assert.rejects(reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }), /Invalid evaluation envelope/);
+  assert.equal(calls, 1);
+});
+
+test("trusted source authorizer, upstream transport and clock failures suppress internal details", async () => {
+  const secret = "SECRET_PRIVATE_SOURCE_PROVIDER_CREDENTIAL";
+  const bad = async () => { throw new Error(secret); };
+  for (const reader of [
+    createGovSourceReader({ authorize: bad, transport: async () => { throw Error("should not reach"); }, now: () => TEST_NOW }),
+    createGovSourceReader({ authorize: async context => permit(context), transport: bad, now: () => TEST_NOW }),
+    createGovSourceReader({ authorize: async context => permit(context), transport: bad, now: () => { throw Error(secret); } })
+  ]) {
+    await assert.rejects(
+      reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }),
+      (error) => error instanceof Error && !error.message.includes(secret) &&
+        /not approved|Upstream unavailable/.test(error.message)
+    );
+  }
+});
+
+test("malformed upstream response objects and stream exceptions never leak backend details", async () => {
+  const secret = "SECRET_REMOTE_PROVIDER_AUTH_HEADER";
+  const responses = [
+    { ok: true, headers: { get: () => { throw Error(secret); } } },
+    { ok: true, headers: { get: () => "application/json" },
+      body: { getReader: () => { throw Error(secret); } } },
+    { ok: true, headers: { get: () => "application/json" },
+      body: { getReader: () => ({
+        read: async () => { throw Error(secret); },
+        cancel: async () => {},
+        releaseLock: () => {}
+      }) } }
+  ];
+  for (const response of responses) {
+    const reader = createGovSourceReader({
+      authorize: async ctx => permit(ctx),
+      now: () => TEST_NOW,
+      transport: async () => response
+    });
+    await assert.rejects(
+      reader.read({ sourceId: "global-clinicaltrials", term: "Apixaban", tenantId: "tenant1" }),
+      error => error instanceof Error && error.message === "Upstream unavailable" &&
+        !error.message.includes(secret)
+    );
+  }
 });

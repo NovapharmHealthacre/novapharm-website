@@ -63,12 +63,17 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       if(!metadata||typeof metadata!=="object"||Array.isArray(metadata))reject("metadata");
 
       // Authorize BEFORE parsing raw content or making any quarantine record.
-      const authorisedAt=now();
+      let authorisedAt;
+      try{authorisedAt=now();}
+      catch{reject("server clock");}
       if(!Number.isFinite(authorisedAt))reject("server clock");
-      const decision=await authorize({
-        tenantId,sourceId,country:plan.country,domain:plan.domain,
-        purpose:"internal-evaluation"
-      });
+      let decision;
+      try{
+        decision=await authorize({
+          tenantId,sourceId,country:plan.country,domain:plan.domain,
+          purpose:"internal-evaluation"
+        });
+      }catch{reject("trusted authorizer unavailable");}
       const grant=assertInternalEvaluationPermit({
         permit:decision,sourceId,tenantId,country:plan.country,
         domain:plan.domain,now:authorisedAt

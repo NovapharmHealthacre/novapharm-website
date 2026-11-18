@@ -12,13 +12,18 @@ export const EVIDENCE_STATE = "unreconciled_upstream_preview";
 
 const isId = (value) => typeof value === "string" &&
   /^[A-Za-z0-9][A-Za-z0-9_:.@-]{1,127}$/.test(value);
+const utcIso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
+const canonicalUtc = value => typeof value === "string" && utcIso.test(value) &&
+  Number.isFinite(Date.parse(value)) && new Date(Date.parse(value)).toISOString() === value;
 
 export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, domain, country, now }) {
   if (!permit || typeof permit !== "object" || Array.isArray(permit)) {
     throw new Error("Source rights are not approved");
   }
-  const issued = Date.parse(permit.issuedAt);
-  const expires = Date.parse(permit.validUntil);
+  // Validate types before Date.parse: even a Symbol or object supplied by a
+  // malformed authority adapter must fail closed with the same denial.
+  const issued = typeof permit.issuedAt === "string" ? Date.parse(permit.issuedAt) : NaN;
+  const expires = typeof permit.validUntil === "string" ? Date.parse(permit.validUntil) : NaN;
   if (permit.decision !== "approved" ||
     permit.rightsStatus !== "approved" ||
     permit.sourceId !== sourceId ||
@@ -31,6 +36,8 @@ export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, dom
     !isId(permit.receiptId) ||
     !isId(permit.licenseId) ||
     !isId(permit.rightsVersion) ||
+    !Number.isFinite(now) ||
+    !canonicalUtc(permit.issuedAt) || !canonicalUtc(permit.validUntil) ||
     !Number.isFinite(issued) || !Number.isFinite(expires) ||
     issued > now || expires <= now || expires <= issued ||
     expires - issued > 24 * 60 * 60 * 1000 ||
@@ -53,7 +60,9 @@ export function buildEvaluationEnvelope({ plan, normalized, raw, grant, captured
       normalized.jurisdiction !== plan.country ||
       !Array.isArray(normalized.records) ||
       !grant || !isId(grant.receiptId) ||
-      !Number.isFinite(when.getTime())) {
+      !canonicalUtc(grant.validUntil) ||
+      !Number.isFinite(when.getTime()) ||
+      when.getTime() >= Date.parse(grant.validUntil)) {
     throw new Error("Invalid evaluation envelope");
   }
   const rawSerialized = JSON.stringify(raw);

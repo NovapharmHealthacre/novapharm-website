@@ -201,11 +201,15 @@ export function normaliseGovSourceResult(plan, data) {
       provenanceDomain: "PubChem CID discovery"
     }));
   } else if (plan.sourceId === "pl-nfz-drug-program") {
-    if (!Array.isArray(data?.data)) throw new Error("Unexpected source schema");
-    // NFZ uses JSON API response envelopes and may nest a grouped data array.
-    const groups = data.data.flatMap((entry) =>
-      Array.isArray(entry?.data) ? entry.data : [entry]
-    );
+    // Official NFZ response is { meta, links, data: { sums, data: [...] } }.
+    // Flat arrays and guessed nested shapes are not the documented contract.
+    if (!data || typeof data !== "object" ||
+        Array.isArray(data) || Array.isArray(data.errors) ||
+        !data.data || Array.isArray(data.data) ||
+        !Array.isArray(data.data.data)) {
+      throw new Error("Unexpected source schema");
+    }
+    const groups = data.data.data;
     rows = groups.map((entry) => {
       const value = entry?.attributes && typeof entry.attributes === "object" ? entry.attributes : entry;
       return {
@@ -248,26 +252,39 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         throw new Error("Invalid tenant context");
       }
-      const permission = await authorize({
-        sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
-      });
-      const grantedAt = now();
+      let permission;
+      try {
+        permission = await authorize({
+          sourceId, tenantId, purpose: "internal-evaluation", domain: plan.domain, country: plan.country
+        });
+      } catch { throw new Error("Source rights are not approved"); }
+      let grantedAt;
+      try { grantedAt = now(); }
+      catch { throw new Error("Source rights are not approved"); }
       const grant = assertInternalEvaluationPermit({
         permit: permission, sourceId, tenantId,
         domain: plan.domain, country: plan.country, now: grantedAt
       });
-      const response = await transport(plan.url, {
-        method: "GET",
-        redirect: "error",
-        credentials: "omit",
-        cache: "no-store",
-        headers: { accept: "application/json" },
-        signal: AbortSignal.timeout(TIMEOUT_MS)
-      });
-      const raw = await readJsonBounded(response);
+      let response;
+      try {
+        response = await transport(plan.url, {
+          method: "GET",
+          redirect: "error",
+          credentials: "omit",
+          cache: "no-store",
+          headers: { accept: "application/json" },
+          signal: AbortSignal.timeout(TIMEOUT_MS)
+        });
+      } catch { throw new Error("Upstream unavailable"); }
+      let raw;
+      try { raw = await readJsonBounded(response); }
+      catch { throw new Error("Upstream unavailable"); }
       const normalized = normaliseGovSourceResult(plan, raw);
+      let capturedAt;
+      try { capturedAt = now(); }
+      catch { throw new Error("Invalid evaluation envelope"); }
       return buildEvaluationEnvelope({
-        plan, normalized, raw, grant, capturedAt: now()
+        plan, normalized, raw, grant, capturedAt
       });
     }
   });
