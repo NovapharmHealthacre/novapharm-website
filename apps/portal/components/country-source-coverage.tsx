@@ -20,6 +20,8 @@ export function CountrySourceCoverage() {
       if (filter === "research" && country.candidateSourceCount !== 0) return false;
       return !term || [
         country.country, country.iso2, country.region,
+        country.publisherResearchLead?.publisherName ?? "",
+        country.publisherResearchLead?.leadType ?? "",
         ...country.candidateSources.map((source) => [source.provider, source.domains, source.candidateKey].join(" "))
       ].join(" ").normalize("NFKC").toLocaleLowerCase().includes(term);
     });
@@ -83,6 +85,13 @@ export function CountrySourceCoverage() {
                   </li>
                 ))}</ul>
               </details>
+            ) : country.publisherResearchLead ? (
+              <div className={styles.details}>
+                <p className={styles.next}>Official publisher research lead — not integrated</p>
+                <a href={country.publisherResearchLead.referenceUrl} target="_blank" rel="noopener noreferrer">{country.publisherResearchLead.publisherName}</a>
+                <p className={styles.next}>{country.publisherResearchLead.caveat}</p>
+                <p className={styles.next}>Reference only · Rights not reviewed · No verified medicine API or live feed</p>
+              </div>
             ) : <p className={styles.next}>Next: verify official regulator, approved dataset and access terms.</p>}
           </article>
         ))}
