@@ -63,6 +63,14 @@ export function ScienceResearchWorkspace() {
         </article>)}
       </div>
     </section>
+    <section className={styles["lifecycle"]} aria-labelledby="science-lifecycle-title">
+      <h2 id="science-lifecycle-title">Eight checks before a scientific claim.</h2>
+      <p>These are unverified prerequisites, not completed scientific validations or clinical permissions.</p>
+      <ol className={styles["lifecycleSteps"]}>
+        {scienceMethods.claimIntegrityPolicy.requiredStages.map((stage) =>
+          <li key={stage}><strong>{stage.replaceAll("_", " ")}</strong><span>Independent verification required</span></li>)}
+      </ol>
+    </section>
     <section className={styles["bottom"]} aria-labelledby="science-gates-title">
       <h2 id="science-gates-title">Production release remains gated.</h2>
       <p>Access to restricted science models (including GPT-Rosalind) requires separate OpenAI eligibility and API approval. Evidence permissions, qualified scientists, regulated validation and independently verified iOS/Android security must also be established. GPT-Rosalind API access is restricted to approved internal research and is not permitted for customer-facing commercial products. Neither this screen nor the public OpenAI Science page is an API connection.</p>
