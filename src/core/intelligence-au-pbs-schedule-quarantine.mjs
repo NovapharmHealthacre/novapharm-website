@@ -5,6 +5,7 @@
  */
 import { createHash } from "node:crypto";
 import { assertInternalEvaluationPermit } from "./intelligence-global-evidence-contract.mjs";
+import { evaluatePbsScheduleCsv } from "./intelligence-au-pbs-schedule-csv-quarantine.mjs";
 
 export const AU_PBS_SOURCE_ID = "au-pbs-schedules";
 export const AU_PBS_PUBLIC_GUIDANCE = "https://data.pbs.gov.au/api/api-public.html";
@@ -103,7 +104,7 @@ export function createPbsScheduleCandidateEvaluator({ authorize, now = () => Dat
     fail("trusted server rights authorizer and clock required");
   }
   return Object.freeze({
-    async evaluate({ tenantId, bytes } = {}) {
+    async evaluate({ tenantId, bytes, format = "application/json" } = {}) {
       if (typeof tenantId !== "string" ||
           !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) fail("tenant identity");
       const binding = {
@@ -113,7 +114,9 @@ export function createPbsScheduleCandidateEvaluator({ authorize, now = () => Dat
       const initial = await authorize(binding);
       const startedAt = safeClock(now());
       const grant = assertInternalEvaluationPermit({ permit: initial, ...binding, now: startedAt });
-      const sample = evaluatePbsScheduleJson(bytes);
+      if (format !== "application/json" && format !== "text/csv") fail("unknown source media type");
+      const sample = format === "text/csv"
+        ? evaluatePbsScheduleCsv(bytes) : evaluatePbsScheduleJson(bytes);
       const parsedAt = safeClock(now());
       if (parsedAt < startedAt || parsedAt >= Date.parse(grant.validUntil)) {
         fail("rights expired during parse");
