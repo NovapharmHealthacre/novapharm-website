@@ -55,7 +55,7 @@ jobs:
           }
           console.log("Verified AEMPS public CIMA HTTP source; no production data admission");
           NODE
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
         with:
           name: intelligence-es-cima-public-live-receipt
           path: artifacts/spain-cima-live/receipt.json
