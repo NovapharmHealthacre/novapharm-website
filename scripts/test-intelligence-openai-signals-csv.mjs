@@ -37,3 +37,17 @@ test("no unsupported headers, sensitive columns, formulae, invalid metrics or ra
   }
   assert.equal(reviewSignalsCsvText("raw_user_messages.csv", "user_id,prompt\n1,PRIVATE").status, "blocked");
 });
+
+test("local preview rejects duplicate publisher time/grouping grain and future-dated records", () => {
+  const csv = "month,country,topic,share_of_messages\n2026-09-01,GB,Writing,0.4\n";
+  const repeated = csv + "2026-09-01,GB,Writing,0.5\n";
+  const duplicate = reviewSignalsCsvText("share_of_messages_by_topic_country_month.csv",repeated);
+  assert.equal(duplicate.status,"blocked");
+  assert.ok(duplicate.reasons.includes("duplicate-grain"));
+  assert.equal(duplicate.executionEnabled,false);
+  assert.equal(duplicate.stored,false);
+  const distinct = csv + "2026-09-01,IN,Writing,0.5\n";
+  assert.equal(reviewSignalsCsvText("share_of_messages_by_topic_country_month.csv",distinct).status,"review-only");
+  const outOfWindow = "month,country,topic,share_of_messages\n2099-01-01,GB,Writing,0.5\n";
+  assert.equal(reviewSignalsCsvText("share_of_messages_by_topic_country_month.csv",outOfWindow).status,"blocked");
+});
