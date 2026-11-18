@@ -42,12 +42,18 @@ for (const file of pages.sort()) {
     const canonical = attr(nodes.find(x => x.tagName === 'link' && (attr(x, 'rel') ?? '').split(/\s+/).includes('canonical')), 'href');
     const robots = attr(nodes.find(x => x.tagName === 'meta' && attr(x, 'name')?.toLowerCase() === 'robots'), 'content') ?? '';
     const fallback = nodes.some(x => x.tagName === 'a' && attr(x, 'href') === target);
-    const script = nodes.some(x => x.tagName === 'script');
+    const scripts = nodes.filter(x => x.tagName === 'script');
+    const unexpectedScripts = scripts.filter(x =>
+      attr(x, 'src') !== '/assets/js/rtl-localization.js' ||
+      (x.childNodes ?? []).some(child => child.nodeName === '#text' && child.value?.trim())
+    );
     if (!target || target.includes('..')) problems.push('Unsafe or invalid legacy redirect target');
     if (!target || canonical !== 'https://novapharmhealthcare.com' + target) problems.push('Redirect canonical mismatch');
     if (!/\bnoindex\b/i.test(robots)) problems.push('Redirect must be noindex');
     if (!target || !fallback) problems.push('Redirect requires a matching fallback link');
-    if (script) problems.push('Redirect alias must not execute scripts');
+    // The site-wide, reviewed RTL bootstrap is deliberately added to two
+    // semantic legacy redirects by the public build. Reject all other scripts.
+    if (unexpectedScripts.length || scripts.length > 1) problems.push('Redirect alias contains unapproved scripts');
     // Both minimal aliases and accessible semantic fallback pages are valid.
     // Reject only inconsistent or duplicated content landmarks.
     if (!((h1 === 0 && main === 0) || (h1 === 1 && main === 1))) problems.push('Redirect alias requires zero or one matched h1/main landmark pair');
