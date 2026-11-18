@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import { ClipVisualSearch } from "./clip-visual-search";
 import styles from "./nova-ml-workspaces.module.css";
 
@@ -57,6 +58,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       )}</ol>
     </section>
 
+    {(kind === "nova-device-intelligence" || kind === "nova-core-runtime") && <MultimodalReviewPanel />}
     {kind === "nova-device-intelligence" ? <ClipVisualSearch /> : null}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
