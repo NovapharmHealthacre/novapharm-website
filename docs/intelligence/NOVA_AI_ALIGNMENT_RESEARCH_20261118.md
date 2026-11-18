@@ -49,3 +49,7 @@ swift test --package-path native/novapharm-intelligence-apple
 ```
 
 SwiftPM requires macOS/Xcode for Apple SDKs. Kotlin tests require an installed versioned Kotlin compiler/JDK; a compiler job is not an Android Studio, physical-device or Play Store test.
+
+### Paper-specific reward equations added
+
+The offline evaluator also includes **unfitted illustrative** reward functions from Gao et al. Let `d = sqrt(KL)` where KL is the policy change relative to the initial policy. The paper studies `R_BoN(d) = d * (alpha - beta*d)` and `R_RL(d) = d * (alpha - beta*ln(d))`. The separate best-of-n theoretical relation is `KL_BoN(n) = ln(n) - (n-1)/n`. These are not fitted with NovaPharm data, do not establish human reward and should not be treated as calibrated safe-optimization targets (especially the RL form near the origin). `evaluateRewardScalingForm` and `calculateBestOfNKl` calculate only this synthetic mathematics with caller-supplied coefficients.
