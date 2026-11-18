@@ -16,6 +16,9 @@ on:
       - 'scripts/test-intelligence-global-source-gateway.mjs'
       - 'docs/intelligence/global-pharma-sources-20261117.json'
       - '.github/workflows/intelligence-global-mobile-contracts.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
 
 permissions:
@@ -47,6 +50,8 @@ jobs:
           node --test scripts/test-intelligence-global-source-registry.mjs
           node --test scripts/test-intelligence-global-source-aliases.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
+      - name: Verify research-only mobile changes cannot trigger public contact publishing
+        run: node --test scripts/aws/contact-release-routing.test.mjs
 
   mobile-bundle-preflight:
     name: iOS/Android candidate typecheck and offline bundle preflight
