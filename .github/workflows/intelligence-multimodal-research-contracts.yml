@@ -8,11 +8,13 @@ on:
       - 'src/core/intelligence-multimodal-research-basis.*'
       - 'src/core/intelligence-multimodal-threat-evaluation.mjs'
       - 'src/core/intelligence-multimodal-benchmark-metadata.mjs'
+      - 'src/core/intelligence-global-canonical-candidates.mjs'
       - 'src/core/intelligence-22-workspace-readiness.mjs'
       - 'scripts/test-intelligence-multimodal-evidence-review.mjs'
       - 'scripts/test-intelligence-multimodal-workspace-policy.mjs'
       - 'scripts/test-intelligence-multimodal-research-basis.mjs'
       - 'scripts/test-intelligence-multimodal-benchmark-metadata.mjs'
+      - 'scripts/test-intelligence-global-canonical-candidates.mjs'
       - 'scripts/test-intelligence-22-workspace-readiness.mjs'
       - 'apps/portal/components/multimodal-review-panel.tsx'
       - 'apps/portal/components/nova-ml-workspaces.tsx'
@@ -55,5 +57,6 @@ jobs:
           node --test scripts/test-intelligence-multimodal-workspace-policy.mjs
           node --test scripts/test-intelligence-multimodal-research-basis.mjs
           node --test scripts/test-intelligence-multimodal-benchmark-metadata.mjs
+          node --test scripts/test-intelligence-global-canonical-candidates.mjs
           node --test scripts/test-intelligence-22-workspace-readiness.mjs
           node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
