@@ -15,13 +15,11 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-24.04
-    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
-    # while preserving Chromium, WebKit and all existing acceptance tests.
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     strategy:
       fail-fast: false
       matrix:
@@ -34,24 +32,33 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      # The official Playwright image may run as root while the workspace is
-      # owned by the runner. Trust only this exact checkout, not all paths.
-      # The provenance-stamping build invokes git rev-parse HEAD.
-      - name: Verify exact checkout Git provenance inside container
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
         run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
-          git rev-parse --verify HEAD
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # Both browsers must be present before real accessibility, Lighthouse
-      # and role/viewport acceptance. Do not disable or mock either engine.
-      - name: Verify Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
       - name: Run complete route, viewport and Axe matrix
@@ -68,35 +75,42 @@ jobs:
   secure-portal:
     name: Secure portal and role-boundary acceptance
     runs-on: ubuntu-24.04
-    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
-    # while preserving Chromium, WebKit and all existing acceptance tests.
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      # The official Playwright image may run as root while the workspace is
-      # owned by the runner. Trust only this exact checkout, not all paths.
-      # The provenance-stamping build invokes git rev-parse HEAD.
-      - name: Verify exact checkout Git provenance inside container
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
         run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
-          git rev-parse --verify HEAD
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # Both browsers must be present before real accessibility, Lighthouse
-      # and role/viewport acceptance. Do not disable or mock either engine.
-      - name: Verify Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
@@ -119,37 +133,42 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-24.04
-    # Version-pinned official Playwright image bundles native Chromium/WebKit
-    # dependencies; the previous cold Ubuntu apt mirror exhausted 1,200s.
-    # Keep both real engines and all synthetic authentication workflows.
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
-    timeout-minutes: 60
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      # The official Playwright image may run as root while the workspace is
-      # owned by the runner. Trust only this exact checkout, not all paths.
-      # The provenance-stamping build invokes git rev-parse HEAD.
-      - name: Verify exact checkout Git provenance inside container
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
         run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
-          git rev-parse --verify HEAD
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # The official image already supplies native libraries and browser builds
-      # matching the frozen npm package. Explicitly verify both engines before
-      # the real Chromium+WebKit workflow acceptance; never skip launch/tests.
-      - name: Verify Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
       - name: Start synthetic non-production runtime
