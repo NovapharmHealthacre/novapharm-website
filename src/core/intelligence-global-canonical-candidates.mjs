@@ -39,10 +39,17 @@ export function buildLocalIdentityCandidates(envelope) {
       !["regulatory", "authorisation"].includes(envelope.domain)) {
     throw new Error("Only national regulatory product sources may suggest medicine identity");
   }
-  return Object.freeze(envelope.records.map(({ localId, label }) => {
-    if (!isBounded(localId, 120) || !isBounded(label, 240)) {
+  // Never allow an inferred visual/semantic candidate to masquerade as a
+  // regulator's original product row. Unknown record fields fail closed.
+  const sourceRowKeys = new Set(["localId", "label", "provenanceDomain"]);
+  return Object.freeze(envelope.records.map((record) => {
+    if (!record || typeof record !== "object" || Array.isArray(record) ||
+        Object.keys(record).some(key => !sourceRowKeys.has(key)) ||
+        !isBounded(record.localId, 120) || !isBounded(record.label, 240) ||
+        (record.provenanceDomain !== undefined && !isBounded(record.provenanceDomain, 100))) {
       throw new Error("Invalid source-local medicine identity");
     }
+    const { localId, label } = record;
     return Object.freeze({
       sourceId: envelope.sourceId,
       country: envelope.jurisdiction,
