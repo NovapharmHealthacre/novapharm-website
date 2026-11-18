@@ -18,9 +18,10 @@ import {
   View
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import { novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 
-type Screen = "overview" | "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "inspect" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -40,6 +41,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "inspect", label: "Inspect" },
   { screen: "account", label: "Account" }
 ];
 const pilotSlugs = new Set([
@@ -262,6 +264,21 @@ export default function App() {
                 <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
               ))}
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
+            </>
+          )}
+          {screen === "inspect" && (
+            <>
+              <SectionHeading title="Model Microscope" detail="Read-only neural-network inspection research. No live models or approved inspection artifacts are installed." />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>No approved model inspections</Text>
+                <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
+                <Text style={styles.meta}>Private source-only preview · Zero inference · Zero network requests · No patient data</Text>
+              </View>
+              <SectionHeading title="Research requirements" />
+              {novaMlWorkspaceCatalogue.find((module) => module.slug === "nova-model-microscope")?.requirements.map((requirement) => (
+                <View style={styles.requirement} key={requirement}><Text style={styles.description}>{requirement}</Text></View>
+              ))}
+              <Text style={styles.meta}>Visualizations may suggest hypotheses but cannot establish model causality, clinical safety or regulatory validity. Use accepted source records and human review.</Text>
             </>
           )}
           {screen === "account" && (
