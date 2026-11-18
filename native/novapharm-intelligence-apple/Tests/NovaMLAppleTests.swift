@@ -44,6 +44,39 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testComputePlannerCannotEnableExecutionOrAllowPersonalDataOrGPUCost() {
+        let digest = "sha256:" + String(repeating: "a", count: 64)
+        let proposal = NovaComputeProposal(
+            mode: "experiment", accelerator: "cpu",
+            datasetDigest: digest, modelDigest: digest,
+            purpose: "non-clinical-research", dataClass: "public-approved",
+            containsPersonalData: false, cpuCores: 2, gpuCount: 0,
+            memoryGiB: 4, durationMinutes: 20, retentionDays: 0,
+            region: "eu-west-2", estimatedCostGbp: 0
+        )
+        let allowed = NovaComputePlanner.assess(proposal)
+        XCTAssertEqual(allowed.status, "review-only")
+        XCTAssertFalse(allowed.executionEnabled)
+        XCTAssertTrue(allowed.reasons.isEmpty)
+
+        let costly = NovaComputeProposal(
+            mode: "training", accelerator: "gpu",
+            datasetDigest: digest, modelDigest: digest,
+            purpose: "non-clinical-research", dataClass: "public-approved",
+            containsPersonalData: true, cpuCores: 2, gpuCount: 1,
+            memoryGiB: 4, durationMinutes: 20, retentionDays: 0,
+            region: "us-east-1", estimatedCostGbp: 10
+        )
+        let denied = NovaComputePlanner.assess(costly)
+        XCTAssertEqual(denied.status, "blocked")
+        XCTAssertFalse(denied.executionEnabled)
+        XCTAssertTrue(denied.reasons.contains("personal-data-not-admitted"))
+        XCTAssertTrue(denied.reasons.contains("region-not-allowed"))
+        XCTAssertTrue(denied.reasons.contains("budget-not-approved"))
+    }
+
+    #if os(macOS)
+
     func testL0HardConcreteResearchMathAndInvalidInputs() throws {
         let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
         XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
