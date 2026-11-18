@@ -5,6 +5,11 @@ on:
     paths:
       - "src/core/intelligence-sparse-circuit-assurance.mjs"
       - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
+      - "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
       - ".github/workflows/intelligence-sparse-circuit-assurance.yml"
   push:
     branches: [main]
@@ -26,4 +31,4 @@ jobs:
         with:
           node-version: "22"
       - name: Validate deterministic research-only contract
-        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs
+        run: node --test scripts/test-intelligence-sparse-circuit-assurance.mjs scripts/test-intelligence-sparse-circuit-cross-platform.mjs
