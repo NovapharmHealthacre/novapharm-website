@@ -10,7 +10,7 @@ export const mobileLightPalette = Object.freeze({
   primary: "#1D1D1F",
   secondary: "#424245",
   tertiary: "#595961",
-  accent: "#B30E09"
+  accent: "#E3120B"
 });
 
 export const mobileDarkPalette = Object.freeze({
