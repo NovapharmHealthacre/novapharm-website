@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
+import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
