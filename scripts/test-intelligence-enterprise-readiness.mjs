@@ -64,3 +64,24 @@ test("zero budget with permitted paid provisioning is a policy conflict", () => 
   const p = payload(); p.constraints.productionPermissions.provisionNewPaidInfrastructure = true;
   assert.ok(assess(p).blockers.includes("INFRASTRUCTURE_SPEND_POLICY_CONFLICT"));
 });
+
+
+test("command-line production gate exits nonzero despite valid source metadata", async () => {
+  const { spawnSync } = await import("node:child_process");
+  const { resolve } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const script = resolve(fileURLToPath(new URL(".", import.meta.url)), "audit-intelligence-enterprise-readiness.mjs");
+  const proc = spawnSync(process.execPath, [script, "--require-production-ready"], {
+    encoding: "utf8", maxBuffer: 2_000_000, timeout: 20_000
+  });
+  assert.equal(proc.error, undefined);
+  assert.equal(proc.status, 1, "production sign-off must not succeed using source metadata alone");
+  const audit = JSON.parse(proc.stdout);
+  assert.equal(audit.enterpriseReady, false);
+  assert.equal(audit.completionPercent, null);
+  assert.equal(audit.metrics.sourceCandidateCount, 101);
+  assert.equal(audit.metrics.distinctNamedCountries, 77);
+  assert.equal(audit.metrics.sourcesRightsDeclaredReviewed, 0);
+  assert.equal(audit.metrics.sourceProductionIntegrationsDeclared, 0);
+  assert.ok(audit.blockers.includes("OWNER_PRODUCTION_SIGNOFF_MISSING"));
+});
