@@ -59,7 +59,7 @@ test("real customer and clinical release must remain explicitly excluded", () =>
     assert.match(implementation, new RegExp(phrase));
   }
   assert.match(plan, /Production gates/);
-  assert.match(plan, /source rights/);
+  assert.match(plan, /source rights/i);
   assert.match(plan, /not deployed/i);
 });
 
