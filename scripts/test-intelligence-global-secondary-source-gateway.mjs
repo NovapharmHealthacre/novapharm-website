@@ -22,8 +22,8 @@ const json = (payload) => new Response(JSON.stringify(payload), {
   headers: { "content-type": "application/json" }
 });
 
-test("five additional official API plans remain HTTPS origin/path allowlisted", () => {
-  assert.equal(Object.keys(secondarySourcePlans).length, 5);
+test("two distinct national API plans remain HTTPS origin/path allowlisted", () => {
+  assert.equal(Object.keys(secondarySourcePlans).length, 2);
   for (const [sourceId, source] of Object.entries(secondarySourcePlans)) {
     const plan = sample(sourceId);
     const url = new URL(plan.url);
@@ -34,10 +34,8 @@ test("five additional official API plans remain HTTPS origin/path allowlisted", 
     assert.equal(plan.domain, source.domain);
     assert.equal(plan.candidateKey, source.candidateKey);
   }
-  assert.match(sample("global-pubchem").url, /\/compound\/name\/Apixaban\/cids\/JSON/);
   assert.equal(new URL(sample("sg-hsa-products").url).searchParams.get("resource_id"),
     "d_767279312753558cbf19d48344577084");
-  assert.equal(new URL(sample("global-ncbi-pubmed").url).searchParams.get("db"), "pubmed");
 });
 
 test("every added API candidate has a corresponding source record without falsely activating it", () => {
@@ -61,7 +59,7 @@ test("invalid source IDs, query controls, bypasses and oversized pages fail befo
     assert.throws(() => buildSecondarySourcePlan({ sourceId: "sg-hsa-products", term }), /Invalid/);
   }
   for (const limit of [0, 11, 1000, 1.5, "2"]) {
-    assert.throws(() => buildSecondarySourcePlan({ sourceId: "global-pubchem", term: "Apixaban", limit }), /Invalid/);
+    assert.throws(() => buildSecondarySourcePlan({ sourceId: "sg-hsa-products", term: "Apixaban", limit }), /Invalid/);
   }
 });
 
@@ -77,19 +75,6 @@ test("country-local medicine codes and global research identifiers never become 
   assert.equal(sg.records[0].localId, "SIN00001P");
   assert.equal(sg.canPublish, false);
   assert.equal(sg.jurisdiction, "SG");
-  const pubmed = normaliseSecondarySourceResult(sample("global-ncbi-pubmed"), {
-    esearchresult: { idlist: ["000123456", "345677"] }
-  });
-  assert.equal(pubmed.records[0].localId, "000123456");
-  const chembl = normaliseSecondarySourceResult(sample("global-chembl"), {
-    molecules: [{ molecule_chembl_id: "CHEMBL00001", pref_name: "Example" }]
-  });
-  assert.equal(chembl.records[0].localId, "CHEMBL00001");
-  const pubchem = normaliseSecondarySourceResult(sample("global-pubchem"), {
-    IdentifierList: { CID: [12345, -2, 1.3] }
-  });
-  assert.equal(pubchem.records.length, 1);
-  assert.equal(pubchem.records[0].localId, "12345");
   const catalogue = normaliseSecondarySourceResult(sample("gb-nhsbsa-dataset-catalogue"), {
     success: true, result: { results: [{ id: "dataset-001", title: "English prescribing dataset" }] }
   });
@@ -150,11 +135,11 @@ test("a grant that expires while the request executes cannot return results", as
   let clocks = [NOW, Date.parse("2026-11-18T08:00:00Z")];
   const reader = createSecondarySourceReader({
     authorize: async (ctx) => authGrant(ctx),
-    transport: async () => json({ IdentifierList: { CID: [123] } }),
+    transport: async () => json({ success: true, result: { records: [{ LicenceNo: "SIN00001P", Productname: "Test medicine" }] } }),
     now: () => clocks.shift()
   });
   await assert.rejects(
-    reader.read({ sourceId: "global-pubchem", term: "Apixaban", tenantId: "tenantA" }),
+    reader.read({ sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA" }),
     /expired/
   );
 });
@@ -167,7 +152,7 @@ test("invalid server clocks and malformed upstream media/stream fail closed", as
     now: () => NaN
   });
   await assert.rejects(badClock.read({
-    sourceId: "global-pubchem", term: "Apixaban", tenantId: "tenantA"
+    sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA"
   }), /Invalid trusted server time/);
   assert.equal(networkCalls, 0);
   for (const transport of [
@@ -183,7 +168,7 @@ test("invalid server clocks and malformed upstream media/stream fail closed", as
       authorize: async (ctx) => authGrant(ctx), transport, now: () => NOW
     });
     await assert.rejects(reader.read({
-      sourceId: "global-pubchem", term: "Apixaban", tenantId: "tenantA"
+      sourceId: "sg-hsa-products", term: "Apixaban", tenantId: "tenantA"
     }));
   }
 });
