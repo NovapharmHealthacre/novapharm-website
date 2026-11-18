@@ -82,9 +82,9 @@
       "ablation": "mean"
     },
     "provenance": {
-      "runId": "toy-transformer-seed-117",
-      "implementationRevision": "offline-pytorch-v1",
-      "evaluatedAt": "2026-11-18T03:46:16Z"
+      "runId": "toy-transformer-117-220-512-256",
+      "implementationRevision": "sha256:341ffa682104da0973944a4ff2ae4725592e939a7260324b08d0c61aac54e819",
+      "evaluatedAt": "2026-11-18T03:53:48Z"
     }
   },
   "assurance": {

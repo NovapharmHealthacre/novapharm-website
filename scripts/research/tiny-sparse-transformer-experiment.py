@@ -7,6 +7,7 @@ import json
 import math
 import random
 from datetime import datetime, timezone
+from pathlib import Path
 
 import torch
 from torch import nn
@@ -156,6 +157,7 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
     qkv_magnitude = float(pruned.qkv.weight.detach().reshape(3, HEADS, head_width, DIM)[:, kept].abs().mean())
     projection_magnitude = float(pruned.proj.weight.detach()[:, kept * head_width: (kept + 1) * head_width].abs().mean())
     assert qkv_magnitude > 0 and projection_magnitude > 0
+    source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     artifact = {
         "schemaVersion": "npi.sparse-circuit.v1",
         "model": {"identifier": "toy-trained-attention", "revision": "synthetic-v1",
@@ -172,8 +174,8 @@ def run(steps=220, train_size=512, holdout_size=256, prune_fraction=0.20):
         "evaluation": {"baselineLoss": base_loss, "circuitLoss": circuit_loss,
                        "ablatedLoss": ablated_loss, "sampleCount": holdout_size,
                        "holdout": True, "ablation": "mean"},
-        "provenance": {"runId": f"toy-transformer-seed-{SEED}",
-                       "implementationRevision": "offline-pytorch-v1",
+        "provenance": {"runId": f"toy-transformer-{SEED}-{steps}-{train_size}-{holdout_size}",
+                       "implementationRevision": f"sha256:{source_sha256}",
                        "evaluatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")}
     }
     result = {
