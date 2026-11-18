@@ -35,6 +35,33 @@ function validateConfiguration(environment) {
       url.pathname !== "/" || url.search || url.hash || url.username || url.password) throw unavailable();
   return { origin: url.origin, secret };
 }
+/**
+ * Probe real private inference readiness, rather than advertising that an
+ * environment flag alone proves model deployment. No patient or query content.
+ */
+export async function probeVisualSearchReadiness(
+  environment = process.env, fetchImpl = globalThis.fetch
+) {
+  const declared = visualSearchReadiness(environment);
+  if (!declared.enabled) return declared;
+  try {
+    const { origin, secret } = validateConfiguration(environment);
+    const response = await fetchImpl(new URL("/healthz", origin), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${secret}` },
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(1500)
+    });
+    if (!response.ok) throw unavailable();
+    const status = await response.json();
+    if (status?.status !== "ready") throw unavailable();
+    return Object.freeze({ ...declared, state: "private_runtime_ready" });
+  } catch {
+    return Object.freeze({ ...declared, enabled: false, state: "unavailable" });
+  }
+}
+
 function normaliseQuery(query) {
   if (typeof query !== "string") throw Object.assign(new Error("A text query is required."), { statusCode: 400 });
   const clean = query.trim();
