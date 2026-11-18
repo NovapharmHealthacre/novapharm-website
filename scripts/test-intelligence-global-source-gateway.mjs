@@ -174,3 +174,34 @@ test("evaluation metadata fingerprint changes when raw source payload changes", 
   assert.notEqual(first.responseSha256, second.responseSha256);
   assert.equal(first.canPublish, false);
 });
+
+test("missing, invalid or spoofed server clocks never authorize an upstream request", async () => {
+  let outgoing = 0;
+  for (const badNow of [NaN, undefined, null, Infinity, -Infinity, -1, "2026-11-17T17:00:00Z", {}, TEST_NOW + 0.5]) {
+    const reader = createGovSourceReader({
+      authorize: async (context) => permit(context),
+      now: () => badNow,
+      transport: async () => {
+        outgoing++;
+        throw new Error("upstream request must not happen with invalid clock");
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /not approved/
+    );
+  }
+  assert.equal(outgoing, 0, "No network access on an invalid clock");
+});
+
+test("the independent grant checker also fails closed on a NaN or missing clock", () => {
+  const plan = buildGovSourcePlan({sourceId:"global-clinicaltrials",term:"Apixaban"});
+  const args = {
+    permit: permit(), sourceId:plan.sourceId, tenantId:"tenant1",
+    domain:plan.domain, country:plan.country
+  };
+  for(const badNow of [NaN,undefined,null,Infinity,-Infinity,-1,"bad-clock"]) {
+    assert.throws(()=>assertInternalEvaluationPermit({...args,now:badNow}),/not approved/);
+  }
+  assert.equal(assertInternalEvaluationPermit({...args,now:TEST_NOW}).receiptId,"receipt-test-001");
+});
