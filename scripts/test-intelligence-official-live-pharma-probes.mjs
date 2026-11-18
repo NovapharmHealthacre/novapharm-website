@@ -187,3 +187,14 @@ test("both real upstream probes resolve to their original national registry publ
     assert.equal(match[0].activeAdapterId,null);
   }
 });
+
+
+test("source-plan rights documentation resolves to the official publisher terms, not generic API guides", () => {
+  const fda = OFFICIAL_LIVE_PROBE_PLANS["us-fda-drugsfda"];
+  const hsa = OFFICIAL_LIVE_PROBE_PLANS["sg-hsa-registered-products"];
+  assert.equal(fda.rightsDocumentation, "https://open.fda.gov/terms/");
+  assert.equal(hsa.rightsDocumentation, "https://developers.data.gov.sg/open-data-licence");
+  assert.equal(hsa.apiTermsDocumentation, "https://developers.data.gov.sg/privacy-and-terms");
+  assert.equal(new URL(fda.rightsDocumentation).protocol, "https:");
+  assert.equal(new URL(hsa.rightsDocumentation).protocol, "https:");
+});
