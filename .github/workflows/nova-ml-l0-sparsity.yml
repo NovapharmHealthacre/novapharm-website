@@ -26,6 +26,13 @@ on:
       - "tooling/python/nova_l0_sparsity.py"
       - "tooling/python/test_nova_l0_sparsity.py"
       - "native/novapharm-intelligence-android/**"
+      - "native/novapharm-intelligence-apple/**"
+      - "docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md"
+      - "docs/ai-model-register.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "scripts/test-nova-l0-governance.mjs"
+      - "apps/portal/data/nova-ml-modules.ts"
       - ".github/workflows/nova-ml-l0-sparsity.yml"
 
 permissions:
