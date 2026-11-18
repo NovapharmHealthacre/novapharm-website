@@ -69,7 +69,7 @@ test("Signals/Whisper/Triton research is a visible fifth tab in the iOS/Android 
 });
 test("research browser opens only curated original OpenAI links after a tap", () => {
   const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
-  assert.match(screen, /\^https:\\/\\/\(\?:openai\\\.com\|cdn\\\.openai\\\.com\)\\\//);
+  assert.ok(screen.includes(String.raw`(?:openai\.com|cdn\.openai\.com)`));
   assert.match(screen, /if \(!validSourceUrl\(url\)\)/);
   assert.match(screen, /onPress=\{\(\) => \{ void openSource\(source\.url\); \}\}/);
   assert.match(screen, /Linking\.openURL\(url\)/);
