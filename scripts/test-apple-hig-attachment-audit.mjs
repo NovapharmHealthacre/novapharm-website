@@ -36,9 +36,17 @@ test("owner-supplied 32 Apple/HIG files have one-to-one audit entries without a 
     assert.ok(Number.isInteger(item.sizeBytes) && item.sizeBytes > 0, "Missing actual byte size: " + item.name);
     assert.equal(item.integrationVerified, false, "Do not invent shipped native assets: " + item.name);
     assert.ok(item.group && item.kind && item.findings && item.inspectionLevel && item.usePolicy);
-    assert.ok(["file_metadata_only","guide_text_reviewed","workbook_content_reviewed","archive_or_source_inspected"].includes(item.inspectionLevel));
+    assert.ok(["file_metadata_only","disk_image_envelope_inspected","guide_text_reviewed","workbook_content_reviewed","archive_or_source_inspected"].includes(item.inspectionLevel));
     if (item.inspectionLevel === "file_metadata_only") assert.equal(item.sha256, null, "Uninspected bytes may not have an invented hash");
-    if (item.name.endsWith(".dmg")) assert.equal(item.inspectionLevel, "file_metadata_only", "A macOS DMG cannot be certified by metadata alone");
+    if (item.name.endsWith(".dmg")) {
+      assert.ok(["file_metadata_only", "disk_image_envelope_inspected"].includes(item.inspectionLevel),
+        "DMG cannot be called license or installer verified");
+      if (item.inspectionLevel === "disk_image_envelope_inspected") {
+        assert.match(item.findings, /UDIF 'koly'/);
+        assert.match(item.findings, /NOT inspected/);
+        assert.match(item.sha256, /^[0-9a-f]{64}$/);
+      }
+    }
     if (item.sha256 != null) assert.match(item.sha256, /^[0-9a-f]{64}$/);
   }
 });
@@ -58,7 +66,7 @@ test("byte-inspected archive records retain exact hashes and no false Mac or IP 
     assert.equal(item.archiveEntries, count);
     assert.equal(item.inspectionLevel, "archive_or_source_inspected");
   }
-  assert.equal(ledger.attachments.filter((item) => item.sha256).length, Object.keys(expected).length);
+  assert.equal(ledger.attachments.filter((item) => item.inspectionLevel === "archive_or_source_inspected").length, Object.keys(expected).length);
   assert.match(report, /no blanket approval to redistribute/);
   assert.match(report, /NOT 100% conformity/);
   assert.match(report, /do not display unsupported store availability/i);
@@ -127,4 +135,29 @@ test("workbook's 30 article anchors and five supporting Apple resource URLs are 
   assert.equal(workbook.sha256, null);
   assert.match(report, /207 indexed link records/);
   assert.match(report, /30 article-section anchors/);
+});
+
+test("17 small Apple DMG containers have bounded SHA evidence, not licensing or Mac install claims", () => {
+  const actual = ledger.attachments.filter((item) => item.inspectionLevel === "disk_image_envelope_inspected");
+  assert.equal(actual.length, 17);
+  assert.equal(ledger.dmgEnvelopeInspection.files, 17);
+  assert.equal(ledger.dmgEnvelopeInspection.uniqueSha256, 9);
+  assert.equal(ledger.dmgEnvelopeInspection.byteIdenticalDuplicatePairs, 8);
+  assert.equal(new Set(actual.map((item) => item.sha256)).size, 9);
+  assert.equal(actual.filter((item) => item.name.endsWith(".dmg")).length, 17);
+  for (const pair of [
+    ["Icons-Siri-AI(1).dmg","Icons-Siri-AI(2).dmg"],
+    ["NY(1).dmg","NY(2).dmg"],
+    ["SF-Arabic(1).dmg","SF-Arabic(2).dmg"],
+    ["SF-Hebrew(1).dmg","SF-Hebrew(2).dmg"],
+    ["SF-Armenian(1).dmg","SF-Armenian(2).dmg"],
+    ["SF-Georgian(1).dmg","SF-Georgian(2).dmg"],
+    ["iOS-27-Icon-Templates-Photoshop-Illustrator(1).dmg","iOS-27-Icon-Templates-Photoshop-Illustrator(2).dmg"]
+  ]) {
+    const a = ledger.attachments.find((x) => x.name === pair[0]);
+    const b = ledger.attachments.find((x) => x.name === pair[1]);
+    assert.ok(a && b && a.sha256 === b.sha256, "Duplicate upload must match exactly: " + pair[0]);
+  }
+  assert.match(report, /17 smaller UDIF disk images/);
+  assert.match(report, /macOS installer\/licence verification is still not complete/i);
 });
