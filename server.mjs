@@ -85,7 +85,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
-import { searchApprovedVisualCatalogue, visualSearchReadiness } from "./src/core/intelligence-visual-search.mjs";
+import { probeVisualSearchReadiness, searchApprovedVisualCatalogue } from "./src/core/intelligence-visual-search.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -1024,7 +1024,7 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/v1/intelligence/visual/readiness" && request.method === "GET") {
       if (!await rateLimit(request, "clip-visual-readiness", 20, 60 * 1000)) return json(response, 429, { error: "Too many requests." });
       if (!await scopedAuthentication(request, response, ["board"])) return;
-      return json(response, 200, visualSearchReadiness());
+      return json(response, 200, await probeVisualSearchReadiness());
     }
 
     if (pathname === "/api/v1/intelligence/visual/search" && request.method === "POST") {
