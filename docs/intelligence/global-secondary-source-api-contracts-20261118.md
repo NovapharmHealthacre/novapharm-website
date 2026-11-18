@@ -1,7 +1,7 @@
-# NovaPharm Intelligence — five additional source API contracts (18 November 2026)
+# NovaPharm Intelligence — two distinct national source API contracts (18 November 2026)
 
 **State: backend-only candidate code, no real upstream connection or production data.**
-This supplements the five initial API gateway candidates merged via #807. It does **not**
+This supplements the five initial API gateway candidates; global PubMed/ChEMBL/PubChem are handled separately by PR #830 merged via #807. It does **not**
 activate an external feed, grant a licence, load Atlas, claim the 101 candidate sources
 are integrated countries, or distribute private data via the mobile applications.
 
@@ -9,9 +9,6 @@ are integrated countries, or distribute private data via the mobile applications
 
 | Source ID | Authority / dataset | What may be previewed in separately authorised internal evaluation | Authority documentation |
 | --- | --- | --- | --- |
-| global-ncbi-pubmed | NCBI E-utilities (PubMed esearch) | PubMed matching record IDs, **not article titles or proof of benefit** | https://www.ncbi.nlm.nih.gov/books/NBK25500/ |
-| global-chembl | EMBL-EBI ChEMBL molecules | Compound research identifiers and names, **not product approvals** | https://www.ebi.ac.uk/training/online/courses/chembl-quick-tour/accessing-chembl-data/programmatic-access-via-web-services/ |
-| global-pubchem | NIH PubChem PUG REST | Compound CIDs matching a name search, **not identical licensed drug packs** | https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest |
 | sg-hsa-products | Singapore Health Sciences Authority / data.gov.sg registered therapeutic products | Licence number and product name from a **specific 2026 HSA dataset**, not live national sales | https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view |
 | gb-nhsbsa-dataset-catalogue | NHSBSA Open Data Portal CKAN | **Dataset discovery metadata only**; NOT EPD prescribing records or SNOMED/dm+d identity | https://opendata.nhsbsa.net/pages/documentation |
 
@@ -24,7 +21,7 @@ expired receipts from generating previews. A successful synthetic test can only 
 
 ## Explicit limitations and release blockers
 
-- All five newly added contracts are isolated from customer HTTP routes and native clients.
+- Both newly added contracts are isolated from customer HTTP routes and native clients.
 - Unit tests use **mocked** payloads; they do not prove external endpoint availability, real API versions,
   service quotas, host-level response structure on 18 November, completeness, licence or data quality.
 - The HSA source listing states the 2026 dataset was last updated 7 August 2026 and is updated
@@ -32,8 +29,7 @@ expired receipts from generating previews. A successful synthetic test can only 
 - The NHSBSA source uses only the dataset catalogue. NHSBSA requires dataset-level licence review,
   publisher attribution and fair-use/high-volume controls. Its BNF/SNOMED/dm+d terms must be checked
   independently before ingesting detailed EPD facts.
-- PubMed paper metadata, ChEMBL chemical activity and PubChem CIDs cannot be merged into clinical
-  or medicinal authorisation decisions by name resemblance. Keep source-native identifiers.
+- Global PubMed, ChEMBL and PubChem are deliberately NOT duplicated in this adapter; PR #830 owns their source IDs and tests.
 - No API secrets, subscriptions, data sales licence, AWS connection, real client authentication,
   regulator approval or customer/data release is created.
 
