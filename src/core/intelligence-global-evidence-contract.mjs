@@ -31,6 +31,9 @@ export function assertInternalEvaluationPermit({ permit, sourceId, tenantId, dom
     !isId(permit.receiptId) ||
     !isId(permit.licenseId) ||
     !isId(permit.rightsVersion) ||
+    // A bad or absent server clock must never cause NaN comparisons to
+    // bypass expiry, not-before or revocation checks.
+    !Number.isSafeInteger(now) || now < 0 ||
     !Number.isFinite(issued) || !Number.isFinite(expires) ||
     issued > now || expires <= now || expires <= issued ||
     expires - issued > 24 * 60 * 60 * 1000 ||
