@@ -128,3 +128,43 @@ test("offline intake suppresses trusted authorizer and clock adapter exceptions"
       /Global source intake rejected/.test(error.message) && !error.message.includes(marker));
   }
 });
+
+
+test("source-intake clock is sampled after trusted backend authorization",async()=>{
+ let approved=false,reads=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async context=>{approved=true;return permit(context);},
+   now:()=>{assert.equal(approved,true,"clock must follow asynchronous authorization");reads++;return FIXED_NOW;}
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(reads,2);
+ assert.equal(result.evidence.canPublish,false);
+ assert.equal(result.evidence.retrievedAt,"2026-11-17T19:00:00.000Z");
+});
+
+test("offline source intake denies expiry and regressed/invalid server clocks after authorization",async()=>{
+ const expires=Date.parse("2026-11-17T20:00:00.000Z");
+ for(const badClock of [expires,expires+1,FIXED_NOW-1,NaN,undefined,Infinity,null,FIXED_NOW+0.5]){
+   let ticks=0;
+   const evaluator=createGlobalSourceIntakeEvaluator({
+     authorize:async context=>permit(context),
+     now:()=>++ticks===1?FIXED_NOW:badClock
+   });
+   await assert.rejects(evaluator.evaluate(request),
+     /Global source intake rejected: permit expired or server clock/);
+   assert.equal(ticks,2);
+ }
+});
+
+test("offline source intake refuses malformed initial clock before parsing upstream content",async()=>{
+ for(const badClock of [-1,NaN,null,Infinity,FIXED_NOW+0.5]){
+   let ticks=0;
+   const evaluator=createGlobalSourceIntakeEvaluator({
+     authorize:async context=>permit(context),
+     now:()=>{ticks++;return badClock;}
+   });
+   await assert.rejects(evaluator.evaluate({...request,rawBytes:Buffer.from("<raw untrusted>")}),
+     /Global source intake rejected: server clock/);
+   assert.equal(ticks,1);
+ }
+});
