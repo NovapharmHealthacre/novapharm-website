@@ -26,7 +26,7 @@ export const OFFICIAL_LIVE_PROBE_PLANS = Object.freeze({
     url: "https://api.fda.gov/drug/drugsfda.json?limit=1",
     publisher: "US Food and Drug Administration",
     documentation: "https://open.fda.gov/apis/drug/drugsfda/",
-    rightsDocumentation: "https://open.fda.gov/license/"
+    rightsDocumentation: "https://open.fda.gov/terms/"
   }),
   "sg-hsa-registered-products": Object.freeze({
     jurisdiction: "SG",
@@ -38,7 +38,8 @@ export const OFFICIAL_LIVE_PROBE_PLANS = Object.freeze({
       HSA_RESOURCE + "&limit=1",
     publisher: "Singapore Health Sciences Authority via data.gov.sg",
     documentation: "https://data.gov.sg/datasets/" + HSA_RESOURCE + "/view",
-    rightsDocumentation: "https://guide.data.gov.sg/developer-guide/api-overview"
+    rightsDocumentation: "https://developers.data.gov.sg/open-data-licence",
+    apiTermsDocumentation: "https://developers.data.gov.sg/privacy-and-terms"
   })
 });
 
