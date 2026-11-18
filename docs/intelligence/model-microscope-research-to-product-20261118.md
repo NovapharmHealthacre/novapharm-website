@@ -118,3 +118,7 @@ All independently supplied authorization, artifact-loading and verification call
 ### Malformed signed-evidence object isolation
 
 The signed-receipt verifier now catches exceptions caused by malformed input objects, hostile accessors, invalid key registries or crypto-provider errors at its public boundary and exposes only a uniform denial. Ephemeral-key regression tests cover throwing envelope, scope and key-map accessors. Real production still requires pinned reviewer keys, approved source rights and private-service audit events; the code does not provision those assets.
+
+### Authorization timing and hostile input isolation
+
+The protected inspection reader now evaluates grant expiry **after** the asynchronous authorizer finishes and **before** the first protected record lookup. Subsequent server-clock samples must be safe integer milliseconds and cannot regress. Its public boundary suppresses unexpected errors from hostile getters on request, grant, artifact or evidence objects while retaining explicit deny reasons for ordinary invalid inputs. Offline adversarial regression tests assert that expiry during authorization produces **zero artifact loads** and private exception text never crosses the reader boundary. This is a research-only source contract, not a deployed identity provider, key service or authorization grant.

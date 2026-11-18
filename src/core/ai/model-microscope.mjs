@@ -12,7 +12,8 @@ const idPattern = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/u;
 const shaPattern = /^[a-f0-9]{64}$/u;
 const keys = ["tenantId", "actorId", "modelId", "modelVersion", "layerId", "featureId"];
 
-function fail(message) { throw new Error("Model inspection denied: " + message); }
+class InspectionDenial extends Error {}
+function fail(message) { throw new InspectionDenial("Model inspection denied: " + message); }
 async function callTrusted(adapter, input, rejection) {
   try { return await adapter(input); }
   catch { fail(rejection); }
@@ -38,25 +39,28 @@ function requireRequest(request) {
  * verifier. They must not trust assertions carried inside artifact records.
  * No client-provided approval fields are examined.
  */
-export async function inspectGovernedModelFeature({ request, authorizeRead, loadRecord, verifyEvidence, now = Date.now }) {
+async function inspectGovernedModelFeatureInternal({ request, authorizeRead, loadRecord, verifyEvidence, now = Date.now }) {
   requireRequest(request);
   // Pin the authorized scope before invoking asynchronous adapters. The caller
   // cannot mutate request identity halfway through a protected read.
   const scopedRequest = Object.freeze({ ...Object.fromEntries(keys.map(key => [key, request[key]])), purpose: MODEL_MICROSCOPE_PURPOSE });
+  let previousClock = null;
   const readClock = () => {
     let tick;
     try { tick = typeof now === "function" ? now() : now; }
     catch { fail("invalid clock"); }
-    if (!Number.isFinite(tick)) fail("invalid clock");
+    if (!Number.isSafeInteger(tick) || tick < 0 || (previousClock !== null && tick < previousClock)) fail("invalid clock");
+    previousClock = tick;
     return tick;
   };
   if (typeof authorizeRead !== "function" || typeof loadRecord !== "function" || typeof verifyEvidence !== "function") {
     fail("trusted backend adapters missing");
   }
-  const requestTime = readClock();
-
   // Permission MUST precede even the metadata lookup; client metadata is untrusted.
   const grant = await callTrusted(authorizeRead, scopedRequest, "trusted authorizer unavailable");
+  // Only sample grant validity after the asynchronous authorization returns.
+  // A permit that timed out during the authorizer must never reach storage.
+  const requestTime = readClock();
   if (!grant || grant.allowed !== true || !sameScope(grant, scopedRequest) ||
       grant.purpose !== MODEL_MICROSCOPE_PURPOSE || grant.channel !== "protected_backend" ||
       !strictText(grant.grantId, 128) || typeof grant.expiresAt !== "string" ||
@@ -154,4 +158,13 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     regulatoryDecisionReady: false,
     commercialDecisionReady: false
   });
+}
+
+/** Never reveal raw errors from malformed externally supplied record objects. */
+export async function inspectGovernedModelFeature(input) {
+  try { return await inspectGovernedModelFeatureInternal(input); }
+  catch (error) {
+    if (error instanceof InspectionDenial) throw error;
+    fail("invalid protected inspection input");
+  }
 }

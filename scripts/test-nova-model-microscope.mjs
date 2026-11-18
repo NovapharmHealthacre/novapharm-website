@@ -232,3 +232,57 @@ test("trusted adapter and clock failures never disclose backend secrets or raw e
     (error) => error instanceof Error && error.message === "Model inspection denied: invalid clock"
   );
 });
+
+test("grant expiry during asynchronous authorizer denies before protected artifact access", async () => {
+  let clock = now;
+  const expired = Date.parse(authorised.expiresAt);
+  const d = deps();
+  await assert.rejects(
+    inspect({
+      request: scope, now: () => clock,
+      authorizeRead: async () => { clock = expired; return authorised; },
+      loadRecord: d.loadRecord,
+      verifyEvidence: d.verifyEvidence
+    }),
+    /missing, mismatched or expired authorisation/
+  );
+  assert.equal(d.loads, 0);
+  assert.equal(d.verifications, 0);
+});
+
+test("server clock regressions and fractional or negative times fail closed", async () => {
+  for (const invalid of [-1, 0.5, Infinity, NaN]) {
+    const d = deps();
+    await assert.rejects(inspect({ request: scope, now: () => invalid, ...d }), /invalid clock/);
+    assert.equal(d.loads, 0);
+  }
+  let reads = 0;
+  const tick = [now, now + 1000, now - 1];
+  await assert.rejects(inspect({
+    request: scope, now: () => tick[Math.min(reads++, tick.length - 1)],
+    ...deps()
+  }), /invalid clock/);
+});
+
+test("malformed scope and untrusted artifact or verifier accessors cannot disclose private errors", async () => {
+  const marker = "PRIVATE_INTERNAL_SIGNER_PASSWORD";
+  const poisoned = (value, property) => new Proxy(value, {
+    get(target, key) {
+      if (key === property) throw new Error(marker);
+      return Reflect.get(target, key);
+    }
+  });
+  for (const changed of [
+    { request: poisoned({ ...scope }, "tenantId") },
+    { authorizeRead: async () => poisoned({ ...authorised }, "allowed") },
+    { loadRecord: async () => poisoned({ ...record }, "rightsReview") },
+    { verifyEvidence: async () => poisoned({ ...verified }, "reviewState") }
+  ]) {
+    await assert.rejects(
+      inspect({ request: scope, now, ...deps(), ...changed }),
+      error => error instanceof Error &&
+        /^Model inspection denied: /u.test(error.message) &&
+        !error.message.includes(marker)
+    );
+  }
+});
