@@ -38,7 +38,7 @@ jobs:
         run: python3 -m unittest discover -s services/clip -p "test_*.py" -v
       - name: Compile isolated Python sources without loading models or network access
         run: |
-          python3 -m py_compile services/clip/rights.py services/clip/serve.py services/clip/build_index.py
+          python3 -m py_compile services/clip/rights.py services/clip/serve.py services/clip/build_index.py services/clip/evaluate.py
       - name: Guard against bundled model and secret material
         run: |
           if find services/clip native/novapharm-intelligence-android -type f \
