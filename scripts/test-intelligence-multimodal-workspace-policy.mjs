@@ -20,6 +20,8 @@ test("every 22-workspace multimodal policy defaults to no model, no publication 
     const p = assessMultimodalWorkspacePolicy(slug);
     assert.equal(p.workspaceSlug,slug);
     assert.equal(p.state,"research_plan_only");
+    assert.equal(p.researchBasisContract, "novapharm.intelligence.multimodal.research-basis.v1");
+    assert.equal(p.researchDimensionCount,7);
     assert.equal(p.requiresIndependentSourceRights,true);
     assert.equal(p.requiresAuthenticatedTenantAuthority,true);
     assert.equal(p.requiresHumanReleaseApproval,true);
