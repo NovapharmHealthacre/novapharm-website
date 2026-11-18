@@ -38,7 +38,18 @@ export function scienceGovernanceForWorkspace(slug) {
  * A caller-provided approval flag can never turn this planning inventory into
  * a runtime model entitlement. This is deliberately NOT an auth service.
  */
+const RESTRICTED_RESEARCH_AUDIENCES = Object.freeze([
+  "unspecified", "internal_research", "customer", "external_commercial"
+]);
+
 export function assessRosalindResearchBoundary({ audience = "unspecified" } = {}) {
+  // Never echo unbounded caller content (including possible patient data)
+  // through a research or model-access status report.
+  if (typeof audience !== "string" || !RESTRICTED_RESEARCH_AUDIENCES.includes(audience)) {
+    throw Object.assign(new Error("Restricted research audience must be an approved non-sensitive category."), {
+      code: "science_research_audience_invalid", statusCode: 400
+    });
+  }
   const internalAudienceCandidate = audience === "internal_research";
   return Object.freeze({
     contract: "novapharm.intelligence.restricted-research-model-boundary.v1",
