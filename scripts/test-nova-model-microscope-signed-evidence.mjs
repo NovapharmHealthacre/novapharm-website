@@ -44,6 +44,10 @@ test("signature is rejected on tampering, unknown key, mismatched scope or wrong
   assert.throws(()=>run(envelope(),{expected:{...expected,tenantId:"tenant-b"}}),/denied/);
   assert.throws(()=>run(envelope(),{expected:{...expected,visualizationSha256:"d".repeat(64)}}),/denied/);
   assert.throws(()=>run(envelope(),{trustedPublicKeys:{}}),/denied/);
+  assert.throws(()=>run(envelope(),{trustedPublicKeys:{"review-key-v1":keyPair.privateKey}}),/denied/);
+  assert.throws(()=>run(envelope(),{trustedPublicKeys:{"review-key-v1":keyPair.privateKey.export({format:"pem",type:"pkcs8"})}}),/denied/);
+  const publicPem=keyPair.publicKey.export({format:"pem",type:"spki"});
+  assert.equal(run(envelope(),{trustedPublicKeys:{"review-key-v1":publicPem}}).reviewState,"independently_verified");
 });
 test("signed receipts cannot approve themselves or replay after expiry",()=>{
   for(const override of [
