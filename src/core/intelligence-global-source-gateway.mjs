@@ -33,6 +33,26 @@ export const sourcePlans = Object.freeze({
     path: "/europepmc/webservices/rest/search",
     documentation: "https://dev.europepmc.org/RestfulWebService"
   }),
+  "global-pubmed": Object.freeze({
+    country: "GLOBAL", domain: "literature", origin: "https://eutils.ncbi.nlm.nih.gov",
+    path: "/entrez/eutils/esearch.fcgi",
+    documentation: "https://www.ncbi.nlm.nih.gov/books/NBK25499/"
+  }),
+  "global-chembl": Object.freeze({
+    country: "GLOBAL", domain: "drug-discovery", origin: "https://www.ebi.ac.uk",
+    path: "/chembl/api/data/molecule/search.json",
+    documentation: "https://chembl.gitbook.io/chembl-interface-documentation/web-services/chembl-data-web-services"
+  }),
+  "global-pubchem": Object.freeze({
+    country: "GLOBAL", domain: "chemical-identity", origin: "https://pubchem.ncbi.nlm.nih.gov",
+    path: "/rest/pug/compound/name/",
+    documentation: "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest"
+  }),
+  "pl-nfz-drug-program": Object.freeze({
+    country: "PL", domain: "drug-program-reimbursement", origin: "https://api.nfz.gov.pl",
+    path: "/app-stat-api-pl/drug-costs-by-active-substance",
+    documentation: "https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs"
+  }),
   "es-aemps-cima": Object.freeze({
     country: "ES", domain: "authorisation", origin: "https://cima.aemps.es",
     path: "/cima/rest/medicamentos",
@@ -73,6 +93,22 @@ export function buildGovSourcePlan({ sourceId, term, limit = 5 }) {
     url.searchParams.set("format", "json");
     url.searchParams.set("pageSize", String(limit));
     url.searchParams.set("resultType", "lite");
+  } else if (sourceId === "global-pubmed") {
+    url.searchParams.set("db", "pubmed");
+    url.searchParams.set("term", query);
+    url.searchParams.set("retmax", String(limit));
+    url.searchParams.set("retmode", "json");
+  } else if (sourceId === "global-chembl") {
+    url.searchParams.set("q", query);
+    url.searchParams.set("limit", String(limit));
+  } else if (sourceId === "global-pubchem") {
+    url.pathname = "/rest/pug/compound/name/" + encodeURIComponent(query) + "/cids/JSON";
+  } else if (sourceId === "pl-nfz-drug-program") {
+    url.searchParams.set("active-substance", query);
+    url.searchParams.set("page", "1");
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("format", "json");
+    url.searchParams.set("api-version", "1.0");
   } else if (sourceId === "es-aemps-cima") {
     url.searchParams.set("nombre", query);
     url.searchParams.set("pagina", "1");
@@ -143,6 +179,41 @@ export function normaliseGovSourceResult(plan, data) {
       label: safeString(record.title),
       provenanceDomain: "Europe PMC"
     }));
+  } else if (plan.sourceId === "global-pubmed") {
+    if (!Array.isArray(data?.esearchresult?.idlist)) throw new Error("Unexpected source schema");
+    rows = data.esearchresult.idlist.map((id) => ({
+      localId: safeString(id),
+      label: safeString(id),
+      provenanceDomain: "NCBI PubMed ESearch (PMID only)"
+    }));
+  } else if (plan.sourceId === "global-chembl") {
+    if (!Array.isArray(data?.molecules)) throw new Error("Unexpected source schema");
+    rows = data.molecules.map((record) => ({
+      localId: safeString(record.molecule_chembl_id),
+      label: safeString(record.pref_name) || safeString(record.molecule_chembl_id),
+      provenanceDomain: "ChEMBL molecule search"
+    }));
+  } else if (plan.sourceId === "global-pubchem") {
+    if (!Array.isArray(data?.IdentifierList?.CID)) throw new Error("Unexpected source schema");
+    rows = data.IdentifierList.CID.map((cid) => ({
+      localId: Number.isSafeInteger(cid) && cid > 0 ? String(cid) : null,
+      label: Number.isSafeInteger(cid) && cid > 0 ? "CID " + cid : null,
+      provenanceDomain: "PubChem CID discovery"
+    }));
+  } else if (plan.sourceId === "pl-nfz-drug-program") {
+    if (!Array.isArray(data?.data)) throw new Error("Unexpected source schema");
+    // NFZ uses JSON API response envelopes and may nest a grouped data array.
+    const groups = data.data.flatMap((entry) =>
+      Array.isArray(entry?.data) ? entry.data : [entry]
+    );
+    rows = groups.map((entry) => {
+      const value = entry?.attributes && typeof entry.attributes === "object" ? entry.attributes : entry;
+      return {
+        localId: safeString(value?.["active-substance-code"]),
+        label: safeString(value?.["active-substance-name"]),
+        provenanceDomain: "NFZ drug-program reimbursement (substance identity only)"
+      };
+    });
   } else if (plan.sourceId === "es-aemps-cima") {
     if (!Array.isArray(data?.resultados)) throw new Error("Unexpected source schema");
     rows = data.resultados.map((record) => ({
