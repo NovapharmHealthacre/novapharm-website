@@ -36,7 +36,7 @@ test("owner-supplied 32 Apple/HIG files have one-to-one audit entries without a 
     assert.ok(Number.isInteger(item.sizeBytes) && item.sizeBytes > 0, "Missing actual byte size: " + item.name);
     assert.equal(item.integrationVerified, false, "Do not invent shipped native assets: " + item.name);
     assert.ok(item.group && item.kind && item.findings && item.inspectionLevel && item.usePolicy);
-    assert.ok(["file_metadata_only","guide_text_reviewed","archive_or_source_inspected"].includes(item.inspectionLevel));
+    assert.ok(["file_metadata_only","guide_text_reviewed","workbook_content_reviewed","archive_or_source_inspected"].includes(item.inspectionLevel));
     if (item.inspectionLevel === "file_metadata_only") assert.equal(item.sha256, null, "Uninspected bytes may not have an invented hash");
     if (item.name.endsWith(".dmg")) assert.equal(item.inspectionLevel, "file_metadata_only", "A macOS DMG cannot be certified by metadata alone");
     if (item.sha256 != null) assert.match(item.sha256, /^[0-9a-f]{64}$/);
@@ -95,4 +95,36 @@ test("IMDF archives are not confused with deployable geodata, live MapKit or cre
     assert.match(report, new RegExp(phrase, "i"));
   }
   assert.doesNotMatch(report, /MapKit JS is live in production/);
+});
+
+test("workbook's 30 article anchors and five supporting Apple resource URLs are distinctly tracked", () => {
+  const extras = ledger.supplementalLinks;
+  assert.equal(extras.articleSectionAnchors.length, 30);
+  assert.equal(extras.appleSupportingResources.length, 5);
+  assert.equal(ledger.officialIndex.articleSectionAnchors, 30);
+  assert.equal(ledger.officialIndex.appleSupportingResourceLinks, 5);
+  assert.equal(ledger.officialIndex.totalIndexedLinkRecords, 207);
+  assert.equal(ledger.officialIndex.allSupplementalArticleTextReviewed, false);
+  const primaryUrls = new Set(register.topics.map((x) => x.url));
+  for (const item of extras.articleSectionAnchors) {
+    assert.ok(primaryUrls.has(item.parentUrl), "Anchor must relate to one supplied main HIG page");
+    assert.equal(item.url, item.parentUrl + "#" + item.anchor);
+    assert.match(item.url, /^https:\/\/developer\.apple\.com\/design\/human-interface-guidelines\/[a-z0-9-]+#[A-Za-z0-9-]+$/);
+    assert.equal(item.articleTextReviewed, false);
+    assert.equal(item.anchorVerifiedInOfficialArticle, false);
+    assert.equal(item.implementation, "not_verified");
+  }
+  for (const item of extras.appleSupportingResources) {
+    assert.ok(item.url.startsWith("https://developer.apple.com/"));
+    assert.equal(item.fullTermsReviewed, false);
+    assert.equal(item.approvedForEmbedding, false);
+    assert.equal(item.implementation, "not_verified");
+  }
+  const all = [...extras.articleSectionAnchors, ...extras.appleSupportingResources].map((x) => x.url);
+  assert.equal(new Set(all).size, 35);
+  const workbook = ledger.attachments.find((x) => x.name === "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx");
+  assert.equal(workbook.inspectionLevel, "workbook_content_reviewed");
+  assert.equal(workbook.sha256, null);
+  assert.match(report, /207 indexed link records/);
+  assert.match(report, /30 article-section anchors/);
 });
