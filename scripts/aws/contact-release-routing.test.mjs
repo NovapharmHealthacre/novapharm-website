@@ -225,3 +225,45 @@ test("country-specific source-only adapters cannot unintentionally dispatch publ
     assert.match(source, /found_ml=true/);
   }
 });
+
+test("inherited 2026-11-18 sparse-circuit research files stay private-only after country PR stack reconciliation", () => {
+  const inherited = [
+      ".github/workflows/nova-ml-native-apple.yml",
+      ".github/workflows/intelligence-sparse-circuit-assurance.yml",
+      ".github/workflows/intelligence-sparse-transformer-experiment.yml",
+      ".github/workflows/nova-sparse-circuit-android.yml",
+      "docs/architecture/nova-scientific-intelligence-programme.md",
+      "docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md",
+      "docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md",
+      "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json",
+      "native/novapharm-intelligence-mobile/App.tsx",
+      "native/novapharm-intelligence-mobile/README.md",
+      "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs",
+      "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json",
+      "scripts/research/tiny-sparse-transformer-experiment.py",
+      "scripts/research/toy-sparse-circuit-intervention.mjs",
+      "scripts/research/validate-trained-sparse-transformer-report.mjs",
+      "scripts/test-intelligence-sparse-circuit-assurance.mjs",
+      "scripts/test-intelligence-sparse-circuit-cross-platform.mjs",
+      "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs",
+      "scripts/test-intelligence-sparse-circuit-upstream-governance.mjs",
+      "scripts/test-intelligence-trained-sparse-transformer-report.mjs",
+      "src/ai/model-registry.mjs",
+      "src/core/ai/model-registry.mjs",
+      "src/core/intelligence-sparse-circuit-assurance.mjs)"
+  ];
+  for (const name of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const workflow = get(name);
+    const line = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, name + " must retain real Bash case classifier");
+    const patterns = line.split("|");
+    for (const file of inherited) {
+      assert.ok(patterns.includes(file) ||
+        (file.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        name + " would accidentally publish a private sparse-circuit file: " + file);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Actual protected backend runtime changes require independent release acceptance");
+  }
+});
