@@ -1,7 +1,18 @@
 name: Apple HIG 172-topic traceability and cross-platform detail
 on:
   pull_request:
+    # Permanent design DNA: run source contract whenever site/app UI changes.
     paths:
+      - 'apps/corporate/**'
+      - 'apps/status/**'
+      - 'apps/founder/**'
+      - 'apps/portal/**'
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/**'
+      - 'native/novapharm-intelligence-android/**'
+      - 'assets/css/**'
+      - 'assets/js/**'
+      - 'packages/design-system/**'
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
       - 'docs/design/apple-hig-172-topic-adoption-20261118.md'
       - 'apps/portal/app/globals.css'
