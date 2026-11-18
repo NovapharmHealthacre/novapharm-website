@@ -54,3 +54,7 @@ The Nova ML compute architecture is a **non-executing, review-only candidate** f
 The complete source-first architecture and unfulfilled cloud, data-rights, identity, budget, security, provenance and device-release gates are in [Deep-learning infrastructure adoption](architecture/deep-learning-infrastructure-20261118.md). The historical [OpenAI 2016 infrastructure article](https://openai.com/index/infrastructure-for-deep-learning/) informs experimental reproducibility and orchestration principles, not the deployment of obsolete Python 2.7/Theano or custom autoscaling tooling.
 
 Current owner constraint remains `productionSignoff: "not_granted"`, `monthlyCapGbp: 0`, with only GitHub source/CI/nonproduction design authorised. The public retrieval system, protected governance views, model providers and actual training services must never be conflated. There is no approved dataset, provisioned ML cluster, signed iOS or Android app, live training run or evidence of authenticated production ML activation in this source change.
+
+## Scholarly source traceability — additional 22-reference programme
+
+The multimodal research basis now records 22 supplied citation positions, **21 unique publications**, seven planned evaluation dimensions and 12 synthetic string-based negative controls. See `docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md`. These tests do not execute images, train a model, measure actual robustness or grant data and tenant rights. Production inference remains disabled by design.
