@@ -360,3 +360,39 @@ test("hybrid API/portal/restricted countries retain every required source access
       "OFFICIAL_EXPORT_CONFIRMED_NO_PORTAL_SCRAPING_ASSUMED"), country);
   }
 });
+
+
+test("published country register enumerates each of 101 original sources and never claims customer-live", () => {
+  const doc = readFileSync(new URL(
+    "../docs/intelligence/77-country-101-source-complete-register-20261118.md",
+    import.meta.url
+  ), "utf8");
+  const tick = String.fromCharCode(96);
+  const lines = doc.split(/\r?\n/).filter(line =>
+    line.startsWith("| ") && line.includes(tick));
+  assert.equal(lines.length, 101, "Exactly one evidence table row per source");
+  const actual = new Map();
+  for (const line of lines) {
+    assert.ok(line.endsWith(" |"), "Markdown record must be complete");
+    const values = line.slice(2, -2).split(" | ");
+    assert.equal(values.length, 8, "Eight schema-bound table fields required");
+    const [region, country, code, provider, mode, quotedKey, rights, live] = values;
+    assert.ok(quotedKey.startsWith(tick) && quotedKey.endsWith(tick));
+    const key = quotedKey.slice(1,-1);
+    assert.match(key, /^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+    assert.ok(!actual.has(key), "Duplicate documented source " + key);
+    assert.equal(code, requireCountryOrGroupCode(country));
+    assert.equal(rights, "Not reviewed");
+    assert.equal(live, "Not verified live");
+    actual.set(key, {region,country,provider,mode});
+  }
+  for (const row of source) {
+    assert.deepEqual(actual.get(row.candidateKey), {
+      region: row.region, country: row.country,
+      provider: row.provider, mode: row.mode
+    }, row.candidateKey);
+  }
+  assert.deepEqual(new Set(actual.keys()), new Set(source.map(x => x.candidateKey)));
+  assert.ok(doc.includes("77 individual named countries"));
+  assert.ok(doc.includes("*not* every country in the world"));
+});
