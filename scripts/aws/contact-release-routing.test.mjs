@@ -428,3 +428,22 @@ test("101-country web and Expo catalogue paths are private-only; no backend serv
       "Real protected server changes must retain independent production acceptance");
   }
 });
+
+test("all 24 official publisher research references remain private-only and cannot release AWS or Pages",()=>{
+  const paths=[
+    "docs/intelligence/country-101-new-24-publisher-research-20261118.json",
+    "scripts/test-intelligence-24-publisher-research.mjs"
+  ];
+  for(const name of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]){
+    const workflow=get(name);
+    const entry=workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(entry && entry.endsWith(")"),name+" must contain a closed Bash case arm");
+    assert.ok(!entry.includes(")|"),name+" has an early Bash case terminator");
+    const privateEntries=new Set(entry.replace(/\)$/u,"").split("|"));
+    for(const p of paths){
+      assert.ok(privateEntries.has(p),name+" could publish candidate-only official research metadata: "+p);
+    }
+    assert.ok(!privateEntries.has("server.mjs"),
+      "protected backend production must not bypass independent deployment acceptance");
+  }
+});
