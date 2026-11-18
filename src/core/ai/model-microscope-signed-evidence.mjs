@@ -41,7 +41,7 @@ export function canonicalMicroscopeReceiptBytes(payload) {
  * This *does not* confirm issuer onboarding, model rights or QA by itself;
  * operator must validate each authorized signing identity beforehand.
  */
-export function verifySignedMicroscopeEvidence({ envelope, expected, trustedPublicKeys, now = Date.now() }) {
+function verifySignedMicroscopeEvidenceInner({ envelope, expected, trustedPublicKeys, now = Date.now() }) {
   if (!envelope || typeof envelope !== "object" || Array.isArray(envelope) ||
       Object.keys(envelope).length !== 2 || !own(envelope,"payload") ||
       !own(envelope,"signature") || !fieldsExact(envelope.payload) ||
@@ -92,4 +92,10 @@ export function verifySignedMicroscopeEvidence({ envelope, expected, trustedPubl
     patientDataExcluded: true,
     separationOfDutiesVerified: true
   });
+}
+
+/** Public verification entry point always denies malformed or adversarial objects uniformly. */
+export function verifySignedMicroscopeEvidence(input) {
+  try { return verifySignedMicroscopeEvidenceInner(input); }
+  catch { deny(); }
 }

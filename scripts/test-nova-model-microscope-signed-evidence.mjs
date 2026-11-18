@@ -90,3 +90,38 @@ test("independent signed verifier integrates with read-only inspection contract 
   assert.ok(!JSON.stringify(value).includes("researcher-a"));
   assert.equal(Object.hasOwn(value,"signature"),false);
 });
+
+test("untrusted receipt objects and key registries cannot expose thrown private errors",()=>{
+  const secret = "PRIVATE_SIGNER_INTERNAL_ERROR_DO_NOT_DISCLOSE";
+  const poisoned = new Proxy(envelope(), {
+    get(target, property) {
+      if(property === "payload") throw new Error(secret);
+      return Reflect.get(target, property);
+    }
+  });
+  const poisonedKeys = new Proxy(keys, {
+    get(target, property) {
+      if(property === "review-key-v1") throw new Error(secret);
+      return Reflect.get(target, property);
+    }
+  });
+  const poisonedExpected = new Proxy(expected, {
+    get(target, property) {
+      if(property === "tenantId") throw new Error(secret);
+      return Reflect.get(target, property);
+    }
+  });
+  for(const options of [
+    { envelope: poisoned },
+    { trustedPublicKeys: poisonedKeys },
+    { expected: poisonedExpected }
+  ]) {
+    assert.throws(
+      ()=>verify({ envelope: envelope(), expected, trustedPublicKeys: keys, now, ...options }),
+      (error)=>error instanceof Error &&
+        error.message === "Model evidence denied." &&
+        !error.message.includes(secret)
+    );
+  }
+  assert.throws(()=>verify(undefined), /Model evidence denied/);
+});

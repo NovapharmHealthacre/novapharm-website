@@ -114,3 +114,7 @@ Immediately after source-rights/PHI/schema preflight, the inspected artifact's a
 ### Sanitized protected-backend adapter errors
 
 All independently supplied authorization, artifact-loading and verification callbacks are invoked behind a fail-closed adapter boundary. Exceptions—including errors carrying internal database locations, tokens or private service details—are suppressed and converted into limited "Model inspection denied" errors. A failing injected clock is also sanitized. These are source-level contracts; real infrastructure still needs a separately authenticated service, controlled server-only logs and end-to-end auditability.
+
+### Malformed signed-evidence object isolation
+
+The signed-receipt verifier now catches exceptions caused by malformed input objects, hostile accessors, invalid key registries or crypto-provider errors at its public boundary and exposes only a uniform denial. Ephemeral-key regression tests cover throwing envelope, scope and key-map accessors. Real production still requires pinned reviewer keys, approved source rights and private-service audit events; the code does not provision those assets.
