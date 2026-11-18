@@ -101,6 +101,8 @@ def make_handler(runtime):
                 return self.send_json(404, {"error": "Not found"})
             if not hmac.compare_digest(self.headers.get("Authorization", ""), "Bearer " + token):
                 return self.send_json(401, {"error": "Unauthorised"})
+            if not any(item["rightsStatus"] == "active" and valid_expiry(item["rightsExpiryDate"]) for item in assets):
+                return self.send_json(503, {"status": "unavailable"})
             return self.send_json(200, {"status": "ready"})
 
         def do_POST(self):
