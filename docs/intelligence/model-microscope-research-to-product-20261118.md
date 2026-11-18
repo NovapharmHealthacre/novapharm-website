@@ -28,8 +28,8 @@ Microscope is **neural-network interpretability**, not laboratory microscopy, re
 ## Actual source changes in this candidate
 
 1. Existing **protected** board Intelligence route adds **Nova Model Microscope** alongside the Nova ML modules. Its default screen is an explicit empty state; it makes no model call. The canonical 22 pharmaceutical workspaces are unchanged.
-2. Expo/React Native's same source-only private preview introduces an **Inspect** tab on both iOS and Android. It displays the cross-platform research and release boundaries, not invented neuron images.
-3. `src/core/ai/model-microscope.mjs` offers a read-only backend helper. It demands an independently trusted tenant+actor+model+version+layer+feature+purpose authorizer before looking up a model artifact, then enforces rights, review, provenance and explicit no-patient requirements. The response is a strict allow-list and always carries `canPublish:false` and `inferenceEnabled:false`. This is not a deployed API.
+2. Expo/React Native's same source-only private preview introduces an **Inspect** tab on both iOS and Android. It renders the same five-stage lifecycle from `apps/portal/data/nova-ml-modules.ts` as the web UI. The stages are **Model identity**, **Feature observations**, **Circuit hypotheses**, **Failure analysis** and **Governed review**. Each remains explicitly non-operational; no invented neuron images are shown.
+3. `src/core/ai/model-microscope.mjs` offers a read-only backend helper. It requires an independently trusted tenant+actor+model+version+layer+feature+purpose authorizer before looking up a model artifact, a protected record loader, and a separately trusted evidence verifier. The verifier must bind the model, dataset, evaluation, rights grant, original authorization grant, manifest digest, no-patient status and reviewer separation. Grants expire within five minutes. The response is an explicit allow-list and always carries `canPublish:false` and `inferenceEnabled:false`. This is not a deployed API.
 4. Negative tests and a standalone CI workflow cover denial, tenant/feature mismatch, expiry, provenance failure and sensitive-field non-disclosure.
 
 ## What remains before real use
@@ -42,3 +42,18 @@ Microscope is **neural-network interpretability**, not laboratory microscopy, re
 - Require browser auth, mobile MFA/PKCE, tenant-bound rights, independent security/Quality reviews, CI, production gates and rollback; approve and sign real iOS/Android builds.
 
 **No integration with an OpenAI Microscope API is claimed. No production web route, Android package or iOS binary is deployed by this PR.**
+
+## Security and interpretability acceptance matrix
+
+| Attack or failure | Implemented source-only defence | Still required to demonstrate production safety |
+| --- | --- | --- |
+| Cross-tenant/model feature read | Full tenant + actor + version + feature binding before record load | Real Cognito MFA, actor identity & tenant attestation, two-tenant integration testing |
+| Replaying or extending a permission | Strict UTC expiry and maximum five-minute future grant | Server-controlled clock and revocation, signed short-lived grants |
+| Self-approved model evidence | Independent evidence-verifier callback and separation-of-duties assertion | Independent service, actual proof of license, immutable manifest signatures |
+| Malicious/private input content | Rights-reviewed non-patient fields and restrictive output projection | Formal DPIA, data redaction checks, no-patient source audits |
+| Fake explanations or causal claims | `hypothesis_only`, `canPublish:false`, hard decision-prohibition flags | Negative controls, reviewer adjudication, faithful attribution benchmarking |
+| Legacy model visualization tooling | No Lucid runtime dependency; no OpenAI model-internals API calls | Evaluated modern technique for the chosen licensed model and its architecture |
+| iOS and Android source-only preview | Same Expo screen + shared five-stage catalogue; no network or credentials | Signed builds, PKCE/MFA, device QA, App Store/Play Store review |
+| Public or anonymous access to web inspector | Inherits protected SSR session and board module scope | Exact deployed protected host, no-store anonymous denial, verified rollout receipt |
+
+The independent verifier is an **interface contract**, not a deployed signature-verification service or evidence of actual licensed datasets. No model artifact has been admitted by this PR. Production readiness cannot be calculated from source-code completion alone.
