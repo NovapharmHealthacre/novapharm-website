@@ -9,6 +9,12 @@ on:
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
   workflow_dispatch:
+    inputs:
+      remote_check:
+        description: 'Check all 172 official Apple HIG Markdown URLs plus MapKit, MapKit JS and IMDF (network only)'
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -26,3 +32,26 @@ jobs:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+
+  remote-apple-link-audit:
+    name: Manual Apple HIG URL reachability evidence (not guideline review)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.remote_check }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify exact 175 Apple link URLs, recording all results
+        run: HIG_VERIFY_LIVE_LINKS=1 node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Preserve the full URL-health evidence (including failures)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: apple-hig-175-link-reachability-${{ github.sha }}
+          path: artifacts/apple-hig-link-health/report.json
+          if-no-files-found: warn
+          retention-days: 30
