@@ -13,6 +13,8 @@ export const MULTIMODAL_CONTRACT = "novapharm.intelligence.multimodal-review.v1"
 
 const MAX_FIELD_LENGTH = 240;
 const FIELDS = ["sourceReference", "country", "visionMedicineName", "imageTextMedicineName", "referenceProductCode", "observedProductCode"];
+// Control and invisible formatting characters can spoof a visually equal name.
+const SUSPICIOUS_FORMATTING = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/u;
 
 function clean(value) {
   if (typeof value !== "string") return "";
@@ -34,6 +36,11 @@ export function assessMultimodalEvidence(input) {
   const candidate = input && typeof input === "object" && !Array.isArray(input) ? input : {};
   const values = Object.fromEntries(FIELDS.map((key) => [key, clean(candidate[key])]));
   const signals = [];
+  // Fail closed rather than silently accepting a truncated or spoofed value.
+  const invalidInput = FIELDS.some((key) => candidate[key] !== undefined &&
+    (typeof candidate[key] !== "string" || candidate[key].length > MAX_FIELD_LENGTH ||
+      SUSPICIOUS_FORMATTING.test(candidate[key])));
+  if (invalidInput) signals.push("invalid_or_oversized_input");
   const needsPurpose = candidate.userInitiated !== true ||
     candidate.nonSensitiveMaterialConfirmed !== true ||
     !["catalogue-research", "non-clinical-quality-review"].includes(candidate.purpose);
@@ -48,12 +55,12 @@ export function assessMultimodalEvidence(input) {
     signals.push("vision_text_name_conflict");
 
   if (values.referenceProductCode && values.observedProductCode &&
-      comparable(values.referenceProductCode) !== comparable(values.observedProductCode))
+      values.referenceProductCode !== values.observedProductCode)
     signals.push("product_code_conflict");
 
   // Even if an apparent agreement exists, this is not a calibrated confidence,
   // match, regulatory decision, pharmacovigilance conclusion or rights approval.
-  const status = needsPurpose ? "blocked" :
+  const status = needsPurpose || invalidInput ? "blocked" :
     signals.some((s) => s.endsWith("_conflict")) ? "conflicting_candidates" :
     signals.includes("provenance_missing") || signals.includes("candidate_evidence_missing")
       ? "insufficient_evidence" : "human_review_required";
