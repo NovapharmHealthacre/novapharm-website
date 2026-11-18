@@ -391,7 +391,7 @@ test("country-specific source-only adapters cannot unintentionally dispatch publ
     const source = get(workflow);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, workflow + " missing active source-only classifier");
-    const allowed = new Set(classifier.split("|"));
+    const allowed = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
     for (const path of countrySourcePaths) {
       assert.ok(allowed.has(path), workflow + " would publish private pharmaceutical source-only file: " + path);
     }
