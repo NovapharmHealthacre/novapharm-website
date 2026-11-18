@@ -29,9 +29,11 @@ jobs:
         run: |
           node --check server.mjs
           node --check src/core/intelligence-visual-search.mjs
+      - name: Verify local rights and fail-closed source metadata without downloading models
+        run: python3 -m unittest discover -s services/clip -p "test_*.py" -v
       - name: Compile isolated Python sources without loading models or network access
         run: |
-          python3 -m py_compile services/clip/serve.py services/clip/build_index.py
+          python3 -m py_compile services/clip/rights.py services/clip/serve.py services/clip/build_index.py
       - name: Guard against bundled model and secret material
         run: |
           if find services/clip native/novapharm-intelligence-android -type f \
