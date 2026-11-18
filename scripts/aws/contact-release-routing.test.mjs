@@ -289,7 +289,8 @@ test("Science research-only files must not trigger AWS or public Pages publicati
     const source = get(name);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, name + " missing changed-file classifier");
-    const allowlist = new Set(classifier.split("|"));
+    assert.ok(classifier.trim().endsWith(")"), name + " private Bash case must be closed");
+    const allowlist = new Set(classifier.trim().slice(0, -1).split("|"));
     for (const path of sciencePaths) {
       assert.ok(allowlist.has(path), name + " missing private Science file: " + path);
     }
