@@ -14,6 +14,10 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 
 The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, an offline **Multimodal Review** tab using the shared web/mobile evidence-conflict contract, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
+## Sparse-circuit research preview
+
+The private Expo iOS/Android preview includes a **Research** tab backed by the same `novaMlSparseCircuitAssurance` governance register as the protected web interface. It displays the offline synthetic experiment, explicit nonclinical limitations, and independent release gates. It **does not** load a trained model, execute inference, fetch a server response, access a patient record, authenticate a user, or store data. The research tab is a static source preview, not a shipped mobile feature or clinical/production certification.
+
 ## Release blockers
 
 - Approved Intelligence mobile product identity/logo and iOS/Android store identifiers.

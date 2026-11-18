@@ -3,9 +3,9 @@ import { createOllamaProvider } from "./provider-ollama.mjs";
 import { createOpenAiZdrProvider } from "./provider-openai-zdr.mjs";
 
 export const internalModelRegister = Object.freeze([
-  Object.freeze({ id: "none", provider: "none", maturity: "production-default", dataBoundary: "No model invocation", licence: "Not applicable" }),
-  Object.freeze({ id: "ollama-loopback", provider: "ollama", maturity: "local-development-adapter", dataBoundary: "Loopback host only", licence: "Model-specific review required before activation" }),
-  Object.freeze({ id: "openai-zdr", provider: "openai", maturity: "approval-gated-adapter-not-operational", dataBoundary: "Explicitly approved EU-only, store:false, rights-certified sources", licence: "Independent production ZDR and external-AI rights confirmation required" })
+  Object.freeze({ id: "none", provider: "none", maturity: "production-default", dataBoundary: "No model invocation", licence: "Not applicable", mechanisticCircuitAccess: "unavailable", mechanisticCircuitVerified: false }),
+  Object.freeze({ id: "ollama-loopback", provider: "ollama", maturity: "local-development-adapter", dataBoundary: "Loopback host only", licence: "Model-specific review required before activation", mechanisticCircuitAccess: "adapter-does-not-expose-weights-or-activations", mechanisticCircuitVerified: false }),
+  Object.freeze({ id: "openai-zdr", provider: "openai", maturity: "approval-gated-adapter-not-operational", dataBoundary: "Explicitly approved EU-only, store:false, rights-certified sources", licence: "Independent production ZDR and external-AI rights confirmation required", mechanisticCircuitAccess: "hosted-model-internals-unavailable", mechanisticCircuitVerified: false })
 ]);
 
 export function configuredInternalProvider(environment = process.env) {
