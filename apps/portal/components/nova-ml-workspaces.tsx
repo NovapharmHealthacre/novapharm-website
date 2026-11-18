@@ -66,8 +66,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
     </section>
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
-      <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
-      <p className={styles.helper}>Ten acceptance requirements for future native releases. These are testable design rules, not live model outputs or permission grants.</p>
+      <h2 id="nova-ml-experience">{isModelMicroscope ? "Model interpretability and privacy acceptance contract" : "Apple HIG machine-learning experience contract"}</h2>
+      <p className={styles.helper}>Ten acceptance requirements for future governed releases. These are testable design rules, not live model outputs or permission grants.</p>
       <dl className={styles.contractGrid}>{designRows.map(([label, description]) =>
         <div key={label} className={styles.contractItem}><dt>{label}</dt><dd>{description}</dd></div>
       )}</dl>
