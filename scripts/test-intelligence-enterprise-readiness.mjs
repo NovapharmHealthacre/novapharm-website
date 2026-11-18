@@ -15,11 +15,12 @@ const payload = (sources = [candidate()]) => ({
 });
 
 test("source counts are not inferred as 101 covered countries", () => {
-  const report = assess(payload([candidate("India"), candidate("India", "in-india-alt"), candidate("Global", "global-trials")]));
-  assert.equal(report.metrics.sourceCandidateCount, 3);
-  assert.equal(report.metrics.distinctCountryLabelsIncludingGlobal, 2);
+  const report = assess(payload([candidate("India"), candidate("India", "in-india-alt"), candidate("Global", "global-trials"), candidate("European Union / EEA", "eu-ema")]));
+  assert.equal(report.metrics.sourceCandidateCount, 4);
+  assert.equal(report.metrics.distinctCountryLabelsIncludingGlobal, 3);
   assert.equal(report.metrics.distinctNamedCountries, 1);
   assert.equal(report.countryRows.find(x => x.country === "Global").type, "cross-border-source-label");
+  assert.equal(report.countryRows.find(x => x.country === "European Union / EEA").type, "regional-source-label");
   assert.equal(report.countryRows.find(x => x.country === "India").candidates, 2);
   assert.equal(report.completionPercent, null);
   assert.equal(report.enterpriseReady, false);
