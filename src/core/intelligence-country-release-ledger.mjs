@@ -110,9 +110,8 @@ function classify(country) {
 }
 
 /** A source registry is the only input. Approvals are never accepted from it. */
-export function buildCountryReleaseLedger(registry, { releasedPlans = sourcePlans } = {}) {
-  if (!Array.isArray(registry) || registry.length !== EXPECTED_SOURCE_COUNT ||
-      !releasedPlans || typeof releasedPlans !== "object" || Array.isArray(releasedPlans)) {
+export function buildCountryReleaseLedger(registry) {
+  if (!Array.isArray(registry) || registry.length !== EXPECTED_SOURCE_COUNT) {
     fail("expected immutable 101-source candidate inventory");
   }
   const seen = new Set();
@@ -122,7 +121,9 @@ export function buildCountryReleaseLedger(registry, { releasedPlans = sourcePlan
     seen.add(input.candidateKey);
     const expectedAdapter = own(KNOWN_SOURCE_BINDINGS, input.candidateKey)
       ? KNOWN_SOURCE_BINDINGS[input.candidateKey] : null;
-    const merged = Boolean(expectedAdapter && own(releasedPlans, expectedAdapter));
+    // Trust only the adapter catalogue imported from committed source code;
+    // callers cannot inject fake release plans or claim a PR was merged.
+    const merged = Boolean(expectedAdapter && own(sourcePlans, expectedAdapter));
     const route = sourceRoute(input.mode);
     const extra = [];
     if (route === "ACCESS_AND_REGULATORY_APPROVAL") extra.push(EXTRA_GATES.ACCESS);
