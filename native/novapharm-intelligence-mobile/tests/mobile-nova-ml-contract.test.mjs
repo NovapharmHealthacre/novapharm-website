@@ -16,7 +16,9 @@ test("Expo preview shares all five offline Nova ML methods with protected web me
   assert.match(ui, /novaMlSparseResearchMethod/);
   assert.match(ui, /novaMlWorkspaceCatalogue/);
   assert.match(ui, /title="Nova ML research"/);
-  assert.match(ui, /screen: "research", label: "Research"/);
+  assert.match(ui, /screen: "research", label: "Nova ML research"/);
+  assert.match(ui, /screen === "more"/);
+  assert.match(ui, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(catalogue, /export const novaMlSparseResearchMethod/);
   assert.match(catalogue, /export const novaMlAlignmentResearchMethods/);
   assert.equal((catalogue.match(/id: "(reward_proxy_sweep|critique_assistance|instruction_conformance|offline_multiagent_scenario_scoreboard)"/g) ?? []).length, 4);
