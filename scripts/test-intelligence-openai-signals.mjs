@@ -107,3 +107,20 @@ test("untrusted table names and accessor-bearing records always fail closed", ()
   assert.equal(assessSignalsResearchProposal(hostile).status, "blocked");
   assert.equal(assessSignalsAggregateRow(name, hostile).status, "blocked");
 });
+
+test("Signals v3.0 rejects out-of-range monthly and quarterly data labels", () => {
+  const monthly = {month:"2024-07-01",country:"GB",topic:"Writing",share_of_messages:0.3};
+  const quarterly = {quarter:"2026-07-01",country:"GB",rank:4};
+  assert.equal(assessSignalsAggregateRow("share_of_messages_by_topic_country_month.csv", monthly).status, "review-only");
+  assert.equal(assessSignalsAggregateRow("share_of_messages_by_country_quarter_rank.csv", quarterly).status, "review-only");
+  for (const month of ["2024-06-01","2026-10-01","2099-01-01"]) {
+    const result = assessSignalsAggregateRow("share_of_messages_by_topic_country_month.csv",{...monthly,month});
+    assert.equal(result.status,"blocked");
+    assert.ok(result.reasons.includes("invalid-month"));
+  }
+  for (const quarter of ["2024-04-01","2026-10-01","2099-01-01"]) {
+    const result = assessSignalsAggregateRow("share_of_messages_by_country_quarter_rank.csv",{...quarterly,quarter});
+    assert.equal(result.status,"blocked");
+    assert.ok(result.reasons.includes("invalid-quarter"));
+  }
+});
