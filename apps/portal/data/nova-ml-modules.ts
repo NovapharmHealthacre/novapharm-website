@@ -39,6 +39,15 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     platform: "Eligible Apple Intelligence device and native app required",
     capabilities: ["Request-only writing assistance", "Source attribution and visible limitations", "Edit, reject and regenerate workflow", "Scoped App Intents with no autonomous write access"],
     requirements: ["Apple device and model availability verification", "Approved source and prompt boundaries", "Privacy and prompt-injection testing", "Explicit human acceptance of every consequential action"]
+  },
+  {
+    slug: "nova-model-microscope",
+    title: "Nova Model Microscope",
+    summary: "Inspect independently reviewed, rights-cleared model features, layers and research hypotheses without disclosing weights, source samples or sensitive records.",
+    appleTechnology: "OpenAI Microscope research principles (not an OpenAI API)",
+    platform: "Governed web research view and iOS/Android read-only preview",
+    capabilities: ["Versioned model, layer and feature index", "Provenance-linked feature visualization hypotheses", "Researcher-reviewed circuit and failure hypotheses", "Explicit uncertainty, falsification and source-first fallback"],
+    requirements: ["Introspection rights for the exact owned or licensed model", "Non-patient evaluation dataset and source rights", "Independent model review, artifact provenance and tenant-scoped authorization", "Signed inspection service, privacy tests and platform release"]
   }
 ] as const);
 export type NovaMlWorkspaceSlug = (typeof novaMlWorkspaceCatalogue)[number]["slug"];
@@ -97,5 +106,17 @@ export const novaMlExperienceGuidance = Object.freeze({
     confidence: "Do not imply model prose is verified evidence or disclose unvalidated confidence values.",
     limitation: "Models can invent facts, lose nuance or be unavailable depending on device, language or region.",
     fallback: "Use the original published text and ordinary manual editing without any model call."
+  },
+  "nova-model-microscope": {
+    role: "Read-only interpretability research, never a validated explanation for medicine, clinical or commercial decisions.",
+    input: "Only separately approved non-patient model artifacts, layers and evaluation references with verified origin.",
+    interaction: "Explicit authorized model/version/layer/feature exploration; no continuous model monitoring or implicit collection.",
+    feedback: "Document researcher hypotheses and counterexamples only after reviewed write permission is separately designed.",
+    calibration: "Do not imply feature activations or saliency percentages are calibrated prediction probabilities.",
+    correction: "Record alternative hypotheses, disconfirming examples and independent model evaluations before accepting claims.",
+    attribution: "Require stable model/version/layer/feature IDs, approved dataset reference, independent rights and digest provenance.",
+    confidence: "A feature description is a hypothesis, not a verified model explanation or medical justification.",
+    limitation: "Third-party hosted models may expose no internal layers; visualizations can be misleading or polysemantic.",
+    fallback: "Always use original accepted medicine source evidence and accountable human review."
   }
 } as const);
