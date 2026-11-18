@@ -9,6 +9,7 @@ on:
       - 'src/core/intelligence-science-research-contract.mjs'
       - 'src/core/intelligence-science-research-principles.mjs'
       - 'src/core/intelligence-science-methodology.mjs'
+      - 'src/core/intelligence-science-evidence-dossier.mjs'
       - 'src/core/intelligence-22-workspace-readiness.mjs'
       - 'src/core/intelligence-release-readiness.mjs'
       - 'scripts/test-intelligence-readiness.mjs'
@@ -20,6 +21,7 @@ on:
       - 'native/novapharm-intelligence-mobile/**'
       - 'scripts/test-intelligence-science-research.mjs'
       - 'scripts/test-intelligence-science-methodology.mjs'
+      - 'scripts/test-intelligence-science-evidence-dossier.mjs'
       - '.github/workflows/intelligence-science-research-contracts.yml'
   workflow_dispatch:
 
@@ -41,10 +43,12 @@ jobs:
           node --check src/core/intelligence-science-research-contract.mjs
           node --check src/core/intelligence-science-research-principles.mjs
           node --check src/core/intelligence-science-methodology.mjs
+          node --check src/core/intelligence-science-evidence-dossier.mjs
+          node --check scripts/test-intelligence-science-evidence-dossier.mjs
           node --check scripts/test-intelligence-science-methodology.mjs
           node --check src/core/intelligence-22-workspace-readiness.mjs
           node --check scripts/test-intelligence-science-research.mjs
           node -e "const x=require('./docs/intelligence/science-research-capabilities-20261118.json');if(x.workflows.length!==6)process.exit(1)"
           node -e "const x=require('./docs/intelligence/openai-science-methods-20261118.json');if(x.methods.length!==9||x.scientificMethodologyCount!==7)process.exit(1)"
       - name: Run scientific research contracts
-        run: node --test scripts/test-intelligence-science-research.mjs scripts/test-intelligence-22-workspace-readiness.mjs scripts/test-intelligence-science-methodology.mjs
+        run: node --test scripts/test-intelligence-science-research.mjs scripts/test-intelligence-22-workspace-readiness.mjs scripts/test-intelligence-science-methodology.mjs scripts/test-intelligence-science-evidence-dossier.mjs
