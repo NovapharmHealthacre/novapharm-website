@@ -15,7 +15,13 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-24.04
+    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
+    # while preserving Chromium, WebKit and all existing acceptance tests.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     strategy:
       fail-fast: false
       matrix:
@@ -28,25 +34,23 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      # The official Playwright image may run as root while the workspace is
+      # owned by the runner. Trust only this exact checkout, not all paths.
+      # The provenance-stamping build invokes git rev-parse HEAD.
+      - name: Verify exact checkout Git provenance inside container
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
+          git rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu archive mirrors intermittently exceed ten minutes during WebKit
-      # dependency installation; retain the real Chromium/WebKit suites and
-      # strict timeout/fail-closed acceptance instead of skipping tests.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
+      # Both browsers must be present before real accessibility, Lighthouse
+      # and role/viewport acceptance. Do not disable or mock either engine.
+      - name: Verify Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
@@ -64,30 +68,34 @@ jobs:
   secure-portal:
     name: Secure portal and role-boundary acceptance
     runs-on: ubuntu-24.04
+    # Official version-matched image avoids cold Ubuntu apt mirror timeouts
+    # while preserving Chromium, WebKit and all existing acceptance tests.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      # The official Playwright image may run as root while the workspace is
+      # owned by the runner. Trust only this exact checkout, not all paths.
+      # The provenance-stamping build invokes git rev-parse HEAD.
+      - name: Verify exact checkout Git provenance inside container
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
+          git rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu archive mirrors intermittently exceed ten minutes during WebKit
-      # dependency installation; retain the real Chromium/WebKit suites and
-      # strict timeout/fail-closed acceptance instead of skipping tests.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
+      # Both browsers must be present before real accessibility, Lighthouse
+      # and role/viewport acceptance. Do not disable or mock either engine.
+      - name: Verify Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
@@ -111,30 +119,36 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    # Version-pinned official Playwright image bundles native Chromium/WebKit
+    # dependencies; the previous cold Ubuntu apt mirror exhausted 1,200s.
+    # Keep both real engines and all synthetic authentication workflows.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+    timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      # The official Playwright image may run as root while the workspace is
+      # owned by the runner. Trust only this exact checkout, not all paths.
+      # The provenance-stamping build invokes git rev-parse HEAD.
+      - name: Verify exact checkout Git provenance inside container
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
+          git rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu archive mirrors intermittently exceed ten minutes during WebKit
-      # dependency installation; retain the real Chromium/WebKit suites and
-      # strict timeout/fail-closed acceptance instead of skipping tests.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
+      # The official image already supplies native libraries and browser builds
+      # matching the frozen npm package. Explicitly verify both engines before
+      # the real Chromium+WebKit workflow acceptance; never skip launch/tests.
+      - name: Verify Chromium and WebKit browsers (bounded)
         run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
