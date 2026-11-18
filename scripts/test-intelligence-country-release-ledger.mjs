@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { sourcePlans } from "../src/core/intelligence-global-source-gateway.mjs";
+import { secondarySourcePlans } from "../src/core/intelligence-global-secondary-source-gateway.mjs";
+import { AU_PBS_SOURCE_ID, createPbsScheduleCandidateEvaluator } from "../src/core/intelligence-au-pbs-schedule-quarantine.mjs";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
@@ -16,6 +18,8 @@ const source = JSON.parse(readFileSync(new URL(
 ), "utf8")).sources;
 const ledger = buildCountryReleaseLedger(source);
 const candidates = () => source.map(x => ({ ...x }));
+const committedCandidateReaderCount = () => Object.keys(sourcePlans).length +
+  Object.keys(secondarySourcePlans).length + (typeof createPbsScheduleCandidateEvaluator === "function" ? 1 : 0);
 
 test("all 101 distinct regulator/research source candidates are represented exactly once", () => {
   assert.equal(ledger.totalSources, EXPECTED_SOURCE_COUNT);
@@ -78,15 +82,19 @@ test("source coverage by region agrees with all original source rows, never coun
   assert.deepEqual(actual, expected);
   // Count adapter contracts from the actual merged release catalogue,
   // so the ledger automatically reflects #830 once that PR is merged.
-  assert.equal(ledger.sourceOnlyAdapterCount, Object.keys(sourcePlans).length);
+  assert.equal(ledger.sourceOnlyAdapterCount, committedCandidateReaderCount());
   assert.equal(ledger.sourceOnlyAdapterCoveragePercent,
-    Number((100 * Object.keys(sourcePlans).length / 101).toFixed(2)));
+    Number((100 * committedCandidateReaderCount() / 101).toFixed(2)));
   const codes = ledger.sourceRows.filter(x => x.adapterContractMerged);
   for (const name of ["Global", "Spain", "Canada", "United States"]) {
     assert.ok(codes.some(x => x.country === name), name);
   }
   assert.ok(codes.filter(x => x.country === "Global").length >= 2);
   assert.ok(codes.filter(x => x.groupType === "NATIONAL").length >= 3);
+  assert.equal(ledger.sourceOnlyAdapterCount, 12);
+  assert.ok(codes.some(x => x.country === "Singapore" && x.adapterContractId === "sg-hsa-products"));
+  assert.ok(codes.some(x => x.country === "United Kingdom" && x.adapterContractId === "gb-nhsbsa-dataset-catalogue"));
+  assert.ok(codes.some(x => x.country === "Australia" && x.adapterContractId === AU_PBS_SOURCE_ID));
 });
 
 test("one and every source and country fails closed against production activation", () => {
@@ -169,7 +177,7 @@ test("caller-supplied fake adapters cannot inflate committed code or production 
     verifiedProductionCountries: 77,
     canPublish: true
   });
-  assert.equal(unchanged.sourceOnlyAdapterCount, Object.keys(sourcePlans).length);
+  assert.equal(unchanged.sourceOnlyAdapterCount, committedCandidateReaderCount());
   assert.equal(unchanged.verifiedLicensedSources, 0);
   assert.equal(unchanged.verifiedProductionCountries, 0);
   assert.equal(unchanged.sourceCandidateRegistrationPercent, 100);
@@ -211,7 +219,7 @@ test("ISO 3166-1 identities are exact for all 77 national jurisdictions, never E
 
 
 test("per-country engineering percentages are reproducible, bounded and never production percentages", () => {
-  const merged = Object.keys(sourcePlans).length;
+  const merged = committedCandidateReaderCount();
   const expectedMean = Number((20 + 20 * merged / 101).toFixed(2));
   assert.equal(ledger.engineeringMilestonePercent, expectedMean);
   for (const source of ledger.sourceRows) {
@@ -229,6 +237,9 @@ test("per-country engineering percentages are reproducible, bounded and never pr
   assert.equal(ledger.countries.find(c => c.country === "United States").engineeringMilestonePercent, 30);
   assert.equal(ledger.countries.find(c => c.country === "Canada").engineeringMilestonePercent, 30);
   assert.equal(ledger.countries.find(c => c.country === "India").engineeringMilestonePercent, 20);
+  assert.equal(ledger.countries.find(c => c.country === "Singapore").engineeringMilestonePercent, 40);
+  assert.equal(ledger.countries.find(c => c.country === "Australia").engineeringMilestonePercent, 30);
+  assert.equal(ledger.countries.find(c => c.country === "United Kingdom").engineeringMilestonePercent, 30);
 });
 
 
@@ -428,4 +439,24 @@ test("country Markdown table renderer escapes backslashes before pipes and HTML 
     "path" + slash.repeat(2) + "name");
   assert.equal(escapeMarkdownTableCell("A\r\nB\nC\rD\u2028E\u2029F"), "A B C D E F");
   assert.equal(escapeMarkdownTableCell(101), "101");
+});
+
+
+test("merged secondary and offline candidate readers are not API evidence, licensed snapshots or production rights", () => {
+  const hsa = ledger.sourceRows.find(x => x.adapterContractId === "sg-hsa-products");
+  const nhsbsa = ledger.sourceRows.find(x => x.adapterContractId === "gb-nhsbsa-dataset-catalogue");
+  const pbs = ledger.sourceRows.find(x => x.adapterContractId === AU_PBS_SOURCE_ID);
+  assert.equal(Object.keys(secondarySourcePlans).length, 2);
+  for (const item of [hsa, nhsbsa, pbs]) {
+    assert.ok(item, "merged candidate reader has a matching immutable source registry record");
+    assert.equal(item.currentStatus, "SOURCE_ONLY_ADAPTER_NO_DATA");
+    assert.equal(item.sourceRightsVerified, false);
+    assert.equal(item.liveConnectionVerified, false);
+    assert.equal(item.verifiedCompletionPercent, 0);
+    assert.equal(item.canPublish, false);
+  }
+  assert.equal(secondarySourcePlans["gb-nhsbsa-dataset-catalogue"].domain, "dataset-catalogue");
+  assert.equal(ledger.verifiedLicensedSources, 0);
+  assert.equal(ledger.verifiedIngestedSources, 0);
+  assert.equal(ledger.verifiedProductionCountries, 0);
 });

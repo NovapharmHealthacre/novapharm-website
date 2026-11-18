@@ -226,33 +226,6 @@ test("country-specific source-only adapters cannot unintentionally dispatch publ
   }
 });
 
-test("101-country web and Expo catalogue paths are private-only; no backend server bypass", () => {
-  const candidatePaths = [
-    ".github/workflows/intelligence-country-web-mobile-parity.yml",
-    "docs/intelligence/country-101-client-catalog-20261118.json",
-    "scripts/generate-intelligence-country-client-catalog.mjs",
-    "scripts/test-intelligence-country-client-catalog.mjs",
-    "apps/portal/components/country-source-coverage.tsx",
-    "apps/portal/components/medicines-intelligence.tsx",
-    "native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx"
-  ];
-  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
-    const source = get(workflow);
-    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
-    assert.ok(line, workflow+" missing active source classifier");
-    const patterns = line.split("|");
-    for (const p of candidatePaths) {
-      assert.ok(patterns.includes(p) ||
-        (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
-        (p.startsWith("native/novapharm-intelligence-mobile/") &&
-          patterns.includes("native/novapharm-intelligence-mobile/*")),
-        workflow+" could publish candidate-only country metadata: "+p);
-    }
-    assert.ok(!patterns.includes("server.mjs"),
-      "Real protected server changes must retain independent production acceptance");
-  }
-});
-
 test("inherited 2026-11-18 sparse-circuit research files stay private-only after country PR stack reconciliation", () => {
   const inherited = [
       ".github/workflows/nova-ml-native-apple.yml",
@@ -292,5 +265,166 @@ test("inherited 2026-11-18 sparse-circuit research files stay private-only after
     }
     assert.ok(!patterns.includes("server.mjs"),
       "Actual protected backend runtime changes require independent release acceptance");
+  }
+});
+
+test("sparse-circuit PR #816 source-only merge skips public AWS contact dispatch and publisher", () => {
+  // Pin the exact files changed by this nonclinical research release.
+  // A missing path must fail CI before merging to main: the unconditional
+  // main-push dispatcher would otherwise enter an AWS contact health/dispatch path.
+  const privatePaths = [
+    ".github/workflows/intelligence-sparse-circuit-assurance.yml",
+    ".github/workflows/intelligence-sparse-transformer-experiment.yml",
+    ".github/workflows/nova-ml-native-apple.yml",
+    ".github/workflows/nova-sparse-circuit-android.yml",
+    "apps/portal/components/nova-ml-workspaces.tsx",
+    "apps/portal/data/nova-ml-modules.ts",
+    "docs/ai-risk-register.md",
+    "docs/architecture/nova-scientific-intelligence-programme.md",
+    "docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md",
+    "docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md",
+    "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json",
+    "native/novapharm-intelligence-android/README.md",
+    "native/novapharm-intelligence-android/app/build.gradle.kts",
+    "native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt",
+    "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt",
+    "native/novapharm-intelligence-android/app/src/main/res/values/strings.xml",
+    "native/novapharm-intelligence-android/app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt",
+    "native/novapharm-intelligence-android/build.gradle.kts",
+    "native/novapharm-intelligence-android/gradle.properties",
+    "native/novapharm-intelligence-android/settings.gradle.kts",
+    "native/novapharm-intelligence-apple/NovaSparseCircuitReader.swift",
+    "native/novapharm-intelligence-apple/NovaSparseCircuitResearchView.swift",
+    "native/novapharm-intelligence-apple/Package.swift",
+    "native/novapharm-intelligence-apple/README.md",
+    "native/novapharm-intelligence-apple/Tests/NovaMLAppleTests.swift",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/README.md",
+    "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs",
+    "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json",
+    "scripts/research/tiny-sparse-transformer-experiment.py",
+    "scripts/research/toy-sparse-circuit-intervention.mjs",
+    "scripts/research/validate-trained-sparse-transformer-report.mjs",
+    "scripts/test-intelligence-sparse-circuit-assurance.mjs",
+    "scripts/test-intelligence-sparse-circuit-cross-platform.mjs",
+    "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs",
+    "scripts/test-intelligence-sparse-circuit-upstream-governance.mjs",
+    "scripts/test-intelligence-trained-sparse-transformer-report.mjs",
+    "src/ai/model-registry.mjs",
+    "src/core/ai/model-registry.mjs",
+    "src/core/intelligence-sparse-circuit-assurance.mjs"
+  ];
+  const privateOnlyPublisherFiles = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  for (const filename of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(filename);
+    const firstCase = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(firstCase, filename + " must classify each exact changed path");
+    const protectedPatterns = firstCase.trim().replace(/\)$/, "").split("|");
+    const covers = (path) => protectedPatterns.some((p) =>
+      p === path || (p.endsWith("/*") && path.startsWith(p.slice(0, -1)))
+    );
+    for (const path of privatePaths) {
+      assert.ok(covers(path), filename + " would permit AWS contact verification on " + path);
+    }
+    for (const path of [
+      "assets/js/contact-production.js",
+      "products/nutraxin/index.html",
+      "scripts/build-site.mjs",
+      "assets/css/novapharm.bundle.css"
+    ]) {
+      assert.equal(covers(path), false, filename + " must preserve genuine public release for " + path);
+    }
+    for (const path of privateOnlyPublisherFiles) {
+      assert.ok(source.includes(path), filename + " must account for its own release-control updates: " + path);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
+
+test("new secondary-source contracts remain private-only and never trigger unrelated AWS publication", () => {
+  const paths = [
+  ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+  "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+  "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+  "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-global-secondary-source-gateway.mjs",
+  "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, file + " must classify private research source paths");
+    const privateRules = new Set(classifier.split("|"));
+    for (const path of paths) {
+      assert.ok(privateRules.has(path), file + " would trigger unrelated public release for " + path);
+    }
+    for (const genuinePublicPath of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(privateRules.has(genuinePublicPath), false);
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
+
+test("Bash publisher classifiers close only after every private source path; no dangling case alternation", () => {
+  const required = [
+    ".github/workflows/intelligence-country-release-gates.yml",
+    "src/core/intelligence-country-release-ledger.mjs",
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const text = get(file);
+    const classifier = text.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(classifier, file + " missing case classifier");
+    assert.ok(classifier.endsWith(")"), file + " Bash pattern must close at end of case arm");
+    assert.equal(classifier.indexOf(")"), classifier.length - 1,
+      file + " cannot append a private source after Bash pattern closure");
+    const rules = new Set(classifier.slice(0, -1).split("|"));
+    for (const path of required) assert.ok(rules.has(path), file + " lacks private source rule: " + path);
+    for (const publicPath of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(rules.has(publicPath), false, file + " must not suppress genuine public release");
+    }
+  }
+});
+
+test("101-country web and Expo catalogue paths are private-only; no backend server bypass", () => {
+  const candidatePaths = [
+    ".github/workflows/intelligence-country-web-mobile-parity.yml",
+    "docs/intelligence/country-101-client-catalog-20261118.json",
+    "scripts/generate-intelligence-country-client-catalog.mjs",
+    "scripts/test-intelligence-country-client-catalog.mjs",
+    "apps/portal/components/country-source-coverage.tsx",
+    "apps/portal/components/medicines-intelligence.tsx",
+    "native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx"
+  ];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, workflow+" missing active source classifier");
+    const patterns = line.split("|");
+    for (const p of candidatePaths) {
+      assert.ok(patterns.includes(p) ||
+        (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
+        (p.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        workflow+" could publish candidate-only country metadata: "+p);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Real protected server changes must retain independent production acceptance");
   }
 });

@@ -9,6 +9,9 @@ on:
       - 'src/core/intelligence-country-iso-identifiers.mjs'
       - 'src/core/intelligence-country-source-baseline.mjs'
       - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'src/core/intelligence-global-secondary-source-gateway.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs'
       - 'scripts/test-intelligence-country-release-ledger.mjs'
       - 'scripts/render-intelligence-country-release-ledger.mjs'
       - 'src/core/intelligence-country-markdown-cell.mjs'
@@ -36,6 +39,9 @@ jobs:
           node-version: 24
       - name: Syntax-check national ledger and the report renderer
         run: |
+          node --check src/core/intelligence-global-secondary-source-gateway.mjs
+          node --check src/core/intelligence-au-pbs-schedule-quarantine.mjs
+          node --check src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs
           node --check src/core/intelligence-country-release-ledger.mjs
           node --check src/core/intelligence-country-iso-identifiers.mjs
           node --check src/core/intelligence-country-source-baseline.mjs
