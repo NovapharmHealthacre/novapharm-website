@@ -39,5 +39,14 @@ class NovaClipVisualSearchTest {
         assertFailsWith<IllegalArgumentException> {
             client.search("public carton", "abcd".repeat(12), "np_session=abc\r\nInjected: yes")
         }
+        assertFailsWith<IllegalArgumentException> {
+            client.search("public carton", "abcd".repeat(12), "np_session=fixture")
+        }
+        assertFailsWith<IllegalArgumentException> {
+            client.search("public carton", "abcd".repeat(12), "np_session=fixture; np_csrf=wrong")
+        }
+        assertFailsWith<IllegalArgumentException> {
+            client.search("public carton", "abcd".repeat(12), "np_session=fixture; np_session=duplicate")
+        }
     }
 }
