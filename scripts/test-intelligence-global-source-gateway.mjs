@@ -312,3 +312,75 @@ test("malformed upstream response objects and stream exceptions never leak backe
     );
   }
 });
+
+
+test("official medicine source identities are preserved exactly, never silently truncated or spoofed", () => {
+  const plan = buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban" });
+  const fullId = "0".repeat(119) + "1";
+  const safeLabel = "B".repeat(240);
+  const result = normaliseGovSourceResult(plan, [
+    { drug_identification_number: fullId, brand_name: safeLabel },
+    { drug_identification_number: "0".repeat(121), brand_name: "Overlong" },
+    { drug_identification_number: "00000001", brand_name: "L".repeat(241) },
+    { drug_identification_number: "00000002", brand_name: "Bidi" + String.fromCharCode(0x202e) },
+    { drug_identification_number: "00000003" + String.fromCharCode(0x200b), brand_name: "Invisible source id" },
+    { drug_identification_number: "00000004", brand_name: "C1" + String.fromCharCode(0x0085) }
+  ]);
+  assert.equal(result.records.length, 1);
+  assert.equal(result.records[0].localId, fullId);
+  assert.equal(result.records[0].label, safeLabel);
+  assert.equal(result.canPublish, false);
+  const bad = [
+    ["us-fda-drugsfda", {results: [{application_number:"Z".repeat(121), products:[{brand_name:"F"}]}]}],
+    ["global-clinicaltrials", {studies: [{protocolSection:{identificationModule:{nctId:"NCT1"+String.fromCharCode(0x202e),briefTitle:"T"}}}]}],
+    ["global-europepmc", {resultList:{result:[{id:"123",title:"R"+String.fromCharCode(0x200b)}]}}],
+    ["global-pubmed", {esearchresult:{idlist:["9".repeat(121)]}}],
+    ["global-chembl", {molecules:[{molecule_chembl_id:"CHEMBL"+String.fromCharCode(0x2066),pref_name:"Drug"}]}],
+    ["es-aemps-cima", {resultados:[{nregistro:"0007",nombre:"L".repeat(241)}]}]
+  ];
+  for (const [sourceId, raw] of bad) {
+    const normalized = normaliseGovSourceResult(buildGovSourcePlan({sourceId,term:"Apixaban"}), raw);
+    assert.deepEqual(normalized.records, [], sourceId);
+    assert.equal(normalized.canPublish, false);
+  }
+});
+
+test("rights clock must be a nonnegative exact epoch-millisecond integer before transport", async () => {
+  let calls = 0;
+  const plan = buildGovSourcePlan({sourceId:"global-clinicaltrials",term:"Apixaban"});
+  for (const clock of [-1, TEST_NOW + 0.5, NaN, Infinity, undefined, "bad", Number.MAX_SAFE_INTEGER+1]) {
+    assert.throws(() => assertInternalEvaluationPermit({
+      permit: permit(), sourceId: plan.sourceId, tenantId:"tenant1",
+      country:plan.country, domain:plan.domain, now: clock
+    }), /not approved/);
+    const reader = createGovSourceReader({
+      authorize: async input => permit(input), now: () => clock,
+      transport: async () => { calls++; throw Error("not authorized for fetch"); }
+    });
+    await assert.rejects(reader.read({
+      sourceId: "global-clinicaltrials", term:"Apixaban", tenantId:"tenant1"
+    }), /not approved/);
+  }
+  assert.equal(calls, 0);
+});
+
+test("an expired or invalid second clock withholds already fetched internal source records", async () => {
+  const expiry = Date.parse("2026-11-17T18:00:00.000Z");
+  for (const secondClock of [expiry, expiry + 1, NaN, null, TEST_NOW + 0.5, undefined]) {
+    let tick = 0, network = 0;
+    const reader = createGovSourceReader({
+      authorize: async input => permit(input),
+      now: () => (++tick === 1 ? TEST_NOW : secondClock),
+      transport: async () => {
+        network++;
+        return new Response(JSON.stringify({
+          studies: [{protocolSection:{identificationModule:{nctId:"NCT01234567",briefTitle:"Synthetic fixture"}}}]
+        }), {headers:{"content-type":"application/json"}});
+      }
+    });
+    await assert.rejects(reader.read({
+      sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+    }), /Invalid evaluation envelope/);
+    assert.equal(network, 1);
+  }
+});

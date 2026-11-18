@@ -66,7 +66,7 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       let authorisedAt;
       try{authorisedAt=now();}
       catch{reject("server clock");}
-      if(!Number.isFinite(authorisedAt))reject("server clock");
+      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
       let decision;
       try{
         decision=await authorize({
