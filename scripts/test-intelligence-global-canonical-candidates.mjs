@@ -105,3 +105,18 @@ test("never silently promote multimodal model attributes as official regulatory 
     }),/Invalid source-local medicine identity/);
   }
 });
+
+test("reject inherited, prototype-polluted and accessor-based regulator labels",()=>{
+  const inherited = Object.create({localId:"00001234",label:"Injected product"});
+  const getter = Object.defineProperty({localId:"00001234"},"label",{
+    enumerable:true,get:()=> "Injected product"
+  });
+  const nullPrototype = Object.assign(Object.create(null),{
+    localId:"00001234",label:"Injected product"
+  });
+  for (const record of [inherited,getter,nullPrototype]) {
+    assert.throws(() => buildLocalIdentityCandidates({
+      ...envelope, records:[record]
+    }),/Invalid source-local medicine identity/);
+  }
+});
