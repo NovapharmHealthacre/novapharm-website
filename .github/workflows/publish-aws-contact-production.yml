@@ -162,7 +162,7 @@ jobs:
             [ -n "$changed" ] || continue
             found_change=true
             case "$changed" in
-              apps/portal/*|native/novapharm-intelligence-apple/*|native/novapharm-intelligence-mobile/*|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/nova-ml-native-apple.yml|.github/workflows/nova-ml-private-ingress-acceptance.yml)
+              apps/portal/*|.github/workflows/intelligence-global-mobile-contracts.yml|.github/workflows/browser-acceptance.yml|native/novapharm-intelligence-apple/*|native/novapharm-intelligence-mobile/*|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/nova-ml-native-apple.yml|.github/workflows/nova-ml-private-ingress-acceptance.yml)
                 found_ml=true
                 ;;
               .github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/aws/contact-release-routing.test.mjs)
