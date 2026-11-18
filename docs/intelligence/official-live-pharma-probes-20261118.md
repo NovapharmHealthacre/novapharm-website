@@ -25,6 +25,8 @@ Source documentation:
 - `scripts/test-intelligence-official-live-pharma-probes.mjs`: synthetic positive and malicious negative contracts covering no SSRF, no unauthorized publication, spoofed IDs, schema, oversize, redirects, upstream errors, and timing.
 - `scripts/run-intelligence-official-live-pharma-probes.mjs`: reads both real public sources using Node fetch, emits only source-ID/hash/size/observed-timestamp evidence receipts, never full records, price/clinical advice, or claims of active customer delivery.
 - `.github/workflows/intelligence-official-live-pharma-probes.yml`: source-only Node 24 tests, two bounded official public HTTP calls on PR or manual dispatch, 7-day receipts-only artifact. Zero new AWS account, database, transport service or source credential.
+- `server.mjs`: proposed protected `GET /api/v1/intelligence/sources/official/public-live-probe?sourceId=...` route checks independent `board` session scope, rate-limits to two requests per minute per network fingerprint, enforces an explicit **default-OFF** server-side `NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED` flag, supports only the two source identifiers, and returns sanitized failures. It is not active merely because code is committed. The response is a receipt, **not** medicine records.
+- `scripts/test-intelligence-official-live-pharma-server-gate.mjs`: static route-boundary regression checks; it does not replace full deployed/authenticated end-to-end acceptance.
 
 ### Verification stages that must remain distinct
 
@@ -33,7 +35,7 @@ Source documentation:
 3. **Rights-reviewed and admitted:** independently approved source-specific licences, permissions, historical and current dataset snapshots, provenance, native-country medicine identity reconciliation, no clinical/market inference.
 4. **NovaPharm production connected:** protected, isolated, monitored runtime; ingestion/reconciliation and audit logs; revocation; deployed production data paths; customer privacy/ABAC; signed web/mobile read-only acceptance and rollback.
 
-This PR delivers only a candidate for stage 2. It **must not** transition stages 3 or 4 from an observed public HTTP result or a green CI job. The 77-country register remains 101 entries, 77 national countries plus EU/EEA and Global; no country is certified customer-live.
+This PR implements source-live read code, a default-off protected application route and a real-source CI probe as a candidate for stage 2. It **must not** transition stages 3 or 4 from an observed public HTTP result or a green CI job. The 77-country register remains 101 entries, 77 national countries plus EU/EEA and Global; no country is certified customer-live.
 
 ## Running the checks
 
