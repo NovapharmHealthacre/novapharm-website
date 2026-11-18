@@ -86,6 +86,34 @@ export function assessRewardProxySweep({ steps } = {}) {
 }
 
 /**
+ * Paper-specific, illustrative analytical forms, NOT a fitted scaling law:
+ * Gao et al. use d=sqrt(KL); BoN R(d)=d(alpha-beta*d);
+ * RL R(d)=d(alpha-beta*log(d)). Their gold reward is a synthetic RM proxy.
+ */
+export function evaluateRewardScalingForm({ method, kl, alpha, beta } = {}) {
+  if (!["best_of_n", "reinforcement_learning"].includes(method)) throw reject();
+  scalar(kl); scalar(alpha); scalar(beta);
+  if (kl < 0 || kl > 1000 || beta < 0) throw reject();
+  const d = Math.sqrt(kl);
+  const estimate = kl === 0 ? 0 : d * (alpha - beta * (method === "best_of_n" ? d : Math.log(d)));
+  if (!Number.isFinite(estimate)) throw reject();
+  return receipt("reward_scaling_illustration", {
+    method, inputKl: kl, sqrtKl: d,
+    illustrativeGoldRewardDelta: estimate,
+    coefficientsVerified: false,
+    status: "unfitted_paper_formula_only",
+    limitations: ["Alpha/beta were supplied by the caller, not fitted to licensed evidence or externally validated.",
+      "The paper's RL form can be inaccurate near KL=0; this calculation is not a safety threshold."]
+  });
+}
+
+/** Analytic KL for theoretical best-of-n reranking (Stiennon et al.; Gao et al.). */
+export function calculateBestOfNKl(n) {
+  if (!Number.isSafeInteger(n) || n < 1 || n > 1000000) throw reject();
+  return Math.log(n) - (n - 1) / n;
+}
+
+/**
  * Critique effectiveness is measured ONLY against externally adjudicated flaw IDs.
  * Untrusted proposed critiques remain suggestions, never evidence or gold labels.
  */
