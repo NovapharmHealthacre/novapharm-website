@@ -1,6 +1,7 @@
 "use client";
 
 import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
+import scienceMethods from "../../../docs/intelligence/openai-science-methods-20261118.json";
 import { intelligenceWorkspaceBySlug } from "../data/intelligence-workspaces";
 import styles from "./science-research-workspace.module.css";
 
@@ -37,6 +38,27 @@ export function ScienceResearchWorkspace() {
               return workspace ? <a key={slug} href={`/portal/executive-platform/medicines-intelligence/${slug}/`} className={styles["relatedLink"]}>{workspace.title} · {workspace.state === "gated" ? "Gated" : "Read-only foundation"}</a> : null;
             })}
           </nav>
+        </article>)}
+      </div>
+    </section>
+    <section className={styles["methodsSection"]} aria-labelledby="science-methods-title">
+      <div className={styles["sectionHeading"]}>
+        <h2 id="science-methods-title">Research methods and original sources</h2>
+        <p>{scienceMethods.scientificMethodologyCount} research examples and {scienceMethods.discoveryIndexCount} discovery indexes, reviewed {scienceMethods.reviewedAt}. These are published examples to study, not new operational datasets or replicated NovaPharm results.</p>
+      </div>
+      <div className={styles["methodsGrid"]}>
+        {scienceMethods.methods.map((entry) => <article className={styles["methodCard"]} key={entry.id}>
+          <p className={styles["methodType"]}>{entry.sourceType === "reference_index" ? "Discovery reference" : "Published research example"} · {entry.publishedAt ?? "Index (changes over time)"}</p>
+          <h3>{entry.title}</h3>
+          <p><strong>What was reported</strong> {entry.reportedFinding}</p>
+          <p><strong>NovaPharm method</strong> {entry.transferablePattern}</p>
+          <p><strong>Limits</strong> {entry.limitations}</p>
+          <h4>Checks before use</h4>
+          <ul>{entry.validationRequirements.map((requirement) => <li key={requirement}>{requirement}</li>)}</ul>
+          <div className={styles["methodFooter"]}>
+            <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer">Read original OpenAI source</a>
+            <span>Reference only · No independent NovaPharm replication</span>
+          </div>
         </article>)}
       </div>
     </section>
