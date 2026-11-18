@@ -1,6 +1,6 @@
 /**
  * Offline country-source discovery for the same Expo bundle on iOS and Android.
- * Reads only reviewed, public reference METADATA from the shared web catalogue.
+ * Reads only publicly discoverable, rights-unreviewed reference METADATA from the shared web catalogue.
  * No HTTP, customer authentication, medicine records or source-use rights.
  */
 import React, { useMemo, useState } from "react";
