@@ -242,7 +242,7 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
   for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
     const source = get(workflow);
     const caseLine = source.split("\n").find((line) =>
-      line.includes("apps/portal/*|.github/workflows/browser-acceptance.yml|"));
+      line.trim().startsWith("apps/portal/*|"));
     assert.ok(caseLine, "no private classifier in " + workflow);
     const cases = caseLine.trim().replace(/\)$/, "").split("|");
     for (const path of researchSources) {
@@ -256,6 +256,142 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
     assert.ok(source.includes("found_ml=true"));
     assert.ok(!cases.includes("packages/medicines-intelligence/src/index.ts"));
     assert.ok(!cases.includes("packages/medicines-intelligence/*"));
+  }
+});
+
+test("HIG-only web and mobile merges never dispatch the unrelated AWS contact release", () => {
+  const higPrivatePaths = [
+    "docs/design/apple-hig-172-topic-acceptance-register.json",
+    "docs/design/apple-hig-172-topic-adoption-20261118.md",
+    "docs/design/apple-hig-three-platform-adoption-20261118.md",
+    "native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx",
+    "native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs",
+    "scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs",
+    ".github/workflows/apple-hig-cross-platform-detail.yml"
+  ];
+  const pr855Changes = [
+    "apps/portal/app/globals.css",
+    "native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx",
+    "docs/design/apple-hig-172-topic-acceptance-register.json",
+    "docs/design/apple-hig-172-topic-adoption-20261118.md",
+    ".github/workflows/apple-hig-cross-platform-detail.yml",
+    "scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs"
+  ];
+  const pr854Changes = [
+    "docs/design/apple-hig-three-platform-adoption-20261118.md",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs",
+    "native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs",
+    "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs"
+  ];
+  const policyRepairChanges = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs",
+    "docs/design/apple-hig-172-topic-adoption-20261118.md"
+  ];
+  const publicChange = "assets/css/novapharm.bundle.css";
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const firstCase = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(firstCase, file + " must inspect the first-parent private change-set");
+    const patterns = firstCase.trim().replace(/\)$/, "").split("|");
+    const covers = (path) => patterns.some((candidate) =>
+      candidate === path || (candidate.endsWith("/*") && path.startsWith(candidate.slice(0, -1))));
+    for (const path of higPrivatePaths) {
+      assert.ok(patterns.includes(path), file + " missing exact HIG research path: " + path);
+    }
+    for (const [label, group] of [["PR855", pr855Changes], ["PR854", pr854Changes]]) {
+      assert.ok(group.every(covers), file + " would incorrectly publish AWS contact for " + label);
+    }
+    // Release-control files live in a deliberately neutral case. They cannot
+    // independently declare a private-only commit, but are safe when an
+    // independently reviewed private source/document path also changed.
+    const neutralLine = source.split("\n").find((line) =>
+      line.includes("scripts/aws/contact-release-routing.test.mjs") && line.trim().endsWith(")"));
+    assert.ok(neutralLine, file + " must retain the neutral publisher-guard clause");
+    const neutralPatterns = neutralLine.trim().replace(/\)$/, "").split("|");
+    const policySource = "docs/design/apple-hig-172-topic-adoption-20261118.md";
+    assert.ok(covers(policySource), file + " must classify the repair's private source evidence");
+    for (const changed of policyRepairChanges.filter((value) => value !== policySource)) {
+      assert.ok(neutralPatterns.includes(changed),
+        file + " must keep publisher policy change neutral, not unclassified: " + changed);
+    }
+    assert.equal(covers(publicChange), false, file + " must not suppress genuine public CSS releases");
+    assert.equal(covers("assets/js/contact-production.js"), false, file + " must not suppress real contact changes");
+    assert.ok(!patterns.includes("docs/design/*"), "Do not hide arbitrary public documentation changes");
+    assert.ok(!patterns.includes("native/novapharm-intelligence-mobile/*"), "Only specifically reviewed private mobile paths may skip");
+  }
+});
+
+test("manual publisher dispatch checks the requested exact commit before allowing AWS or Pages", () => {
+  const publisher = get("publish-aws-contact-production.yml");
+  assert.ok(publisher.includes("ref: " + "$" + "{{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}"));
+  assert.ok(publisher.includes("EXPECTED_SHA: " + "$" + "{{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}"));
+  assert.match(publisher, /test "\$\(git rev-parse HEAD\)" = "\$EXPECTED_SHA"/);
+  assert.match(publisher, /changed_paths=\$\(git diff --name-only "HEAD\^1" HEAD\)/);
+  assert.doesNotMatch(publisher, /if \[ "\$GITHUB_EVENT_NAME" = "workflow_dispatch" \]; then\s*\n\s*echo "release_needed=true"/);
+  assert.match(publisher, /release_needed=false/);
+  assert.match(publisher, /release_needed=true/);
+});
+
+test("global secondary-source-only merges are excluded from AWS contact dispatch and public publisher", () => {
+  // These exact files appeared in the source-only main merge f1546b7.
+  // Both the ordinary dispatcher and the separately triggered publisher
+  // must classify them as private BEFORE any live contact verification.
+  const sourceOnlyPaths = [
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+  ];
+  const neutralReleaseGuards = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const actualPublicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css"
+  ];
+  for (const workflow of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(workflow);
+    const caseLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(caseLine, workflow + ": release scope case must exist");
+    const privatePatterns = caseLine.trim().replace(/\)$/, "").split("|");
+    const protectedSource = path => privatePatterns.some(pattern =>
+      pattern === path || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    const privateRelease = paths => {
+      const changed = paths.length > 0;
+      const sawPrivate = paths.some(protectedSource);
+      const onlyPrivateOrNeutral = paths.every(path =>
+        protectedSource(path) || neutralReleaseGuards.includes(path)
+      );
+      return changed && sawPrivate && onlyPrivateOrNeutral;
+    };
+    for (const path of sourceOnlyPaths) {
+      assert.equal(protectedSource(path), true, workflow + " must protect " + path);
+    }
+    assert.equal(privateRelease(sourceOnlyPaths), true, workflow + " must deny source-only AWS publish");
+    assert.equal(privateRelease([...neutralReleaseGuards, sourceOnlyPaths[1], sourceOnlyPaths[0]]), true,
+      workflow + " must deny AWS publish on this guard-repair merge");
+    assert.equal(privateRelease(neutralReleaseGuards), false,
+      workflow + " guard-only changes must not silently redefine real public release policy");
+    for (const path of actualPublicChanges) {
+      assert.equal(protectedSource(path), false, workflow + " must not quarantine a real public file " + path);
+      assert.equal(privateRelease([sourceOnlyPaths[0], path]), false,
+        workflow + " must not suppress mixed public and protected source releases");
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
   }
 });
 
