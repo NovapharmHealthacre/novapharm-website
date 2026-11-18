@@ -44,6 +44,18 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testL0HardConcreteResearchMathAndInvalidInputs() throws {
+        let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
+        XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 0), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0.5), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: -1000), 0)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 1000), 1)
+        XCTAssertThrowsError(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0))
+        XCTAssertThrowsError(try NovaL0ResearchMath.activationProbability(logAlpha: .nan))
+        XCTAssertThrowsError(try NovaL0ResearchMath.deterministicGate(logAlpha: 0, gamma: 0))
+    }
+
     #if os(macOS)
     func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
         let permit = NovaTrainingPermit(
