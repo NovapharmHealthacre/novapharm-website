@@ -47,3 +47,11 @@ To prevent future regression, the dedicated CI must:
 This review candidate deliberately **does not** install CLIP weights or publish inferred image matches. Real OCR/model evaluation needs a labelled, licensed holdout and counterfactual packaging overlays (e.g. printed distractor words), independently reviewed per country, language, strength, dose form, manufacturer and image modality. Track class-wise false identity merges, abstention, calibrations and model drift; never convert a visual score into a clinical confidence or regulated product status.
 
 **Status reporting:** a green source contract does not prove a model, hosted API, native build, external data rights, regulated validation or live customer rollout.
+
+## Extended bibliography (22 entries supplied, 21 unique studies)
+
+The comprehensive paper-by-paper research-control mapping is in [multimodal-22-reference-engineering-matrix-20261118.md](./multimodal-22-reference-engineering-matrix-20261118.md). Items 15 and 22 repeat Crawford & Paglen (2019), so they produce **one** dataset-governance requirement, not two separate algorithms.
+
+The source registry `src/core/intelligence-multimodal-research-basis.mjs` contains 21 individual publication pointers and seven research dimensions. Every one of the 22 canonical Intelligence workspace-policy reports now includes this research-basis contract. The protected web panel and the source-only Expo iOS/Android review surface the same provenance counts. `src/core/intelligence-multimodal-threat-evaluation.mjs` provides 12 **synthetic string-based** regression probes mapped back to all 21 distinct references. The probes check that deterministic conflict and refusal logic fails closed, not that any real image model is robust.
+
+**Do not infer 100% production integration from source-code mapping or mock tests.** Model weights, authorised actual images, secure ingestion, independent clinical/regulatory evaluation, live inference endpoints and signed iOS/Android app releases remain absent and require issue #825 acceptance.
