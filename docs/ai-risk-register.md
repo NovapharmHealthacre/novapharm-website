@@ -18,6 +18,7 @@
 | Accessibility failure | Search dialog and navigator | Native modal dialog, labelled controls, status region, keyboard controls, no simulated typing | Browser and assistive-technology variation | Manual keyboard and screen-reader acceptance |
 | False forecasting or traceability claim | Public content | Roadmap-only language and claims scanner | Marketing copy may regress later | Automated claim gate and evidence owner |
 | Ollama exposure | Internal development | Loopback HTTP host allowlist and production rejection | Local machine compromise remains possible | Local developer security and model review |
+| False mechanistic-circuit explanation | NOVA sparse-circuit research and model governance (added 18 November 2026) | Existing provider/model registries explicitly deny verified neural-circuit access; shared exact-schema research artifact inspector rejects forged approvals and malformed graphs; protected web and native views label results unverified and non-clinical | Well-formed metadata, pruning results or ablation deltas are not independent causal verification; over-reliance on a future experiment remains possible | AI research lead, independent evaluator, Security, Quality and Regulatory before any release |
 
 ## Stop conditions
 

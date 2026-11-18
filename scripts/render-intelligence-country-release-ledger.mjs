@@ -27,7 +27,7 @@ if (format[0] === "--json") {
   line.push("National countries: " + report.nationalCountries +
     "; EU/EEA + global groups: " + report.supranationalAndGlobalGroups +
     "; source candidates: " + report.totalSources +
-    "; source-only merged API contracts: " + report.sourceOnlyAdapterCount +
+    "; merged source-only candidate readers: " + report.sourceOnlyAdapterCount +
     "; verified live countries: " + report.verifiedProductionCountries + ".");
   line.push("");
   line.push("| Region | Country / group | Country code | Candidates | Source-only adapters | Engineering milestone | Verified production | Specific next actions |");
