@@ -188,3 +188,33 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
   const uncertain = results.filter(x => x.state !== "reachable");
   assert.deepEqual(uncertain, [], "Apple HIG remote reachability requires review of non-200 or blocked endpoints");
 });
+
+
+test("all 516 topic/platform applicability decisions fail closed until source-specific review", () => {
+  const states = [];
+  for (const topic of tracker.topics) {
+    assert.ok(topic.platformApplicability, "Missing platform decision matrix: " + topic.title);
+    assert.deepEqual(Object.keys(topic.platformApplicability).sort(), ["android", "ios", "web"]);
+    for (const platform of ["web", "ios", "android"]) {
+      const decision = topic.platformApplicability[platform];
+      assert.ok(["unassessed", "applicable", "not_applicable"].includes(decision.state),
+        "Invalid platform decision: " + topic.title + "/" + platform);
+      if (decision.state !== "unassessed") {
+        assert.equal(topic.guidelineReview, "reviewed",
+          "Applicability must follow actual Apple full-text review: " + topic.title + "/" + platform);
+        assert.ok(typeof decision.rationale === "string" && decision.rationale.trim().length >= 20,
+          "Platform applicability needs a source-specific reason: " + topic.title + "/" + platform);
+      } else {
+        assert.equal(decision.rationale, null,
+          "An unassessed platform may not claim a conformance rationale: " + topic.title + "/" + platform);
+      }
+      states.push(decision.state);
+    }
+  }
+  assert.equal(states.length, 516);
+  assert.equal(tracker.meta.platformsAssessed, states.filter(x => x !== "unassessed").length);
+  if (states.some(x => x !== "unassessed")) {
+    assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false,
+      "Partial applicability decisions are not completion of all 172 HIG pages");
+  }
+});
