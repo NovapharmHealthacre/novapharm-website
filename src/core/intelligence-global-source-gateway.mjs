@@ -248,7 +248,7 @@ export function normaliseGovSourceResult(plan, data) {
  * The returned approval is only suitable for internal evaluation, never display.
  */
 export function createGovSourceReader({ authorize, transport = globalThis.fetch, now = () => Date.now() } = {}) {
-  if (typeof authorize !== "function" || typeof transport !== "function") {
+  if (typeof authorize !== "function" || typeof transport !== "function" || typeof now !== "function") {
     throw new Error("Trusted authorizer and transport are required");
   }
   return Object.freeze({
@@ -284,18 +284,38 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       let raw;
       try { raw = await readJsonBounded(response); }
       catch { throw new Error("Upstream unavailable"); }
-      const normalized = normaliseGovSourceResult(plan, raw);
       let capturedAt;
       try { capturedAt = now(); }
       catch { throw new Error("Invalid evaluation envelope"); }
-      // A grant expiring while reading may not return an internal evaluation.
-      // Validate clock shape again; Date coercion is never authorization.
-      if (!Number.isSafeInteger(capturedAt) || capturedAt < 0 ||
+      // The source rights clock must remain valid and monotonic for the entire
+      // request. The initial receipt alone is not proof against revocation.
+      if (!Number.isSafeInteger(capturedAt) || capturedAt < grantedAt ||
           capturedAt >= Date.parse(grant.validUntil)) {
         throw new Error("Invalid evaluation envelope");
       }
+      let postPermission;
+      try {
+        postPermission = await authorize({
+          sourceId, tenantId, purpose: "internal-evaluation",
+          domain: plan.domain, country: plan.country
+        });
+      } catch { throw new Error("Source rights are not approved"); }
+      let refreshedGrant;
+      try {
+        refreshedGrant = assertInternalEvaluationPermit({
+          permit: postPermission, sourceId, tenantId,
+          domain: plan.domain, country: plan.country, now: capturedAt
+        });
+      } catch { throw new Error("Source rights are not approved"); }
+      if (refreshedGrant.receiptId !== grant.receiptId ||
+          refreshedGrant.licenseId !== grant.licenseId ||
+          refreshedGrant.rightsVersion !== grant.rightsVersion ||
+          refreshedGrant.validUntil !== grant.validUntil) {
+        throw new Error("Source rights changed during evaluation");
+      }
+      const normalized = normaliseGovSourceResult(plan, raw);
       return buildEvaluationEnvelope({
-        plan, normalized, raw, grant, capturedAt
+        plan, normalized, raw, grant: refreshedGrant, capturedAt
       });
     }
   });
