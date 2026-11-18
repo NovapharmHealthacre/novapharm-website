@@ -8,6 +8,8 @@
  * All upstream URLs are fixed at build time and never user supplied.
  */
 import { createHash } from "node:crypto";
+import { assertInternalEvaluationPermit } from "./intelligence-global-evidence-contract.mjs";
+import { buildSourceSnapshotQuarantine } from "./intelligence-source-snapshot-quarantine.mjs";
 
 const HSA_RESOURCE = "d_767279312753558cbf19d48344577084";
 const MAX_SOURCE_BYTES = 131072;
@@ -19,6 +21,8 @@ export const OFFICIAL_LIVE_PROBE_PLANS = Object.freeze({
     jurisdiction: "US",
     domain: "regulatory-applications",
     registryCandidateKey: "north-america-united-states-fda-openfda",
+    datasetKey: "drugsfda",
+    releaseResourceId: "openfda-drugsfda",
     url: "https://api.fda.gov/drug/drugsfda.json?limit=1",
     publisher: "US Food and Drug Administration",
     documentation: "https://open.fda.gov/apis/drug/drugsfda/",
@@ -28,6 +32,8 @@ export const OFFICIAL_LIVE_PROBE_PLANS = Object.freeze({
     jurisdiction: "SG",
     domain: "registered-therapeutic-products",
     registryCandidateKey: "asia-pacific-singapore-hsa-data-gov-sg",
+    datasetKey: "hsa-registered-products",
+    releaseResourceId: HSA_RESOURCE,
     url: "https://data.gov.sg/api/action/datastore_search?resource_id=" +
       HSA_RESOURCE + "&limit=1",
     publisher: "Singapore Health Sciences Authority via data.gov.sg",
@@ -102,7 +108,9 @@ async function readBoundedOfficialJson(response) {
   catch { fail("invalid UTF-8 JSON from publisher"); }
   return Object.freeze({
     // Exact bytes received from the upstream, not the canonicalized JSON.
-    bytes, sha256:createHash("sha256").update(raw).digest("hex"), parsed
+    bytes, sha256:createHash("sha256").update(raw).digest("hex"), parsed,
+    // Private in-process ingest only; never place this on a public receipt.
+    rawBytes:raw
   });
 }
 
@@ -214,5 +222,141 @@ export async function probeOfficialPublicPharmaSource(sourceId, {
     clinicalDecisionReady:false,
     commercialDecisionReady:false,
     rawRecordsRetained:false
+  });
+}
+
+
+/**
+ * Connects the *actual* official publisher read to the existing internal
+ * source-quarantine contract, using TWO separate trusted rights decisions.
+ *
+ * The releaseInventory callback must be provided by a protected, independently
+ * audited backend release registry. Passing a fake callback does NOT constitute
+ * source permissions or legally verified snapshot provenance. No persistence,
+ * data admission, customer endpoint or external record exposure is performed.
+ */
+export function createOfficialLivePharmaQuarantineReader({
+  authorize, releaseInventory, transport=globalThis.fetch,
+  now=()=>Date.now()
+}={}) {
+  if(typeof authorize!=="function" || typeof releaseInventory!=="function" ||
+     typeof transport!=="function" || typeof now!=="function") {
+    fail("trusted backend authorizer, release inventory, transport and clock required");
+  }
+  function readClock() {
+    let value;
+    try { value=now(); } catch { fail("trusted clock unavailable"); }
+    if(!Number.isSafeInteger(value) || value < 0) fail("invalid trusted clock");
+    return value;
+  }
+  return Object.freeze({
+    async evaluate({sourceId,tenantId}={}) {
+      if(!Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS,sourceId)) {
+        fail("source not on fixed publisher allowlist");
+      }
+      if(typeof tenantId!=="string" ||
+         !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
+        fail("invalid protected tenant");
+      }
+      const source=OFFICIAL_LIVE_PROBE_PLANS[sourceId];
+      const context={
+        sourceId,tenantId,country:source.jurisdiction,
+        domain:source.domain,purpose:"internal-evaluation"
+      };
+      const initialTime=readClock();
+      let firstDecision;
+      try { firstDecision=await authorize(context); }
+      catch { fail("independent source rights unavailable"); }
+      const beforeTransport=readClock();
+      if(beforeTransport<initialTime) fail("source clock rollback before transport");
+      let grant;
+      try {
+        grant=assertInternalEvaluationPermit({
+          permit:firstDecision,...context,now:beforeTransport
+        });
+      } catch { fail("source rights not approved for internal evaluation"); }
+      let response;
+      try {
+        response=await transport(source.url,{
+          method:"GET",redirect:"error",credentials:"omit",cache:"no-store",
+          headers:{accept:"application/json"},signal:AbortSignal.timeout(TIMEOUT_MS)
+        });
+      } catch { fail("official publisher connection failed"); }
+      validateResponseUrl(response,source.url);
+      const body=await readBoundedOfficialJson(response);
+      const sample=validateOfficialLiveSample(sourceId,body.parsed);
+      const afterFetch=readClock();
+      if(afterFetch<beforeTransport || afterFetch>=Date.parse(grant.validUntil)) {
+        fail("source rights expired or clock rolled back during live read");
+      }
+      let metadata;
+      try { metadata=await releaseInventory({sourceId}); }
+      catch { fail("trusted publisher release inventory unavailable"); }
+      if(!metadata || typeof metadata!=="object" ||
+         Array.isArray(metadata) ||
+         metadata.resourceId!==source.releaseResourceId ||
+         metadata.datasetKey!==source.datasetKey) {
+        fail("publisher release metadata not independently bound");
+      }
+      let manifest;
+      try {
+        manifest=buildSourceSnapshotQuarantine({
+          sourceKey:sourceId,
+          jurisdiction:source.jurisdiction,
+          publisher:source.publisher,
+          datasetKey:source.datasetKey,
+          resourceId:source.releaseResourceId,
+          resourceUrl:source.url,
+          expectedOrigin:new URL(source.url).origin,
+          mediaType:"application/json",
+          schemaVersion:metadata.schemaVersion,
+          observationStart:metadata.observationStart,
+          observationEnd:metadata.observationEnd,
+          publishedOn:metadata.publishedOn,
+          fetchedAt:new Date(afterFetch).toISOString(),
+          bytes:body.rawBytes
+        });
+      } catch { fail("publisher release metadata or snapshot failed quarantine"); }
+      const afterManifest=readClock();
+      if(afterManifest<afterFetch || afterManifest>=Date.parse(grant.validUntil)) {
+        fail("source rights expired during quarantine");
+      }
+      let finalDecision;
+      try { finalDecision=await authorize(context); }
+      catch { fail("source rights unavailable after quarantine"); }
+      const finished=readClock();
+      if(finished<afterManifest || finished>=Date.parse(grant.validUntil)) {
+        fail("source rights expired after quarantine");
+      }
+      let checked;
+      try {
+        checked=assertInternalEvaluationPermit({
+          permit:finalDecision,...context,now:finished
+        });
+      } catch { fail("source rights revoked after quarantine"); }
+      if(checked.receiptId!==grant.receiptId ||
+         checked.licenseId!==grant.licenseId ||
+         checked.rightsVersion!==grant.rightsVersion ||
+         checked.validUntil!==grant.validUntil) {
+        fail("source rights changed after quarantine");
+      }
+      return Object.freeze({
+        contract:"novapharm.intelligence.official-live-intake-quarantine.v1",
+        sourceId,tenantId,jurisdiction:source.jurisdiction,
+        registryCandidateKey:source.registryCandidateKey,
+        sourceRecordsSchemaValidated:sample.sourceRecordsValidated,
+        sourceResponseSha256:body.sha256,
+        publisherApiResponded:true,
+        rightsReceiptId:checked.receiptId,
+        manifest,
+        sourceSnapshotQuarantined:true,
+        independentSourceUseRightsLegallyVerified:false,
+        clinicalIdentityReconciled:false,
+        customerReadEnabled:false,
+        productionAccepted:false,
+        canPublish:false,
+        rawRecordsRetained:false
+      });
+    }
   });
 }
