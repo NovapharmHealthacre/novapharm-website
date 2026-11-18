@@ -48,6 +48,10 @@ The shared output deliberately forces `mechanisticExplanationVerified=false`, `p
 
 ## Production gates (all outstanding)
 
+Source rights and model rights are independent release prerequisites: no schema validation, app build or successful ablation can grant either right. All experiments must remain within documented licences, tenant boundaries and human-reviewed purposes.
+
+
+
 1. Identify a specific non-clinical research task, an appropriately licensed inspectable model, evaluation set, and independent benchmark, with no identifiable patient, supplier or customer data.
 2. Approve rights for model weights, code, derived features and datasets, plus software bill of materials, dependency scan and regional transfer restrictions.
 3. Execute real pruning/mean-ablation research, compare unablated/pruned/ablated losses on independently held-out data and publish a reproducibility receipt with model/dataset/code hashes and a signed server-side attestation.
