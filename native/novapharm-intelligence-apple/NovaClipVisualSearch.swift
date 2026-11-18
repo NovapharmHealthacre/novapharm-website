@@ -23,6 +23,19 @@ public enum NovaClipVisualError: Error {
     case invalidConfiguration, invalidQuery, unavailable, invalidResponse
 }
 
+/// Per-task redirect denial so an authenticated request cannot follow an unexpected host.
+private final class NovaClipNoRedirectDelegate: NSObject, URLSessionTaskDelegate {
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        completionHandler(nil)
+    }
+}
+
 @available(iOS 17.0, macOS 14.0, *)
 public struct NovaClipVisualSearch {
     private let trustedPortalOrigin: URL
@@ -32,7 +45,9 @@ public struct NovaClipVisualSearch {
         guard trustedPortalOrigin.scheme == "https",
               trustedPortalOrigin.host == "portal.novapharmhealthcare.com",
               trustedPortalOrigin.user == nil, trustedPortalOrigin.password == nil,
-              trustedPortalOrigin.path.isEmpty || trustedPortalOrigin.path == "/" else {
+              (trustedPortalOrigin.port == nil || trustedPortalOrigin.port == 443),
+              trustedPortalOrigin.query == nil, trustedPortalOrigin.fragment == nil,
+              (trustedPortalOrigin.path.isEmpty || trustedPortalOrigin.path == "/") else {
             throw NovaClipVisualError.invalidConfiguration
         }
         self.trustedPortalOrigin = trustedPortalOrigin
@@ -56,8 +71,11 @@ public struct NovaClipVisualSearch {
         request.setValue(csrfToken, forHTTPHeaderField: "X-CSRF-Token")
         request.httpBody = try JSONSerialization.data(withJSONObject: ["query": trimmed, "limit": 5])
         request.timeoutInterval = 8
-        let (data, response) = try await session.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        let (data, response) = try await session.data(
+            for: request, delegate: NovaClipNoRedirectDelegate()
+        )
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200,
+              http.url == request.url, data.count <= 32_768 else {
             throw NovaClipVisualError.unavailable
         }
         let result = try JSONDecoder().decode(NovaClipVisualResponse.self, from: data)
@@ -65,7 +83,17 @@ public struct NovaClipVisualSearch {
               result.humanReviewRequired, result.similarityIsNotEvidence,
               !result.regulatoryStatusVerified, !result.productIdentityVerified,
               result.results.count <= 5,
-              result.results.allSatisfy({ $0.sourceUrl.scheme == "https" && $0.status == "unverified_visual_match" }) else {
+              Set(result.results.map(\.assetId)).count == result.results.count,
+              result.results.enumerated().allSatisfy({ index, candidate in
+                  candidate.rank == index + 1 &&
+                  !candidate.assetId.isEmpty && candidate.assetId.count <= 120 &&
+                  !candidate.title.isEmpty && candidate.title.count <= 200 &&
+                  !candidate.rightsReference.isEmpty &&
+                  candidate.sourceUrl.scheme == "https" &&
+                  candidate.sourceUrl.user == nil && candidate.sourceUrl.password == nil &&
+                  candidate.sourceUrl.fragment == nil &&
+                  candidate.status == "unverified_visual_match"
+              }) else {
             throw NovaClipVisualError.invalidResponse
         }
         return result
