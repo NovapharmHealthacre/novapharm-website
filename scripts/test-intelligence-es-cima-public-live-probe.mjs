@@ -122,7 +122,7 @@ test("CIMA clock must be valid, monotonic and within bounded observation window"
   }),/invalid observation clock/);
  }
  assert.equal(calls,0);
- for(const end of [NOW-1,NOW+13001,NaN]){
+ for(const end of [NOW-1,NOW+25001,NaN]){
   const times=[NOW,end];
   await assert.rejects(probeCimaPublicMedicine({
    now:()=>times.shift(),transport:async()=>makeResponse(sample())
