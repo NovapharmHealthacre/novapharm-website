@@ -48,7 +48,9 @@ for (const file of pages.sort()) {
     if (!/\bnoindex\b/i.test(robots)) problems.push('Redirect must be noindex');
     if (!target || !fallback) problems.push('Redirect requires a matching fallback link');
     if (script) problems.push('Redirect alias must not execute scripts');
-    if (h1 !== 0 || main !== 0) problems.push('Redirect alias unexpectedly contains content landmarks; review alias');
+    // Both minimal aliases and accessible semantic fallback pages are valid.
+    // Reject only inconsistent or duplicated content landmarks.
+    if (!((h1 === 0 && main === 0) || (h1 === 1 && main === 1))) problems.push('Redirect alias requires zero or one matched h1/main landmark pair');
   } else {
     if (h1 !== 1) problems.push('Expected one page h1; found ' + h1);
     if (main !== 1) problems.push('Expected one main landmark; found ' + main);
