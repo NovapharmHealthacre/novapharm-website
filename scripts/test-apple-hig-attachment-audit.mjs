@@ -72,6 +72,15 @@ test("HIG index parity remains separate from 172-topic implementation status", (
   for (const [section, count] of Object.entries(ledger.officialIndex.sections)) {
     assert.equal(count, register.topics.filter((topic) => topic.section === section).length);
   }
+  assert.match(register.meta.indexFieldProvenance, /User-supplied 2026-11-18/);
+  assert.equal(register.topics.filter((topic) => topic.indexType === "Guideline").length, 158);
+  assert.equal(register.topics.filter((topic) => topic.indexType === "Category").length, 14);
+  for (const topic of register.topics) {
+    assert.ok(topic.indexDescription && topic.indexSuggestedPlatforms && topic.indexType);
+    // Source descriptions and suggested platform scope are not implementation evidence.
+    assert.notEqual(topic.indexSuggestedPlatforms, "production_verified");
+    assert.ok(topic.implementation !== "verified" || topic.releaseEvidence.length > 0);
+  }
   assert.equal(ledger.officialIndex.allFullTextReviewed, false);
   assert.equal(ledger.officialIndex.allImplemented, false);
   assert.ok(register.topics.every((topic) => topic.implementation !== "verified" || topic.releaseEvidence.length > 0),
