@@ -40,3 +40,7 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 ## Human accountability
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
+
+## Research-only L0 sparsity boundary (18 November 2026)
+
+The `nova-l0-hard-concrete-research-v0` entry is **source-only research**, not a component of public Search & Ask or an active protected prediction model. Pure PyTorch, TypeScript, Swift and Kotlin hard-concrete candidates exist for offline mathematical evaluation. They contain no approved trained weights, patient records, model permission, hosted prediction endpoint, Core ML/LiteRT deployment or release sign-off. L0 regularisation is neither automatic interpretability nor a promise of smaller executable size or lower latency. Source and device-specific benchmarking, clinical exclusions, temporal holdouts, rights and governance review are mandatory before any separate deployment proposal. See `docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md`.
