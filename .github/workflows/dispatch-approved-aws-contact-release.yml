@@ -47,7 +47,7 @@ jobs:
                   private_only=false
                 fi
                 ;;
-              scripts/aws/contact-release-routing.test.mjs|.github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/check-syntax.mjs)
+              scripts/aws/contact-release-routing.test.mjs|.github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml)
                 ;;
               *)
                 private_only=false

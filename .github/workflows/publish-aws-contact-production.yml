@@ -176,7 +176,7 @@ jobs:
                   private_only=false
                 fi
                 ;;
-              .github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/aws/contact-release-routing.test.mjs|scripts/check-syntax.mjs)
+              .github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/aws/contact-release-routing.test.mjs)
                 # A publisher policy-only update must not be silently skipped.
                 ;;
               *)

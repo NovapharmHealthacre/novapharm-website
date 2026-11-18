@@ -395,7 +395,7 @@ test("global secondary-source-only merges are excluded from AWS contact dispatch
   }
 });
 
-test("CLIP Expo mobile research-only source merges cannot publish AWS contact", () => {
+test("CLIP research source changes keep shared syntax tooling on the public release path", () => {
   const privateChanges = [
     "native/novapharm-intelligence-mobile/clip-research.ts",
     "native/novapharm-intelligence-mobile/package.json",
@@ -408,8 +408,7 @@ test("CLIP Expo mobile research-only source merges cannot publish AWS contact", 
   const neutral = [
     ".github/workflows/dispatch-approved-aws-contact-release.yml",
     ".github/workflows/publish-aws-contact-production.yml",
-    "scripts/aws/contact-release-routing.test.mjs",
-    "scripts/check-syntax.mjs"
+    "scripts/aws/contact-release-routing.test.mjs"
   ];
   const publicPaths = [
     "assets/js/contact-production.js",
@@ -431,11 +430,11 @@ test("CLIP Expo mobile research-only source merges cannot publish AWS contact", 
     for (const path of privateChanges) {
       assert.equal(isPrivate(path), true, workflow + " missing source-only protection: " + path);
     }
-    assert.ok(source.includes("scripts/check-syntax.mjs)"),
-      workflow + " must preserve general syntax test as neutral source work");
+    assert.equal(isPrivate("scripts/check-syntax.mjs"), false, workflow + " must not mark shared syntax validation as private");
     const isSafePrivateOnly = changed => changed.some(isPrivate) &&
       changed.every(path => isPrivate(path) || neutral.includes(path));
     assert.equal(isSafePrivateOnly([...privateChanges, ...neutral]), true);
+    assert.equal(isSafePrivateOnly([...privateChanges, "scripts/check-syntax.mjs"]), false, "shared validation changes must follow normal public-release gating");
     assert.equal(isSafePrivateOnly(neutral), false);
     for (const path of publicPaths) {
       assert.equal(isPrivate(path), false, workflow + " must not classify public release as research-only");
