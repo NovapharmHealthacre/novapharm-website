@@ -10,6 +10,7 @@
  * medicine is the cross-workspace integration prerequisite in issue #497.
  */
 import { capabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
 export const workspaceCapabilityDependencies = Object.freeze({
   "medicine-search": Object.freeze(["medicine_knowledge_graph", "data_operations_governance", "enterprise_operations"]),
@@ -131,6 +132,7 @@ export function assessIntelligence22Workspaces({
       catalogueState: workspace.state,
       priority: pilotSet.has(workspace.slug) ? "P0_first_accepted_medicine" : "P1_after_shared_pilot",
       capabilityDependencies: Object.freeze([...gates]),
+      scientificResearch: SCIENCE_READINESS_BOUNDARY,
       missingChecks: Object.freeze(blockers),
       // These are IMPLEMENTATION states, not claims of released function.
       implementationState: blockers.length
