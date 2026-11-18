@@ -56,6 +56,7 @@ jobs:
 
       - name: Verify responsive repairs and content-bound CSS publication
         run: |
+          node --test scripts/test-apple-hig-census.mjs
           node --test scripts/test-contact-focus-contrast.mjs
           node --test scripts/test-public-motion-preferences.mjs
           node --test scripts/test-corporate-responsive-repairs.mjs
