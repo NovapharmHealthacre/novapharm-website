@@ -20,11 +20,12 @@ test("the private-only merge guard includes the Nova ML probe and its contract w
   assert.match(guard, /if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
 });
 
-test("probe contains the exact four canonical Nova ML protected route slugs", () => {
+test("four released Nova ML ingress routes remain monitored; the fifth research route is gated but not live", () => {
   const src = readFileSync(new URL("../apps/portal/data/nova-ml-modules.ts", import.meta.url), "utf8");
   const slugs = [...src.matchAll(/slug: "(nova-[a-z-]+)"/g)].map((match) => match[1]);
   assert.equal(novaMlIngressOrigin, "https://intelligence.novapharmhealthcare.com");
-  assert.deepEqual(novaMlPrivateRoutes, slugs.map((slug) => "/portal/executive-platform/nova-ml/" + slug + "/"));
+  assert.deepEqual(slugs, ["nova-ml-studio", "nova-core-runtime", "nova-device-intelligence", "nova-generative-assist", "nova-model-microscope"]);
+  assert.deepEqual(novaMlPrivateRoutes, slugs.slice(0, 4).map((slug) => "/portal/executive-platform/nova-ml/" + slug + "/"));
   assert.equal(novaMlPrivateRoutes.length, 4);
   assert.equal(new Set(novaMlPrivateRoutes).size, 4);
 });
