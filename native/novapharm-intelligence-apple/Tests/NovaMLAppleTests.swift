@@ -12,6 +12,24 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testCLIPSourceUrlsEnforcePublicHttpsAttribution() throws {
+        for text in [
+            "https://127.0.0.1/private",
+            "https://[::1]/private",
+            "https://warehouse.internal/secret",
+            "https://docs.local/secret",
+            "https://attacker@novapharmhealthcare.com/public",
+            "https://novapharmhealthcare.com:8443/public",
+            "https://novapharmhealthcare.com/public#fragment",
+            "http://novapharmhealthcare.com/public"
+        ] {
+            XCTAssertFalse(NovaClipVisualSearch.sourceAllowed(URL(string: text)!), text)
+        }
+        XCTAssertTrue(NovaClipVisualSearch.sourceAllowed(
+            URL(string: "https://novapharmhealthcare.com/products/")!
+        ))
+    }
+
     func testCoreMLRejectsMissingModelApprovalBeforeLoadingBundle() throws {
         let permit = NovaModelPermit(
             modelIdentifier: "",
