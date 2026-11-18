@@ -44,3 +44,13 @@
 .methodFooter a:focus-visible { outline: 3px solid #e3120b; outline-offset: 3px; border-radius: 5px; }
 .methodFooter span { color: #6e6e73; font-size: 11px; line-height: 1.5; }
 @media (max-width: 740px) { .methodsGrid { grid-template-columns: minmax(0, 1fr); } .methodCard { padding: 18px; } }
+
+.lifecycle { margin-top: 30px; padding: 26px; border: 1px solid #d2d2d7; background: #fff; border-radius: 15px; }
+.lifecycle h2 { margin: 0; font-size: clamp(22px, 2.4vw, 28px); line-height: 1.25; letter-spacing: -.02em; }
+.lifecycle > p { color: #515154; font-size: 13px; line-height: 1.6; max-width: 780px; }
+.lifecycleSteps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 19px 0 0; list-style: none; counter-reset: stage; }
+.lifecycleSteps li { min-width: 0; counter-increment: stage; border: 1px solid #e5e5e8; background: #f5f5f7; border-radius: 9px; padding: 15px; display: grid; gap: 6px; }
+.lifecycleSteps li::before { content: counter(stage, decimal-leading-zero); color: #e3120b; font-size: 11px; font-weight: 700; }
+.lifecycleSteps strong { text-transform: capitalize; font-size: 13px; line-height: 1.5; }
+.lifecycleSteps span { color: #595961; font-size: 12px; line-height: 1.5; }
+@media (max-width: 740px) { .lifecycle { padding: 18px; } .lifecycleSteps { grid-template-columns: minmax(0, 1fr); } }
