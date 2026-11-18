@@ -12,7 +12,7 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
 
-The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, and a **virtualized**, searchable and region-filtered global source list. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
+The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, a **virtualized**, searchable and region-filtered global source list, and a shared **Inspect** tab describing the five-stage, non-operational Model Microscope research lifecycle. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
 ## Release blockers
 
@@ -26,3 +26,7 @@ The current navigation is deliberately a research preview: an Overview with six 
 Native/novapharm-intelligence-apple remains a separate Swift Package research prototype. It is not embedded automatically into this Expo app.
 
 Brand tokens follow NovaPharm's light-first white/graphite interface, restrained #E3120B accent and native platform fonts without bundling Apple font binaries.
+
+## Model Microscope research preview
+
+The Inspect tab shares `modelMicroscopeInspectionStages` from `apps/portal/data/nova-ml-modules.ts` with the protected web Intelligence research view. It is not a native inferencing runtime, does not embed an OpenAI Microscope browser, and does not communicate with model internals. The server-side `src/core/ai/model-microscope.mjs` contract is not imported into the client, preventing Node-only authorization and evidence logic from entering mobile bundles. No live model selection or evidence visualisation is advertised.
