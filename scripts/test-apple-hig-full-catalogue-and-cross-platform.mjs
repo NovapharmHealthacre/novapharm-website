@@ -67,3 +67,61 @@ test("offline iOS/Android research form improves readable text and screen-reader
   assert.match(mobile, /does not verify medicine identity/);
   assert.doesNotMatch(mobile, /fetch\(|Authorization:|client_secret|access_token/);
 });
+
+
+const designDNA = read("docs/design/apple-hig-three-platform-adoption-20261118.md");
+
+test("each of the 172 official HIG links keeps the owner's exact section-wise source metadata", () => {
+  assert.equal(tracker.meta.userProvidedIndexFile, "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.csv");
+  assert.equal(tracker.meta.sourceAttachmentBytesAudited, false);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+  assert.equal(new Set(tracker.topics.map(item => item.sourceRowIndex)).size, 172);
+  for (const [index, item] of tracker.topics.entries()) {
+    assert.equal(item.sourceRowIndex, index, "User CSV row order must not drift: " + item.title);
+    assert.ok(["Category", "Guideline"].includes(item.sourceType), "Missing CSV source type: " + item.title);
+    assert.equal(typeof item.sourceDescription, "string");
+    assert.ok(item.sourceDescription.trim(), "Missing exact owner-provided description: " + item.title);
+    assert.equal(typeof item.sourceRequestedPlatforms, "string");
+    assert.ok(item.sourceRequestedPlatforms.trim(), "Missing owner platform scope: " + item.title);
+    assert.match(item.markdown, /^https:\/\/developer\.apple\.com\/design\/human-interface-guidelines\/[a-z0-9-]+\.md$/);
+    if (item.guidelineReview === "reviewed") {
+      assert.ok(Array.isArray(item.guidelineReviewEvidence) && item.guidelineReviewEvidence.length > 0,
+        "Reviewed topics require article-level source evidence: " + item.title);
+    }
+  }
+});
+
+test("NovaPharm design DNA includes every original Apple archive and all three source-index files", () => {
+  const archives = [
+    "Bezel-MacBook-Air-M5.dmg", "Core_AI_Debugger(1).dmg",
+    "Icon_Composer_27.3_beta(1).dmg", "Icons-Siri-AI(2).dmg",
+    "iOS-27-Icon-Templates-Photoshop-Illustrator(2).dmg",
+    "Logo-Sign-in-with-Apple(1).dmg", "NY(2).dmg",
+    "SF-Arabic(2).dmg", "SF-Armenian(2).dmg", "SF-Georgian(2).dmg",
+    "SF-Compact(1).dmg", "SF-Hebrew(2).dmg", "SF-Pro(1).dmg",
+    "SF-Mono(1).dmg", "SF-Symbols-27(1).dmg",
+    "Download-on-the-App-Store(1).zip", "Download-on-the-Mac-App-Store(1).zip",
+    "AnimatingViewsAndTransitions.zip",
+    "apple-ios-27-ui-kit_assets_2026-10-27_v32(1).zip",
+    "ComposingCustomLayoutsWithSwiftUI(1).zip", "IMDF.zip"
+  ];
+  const indices = [
+    "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.csv",
+    "Apple_HIG_Sectionwise_Guide_2026-11-18.md",
+    "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx"
+  ];
+  assert.equal(archives.length, 21);
+  assert.equal(indices.length, 3);
+  for (const name of [...archives, ...indices]) {
+    assert.ok(designDNA.includes("| \`" + name + "\` |"),
+      "Missing user-supplied attachment metadata: " + name);
+  }
+  assert.match(designDNA, /not opened, mounted, executed, unpacked or licensed/);
+  assert.match(designDNA, /no map API credentials/i);
+  assert.match(designDNA, /48×48 dp/);
+  assert.match(designDNA, /44×44 pt/);
+  assert.match(designDNA, /MapKit JS/);
+  assert.match(designDNA, /not evidence that every app is already compliant/);
+  assert.doesNotMatch(designDNA, /all 172 (?:guidelines|articles) (?:have been )?reviewed/i);
+});
