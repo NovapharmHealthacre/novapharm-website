@@ -16,6 +16,9 @@ export const MICROSCOPE_SIGNED_RECEIPT_FIELDS = Object.freeze([
 const digest = /^[a-f0-9]{64}$/u;
 const identifier = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/u;
 const dateUtc = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
+const validId = value => typeof value === "string" && identifier.test(value);
+const canonicalUtc = value => typeof value === "string" && dateUtc.test(value) &&
+  Number.isFinite(Date.parse(value)) && new Date(Date.parse(value)).toISOString() === value;
 function deny() { throw new Error("Model evidence denied."); }
 const own = (object, key) => Object.hasOwn(object, key);
 function fieldsExact(payload) {
@@ -46,18 +49,17 @@ export function verifySignedMicroscopeEvidence({ envelope, expected, trustedPubl
       typeof trustedPublicKeys !== "object" || !Number.isFinite(now)) deny();
   const p = envelope.payload;
   if (p.schemaVersion !== "novapharm.model-microscope.signed-evidence.v1" ||
-      !["keyId","issuerId","reviewerId","rightsApproverId"].every(k => identifier.test(p[k])) ||
+      !["keyId","issuerId","reviewerId","rightsApproverId"].every(k => validId(p[k])) ||
       p.reviewerId === p.rightsApproverId || p.reviewerId === p.actorId ||
       p.rightsApproverId === p.actorId ||
       [...SCOPE,...BINDINGS].some(k => p[k] !== expected[k]) ||
-      SCOPE.some(k => !identifier.test(p[k])) ||
+      SCOPE.some(k => !validId(p[k])) ||
       BINDINGS.filter(k=>k.endsWith("Sha256")).some(k => !digest.test(p[k])) ||
-      BINDINGS.filter(k=>!k.endsWith("Sha256")).some(k => !identifier.test(p[k])) ||
+      BINDINGS.filter(k=>!k.endsWith("Sha256")).some(k => !validId(p[k])) ||
       p.reviewState !== "independently_verified" ||
       p.modelRightsApproved !== true || p.datasetRightsApproved !== true ||
       p.patientDataExcluded !== true || p.separationOfDutiesVerified !== true ||
-      typeof p.issuedAt !== "string" || typeof p.expiresAt !== "string" ||
-      !dateUtc.test(p.issuedAt) || !dateUtc.test(p.expiresAt)) deny();
+      !canonicalUtc(p.issuedAt) || !canonicalUtc(p.expiresAt)) deny();
   const issuedAt = Date.parse(p.issuedAt), expiresAt = Date.parse(p.expiresAt);
   if (!Number.isFinite(issuedAt) || !Number.isFinite(expiresAt) ||
       issuedAt > now || expiresAt <= now || expiresAt <= issuedAt ||

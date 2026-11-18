@@ -92,3 +92,7 @@ The dedicated tests verify reproducibility, finite-difference gradients, invalid
 ### Cross-platform reference interaction
 
 The existing protected web research view and the private iOS/Android Expo source preview can now run the **same first-party synthetic toy-network demonstration** on user initiation, displaying a bounded 4×4 grayscale feature-maximization grid and two synthetic activation values. Neither runtime sends data off-device, fetches protected records or claims production model introspection. The shared mathematical reference is not wired into the independent, rights-gated protected model-artifact reader. Actual pharmaceutical model inspection still requires a separately admitted model and server-backed release.
+
+### Strict identity and UTC receipt parsing
+
+The governed reader and Ed25519 verifier reject noncanonical UTC dates (including normalized impossible calendar dates), non-string identity fields and malformed scope values. Synthetic and proof tests exercise these failures without obtaining any infrastructure privileges. A valid test signature is not itself an authority to grant pharmaceutical rights or to publish interpretations.

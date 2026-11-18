@@ -47,7 +47,8 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
       grant.purpose !== MODEL_MICROSCOPE_PURPOSE || grant.channel !== "protected_backend" ||
       !strictText(grant.grantId, 128) || typeof grant.expiresAt !== "string" ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(grant.expiresAt) ||
-      !Number.isFinite(Date.parse(grant.expiresAt)) || Date.parse(grant.expiresAt) <= now ||
+      !Number.isFinite(Date.parse(grant.expiresAt)) || new Date(Date.parse(grant.expiresAt)).toISOString() !== grant.expiresAt ||
+      Date.parse(grant.expiresAt) <= now ||
       Date.parse(grant.expiresAt) - now > 5 * 60 * 1000) {
     fail("missing, mismatched or expired authorisation");
   }

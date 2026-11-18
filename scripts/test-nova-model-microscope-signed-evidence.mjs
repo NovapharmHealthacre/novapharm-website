@@ -56,6 +56,9 @@ test("signed receipts cannot approve themselves or replay after expiry",()=>{
     {issuedAt:"2026-11-18T08:02:00.000Z"},
     {expiresAt:"2026-11-18T10:00:00.000Z"},
     {provenanceSha256:"f".repeat(64)},
+    {reviewerId:17},{issuerId:19},{rightsApproverId:true},{datasetRef:17},
+    {issuedAt:"2026-11-18T07:59:00.000+00:00"},
+    {expiresAt:"2026-11-31T08:03:00.000Z"},
     {unexpected:"injected"}]) {
     const p={...payload,...override};
     assert.throws(()=>run(envelope(p)),/denied/);

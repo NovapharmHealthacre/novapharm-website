@@ -48,7 +48,8 @@ test("fails closed before reading when actor/tenant/model/feature rights are mis
     { ...authorised, channel: "mobile_client" },
     { ...authorised, expiresAt: "2026-11-18T07:00:00.000Z" },
     { ...authorised, expiresAt: "2026-11-18T09:00:00.000Z" },
-    { ...authorised, expiresAt: "2026-11-18T08:04:00+00:00" }]) {
+    { ...authorised, expiresAt: "2026-11-18T08:04:00+00:00" },
+    { ...authorised, expiresAt: "2026-11-31T08:04:00.000Z" }]) {
     const d = deps(grant);
     await assert.rejects(inspect({ request: scope, now, ...d }), /denied/);
     assert.equal(d.loads, 0);
