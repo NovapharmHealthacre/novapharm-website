@@ -24,7 +24,9 @@
     "sourceMetadataAudit": "172 of 172 CSV rows matched the current register by official URL, title, section, subsection, priority and Markdown link. Description/platform/type values are owner-supplied classifications, not independently verified Apple guidance.",
     "sourceAttachmentBytesAudited": false,
     "allGuidelinePagesFullyReviewed": false,
-    "allPlatformsProductionVerified": false
+    "allPlatformsProductionVerified": false,
+    "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
+    "platformsAssessed": 0
   },
   "topics": [
     {
@@ -43,7 +45,21 @@
       "sourceRowIndex": 0,
       "sourceType": "Category",
       "sourceDescription": "Overview of design guidance by Apple platform",
-      "sourceRequestedPlatforms": "iOS, Web, macOS"
+      "sourceRequestedPlatforms": "iOS, Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -61,7 +77,21 @@
       "sourceRowIndex": 1,
       "sourceType": "Guideline",
       "sourceDescription": "Purpose, agency, responsibility, familiarity, flexibility and clarity",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -79,7 +109,21 @@
       "sourceRowIndex": 2,
       "sourceType": "Guideline",
       "sourceDescription": "iPhone ergonomics, interaction and native design patterns",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -97,7 +141,21 @@
       "sourceRowIndex": 3,
       "sourceType": "Guideline",
       "sourceDescription": "Tablet layout, multitasking and input",
-      "sourceRequestedPlatforms": "iPadOS"
+      "sourceRequestedPlatforms": "iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -115,7 +173,21 @@
       "sourceRowIndex": 4,
       "sourceType": "Guideline",
       "sourceDescription": "Desktop windows, menus and pointer workflows",
-      "sourceRequestedPlatforms": "macOS, Web"
+      "sourceRequestedPlatforms": "macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -133,7 +205,21 @@
       "sourceRowIndex": 5,
       "sourceType": "Guideline",
       "sourceDescription": "TV display, focus and remote-based navigation",
-      "sourceRequestedPlatforms": "tvOS"
+      "sourceRequestedPlatforms": "tvOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -151,7 +237,21 @@
       "sourceRowIndex": 6,
       "sourceType": "Guideline",
       "sourceDescription": "Spatial content and immersive interaction",
-      "sourceRequestedPlatforms": "visionOS"
+      "sourceRequestedPlatforms": "visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -169,7 +269,21 @@
       "sourceRowIndex": 7,
       "sourceType": "Guideline",
       "sourceDescription": "Glanceable wearable experiences",
-      "sourceRequestedPlatforms": "watchOS"
+      "sourceRequestedPlatforms": "watchOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -187,7 +301,21 @@
       "sourceRowIndex": 8,
       "sourceType": "Guideline",
       "sourceDescription": "Game-focused design across Apple devices",
-      "sourceRequestedPlatforms": "Games"
+      "sourceRequestedPlatforms": "Games",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Getting started",
@@ -205,7 +333,21 @@
       "sourceRowIndex": 9,
       "sourceType": "Guideline",
       "sourceDescription": "Adapting an experience between paired phone displays",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -223,7 +365,21 @@
       "sourceRowIndex": 10,
       "sourceType": "Category",
       "sourceDescription": "Visual and interaction fundamentals across Apple platforms",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -241,7 +397,21 @@
       "sourceRowIndex": 11,
       "sourceType": "Guideline",
       "sourceDescription": "Readable, operable experiences across different abilities",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -259,7 +429,21 @@
       "sourceRowIndex": 12,
       "sourceType": "Guideline",
       "sourceDescription": "Platform app icon shapes, layers and production",
-      "sourceRequestedPlatforms": "iOS, Android, macOS"
+      "sourceRequestedPlatforms": "iOS, Android, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -277,7 +461,21 @@
       "sourceRowIndex": 13,
       "sourceType": "Guideline",
       "sourceDescription": "Express identity while preserving native familiarity",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -295,7 +493,21 @@
       "sourceRowIndex": 14,
       "sourceType": "Guideline",
       "sourceDescription": "Semantic colors, contrast, brand accents and appearance",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -313,7 +525,21 @@
       "sourceRowIndex": 15,
       "sourceType": "Guideline",
       "sourceDescription": "Adapt interface for dark system appearance",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -331,7 +557,21 @@
       "sourceRowIndex": 16,
       "sourceType": "Guideline",
       "sourceDescription": "Clear, consistent graphic symbols and meaning",
-      "sourceRequestedPlatforms": "iOS, macOS, Web"
+      "sourceRequestedPlatforms": "iOS, macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -349,7 +589,21 @@
       "sourceRowIndex": 17,
       "sourceType": "Guideline",
       "sourceDescription": "Image scaling, resolution and display treatments",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -367,7 +621,21 @@
       "sourceRowIndex": 18,
       "sourceType": "Guideline",
       "sourceDescription": "Immersive content in visionOS",
-      "sourceRequestedPlatforms": "visionOS"
+      "sourceRequestedPlatforms": "visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -385,7 +653,21 @@
       "sourceRowIndex": 19,
       "sourceType": "Guideline",
       "sourceDescription": "Respectful, understandable and inclusive experience design",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -403,7 +685,21 @@
       "sourceRowIndex": 20,
       "sourceType": "Guideline",
       "sourceDescription": "Responsive hierarchy, spacing, safe areas and adaptable geometry",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -421,7 +717,21 @@
       "sourceRowIndex": 21,
       "sourceType": "Guideline",
       "sourceDescription": "Foreground/background hierarchy including Liquid Glass",
-      "sourceRequestedPlatforms": "iOS, macOS, Web"
+      "sourceRequestedPlatforms": "iOS, macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -439,7 +749,21 @@
       "sourceRowIndex": 22,
       "sourceType": "Guideline",
       "sourceDescription": "Animation that reinforces meaning and feedback",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -457,7 +781,21 @@
       "sourceRowIndex": 23,
       "sourceType": "Guideline",
       "sourceDescription": "Data permission transparency and private-by-design experiences",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -475,7 +813,21 @@
       "sourceRowIndex": 24,
       "sourceType": "Guideline",
       "sourceDescription": "Arabic and Hebrew directional layout and writing",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -493,7 +845,21 @@
       "sourceRowIndex": 25,
       "sourceType": "Guideline",
       "sourceDescription": "System symbol sizing, weight, rendering and availability",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -511,7 +877,21 @@
       "sourceRowIndex": 26,
       "sourceType": "Guideline",
       "sourceDescription": "Positioning elements in three-dimensional space",
-      "sourceRequestedPlatforms": "visionOS"
+      "sourceRequestedPlatforms": "visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -529,7 +909,21 @@
       "sourceRowIndex": 27,
       "sourceType": "Guideline",
       "sourceDescription": "Text sizing, hierarchy, system fonts and Dynamic Type",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Foundations",
@@ -547,7 +941,21 @@
       "sourceRowIndex": 28,
       "sourceType": "Guideline",
       "sourceDescription": "Plain-language labels, instructions, errors and tone",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -565,7 +973,21 @@
       "sourceRowIndex": 29,
       "sourceType": "Category",
       "sourceDescription": "Common user tasks, experiences and interaction conventions",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -583,7 +1005,21 @@
       "sourceRowIndex": 30,
       "sourceType": "Guideline",
       "sourceDescription": "Make quantitative information clear and readable",
-      "sourceRequestedPlatforms": "Intelligence, Web"
+      "sourceRequestedPlatforms": "Intelligence, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -601,7 +1037,21 @@
       "sourceRowIndex": 31,
       "sourceType": "Guideline",
       "sourceDescription": "Sharing content and collaborative workflows",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -619,7 +1069,21 @@
       "sourceRowIndex": 32,
       "sourceType": "Guideline",
       "sourceDescription": "Moving or duplicating selected items by dragging",
-      "sourceRequestedPlatforms": "Web, iPadOS"
+      "sourceRequestedPlatforms": "Web, iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -637,7 +1101,21 @@
       "sourceRowIndex": 33,
       "sourceType": "Guideline",
       "sourceDescription": "Form entry, validation and low-friction input",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -655,7 +1133,21 @@
       "sourceRowIndex": 34,
       "sourceType": "Guideline",
       "sourceDescription": "Show action outcomes, progress and recoverable problems",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -673,7 +1165,21 @@
       "sourceRowIndex": 35,
       "sourceType": "Guideline",
       "sourceDescription": "Manage documents and files in an app",
-      "sourceRequestedPlatforms": "Web, iOS"
+      "sourceRequestedPlatforms": "Web, iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -691,7 +1197,21 @@
       "sourceRowIndex": 36,
       "sourceType": "Guideline",
       "sourceDescription": "Distraction-reducing fullscreen modes",
-      "sourceRequestedPlatforms": "macOS, iOS"
+      "sourceRequestedPlatforms": "macOS, iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -709,7 +1229,21 @@
       "sourceRowIndex": 37,
       "sourceType": "Guideline",
       "sourceDescription": "Responsive app startup and first impressions",
-      "sourceRequestedPlatforms": "iOS, Android, Web"
+      "sourceRequestedPlatforms": "iOS, Android, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -727,7 +1261,21 @@
       "sourceRowIndex": 38,
       "sourceType": "Guideline",
       "sourceDescription": "Real-time broadcast and live-media viewing",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -745,7 +1293,21 @@
       "sourceRowIndex": 39,
       "sourceType": "Guideline",
       "sourceDescription": "Communicate asynchronous loading without jarring stalls",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -763,7 +1325,21 @@
       "sourceRowIndex": 40,
       "sourceType": "Guideline",
       "sourceDescription": "Account creation, profile management and sign-in",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -781,7 +1357,21 @@
       "sourceRowIndex": 41,
       "sourceType": "Guideline",
       "sourceDescription": "Permission, relevance and notification preferences",
-      "sourceRequestedPlatforms": "iOS, Android"
+      "sourceRequestedPlatforms": "iOS, Android",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -799,7 +1389,21 @@
       "sourceRowIndex": 42,
       "sourceType": "Guideline",
       "sourceDescription": "Interruptive contexts that require a decision",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -817,7 +1421,21 @@
       "sourceRowIndex": 43,
       "sourceType": "Guideline",
       "sourceDescription": "Switching and working across multiple activities",
-      "sourceRequestedPlatforms": "iPadOS, macOS"
+      "sourceRequestedPlatforms": "iPadOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -835,7 +1453,21 @@
       "sourceRowIndex": 44,
       "sourceType": "Guideline",
       "sourceDescription": "Contextual explanations and support",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -853,7 +1485,21 @@
       "sourceRowIndex": 45,
       "sourceType": "Guideline",
       "sourceDescription": "First-run orientation and feature discovery",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -871,7 +1517,21 @@
       "sourceRowIndex": 46,
       "sourceType": "Guideline",
       "sourceDescription": "Audio sessions, interruptions and playback",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -889,7 +1549,21 @@
       "sourceRowIndex": 47,
       "sourceType": "Guideline",
       "sourceDescription": "Physical tactile feedback to enhance interaction",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -907,7 +1581,21 @@
       "sourceRowIndex": 48,
       "sourceType": "Guideline",
       "sourceDescription": "Video playback expectations and controls",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -925,7 +1613,21 @@
       "sourceRowIndex": 49,
       "sourceType": "Guideline",
       "sourceDescription": "Printing documents through system facilities",
-      "sourceRequestedPlatforms": "Web, iOS"
+      "sourceRequestedPlatforms": "Web, iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -943,7 +1645,21 @@
       "sourceRowIndex": 50,
       "sourceType": "Guideline",
       "sourceDescription": "Ratings prompts and review interactions",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -961,7 +1677,21 @@
       "sourceRowIndex": 51,
       "sourceType": "Guideline",
       "sourceDescription": "Content discovery, search navigation and results",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -979,7 +1709,21 @@
       "sourceRowIndex": 52,
       "sourceType": "Guideline",
       "sourceDescription": "Personalisation, preferences and configuration",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -997,7 +1741,21 @@
       "sourceRowIndex": 53,
       "sourceType": "Guideline",
       "sourceDescription": "Recover or reverse actions without data loss",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Patterns",
@@ -1015,7 +1773,21 @@
       "sourceRowIndex": 54,
       "sourceType": "Guideline",
       "sourceDescription": "Workout progress and fitness interactions",
-      "sourceRequestedPlatforms": "Health"
+      "sourceRequestedPlatforms": "Health",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1033,7 +1805,21 @@
       "sourceRowIndex": 55,
       "sourceType": "Category",
       "sourceDescription": "Apple UI component families grouped by purpose",
-      "sourceRequestedPlatforms": "iOS, macOS, Web"
+      "sourceRequestedPlatforms": "iOS, macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1051,7 +1837,21 @@
       "sourceRowIndex": 56,
       "sourceType": "Category",
       "sourceDescription": "Collection of components for displaying content",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1069,7 +1869,21 @@
       "sourceRowIndex": 57,
       "sourceType": "Guideline",
       "sourceDescription": "Chart component presentation and labeling",
-      "sourceRequestedPlatforms": "Intelligence, Web"
+      "sourceRequestedPlatforms": "Intelligence, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1087,7 +1901,21 @@
       "sourceRowIndex": 58,
       "sourceType": "Guideline",
       "sourceDescription": "Display still or animated images",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1105,7 +1933,21 @@
       "sourceRowIndex": 59,
       "sourceType": "Guideline",
       "sourceDescription": "View and edit multiline formatted text",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1123,7 +1965,21 @@
       "sourceRowIndex": 60,
       "sourceType": "Guideline",
       "sourceDescription": "Display embedded web content inside an app",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1141,7 +1997,21 @@
       "sourceRowIndex": 61,
       "sourceType": "Category",
       "sourceDescription": "Grouping, arranging and structuring information",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1159,7 +2029,21 @@
       "sourceRowIndex": 62,
       "sourceType": "Guideline",
       "sourceDescription": "Group related content in a visual container",
-      "sourceRequestedPlatforms": "Web, macOS"
+      "sourceRequestedPlatforms": "Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1177,7 +2061,21 @@
       "sourceRowIndex": 63,
       "sourceType": "Guideline",
       "sourceDescription": "Arrange ordered content in a customizable visual grid",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1195,7 +2093,21 @@
       "sourceRowIndex": 64,
       "sourceType": "Guideline",
       "sourceDescription": "Navigate hierarchies with adjacent columns",
-      "sourceRequestedPlatforms": "macOS, Web"
+      "sourceRequestedPlatforms": "macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1213,7 +2125,21 @@
       "sourceRowIndex": 65,
       "sourceType": "Guideline",
       "sourceDescription": "Reveal or hide extra details on demand",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1231,7 +2157,21 @@
       "sourceRowIndex": 66,
       "sourceType": "Guideline",
       "sourceDescription": "Readable static copy for fields and components",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1249,7 +2189,21 @@
       "sourceRowIndex": 67,
       "sourceType": "Guideline",
       "sourceDescription": "Present repeated or tabular records",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1267,7 +2221,21 @@
       "sourceRowIndex": 68,
       "sourceType": "Guideline",
       "sourceDescription": "Group views into one interactive unit",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1285,7 +2253,21 @@
       "sourceRowIndex": 69,
       "sourceType": "Guideline",
       "sourceDescription": "Expand and browse hierarchical rows",
-      "sourceRequestedPlatforms": "Web, macOS"
+      "sourceRequestedPlatforms": "Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1303,7 +2285,21 @@
       "sourceRowIndex": 70,
       "sourceType": "Guideline",
       "sourceDescription": "Multi-pane workspaces and master-detail views",
-      "sourceRequestedPlatforms": "Web, iPadOS, macOS"
+      "sourceRequestedPlatforms": "Web, iPadOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1321,7 +2317,21 @@
       "sourceRowIndex": 71,
       "sourceType": "Guideline",
       "sourceDescription": "Switch between mutually exclusive content panes",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1339,7 +2349,21 @@
       "sourceRowIndex": 72,
       "sourceType": "Category",
       "sourceDescription": "Actions, menus and commands",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1357,7 +2381,21 @@
       "sourceRowIndex": 73,
       "sourceType": "Guideline",
       "sourceDescription": "Native share sheet and available activities",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1375,7 +2413,21 @@
       "sourceRowIndex": 74,
       "sourceType": "Guideline",
       "sourceDescription": "Actions with clear labels and interaction targets",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1393,7 +2445,21 @@
       "sourceRowIndex": 75,
       "sourceType": "Guideline",
       "sourceDescription": "Item-specific commands without interface clutter",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1411,7 +2477,21 @@
       "sourceRowIndex": 76,
       "sourceType": "Guideline",
       "sourceDescription": "macOS Dock quick-access actions",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1429,7 +2509,21 @@
       "sourceRowIndex": 77,
       "sourceType": "Guideline",
       "sourceDescription": "Contextual editing commands and operations",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1447,7 +2541,21 @@
       "sourceRowIndex": 78,
       "sourceType": "Guideline",
       "sourceDescription": "App commands from an iPhone Home Screen",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1465,7 +2573,21 @@
       "sourceRowIndex": 79,
       "sourceType": "Guideline",
       "sourceDescription": "Disclose groups of actions and options",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1483,7 +2605,21 @@
       "sourceRowIndex": 80,
       "sourceType": "Guideline",
       "sourceDescription": "VisionOS accessory controls outside the main window",
-      "sourceRequestedPlatforms": "visionOS"
+      "sourceRequestedPlatforms": "visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1501,7 +2637,21 @@
       "sourceRowIndex": 81,
       "sourceType": "Guideline",
       "sourceDescription": "Single-choice selection from a pop-up menu",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1519,7 +2669,21 @@
       "sourceRowIndex": 82,
       "sourceType": "Guideline",
       "sourceDescription": "Show related actions directly from a control",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1537,7 +2701,21 @@
       "sourceRowIndex": 83,
       "sourceType": "Guideline",
       "sourceDescription": "Desktop and tablet top-level menus",
-      "sourceRequestedPlatforms": "macOS, iPadOS"
+      "sourceRequestedPlatforms": "macOS, iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1555,7 +2733,21 @@
       "sourceRowIndex": 84,
       "sourceType": "Guideline",
       "sourceDescription": "Frequently used commands and navigation",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1573,7 +2765,21 @@
       "sourceRowIndex": 85,
       "sourceType": "Category",
       "sourceDescription": "Finding and moving between app sections",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1591,7 +2797,21 @@
       "sourceRowIndex": 86,
       "sourceType": "Guideline",
       "sourceDescription": "Show selected file or folder path",
-      "sourceRequestedPlatforms": "macOS, Web"
+      "sourceRequestedPlatforms": "macOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1609,7 +2829,21 @@
       "sourceRowIndex": 87,
       "sourceType": "Guideline",
       "sourceDescription": "Search input for a collection of content",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1627,7 +2861,21 @@
       "sourceRowIndex": 88,
       "sourceType": "Guideline",
       "sourceDescription": "Navigate top-level content areas and collections",
-      "sourceRequestedPlatforms": "Web, iPadOS, macOS"
+      "sourceRequestedPlatforms": "Web, iPadOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1645,7 +2893,21 @@
       "sourceRowIndex": 89,
       "sourceType": "Guideline",
       "sourceDescription": "Switch between top-level app destinations",
-      "sourceRequestedPlatforms": "iOS, Android"
+      "sourceRequestedPlatforms": "iOS, Android",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1663,7 +2925,21 @@
       "sourceRowIndex": 90,
       "sourceType": "Guideline",
       "sourceDescription": "Manipulable discrete text tokens in an input",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1681,7 +2957,21 @@
       "sourceRowIndex": 91,
       "sourceType": "Category",
       "sourceDescription": "Display alerts, sheets and windows",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1699,7 +2989,21 @@
       "sourceRowIndex": 92,
       "sourceType": "Guideline",
       "sourceDescription": "Present a contextual list of action choices",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1717,7 +3021,21 @@
       "sourceRowIndex": 93,
       "sourceType": "Guideline",
       "sourceDescription": "Communicate urgent or important information",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1735,7 +3053,21 @@
       "sourceRowIndex": 94,
       "sourceType": "Guideline",
       "sourceDescription": "Indicate progress through horizontal pages",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1753,7 +3085,21 @@
       "sourceRowIndex": 95,
       "sourceType": "Guideline",
       "sourceDescription": "Floating auxiliary windows and controls",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1771,7 +3117,21 @@
       "sourceRowIndex": 96,
       "sourceType": "Guideline",
       "sourceDescription": "Temporary contextual detail and controls",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1789,7 +3149,21 @@
       "sourceRowIndex": 97,
       "sourceType": "Guideline",
       "sourceDescription": "Move content larger than its viewport",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1807,7 +3181,21 @@
       "sourceRowIndex": 98,
       "sourceType": "Guideline",
       "sourceDescription": "Complete a task within a focused temporary view",
-      "sourceRequestedPlatforms": "iOS, iPadOS"
+      "sourceRequestedPlatforms": "iOS, iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1825,7 +3213,21 @@
       "sourceRowIndex": 99,
       "sourceType": "Guideline",
       "sourceDescription": "App content in resizable or independent windows",
-      "sourceRequestedPlatforms": "macOS, iPadOS"
+      "sourceRequestedPlatforms": "macOS, iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1843,7 +3245,21 @@
       "sourceRowIndex": 100,
       "sourceType": "Category",
       "sourceDescription": "Choose values and enter information",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1861,7 +3277,21 @@
       "sourceRowIndex": 101,
       "sourceType": "Guideline",
       "sourceDescription": "Select or adjust a color",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1879,7 +3309,21 @@
       "sourceRowIndex": 102,
       "sourceType": "Guideline",
       "sourceDescription": "Combined text input and option list",
-      "sourceRequestedPlatforms": "Web, macOS"
+      "sourceRequestedPlatforms": "Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1897,7 +3341,21 @@
       "sourceRowIndex": 103,
       "sourceType": "Guideline",
       "sourceDescription": "Full-screen numerical entry such as a PIN",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1915,7 +3373,21 @@
       "sourceRowIndex": 104,
       "sourceType": "Guideline",
       "sourceDescription": "Editable image presentation and replacement",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1933,7 +3405,21 @@
       "sourceRowIndex": 105,
       "sourceType": "Guideline",
       "sourceDescription": "Choose values from ordered options",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1951,7 +3437,21 @@
       "sourceRowIndex": 106,
       "sourceType": "Guideline",
       "sourceDescription": "Switch between compact related choices",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1969,7 +3469,21 @@
       "sourceRowIndex": 107,
       "sourceType": "Guideline",
       "sourceDescription": "Adjust a continuous value",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -1987,7 +3501,21 @@
       "sourceRowIndex": 108,
       "sourceType": "Guideline",
       "sourceDescription": "Increment or decrement a numeric value",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2005,7 +3533,21 @@
       "sourceRowIndex": 109,
       "sourceType": "Guideline",
       "sourceDescription": "Enter or edit short form values",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2023,7 +3565,21 @@
       "sourceRowIndex": 110,
       "sourceType": "Guideline",
       "sourceDescription": "Change a setting between two states",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2041,7 +3597,21 @@
       "sourceRowIndex": 111,
       "sourceType": "Guideline",
       "sourceDescription": "Touch keyboard layouts and input behaviour",
-      "sourceRequestedPlatforms": "iOS, iPadOS"
+      "sourceRequestedPlatforms": "iOS, iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2059,7 +3629,21 @@
       "sourceRowIndex": 112,
       "sourceType": "Category",
       "sourceDescription": "Communicate status, value and progress",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2077,7 +3661,21 @@
       "sourceRowIndex": 113,
       "sourceType": "Guideline",
       "sourceDescription": "Circular daily fitness goal progress",
-      "sourceRequestedPlatforms": "Fitness"
+      "sourceRequestedPlatforms": "Fitness",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2095,7 +3693,21 @@
       "sourceRowIndex": 114,
       "sourceType": "Guideline",
       "sourceDescription": "Represent a numeric value within a range",
-      "sourceRequestedPlatforms": "Intelligence"
+      "sourceRequestedPlatforms": "Intelligence",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2113,7 +3725,21 @@
       "sourceRowIndex": 115,
       "sourceType": "Guideline",
       "sourceDescription": "Indicate work and loading progress",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2131,7 +3757,21 @@
       "sourceRowIndex": 116,
       "sourceType": "Guideline",
       "sourceDescription": "Represent ordinal ratings visually",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2149,7 +3789,21 @@
       "sourceRowIndex": 117,
       "sourceType": "Category",
       "sourceDescription": "Integrations visible throughout the operating system",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2167,7 +3821,21 @@
       "sourceRowIndex": 118,
       "sourceType": "Guideline",
       "sourceDescription": "Expose meaningful actions to system shortcuts",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2185,7 +3853,21 @@
       "sourceRowIndex": 119,
       "sourceType": "Guideline",
       "sourceDescription": "Glanceable watch-face information",
-      "sourceRequestedPlatforms": "watchOS"
+      "sourceRequestedPlatforms": "watchOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2203,7 +3885,21 @@
       "sourceRowIndex": 120,
       "sourceType": "Guideline",
       "sourceDescription": "Expose actions in Control Center and Lock Screen",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2221,7 +3917,21 @@
       "sourceRowIndex": 121,
       "sourceType": "Guideline",
       "sourceDescription": "Show live progress on an ongoing event or task",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2239,7 +3949,21 @@
       "sourceRowIndex": 122,
       "sourceType": "Guideline",
       "sourceDescription": "Display timely messages outside the app",
-      "sourceRequestedPlatforms": "iOS, Android"
+      "sourceRequestedPlatforms": "iOS, Android",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2257,7 +3981,21 @@
       "sourceRowIndex": 123,
       "sourceType": "Guideline",
       "sourceDescription": "Result or confirmation views for Siri and shortcuts",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2275,7 +4013,21 @@
       "sourceRowIndex": 124,
       "sourceType": "Guideline",
       "sourceDescription": "Device information at top of screen",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2293,7 +4045,21 @@
       "sourceRowIndex": 125,
       "sourceType": "Guideline",
       "sourceDescription": "tvOS featured app content",
-      "sourceRequestedPlatforms": "tvOS"
+      "sourceRequestedPlatforms": "tvOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2311,7 +4077,21 @@
       "sourceRowIndex": 126,
       "sourceType": "Guideline",
       "sourceDescription": "Primary watchOS screen experience",
-      "sourceRequestedPlatforms": "watchOS"
+      "sourceRequestedPlatforms": "watchOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Components",
@@ -2329,7 +4109,21 @@
       "sourceRowIndex": 127,
       "sourceType": "Guideline",
       "sourceDescription": "Glanceable actionable content outside the app",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2347,7 +4141,21 @@
       "sourceRowIndex": 128,
       "sourceType": "Category",
       "sourceDescription": "Methods people use to control apps and enter data",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2365,7 +4173,21 @@
       "sourceRowIndex": 129,
       "sourceType": "Guideline",
       "sourceDescription": "Quick access from supported Apple devices",
-      "sourceRequestedPlatforms": "iOS, watchOS"
+      "sourceRequestedPlatforms": "iOS, watchOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2383,7 +4205,21 @@
       "sourceRowIndex": 130,
       "sourceType": "Guideline",
       "sourceDescription": "Handwriting, drawing and stylus interaction",
-      "sourceRequestedPlatforms": "iPadOS"
+      "sourceRequestedPlatforms": "iPadOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2401,7 +4237,21 @@
       "sourceRowIndex": 131,
       "sourceType": "Guideline",
       "sourceDescription": "Dedicated hardware camera interaction",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2419,7 +4269,21 @@
       "sourceRowIndex": 132,
       "sourceType": "Guideline",
       "sourceDescription": "Rotary input on Apple Watch and Vision Pro",
-      "sourceRequestedPlatforms": "watchOS, visionOS"
+      "sourceRequestedPlatforms": "watchOS, visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2437,7 +4301,21 @@
       "sourceRowIndex": 133,
       "sourceType": "Guideline",
       "sourceDescription": "Gaze-based selection and interaction",
-      "sourceRequestedPlatforms": "visionOS"
+      "sourceRequestedPlatforms": "visionOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2455,7 +4333,21 @@
       "sourceRowIndex": 134,
       "sourceType": "Guideline",
       "sourceDescription": "Show which interface item is the current target",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2473,7 +4365,21 @@
       "sourceRowIndex": 135,
       "sourceType": "Guideline",
       "sourceDescription": "Game controller mechanics and affordances",
-      "sourceRequestedPlatforms": "Games"
+      "sourceRequestedPlatforms": "Games",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2491,7 +4397,21 @@
       "sourceRowIndex": 136,
       "sourceType": "Guideline",
       "sourceDescription": "Direct manipulation through touch and motion",
-      "sourceRequestedPlatforms": "iOS, Android"
+      "sourceRequestedPlatforms": "iOS, Android",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2509,7 +4429,21 @@
       "sourceRowIndex": 137,
       "sourceType": "Guideline",
       "sourceDescription": "Motion-sensor input from the device",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2527,7 +4461,21 @@
       "sourceRowIndex": 138,
       "sourceType": "Guideline",
       "sourceDescription": "Keyboard entry and shortcut expectations",
-      "sourceRequestedPlatforms": "Web, macOS"
+      "sourceRequestedPlatforms": "Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2545,7 +4493,21 @@
       "sourceRowIndex": 139,
       "sourceType": "Guideline",
       "sourceDescription": "Short-range contextual device interactions",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2563,7 +4525,21 @@
       "sourceRowIndex": 140,
       "sourceType": "Guideline",
       "sourceDescription": "Mouse and trackpad interaction patterns",
-      "sourceRequestedPlatforms": "Web, macOS"
+      "sourceRequestedPlatforms": "Web, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Inputs",
@@ -2581,7 +4557,21 @@
       "sourceRowIndex": 141,
       "sourceType": "Guideline",
       "sourceDescription": "TV remote navigation and controls",
-      "sourceRequestedPlatforms": "tvOS"
+      "sourceRequestedPlatforms": "tvOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2599,7 +4589,21 @@
       "sourceRowIndex": 142,
       "sourceType": "Category",
       "sourceDescription": "Design guidance for Apple technologies and platform services",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2617,7 +4621,21 @@
       "sourceRowIndex": 143,
       "sourceType": "Guideline",
       "sourceDescription": "Stream media to compatible receivers",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2635,7 +4653,21 @@
       "sourceRowIndex": 144,
       "sourceType": "Guideline",
       "sourceDescription": "Interface when an always-on display is dimmed",
-      "sourceRequestedPlatforms": "iOS, watchOS"
+      "sourceRequestedPlatforms": "iOS, watchOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2653,7 +4685,21 @@
       "sourceRowIndex": 145,
       "sourceType": "Guideline",
       "sourceDescription": "Compact fast-access app experiences",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2671,7 +4717,21 @@
       "sourceRowIndex": 146,
       "sourceType": "Guideline",
       "sourceDescription": "Purchase eligible digital content and subscriptions",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2689,7 +4749,21 @@
       "sourceRowIndex": 147,
       "sourceType": "Guideline",
       "sourceDescription": "Pay for goods and services with Apple Pay",
-      "sourceRequestedPlatforms": "iOS, Web"
+      "sourceRequestedPlatforms": "iOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2707,7 +4781,21 @@
       "sourceRowIndex": 148,
       "sourceType": "Guideline",
       "sourceDescription": "Blend virtual and real-world content",
-      "sourceRequestedPlatforms": "AR"
+      "sourceRequestedPlatforms": "AR",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2725,7 +4813,21 @@
       "sourceRowIndex": 149,
       "sourceType": "Guideline",
       "sourceDescription": "Patient-centric care plan experiences",
-      "sourceRequestedPlatforms": "Health"
+      "sourceRequestedPlatforms": "Health",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2743,7 +4845,21 @@
       "sourceRowIndex": 150,
       "sourceType": "Guideline",
       "sourceDescription": "Vehicle-screen experiences",
-      "sourceRequestedPlatforms": "CarPlay"
+      "sourceRequestedPlatforms": "CarPlay",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2761,7 +4877,21 @@
       "sourceRowIndex": 151,
       "sourceType": "Guideline",
       "sourceDescription": "Game identity, scores and player interaction",
-      "sourceRequestedPlatforms": "Games"
+      "sourceRequestedPlatforms": "Games",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2779,7 +4909,21 @@
       "sourceRowIndex": 152,
       "sourceType": "Guideline",
       "sourceDescription": "Design dynamic AI-generated experiences responsibly",
-      "sourceRequestedPlatforms": "Intelligence, All"
+      "sourceRequestedPlatforms": "Intelligence, All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2797,7 +4941,21 @@
       "sourceRowIndex": 153,
       "sourceType": "Guideline",
       "sourceDescription": "Use user-authorized health and fitness data",
-      "sourceRequestedPlatforms": "Health"
+      "sourceRequestedPlatforms": "Health",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2815,7 +4973,21 @@
       "sourceRowIndex": 154,
       "sourceType": "Guideline",
       "sourceDescription": "Connected home accessory interactions",
-      "sourceRequestedPlatforms": "Home"
+      "sourceRequestedPlatforms": "Home",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2833,7 +5005,21 @@
       "sourceRowIndex": 155,
       "sourceType": "Guideline",
       "sourceDescription": "Cloud-backed continuity across Apple devices",
-      "sourceRequestedPlatforms": "iOS, macOS"
+      "sourceRequestedPlatforms": "iOS, macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2851,7 +5037,21 @@
       "sourceRowIndex": 156,
       "sourceType": "Guideline",
       "sourceDescription": "Read supported mobile IDs in person",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2869,7 +5069,21 @@
       "sourceRowIndex": 157,
       "sourceType": "Guideline",
       "sourceDescription": "Experiences that appear within Messages",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2887,7 +5101,21 @@
       "sourceRowIndex": 158,
       "sourceType": "Guideline",
       "sourceDescription": "Capture and display motion photos",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2905,7 +5133,21 @@
       "sourceRowIndex": 159,
       "sourceType": "Guideline",
       "sourceDescription": "Adapt iPad apps for Mac",
-      "sourceRequestedPlatforms": "macOS"
+      "sourceRequestedPlatforms": "macOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2923,7 +5165,21 @@
       "sourceRowIndex": 160,
       "sourceType": "Guideline",
       "sourceDescription": "User experiences powered by ML",
-      "sourceRequestedPlatforms": "Intelligence"
+      "sourceRequestedPlatforms": "Intelligence",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2941,7 +5197,21 @@
       "sourceRowIndex": 161,
       "sourceType": "Guideline",
       "sourceDescription": "Map and geographic information experiences",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2959,7 +5229,21 @@
       "sourceRowIndex": 162,
       "sourceType": "Guideline",
       "sourceDescription": "Tap-based near-field interactions",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2977,7 +5261,21 @@
       "sourceRowIndex": 163,
       "sourceType": "Guideline",
       "sourceDescription": "Photo and video editing extensions",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -2995,7 +5293,21 @@
       "sourceRowIndex": 164,
       "sourceType": "Guideline",
       "sourceDescription": "Apps for participation in health research",
-      "sourceRequestedPlatforms": "Research"
+      "sourceRequestedPlatforms": "Research",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3013,7 +5325,21 @@
       "sourceRowIndex": 165,
       "sourceType": "Guideline",
       "sourceDescription": "Shared synchronous collaborative activities",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3031,7 +5357,21 @@
       "sourceRowIndex": 166,
       "sourceType": "Guideline",
       "sourceDescription": "Recognize audio against a catalogue",
-      "sourceRequestedPlatforms": "Media"
+      "sourceRequestedPlatforms": "Media",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3049,7 +5389,21 @@
       "sourceRowIndex": 167,
       "sourceType": "Guideline",
       "sourceDescription": "Privacy-focused Apple account sign-in",
-      "sourceRequestedPlatforms": "iOS, Web"
+      "sourceRequestedPlatforms": "iOS, Web",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3067,7 +5421,21 @@
       "sourceRowIndex": 168,
       "sourceType": "Guideline",
       "sourceDescription": "Voice and shortcut interactions",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3085,7 +5453,21 @@
       "sourceRowIndex": 169,
       "sourceType": "Guideline",
       "sourceDescription": "Accept contactless payments on iPhone",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3103,7 +5485,21 @@
       "sourceRowIndex": 170,
       "sourceType": "Guideline",
       "sourceDescription": "Support system screen-reader users",
-      "sourceRequestedPlatforms": "All"
+      "sourceRequestedPlatforms": "All",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     },
     {
       "section": "Technologies",
@@ -3121,7 +5517,21 @@
       "sourceRowIndex": 171,
       "sourceType": "Guideline",
       "sourceDescription": "Present digital cards, passes and credentials",
-      "sourceRequestedPlatforms": "iOS"
+      "sourceRequestedPlatforms": "iOS",
+      "platformApplicability": {
+        "web": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "ios": {
+          "state": "unassessed",
+          "rationale": null
+        },
+        "android": {
+          "state": "unassessed",
+          "rationale": null
+        }
+      }
     }
   ]
 }
