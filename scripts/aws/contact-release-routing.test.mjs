@@ -252,6 +252,33 @@ test("new secondary-source contracts remain private-only and never trigger unrel
 });
 
 
+test("private publisher Bash case arms have exactly one terminating parenthesis", () => {
+  const sourcePaths = [
+  ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+  "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+  "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+  "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-global-secondary-source-gateway.mjs",
+  "src/core/intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/ai/intelligence-openai-signals.mjs",
+  ".github/workflows/intelligence-sparse-circuit-assurance.yml"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const arm = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(arm, file + " must contain private-only Bash case arm");
+    assert.ok(arm.endsWith(")"), file + " must terminate the private case arm");
+    assert.equal((arm.match(/\)/g) || []).length, 1, file + " must have exactly one closing paren");
+    const patterns = new Set(arm.slice(0, -1).split("|"));
+    for (const path of sourcePaths) {
+      assert.ok(patterns.has(path), file + " must classify source-only path inside the case arm: " + path);
+    }
+    assert.equal(patterns.has("assets/js/contact-production.js"), false);
+    assert.equal(patterns.has("scripts/build-site.mjs"), false);
+  }
+});
+
+
 test("private mobile source changes cannot trigger unrelated public AWS contact publishing", () => {
   const dispatcher = get("dispatch-approved-aws-contact-release.yml");
   const publisher = get("publish-aws-contact-production.yml");
