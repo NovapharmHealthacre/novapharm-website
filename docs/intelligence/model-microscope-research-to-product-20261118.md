@@ -96,3 +96,9 @@ The existing protected web research view and the private iOS/Android Expo source
 ### Strict identity and UTC receipt parsing
 
 The governed reader and Ed25519 verifier reject noncanonical UTC dates (including normalized impossible calendar dates), non-string identity fields and malformed scope values. Synthetic and proof tests exercise these failures without obtaining any infrastructure privileges. A valid test signature is not itself an authority to grant pharmaceutical rights or to publish interpretations.
+
+### End-to-end signed synthetic evidence integration test
+
+The offline integration harness `scripts/test-nova-model-microscope-end-to-end.mjs` hashes the *actual* first-party synthetic model module bytes and a canonical deterministic feature-maximization grid, constructs a provenance digest, signs an independent Ed25519 QA receipt using a freshly generated **ephemeral test key**, and calls the protected read-only inspection helper with a short-lived synthetic-tenant grant.
+
+It asserts that changing model-source bytes, visualization pixels, dataset reference or actor identity denies the read and that signed approval IDs, raw weights and purported clinical results do not escape the allow-listed response. This demonstrates test-only trust chaining, **not production live artifact admission**: no real model rights, external data, public signing service, production key, authenticated user or cloud back end is provisioned by this test.
