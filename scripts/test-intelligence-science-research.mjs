@@ -159,3 +159,22 @@ test("actual NOVA model gateway explicitly rejects Rosalind and does not registe
     NOVAPHARM_OPENAI_EU_ZDR_APPROVED: "true"
   }), (error) => error.code === "nova_model_not_approved");
 });
+
+test("restricted research audience accepts only a bounded, non-sensitive classification", () => {
+  for (const audience of ["unspecified", "internal_research", "customer", "external_commercial"]) {
+    const result = assessRosalindResearchBoundary({ audience, apiApproved: true, productionApproved: true });
+    assert.equal(result.audience, audience);
+    assert.equal(result.modelCallAuthorised, false);
+    assert.equal(result.customerFacingUsePermitted, false);
+  }
+  for (const audience of [
+    "administrator", "patient-12345", "internal_research ", "a".repeat(9000),
+    { patientRecord: "synthetic-sensitive-input" }, ["customer"], null, 9
+  ]) {
+    assert.throws(
+      () => assessRosalindResearchBoundary({ audience }),
+      (error) => error?.statusCode === 400 && error?.code === "science_research_audience_invalid" &&
+        !String(error.message).includes("synthetic-sensitive-input")
+    );
+  }
+});
