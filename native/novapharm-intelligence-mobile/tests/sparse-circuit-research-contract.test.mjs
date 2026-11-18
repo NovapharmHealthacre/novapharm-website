@@ -13,9 +13,11 @@ test("Expo iOS and Android preview uses canonical sparse-circuit research govern
   assert.match(app,/novaMlSparseCircuitAssurance/);
   assert.match(app,/type Screen =[^;]*"research"/);
   assert.match(app,/type Screen =[^;]*"review"/);
-  assert.match(app,/\{ screen: "review", label: "Review" \}/);
+  assert.match(app,/screen: "review", label: "Evidence review"/);
   assert.match(app,/<MultimodalReviewScreen/);
-  assert.match(app,/\{ screen: "research", label: "Research" \}/);
+  assert.match(app,/screen: "research", label: "Nova ML research"/);
+  assert.match(app,/screen === "more"/);
+  assert.match(app,/onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(app,/screen === "research"/);
   assert.match(app,/offlineExperiment\.limitation/);
   assert.match(app,/methodGates\.map/);
