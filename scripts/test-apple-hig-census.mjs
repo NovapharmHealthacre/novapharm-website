@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -72,4 +72,10 @@ test('binary web font accidentally placed in public assets is a release failure'
   const r = verify(content, { 'apple-font.otf': 'not-a-real-font' });
   assert.notEqual(r.status, 0);
   assert.deepEqual(r.report.forbiddenAssets, ['apple-font.otf']);
+});
+
+test('corporate breadcrumb links preserve a readable 44px target across viewports', () => {
+  const css = readFileSync(resolve('apps/corporate/app/design-system.css'), 'utf8');
+  assert.match(css, /np-hig-breadcrumb-target-v1/);
+  assert.match(css, /\.breadcrumbs span > a\s*\{[^}]*display:\s*inline-flex;[^}]*min-block-size:\s*44px;/s);
 });
