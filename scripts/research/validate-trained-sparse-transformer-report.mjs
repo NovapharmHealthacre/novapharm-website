@@ -4,10 +4,15 @@
  * NO network, tenant data, uploads, clinical decisions or rights attestation.
  */
 import { pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { inspectSparseCircuitCandidate } from "../../src/core/intelligence-sparse-circuit-assurance.mjs";
 
 const MAX_BYTES = 65_536;
 const SHA = /^[a-f0-9]{64}$/;
+const SCRIPT_SHA256 = "sha256:" + createHash("sha256")
+  .update(readFileSync(new URL("./tiny-sparse-transformer-experiment.py", import.meta.url)))
+  .digest("hex");
 const deny = () => Object.assign(new Error("Invalid or untrusted synthetic experiment report."), {
   code: "npi_sparse_experiment_rejected"
 });
@@ -89,6 +94,9 @@ export function inspectTrainedSparseTransformerReport(report) {
     checked.taskId === "synthetic-keyword-class" &&
     candidateArtifact.model.weightsSha256 === model.weightsSha256 &&
     candidateArtifact.task.datasetSha256 === data.sha256 &&
+    candidateArtifact.provenance.implementationRevision === SCRIPT_SHA256 &&
+    candidateArtifact.provenance.runId ===
+      "toy-transformer-" + model.seed + "-" + model.trainSteps + "-" + data.train + "-" + data.holdout &&
     candidateArtifact.evaluation.sampleCount === data.holdout &&
     candidateArtifact.evaluation.baselineLoss === evaluation.baselineLoss &&
     candidateArtifact.evaluation.circuitLoss === evaluation.isolatedCircuitLoss &&

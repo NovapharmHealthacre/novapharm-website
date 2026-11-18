@@ -42,6 +42,8 @@ test("contradicted model rights, hidden private fields and altered hash cannot b
     report => { report.patient = {name:"PRIVATE-NEVER-OUTPUT"}; },
     report => { report.candidateArtifact.sourceToken = "PRIVATE-NEVER-OUTPUT"; },
     report => { report.model.weightsSha256 = "a".repeat(64); },
+    report => { report.candidateArtifact.provenance.implementationRevision = "sha256:" + "0".repeat(64); },
+    report => { report.candidateArtifact.provenance.runId = "unrelated-run"; },
     report => { report.data.sha256 = "b".repeat(64); },
     report => { report.evaluation.ablatedLoss = 0; },
     report => { report.evaluation.keptHeadIndex = 13; },
