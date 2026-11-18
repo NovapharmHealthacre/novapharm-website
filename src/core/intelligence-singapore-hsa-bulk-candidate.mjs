@@ -140,6 +140,35 @@ export function createHsaBulkCandidateEvaluator({ authorize, now = () => Date.no
       if (capturedAt < evaluatedAt || capturedAt >= Date.parse(grant.validUntil)) {
         fail("rights expired during validation");
       }
+      // Independently re-check authoritative rights before releasing even an
+      // internal preview. Mid-parse revocation/rotation invalidates the receipt.
+      let subsequent;
+      try {
+        subsequent = await authorize({
+          tenantId, sourceId: SOURCE_ID, country: "SG",
+          domain: "regulatory", purpose: "internal-evaluation"
+        });
+      } catch {
+        fail("source rights unavailable after validation");
+      }
+      const reviewedAt = clock(now());
+      if (reviewedAt < capturedAt || reviewedAt >= Date.parse(grant.validUntil)) {
+        fail("rights expired after validation");
+      }
+      let rechecked;
+      try {
+        rechecked = assertInternalEvaluationPermit({
+          permit: subsequent, sourceId: SOURCE_ID, tenantId,
+          country: "SG", domain: "regulatory", now: reviewedAt
+        });
+      } catch {
+        fail("source rights revoked after validation");
+      }
+      if (grant.receiptId !== rechecked.receiptId ||
+          grant.licenseId !== rechecked.licenseId ||
+          grant.rightsVersion !== rechecked.rightsVersion) {
+        fail("source rights rotated after validation");
+      }
       const digest = createHash("sha256").update(bytes).digest("hex");
       return Object.freeze({
         contract: "novapharm.intelligence.hsa-bulk-candidate.v1",
@@ -147,7 +176,7 @@ export function createHsaBulkCandidateEvaluator({ authorize, now = () => Date.no
         datasetId: DATASET_ID, sourceReference: DATASET_PAGE,
         rightsReceiptId: grant.receiptId, rightsVersion: grant.rightsVersion,
         fileSha256: digest, bytes: bytes.byteLength,
-        evaluatedAt: new Date(capturedAt).toISOString(),
+        evaluatedAt: new Date(reviewedAt).toISOString(),
         snapshotSourceDateVerified: false,
         datasetVersionVerified: false,
         upstreamFileAuthenticated: false,
