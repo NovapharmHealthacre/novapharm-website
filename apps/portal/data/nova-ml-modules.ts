@@ -99,3 +99,38 @@ export const novaMlExperienceGuidance = Object.freeze({
     fallback: "Use the original published text and ordinary manual editing without any model call."
   }
 } as const);
+
+/**
+ * Research directions only. These are not separate live workspaces and do not
+ * run models in the web browser. Keep the existing four protected routes.
+ */
+export const novaMlAlignmentResearchMethods = Object.freeze([
+  {
+    id: "reward_proxy_sweep",
+    title: "Reward proxy overoptimisation",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Compare proxy scores against separate, independently adjudicated outcomes to detect Goodhart-style deterioration.",
+    approval: "No trained reward model, verified independent gold outcome or optimisation permission."
+  },
+  {
+    id: "critique_assistance",
+    title: "Human-assisted critique review",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Assess whether proposed flaws improve human review of medicine evidence, supplier documents and research summaries.",
+    approval: "No automatic validation of factual correctness, medical safety or source rights."
+  },
+  {
+    id: "instruction_conformance",
+    title: "Instruction adherence",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Audit specified requirements, missing citations and prohibited actions without trusting instructions embedded in source material.",
+    approval: "No SFT, PPO, RLHF training or permission to override identity and scope."
+  },
+  {
+    id: "offline_multiagent_scenario_scoreboard",
+    title: "Long-horizon simulation",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Compare synthetic supply-chain planning trajectories and flag unsafe action attempts, without controlling operations.",
+    approval: "No trained agent, approved simulator, autonomous WMS or inventory release."
+  }
+] as const);
