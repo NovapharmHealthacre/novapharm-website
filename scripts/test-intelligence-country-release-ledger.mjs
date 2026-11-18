@@ -396,3 +396,21 @@ test("published country register enumerates each of 101 original sources and nev
   assert.ok(doc.includes("77 individual named countries"));
   assert.ok(doc.includes("*not* every country in the world"));
 });
+
+
+test("all 77 nations have local source candidates and 12 EU/global sources stay separate", () => {
+  assert.equal(ledger.nationalSourceCandidates, 89);
+  assert.equal(ledger.euEeaGroupSourceCandidates, 3);
+  assert.equal(ledger.globalGroupSourceCandidates, 9);
+  assert.equal(ledger.totalSources, 89 + 3 + 9);
+  assert.equal(ledger.countries.filter(x=>x.groupType === "NATIONAL").length, 77);
+  assert.equal(ledger.countries.filter(x=>x.groupType === "NATIONAL" &&
+    x.candidateSourceCount === 0).length, 0);
+  assert.deepEqual(ledger.sourceAdvertisedModeCounts, {
+    apiRelated: 35,
+    downloadRelatedWithoutApi: 26,
+    portalDiscoveryOrOther: 40
+  });
+  assert.ok(Object.isFrozen(ledger.sourceAdvertisedModeCounts));
+  assert.equal(ledger.countries.filter(x => x.customerEnabled).length, 0);
+});
