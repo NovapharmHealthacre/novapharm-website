@@ -6,6 +6,7 @@
  */
 import { sourcePlans } from "./intelligence-global-source-gateway.mjs";
 import { COUNTRY_ISO2, requireCountryOrGroupCode } from "./intelligence-country-iso-identifiers.mjs";
+import { assertExactCountrySourceCoverage } from "./intelligence-country-source-baseline.mjs";
 
 export const COUNTRY_LEDGER_CONTRACT = "novapharm.intelligence.country-release-ledger.v1";
 export const EXPECTED_SOURCE_COUNT = 101;
@@ -133,6 +134,9 @@ export function buildCountryReleaseLedger(registry) {
   if (!Array.isArray(registry) || registry.length !== EXPECTED_SOURCE_COUNT) {
     fail("expected immutable 101-source candidate inventory");
   }
+  // Independently pin every country-to-publisher key from the owner-requested
+  // baseline. A different source cannot silently replace a registered one.
+  assertExactCountrySourceCoverage(registry);
   const seen = new Set();
   const sourceRows = registry.map(input => {
     cleanSource(input);
