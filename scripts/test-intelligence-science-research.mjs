@@ -123,3 +123,13 @@ test("canonical science readiness principles are identical in cross-workspace re
   assert.match(rules, /no_customer_facing_restricted_model_access/);
   assert.match(rules, /reproducibility_and_falsifiable_counterevidence/);
 });
+
+test("private release readiness reports Science as unverified for every Intelligence workspace", () => {
+  const source = read("src/core/intelligence-release-readiness.mjs");
+  const regression = read("scripts/test-intelligence-readiness.mjs");
+  assert.match(source, /SCIENCE_READINESS_BOUNDARY/);
+  assert.match(source, /gptRosalindResearchApiApprovalVerified: false/);
+  assert.match(source, /restrictedResearchModelCustomerUsePermitted: false/);
+  assert.match(source, /canonicalWorkspacesCovered: 22/);
+  assert.match(regression, /readiness\.science\.scientificAiProductionCertified/);
+});
