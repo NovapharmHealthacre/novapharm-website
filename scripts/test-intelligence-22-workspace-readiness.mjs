@@ -120,3 +120,17 @@ test("all 22 readiness reports inherit fail-closed scientific safeguards", () =>
     assert.ok(workspace.scientificResearch.requiredGuardrails.includes("no_customer_facing_restricted_model_access"));
   }
 });
+
+test("all 22 workspace readiness reports share the nine reviewed research method references, without accepting them as scientific evidence", () => {
+  const registry = JSON.parse(readFileSync(new URL("../docs/intelligence/openai-science-methods-20261118.json", import.meta.url), "utf8"));
+  const report = assess();
+  assert.equal(registry.methods.length, 9);
+  assert.equal(report.workspaces.length, 22);
+  for (const workspace of report.workspaces) {
+    const expected = registry.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id);
+    assert.deepEqual(workspace.scientificMethodReferences, expected);
+    assert.equal(workspace.scientificMethodReferencesIndependentlyValidated, false);
+    assert.equal(workspace.scientificResearch.scientificAiProductionCertified, false);
+    assert.equal(workspace.productionAccepted, false);
+  }
+});
