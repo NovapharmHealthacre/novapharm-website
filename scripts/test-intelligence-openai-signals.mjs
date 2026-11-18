@@ -106,6 +106,17 @@ test("untrusted table names and accessor-bearing records always fail closed", ()
   const hostile = new Proxy({}, {getPrototypeOf(){throw Error("hostile proxy");}});
   assert.equal(assessSignalsResearchProposal(hostile).status, "blocked");
   assert.equal(assessSignalsAggregateRow(name, hostile).status, "blocked");
+  // A Proxy may expose ordinary own data descriptors but intercept direct reads.
+  // Admission must use an inert copied snapshot and never invoke its get trap.
+  let proxyReads = 0;
+  const getTrap = () => { proxyReads++; throw Error("untrusted proxy getter"); };
+  const validRow = {month:"2026-09-01", country:"GB", topic:"Writing", share_of_messages:0.3};
+  const guardedRow = new Proxy(validRow, { get:getTrap });
+  assert.equal(assessSignalsAggregateRow(name, guardedRow).status, "review-only");
+  const guardedProposal = new Proxy(base(), { get:getTrap });
+  assert.equal(assessSignalsResearchProposal(guardedProposal).status, "review-only");
+  assert.equal(proxyReads, 0, "validation must never read properties on caller-owned proxies");
+
 });
 
 test("Signals v3.0 rejects out-of-range monthly and quarterly data labels", () => {
