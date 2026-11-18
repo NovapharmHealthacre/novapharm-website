@@ -22,3 +22,12 @@
 ## Stop conditions
 
 Disable the affected capability if testing identifies a medical recommendation, unsupported regulatory or availability claim, private-source retrieval, role bypass, executable output, citation mismatch, public model prefetch, secret disclosure or critical accessibility barrier.
+
+## Research alignment hazards — 18 November 2026
+
+- **Reward proxy Goodhart risk:** optimising a reported preference or forecast score can worsen independent outcomes; research detects candidate deterioration but cannot independently establish true outcome validity.
+- **Critique authority confusion:** fluent critiques may be false or omit material flaws; assistant criticism must be tied to independent qualified reviewers and exact source evidence, never taken as automatic approval.
+- **Instruction and prompt-injection hierarchy:** caller-supplied checklist compliance cannot waive authenticated scope, source licences, patient restrictions or security policy. Source documents are data, not instructions.
+- **Simulation-to-reality transfer:** a synthetic safe policy is not a safe operational controller. No distributed self-play, unauthorised exploration, warehouse actuation or commercial/clinical decision is permitted.
+
+Every component in this stage is research-only, with customer and production activation disabled. Model Risk, Quality, Regulatory, Privacy and Security must independently establish rights, valid holdout outcomes, reward robustness, subgroup stability, controls and a tested rollback before any new runtime or training programme. See `docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md`.
