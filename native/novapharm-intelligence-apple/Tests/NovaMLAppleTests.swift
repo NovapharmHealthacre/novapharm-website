@@ -44,6 +44,34 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testAlignmentResearchReceiptAcceptsOnlyOfflineUnverifiedLabels() throws {
+        let sample = NovaAlignmentResearchReceipt(
+            contract: "novapharm.intelligence.nova-alignment-research.v1",
+            kind: "critique_assistance",
+            researchOnly: true,
+            productionApproved: false,
+            customerVisible: false,
+            independentGroundTruthVerified: false,
+            dataRightsVerified: false,
+            humanAdjudicationRequired: true
+        )
+        XCTAssertNoThrow(try sample.validateForResearchDisplay())
+        let forbidden = NovaAlignmentResearchReceipt(
+            contract: sample.contract, kind: sample.kind,
+            researchOnly: true, productionApproved: true,
+            customerVisible: false, independentGroundTruthVerified: false,
+            dataRightsVerified: false, humanAdjudicationRequired: true
+        )
+        XCTAssertThrowsError(try forbidden.validateForResearchDisplay())
+        let fakeTruth = NovaAlignmentResearchReceipt(
+            contract: sample.contract, kind: sample.kind,
+            researchOnly: true, productionApproved: false,
+            customerVisible: false, independentGroundTruthVerified: true,
+            dataRightsVerified: false, humanAdjudicationRequired: true
+        )
+        XCTAssertThrowsError(try fakeTruth.validateForResearchDisplay())
+    }
+
     #if os(macOS)
     func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
         let permit = NovaTrainingPermit(
