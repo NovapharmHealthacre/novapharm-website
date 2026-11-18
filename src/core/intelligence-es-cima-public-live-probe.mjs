@@ -4,6 +4,8 @@
  * Protected customer data-admission and terms checks are separate controls.
  */
 import { createHash } from "node:crypto";
+import { assertInternalEvaluationPermit } from "./intelligence-global-evidence-contract.mjs";
+import { buildSourceSnapshotQuarantine, classifySourceSnapshotReplay } from "./intelligence-source-snapshot-quarantine.mjs";
 
 export const ES_CIMA_PROBE = Object.freeze({
   sourceId:"es-aemps-cima",
@@ -88,7 +90,7 @@ async function bounded(response){
   let parsed;
   try{parsed=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(raw));}
   catch{fail("malformed UTF-8 or JSON");}
-  return {parsed,bytes,hash:createHash("sha256").update(raw).digest("hex")};
+  return {parsed,bytes,rawBytes:raw,hash:createHash("sha256").update(raw).digest("hex")};
 }
 export async function probeCimaPublicMedicine({
   transport=globalThis.fetch,now=()=>Date.now()
@@ -134,5 +136,172 @@ export async function probeCimaPublicMedicine({
     countryCustomerLive:false,
     canPublish:false,
     rawMedicineRecordsRetained:false
+  });
+}
+
+
+/**
+ * Internal live CIMA medicine sample to bounded source snapshot quarantine.
+ *
+ * The publisher's medicine detail lacks an authenticated snapshot-release
+ * timestamp. A trusted server-side release inventory supplies the dates and
+ * legally approved source-use decisions; their mere shape is NOT a legal grant.
+ * No external record, medicine, or sensitive patient data is returned or saved.
+ */
+export function createCimaLiveSourceQuarantineReader({
+  authorize, releaseInventory, transport=globalThis.fetch,
+  now=()=>Date.now()
+}={}){
+  if(typeof authorize!=="function" || typeof releaseInventory!=="function" ||
+     typeof transport!=="function" || typeof now!=="function"){
+    fail("independent rights authorizer, release inventory, transport and clock required");
+  }
+  function clock(){
+    let value;
+    try{value=now();}catch{fail("trusted clock unavailable");}
+    if(!Number.isSafeInteger(value)||value<0)fail("invalid trusted clock");
+    return value;
+  }
+  function grantFor(permit,context,at){
+    try{
+      return assertInternalEvaluationPermit({permit,...context,now:at});
+    }catch{fail("trusted source rights not approved");}
+  }
+  function validEvidence(receipt){
+    return receipt && typeof receipt==="object" &&
+      receipt.contract==="novapharm.intelligence.es-cima-live-quarantine.v1" &&
+      receipt.sourceId===ES_CIMA_PROBE.sourceId && receipt.country==="ES" &&
+      typeof receipt.tenantId==="string" &&
+      receipt.manifest?.sourceKey===ES_CIMA_PROBE.sourceId &&
+      receipt.manifest?.jurisdiction==="ES" &&
+      receipt.manifest?.canPublish===false &&
+      receipt.manifest?.productionAccepted===false &&
+      receipt.productionAccepted===false && receipt.canPublish===false &&
+      receipt.customerReadEnabled===false;
+  }
+  return Object.freeze({
+    async evaluate({tenantId}={}){
+      if(typeof tenantId!=="string" ||
+         !/^[A-Za-z0-9_-]{2,64}$/u.test(tenantId)){
+        fail("invalid protected tenant identity");
+      }
+      const context={
+        sourceId:ES_CIMA_PROBE.sourceId,tenantId,
+        country:"ES",domain:"medicine-regulatory",
+        purpose:"internal-evaluation"
+      };
+      const initialAt=clock();
+      let firstPermission;
+      try{firstPermission=await authorize(context);}
+      catch{fail("trusted source rights unavailable before fetch");}
+      const beforeFetch=clock();
+      if(beforeFetch<initialAt)fail("clock rollback before fetch");
+      const first=grantFor(firstPermission,context,beforeFetch);
+      let response;
+      try{
+        response=await transport(ES_CIMA_PROBE.url,{
+          method:"GET",redirect:"error",credentials:"omit",cache:"no-store",
+          headers:{accept:"application/json"},
+          signal:AbortSignal.timeout(DEADLINE_MS)
+        });
+      }catch{fail("official publisher connection unavailable");}
+      const body=await bounded(response);
+      const sample=validateCimaMedicineSample(body.parsed);
+      const afterFetch=clock();
+      if(afterFetch<beforeFetch||afterFetch>=Date.parse(first.validUntil)){
+        fail("source rights expired or clock rolled back during fetch");
+      }
+      let release;
+      try{release=await releaseInventory({
+        sourceId:ES_CIMA_PROBE.sourceId,
+        country:"ES",
+        officialRegistrationNumber:ES_CIMA_PROBE.officialRegistrationNumber
+      });}
+      catch{fail("trusted publisher release catalogue unavailable");}
+      if(!release || typeof release!=="object" || Array.isArray(release) ||
+         release.datasetKey!=="es-cima-medicine-detail" ||
+         release.resourceId!=="es-cima-nregistro-51347" ||
+         release.officialRegistrationNumber!==ES_CIMA_PROBE.officialRegistrationNumber){
+        fail("publisher release catalogue identity mismatch");
+      }
+      let manifest;
+      try{
+        manifest=buildSourceSnapshotQuarantine({
+          sourceKey:ES_CIMA_PROBE.sourceId,
+          jurisdiction:"ES",
+          publisher:ES_CIMA_PROBE.publisher,
+          datasetKey:release.datasetKey,
+          resourceId:release.resourceId,
+          resourceUrl:ES_CIMA_PROBE.url,
+          expectedOrigin:new URL(ES_CIMA_PROBE.url).origin,
+          mediaType:"application/json",
+          schemaVersion:release.schemaVersion,
+          observationStart:release.observationStart,
+          observationEnd:release.observationEnd,
+          publishedOn:release.publishedOn,
+          fetchedAt:new Date(afterFetch).toISOString(),
+          bytes:body.rawBytes
+        });
+      }catch{fail("publisher release evidence failed snapshot quarantine");}
+      const afterManifest=clock();
+      if(afterManifest<afterFetch||afterManifest>=Date.parse(first.validUntil)){
+        fail("source rights expired during source quarantine");
+      }
+      let secondPermission;
+      try{secondPermission=await authorize(context);}
+      catch{fail("trusted source rights unavailable after quarantine");}
+      const finished=clock();
+      if(finished<afterManifest||finished>=Date.parse(first.validUntil)){
+        fail("source rights expired after quarantine");
+      }
+      const second=grantFor(secondPermission,context,finished);
+      if(second.receiptId!==first.receiptId ||
+         second.licenseId!==first.licenseId ||
+         second.rightsVersion!==first.rightsVersion ||
+         second.validUntil!==first.validUntil){
+        fail("source rights changed during quarantine");
+      }
+      return Object.freeze({
+        contract:"novapharm.intelligence.es-cima-live-quarantine.v1",
+        sourceId:ES_CIMA_PROBE.sourceId,
+        registryCandidateKey:ES_CIMA_PROBE.registryCandidateKey,
+        tenantId,country:"ES",
+        sourceSchemaBoundRecords:sample.recordCount,
+        validatedPresentationCount:sample.validatedPresentationCount,
+        validatedIngredientCount:sample.validatedIngredientCount,
+        sourceResponseSha256:body.hash,
+        rightsReceiptId:second.receiptId,
+        manifest,
+        sourceHttpReadConfirmed:true,
+        sourceSampleQuarantined:true,
+        publisherReleaseDatesIndependentlyVerified:false,
+        legalCommercialAndAiUseRightsVerified:false,
+        countryMedicineIdentifiersReconciled:false,
+        protectedCustomerDeploymentVerified:false,
+        productionAccepted:false,
+        customerReadEnabled:false,
+        canPublish:false,
+        rawMedicineRecordsRetained:false
+      });
+    },
+    compareReplay(previous,next){
+      if(!Array.isArray(previous) || !validEvidence(next) ||
+         previous.some(p=>!validEvidence(p) || p.tenantId!==next.tenantId)){
+        fail("invalid or cross-tenant source replay receipts");
+      }
+      let outcome;
+      try{
+        outcome=classifySourceSnapshotReplay(
+          previous.map(p=>p.manifest),next.manifest);
+      }catch{fail("invalid source replay metadata");}
+      return Object.freeze({
+        contract:"novapharm.intelligence.es-cima-replay-review.v1",
+        tenantId:next.tenantId,
+        sourceId:ES_CIMA_PROBE.sourceId,
+        decision:outcome.decision,
+        canPublish:false,
+        productionAccepted:false
+      });
+    }
   });
 }
