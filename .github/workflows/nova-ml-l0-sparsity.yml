@@ -9,7 +9,12 @@ on:
       - "tooling/python/nova_l0_sparsity.py"
       - "tooling/python/test_nova_l0_sparsity.py"
       - "native/novapharm-intelligence-android/**"
+      - "native/novapharm-intelligence-apple/**"
       - "docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md"
+      - "docs/ai-model-register.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "scripts/test-nova-l0-governance.mjs"
       - "apps/portal/data/nova-ml-modules.ts"
       - ".github/workflows/nova-ml-l0-sparsity.yml"
   push:
@@ -39,6 +44,10 @@ jobs:
       - run: npm ci
       - name: Shared sparse math and forecasting regressions
         run: npm run test --workspace=@novapharm/medicines-intelligence
+      - name: Standing governance and platform contract tests
+        run: node --test scripts/test-nova-l0-governance.mjs scripts/test-nova-ml-apple-adaptation.mjs
+      - name: Python reference syntax (torch numerical tests are separate)
+        run: python3 -m py_compile tooling/python/nova_l0_sparsity.py tooling/python/test_nova_l0_sparsity.py
       - name: TypeScript source contracts
         run: npm run typecheck --workspace=@novapharm/medicines-intelligence
       - name: Independently fail closed on production activation
