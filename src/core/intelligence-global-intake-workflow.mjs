@@ -30,6 +30,10 @@ const DATASETS=Object.freeze({
   "global-clinicaltrials":Object.freeze({publisher:"ClinicalTrials.gov",datasetKey:"clinicaltrials-v2"}),
   "ca-health-canada-dpd":Object.freeze({publisher:"Health Canada",datasetKey:"drug-product-database"}),
   "global-europepmc":Object.freeze({publisher:"Europe PMC",datasetKey:"europepmc-search"}),
+  "global-pubmed":Object.freeze({publisher:"US National Library of Medicine",datasetKey:"pubmed-esearch"}),
+  "global-chembl":Object.freeze({publisher:"European Bioinformatics Institute ChEMBL",datasetKey:"chembl-molecule-search"}),
+  "global-pubchem":Object.freeze({publisher:"US National Center for Biotechnology Information PubChem",datasetKey:"pubchem-cid-search"}),
+  "pl-nfz-drug-program":Object.freeze({publisher:"Narodowy Fundusz Zdrowia",datasetKey:"nfz-drug-program-substance-costs"}),
   "es-aemps-cima":Object.freeze({publisher:"Agencia Espanola de Medicamentos y Productos Sanitarios",datasetKey:"aemps-cima"})
 });
 function reject(message){throw new Error("Global source intake rejected: "+message);}
