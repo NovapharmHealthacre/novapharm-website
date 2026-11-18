@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   action: { minHeight: 44, alignItems: "flex-start", justifyContent: "center", marginTop: 10 },
   actionText: { fontSize: 12, color: "#0066CC", fontWeight: "600" },
   source: { marginTop: 7, borderTopWidth: 1, borderColor: "#E2E2E5", paddingTop: 9 },
-  publisher: { fontSize: 12, color: ink, fontWeight: "650" },
+  publisher: { fontSize: 12, color: ink, fontWeight: "600" },
   sourceText: { fontSize: 11, lineHeight: 16, color: muted, marginTop: 4 },
   empty: { color: muted, fontSize: 13, paddingTop: 24 }
 });
