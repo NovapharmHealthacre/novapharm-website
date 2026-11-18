@@ -168,7 +168,7 @@ export function normaliseGovSourceResult(plan, data) {
  * The returned approval is only suitable for internal evaluation, never display.
  */
 export function createGovSourceReader({ authorize, transport = globalThis.fetch, now = () => Date.now() } = {}) {
-  if (typeof authorize !== "function" || typeof transport !== "function") {
+  if (typeof authorize !== "function" || typeof transport !== "function" || typeof now !== "function") {
     throw new Error("Trusted authorizer and transport are required");
   }
   return Object.freeze({
@@ -202,7 +202,7 @@ export function createGovSourceReader({ authorize, transport = globalThis.fetch,
       });
       const capturedAt = now();
       // Prevent any invalid clock or permit expiry from returning a preview.
-      if (!Number.isSafeInteger(capturedAt) || capturedAt < 0 ||
+      if (!Number.isSafeInteger(capturedAt) || capturedAt < grantedAt ||
           capturedAt >= Date.parse(grant.validUntil)) {
         throw new Error("Source rights are no longer approved");
       }
