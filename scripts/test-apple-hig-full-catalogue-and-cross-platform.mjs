@@ -213,8 +213,11 @@ test("all 516 topic/platform applicability decisions fail closed until source-sp
   }
   assert.equal(states.length, 516);
   assert.equal(tracker.meta.platformsAssessed, states.filter(x => x !== "unassessed").length);
-  if (states.some(x => x !== "unassessed")) {
-    assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false,
-      "Partial applicability decisions are not completion of all 172 HIG pages");
+  if (tracker.meta.allGuidelinePagesFullyReviewed === true) {
+    assert.ok(tracker.topics.every(topic =>
+      topic.guidelineReview === "reviewed" &&
+      Array.isArray(topic.guidelineReviewEvidence) &&
+      topic.guidelineReviewEvidence.length > 0),
+    "Full-text completion must be backed by article-level evidence for all 172 topics");
   }
 });
