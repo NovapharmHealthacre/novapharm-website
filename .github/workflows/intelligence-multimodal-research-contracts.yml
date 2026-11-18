@@ -13,6 +13,8 @@ on:
       - 'apps/portal/components/nova-ml-workspaces.tsx'
       - 'native/novapharm-intelligence-mobile/**'
       - 'docs/intelligence/multimodal-neurons-adaptation-20261118.md'
+      - 'docs/ai-risk-register.md'
+      - 'docs/ai-system-card.md'
       - '.github/workflows/intelligence-multimodal-research-contracts.yml'
   workflow_dispatch:
 
