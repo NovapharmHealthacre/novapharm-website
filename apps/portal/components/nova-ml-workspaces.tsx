@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { NovaSignalsResearch } from "./nova-signals-research";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -72,6 +73,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       )}</dl>
       <p className={styles.reference}>Architecture reference: <a href="https://openai.com/index/infrastructure-for-deep-learning/">OpenAI — Infrastructure for deep learning (2016)</a>. Any compute activation requires independent security, rights, cost and infrastructure approval.</p>
     </section>
+
+    <NovaSignalsResearch />
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">
       <h2 id="nova-ml-acceptance">Requirements before activation</h2>
