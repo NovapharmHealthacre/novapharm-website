@@ -75,6 +75,32 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertTrue(denied.reasons.contains("budget-not-approved"))
     }
 
+    func testSignalsResearchIsAlwaysReviewOnlyAndRejectsUnsafeCrossRoleUse() {
+        let source = NovaSignalsResearchRequest(
+            sourceId: "science-frontier", purpose: "non-clinical-evidence-research",
+            containsPersonalData: false, requestsExternalTransfer: false,
+            automatedDecision: false, estimatedIncrementalCostGbp: 0
+        )
+        let review = NovaSignalsResearchPolicy.assess(source)
+        XCTAssertEqual(review.status, "review-only")
+        XCTAssertFalse(review.executionEnabled)
+        XCTAssertTrue(review.reasons.isEmpty)
+
+        let forbidden = NovaSignalsResearchRequest(
+            sourceId: "whisper-2022", purpose: "clinical-diagnosis",
+            containsPersonalData: true, requestsExternalTransfer: true,
+            automatedDecision: true, estimatedIncrementalCostGbp: 2
+        )
+        let blocked = NovaSignalsResearchPolicy.assess(forbidden)
+        XCTAssertEqual(blocked.status, "blocked")
+        XCTAssertFalse(blocked.executionEnabled)
+        XCTAssertTrue(blocked.reasons.contains("unapproved-purpose"))
+        XCTAssertTrue(blocked.reasons.contains("personal-data-not-admitted"))
+        XCTAssertTrue(blocked.reasons.contains("external-transfer-not-approved"))
+        XCTAssertTrue(blocked.reasons.contains("autonomous-decision-prohibited"))
+        XCTAssertTrue(blocked.reasons.contains("zero-budget-only"))
+    }
+
     #if os(macOS)
     func testCreateMLRejectsMissingGovernanceBeforeReadingFiles() throws {
         let permit = NovaTrainingPermit(
