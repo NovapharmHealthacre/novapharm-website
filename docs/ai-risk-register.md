@@ -50,3 +50,5 @@ These are **source-stage mitigations only**, not evidence that production cloud 
 | Mistaking GitHub tests for production activation | README, research UI and CI label source-only maturity | Signed image/device artifacts, actual deployment receipts, authorised user tests and independent release sign-off | Engineering / Security |
 
 **Stop conditions:** unapproved source copying, withheld licence attribution, individual or patient inference from aggregated consumer data, raw voice or message access, automatic regulated decisions, cloud spending, public-route exposure or claims that an inactive model is running.
+
+**Offline dataset safeguard:** Signals CSV files are only reviewed through a field/size/row-bounded local parser returning status and counts, never raw data values, with `persisted: false`. This does not replace a verified publisher archive, data-sharing review, modelled DP uncertainty or signed release approval.
