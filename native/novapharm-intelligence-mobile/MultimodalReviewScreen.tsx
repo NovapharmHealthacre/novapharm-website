@@ -45,21 +45,21 @@ export function MultimodalReviewScreen() {
     {labels.map(([key,label]) => <View style={styles.field} key={key}>
       <Text style={styles.label}>{label}</Text>
       <TextInput value={fields[key]} onChangeText={(v)=>update(key,v)}
-        accessibilityLabel={label} style={styles.input} maxLength={240}
+        accessibilityLabel={label} accessibilityHint="Local research sample only. Do not enter patient or confidential information." style={styles.input} maxLength={240}
         autoCorrect={false} autoCapitalize="none" />
     </View>)}
-    <Pressable accessibilityRole="checkbox" accessibilityState={{checked:consent}} accessibilityLabel="Confirm non-sensitive approved material"
+    <Pressable accessibilityRole="checkbox" accessibilityState={{checked:consent}} accessibilityLabel="Confirm non-sensitive approved material" accessibilityHint="Required before submitting research samples for an offline conflict check"
       style={styles.checkboxRow} onPress={()=>{setConsent(p=>!p);setResult(null)}}>
       <View style={[styles.checkbox,consent && styles.checked]} />
       <Text style={styles.checkboxText}>I confirm these are non-sensitive, non-patient research samples.</Text>
     </Pressable>
-    <Pressable accessibilityRole="button" style={styles.primary} onPress={run}>
+    <Pressable accessibilityRole="button" accessibilityHint="Runs an offline string consistency check; does not verify medicine identity" style={styles.primary} onPress={run}>
       <Text style={styles.primaryText}>Review candidates</Text>
     </Pressable>
     <Pressable accessibilityRole="button" style={styles.secondary} onPress={reset}>
       <Text style={styles.secondaryText}>Clear locally</Text>
     </Pressable>
-    {result && <View accessibilityRole="summary" style={styles.output}>
+    {result && <View accessibilityRole="summary" accessibilityLiveRegion="polite" style={styles.output}>
       <Text style={styles.outputHeading}>{result.status.replace(/_/g," ")}</Text>
       <Text style={styles.paragraph}>{result.signals.length ? result.signals.join(", ").replace(/_/g," ") : "No observed string conflict. This is not a verified match."}</Text>
       <Text style={styles.paragraph}>{result.next}</Text>
@@ -69,14 +69,14 @@ export function MultimodalReviewScreen() {
 }
 const styles=StyleSheet.create({
   root:{paddingTop:6,paddingBottom:26},heading:{fontSize:23,fontWeight:"700",color:"#1D1D1F",marginBottom:8},
-  paragraph:{fontSize:13,lineHeight:21,color:"#424245",marginBottom:10},
-  field:{marginTop:12},label:{fontSize:13,fontWeight:"600",color:"#1D1D1F",marginBottom:6},
-  input:{borderWidth:1,borderColor:"#A5A5AA",borderRadius:10,minHeight:48,paddingHorizontal:12,color:"#1D1D1F",fontSize:14},
+  paragraph:{fontSize:16,lineHeight:24,color:"#424245",marginBottom:10},
+  field:{marginTop:12},label:{fontSize:16,fontWeight:"600",color:"#1D1D1F",marginBottom:6},
+  input:{borderWidth:1,borderColor:"#A5A5AA",borderRadius:10,minHeight:48,paddingHorizontal:12,color:"#1D1D1F",fontSize:17},
   checkboxRow:{flexDirection:"row",gap:12,alignItems:"center",minHeight:54,marginTop:18},
   checkbox:{width:21,height:21,borderRadius:5,borderWidth:2,borderColor:"#606068"},checked:{backgroundColor:"#1D1D1F"},
-  checkboxText:{flex:1,fontSize:13,lineHeight:19,color:"#424245"},
+  checkboxText:{flex:1,fontSize:16,lineHeight:24,color:"#424245"},
   primary:{backgroundColor:"#1D1D1F",borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:12},
-  primaryText:{color:"#fff",fontWeight:"700"},secondary:{borderWidth:1,borderColor:"#C7C7CC",borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:10},
-  secondaryText:{color:"#1D1D1F",fontWeight:"600"},output:{padding:16,backgroundColor:"#F5F5F7",borderRadius:12,marginTop:18},
-  outputHeading:{color:"#1D1D1F",fontWeight:"700",fontSize:14,marginBottom:8}
+  primaryText:{color:"#fff",fontWeight:"700",fontSize:16},secondary:{borderWidth:1,borderColor:"#C7C7CC",borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:10},
+  secondaryText:{color:"#1D1D1F",fontWeight:"600",fontSize:16},output:{padding:16,backgroundColor:"#F5F5F7",borderRadius:12,marginTop:18},
+  outputHeading:{color:"#1D1D1F",fontWeight:"700",fontSize:16,marginBottom:8}
 });
