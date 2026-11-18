@@ -5,6 +5,7 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { assessMultimodalEvidence, type MultimodalReviewResult } from "../../src/core/intelligence-multimodal-evidence-review.mjs";
+import { assessMultimodalResearchBasis } from "../../src/core/intelligence-multimodal-research-basis.mjs";
 
 const fieldsInitial = {
   sourceReference: "", country: "", visionMedicineName: "", imageTextMedicineName: "",
@@ -26,6 +27,8 @@ const labels: ReadonlyArray<readonly [Key, string]> = [
   ["referenceManufacturer","Reference manufacturer (optional)"],
   ["observedManufacturer","Observed manufacturer (optional)"]
 ];
+const researchPlan = assessMultimodalResearchBasis();
+
 export function MultimodalReviewScreen() {
   const [fields, setFields] = useState(fieldsInitial);
   const [consent, setConsent] = useState(false);
@@ -38,6 +41,7 @@ export function MultimodalReviewScreen() {
   return <View style={styles.root}>
     <Text style={styles.heading} accessibilityRole="header">Multimodal review</Text>
     <Text style={styles.paragraph}>Research-only, offline conflict screening of manually supplied candidate strings. No image recognition, OCR, model inference, upload, medicine identity verification or sensitive material is allowed.</Text>
+    <Text style={styles.paragraph}>Research basis: {researchPlan.distinctWorks} unique publications, {researchPlan.suppliedEntries} supplied references, {researchPlan.dimensions.length} research dimensions. Validated image models: {researchPlan.realModelEvaluationCount}. Research is not permission to process licensed or private data.</Text>
     {labels.map(([key,label]) => <View style={styles.field} key={key}>
       <Text style={styles.label}>{label}</Text>
       <TextInput value={fields[key]} onChangeText={(v)=>update(key,v)}
