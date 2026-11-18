@@ -126,13 +126,20 @@ export function inspectTrainedSparseTransformerReport(report) {
 }
 
 async function main() {
-  let input = "";
+  // Enforce the byte quota *before* decoding or retaining any input chunk.
+  // This protects the offline research CLI against oversized stdin messages,
+  // including Unicode input that occupies multiple bytes per code point.
+  const buffers = [];
+  let totalBytes = 0;
   try {
     for await (const chunk of process.stdin) {
-      input += chunk.toString("utf8");
-      if (Buffer.byteLength(input, "utf8") > MAX_BYTES) throw deny();
+      if (!Buffer.isBuffer(chunk) || chunk.byteLength > MAX_BYTES - totalBytes) throw deny();
+      totalBytes += chunk.byteLength;
+      buffers.push(chunk);
     }
-    denyUnless(input.length > 0);
+    denyUnless(totalBytes > 0);
+    const input = new TextDecoder("utf-8", { fatal: true })
+      .decode(Buffer.concat(buffers, totalBytes));
     const summary = inspectTrainedSparseTransformerReport(JSON.parse(input));
     process.stdout.write(JSON.stringify(summary) + "\n");
   } catch {

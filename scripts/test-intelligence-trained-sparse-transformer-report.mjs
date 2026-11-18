@@ -97,6 +97,30 @@ test("CLI rejects oversized and forged requests without leaking their contents",
   }
 });
 
+test("CLI enforces raw UTF-8 byte bounds before decode, including exact boundary", () => {
+  const cli = new URL("./research/validate-trained-sparse-transformer-report.mjs", import.meta.url);
+  const valid = JSON.stringify(fixture());
+  const allowed = valid.padEnd(65_536, " ");
+  for (const [input, accepted] of [
+    [allowed, true],
+    [allowed + " ", false],
+    ["€".repeat(24_000), false],
+    [Buffer.concat([Buffer.from(valid.slice(0, 40)), Buffer.from([0xff]), Buffer.from(valid.slice(41))]), false]
+  ]) {
+    const result = spawnSync(process.execPath, [cli.pathname], {
+      input, encoding: "utf8", timeout: 20_000, maxBuffer: 65_536
+    });
+    if (accepted) {
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(JSON.parse(result.stdout).productionEligible, false);
+    } else {
+      assert.notEqual(result.status, 0);
+      assert.equal(result.stdout, "");
+      assert.match(result.stderr, /report rejected/i);
+    }
+  }
+});
+
 test("head-selection uses calibration rather than held-out examples", () => {
   const script = readFileSync(
     new URL("./research/tiny-sparse-transformer-experiment.py", import.meta.url),
