@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
@@ -61,6 +62,15 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <dl className={styles.contractGrid}>{designRows.map(([label, description]) =>
         <div key={label} className={styles.contractItem}><dt>{label}</dt><dd>{description}</dd></div>
       )}</dl>
+    </section>
+
+    <section className={styles.section} aria-labelledby="nova-ml-infrastructure">
+      <h2 id="nova-ml-infrastructure">Deep-learning infrastructure architecture</h2>
+      <p className={styles.helper}>A cross-platform engineering contract informed by OpenAI’s 2016 infrastructure research. These are design requirements, not an active cluster, AI model or job scheduler.</p>
+      <dl className={styles.contractGrid}>{novaComputeInfrastructureRows.map((item) =>
+        <div key={item.title} className={styles.contractItem}><dt>{item.title}</dt><dd>{item.detail}</dd></div>
+      )}</dl>
+      <p className={styles.reference}>Architecture reference: <a href="https://openai.com/index/infrastructure-for-deep-learning/">OpenAI — Infrastructure for deep learning (2016)</a>. Any compute activation requires independent security, rights, cost and infrastructure approval.</p>
     </section>
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">
