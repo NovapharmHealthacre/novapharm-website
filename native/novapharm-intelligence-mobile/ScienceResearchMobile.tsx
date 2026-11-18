@@ -59,6 +59,14 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         <Text style={styles.sourceDisclaimer}>Opens external browser on request · No Science model or dataset connected</Text>
       </View>
     )}
+    <Text style={styles.sectionTitle} accessibilityRole="header">Eight evidence checks before release</Text>
+    <Text style={styles.description}>All eight stages require independent verification. None is certified by this offline reference catalogue.</Text>
+    {scienceMethods.claimIntegrityPolicy.requiredStages.map((stage, index) =>
+      <View key={stage} style={styles.reviewStage}>
+        <Text style={styles.methodTag}>{String(index + 1).padStart(2, "0")}</Text>
+        <Text style={styles.cardTitle}>{stage.replaceAll("_", " ")}</Text>
+        <Text style={styles.description}>Not independently verified</Text>
+      </View>)}
     <Text style={styles.footer}>OpenAI Science is a public research reference, not an API. GPT-Rosalind API use is limited to separately approved internal research and cannot be offered to customers. Source licences and release approvals remain separate.</Text>
   </View>;
 }
@@ -80,6 +88,7 @@ const styles = StyleSheet.create({
   requirement: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 4 },
   relatedButton: { minHeight: 44, justifyContent: "center", borderWidth: 1, borderColor: color.border, borderRadius: 9, paddingHorizontal: 12, marginTop: 7 },
   relatedText: { fontSize: 12, color: color.ink, lineHeight: 19, fontWeight: "600" },
+  reviewStage: { padding: 14, borderWidth: 1, borderColor: color.border, borderRadius: 11, marginTop: 9 },
   methodTag: { color: color.accent, marginBottom: 10, fontSize: 11, fontWeight: "700", lineHeight: 17 },
   sourceLink: { minHeight: 44, marginTop: 14, alignSelf: "flex-start", justifyContent: "center" },
   sourceLinkLabel: { fontSize: 13, fontWeight: "700", textDecorationLine: "underline", color: color.ink },
