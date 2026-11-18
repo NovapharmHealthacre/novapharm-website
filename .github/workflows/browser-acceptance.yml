@@ -15,8 +15,8 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-24.04
-    # Playwright 1.61.1 and Ubuntu Noble are preinstalled in this vendor image.
-    # Avoid slow Ubuntu apt mirrors; do NOT skip Chromium/WebKit or Axe tests.
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
@@ -32,18 +32,33 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
+        run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Verify preinstalled exact Playwright runtime
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
         run: |
-          test -d /ms-playwright
-          test "$(npx playwright --version)" = "Version 1.61.1"
-          test -n "$(find /ms-playwright -maxdepth 1 -name 'chromium-*' -print -quit)"
-          test -n "$(find /ms-playwright -maxdepth 1 -name 'webkit-*' -print -quit)"
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
       - name: Run complete route, viewport and Axe matrix
@@ -60,28 +75,42 @@ jobs:
   secure-portal:
     name: Secure portal and role-boundary acceptance
     runs-on: ubuntu-24.04
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
+        run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
@@ -104,29 +133,42 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Microsoft official image supplies pinned Chromium/WebKit and Ubuntu
+    # system dependencies, avoiding apt installation stalls on shared runners.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust exact checked-out workspace in the official browser container
+        shell: bash
+        run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      # WebKit packages differ by distro release even at the same revision.
-      # Segregate this cache from ubuntu-26.04 to prevent ICU 78 binaries on ICU 74 runners.
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-ubuntu-24.04-${{ hashFiles('package-lock.json') }}
-      # Ubuntu mirrors exceeded 600s on Nov 18 before tests; retain all suites with a bounded 1200s install.
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 1200s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Assert preinstalled browser binaries match locked Playwright
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const pw = require("playwright");
+          const version = require("playwright/package.json").version;
+          if (version !== "1.61.1") throw new Error("Unexpected Playwright version: " + version);
+          for (const browser of [pw.chromium, pw.webkit]) {
+            if (!fs.existsSync(browser.executablePath())) {
+              throw new Error("Missing locked " + browser.name() + " executable: " + browser.executablePath());
+            }
+          }
+          NODE
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
       - name: Start synthetic non-production runtime
