@@ -1,0 +1,42 @@
+# Apple HIG 172-topic adoption — NovaPharm repository checkpoint
+
+**18 November 2026.** Scope: NovaPharm corporate estate, protected Portal/Intelligence, Expo candidate for iOS and Android, separate Swift/Kotlin research work. This is **not** a certification, universal implementation, verified live deployment or store release.
+
+## Official scope and source-evidence policy
+
+The owner provided the complete, section-wise 172-link index. The machine-readable [topic register](apple-hig-172-topic-acceptance-register.json) contains all 172 parent and child pages: **Getting started (10), Foundations (19), Patterns (26), Components (73, including 8 component groups), Inputs (14), Technologies (30)**. Original priorities: 42 Critical, 61 High, 24 Medium, 45 Later.
+
+Every topic currently starts as **pending full-text review / implementation not verified** even when the repository contains earlier related work. Existing source-level tests, archived audit notes, a package-build result or an interface image do not independently prove that the full guideline was read, that each relevant user journey conforms or that live release acceptance passed. Mark a topic verified only after linking the exact official article review, relevant source and test evidence, browser/device and assistive-technology evidence, and an independently observed deployed or signed distribution receipt. Inapplicable topics require an explicit reason.
+
+Sample primary sections inspected for this correction: [Design principles](https://developer.apple.com/design/human-interface-guidelines/design-principles.md), [Layout](https://developer.apple.com/design/human-interface-guidelines/layout.md), [Materials](https://developer.apple.com/design/human-interface-guidelines/materials.md), [Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility.md), [Typography](https://developer.apple.com/design/human-interface-guidelines/typography.md), [Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars.md), and [Generative AI](https://developer.apple.com/design/human-interface-guidelines/generative-ai.md). Their review here is selective, not exhaustive.
+
+## Platform-specific interpretation
+
+| Guideline family | Web / Portal | iOS Expo candidate and native Swift | Android Expo candidate and Kotlin | Remaining release gate |
+| --- | --- | --- | --- | --- |
+| Getting started, Foundations | Clear hierarchy, brand tokens, keyboard focus, responsive grid and semantic HTML | Native-feeling navigation, Dynamic Type, safe areas, VoiceOver and light/dark appearance | Platform conventions, font scaling, TalkBack, system insets and appearance | Computed rendering and accessibility across devices |
+| Patterns | Explicit form outcomes, loading/empty/error recovery, accessible search and undo | Contextual navigation, native input and system feedback as supported | Android-native navigation and feedback conventions | Exercised end-to-end journeys, not static text |
+| Components: Content; Layout and organization | Semantic tables and chart alternatives, responsive split views | Screen-reader labels and scrollable content | Screen-reader labels and responsive content | Contrast, voice and large-text testing |
+| Components: Menus and actions; Navigation and search | Keyboard-operable menus and 44px controls | Reduced tab complexity and labelled destinations | Material/Android-compatible labels and destination behaviour | Tab and focus state device acceptance |
+| Components: Presentation; Selection and input; Status | Field errors, dialogs, progress, empty states | Local form semantics, clear choices and status announcements | TalkBack and Android form/status semantics | Form-error and announcement verification |
+| Components: System experiences | Only relevant web permissions, no counterfeit Apple system UI | Add native widgets/notifications/Shortcuts only when real capabilities exist | Use Android system APIs for equivalent approved features | Product scope, entitlements and signed builds |
+| Inputs | Keyboard/mouse/touch/RTL focus and input | Touch, voice input and adaptive type | Touch, keyboard, TalkBack | Real device and assistive-tech acceptance |
+| Technologies | AI disclosure, source provenance, privacy and fail-closed protected routes | No fake Apple Pay or Sign in with Apple; no unlicensed Apple asset redistribution | No Apple-only frameworks/assets embedded in Android | Actual identity, payments, rights and platform review |
+
+Official platform guidance is a **reference**: Apple-native Liquid Glass, proprietary typeface binaries and SF Symbols are not general-purpose web or Android assets. Keep NovaPharm ownership and the restrained red #E3120B accent; prefer text over decorative icons. Android needs independent platform-native conformance rather than Apple pixel duplication.
+
+## Concrete source corrections in this pull request
+
+- Portal stylesheet: the search-dismiss control was **34×34px**, user-menu action **42×42px**, and an icon command had a **42px** minimum height. These now use a **44px** hit region; user-summary grid reserves matching space.
+- Offline Expo multimodal-research form: increase regular body/label/checkbox text from 13 to 16, form input from 14 to 17, and action/result copy to 16; provide explicit privacy and research-only action hints and Android polite live-region status announcement. No customer, patient or licensed pharma data is enabled.
+- Add a deterministic Node regression checking 172 links, all section/category counts and priorities, evidence-gated completion states, interactive sizes, mobile readability and non-network source contract. Integrate with a dedicated GitHub Actions path-scoped workflow; the existing Expo typecheck and two-bundle preflight remain independent.
+
+## Evidence required before any 100%-ready statement
+
+1. Review every applicable official Markdown page and record a source-specific implementation decision, not merely a category-level label.
+2. Run all source tests, code scanning, security and application builds against the **latest exact pull request head**. No cancelled, queued or old-head check counts as a pass.
+3. Inspect every relevant route and protected module at small and large widths, 200–400% text/zoom, keyboard/focus, RTL, light/dark, high contrast and reduced motion/transparency in Chromium/WebKit and on actual iOS/Android devices with VoiceOver and TalkBack.
+4. Verify independent protected API/session/role/data-rights and commercial/medical acceptance. A mock/source list does not count as live medicine data integration.
+5. Confirm exact deploy SHA and public origin response for each hosted app; confirm App Store/Play Store signed installations separately. AWS was deliberately **not accessed** and these production receipts are **not present** in this change.
+
+See related PR [#854](https://github.com/NovapharmHealthacre/novapharm-website/pull/854) for an independent compact-navigation candidate. Do not merge overlapping work blindly; a green static assertion alone is not a substitute for human device acceptance.
