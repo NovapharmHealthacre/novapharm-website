@@ -298,7 +298,7 @@ test("new secondary-source contracts remain private-only and never trigger unrel
     const source = get(file);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, file + " must classify private research source paths");
-    const privateRules = new Set(classifier.split("|"));
+    const privateRules = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
     for (const path of paths) {
       assert.ok(privateRules.has(path), file + " would trigger unrelated public release for " + path);
     }
