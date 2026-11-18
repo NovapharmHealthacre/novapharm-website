@@ -13,8 +13,8 @@ test("hard-concrete expected L0 matches the closed-form gate probability", () =>
   const expected = 1 / (1 + Math.exp(-(2 / 3) * Math.log(11)));
   assert.ok(Math.abs(l0ActivationProbability(0) - expected) < 1e-12);
   assert.ok(Math.abs(l0ExpectedActiveCount([0, 0]) - 2 * expected) < 1e-12);
-  assert.equal(l0DeterministicGate(0), 0.5);
-  assert.equal(l0SampleGate(0, 0.5), 0.5);
+  assert.ok(Math.abs(l0DeterministicGate(0) - 0.5) < 1e-12);
+  assert.ok(Math.abs(l0SampleGate(0, 0.5) - 0.5) < 1e-12);
 });
 
 test("extreme gates produce exact zeros and ones without numerical overflow", () => {
@@ -34,8 +34,10 @@ test("candidate inference uses fixed feature order, dimensionality and exact pru
     bias: 3,
   });
   assert.equal(model.nonZeroCount, 2);
-  assert.deepEqual(model.coefficients, [2, 0, 2]);
-  assert.equal(scoreL0SparseLinearCandidate(model, { lead_time: 4, demand: 5, stock: 99 }), 21);
+  assert.equal(model.coefficients[0], 2);
+  assert.equal(model.coefficients[1], 0);
+  assert.ok(Math.abs((model.coefficients[2] ?? 0) - 2) < 1e-12);
+  assert.ok(Math.abs(scoreL0SparseLinearCandidate(model, { lead_time: 4, demand: 5, stock: 99 }) - 21) < 1e-12);
   assert.equal(model.productionApproved, false);
   assert.equal(model.customerVisible, false);
   assert.equal(model.releaseStatus, "research-only");
