@@ -20,8 +20,9 @@ import {
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
 
-type Screen = "overview" | "workspaces" | "sources" | "review" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "countries" | "review" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -41,6 +42,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "countries", label: "Countries" },
   { screen: "review", label: "Review" },
   { screen: "account", label: "Account" }
 ];
@@ -198,7 +200,9 @@ export default function App() {
         <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
 
-      {screen === "sources" ? (
+      {screen === "countries" ? (
+        <CountryDirectoryScreen />
+      ) : screen === "sources" ? (
         <FlatList
           key={twoColumns ? "sources-wide" : "sources-narrow"}
           style={styles.list}
