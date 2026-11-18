@@ -125,3 +125,54 @@ test("NovaPharm design DNA includes every original Apple archive and all three s
   assert.match(designDNA, /not evidence that every app is already compliant/);
   assert.doesNotMatch(designDNA, /all 172 (?:guidelines|articles) (?:have been )?reviewed/i);
 });
+
+
+test("manual remote Apple link reachability audit (not article review)", { skip: process.env.HIG_VERIFY_LIVE_LINKS !== "1", timeout: 780000 }, async () => {
+  // Run only by explicit GitHub workflow_dispatch. A successful HTTP response
+  // proves link reachability, NEVER that the 172 guideline bodies were read.
+  const paths = [
+    ...tracker.topics.map(item => item.markdown),
+    "https://developer.apple.com/documentation/mapkit",
+    "https://developer.apple.com/documentation/mapkitjs",
+    "https://register.apple.com/resources/imdf/"
+  ];
+  assert.equal(paths.length, 175);
+  assert.equal(new Set(paths).size, 175);
+  const results = [];
+  for (let offset = 0; offset < paths.length; offset += 4) {
+    const batch = paths.slice(offset, offset + 4);
+    const responses = await Promise.all(batch.map(async url => {
+      try {
+        const response = await fetch(url, {
+          redirect: "follow",
+          headers: { Accept: "text/markdown, text/plain;q=0.9, */*;q=0.8" },
+          signal: AbortSignal.timeout(12000)
+        });
+        const finalUrl = new URL(response.url);
+        await response.body?.cancel();
+        const approvedHost = ["developer.apple.com", "register.apple.com"].includes(finalUrl.hostname);
+        const state = !approvedHost ? "unexpected_redirect"
+          : response.status === 404 || response.status === 410 ? "broken"
+          : response.ok ? "reachable" : "unverified_http";
+        return { url, finalUrl: response.url, state, status: response.status };
+      } catch (error) {
+        return { url, state: "unverified_network", error: String(error?.name || "request_error") };
+      }
+    }));
+    results.push(...responses);
+  }
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const dir = "artifacts/apple-hig-link-health";
+  mkdirSync(dir, { recursive: true });
+  const report = {
+    checkedAt: new Date().toISOString(),
+    scope: "175 public Apple URL reachability only; neither full article review nor application conformance",
+    expected: 175,
+    reachable: results.filter(x => x.state === "reachable").length,
+    results
+  };
+  writeFileSync(dir + "/report.json", JSON.stringify(report, null, 2) + "\n");
+  assert.equal(results.length, 175);
+  const uncertain = results.filter(x => x.state !== "reachable");
+  assert.deepEqual(uncertain, [], "Apple HIG remote reachability requires review of non-200 or blocked endpoints");
+});
