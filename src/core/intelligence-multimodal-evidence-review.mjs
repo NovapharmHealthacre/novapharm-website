@@ -22,7 +22,7 @@ function clean(value) {
 function comparable(value) {
   // An exact comparison is deliberately conservative: similarity is not identity.
   // Keep alphanumeric product codes as strings, preserving leading zeroes.
-  return clean(value).normalize("NFKC").toLocaleLowerCase("en").replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
+  return clean(value).normalize("NFKC").toLocaleLowerCase("en").replace(/[^\p{L}\p{N}]+/gu, " ").trim().replace(/\s+/g, " ");
 }
 
 /**
