@@ -16,7 +16,7 @@ Source: OpenAI, [Infrastructure for deep learning](https://openai.com/index/infr
 | Cross-region capacity | Data residency, contractual transfers, disaster recovery and region-specific authorisation precede any overflow |
 
 ## Implemented source foundation
-- Shared JavaScript review-only planner: \`src/ai/compute-admission.mjs\`, with explicit deny cases and Node tests. It does not run code, access AWS, calculate authoritative cloud costs or validate user identity. No submitted boolean is accepted as a licence, security sign-off or identity claim.
+- Shared JavaScript review-only planner: `src/ai/compute-admission.mjs`, with explicit deny cases and Node tests. It does not run code, access AWS, calculate authoritative cloud costs or validate user identity. No submitted boolean is accepted as a licence, security sign-off or identity claim.
 - Protected Nova ML web pages: an infrastructure-readiness explanation is visible through the existing verified portal authorization boundary. No public training route is introduced.
 - Swift Package companion: local proposal checks only; no iOS app entitlements, cloud requests, model training or user-data transfer.
 - Kotlin Android companion: local proposal checks only; no packaged APK, Android UI, identity session or API networking.
@@ -29,7 +29,7 @@ Source: OpenAI, [Infrastructure for deep learning](https://openai.com/index/infr
 5. Only then may a separately reviewed scheduler dispatch a short-lived least-privileged container with limits, private storage/networking, no embedded cloud credentials, and explicit cancellation/termination.
 6. Immutable model artefacts record version, rights, dataset checksum, evaluation, reproducibility seed, incident path and rollback. Human sign-off controls any model promotion and output use.
 
-**No job execution exists in this change.** The planner's \`review-only\` response is not a permit, cannot be submitted to a scheduler as an authorization token, and must not be used to permit production. The local estimated-cost input is advisory and untrusted. A real system must enforce budgets in trusted infrastructure independently of the client.
+**No job execution exists in this change.** The planner's `review-only` response is not a permit, cannot be submitted to a scheduler as an authorization token, and must not be used to permit production. The local estimated-cost input is advisory and untrusted. A real system must enforce budgets in trusted infrastructure independently of the client.
 
 ## Release gates
 - Node contract tests; Apple Swift Package compile and denial tests on macOS/Xcode; Kotlin compile and denial tests on CI.
