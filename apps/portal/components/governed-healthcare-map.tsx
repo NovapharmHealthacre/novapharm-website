@@ -16,7 +16,7 @@ type MapKitNamespace = Readonly<{
     addAnnotation(annotation: unknown): void;
     destroy?: () => void;
   };
-  MarkerAnnotation: new (coordinate: unknown, options: { title: string; color: string; glyphText: string }) => unknown;
+  MarkerAnnotation: new (coordinate: unknown, options: { title: string; color: string; glyphText: string; clusteringIdentifier?: string }) => unknown;
 }>;
 
 declare global {
@@ -81,7 +81,8 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         for (const point of points) {
           map.addAnnotation(new kit.MarkerAnnotation(new kit.Coordinate(point.latitude, point.longitude), {
             title: point.title, color: point.kind === "pharmacy" ? "#E3120B" : "#424245",
-            glyphText: point.kind === "pharmacy" ? "P" : "GP"
+            glyphText: point.kind === "pharmacy" ? "P" : "GP",
+            clusteringIdentifier: `novapharm-${point.kind}`
           }));
         }
         setStatus(`Interactive Apple map: ${points.length} organisation markers with recorded coordinates. Location permission not requested.`);
