@@ -54,6 +54,48 @@ struct NovaL0ResearchMath {
     }
 }
 
+
+@available(iOS 17.0, macOS 14.0, *)
+struct NovaL0ResearchCandidate {
+    let format: String
+    let releaseStatus: String
+    let productionApproved: Bool
+    let customerVisible: Bool
+    let featureNames: [String]
+    let coefficients: [Double]
+    let bias: Double
+    let nonZeroCount: Int
+
+    // Deliberately not an approved Core ML runtime. This scores only an explicitly
+    // supplied synthetic research candidate and never opens files or networks.
+    func score(features: [String: Double]) throws -> Double {
+        guard format == "nova-l0-sparse-linear-candidate-v1" &&
+              releaseStatus == "research-only" &&
+              !productionApproved && !customerVisible &&
+              !featureNames.isEmpty && featureNames.count <= 4096 &&
+              featureNames.count == coefficients.count &&
+              featureNames.count == Set(featureNames).count &&
+              featureNames.allSatisfy({ $0.range(of: "^[a-z][a-z0-9_]{0,63}$", options: .regularExpression) != nil }) &&
+              Set(features.keys) == Set(featureNames) &&
+              coefficients.allSatisfy({ $0.isFinite }) &&
+              coefficients.filter({ $0 != 0 }).count == nonZeroCount else {
+            throw NovaL0ResearchError.invalidFeatureSchema
+        }
+        guard bias.isFinite && features.values.allSatisfy({ $0.isFinite }) else {
+            throw NovaL0ResearchError.invalidNumericalInput
+        }
+        var result = bias
+        for index in featureNames.indices {
+            guard let value = features[featureNames[index]] else {
+                throw NovaL0ResearchError.invalidFeatureSchema
+            }
+            result += value * coefficients[index]
+            if !result.isFinite { throw NovaL0ResearchError.invalidNumericalInput }
+        }
+        return result
+    }
+}
+
 // Native inference still belongs in NovaCoreMLRuntime, after signed manifest,
 // licence, model-schema, privacy, rights and independent validation checks.
 // This helper does not load a model, process medicine data, or publish predictions.
