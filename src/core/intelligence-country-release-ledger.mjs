@@ -5,6 +5,7 @@
  * ingested medicine records, clinical validation or live customer access.
  */
 import { sourcePlans } from "./intelligence-global-source-gateway.mjs";
+import { COUNTRY_ISO2, requireCountryOrGroupCode } from "./intelligence-country-iso-identifiers.mjs";
 
 export const COUNTRY_LEDGER_CONTRACT = "novapharm.intelligence.country-release-ledger.v1";
 export const EXPECTED_SOURCE_COUNT = 101;
@@ -126,6 +127,7 @@ export function buildCountryReleaseLedger(registry, { releasedPlans = sourcePlan
       candidateKey: input.candidateKey,
       region: input.region,
       country: input.country,
+      countryCode: requireCountryOrGroupCode(input.country),
       groupType: classify(input.country),
       provider: input.provider,
       dataDomains: input.domains,
@@ -158,11 +160,14 @@ export function buildCountryReleaseLedger(registry, { releasedPlans = sourcePlan
   }
   const nationalCount = [...buckets.keys()].filter(x => classify(x) === "NATIONAL").length;
   const groupsCount = [...buckets.keys()].filter(x => classify(x) !== "NATIONAL").length;
-  if (nationalCount !== EXPECTED_NATIONAL_COUNTRIES || groupsCount !== EXPECTED_GROUPS) {
+  if (nationalCount !== EXPECTED_NATIONAL_COUNTRIES || groupsCount !== EXPECTED_GROUPS ||
+      Object.keys(COUNTRY_ISO2).length !== EXPECTED_NATIONAL_COUNTRIES ||
+      new Set(Object.values(COUNTRY_ISO2)).size !== EXPECTED_NATIONAL_COUNTRIES) {
     fail("expected 77 national countries, EU/EEA and Global");
   }
   const countries = [...buckets].map(([country, sources]) => Object.freeze({
-    country, region: sources[0].region,
+    country, countryCode: requireCountryOrGroupCode(country),
+    region: sources[0].region,
     groupType: classify(country),
     candidateSourceCount: sources.length,
     sourceCandidateKeys: Object.freeze(sources.map(x => x.candidateKey)),
