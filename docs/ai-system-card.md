@@ -40,3 +40,7 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 ## Human accountability
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
+
+## Offline alignment and simulation research — 18 November 2026
+
+Nova ML now includes **source-only** evaluation contracts inspired by reward-model overoptimisation, AI-written critiques, instruction following and OpenAI Five. The offline Node module scores only caller-supplied numeric/categorical claims and returns explicitly unverified research receipts. Protected Nova ML Studio may display the directions as planned research, but it does not call these evaluators, train an agent, generate critiques or handle live source records. Swift and Kotlin contain display-only negative-claim validators, not production model runtimes. No approved model, human preference dataset, real independent ground truth, inference endpoint or production rights have been granted. See `docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md`.
