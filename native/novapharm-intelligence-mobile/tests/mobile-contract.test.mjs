@@ -62,5 +62,5 @@ test("iOS/Android preview uses the same offline multimodal conflict gate as prot
   assert.match(webWorkspace, /<MultimodalReviewPanel/);
   assert.match(core, /canPublish: false/);
   assert.match(core, /identityVerified: false/);
-  assert.doesNotMatch(mobilePanel, /fetch\\(|AsyncStorage|SecureStore|Camera|ImagePicker|access_token/);
+  assert.doesNotMatch(mobilePanel, /fetch\(|AsyncStorage|SecureStore|Camera|ImagePicker|access_token/);
 });
