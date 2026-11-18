@@ -11,6 +11,9 @@ function responseRows(sourceId,raw){
   if(sourceId==="us-fda-drugsfda")return raw?.results;
   if(sourceId==="global-clinicaltrials")return raw?.studies;
   if(sourceId==="global-europepmc")return raw?.resultList?.result;
+  if(sourceId==="global-pubmed")return raw?.esearchresult?.idlist;
+  if(sourceId==="global-chembl")return raw?.molecules;
+  if(sourceId==="global-pubchem")return raw?.IdentifierList?.CID;
   if(sourceId==="es-aemps-cima")return raw?.resultados;
   reject("unsupported source");
 }

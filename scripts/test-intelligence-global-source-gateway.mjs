@@ -30,8 +30,8 @@ function permit({ sourceId = "global-clinicaltrials", tenantId = "tenant1", coun
 }
 
 
-test("only five documented HTTPS hosts are reachable through fixed-path plans", () => {
-  assert.equal(Object.keys(sourcePlans).length, 5);
+test("only eight documented HTTPS source plans are reachable through fixed-path plans", () => {
+  assert.equal(Object.keys(sourcePlans).length, 8);
   for (const sourceId of Object.keys(sourcePlans)) {
     const p = buildGovSourcePlan({ sourceId, term: "Apixaban", limit: 5 });
     assert.equal(new URL(p.url).protocol, "https:");
@@ -42,6 +42,9 @@ test("only five documented HTTPS hosts are reachable through fixed-path plans", 
   assert.match(buildGovSourcePlan({ sourceId: "es-aemps-cima", term: "Apixaban" }).url, /nombre=Apixaban/);
   assert.match(buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban" }).url, /brandname=Apixaban/);
   assert.match(buildGovSourcePlan({ sourceId: "global-europepmc", term: "Apixaban" }).url, /pageSize=5/);
+  assert.match(buildGovSourcePlan({ sourceId: "global-pubmed", term: "Apixaban" }).url, /esearch.fcgi\?db=pubmed.*retmax=5.*retmode=json/);
+  assert.match(buildGovSourcePlan({ sourceId: "global-chembl", term: "Apixaban" }).url, /search.json\?q=Apixaban.*limit=5/);
+  assert.match(buildGovSourcePlan({ sourceId: "global-pubchem", term: "Apixaban" }).url, /compound\/name\/Apixaban\/cids\/JSON/);
 });
 test("bounds reject query injection, unsupported hosts and unbounded pages", () => {
   for (const term of ['" OR true', "https://evil.example", "a", " ".repeat(100), "a\nb"]) {
@@ -173,4 +176,29 @@ test("evaluation metadata fingerprint changes when raw source payload changes", 
   const second = buildEvaluationEnvelope({ plan, normalized: normaliseGovSourceResult(plan, b), raw: b, grant, capturedAt: TEST_NOW });
   assert.notEqual(first.responseSha256, second.responseSha256);
   assert.equal(first.canPublish, false);
+});
+
+test("PubMed, ChEMBL and PubChem retain database-specific identifiers without suggesting clinical conclusions", () => {
+  const cases = [
+    { sourceId: "global-pubmed", raw: { esearchresult: { idlist: ["12345678"] } }, localId: "12345678" },
+    { sourceId: "global-chembl", raw: { molecules: [{ molecule_chembl_id: "CHEMBL25", pref_name: "Aspirin" }] }, localId: "CHEMBL25" },
+    { sourceId: "global-pubchem", raw: { IdentifierList: { CID: [2244] } }, localId: "2244" }
+  ];
+  for (const x of cases) {
+    const plan = buildGovSourcePlan({ sourceId: x.sourceId, term: "Apixaban" });
+    const result = normaliseGovSourceResult(plan, x.raw);
+    assert.equal(result.records[0].localId, x.localId);
+    assert.equal(result.jurisdiction, "GLOBAL");
+    assert.equal(result.canPublish, false);
+    assert.equal(result.dataState, "unreconciled_upstream_preview");
+  }
+  assert.equal(
+    normaliseGovSourceResult(buildGovSourcePlan({ sourceId: "global-pubchem", term: "Apixaban" }), { IdentifierList: { CID: [-1, 12.5] } }).records.length, 0
+  );
+});
+test("new global discovery adapters reject non-JSON or unrecognized schema", () => {
+  for (const sourceId of ["global-pubmed", "global-chembl", "global-pubchem"]) {
+    assert.throws(() => normaliseGovSourceResult(buildGovSourcePlan({ sourceId, term: "Apixaban" }), {}), /Unexpected source schema/);
+    assert.throws(() => buildGovSourcePlan({ sourceId, term: "a/b" }), /Invalid search term/);
+  }
 });

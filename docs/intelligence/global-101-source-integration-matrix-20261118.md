@@ -12,9 +12,9 @@ Every entry remains unverified for production, has no approved source reuse term
 |---:|---|---|---|---|---|
 | 1 | Global | [US ClinicalTrials.gov](https://clinicaltrials.gov/data-api/api) | API | documented api candidate | Code: bounded API preview |
 | 2 | Global | [Europe PMC](https://www.ebi.ac.uk/europepmc/webservices/rest/) | API | documented api candidate | Code: bounded API preview |
-| 3 | Global | [NCBI PubMed](https://www.ncbi.nlm.nih.gov/books/NBK25501/) | API | documented api candidate | No source adapter code |
-| 4 | Global | [ChEMBL](https://www.ebi.ac.uk/chembl/api/data/) | API | documented api candidate | No source adapter code |
-| 5 | Global | [PubChem](https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest) | API | documented api candidate | No source adapter code |
+| 3 | Global | [NCBI PubMed](https://www.ncbi.nlm.nih.gov/books/NBK25501/) | API | documented api candidate | Code: bounded API preview |
+| 4 | Global | [ChEMBL](https://www.ebi.ac.uk/chembl/api/data/) | API | documented api candidate | Code: bounded API preview |
+| 5 | Global | [PubChem](https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest) | API | documented api candidate | Code: bounded API preview |
 | 6 | Global | [UN Comtrade](https://comtradeapi.un.org/) | API | documented api candidate | No source adapter code |
 | 7 | Global | [EPO OPS](https://www.epo.org/en/searching-for-patents/data/web-services/ops) | API | documented api candidate | No source adapter code |
 | 8 | Global | [WHO Global Health Observatory](https://www.who.int/data/gho/info/gho-odata-api) | API-review | documented api candidate | No source adapter code |
