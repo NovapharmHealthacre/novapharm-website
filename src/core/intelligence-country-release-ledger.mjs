@@ -134,9 +134,6 @@ export function buildCountryReleaseLedger(registry) {
   if (!Array.isArray(registry) || registry.length !== EXPECTED_SOURCE_COUNT) {
     fail("expected immutable 101-source candidate inventory");
   }
-  // Independently pin every country-to-publisher key from the owner-requested
-  // baseline. A different source cannot silently replace a registered one.
-  assertExactCountrySourceCoverage(registry);
   const seen = new Set();
   const sourceRows = registry.map(input => {
     cleanSource(input);
@@ -181,6 +178,9 @@ export function buildCountryReleaseLedger(registry) {
       nextStep: nextStep({ route, adapterContractMerged: merged })
     });
   });
+  // Validate metadata and duplicate keys first, then independently verify
+  // every source belongs to its immutable baseline country and authority.
+  assertExactCountrySourceCoverage(sourceRows);
   const buckets = new Map();
   for (const item of sourceRows) {
     const key = item.country;
