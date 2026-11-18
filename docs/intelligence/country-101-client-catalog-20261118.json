@@ -234,7 +234,7 @@
         "publisherName": "AGEMED",
         "referenceUrl": "https://apiwww.agemed.gob.bo/api/listautcom",
         "leadType": "official-registration-list",
-        "caveat": "Despite API-looking path, machine schema, stability, rate limits and rights have not been verified",
+        "caveat": "The AGEMED URL currently presents an HTML daily download listing dated 18 November 2026, not a validated JSON medicine API. Verify downloadable medicine files, schema, access terms, commercial rights and update cadence.",
         "status": "publisher-reference-only-not-integrated",
         "rightsStatus": "not-reviewed"
       },
@@ -1340,7 +1340,7 @@
         "publisherName": "Malta Medicines Authority via Malta Data Portal",
         "referenceUrl": "https://portal.data.gov.mt/dataset/medicines-list-authorised-medicines-in-malta",
         "leadType": "official-dataset-directory",
-        "caveat": "Portal lists an XLS resource under CC BY 4.0; resource-specific terms and refresh must be reviewed",
+        "caveat": "The Malta Data Portal lists a medicinal-products XLS under CC BY 4.0 metadata, but states its catalogue is a work in progress and not an official record without confirmation. Verify Medicines Authority confirmation, licence scope, freshness and downstream reuse.",
         "status": "publisher-reference-only-not-integrated",
         "rightsStatus": "not-reviewed"
       },
