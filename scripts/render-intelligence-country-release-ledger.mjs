@@ -29,12 +29,13 @@ if (format[0] === "--json") {
     "; source-only merged API contracts: " + report.sourceOnlyAdapterCount +
     "; verified live countries: " + report.verifiedProductionCountries + ".");
   line.push("");
-  line.push("| Region | Country / group | Country code | Candidates | Source-only adapters | Verified production | Specific next actions |");
-  line.push("|---|---|---|---:|---:|---:|---|");
+  line.push("| Region | Country / group | Country code | Candidates | Source-only adapters | Engineering milestone | Verified production | Specific next actions |");
+  line.push("|---|---|---|---:|---:|---:|---:|---|");
   for (const c of report.countries) {
     const actions = c.nextSteps.map(x => x.source + ": " + x.action).join("; ");
     line.push("| " + [c.region,c.country,c.countryCode,c.candidateSourceCount,
-      c.codedAdapterCandidateCount,c.verifiedProductionCompletionPercent + "%",
+      c.codedAdapterCandidateCount,c.engineeringMilestonePercent + "%",
+      c.verifiedProductionCompletionPercent + "%",
       actions].map(esc).join(" | ") + " |");
   }
   line.push("");
