@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - "services/clip/**"
+      - "server.mjs"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - "docs/ai-model-register.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/intelligence/visual-search-cross-platform-contract.json"
       - "src/core/intelligence-visual-search.mjs"
       - "scripts/test-intelligence-visual-search.mjs"
       - "apps/portal/app/gateway/**"
