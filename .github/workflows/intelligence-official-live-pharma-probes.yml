@@ -1,0 +1,70 @@
+name: Intelligence official pharmaceutical live-source probe (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-official-live-pharma-probes.mjs'
+      - 'scripts/test-intelligence-official-live-pharma-probes.mjs'
+      - 'scripts/run-intelligence-official-live-pharma-probes.mjs'
+      - 'docs/intelligence/official-live-pharma-probes-20261118.md'
+      - '.github/workflows/intelligence-official-live-pharma-probes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: \${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-live-only:
+    name: US FDA + Singapore HSA live public source schema and safety
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Verify bounded source reader and negative tests locally
+        run: |
+          node --check src/core/intelligence-official-live-pharma-probes.mjs
+          node --check scripts/test-intelligence-official-live-pharma-probes.mjs
+          node --check scripts/run-intelligence-official-live-pharma-probes.mjs
+          node --test scripts/test-intelligence-official-live-pharma-probes.mjs
+      - name: Read one real publisher record per source, not a customer release
+        run: |
+          mkdir -p artifacts/live-public-source-observations
+          node scripts/run-intelligence-official-live-pharma-probes.mjs > \
+            artifacts/live-public-source-observations/receipts.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+          const report=JSON.parse(readFileSync(
+            "artifacts/live-public-source-observations/receipts.json","utf8"));
+          if(report.customerDataEnabled!==false ||
+            report.containsPharmaceuticalSourceRecords!==false ||
+            report.regulatedEvidenceAdmitted!==false ||
+            report.sources.length!==2 ||
+            report.sources.some(x=>!x.publicPublisherEndpointResponded ||
+              x.schemaBoundRecordCount!==1 || x.customerCountryLive ||
+              x.canPublish || x.actualProductionApiConnected ||
+              x.rawRecordsRetained || x.sourceRightsForCommercialAiReuseReviewed)){
+            throw new Error("Real publisher readiness must remain a non-customer observation");
+          }
+          const sources=report.sources.map(x=>x.sourceId).sort();
+          if(JSON.stringify(sources)!==JSON.stringify([
+            "sg-hsa-registered-products","us-fda-drugsfda"])){
+            throw new Error("Unexpected source in source-live report");
+          }
+          console.log("Official source HTTP and schema confirmed; no record publication or production admission.");
+          NODE
+      - name: Archive SHA-256 and publication-free evidence receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-official-source-live-receipts
+          path: artifacts/live-public-source-observations/receipts.json
+          if-no-files-found: error
+          retention-days: 7
