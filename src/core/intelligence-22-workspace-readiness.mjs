@@ -138,6 +138,11 @@ export function assessIntelligence22Workspaces({
       scientificMethodReferences: Object.freeze(scienceMethods.methods.filter(
         item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id)),
       scientificMethodReferencesIndependentlyValidated: false,
+      scientificMethodValidationTracks: Object.freeze([...new Set(
+        scienceMethods.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug))
+          .map(item => item.validationTrack))]),
+      scientificDossierRequiredStages: Object.freeze([...scienceMethods.claimIntegrityPolicy.requiredStages]),
+      scientificDossierIndependentEvidenceAccepted: false,
       missingChecks: Object.freeze(blockers),
       // These are IMPLEMENTATION states, not claims of released function.
       implementationState: blockers.length
