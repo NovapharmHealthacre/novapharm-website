@@ -2,32 +2,32 @@
 // It does not fetch data or grant AI, medical, source or production permissions.
 import Foundation
 
-struct NovaSparseCircuitSummary: Decodable {
-    let schemaVersion: String
-    let valid: Bool
-    let status: String
-    let modelId: String
-    let taskId: String
-    let nodeCount: Int
-    let edgeCount: Int
-    let lossDeltaCircuitVsBaseline: Double
-    let lossDeltaAblatedVsCircuit: Double
-    let sampleCount: Int
-    let ablation: String
-    let mechanisticExplanationVerified: Bool
-    let productionEligible: Bool
-    let clinicalUsePermitted: Bool
+public struct NovaSparseCircuitSummary: Decodable {
+    public let schemaVersion: String
+    public let valid: Bool
+    public let status: String
+    public let modelId: String
+    public let taskId: String
+    public let nodeCount: Int
+    public let edgeCount: Int
+    public let lossDeltaCircuitVsBaseline: Double
+    public let lossDeltaAblatedVsCircuit: Double
+    public let sampleCount: Int
+    public let ablation: String
+    public let mechanisticExplanationVerified: Bool
+    public let productionEligible: Bool
+    public let clinicalUsePermitted: Bool
 }
 
-enum NovaSparseCircuitReadError: Error {
+public enum NovaSparseCircuitReadError: Error {
     case unsupportedOrUntrusted
 }
 
-struct NovaSparseCircuitReader {
+public struct NovaSparseCircuitReader {
     // Data must already have come from an authenticated, authorised app service.
     // Decoding is NOT authentication, signature verification or model validation.
-    static func readResearchSummary(_ data: Data) throws -> NovaSparseCircuitSummary {
-        let summary = try JSONDecoder().decode(NovaSparseCircuitSummary.self, from: data)
+    public static func readResearchSummary(_ data: Data) throws -> NovaSparseCircuitSummary {
+        public let summary = try JSONDecoder().decode(NovaSparseCircuitSummary.self, from: data)
         guard summary.schemaVersion == "npi.sparse-circuit.v1",
               summary.valid,
               summary.status == "unverified-research-candidate",
