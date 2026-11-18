@@ -1,0 +1,68 @@
+name: Nova ML deep-learning infrastructure cross-platform contract
+
+on:
+  pull_request:
+    paths:
+      - "src/ai/compute-admission.mjs"
+      - "scripts/test-nova-compute-admission.mjs"
+      - "scripts/test-nova-infrastructure-integration.mjs"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "apps/portal/data/nova-ml-infrastructure.ts"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "docs/architecture/deep-learning-infrastructure-20261118.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-risk-register.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - "scripts/aws/contact-release-routing.test.mjs"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
+      - ".github/workflows/nova-ml-infrastructure-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/ai/compute-admission.mjs"
+      - "scripts/test-nova-compute-admission.mjs"
+      - "scripts/test-nova-infrastructure-integration.mjs"
+      - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "apps/portal/data/nova-ml-infrastructure.ts"
+      - "native/novapharm-intelligence-apple/**"
+      - "native/novapharm-intelligence-android/**"
+      - "docs/architecture/deep-learning-infrastructure-20261118.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-risk-register.md"
+      - "config/intelligence/owner-production-constraints.json"
+      - "scripts/aws/contact-release-routing.test.mjs"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
+      - ".github/workflows/nova-ml-infrastructure-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Run fail-closed planning and cross-platform source contract tests
+        run: node --test scripts/test-nova-compute-admission.mjs scripts/test-nova-infrastructure-integration.mjs
+      - name: Run existing protected Nova ML UI parity tests
+        run: node --test scripts/test-nova-ml-apple-adaptation.mjs
+  android-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install Kotlin CLI for source-only contract compilation
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq kotlin
+      - name: Compile and run local Kotlin deny tests (not an Android app build)
+        run: |
+          kotlinc native/novapharm-intelligence-android/NovaComputePlan.kt native/novapharm-intelligence-android/NovaComputePlanTest.kt -include-runtime -d /tmp/novapharm-android-compute-tests.jar
+          java -jar /tmp/novapharm-android-compute-tests.jar
+      - name: State release boundary
+        run: echo "Kotlin CLI tests do not prove Android device compatibility, signing, store publication or backend execution."
