@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/test-corporate-live-acceptance.mjs'
       - 'scripts/test-corporate-live-logo-contract.mjs'
+      - 'scripts/test-corporate-live-publication-gate.mjs'
       - 'scripts/test-corporate-contact-failure.mjs'
       - '.github/workflows/corporate-live-full-acceptance.yml'
   workflow_run:
