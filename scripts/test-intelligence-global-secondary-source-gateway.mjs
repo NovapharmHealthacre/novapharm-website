@@ -242,3 +242,47 @@ test("Singapore HSA responses must attest the exact national dataset and require
     assert.throws(() => normaliseSecondarySourceResult(plan, raw), /Unexpected HSA resource identity or schema/);
   }
 });
+
+
+test("secondary rights and upstream secrets are never propagated from trusted callbacks", async () => {
+  const secret = "PRIVATE_INTERNAL_DATA_CREDENTIAL";
+  let outgoing = 0;
+  const req = {sourceId:"sg-hsa-products",term:"Apixaban",tenantId:"tenantA"};
+  for (const config of [
+    {authorize: async()=>{throw Error(secret);}, transport:async()=>{outgoing++;throw Error(secret);}, now:()=>NOW},
+    {authorize: async ctx=>authGrant(ctx), transport:async()=>{outgoing++;throw Error(secret);}, now:()=>NOW},
+    {authorize: async ctx=>authGrant(ctx), transport:async()=>{
+      outgoing++;return {ok:true,headers:{get:()=>{throw Error(secret);}}};
+    }, now:()=>NOW}
+  ]) {
+    const reader = createSecondarySourceReader(config);
+    await assert.rejects(reader.read(req), err =>
+      err instanceof Error && !err.message.includes(secret) &&
+      /Source rights not approved|Upstream unavailable/.test(err.message));
+  }
+  assert.equal(outgoing, 2);
+});
+
+test("secondary trusted clock failures and out-of-range dates always fail closed", async () => {
+  const secret = "PRIVATE_CLOCK_SERVICE_TOKEN";
+  const payload = {success:true,result:{resource_id:HSA_DATASET,fields:HSA_FIELDS,
+    records:[{LicenceNo:"SIN00001P",Productname:"Test"}]}};
+  for (let failAt=1;failAt<=3;failAt++) {
+    let ticks=0;
+    const reader = createSecondarySourceReader({
+      authorize:async ctx=>authGrant(ctx), transport:async()=>json(payload),
+      now:()=>{if(++ticks===failAt)throw Error(secret);return NOW;}
+    });
+    await assert.rejects(reader.read({
+      sourceId:"sg-hsa-products",term:"Apixaban",tenantId:"tenantA"
+    }), err=>err instanceof Error && !err.message.includes(secret) &&
+      /Invalid trusted server time|Source rights revoked during upstream request/.test(err.message));
+  }
+  const invalid=createSecondarySourceReader({
+    authorize:async ctx=>authGrant(ctx), transport:async()=>json(payload),
+    now:()=>Number.MAX_SAFE_INTEGER
+  });
+  await assert.rejects(invalid.read({
+    sourceId:"sg-hsa-products",term:"Apixaban",tenantId:"tenantA"
+  }),/Invalid trusted server time/);
+});

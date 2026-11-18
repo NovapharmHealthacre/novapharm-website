@@ -21,7 +21,7 @@ const HEADERS = Object.freeze([
 
 function fail(message) { throw new Error("HSA bulk candidate rejected: " + message); }
 function clock(value) {
-  if (!Number.isSafeInteger(value) || value < 0) fail("invalid trusted server time");
+  if (!Number.isSafeInteger(value) || value < 0 || value > 8_640_000_000_000_000) fail("invalid trusted server time");
   return value;
 }
 function safeIdentifier(value, max = 240) {
@@ -126,17 +126,27 @@ export function createHsaBulkCandidateEvaluator({ authorize, now = () => Date.no
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         fail("tenant context");
       }
-      const rights = await authorize({
-        tenantId, sourceId: SOURCE_ID, country: "SG",
-        domain: "regulatory", purpose: "internal-evaluation"
-      });
-      const evaluatedAt = clock(now());
-      const grant = assertInternalEvaluationPermit({
-        permit: rights, sourceId: SOURCE_ID, tenantId,
-        country: "SG", domain: "regulatory", now: evaluatedAt
-      });
+      let rights;
+      try {
+        rights = await authorize({
+          tenantId, sourceId: SOURCE_ID, country: "SG",
+          domain: "regulatory", purpose: "internal-evaluation"
+        });
+      } catch { fail("source rights unavailable before validation"); }
+      let evaluatedAt;
+      try { evaluatedAt = clock(now()); }
+      catch { fail("invalid trusted server time"); }
+      let grant;
+      try {
+        grant = assertInternalEvaluationPermit({
+          permit: rights, sourceId: SOURCE_ID, tenantId,
+          country: "SG", domain: "regulatory", now: evaluatedAt
+        });
+      } catch { fail("source rights not approved before validation"); }
       const candidate = parseHsaCsvBytes(bytes);
-      const capturedAt = clock(now());
+      let capturedAt;
+      try { capturedAt = clock(now()); }
+      catch { fail("invalid trusted server time"); }
       if (capturedAt < evaluatedAt || capturedAt >= Date.parse(grant.validUntil)) {
         fail("rights expired during validation");
       }
@@ -151,7 +161,9 @@ export function createHsaBulkCandidateEvaluator({ authorize, now = () => Date.no
       } catch {
         fail("source rights unavailable after validation");
       }
-      const reviewedAt = clock(now());
+      let reviewedAt;
+      try { reviewedAt = clock(now()); }
+      catch { fail("invalid trusted server time"); }
       if (reviewedAt < capturedAt || reviewedAt >= Date.parse(grant.validUntil)) {
         fail("rights expired after validation");
       }

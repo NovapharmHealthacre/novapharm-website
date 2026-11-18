@@ -157,3 +157,33 @@ test("HSA bulk rechecks revocation and licence version after parsing, never retu
     assert.equal(calls, 2);
   }
 });
+
+
+test("HSA CSV rights and trusted-clock callback errors cannot reveal backend credentials", async () => {
+  const secret="PRIVATE_HSA_BACKEND_CREDENTIAL";
+  const file=csv(row());
+  let times=0;
+  const denied=createHsaBulkCandidateEvaluator({
+    authorize:async()=>{throw Error(secret);},
+    now:()=>{times++;return NOW;}
+  });
+  await assert.rejects(denied.evaluate({tenantId:"tenantA",bytes:file}),err=>
+    err.message==="HSA bulk candidate rejected: source rights unavailable before validation" &&
+    !err.message.includes(secret));
+  assert.equal(times,0);
+  for(let failAt=1;failAt<=3;failAt++){
+    let tick=0;
+    const evaluator=createHsaBulkCandidateEvaluator({
+      authorize:async ctx=>grant(ctx),
+      now:()=>++tick===failAt ? (()=>{throw Error(secret);})() : NOW
+    });
+    await assert.rejects(evaluator.evaluate({tenantId:"tenantA",bytes:file}),err=>
+      err.message==="HSA bulk candidate rejected: invalid trusted server time" &&
+      !err.message.includes(secret));
+  }
+  const invalid=createHsaBulkCandidateEvaluator({
+    authorize:async ctx=>grant(ctx),now:()=>Number.MAX_SAFE_INTEGER
+  });
+  await assert.rejects(invalid.evaluate({tenantId:"tenantA",bytes:file}),
+    /HSA bulk candidate rejected: invalid trusted server time/);
+});

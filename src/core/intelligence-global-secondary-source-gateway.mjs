@@ -48,7 +48,7 @@ function sourceField(value, max) {
 }
 
 function trustedMillis(value) {
-  if (!Number.isSafeInteger(value) || value < 0) throw new Error("Invalid trusted server time");
+  if (!Number.isSafeInteger(value) || value < 0 || value > 8_640_000_000_000_000) throw new Error("Invalid trusted server time");
   return value;
 }
 
@@ -189,21 +189,36 @@ export function createSecondarySourceReader({
       if (typeof tenantId !== "string" || !/^[A-Za-z0-9_-]{2,64}$/.test(tenantId)) {
         throw new Error("Invalid tenant context");
       }
-      const permit = await authorize({
-        sourceId, tenantId, purpose: "internal-evaluation",
-        domain: plan.domain, country: plan.country
-      });
-      const issuedAt = trustedMillis(now());
-      const grant = assertInternalEvaluationPermit({
-        permit, sourceId, tenantId, domain: plan.domain, country: plan.country, now: issuedAt
-      });
-      const response = await transport(plan.url, {
-        method: "GET", redirect: "error", credentials: "omit", cache: "no-store",
-        headers: { accept: "application/json" },
-        signal: AbortSignal.timeout(TIMEOUT_MS)
-      });
-      const raw = await boundedJson(response);
-      const completedAt = trustedMillis(now());
+      let permit;
+      try {
+        permit = await authorize({
+          sourceId, tenantId, purpose: "internal-evaluation",
+          domain: plan.domain, country: plan.country
+        });
+      } catch { throw new Error("Source rights not approved"); }
+      let issuedAt;
+      try { issuedAt = trustedMillis(now()); }
+      catch { throw new Error("Invalid trusted server time"); }
+      let grant;
+      try {
+        grant = assertInternalEvaluationPermit({
+          permit, sourceId, tenantId, domain: plan.domain, country: plan.country, now: issuedAt
+        });
+      } catch { throw new Error("Source rights not approved"); }
+      let response;
+      try {
+        response = await transport(plan.url, {
+          method: "GET", redirect: "error", credentials: "omit", cache: "no-store",
+          headers: { accept: "application/json" },
+          signal: AbortSignal.timeout(TIMEOUT_MS)
+        });
+      } catch { throw new Error("Upstream unavailable"); }
+      let raw;
+      try { raw = await boundedJson(response); }
+      catch { throw new Error("Upstream unavailable"); }
+      let completedAt;
+      try { completedAt = trustedMillis(now()); }
+      catch { throw new Error("Invalid trusted server time"); }
       if (completedAt < issuedAt || completedAt >= Date.parse(grant.validUntil)) {
         throw new Error("Evaluation rights expired during upstream request");
       }
