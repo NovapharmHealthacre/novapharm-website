@@ -128,6 +128,9 @@ export function validateOfficialLiveSample(sourceId, payload) {
   if (sourceId === "us-fda-drugsfda") {
     if (!Array.isArray(payload.results) || payload.results.length !== 1 ||
         !payload.meta || !safeLabel(payload.meta.last_updated) ||
+        !/^\d{4}-\d{2}-\d{2}$/u.test(payload.meta.last_updated) ||
+        !Number.isFinite(Date.parse(payload.meta.last_updated)) ||
+        new Date(payload.meta.last_updated).toISOString().slice(0,10)!==payload.meta.last_updated ||
         !Number.isSafeInteger(payload.meta?.results?.total) ||
         payload.meta.results.total < 1) {
       fail("US FDA application response schema mismatch");
@@ -297,6 +300,13 @@ export function createOfficialLivePharmaQuarantineReader({
          metadata.resourceId!==source.releaseResourceId ||
          metadata.datasetKey!==source.datasetKey) {
         fail("publisher release metadata not independently bound");
+      }
+      // For FDA, the authoritative openFDA dataset revision has a public
+      // last_updated field. The release inventory must refer to that exact
+      // revision, not an invented or stale date.
+      if(sourceId==="us-fda-drugsfda" &&
+         metadata.publishedOn!==sample.publisherLastUpdated) {
+        fail("official FDA dataset revision differs from release inventory");
       }
       let manifest;
       try {
