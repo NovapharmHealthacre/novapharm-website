@@ -49,6 +49,20 @@ class NovaSparseCircuitReaderTest {
         }
     }
 
+    @Test fun numericStringAndMalformedObjectRejected() {
+        for (field in listOf("nodeCount", "edgeCount", "sampleCount")) {
+            val item = candidate().put(field, "12")
+            assertThrows(IllegalArgumentException::class.java) {
+                NovaSparseCircuitReader.readResearchSummary(item.toString())
+            }
+        }
+        for (payload in listOf("", "{invalid-json", "[]")) {
+            assertThrows(IllegalArgumentException::class.java) {
+                NovaSparseCircuitReader.readResearchSummary(payload)
+            }
+        }
+    }
+
     @Test fun invalidIdsCountsOrMetricsRejected() {
         val bads = listOf(
             candidate().put("modelId", "path/to/private"),
