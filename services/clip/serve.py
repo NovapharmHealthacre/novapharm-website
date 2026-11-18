@@ -10,6 +10,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from rights import validate_public_asset, valid_expiry
 
 CONTRACT = "novapharm.intelligence.visual-search.v1"
 
@@ -22,7 +23,11 @@ def approved_file(path_key, sha_key):
     path = Path(filename).resolve(strict=True)
     if not path.is_file() or path.stat().st_size > 2_000_000_000:
         raise RuntimeError("Invalid model or index file.")
-    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    hash_state = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            hash_state.update(chunk)
+    digest = hash_state.hexdigest()
     if not hmac.compare_digest(digest, expected):
         raise RuntimeError("Model or index integrity failure.")
     return path
@@ -50,15 +55,12 @@ def prepare():
         raise RuntimeError("Index size or approval is invalid.")
     dimension = int(model.text_projection.shape[1])
     features = []
+    seen = set()
     for item in rows:
-        if not isinstance(item, dict) or item.get("rightsApproved") is not True or item.get("publicAssetOnly") is not True:
-            raise RuntimeError("Index contains an unapproved asset.")
-        if not isinstance(item.get("assetId"), str) or not isinstance(item.get("title"), str):
-            raise RuntimeError("Malformed index metadata.")
-        if not isinstance(item.get("sourceUrl"), str) or not item["sourceUrl"].startswith("https://"):
-            raise RuntimeError("Missing verified source.")
-        if not isinstance(item.get("rightsReference"), str) or not item["rightsReference"]:
-            raise RuntimeError("Missing rights record.")
+        try:
+            validate_public_asset(item, indexed=True, seen=seen)
+        except ValueError as exc:
+            raise RuntimeError("Index contains an invalid, expired or revoked source record.") from exc
         vector = item.get("vector")
         if not isinstance(vector, list) or len(vector) != dimension or not all(isinstance(value, (int, float)) for value in vector):
             raise RuntimeError("Index vector dimensions are invalid.")
@@ -121,7 +123,11 @@ def make_handler(runtime):
                 encoded = model.encode_text(clip.tokenize([query.strip()], truncate=True)).float()[0]
                 encoded /= encoded.norm().clamp_min(1e-12)
                 similarities = embeddings @ encoded
-                ranks = torch.argsort(similarities, descending=True)[:limit].tolist()
+                ranks = [
+                    index for index in torch.argsort(similarities, descending=True).tolist()
+                    if assets[index]["rightsStatus"] == "active"
+                    and valid_expiry(assets[index]["rightsExpiryDate"])
+                ][:limit]
             results = [{"assetId": assets[i]["assetId"], "title": assets[i]["title"],
                         "rightsReference": assets[i]["rightsReference"], "sourceUrl": assets[i]["sourceUrl"]}
                        for i in ranks]
