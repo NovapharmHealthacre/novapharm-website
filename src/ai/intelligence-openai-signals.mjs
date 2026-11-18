@@ -31,6 +31,9 @@ const FIELDS = Object.freeze(Object.fromEntries(signalsV3PreviewAllowlist.map(fi
 const MONTH = /^20[0-9]{2}-(0[1-9]|1[0-2])-01$/;
 const QUARTER = /^20[0-9]{2}-(01|04|07|10)-01$/;
 const COUNTRY = /^[A-Z]{2}$/;
+// OpenAI Signals v3.0 sample covers July 2024–September 2026; dates are UTC labels.
+const MONTH_START = "2024-07-01", MONTH_END = "2026-09-01";
+const QUARTER_START = "2024-07-01", QUARTER_END = "2026-07-01";
 // Accept records/proposals with plain own data properties only. Reject accessor,
 // symbol, prototype-inherited and malformed Proxy inputs without invoking getters.
 const plain = value => {
@@ -71,8 +74,8 @@ export function assessSignalsAggregateRow(table, row) {
   if (!plain(row)) return answer(["invalid-record"]);
   const reasons = [];
   if (Reflect.ownKeys(row).some(key => !fields.includes(key)) || fields.some(key => !Object.hasOwn(row, key))) reasons.push("unexpected-fields");
-  if ("month" in row && (typeof row.month !== "string" || !MONTH.test(row.month))) reasons.push("invalid-month");
-  if ("quarter" in row && (typeof row.quarter !== "string" || !QUARTER.test(row.quarter))) reasons.push("invalid-quarter");
+  if ("month" in row && (typeof row.month !== "string" || !MONTH.test(row.month) || row.month < MONTH_START || row.month > MONTH_END)) reasons.push("invalid-month");
+  if ("quarter" in row && (typeof row.quarter !== "string" || !QUARTER.test(row.quarter) || row.quarter < QUARTER_START || row.quarter > QUARTER_END)) reasons.push("invalid-quarter");
   if ("country" in row && (typeof row.country !== "string" || !COUNTRY.test(row.country))) reasons.push("invalid-country");
   if ("topic" in row && !TOPICS.has(row.topic)) reasons.push("invalid-topic");
   if ("work_related" in row && ![0, 1, "0", "1"].includes(row.work_related)) reasons.push("invalid-work-classification");
