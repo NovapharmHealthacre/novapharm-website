@@ -64,7 +64,9 @@ export function buildSecondarySourcePlan({ sourceId, term, limit = 5 } = {}) {
   switch (sourceId) {
     case "sg-hsa-products":
       url.searchParams.set("resource_id", "d_767279312753558cbf19d48344577084");
-      url.searchParams.set("q", query);
+      // data.gov.sg documents datastore q as a JSON object keyed by column;
+      // a bare string is not a schema-bound product-name query.
+      url.searchParams.set("q", JSON.stringify({ Productname: query }));
       url.searchParams.set("limit", String(limit));
       break;
     case "gb-nhsbsa-dataset-catalogue":
