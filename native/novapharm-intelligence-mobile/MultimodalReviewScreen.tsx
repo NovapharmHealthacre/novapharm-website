@@ -6,7 +6,8 @@ import React, { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { assessMultimodalEvidence, type MultimodalReviewResult } from "../../src/core/intelligence-multimodal-evidence-review.mjs";
 import { assessMultimodalResearchBasis } from "../../src/core/intelligence-multimodal-research-basis.mjs";
-import { mobileDarkPalette, mobileLightPalette, type MobilePalette } from "./appearance";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 const fieldsInitial = {
   sourceReference: "", country: "", visionMedicineName: "", imageTextMedicineName: "",
