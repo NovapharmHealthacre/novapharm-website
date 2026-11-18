@@ -39,13 +39,22 @@ Android signed app --- future approved session bridge --- /gateway/v1/... |
 - Board-only readiness and CSRF-protected POST search, per-fingerprint rate limit, request size cap, strict fixed BFF paths, no public credentials and hard fail-closed runtime flag.
 - Optional Python local-only CLIP inference from pre-approved SHA-256 checkpoint and rights-approved public artwork index; no auto-download. Candidate rank only; no exposed numeric pseudo-confidence.
 - Portal Nova Device Intelligence English text-search panel with explicit disabled state, human-review notice and source attribution; users cannot turn on a backend simply by checking a box.
-- Swift package visual-retrieval source client and separate Kotlin Android source client; neither is a distributable app.
+- Swift package visual-retrieval source client with explicit redirect denial, and separate Gradle-built Kotlin/JVM Android adapter candidate. Neither is a signed or distributable app.
+- Machine-enforced public-image metadata: active rights state, UTC expiry date, exact image hash, duplicate rejection and no external image downloads. Source indexing and search deny expired entries; a separately authorised operator must disable/rebuild on external rights revocation.
+- A versioned common contract in `docs/intelligence/visual-search-cross-platform-contract.json`, enforced by Node, Python, native Apple and Kotlin fail-closed source tests.
+- An authenticated readiness check in the web interface disables the search action until the private research configuration is available; a configured candidate is not proof of running inference.
 
 **Not implemented/approved:**
 - No downloaded/approved CLIP weights, populated approved image catalogue, private inferencing server deployment or AWS resources; no actual image search currently running.
-- No native iOS/Android app target, app-store distribution, device secure-login proof or camera ingestion.
+- No signed iOS/Android app target, app-store distribution, device secure-login proof or camera ingestion. A Kotlin/JVM test module is not an Android APK.
 - No authorised clinical use, packaging verification, OCR-backed strength validation, regulatory decision capability or accepted medicine/tenant evidence.
 - No independent domain/abuse/rights review or exact-head production proof.
+
+## Standing architecture and release DNA
+
+The source and governance controls are not tied to a single page: all future visual retrieval entry points (Portal, iOS, Android, API or research evaluations) must inherit the single `novapharm.intelligence.visual-search.v1` contract, source-level rights, disabled-by-default release state, exact board-access gate, human verification, absence of medical or regulatory decision authority and no unapproved model egress.
+
+A merge can only establish these **source-level foundations**. Evidence of completed functional integration additionally requires rights-cleared model and catalogue artifacts, Android and iOS signed application releases, protected pilot, cross-platform measured quality, incident/revocation testing, and public/protected deployment attestation. Until those are independently available, this programme must never be called "100% integrated and live".
 
 ## Acceptance checklist before any pilot activation
 
