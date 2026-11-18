@@ -384,3 +384,165 @@ test("an expired or invalid second clock withholds already fetched internal sour
     assert.equal(network, 1);
   }
 });
+
+
+test("all nine source gateway contracts require stable rights after transport, not only at request start", async () => {
+  const payload = { studies: [{
+    protocolSection: { identificationModule: {
+      nctId: "NCT01234567", briefTitle: "Synthetic internal fixture"
+    } }
+  }] };
+  const changes = [
+    { revokedAt: "2026-11-17T16:30:00.000Z" },
+    { rightsStatus: "not-reviewed" },
+    { country: "ES" },
+    { tenantId: "anotherTenant" },
+    { receiptId: "receipt-test-999" },
+    { licenseId: "lic-test-999" },
+    { rightsVersion: "rights-v999" },
+    { validUntil: "2026-11-17T17:30:00.000Z" }
+  ];
+  for (const modification of changes) {
+    let grants = 0, outgoing = 0;
+    const reader = createGovSourceReader({
+      authorize: async context => permit({
+        ...context, ...(++grants === 1 ? {} : modification)
+      }),
+      now: () => TEST_NOW,
+      transport: async () => {
+        outgoing++;
+        return new Response(JSON.stringify(payload), {
+          headers: { "content-type": "application/json" }
+        });
+      }
+    });
+    await assert.rejects(
+      reader.read({sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"}),
+      /Source rights (are not approved|changed during evaluation)/,
+      JSON.stringify(modification)
+    );
+    assert.equal(grants, 2);
+    assert.equal(outgoing, 1);
+  }
+});
+
+test("expanded nine-source gateway refuses a clock rollback and any source-rights outage after fetch", async () => {
+  const response = () => new Response(JSON.stringify({
+    studies: [{protocolSection:{identificationModule:{
+      nctId:"NCT01234567",briefTitle:"Synthetic"
+    }}}]
+  }), {headers:{"content-type":"application/json"}});
+  let calls=0;
+  const reader = createGovSourceReader({
+    authorize: async ctx => {calls++;return permit(ctx);},
+    now: (() => {let n=0;return()=>++n===1 ? TEST_NOW : TEST_NOW-1000;})(),
+    transport:async()=>response()
+  });
+  await assert.rejects(reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  }), /Invalid evaluation envelope/);
+  assert.equal(calls,1,"Rollback must fail even before the second rights service call");
+
+  const secret="SHOULD_NOT_LEAK_RIGHTS_BACKEND_CREDENTIAL";
+  let count=0;
+  const unavailable = createGovSourceReader({
+    authorize:async ctx => {
+      if(++count===1)return permit(ctx);
+      throw new Error(secret);
+    },
+    now:()=>TEST_NOW,transport:async()=>response()
+  });
+  await assert.rejects(unavailable.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  }),err=>err instanceof Error && err.message==="Source rights are not approved" &&
+    !err.message.includes(secret));
+  assert.equal(count,2);
+
+  assert.throws(()=>createGovSourceReader({
+    authorize:async()=>permit(),
+    transport:async()=>response(),
+    now:"invalid clock"
+  }),/Trusted authorizer and transport/);
+});
+
+test("stable double-authorisation still produces only a non-publishable evidence envelope", async () => {
+  let authorizations=0;
+  const reader=createGovSourceReader({
+    authorize:async ctx=>{authorizations++;return permit(ctx);},
+    now:()=>TEST_NOW,
+    transport:async()=>new Response(JSON.stringify({
+      studies:[{protocolSection:{identificationModule:{
+        nctId:"NCT01234567",briefTitle:"Synthetic"
+      }}}]
+    }),{headers:{"content-type":"application/json"}})
+  });
+  const result=await reader.read({
+    sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+  });
+  assert.equal(authorizations,2);
+  assert.equal(result.canPublish,false);
+  assert.equal(result.rightsReceiptId,"receipt-test-001");
+  assert.equal(result.publishDecision,"DENIED_UNTIL_INDEPENDENT_DATA_ADMISSION");
+});
+
+
+test("source grant expiry while reauthorising is blocked at the final trusted clock", async () => {
+  const payload={studies:[{protocolSection:{identificationModule:{
+    nctId:"NCT01234567",briefTitle:"Synthetic evaluation"
+  }}}]};
+  const clockCases=[
+    Date.parse("2026-11-17T18:00:00.000Z"),
+    TEST_NOW - 1,
+    NaN,
+    undefined
+  ];
+  for (const afterReauthorisation of clockCases) {
+    let calls=0;
+    const times=[TEST_NOW,TEST_NOW,afterReauthorisation];
+    const reader=createGovSourceReader({
+      authorize:async ctx=>{calls++;return permit(ctx);},
+      now:()=>times.shift(),
+      transport:async()=>new Response(JSON.stringify(payload),
+        {headers:{"content-type":"application/json"}})
+    });
+    await assert.rejects(reader.read({
+      sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+    }),/Invalid evaluation envelope/);
+    assert.equal(calls,2,"Second rights service request was completed");
+  }
+});
+
+
+// Reconciled regression coverage from PR #834; gateway denial is stricter on #830.
+test("upstream medicine identifiers remain lossless and unsafe/oversized fields are omitted rather than truncated", () => {
+  const plan = buildGovSourcePlan({ sourceId: "ca-health-canada-dpd", term: "Apixaban", limit: 5 });
+  const fullId = "0".repeat(119) + "1";
+  const fullLabel = "A".repeat(240);
+  const data = [
+    { drug_identification_number: fullId, brand_name: fullLabel },
+    { drug_identification_number: "0".repeat(121), brand_name: "Invalid long ID" },
+    { drug_identification_number: "00012345", brand_name: "B".repeat(241) },
+    { drug_identification_number: "00012346", brand_name: "Alpha" + String.fromCharCode(0x202e) + "Beta" },
+    { drug_identification_number: "00012347" + String.fromCharCode(0x200b), brand_name: "Invisible ID" }
+  ];
+  const result = normaliseGovSourceResult(plan, data);
+  assert.equal(result.records.length, 1);
+  assert.equal(result.records[0].localId, fullId);
+  assert.equal(result.records[0].label, fullLabel);
+  assert.equal(result.canPublish, false);
+});
+
+test("malformed upstream trial and regulator identifiers do not become plausible truncated medicine facts", () => {
+  const cases = [
+    ["us-fda-drugsfda", {results:[{application_number:"X".repeat(121),products:[{brand_name:"Sample"}]}]}],
+    ["global-clinicaltrials", {studies:[{protocolSection:{identificationModule:{nctId:"NCT00000001" + String.fromCharCode(0x202e),briefTitle:"Study"}}}]}],
+    ["es-aemps-cima", {resultados:[{nregistro:"000123",nombre:"A".repeat(241)}]}],
+    ["global-europepmc", {resultList:{result:[{id:"12345678",title:"Example" + String.fromCharCode(0x200b)}]}}]
+  ];
+  for (const [sourceId, raw] of cases) {
+    const plan = buildGovSourcePlan({sourceId,term:"Apixaban",limit:5});
+    const result = normaliseGovSourceResult(plan,raw);
+    assert.deepEqual(result.records, [],sourceId);
+    assert.equal(result.canPublish,false,sourceId);
+  }
+});
