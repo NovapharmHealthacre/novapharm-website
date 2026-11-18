@@ -12,7 +12,7 @@
 export const MULTIMODAL_CONTRACT = "novapharm.intelligence.multimodal-review.v1";
 
 const MAX_FIELD_LENGTH = 240;
-const FIELDS = ["sourceReference", "country", "visionMedicineName", "imageTextMedicineName", "referenceProductCode", "observedProductCode"];
+const FIELDS = ["sourceReference", "country", "visionMedicineName", "imageTextMedicineName", "referenceProductCode", "observedProductCode", "referenceStrength", "observedStrength", "referenceDoseForm", "observedDoseForm", "referenceManufacturer", "observedManufacturer"];
 // Control and invisible formatting characters can spoof a visually equal name.
 const SUSPICIOUS_FORMATTING = /[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/u;
 
@@ -57,6 +57,18 @@ export function assessMultimodalEvidence(input) {
   if (values.referenceProductCode && values.observedProductCode &&
       values.referenceProductCode !== values.observedProductCode)
     signals.push("product_code_conflict");
+
+  // Packaging matches are never identity proof. Compare independent attributes
+  // conservatively; even equivalent abbreviations require reviewer reconciliation.
+  for (const [left, right, signal] of [
+    ["referenceStrength", "observedStrength", "strength_conflict"],
+    ["referenceDoseForm", "observedDoseForm", "dose_form_conflict"],
+    ["referenceManufacturer", "observedManufacturer", "manufacturer_conflict"]
+  ]) {
+    if (values[left] && values[right] && comparable(values[left]) !== comparable(values[right])) {
+      signals.push(signal);
+    }
+  }
 
   // Even if an apparent agreement exists, this is not a calibrated confidence,
   // match, regulatory decision, pharmacovigilance conclusion or rights approval.
