@@ -19,8 +19,9 @@ import {
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { ScienceResearchMobile } from "./ScienceResearchMobile";
 
-type Screen = "overview" | "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -40,6 +41,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "science", label: "Science" },
   { screen: "account", label: "Account" }
 ];
 const pilotSlugs = new Set([
@@ -264,6 +266,7 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
+          {screen === "science" && <ScienceResearchMobile />}
           {screen === "account" && (
             <>
               <SectionHeading title="Enterprise access" detail="Identity and data availability are independent permission decisions." />
