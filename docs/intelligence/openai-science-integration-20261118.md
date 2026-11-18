@@ -9,6 +9,23 @@
 - Developer API interfaces and restrictions must be independently reviewed, including Responses API, function calling, retrieval and server-side tool boundaries: https://developers.openai.com/api/docs
 - The Science page, GPT-Rosalind and the Life Sciences plugin are distinct products/surfaces. A ChatGPT plugin cannot be presumed to execute within an unauthenticated public web/mobile app, and external OpenAI research findings do not confer copyright, model access or clinical validity.
 
+## November 2026 source-rights correction: GPT-Rosalind-6 Research
+Official access policy (verified 18 November 2026): https://help.openai.com/en/articles/20001193-gpt-rosalind-for-life-sciences-research ; system card: https://deploymentsafety.openai.com/gpt-rosalind-6 .
+
+- GPT-6 Rosalind Research is a restricted trusted-access tier. The API model identifier **`gpt-6-rosalind`** is usable only in an explicitly approved OpenAI API organisation with separate Research-tier permission. A Discovery-tier or general OpenAI model approval does not confer Research access.
+- **Critical boundary:** OpenAI limits GPT-Rosalind API access to approved **internal** research tools/workflows/applications. Its API is **not available for customer-facing products or external commercial applications** at this time. NovaPharm must never proxy the restricted model through its customer portal, public web/API, or externally distributed mobile app. Publishing UI for learning about research is a different operation from allowing model access.
+- Approved researchers may use allowed first-party ChatGPT Work/Codex deployments subject to the agreement and current access controls. Rosalind Workbench, a plugin, ChatGPT models, Codex and the separately approved API are distinct product surfaces; none is enabled merely because another exists.
+- `gpt-6-rosalind` is **catalogue/reference metadata only** in this branch. No backend invocation, vendor key, institution application, acceptance, laboratory action or mobile model release is implied.
+- OpenAI does not currently provide this restricted model through Amazon Bedrock; existing AWS infrastructure cannot establish eligibility. Data-handling, residency, retention, BAA and ZDR need agreement-specific verification; `store:false` is not a zero-retention certification.
+- The specialist biological research model has elevated biosecurity safeguards. Any future internal implementation requires genuine researcher identity, least-privilege, qualified scientific review, abuse prevention, evaluations, incident response, user training and explicit model/tool scopes. Do not expose actionable wet-lab protocols, patient data or controlled confidential research through this preview.
+
+## Cross-workspace engineering DNA
+The scientific research catalogue is shared by the protected web experience and the isolated iOS/Android native candidate; each of the six workflows declares links to existing canonical workspaces, with no additional canonical workspace falsely counted as the 23rd. The web links preserve the existing SSR portal session gate; the mobile links open offline prerequisites only.
+
+The source-only `scienceGovernanceForWorkspace(slug)` applies invariant controls to **all 22** canonical Intelligence workspace slugs, including provenance, retraction/contradiction review, reproducibility, scientist oversight and prohibition on automatic clinical decisions. This is an auditable design contract, **not runtime enforcement of authenticated sessions**. Production deployment must enforce the same invariants at each trusted server operation (with actual source manifests and independent auth), never by trusting values sent by web/mobile clients.
+
+The `assessRosalindResearchBoundary()` function always reports `modelCallAuthorised:false`, even if a caller passes purported approval flags. For the customer/external portal, this restriction is mandatory and cannot be lifted by a successful test. A future approved *separate internal* service needs independent regulatory/legal review and a distinct trusted execution boundary, rather than changing UI metadata.
+
 ## Repository implementation in this draft
 1. `docs/intelligence/science-research-capabilities-20261118.json`: six common workflow definitions and exact release-gate states, consumable by web and native mobile without provider keys.
 2. `src/core/intelligence-science-research-contract.mjs`: deterministic, bounded planning-only source-reference contract. Rejects malformed identifiers, arbitrary strings and duplicate references; denies model activation/production promotion.
