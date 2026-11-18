@@ -62,7 +62,7 @@ function cleanCandidate(candidate){
   if (url.port || labels.length < 2 ||
       !/^[a-z0-9.-]+$/u.test(hostname) ||
       labels.some(label => !label || label.startsWith("-") || label.endsWith("-")) ||
-      /^\\d+\\.\\d+\\.\\d+\\.\\d+$/u.test(hostname) ||
+      /^\d+\.\d+\.\d+\.\d+$/u.test(hostname) ||
       hostname.startsWith("[") ||
       ["localhost","local","internal","test","invalid","example","onion"].includes(labels.at(-1))) {
     deny("untrusted source reference host");
