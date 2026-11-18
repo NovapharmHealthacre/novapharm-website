@@ -83,6 +83,7 @@ export function evaluatePbsScheduleJson(bytes) {
     sourceId: AU_PBS_SOURCE_ID, jurisdiction: "AU",
     sourceCategory: "government-subsidised-reimbursement-schedule",
     distinctScheduleCount: rows.length,
+    latestCandidateEffectiveDate: rows.at(-1).effectiveDate,
     previews: Object.freeze(rows.slice(0,PREVIEW_ROWS)),
     schedulesAreNotInventory: true,
     sourceSchemaConfirmedAgainstLivePublisher: false,
@@ -116,6 +117,11 @@ export function createPbsScheduleCandidateEvaluator({ authorize, now = () => Dat
       const sample = format === "text/csv"
         ? evaluatePbsScheduleCsv(bytes) : evaluatePbsScheduleJson(bytes);
       const parsedAt = safeClock(now());
+      // Even a forged "Published" flag cannot introduce a future embargoed
+      // schedule into a public-only evaluation. All rows were ordered earlier.
+      if (sample.latestCandidateEffectiveDate > new Date(parsedAt).toISOString().slice(0,10)) {
+        fail("future or embargoed public schedule");
+      }
       if (parsedAt < startedAt || parsedAt >= Date.parse(grant.validUntil)) {
         fail("rights expired during parse");
       }
