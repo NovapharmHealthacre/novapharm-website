@@ -35,6 +35,7 @@ test("Expo SDK 58 enables Android and iOS automatic system appearance with suppo
   assert.equal(config.userInterfaceStyle, "automatic");
   assert.ok(config.plugins.includes("expo-system-ui"));
   assert.equal(pkg.dependencies["expo-system-ui"], "~58.0.7");
+  assert.equal(pkg.dependencies["react-native-safe-area-context"], "~5.11.1");
   assert.equal(pkg.private, true, "Native candidate must remain private");
   assert.equal(config.ios.bundleIdentifier, undefined, "Do not manufacture an App Store release");
   assert.equal(config.android.package, undefined, "Do not manufacture Play Store signing");
@@ -62,6 +63,9 @@ test("both original NovaPharm palettes preserve text and control contrast", () =
 });
 
 test("full offline candidate follows system appearance without reintroducing fixed light-theme surfaces", () => {
+  assert.match(app, /SafeAreaProvider/);
+  assert.match(app, /SafeAreaView style=\{styles.root\} edges=\{\["top", "right", "bottom", "left"\]\}/);
+  assert.match(app, /from "react-native-safe-area-context"/);
   assert.match(app, /useColorScheme\(\) === "dark"/);
   assert.match(app, /const styles = darkMode \? darkStyles : lightStyles/);
   assert.match(app, /const palette = darkMode \? mobileDarkPalette : mobileLightPalette/);
