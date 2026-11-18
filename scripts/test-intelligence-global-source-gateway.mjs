@@ -484,3 +484,30 @@ test("stable double-authorisation still produces only a non-publishable evidence
   assert.equal(result.rightsReceiptId,"receipt-test-001");
   assert.equal(result.publishDecision,"DENIED_UNTIL_INDEPENDENT_DATA_ADMISSION");
 });
+
+
+test("source grant expiry while reauthorising is blocked at the final trusted clock", async () => {
+  const payload={studies:[{protocolSection:{identificationModule:{
+    nctId:"NCT01234567",briefTitle:"Synthetic evaluation"
+  }}}]};
+  const clockCases=[
+    Date.parse("2026-11-17T18:00:00.000Z"),
+    TEST_NOW - 1,
+    NaN,
+    undefined
+  ];
+  for (const afterReauthorisation of clockCases) {
+    let calls=0;
+    const times=[TEST_NOW,TEST_NOW,afterReauthorisation];
+    const reader=createGovSourceReader({
+      authorize:async ctx=>{calls++;return permit(ctx);},
+      now:()=>times.shift(),
+      transport:async()=>new Response(JSON.stringify(payload),
+        {headers:{"content-type":"application/json"}})
+    });
+    await assert.rejects(reader.read({
+      sourceId:"global-clinicaltrials",term:"Apixaban",tenantId:"tenant1"
+    }),/Invalid evaluation envelope/);
+    assert.equal(calls,2,"Second rights service request was completed");
+  }
+});
