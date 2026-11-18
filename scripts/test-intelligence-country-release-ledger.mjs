@@ -206,3 +206,25 @@ test("ISO 3166-1 identities are exact for all 77 national jurisdictions, never E
     assert.equal(item.countryCode, requireCountryOrGroupCode(item.country));
   }
 });
+
+
+test("per-country engineering percentages are reproducible, bounded and never production percentages", () => {
+  const merged = Object.keys(sourcePlans).length;
+  const expectedMean = Number((20 + 20 * merged / 101).toFixed(2));
+  assert.equal(ledger.engineeringMilestonePercent, expectedMean);
+  for (const source of ledger.sourceRows) {
+    assert.equal(source.engineeringMilestonePercent, source.adapterContractMerged ? 40 : 20);
+    assert.equal(source.verifiedCompletionPercent, 0);
+    assert.equal(source.liveConnectionVerified, false);
+  }
+  for (const c of ledger.countries) {
+    assert.equal(c.engineeringMilestonePercent,
+      Number((20 + (20 * c.codedAdapterCandidateCount / c.candidateSourceCount)).toFixed(2)));
+    assert.equal(c.verifiedProductionCompletionPercent, 0);
+    assert.ok(c.engineeringMilestonePercent <= 40);
+  }
+  assert.equal(ledger.countries.find(c => c.country === "Spain").engineeringMilestonePercent, 40);
+  assert.equal(ledger.countries.find(c => c.country === "United States").engineeringMilestonePercent, 30);
+  assert.equal(ledger.countries.find(c => c.country === "Canada").engineeringMilestonePercent, 30);
+  assert.equal(ledger.countries.find(c => c.country === "India").engineeringMilestonePercent, 20);
+});
