@@ -15,8 +15,9 @@ function responseRows(sourceId,raw){
   if(sourceId==="global-chembl")return raw?.molecules;
   if(sourceId==="global-pubchem")return raw?.IdentifierList?.CID;
   if(sourceId==="pl-nfz-drug-program"){
-    if(!Array.isArray(raw?.data))return raw?.data;
-    return raw.data.flatMap(entry=>Array.isArray(entry?.data)?entry.data:[entry]);
+    // NFZ uses grouped object payload: data: { sums, data: rows[] }.
+    // Do not treat an invalid top-level array as a valid upstream page.
+    return raw?.data?.data;
   }
   if(sourceId==="es-aemps-cima")return raw?.resultados;
   reject("unsupported source");
