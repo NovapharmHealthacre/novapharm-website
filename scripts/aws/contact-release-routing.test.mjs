@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const get = path => readFileSync(".github/workflows/" + path, "utf8");
 test("public-only Pages release jobs must never auto-overwrite live AWS contact", () => {
@@ -395,7 +396,15 @@ test("global secondary-source-only merges are excluded from AWS contact dispatch
   }
 });
 
-test("CLIP research source changes keep shared syntax tooling on the public release path", () => {
+test("CLIP source-only merge permits only the exact reviewed shared syntax migration", () => {
+  const syntaxPath = "scripts/check-syntax.mjs";
+  const reviewedBaseBlob = "51c1abd00a10856395c3283a992f5c53e6de7cea";
+  const reviewedCandidateBlob = "e186036b0f29d8c67d6e942311aa2585d41e37c0";
+  const content = readFileSync(syntaxPath);
+  // Git object hash, not a guessed filesystem checksum.
+  const actualBlob = createHash("sha1").update("blob " + content.length + "\0").update(content).digest("hex");
+  assert.equal(actualBlob, reviewedCandidateBlob, "reviewed Node24 syntax migration changed: re-approve before merge");
+
   const privateChanges = [
     "native/novapharm-intelligence-mobile/clip-research.ts",
     "native/novapharm-intelligence-mobile/package.json",
@@ -430,15 +439,26 @@ test("CLIP research source changes keep shared syntax tooling on the public rele
     for (const path of privateChanges) {
       assert.equal(isPrivate(path), true, workflow + " missing source-only protection: " + path);
     }
-    assert.equal(isPrivate("scripts/check-syntax.mjs"), false, workflow + " must not mark shared syntax validation as private");
-    const isSafePrivateOnly = changed => changed.some(isPrivate) &&
-      changed.every(path => isPrivate(path) || neutral.includes(path));
-    assert.equal(isSafePrivateOnly([...privateChanges, ...neutral]), true);
-    assert.equal(isSafePrivateOnly([...privateChanges, "scripts/check-syntax.mjs"]), false, "shared validation changes must follow normal public-release gating");
-    assert.equal(isSafePrivateOnly(neutral), false);
+    assert.equal(isPrivate(syntaxPath), false, "shared tooling must not be universally private");
+    assert.ok(source.includes('scripts/check-syntax.mjs)'), workflow + " must inspect the exact shared-tool change");
+    assert.ok(source.includes('git rev-parse "$GITHUB_SHA^1:$changed"'), workflow + " must verify previous blob");
+    assert.ok(source.includes('git hash-object "$changed"'), workflow + " must verify candidate blob");
+    assert.ok(source.includes(reviewedBaseBlob), workflow + " must pin the reviewed source");
+    assert.ok(source.includes(reviewedCandidateBlob), workflow + " must pin the reviewed result");
+
+    const isSafePrivateOnly = (changed, verifiedSyntaxMigration) => changed.some(isPrivate) &&
+      changed.every(path => isPrivate(path) || neutral.includes(path) ||
+        (path === syntaxPath && verifiedSyntaxMigration));
+    assert.equal(isSafePrivateOnly([...privateChanges, ...neutral, syntaxPath], true), true,
+      "this exact approved private CLIP + Node24 migration should skip AWS");
+    assert.equal(isSafePrivateOnly([...privateChanges, syntaxPath], false), false,
+      "changed or unreviewed syntax tooling must follow normal public release gates");
+    assert.equal(isSafePrivateOnly([...neutral, syntaxPath], true), false,
+      "shared tooling alone may never masquerade as a private ML release");
     for (const path of publicPaths) {
-      assert.equal(isPrivate(path), false, workflow + " must not classify public release as research-only");
-      assert.equal(isSafePrivateOnly([...privateChanges, path]), false, workflow + " must not suppress mixed public changes");
+      assert.equal(isPrivate(path), false);
+      assert.equal(isSafePrivateOnly([...privateChanges, syntaxPath, path], true), false,
+        "real mixed public releases must never be suppressed");
     }
     assert.match(source, /private_only=true/);
     assert.match(source, /found_ml=true/);

@@ -47,6 +47,15 @@ jobs:
                   private_only=false
                 fi
                 ;;
+              scripts/check-syntax.mjs)
+                # This one audited Node 24 syntax-parser migration is source-only.
+                # Other shared-tool changes retain normal public release verification.
+                prior_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                proposed_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$prior_blob" != "51c1abd00a10856395c3283a992f5c53e6de7cea" ] || [ "$proposed_blob" != "e186036b0f29d8c67d6e942311aa2585d41e37c0" ]; then
+                  private_only=false
+                fi
+                ;;
               scripts/aws/contact-release-routing.test.mjs|.github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml)
                 ;;
               *)
