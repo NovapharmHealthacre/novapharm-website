@@ -46,6 +46,36 @@ python3 -m unittest discover -s services/clip -p 'test_*.py' -v
 
 Only a nonclinical research pilot may be considered after independent image-rights acceptance and a named Quality/Privacy/Security approval. Run domain-shift evaluation against a rights-cleared pharmaceutical corpus; measure precision@k, false-near-miss retrieval for different strengths, doses, dosage forms, contraindications, lookalike/soundalike risk, English-prompt sensitivity, multilingual abstention, out-of-distribution rejection, abuse, CSRF, tenancy and rollback. Never interpret cosine ranking as certainty or identity verification.
 
+## Independent retrieval benchmark (mandatory before any pilot)
+
+`evaluate.py` accepts a human-reviewed JSON fixture with this structure; it makes **no model calls** and uses no patient or protected data:
+
+```json
+{
+  "contract": "novapharm.intelligence.visual-search.v1",
+  "cases": [
+    {
+      "caseId": "approved-presentation-1",
+      "query": "approved public carton artwork",
+      "riskTag": "general",
+      "expectedAssetIds": ["licenced-public-artwork-1"],
+      "returnedAssetIds": ["licenced-public-artwork-1"]
+    },
+    {
+      "caseId": "non-catalogue-1",
+      "query": "subject absent from approved catalogue",
+      "riskTag": "out_of_domain",
+      "expectedAssetIds": [],
+      "returnedAssetIds": []
+    }
+  ]
+}
+```
+
+Run `python3 services/clip/evaluate.py --cases /private/approved-nonclinical-evaluation.json --output /private/benchmark.json`. It computes precision@1, recall@5, negative/out-of-domain return rate and lookalike-strength first-result errors. A high recall score can coexist with dangerously wrong first results; any unapproved images and cases without ground truth are excluded. These are **descriptive diagnostics, not proof of safety**. The report always sets `releaseApprovalGranted: false`. Quality, Privacy, Security and the business owner must independently review the labelled cases, define minimum acceptance metrics, document all failures and formally approve any specific, strictly nonclinical pilot.
+
+The model service permits only two concurrent CPU inference requests and a bounded index file to avoid unbounded local resource consumption. Expiry checks run at search time; external rights revocation still requires disabling the service and rebuilding the index.
+
 ## Limitations and release blockers
 
 CLIP does not read medicine label dosage/expiry reliably, does not authenticate packaging, does not verify MHRA/FDA approvals, does not interpret radiology scans safely, and does not prove stock or manufacture. OCR for regulatory artwork needs a separate verified extraction pipeline. Do not use for clinical diagnosis, medicine substitution, batch release, safety or supply decisions. No patient data, health imagery, face recognition, surveillance, automatic camera feeds or private supplier records are permitted.
