@@ -42,7 +42,7 @@ test("Australia PBS is mapped to its real source-candidate registry and a non-li
 test("PBS snapshot parser preserves exact native schedule codes and dates without claiming stock", () => {
   const result = evaluatePbsScheduleJson(bytes([
     sample({schedule_code:"00003922",effective_date:"1/10/2026"}),
-    sample({schedule_code:3923,effective_date:"2026-11-01"})
+    sample({schedule_code:"3923",effective_date:"2026-11-01"})
   ]));
   assert.equal(result.distinctScheduleCount, 2);
   assert.equal(result.previews[0].scheduleCode, "00003922");
@@ -69,6 +69,7 @@ test("no fabricated sample can claim a current approved or unembargoed source", 
     sample({effective_date:"2030-01-99"}),
     sample({schedule_code:"a/b"}),
     sample({schedule_code:NaN}),
+    sample({schedule_code:3923}),
     sample({schedule_code:"\u202e3299"})
   ]) assert.throws(() => evaluatePbsScheduleJson(bytes([item])), /PBS schedule quarantine rejected/);
 });
