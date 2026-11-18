@@ -36,7 +36,7 @@ test("all five extensions use existing verified SSR portal routing, not public b
   assert.match(page, /if \(decision !== "allow"\) redirect\("\/"\)/);
   assert.match(view, /isNovaMlWorkspaceSlug\(current\)/);
   assert.match(view, /<NovaMlWorkspace key=\{current\} kind=\{current\}/);
-  assert.match(view, /Nova ML · Apple companion/);
+  assert.match(view, /Nova ML & interpretability/);
   assert.match(view, /!isNovaMlWorkspaceSlug\(key\)/);
   assert.match(view, /const isNovaMlView = isNovaMlWorkspaceSlug\(current\)/);
   assert.match(view, /if \(isNovaMlView\) return;/);
