@@ -115,3 +115,115 @@ test("native IDs are preserved for Canadian DPD, with no country translation",as
  assert.equal(result.evidence.records[0].localId,"00001234");
  assert.equal(result.canPublish,false);
 });
+
+
+test("file-based source intake refuses revoked, replaced and cross-tenant rights after parsing",async()=>{
+ const transitions=[
+  {rightsStatus:"pending"},
+  {revokedAt:"2026-11-17T18:45:00.000Z"},
+  {tenantId:"tenant-beta"},
+  {country:"US"},
+  {receiptId:"rights-receipt-002"},
+  {licenseId:"license-internal-v2"},
+  {rightsVersion:"rights-review-v2"},
+  {validUntil:"2026-11-17T19:45:00.000Z"}
+ ];
+ for(const changed of transitions){
+  let authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx,++authorizations===1?{}:changed),
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),/not approved|changed during evaluation/);
+  assert.equal(authorizations,2,"A completed quarantine may return only after renewed rights verification");
+ }
+});
+
+test("file-based intake refuses expiry, invalid clocks and clock rollback at the final rights gate",async()=>{
+ const invalidFinalTimes=[
+  Date.parse("2026-11-17T20:00:00.000Z"),
+  Date.parse("2026-11-17T20:00:00.001Z"),
+  FIXED_NOW-1,NaN,undefined,-1
+ ];
+ for(const finalTime of invalidFinalTimes){
+  let ticks=0,authorizations=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{authorizations++;return permit(ctx);},
+   now:()=>++ticks===1?FIXED_NOW:finalTime
+  });
+  await assert.rejects(evaluator.evaluate(request),/expired during evaluation/);
+  assert.equal(ticks,2);
+  assert.equal(authorizations,2);
+ }
+});
+
+test("stable independently rechecked intake remains unpublished and cannot self-admit",async()=>{
+ let calls=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+  authorize:async ctx=>{calls++;return permit(ctx);},
+  now:()=>FIXED_NOW
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(calls,2);
+ assert.equal(result.canPublish,false);
+ assert.equal(result.productionAccepted,false);
+ assert.equal(result.evidence.clinicalDecisionReady,false);
+ assert.equal(result.manifest.canPublish,false);
+ assert.throws(()=>assertGlobalIntakeCustomerReady(result),/rejected/);
+});
+
+
+test("file intake never discloses internal authorization failure details at either rights check",async()=>{
+ const secret="PRIVATE_AUTHORISER_CREDENTIAL_MUST_NOT_LEAK";
+ for(const failOnCall of [1,2]){
+  let calls=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>{
+    if(++calls===failOnCall)throw new Error(secret);
+    return permit(ctx);
+   },
+   now:()=>FIXED_NOW
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: trusted authorizer unavailable" &&
+   !error.message.includes(secret));
+  assert.equal(calls,failOnCall);
+ }
+});
+
+test("file intake redacts failing server-clock callbacks and does not return evidence",async()=>{
+ const secret="PRIVATE_CLOCK_ADAPTER_CONFIGURATION_MUST_NOT_LEAK";
+ for(const failOnRead of [1,2]){
+  let ticks=0;
+  const evaluator=createGlobalSourceIntakeEvaluator({
+   authorize:async ctx=>permit(ctx),
+   now:()=>{
+    if(++ticks===failOnRead)throw new Error(secret);
+    return FIXED_NOW;
+   }
+  });
+  await assert.rejects(evaluator.evaluate(request),error=>
+   error instanceof Error &&
+   error.message==="Global source intake rejected: server clock" &&
+   !error.message.includes(secret));
+  assert.equal(ticks,failOnRead);
+ }
+});
+
+test("file intake samples the first permit clock only after trusted async authorization",async()=>{
+ let authorized=false,ticks=0,authorizations=0;
+ const evaluator=createGlobalSourceIntakeEvaluator({
+  authorize:async ctx=>{authorized=true;authorizations++;return permit(ctx);},
+  now:()=>{
+   assert.equal(authorized,true,"The first clock read must follow authorization");
+   ticks++;
+   return FIXED_NOW;
+  }
+ });
+ const result=await evaluator.evaluate(request);
+ assert.equal(authorizations,2);
+ assert.equal(ticks,2);
+ assert.equal(result.canPublish,false);
+ assert.equal(result.productionAccepted,false);
+});

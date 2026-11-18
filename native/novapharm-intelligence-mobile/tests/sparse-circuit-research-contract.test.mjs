@@ -11,7 +11,10 @@ test("Expo iOS and Android preview uses canonical sparse-circuit research govern
   const app=read("native/novapharm-intelligence-mobile/App.tsx");
   const catalogue=read("apps/portal/data/nova-ml-modules.ts");
   assert.match(app,/novaMlSparseCircuitAssurance/);
-  assert.match(app,/type Screen = "overview" \| "workspaces" \| "sources" \| "research" \| "account"/);
+  assert.match(app,/type Screen =[^;]*"research"/);
+  assert.match(app,/type Screen =[^;]*"review"/);
+  assert.match(app,/\{ screen: "review", label: "Review" \}/);
+  assert.match(app,/<MultimodalReviewScreen/);
   assert.match(app,/\{ screen: "research", label: "Research" \}/);
   assert.match(app,/screen === "research"/);
   assert.match(app,/offlineExperiment\.limitation/);
