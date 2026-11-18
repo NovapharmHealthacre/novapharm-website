@@ -44,6 +44,38 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testL0HardConcreteResearchMathAndInvalidInputs() throws {
+        let expected = 1 / (1 + exp(-(2.0 / 3.0) * log(11)))
+        XCTAssertEqual(try NovaL0ResearchMath.activationProbability(logAlpha: 0), expected, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 0), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0.5), 0.5, accuracy: 1e-12)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: -1000), 0)
+        XCTAssertEqual(try NovaL0ResearchMath.deterministicGate(logAlpha: 1000), 1)
+        XCTAssertThrowsError(try NovaL0ResearchMath.sampleGate(logAlpha: 0, uniform: 0))
+        XCTAssertThrowsError(try NovaL0ResearchMath.activationProbability(logAlpha: .nan))
+        XCTAssertThrowsError(try NovaL0ResearchMath.deterministicGate(logAlpha: 0, gamma: 0))
+    }
+
+    func testL0ResearchCandidateFailsClosedWithFeatureParity() throws {
+        let candidate = NovaL0ResearchCandidate(
+            format: "nova-l0-sparse-linear-candidate-v1",
+            releaseStatus: "research-only",
+            productionApproved: false, customerVisible: false,
+            featureNames: ["demand", "stock", "lead_time"],
+            coefficients: [2, 0, 2], bias: 3, nonZeroCount: 2
+        )
+        XCTAssertEqual(try candidate.score(features: ["lead_time": 4, "demand": 5, "stock": 99]), 21)
+        XCTAssertThrowsError(try candidate.score(features: ["demand": 5, "stock": 99]))
+        XCTAssertThrowsError(try candidate.score(features: ["demand": .nan, "stock": 1, "lead_time": 4]))
+        let forbidden = NovaL0ResearchCandidate(
+            format: candidate.format, releaseStatus: candidate.releaseStatus,
+            productionApproved: true, customerVisible: false,
+            featureNames: candidate.featureNames, coefficients: candidate.coefficients,
+            bias: candidate.bias, nonZeroCount: candidate.nonZeroCount
+        )
+        XCTAssertThrowsError(try forbidden.score(features: ["demand": 5, "stock": 99, "lead_time": 4]))
+    }
+
     func testAlignmentResearchReceiptAcceptsOnlyOfflineUnverifiedLabels() throws {
         let sample = NovaAlignmentResearchReceipt(
             contract: "novapharm.intelligence.nova-alignment-research.v1",

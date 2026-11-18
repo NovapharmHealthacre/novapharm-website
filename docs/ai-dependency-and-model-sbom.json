@@ -68,6 +68,22 @@
     },
     {
       "type": "source-only-research",
+      "name": "Nova L0 hard-concrete research source",
+      "version": "0.1.0-research",
+      "licence": "NovaPharm-owned adapter source; referenced paper is a method, not a model licence",
+      "paths": [
+        "tooling/python/nova_l0_sparsity.py",
+        "packages/medicines-intelligence/src/l0-sparsity.ts",
+        "native/novapharm-intelligence-apple/NovaL0ResearchMath.swift",
+        "native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt"
+      ],
+      "bundledModel": false,
+      "productionEnabled": false,
+      "optionalResearchDependency": "PyTorch (version and licence to be pinned/reviewed in an independently approved training environment)",
+      "noWeightsOrCustomerData": true
+    },
+    {
+      "type": "source-only-research",
       "name": "Nova ML alignment research source contracts",
       "version": "0.1.0-research",
       "licence": "NovaPharm-owned first-party evaluation code; research methodology referenced, no third-party model weights",
