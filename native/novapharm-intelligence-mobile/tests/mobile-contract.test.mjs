@@ -58,7 +58,9 @@ test("iOS/Android preview uses the same offline multimodal conflict gate as prot
   assert.match(app, /screen: "review"/);
   assert.match(app, /<MultimodalReviewScreen/);
   assert.match(mobilePanel, /assessMultimodalEvidence/);
+  assert.match(mobilePanel, /assessMultimodalResearchBasis/);
   assert.match(webPanel, /assessMultimodalEvidence/);
+  assert.match(webPanel, /assessMultimodalResearchBasis/);
   assert.match(webWorkspace, /<MultimodalReviewPanel/);
   assert.match(core, /canPublish: false/);
   assert.match(core, /identityVerified: false/);
