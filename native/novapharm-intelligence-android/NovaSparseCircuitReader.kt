@@ -23,17 +23,30 @@ object NovaSparseCircuitReader {
     fun readResearchSummary(json: String): NovaSparseCircuitSummary {
         require(json.length <= 32_768) { "Unsupported summary size" }
         val value = JSONObject(json)
+        val expectedKeys = setOf(
+            "schemaVersion", "valid", "status", "modelId", "taskId",
+            "nodeCount", "edgeCount", "lossDeltaCircuitVsBaseline",
+            "lossDeltaAblatedVsCircuit", "sampleCount", "ablation",
+            "mechanisticExplanationVerified", "productionEligible",
+            "clinicalUsePermitted"
+        )
+        val supplied = mutableSetOf<String>()
+        val keys = value.keys()
+        while (keys.hasNext()) supplied.add(keys.next())
+        require(supplied == expectedKeys) { "Unsupported research summary fields" }
         require(value.optString("schemaVersion") == "npi.sparse-circuit.v1")
-        require(value.optBoolean("valid", false))
+        require(value.get("valid") == true)
         require(value.optString("status") == "unverified-research-candidate")
-        require(!value.optBoolean("mechanisticExplanationVerified", true))
-        require(!value.optBoolean("productionEligible", true))
-        require(!value.optBoolean("clinicalUsePermitted", true))
+        require(value.get("mechanisticExplanationVerified") == false)
+        require(value.get("productionEligible") == false)
+        require(value.get("clinicalUsePermitted") == false)
         require(value.optString("ablation") == "mean")
         val nodes = value.getInt("nodeCount")
         val edges = value.getInt("edgeCount")
         val examples = value.getInt("sampleCount")
         require(nodes in 1..2000 && edges in 1..8000 && examples > 0)
+        require(value.get("lossDeltaCircuitVsBaseline") is Number)
+        require(value.get("lossDeltaAblatedVsCircuit") is Number)
         val baseline = value.getDouble("lossDeltaCircuitVsBaseline")
         val ablated = value.getDouble("lossDeltaAblatedVsCircuit")
         require(baseline.isFinite() && ablated.isFinite())
