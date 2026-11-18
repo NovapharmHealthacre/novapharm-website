@@ -6,6 +6,10 @@ on:
       - "scripts/test-nova-model-microscope.mjs"
       - "apps/portal/data/nova-ml-modules.ts"
       - "apps/portal/components/nova-ml-workspaces.tsx"
+      - "apps/portal/test/routes.test.ts"
+      - "scripts/test-nova-ml-apple-adaptation.mjs"
+      - "scripts/test-nova-ml-private-ingress.mjs"
+      - "native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs"
       - "native/novapharm-intelligence-mobile/App.tsx"
       - "docs/intelligence/model-microscope-research-to-product-20261118.md"
       - ".github/workflows/intelligence-model-microscope.yml"
@@ -24,3 +28,4 @@ jobs:
       - run: node --check src/core/ai/model-microscope.mjs
       - run: node --test scripts/test-nova-model-microscope.mjs
       - run: node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
+      - run: node --test scripts/test-nova-ml-apple-adaptation.mjs scripts/test-nova-ml-private-ingress.mjs
