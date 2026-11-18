@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
-import styles from "./nova-ml-workspaces.module.css";
+import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import { NovaSignalsResearch } from "./nova-signals-research";
+import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
   { id: "rights", title: "Data and model rights", detail: "Authorised source, licence, purpose and retention are documented." },
@@ -56,6 +57,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <li key={capability}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p>{capability}</p></li>
       )}</ol>
     </section>
+
+    {(kind === "nova-device-intelligence" || kind === "nova-core-runtime") && <MultimodalReviewPanel />}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
       <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>

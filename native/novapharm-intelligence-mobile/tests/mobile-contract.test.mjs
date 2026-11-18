@@ -49,7 +49,31 @@ test("no source candidate is silently represented as verified market facts", () 
   assert.doesNotMatch(app, /sourceRegister\.sources\.map\(.*fetch/);
 });
 
-test("Signals/Whisper/Triton research is a visible fifth tab in the iOS/Android prototype", () => {
+test("iOS/Android preview uses the same offline multimodal conflict gate as protected web", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  const mobilePanel = read("native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx");
+  const webPanel = read("apps/portal/components/multimodal-review-panel.tsx");
+  const webWorkspace = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const core = read("src/core/intelligence-multimodal-evidence-review.mjs");
+  assert.match(app, /screen: "review"/);
+  assert.match(app, /<MultimodalReviewScreen/);
+  assert.match(mobilePanel, /assessMultimodalEvidence/);
+  assert.match(mobilePanel, /assessMultimodalResearchBasis/);
+  assert.match(webPanel, /assessMultimodalEvidence/);
+  assert.match(webPanel, /assessMultimodalResearchBasis/);
+  assert.match(webWorkspace, /<MultimodalReviewPanel/);
+  assert.match(core, /canPublish: false/);
+  assert.match(core, /identityVerified: false/);
+  for (const requiredField of ["referenceStrength", "observedStrength", "referenceDoseForm", "observedDoseForm", "referenceManufacturer", "observedManufacturer"]) {
+    assert.ok(mobilePanel.includes(requiredField), "Mobile review missing " + requiredField);
+    assert.ok(webPanel.includes(requiredField), "Web review missing " + requiredField);
+    assert.ok(core.includes(requiredField), "Shared policy missing " + requiredField);
+  }
+  assert.doesNotMatch(mobilePanel, /fetch\(|AsyncStorage|SecureStore|Camera|ImagePicker|access_token/);
+});
+
+
+test("Signals/Whisper/Triton research is an additional review-only tab in the iOS/Android prototype", () => {
   const app = read("native/novapharm-intelligence-mobile/App.tsx");
   const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
   const shared = read("apps/portal/data/nova-signals-research.ts");

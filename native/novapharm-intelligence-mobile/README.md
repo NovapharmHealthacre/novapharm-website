@@ -12,7 +12,9 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
 
-The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, and a **virtualized**, searchable and region-filtered global source list. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. **101 candidate records are not 101 countries:** the current register contains 79 distinct geographic labels including `Global` and `European Union / EEA`, leaving 77 distinct country/territory labels; none has an admitted, verified live adapter. The Overview displays these distinctions rather than claiming country coverage. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
+The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, an offline **Multimodal Review** tab using the shared web/mobile evidence-conflict contract, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
+
+**Source coverage is not activated:** 101 source candidates span 79 geography labels including `Global` and `European Union / EEA`, leaving 77 distinct country/territory labels. These are not rights-approved national API integrations; the Overview identifies them as unverified candidates.
 
 ## Release blockers
 
@@ -27,9 +29,20 @@ Native/novapharm-intelligence-apple remains a separate Swift Package research pr
 
 Brand tokens follow NovaPharm's light-first white/graphite interface, restrained #E3120B accent and native platform fonts without bundling Apple font binaries.
 
+## Shared representation research and non-release policy
+
+The mobile `MultimodalReviewScreen.tsx` imports the **same** offline research basis as protected web: `src/core/intelligence-multimodal-research-basis.mjs` and the same `intelligence-multimodal-evidence-review.mjs` conflict gate. User-supplied citation positions #1–#22 represent **21 unique papers** (#22 duplicates #15); the research registry groups their engineering implications into seven categories. The source-only app displays this reference count and makes no claim of model execution.
+
+The manually entered, non-sensitive research panel can flag differences in image/text labels, exact product codes, strength, dose form and manufacturer. Its output is **always unverified and not publishable**. All 22 canonical Intelligence workspaces inherit the research-basis version and non-release policy through the shared architecture. The desktop/web and Expo source contracts enforce parity.
+
+Twelve deterministic synthetic probes provide CI regression against misleading text, spoofing, missing consent/provenance, label conflicts and false release claims; they **do not** simulate image attacks or constitute model evaluation. The full [22-reference engineering matrix](../../docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md) and release-blocker issue #825 govern subsequent licensed datasets, actual image-model benchmarking and iOS/Android on-device verification.
+
+No camera permission, CLIP/ResNet model, OCR, native ML inference, external call, training data, production authentication or patient-data processing is enabled in this source preview.
+
+
 ## New research tab (iOS/Android prototype)
 
-The unsigned Expo application now has a fifth, **Research** tab backed by the same read-only `apps/portal/data/nova-signals-research.ts` source register proposed for the protected web ML workspace. It presents fifteen OpenAI study and technology references, supports category filtering, shows each study's NovaPharm application and explicit limitation, and launches original `openai.com` or `cdn.openai.com` references **only after a user taps a link**. No report bytes, CSV data, OpenAI credentials, patient inputs, microphone access, AI inference or GPU workload are included.
+The unsigned Expo application now has an additional **Research** tab backed by the same read-only `apps/portal/data/nova-signals-research.ts` source register proposed for the protected web ML workspace. It presents fifteen OpenAI study and technology references, supports category filtering, shows each study's NovaPharm application and explicit limitation, and launches original `openai.com` or `cdn.openai.com` references **only after a user taps a link**. No report bytes, CSV data, OpenAI credentials, patient inputs, microphone access, AI inference or GPU workload are included.
 
 This is **not** a live API integration, native iOS/Android app signing, imported Signals dataset or AI assistant. The linked 2026 Signals v3 dictionary enumerates 24 data tables; in the accompanying source-only research candidate only three aggregate tables have a bounded local, non-persistent preview parser, while the other 21 remain metadata-only. The mobile screen displays this limitation without importing data.
 

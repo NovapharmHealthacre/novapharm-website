@@ -19,9 +19,10 @@ import {
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { SignalsResearchScreen } from "./SignalsResearchScreen";
 
-type Screen = "overview" | "workspaces" | "sources" | "research" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "review" | "research" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -37,7 +38,6 @@ const palette = Object.freeze({
 });
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
-// Candidate counts must never be presented as verified country or API coverage.
 const countryTerritoryCandidateLabels = new Set(sourceRegister.sources
   .map((item) => item.country)
   .filter((label) => label !== "Global" && label !== "European Union / EEA")).size;
@@ -45,6 +45,7 @@ const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
+  { screen: "review", label: "Review" },
   { screen: "research", label: "Research" },
   { screen: "account", label: "Account" }
 ];
@@ -271,6 +272,7 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
+          {screen === "review" && <MultimodalReviewScreen />}
           {screen === "research" && <SignalsResearchScreen />}
           {screen === "account" && (
             <>
