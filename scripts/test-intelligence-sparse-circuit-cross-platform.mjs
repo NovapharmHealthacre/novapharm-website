@@ -32,8 +32,8 @@ test("iOS and Android screens do not claim verification or run network/model inf
   const swiftReader = read("native/novapharm-intelligence-apple/NovaSparseCircuitReader.swift");
   const swiftView = read("native/novapharm-intelligence-apple/NovaSparseCircuitResearchView.swift");
   const swiftPackage = read("native/novapharm-intelligence-apple/Package.swift");
-  const kotlinReader = read("native/novapharm-intelligence-android/NovaSparseCircuitReader.kt");
-  const kotlinView = read("native/novapharm-intelligence-android/NovaSparseCircuitResearchScreen.kt");
+  const kotlinReader = read("native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitReader.kt");
+  const kotlinView = read("native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt");
 
   for(const [reader,view] of [[swiftReader,swiftView],[kotlinReader,kotlinView]]) {
     assert.match(reader, /npi\.sparse-circuit\.v1/);
@@ -73,4 +73,17 @@ test("registered AI providers never claim sparse circuit access or causal verifi
   }
   assert.equal(PUBLIC_SEMANTIC_MODEL.sparseCircuitsApplicable, false);
   assert.equal(PUBLIC_SEMANTIC_MODEL.mechanisticCircuitVerified, false);
+});
+
+test("Android pilot compiles only an offline, read-only application shell by design", () => {
+  const manifest = read("native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml");
+  const activity = read("native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaResearchActivity.kt");
+  const gradle = read("native/novapharm-intelligence-android/app/build.gradle.kts");
+  assert.doesNotMatch(manifest, /<uses-permission/);
+  assert.match(manifest, /android:allowBackup="false"/);
+  assert.match(manifest, /android:usesCleartextTraffic="false"/);
+  assert.match(activity, /summary = null/);
+  assert.doesNotMatch(activity, /HttpURLConnection|OkHttpClient|WebView|token|apiKey/);
+  assert.match(gradle, /minSdk = 26/);
+  assert.match(gradle, /targetSdk = 35/);
 });
