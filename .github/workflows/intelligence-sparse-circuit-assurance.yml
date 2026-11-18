@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "src/core/intelligence-sparse-circuit-assurance.mjs"
+      - "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json"
       - "src/core/ai/model-registry.mjs"
       - "src/ai/model-registry.mjs"
       - "scripts/test-intelligence-sparse-circuit-assurance.mjs"
