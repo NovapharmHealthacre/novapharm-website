@@ -256,3 +256,30 @@ test("Science research-only files must not trigger AWS or public Pages publicati
     assert.match(source, /private_only=true/);
   }
 });
+
+
+test("science and secondary-source Bash classifier arms are syntactically closed once", () => {
+  const privatePaths = [
+  ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+  "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+  "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+  "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-global-secondary-source-gateway.mjs",
+  "src/core/intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-science-research-contract.mjs",
+  ".github/workflows/intelligence-sparse-circuit-assurance.yml"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const arm = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(arm && arm.endsWith(")"), file + " must terminate private Bash case arm");
+    assert.equal((arm.match(/\)/g) || []).length, 1, file + " cannot close the private case arm early");
+    const allowed = new Set(arm.slice(0, -1).split("|"));
+    for (const path of privatePaths) {
+      assert.ok(allowed.has(path), file + " must protect source-only path inside Bash case: " + path);
+    }
+    for (const publicFile of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(allowed.has(publicFile), false);
+    }
+  }
+});
