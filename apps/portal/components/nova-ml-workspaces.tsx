@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
-import { NovaSignalsResearch } from "./nova-signals-research";
 import styles from "./nova-ml-workspaces.module.css";
+import { NovaSignalsResearch } from "./nova-signals-research";
 
 const gates = [
   { id: "rights", title: "Data and model rights", detail: "Authorised source, licence, purpose and retention are documented." },
