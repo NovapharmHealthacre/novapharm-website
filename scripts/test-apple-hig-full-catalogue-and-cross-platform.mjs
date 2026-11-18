@@ -242,6 +242,14 @@ test("30 exact user workbook anchors and 5 supporting Apple resources remain ind
   assert.equal(tracker.meta.ownerWorkbookSupportingResources, 5);
   assert.equal(tracker.meta.totalOriginalWorkbookLinks, 207);
   assert.equal(tracker.meta.totalTrackedLinkTargets, 210);
+  assert.equal(tracker.meta.workbookTenTabsRead, true);
+  assert.equal(tracker.meta.workbookSixSectionSheetRowsCrossChecked, 172);
+  assert.equal(tracker.meta.workbookAllModulesRowsCrossChecked, 172);
+  assert.equal(tracker.meta.workbookVsCsvFieldMismatches, 0);
+  assert.deepEqual(tracker.meta.workbookCrossCheckFields, [
+    "Section", "Subsection", "Topic", "Type", "Description",
+    "Priority", "Platforms", "URL", "Markdown"
+  ]);
   const articleURLs = new Set(tracker.topics.map(x => x.url));
   const targets = new Set(tracker.topics.map(x => x.markdown));
   for (const [index, anchor] of tracker.inPageAnchors.entries()) {
