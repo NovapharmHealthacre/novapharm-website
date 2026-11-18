@@ -18,7 +18,7 @@ import {
   View
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
-import { novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
+import { novaMlWorkspaceCatalogue, modelMicroscopeInspectionStages } from "../../apps/portal/data/nova-ml-modules";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 
 type Screen = "overview" | "workspaces" | "sources" | "inspect" | "account";
@@ -274,6 +274,14 @@ export default function App() {
                 <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
                 <Text style={styles.meta}>Private source-only preview · Zero inference · Zero network requests · No patient data</Text>
               </View>
+              <SectionHeading title="Interpretability research lifecycle" />
+              {modelMicroscopeInspectionStages.map((stage) => (
+                <View key={stage.id} style={styles.card}>
+                  <Text style={styles.cardTitle}>{stage.title}</Text>
+                  <Text style={styles.description}>{stage.summary}</Text>
+                  <Text style={styles.meta}>Not operational · Requires: {stage.requiredEvidence}</Text>
+                </View>
+              ))}
               <SectionHeading title="Research requirements" />
               {novaMlWorkspaceCatalogue.find((module) => module.slug === "nova-model-microscope")?.requirements.map((requirement) => (
                 <View style={styles.requirement} key={requirement}><Text style={styles.description}>{requirement}</Text></View>
