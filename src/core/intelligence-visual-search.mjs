@@ -66,8 +66,14 @@ export async function searchApprovedVisualCatalogue(
     });
   } catch { throw unavailable("Visual retrieval service is unavailable."); }
   if (!response.ok) throw unavailable("Visual retrieval service is unavailable.");
+  const declaredLength = Number(response.headers?.get?.("content-length") ?? 0);
+  if (!Number.isFinite(declaredLength) || declaredLength < 0 || declaredLength > 32_768) throw unavailable();
   let payload;
-  try { payload = await response.json(); } catch { throw unavailable(); }
+  try {
+    const body = await response.text();
+    if (Buffer.byteLength(body, "utf8") > 32_768) throw unavailable();
+    payload = JSON.parse(body);
+  } catch { throw unavailable(); }
   if (payload?.contract !== CONTRACT || !Array.isArray(payload.results) || payload.results.length > limit) throw unavailable();
   const seen = new Set();
   const results = payload.results.map((item, index) => {
