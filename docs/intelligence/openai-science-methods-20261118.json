@@ -1,0 +1,235 @@
+{
+  "contract": "novapharm.intelligence.openai-science-methods.v1",
+  "reviewedAt": "2026-11-18",
+  "scope": "versioned external research references; not ingest, API or independent scientific verification",
+  "collectionStatus": "research_reference_only",
+  "sourceCount": 9,
+  "scientificMethodologyCount": 7,
+  "discoveryIndexCount": 2,
+  "externalEndpointsCalledByClient": false,
+  "apiPermissionsGranted": false,
+  "labToolsAuthorized": false,
+  "patientDataProcessed": false,
+  "methods": [
+    {
+      "id": "openai-research-index",
+      "title": "OpenAI research and deployment",
+      "sourceUrl": "https://openai.com/",
+      "publishedAt": null,
+      "sourceType": "reference_index",
+      "methodologyId": "research-discovery",
+      "reportedFinding": "Entry point to OpenAI's research, products and publications.",
+      "transferablePattern": "Use as a human-reviewed discovery route; do not infer API availability or scientific approval.",
+      "validationRequirements": [
+        "Check destination publication date and original source",
+        "Capture article/DOI and author-level provenance"
+      ],
+      "limitations": "Homepage changes over time and is not a licensed machine-readable research data source.",
+      "linkedWorkspaces": [
+        "evidence",
+        "reports"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "geometry-counterexample",
+      "title": "Discrete geometry counterexample",
+      "sourceUrl": "https://openai.com/index/model-disproves-discrete-geometry-conjecture/",
+      "publishedAt": "2026-05-20",
+      "sourceType": "research_milestone",
+      "methodologyId": "formal-proof-validation",
+      "reportedFinding": "An OpenAI reasoning model proposed a counterexample family for a longstanding unit-distance conjecture; external mathematicians checked the proof.",
+      "transferablePattern": "Apply proof-obligation and independent verification techniques to rigorous analytical claims and invariants; not a drug-discovery result.",
+      "validationRequirements": [
+        "Independent mathematical verification",
+        "Reproducible symbolic claims with exact assumptions",
+        "Versioned counterexamples and proof artifacts"
+      ],
+      "limitations": "A validated mathematics proof does not establish correctness of biological or clinical conclusions.",
+      "linkedWorkspaces": [
+        "reports",
+        "decision-workspace"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "theoretical-physics-derivation",
+      "title": "Theoretical physics preprint",
+      "sourceUrl": "https://openai.com/index/new-result-theoretical-physics/",
+      "publishedAt": "2026-02-13",
+      "sourceType": "preprint_report",
+      "methodologyId": "analytical-conjecture-checking",
+      "reportedFinding": "A model proposed a simplified theoretical-physics expression; authors checked and verified the derivation in a preprint.",
+      "transferablePattern": "Capture hypotheses, domain assumptions and independent analytical verification for simulation and model development.",
+      "validationRequirements": [
+        "Explicit mathematical assumptions",
+        "Independent derivation and known-case checks",
+        "Preprint status and revision tracking"
+      ],
+      "limitations": "The physics result is not a pharmacological model and the preprint's claims must not be inherited by NovaPharm.",
+      "linkedWorkspaces": [
+        "reports",
+        "decision-workspace"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "medicinal-chemistry-lab",
+      "title": "Medicinal chemistry, AI and laboratory validation",
+      "sourceUrl": "https://openai.com/index/ai-chemist-improves-reaction/",
+      "publishedAt": "2026-06-17",
+      "sourceType": "experimental_research_report",
+      "methodologyId": "human-governed-lab-iteration",
+      "reportedFinding": "GPT-5.4 and Molecule.one Maria explored a medicinal-chemistry research question in high-throughput experiments; humans guided the study and replicated representative findings at bench scale.",
+      "transferablePattern": "Model a non-executing hypothesis-to-proposal-to-evidence-to-independent-replication lifecycle for qualified internal chemists.",
+      "validationRequirements": [
+        "Qualified chemist approval and lab safety review",
+        "Independent replication and scope limits",
+        "Source provenance, variability and scale transfer assessment"
+      ],
+      "limitations": "Reported results cover particular reaction classes and experiments; they do not authorize autonomous chemical synthesis, production transfer or general-yield claims.",
+      "linkedWorkspaces": [
+        "biotech-intelligence",
+        "decision-workspace",
+        "evidence"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "protein-bioprocess-optimization",
+      "title": "Cell-free protein synthesis optimization",
+      "sourceUrl": "https://openai.com/index/gpt-5-lowers-protein-synthesis-cost/",
+      "publishedAt": "2026-02-05",
+      "sourceType": "experimental_research_report",
+      "methodologyId": "closed-loop-cost-validation",
+      "reportedFinding": "In a collaboration with Ginkgo Bioworks, GPT-5-assisted laboratory iteration was associated with a 40% reduction in protein-production cost in a studied cell-free system.",
+      "transferablePattern": "Design research evaluation around comparable cost baselines, measured outputs, change control and qualified lab review.",
+      "validationRequirements": [
+        "Independent cost-accounting denominator",
+        "Replicate across proteins, conditions and scale",
+        "Review dataset provenance and lab experiment authority"
+      ],
+      "limitations": "The result was reported for one protein and one cell-free system; no NovaPharm cost saving or general manufacturing benefit has been demonstrated.",
+      "linkedWorkspaces": [
+        "biotech-intelligence",
+        "reports",
+        "decision-workspace"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "immunology-mechanism-investigation",
+      "title": "Immunology hypothesis investigation",
+      "sourceUrl": "https://openai.com/index/gpt-5-immunology-mystery/",
+      "publishedAt": "2026-06-23",
+      "sourceType": "applied_research_account",
+      "methodologyId": "counterhypothesis-mechanism-review",
+      "reportedFinding": "GPT-5 Pro helped an immunologist develop a plausible explanation of unexpected T-cell experiment outcomes, illustrating human-led mechanism investigation.",
+      "transferablePattern": "Maintain alternative hypotheses, expert plausibility review and disconfirming evidence before making biological inferences.",
+      "validationRequirements": [
+        "Independent mechanism evidence",
+        "Expert review and controlled validation",
+        "Separate inference from biological or clinical fact"
+      ],
+      "limitations": "This is a reported research account, not an independently validated NovaPharm immunology model or a therapy claim.",
+      "linkedWorkspaces": [
+        "evidence",
+        "biotech-intelligence",
+        "decision-workspace"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "rare-disease-reanalysis",
+      "title": "Rare-disease expert-led reanalysis",
+      "sourceUrl": "https://openai.com/index/diagnose-rare-childhood-diseases/",
+      "publishedAt": "2026-06-18",
+      "sourceType": "clinical_research_report",
+      "methodologyId": "specialist-led-candidate-reanalysis",
+      "reportedFinding": "An AI-assisted reanalysis of 376 previously unsolved cases produced leads that physicians later confirmed in 18 cases after expert review and testing.",
+      "transferablePattern": "Support non-patient-facing literature/gene-disease evidence crosswalk planning and periodic knowledge-refresh methodology, without ingesting clinical records.",
+      "validationRequirements": [
+        "Ethics, privacy and legal approval for any future clinical data",
+        "Physician-led confirmation and independent clinical validation",
+        "Prospective performance evaluation and false-positive analysis"
+      ],
+      "limitations": "The model generated leads rather than making diagnoses; NovaPharm has no authorized patient-data or diagnostic service.",
+      "linkedWorkspaces": [
+        "evidence",
+        "biotech-intelligence",
+        "reports"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "codex-scientific-simulation",
+      "title": "Codex-supported scientific simulation",
+      "sourceUrl": "https://openai.com/index/using-codex-to-simulate-black-holes/",
+      "publishedAt": "2026-06-11",
+      "sourceType": "applied_research_account",
+      "methodologyId": "scientific-code-verification",
+      "reportedFinding": "An astrophysics researcher used Codex to explore and test simulation algorithms against known physical solutions.",
+      "transferablePattern": "Apply reproducible software experiments, numerical regression tests and model-to-reference comparisons in non-clinical pharmaceutical analytics.",
+      "validationRequirements": [
+        "Deterministic fixtures and independent code review",
+        "Known-solution/holdout testing and convergence evidence",
+        "Security, dependency and reproducibility checks"
+      ],
+      "limitations": "An algorithm working for an astrophysical simulation is not evidence of validity for drug modelling, clinical prediction or pharmacy outcomes.",
+      "linkedWorkspaces": [
+        "forecasts",
+        "reports",
+        "decision-workspace"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    },
+    {
+      "id": "openai-science-newsroom",
+      "title": "OpenAI Science news index",
+      "sourceUrl": "https://openai.com/news/science/",
+      "publishedAt": null,
+      "sourceType": "reference_index",
+      "methodologyId": "research-discovery",
+      "reportedFinding": "Editorial index of scientific reports and researcher perspectives, observed on 18 November 2026.",
+      "transferablePattern": "Use as a manually reviewed discovery source; record individual publication versions before adding new case studies.",
+      "validationRequirements": [
+        "Explicit human review of each dated article",
+        "Source attribution and individual evidence maturity",
+        "Do not infer current data from the last catalogue snapshot"
+      ],
+      "limitations": "This is not an approved real-time API, live web feed or continuously monitored source.",
+      "linkedWorkspaces": [
+        "evidence",
+        "reports"
+      ],
+      "sourceReviewed": true,
+      "independentNovaPharmReplication": false,
+      "sourceRightsForAiIngestionApproved": false,
+      "clinicalOrCommercialUseApproved": false
+    }
+  ]
+}
