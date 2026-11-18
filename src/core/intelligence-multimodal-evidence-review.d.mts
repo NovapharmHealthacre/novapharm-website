@@ -1,0 +1,35 @@
+export type MultimodalReviewInput = Readonly<{
+  userInitiated: boolean;
+  nonSensitiveMaterialConfirmed: boolean;
+  purpose: "catalogue-research" | "non-clinical-quality-review";
+  sourceReference?: string;
+  country?: string;
+  visionMedicineName?: string;
+  imageTextMedicineName?: string;
+  referenceProductCode?: string;
+  observedProductCode?: string;
+  referenceStrength?: string;
+  observedStrength?: string;
+  referenceDoseForm?: string;
+  observedDoseForm?: string;
+  referenceManufacturer?: string;
+  observedManufacturer?: string;
+}>;
+export type MultimodalReviewStatus = "blocked" | "conflicting_candidates" | "insufficient_evidence" | "human_review_required";
+export type MultimodalReviewResult = Readonly<{
+  contract: "novapharm.intelligence.multimodal-review.v1";
+  status: MultimodalReviewStatus;
+  signals: readonly string[];
+  reviewRequired: true;
+  productionAccepted: false;
+  identityVerified: false;
+  confidenceCalibrated: false;
+  sourceRightsVerified: false;
+  tenantAuthorised: false;
+  canPublish: false;
+  decisionReady: false;
+  clinicalUseAllowed: false;
+  next: string;
+}>;
+export const MULTIMODAL_CONTRACT: "novapharm.intelligence.multimodal-review.v1";
+export function assessMultimodalEvidence(input: Partial<MultimodalReviewInput> | null): MultimodalReviewResult;
