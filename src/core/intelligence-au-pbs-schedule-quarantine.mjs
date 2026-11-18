@@ -21,10 +21,8 @@ const safeClock = (value) => {
   return value;
 };
 const safeCode = (value) => {
-  if (typeof value === "number") {
-    if (!Number.isSafeInteger(value) || value < 0) return null;
-    return String(value);
-  }
+  // A numeric decoder may already have discarded publisher-significant leading
+  // zeroes. Never reconstruct a national identifier from a JSON number.
   if (typeof value !== "string" || value.length < 1 || value.length > 80 ||
       !/^[A-Za-z0-9_-]+$/.test(value)) return null;
   return value;
