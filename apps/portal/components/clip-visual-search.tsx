@@ -94,12 +94,12 @@ export function ClipVisualSearch() {
     }
   }
 
-  return <section className={styles.section} aria-labelledby="clip-visual-title">
+  return <section className={styles["section"]} aria-labelledby="clip-visual-title">
     <h2 id="clip-visual-title">CLIP visual catalogue research</h2>
-    <p className={styles.description}>Find candidate matches within a separately approved public-image catalogue using English descriptions. No uploaded images, patient data, supplier files or unsanctioned product material. This is not a medicine identification, authentication or regulatory verification tool.</p>
-    <form className={styles.form} onSubmit={(event) => { void submit(event); }}>
+    <p className={styles["description"]}>Find candidate matches within a separately approved public-image catalogue using English descriptions. No uploaded images, patient data, supplier files or unsanctioned product material. This is not a medicine identification, authentication or regulatory verification tool.</p>
+    <form className={styles["form"]} onSubmit={(event) => { void submit(event); }}>
       <label htmlFor="npi-clip-query">Describe an approved public pharmaceutical image</label>
-      <div className={styles.controls}>
+      <div className={styles["controls"]}>
         <input
           id="npi-clip-query"
           type="search"
@@ -116,14 +116,14 @@ export function ClipVisualSearch() {
         <button type="submit" disabled={!enabled || pending || query.trim().length < 3}>{pending ? "Searching…" : "Find candidate images"}</button>
       </div>
     </form>
-    <p role="status" aria-live="polite" className={styles.status}>{status}</p>
-    {results.length ? <ol className={styles.results}>
+    <p role="status" aria-live="polite" className={styles["status"]}>{status}</p>
+    {results.length ? <ol className={styles["results"]}>
       {results.map((candidate) => <li key={candidate.assetId}>
         <strong>{candidate.title}</strong>
         <span>Candidate match #{candidate.rank} · Rights record: {candidate.rightsReference}</span>
         <a href={candidate.sourceUrl} target="_blank" rel="noopener noreferrer">Review original published source</a>
       </li>)}
     </ol> : null}
-    <p className={styles.footnote}>Similarity does not establish product identity, strength, authenticity, quality, stock, marketing authorisation or medical suitability. A human must verify every match.</p>
+    <p className={styles["footnote"]}>Similarity does not establish product identity, strength, authenticity, quality, stock, marketing authorisation or medical suitability. A human must verify every match.</p>
   </section>;
 }
