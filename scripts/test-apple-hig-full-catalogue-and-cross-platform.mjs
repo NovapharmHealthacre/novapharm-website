@@ -154,7 +154,7 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
         const body = response.ok ? await response.text() : "";
         if (!response.ok) await response.body?.cancel();
         const { createHash } = await import("node:crypto");
-        const hasHeading = !markdownPage || /^#\\s+\\S/m.test(body);
+        const hasHeading = !markdownPage || /^#\s+\S/m.test(body);
         const state = !approvedHost ? "unexpected_redirect"
           : response.status === 404 || response.status === 410 ? "broken"
           : response.ok && hasHeading ? "reachable"
@@ -162,7 +162,7 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
         // Store evidence hashes and section headings only, never Apple article
         // content, Apple art, user data or proprietary downloads.
         const headings = markdownPage && body
-          ? body.split("\\n").filter(line => /^#{1,3}\\s+/.test(line)).slice(0, 40).map(line => line.slice(0, 180))
+          ? body.split("\n").filter(line => /^#{1,3}\s+/.test(line)).slice(0, 40).map(line => line.slice(0, 180))
           : [];
         return { url, finalUrl: response.url, state, status: response.status,
           contentSha256: body ? createHash("sha256").update(body).digest("hex") : null,
