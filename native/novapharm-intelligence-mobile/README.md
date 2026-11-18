@@ -26,3 +26,13 @@ The current navigation is deliberately a research preview: an Overview with six 
 Native/novapharm-intelligence-apple remains a separate Swift Package research prototype. It is not embedded automatically into this Expo app.
 
 Brand tokens follow NovaPharm's light-first white/graphite interface, restrained #E3120B accent and native platform fonts without bundling Apple font binaries.
+
+## New research tab (iOS/Android prototype)
+
+The unsigned Expo application now has a fifth, **Research** tab backed by the same read-only `apps/portal/data/nova-signals-research.ts` source register proposed for the protected web ML workspace. It presents fifteen OpenAI study and technology references, supports category filtering, shows each study's NovaPharm application and explicit limitation, and launches original `openai.com` or `cdn.openai.com` references **only after a user taps a link**. No report bytes, CSV data, OpenAI credentials, patient inputs, microphone access, AI inference or GPU workload are included.
+
+This is **not** a live API integration, native iOS/Android app signing, imported Signals dataset or AI assistant. The linked 2026 Signals v3 dictionary enumerates 24 data tables; in the accompanying source-only research candidate only three aggregate tables have a bounded local, non-persistent preview parser, while the other 21 remain metadata-only. The mobile screen displays this limitation without importing data.
+
+`npm run typecheck`, `npm run test:contracts` and offline `npx expo export --platform ios/android` must pass on the exact candidate SHA; then simulator/device accessibility, deep links, outward navigation, performance and signed-store reviews remain separate release gates. Code-level access to original public research does not confer permission to access protected NovaPharm Intelligence or clinical data.
+
+**Release ordering:** this mobile candidate is coordinated with deep-learning infrastructure PR #820 and OpenAI Signals PR #828. Do not merge until the canonical source register, private-only release routing and all shared tests are reconciled on the latest `main`; other in-progress research/mobile PRs may modify the same application.
