@@ -7,12 +7,12 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
-import { ScienceResearchWorkspace } from "./science-research-workspace";
 import styles from "./medicines-intelligence.module.css";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
+import { ScienceResearchWorkspace } from "./science-research-workspace";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
