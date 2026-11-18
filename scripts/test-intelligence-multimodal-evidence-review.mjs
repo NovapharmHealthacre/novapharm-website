@@ -55,3 +55,11 @@ test("never echo user data or patient information into the result or logs", () =
   assert.equal(JSON.stringify(result).includes(privateMarker), false);
   assert.equal(JSON.stringify(result).includes("000123"), false);
 });
+
+test("multilingual medicine names remain distinguishable, not erased as ASCII", () => {
+  const result = assessMultimodalEvidence({
+    ...sample, visionMedicineName:"薬剤甲", imageTextMedicineName:"薬剤乙"
+  });
+  assert.equal(result.status,"conflicting_candidates");
+  assert.ok(result.signals.includes("vision_text_name_conflict"));
+});
