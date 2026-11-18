@@ -89,3 +89,17 @@ test("canonical contact publication verifies health and rejected anonymous acces
   assert.match(canonical, /data-live-b2b-enquiry-form/);
   assert.ok(canonical.includes("! grep -Fq 'data-email-enquiry-form'"));
 });
+
+test("private-only corporate live CI trigger repairs cannot dispatch public AWS releases", () => {
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  for (const path of [
+    ".github/workflows/corporate-live-full-acceptance.yml",
+    "scripts/test-corporate-live-publication-gate.mjs"
+  ]) {
+    assert.ok(dispatch.includes(path), "dispatcher guard missing " + path);
+    assert.ok(publish.includes(path), "publisher guard missing " + path);
+  }
+  assert.match(dispatch, /private_only=true/);
+  assert.match(publish, /release_needed=false/);
+});

@@ -49,6 +49,10 @@ The complete source-first architecture and unfulfilled cloud, data-rights, ident
 
 Current owner constraint remains `productionSignoff: "not_granted"`, `monthlyCapGbp: 0`, with only GitHub source/CI/nonproduction design authorised. The public retrieval system, protected governance views, model providers and actual training services must never be conflated. There is no approved dataset, provisioned ML cluster, signed iOS or Android app, live training run or evidence of authenticated production ML activation in this source change.
 
+## Scholarly source traceability — additional 22-reference programme
+
+The multimodal research basis now records 22 supplied citation positions, **21 unique publications**, seven planned evaluation dimensions and 12 synthetic string-based negative controls. See `docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md`. These tests do not execute images, train a model, measure actual robustness or grant data and tenant rights. Production inference remains disabled by design.
+
 ## OpenAI Signals, scientific-work evidence, Whisper, large-model training and Triton — 18 November 2026
 
 This candidate adds a source-first OpenAI research register to the **existing protected Nova ML web workspace** and non-executing advisory review policies in JavaScript, Swift and Kotlin. Its controlled source reference is [OpenAI Signals and technical research adoption](intelligence/openai-signals-whisper-triton-integration-20261118.md). The source register contains ten scientific/economic reports, two Signals data/methodology resources, and three neural-network/speech/GPU engineering references.
