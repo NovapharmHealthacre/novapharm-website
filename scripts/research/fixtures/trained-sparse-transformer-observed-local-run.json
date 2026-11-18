@@ -25,7 +25,7 @@
     "prunedAccuracy": 1,
     "isolatedCircuitLoss": 0.00009764483547769487,
     "isolatedCircuitAccuracy": 1,
-    "ablatedLoss": 4.706462860107422,
+    "ablatedLoss": 4.715945720672607,
     "ablatedAccuracy": 0.4921875,
     "headAblatedLosses": [
       0.00009679462527856231,
@@ -76,7 +76,7 @@
     "evaluation": {
       "baselineLoss": 0.00008897692168829963,
       "circuitLoss": 0.00009764483547769487,
-      "ablatedLoss": 4.706462860107422,
+      "ablatedLoss": 4.715945720672607,
       "sampleCount": 256,
       "holdout": true,
       "ablation": "mean"
@@ -84,7 +84,7 @@
     "provenance": {
       "runId": "toy-transformer-seed-117",
       "implementationRevision": "offline-pytorch-v1",
-      "evaluatedAt": "2026-11-18T03:42:58Z"
+      "evaluatedAt": "2026-11-18T03:46:16Z"
     }
   },
   "assurance": {
