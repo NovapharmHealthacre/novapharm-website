@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { SIGNALS_DATASET, assessSignalsResearchProposal, assessSignalsAggregateRow, signalsApprovedTables, signalsRegisteredSources } from "../src/ai/intelligence-openai-signals.mjs";
+import { signalsV3TableRegistry, signalsV3PreviewAllowlist, signalsV3TableByName } from "../src/ai/openai-signals-v3-table-registry.mjs";
 
 const base = () => ({
   sourceId: "science-frontier", mode: "evidence-reading", purpose: "non-clinical-evidence-research",
@@ -55,4 +56,22 @@ test("aggregated consumer records must match official allowed CSV schema", () =>
     assert.ok(!JSON.stringify(a).includes("PRIVATE"));
     assert.ok(!JSON.stringify(a).includes("sensitive"));
   }
+});
+
+test("all 24 publisher-described Signals v3 tables are registered, but only three are reviewable", () => {
+  assert.equal(signalsV3TableRegistry.length, 24);
+  assert.equal(new Set(signalsV3TableRegistry.map(t => t.name)).size, 24);
+  assert.equal(signalsV3PreviewAllowlist.length, 3);
+  assert.deepEqual([...signalsApprovedTables].sort(), [...signalsV3PreviewAllowlist].sort());
+  assert.equal(signalsV3TableRegistry.filter(t => t.admission === "metadata-only").length, 21);
+  assert.equal(signalsV3TableRegistry.filter(t => t.admission === "local-aggregate-preview-only").length, 3);
+  assert.ok(signalsV3TableRegistry.every(t => t.name.endsWith(".csv") && t.dimensions.length > 0));
+  assert.ok(signalsV3TableRegistry.every(t => Object.isFrozen(t) && Object.isFrozen(t.dimensions)));
+  for (const table of signalsV3TableRegistry) {
+    assert.equal(signalsV3TableByName(table.name), table);
+    if (table.admission === "metadata-only") {
+      assert.equal(assessSignalsAggregateRow(table.name, Object.fromEntries(table.dimensions.map(key => [key, "none"]))).status, "blocked");
+    }
+  }
+  assert.equal(signalsV3TableByName("../raw_messages.csv"), null);
 });
