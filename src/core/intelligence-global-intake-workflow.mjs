@@ -30,6 +30,10 @@ const DATASETS=Object.freeze({
   "global-clinicaltrials":Object.freeze({publisher:"ClinicalTrials.gov",datasetKey:"clinicaltrials-v2"}),
   "ca-health-canada-dpd":Object.freeze({publisher:"Health Canada",datasetKey:"drug-product-database"}),
   "global-europepmc":Object.freeze({publisher:"Europe PMC",datasetKey:"europepmc-search"}),
+  "global-pubmed":Object.freeze({publisher:"US National Library of Medicine",datasetKey:"pubmed-esearch"}),
+  "global-chembl":Object.freeze({publisher:"European Bioinformatics Institute ChEMBL",datasetKey:"chembl-molecule-search"}),
+  "global-pubchem":Object.freeze({publisher:"US National Center for Biotechnology Information PubChem",datasetKey:"pubchem-cid-search"}),
+  "pl-nfz-drug-program":Object.freeze({publisher:"Narodowy Fundusz Zdrowia",datasetKey:"nfz-drug-program-substance-costs"}),
   "es-aemps-cima":Object.freeze({publisher:"Agencia Espanola de Medicamentos y Productos Sanitarios",datasetKey:"aemps-cima"})
 });
 function reject(message){throw new Error("Global source intake rejected: "+message);}
@@ -58,13 +62,13 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       if(!dataset)reject("unregistered source");
       if(!metadata||typeof metadata!=="object"||Array.isArray(metadata))reject("metadata");
 
-      // Authorize BEFORE reading source bytes or creating a quarantine record.
-      // Sample trusted server time AFTER asynchronous authorisation, so a grant
-      // expiring while the callback runs cannot be accepted using stale time.
+      // Only the trusted backend may supply this scope. Do not treat a caller
+      // receipt or client-side state as proof of source rights.
       const rightsScope=Object.freeze({
         tenantId,sourceId,country:plan.country,domain:plan.domain,
         purpose:"internal-evaluation"
       });
+      // Sample the server clock AFTER the asynchronous authorization returns.
       let decision;
       try{decision=await authorize(rightsScope);}
       catch{reject("trusted authorizer unavailable");}
@@ -78,7 +82,14 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
       });
       const raw=decodeSourceBytes(rawBytes);
       const normalized=normaliseGovSourceResult(plan,raw);
-      const fetchedAt=new Date(authorisedAt).toISOString();
+      // The independent evaluator has no network call, but processing can
+      // still outlast a grant or observe a regressed/malformed server clock.
+      let capturedAt;
+      try{capturedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(capturedAt)||capturedAt<authorisedAt||
+        capturedAt>=Date.parse(grant.validUntil))reject("permit expired or server clock");
+      const fetchedAt=new Date(capturedAt).toISOString();
 
       // Publication/observation dates and version are supplied by a trusted
       // backend source release inventory, never guessed from HTTP response
@@ -100,37 +111,44 @@ export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}
         bytes:rawBytes
       });
       const evidence=buildEvaluationEnvelope({
-        plan,normalized,raw,grant,capturedAt:authorisedAt
+        plan,normalized,raw,grant,capturedAt
       });
       const pageQuality=assessGlobalSourcePageQuality({
         sourceId,raw,normalized,manifest,limit
       });
-      // The quarantine payload is still in memory only. Recheck rights after
-      // parsing and evidence preparation, before allowing any result to leave.
-      // A grant can be revoked, replaced or expire during an async evaluation.
+      // Quarantine and evidence remain memory-only. Reauthorise after parsing
+      // and evidence preparation, before any evaluated result may leave.
+      // Rights may expire, be revoked or be replaced during processing.
       let finalDecision;
       try{finalDecision=await authorize(rightsScope);}
       catch{reject("trusted authorizer unavailable");}
-      let evaluatedAt;
-      try{evaluatedAt=now();}
+      let finalAt;
+      try{finalAt=now();}
       catch{reject("server clock");}
-      if(!Number.isSafeInteger(evaluatedAt)||evaluatedAt<authorisedAt||
-         evaluatedAt>=Date.parse(grant.validUntil))reject("source rights expired during evaluation");
-      const finalGrant=assertInternalEvaluationPermit({
-        permit:finalDecision,sourceId,tenantId,country:plan.country,
-        domain:plan.domain,now:evaluatedAt
-      });
+      if(!Number.isSafeInteger(finalAt)||finalAt<capturedAt||
+         finalAt>=Date.parse(grant.validUntil)) {
+        reject("source rights expired during evaluation");
+      }
+      let finalGrant;
+      try{
+        finalGrant=assertInternalEvaluationPermit({
+          permit:finalDecision,sourceId,tenantId,country:plan.country,
+          domain:plan.domain,now:finalAt
+        });
+      }catch{reject("source rights not approved during evaluation");}
       if(finalGrant.receiptId!==grant.receiptId||
          finalGrant.licenseId!==grant.licenseId||
          finalGrant.rightsVersion!==grant.rightsVersion||
-         finalGrant.validUntil!==grant.validUntil)reject("source rights changed during evaluation");
+         finalGrant.validUntil!==grant.validUntil) {
+        reject("source rights changed during evaluation");
+      }
       return Object.freeze({
         contract:EVALUATION_CONTRACT,
         tenantId,
         sourceId,
         country:plan.country,
         domain:plan.domain,
-        sourceRightsReceipt:grant.receiptId,
+        sourceRightsReceipt:finalGrant.receiptId,
         manifest,
         evidence,
         pageQuality,
