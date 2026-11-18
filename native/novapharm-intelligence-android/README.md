@@ -16,3 +16,7 @@ Offline Kotlin test (with a separately installed Kotlin compiler):
 kotlinc native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt -include-runtime -d /tmp/nova-l0-test.jar
 java -jar /tmp/nova-l0-test.jar
 ```
+
+## Research candidate schema
+
+The Kotlin source also contains `NovaL0ResearchCandidate.score` for deterministic testing of the same versioned sparse-linear artifact consumed by the TypeScript and Swift research sources. This offline function rejects wrong feature keys, duplicate or malformed names, non-finite values, incorrect nonzero counts and any claim of production or customer activation. It is **not** an Android ML runtime, signed app, LiteRT conversion, or user-facing prediction feature. Test with synthetic vector: demand=5, stock=99, lead_time=4; coefficients=(2,0,2), bias=3; expected score=21.
