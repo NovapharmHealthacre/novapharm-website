@@ -9,7 +9,7 @@
  */
 import { createHash } from "node:crypto";
 import { assertInternalEvaluationPermit } from "./intelligence-global-evidence-contract.mjs";
-import { buildSourceSnapshotQuarantine } from "./intelligence-source-snapshot-quarantine.mjs";
+import { buildSourceSnapshotQuarantine, classifySourceSnapshotReplay } from "./intelligence-source-snapshot-quarantine.mjs";
 
 const HSA_RESOURCE = "d_767279312753558cbf19d48344577084";
 const MAX_SOURCE_BYTES = 131072;
@@ -366,6 +366,37 @@ export function createOfficialLivePharmaQuarantineReader({
         productionAccepted:false,
         canPublish:false,
         rawRecordsRetained:false
+      });
+    },
+    // Replay comparisons are only for trusted backend-stored evidence
+    // candidates; never accept previous receipts from a customer browser.
+    compareReplay(previous,next) {
+      const valid = x => x &&
+        x.contract==="novapharm.intelligence.official-live-intake-quarantine.v1" &&
+        typeof x.tenantId==="string" &&
+        Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS,x.sourceId) &&
+        x.manifest?.sourceKey===x.sourceId &&
+        x.manifest?.jurisdiction===x.jurisdiction &&
+        x.canPublish===false && x.productionAccepted===false &&
+        x.customerReadEnabled===false &&
+        x.manifest.canPublish===false &&
+        x.manifest.productionAccepted===false;
+      if(!Array.isArray(previous)||!valid(next) ||
+         previous.some(x=>!valid(x)||x.tenantId!==next.tenantId||
+           x.sourceId!==next.sourceId)) {
+        fail("untrusted or cross-tenant source replay evidence");
+      }
+      let classified;
+      try {
+        classified=classifySourceSnapshotReplay(
+          previous.map(x=>x.manifest),next.manifest);
+      } catch { fail("invalid publisher release replay evidence"); }
+      return Object.freeze({
+        contract:"novapharm.intelligence.official-live-replay-review.v1",
+        tenantId:next.tenantId,sourceId:next.sourceId,
+        decision:classified.decision,
+        sourceRightsLegallyApproved:false,
+        productionAccepted:false,canPublish:false
       });
     }
   });
