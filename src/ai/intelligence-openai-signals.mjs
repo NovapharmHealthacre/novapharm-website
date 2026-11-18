@@ -1,3 +1,5 @@
+import { signalsV3PreviewAllowlist, signalsV3TableByName } from "./openai-signals-v3-table-registry.mjs";
+
 // OpenAI Signals research intake: local admission only. NEVER fetches, runs models or approves jobs.
 export const SIGNALS_DATASET = Object.freeze({
   id: "openai-signals-v3",
@@ -20,11 +22,12 @@ const MODES = new Set(["evidence-reading", "aggregate-data-review", "voice-desig
 const KEYS = new Set(["sourceId", "mode", "purpose", "dataClass", "containsPersonalData", "requestsExternalTransfer", "automatedDecision", "estimatedIncrementalCostGbp"]);
 const TOPICS = new Set(["Multimedia", "Other/Unknown", "Practical Guidance", "Seeking information", "Self-expression", "Technical help", "Writing"]);
 const INTENTS = new Set(["asking", "doing", "expressing"]);
-const FIELDS = Object.freeze({
-  "share_of_messages_by_topic_country_month.csv": ["month", "country", "topic", "share_of_messages"],
-  "share_of_messages_by_country_quarter_rank.csv": ["quarter", "country", "rank"],
-  "share_of_messages_by_work_related_ask_do_express_month.csv": ["month", "work_related", "ask_do_express", "share_of_messages"]
-});
+// Only three publisher tables pass the first-stage local preview gate.
+// The remaining 21 are discoverable metadata, NOT authorised imports.
+const FIELDS = Object.freeze(Object.fromEntries(signalsV3PreviewAllowlist.map(filename => {
+  const meta = signalsV3TableByName(filename);
+  return [filename, [...meta.dimensions, meta.metric]];
+})));
 const MONTH = /^20[0-9]{2}-(0[1-9]|1[0-2])-01$/;
 const QUARTER = /^20[0-9]{2}-(01|04|07|10)-01$/;
 const COUNTRY = /^[A-Z]{2}$/;
