@@ -40,3 +40,11 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 ## Human accountability
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
+
+## Deep-learning compute infrastructure boundary — November 2026 source extension
+
+The Nova ML compute architecture is a **non-executing, review-only candidate** for the protected web experience and future signed iOS and Android clients. Its source-controlled workload proposal constraints are implemented in `src/ai/compute-admission.mjs`, `native/novapharm-intelligence-apple/NovaComputePlan.swift`, and `native/novapharm-intelligence-android/NovaComputePlan.kt`. These local checks are advisory. They confer **no** authorisation to run training, request GPU capacity, upload data, access patient records or write results.
+
+The complete source-first architecture and unfulfilled cloud, data-rights, identity, budget, security, provenance and device-release gates are in [Deep-learning infrastructure adoption](architecture/deep-learning-infrastructure-20261118.md). The historical [OpenAI 2016 infrastructure article](https://openai.com/index/infrastructure-for-deep-learning/) informs experimental reproducibility and orchestration principles, not the deployment of obsolete Python 2.7/Theano or custom autoscaling tooling.
+
+Current owner constraint remains `productionSignoff: "not_granted"`, `monthlyCapGbp: 0`, with only GitHub source/CI/nonproduction design authorised. The public retrieval system, protected governance views, model providers and actual training services must never be conflated. There is no approved dataset, provisioned ML cluster, signed iOS or Android app, live training run or evidence of authenticated production ML activation in this source change.
