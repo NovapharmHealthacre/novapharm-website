@@ -55,7 +55,8 @@ test("web and API routes stay board-scoped and exact-allowlisted", () => {
   assert.ok(server.includes('pathname === "/api/v1/intelligence/visual/search"'));
   assert.ok(server.includes("searchApprovedVisualCatalogue("));
   assert.ok(server.includes('scopedAuthentication(request, response, ["board"])'));
-  assert.ok(portal.includes("v1\\/intelligence\\/visual\\/search"));
+  assert.ok(portal.includes("v1\\/intelligence\\/visual\\/(?:readiness|search)"));
+  assert.ok(portal.includes('path === "v1/intelligence/visual/search"'));
   assert.ok(!portal.includes("v1\\/intelligence\\/visual\\/.*"));
   assert.ok(server.includes("requireCsrf(request)"));
 });
