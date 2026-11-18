@@ -7,6 +7,9 @@ on:
       - 'docs/intelligence/country-101-scope-proposal-20261118.json'
       - 'docs/intelligence/country-101-scope-proposal-20261118.md'
       - 'scripts/test-intelligence-country-101-scope-proposal.mjs'
+      - 'src/core/intelligence-country-101-proposed-ledger.mjs'
+      - 'scripts/test-intelligence-country-101-proposed-ledger.mjs'
+      - 'scripts/render-intelligence-country-101-proposed-ledger.mjs'
       - 'scripts/aws/contact-release-routing.test.mjs'
       - '.github/workflows/dispatch-approved-aws-contact-release.yml'
       - '.github/workflows/publish-aws-contact-production.yml'
@@ -34,6 +37,12 @@ jobs:
           node-version: '24'
       - name: Syntax and negative-test country/source distinction
         run: |
+          node --check src/core/intelligence-country-101-proposed-ledger.mjs
+          node --check scripts/test-intelligence-country-101-proposed-ledger.mjs
+          node --check scripts/render-intelligence-country-101-proposed-ledger.mjs
           node --check scripts/test-intelligence-country-101-scope-proposal.mjs
           node --check scripts/aws/contact-release-routing.test.mjs
-          node --test scripts/test-intelligence-country-101-scope-proposal.mjs scripts/aws/contact-release-routing.test.mjs
+          node --test scripts/test-intelligence-country-101-scope-proposal.mjs scripts/test-intelligence-country-101-proposed-ledger.mjs scripts/aws/contact-release-routing.test.mjs
+          node scripts/render-intelligence-country-101-proposed-ledger.mjs --json > /tmp/npi-101-country-proposed-ledger.json
+          node scripts/render-intelligence-country-101-proposed-ledger.mjs --markdown > /tmp/npi-101-country-proposed-ledger.md
+          node --input-type=module -e 'import {readFileSync} from "node:fs"; const x=JSON.parse(readFileSync("/tmp/npi-101-country-proposed-ledger.json","utf8")); if(x.distinctNationalCountries!==101||x.verifiedCustomerLiveCountries!==0||x.nationalCountriesWithNoRegisteredDataSource!==24) process.exit(1);'
