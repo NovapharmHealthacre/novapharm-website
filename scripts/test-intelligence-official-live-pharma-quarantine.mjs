@@ -228,3 +228,46 @@ test("FDA publisher-declared last_updated date must exactly bind the trusted rel
     }),/US FDA application response schema mismatch/);
   }
 });
+
+
+test("two live-source releases compare replay without cross-tenant or cross-source publication",async()=>{
+  const sourceId="sg-hsa-registered-products";
+  const values=[
+    payload(sourceId),
+    payload(sourceId),
+    {...payload(sourceId),result:{...payload(sourceId).result,
+      records:[{LicenceNo:"SIN00230P",Productname:"REVISED PRODUCT LABEL"}]}}
+  ];
+  const receipts=[];
+  for(const data of values){
+    const candidate=reader({
+      transport:async()=>JSON_RESPONSE(data)
+    });
+    receipts.push(await candidate.evaluate({sourceId,tenantId:"tenantA"}));
+  }
+  const comparator=reader();
+  const first=comparator.compareReplay([],receipts[0]);
+  const duplicate=comparator.compareReplay([receipts[0]],receipts[1]);
+  const changed=comparator.compareReplay([receipts[0]],receipts[2]);
+  assert.equal(first.decision,"QUARANTINE_NEW_CANDIDATE");
+  assert.equal(duplicate.decision,"DUPLICATE");
+  assert.equal(changed.decision,"QUARANTINE_CONFLICTING_REVISION");
+  for(const v of [first,duplicate,changed]){
+    assert.equal(v.canPublish,false);
+    assert.equal(v.productionAccepted,false);
+    assert.equal(v.sourceRightsLegallyApproved,false);
+    assert.equal(v.tenantId,"tenantA");
+  }
+  const moved={...receipts[0],tenantId:"anotherTenant"};
+  assert.throws(()=>comparator.compareReplay([moved],receipts[1]),
+    /cross-tenant source replay/);
+  const wrongSource={...receipts[0],sourceId:"us-fda-drugsfda"};
+  assert.throws(()=>comparator.compareReplay([wrongSource],receipts[1]),
+    /cross-tenant source replay/);
+  const forcedLive={...receipts[0],productionAccepted:true};
+  assert.throws(()=>comparator.compareReplay([forcedLive],receipts[1]),
+    /cross-tenant source replay/);
+  assert.throws(()=>comparator.compareReplay([receipts[0]],{
+    ...receipts[1],canPublish:true
+  }),/cross-tenant source replay/);
+});
