@@ -31,8 +31,19 @@ const FIELDS = Object.freeze(Object.fromEntries(signalsV3PreviewAllowlist.map(fi
 const MONTH = /^20[0-9]{2}-(0[1-9]|1[0-2])-01$/;
 const QUARTER = /^20[0-9]{2}-(01|04|07|10)-01$/;
 const COUNTRY = /^[A-Z]{2}$/;
-const plain = value => value !== null && typeof value === "object" && !Array.isArray(value) &&
-  (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+// Accept records/proposals with plain own data properties only. Reject accessor,
+// symbol, prototype-inherited and malformed Proxy inputs without invoking getters.
+const plain = value => {
+  try {
+    if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) return false;
+    return Reflect.ownKeys(value).every(key => typeof key === "string" &&
+      Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), "value"));
+  } catch {
+    return false;
+  }
+};
 function answer(reasons) {
   const unique = [...new Set(reasons)];
   return Object.freeze({ status: unique.length ? "blocked" : "review-only", executionEnabled: false, reasons: Object.freeze(unique) });
@@ -40,7 +51,7 @@ function answer(reasons) {
 export function assessSignalsResearchProposal(value) {
   if (!plain(value)) return answer(["invalid-proposal"]);
   const reasons = [];
-  if (Object.keys(value).some(key => !KEYS.has(key))) reasons.push("unexpected-fields");
+  if (Reflect.ownKeys(value).some(key => !KEYS.has(key))) reasons.push("unexpected-fields");
   if (!SOURCE_SET.has(value.sourceId)) reasons.push("unregistered-source");
   if (!MODES.has(value.mode)) reasons.push("invalid-mode");
   if (value.purpose !== "non-clinical-evidence-research") reasons.push("unapproved-purpose");
@@ -54,11 +65,12 @@ export function assessSignalsResearchProposal(value) {
 }
 // Only validates public, *already aggregated* CSV rows. No user prompts or raw transcripts.
 export function assessSignalsAggregateRow(table, row) {
+  // Never traverse Object.prototype for "__proto__", "constructor", etc.
+  if (typeof table !== "string" || !Object.hasOwn(FIELDS, table)) return answer(["unapproved-table"]);
   const fields = FIELDS[table];
-  if (!fields) return answer(["unapproved-table"]);
   if (!plain(row)) return answer(["invalid-record"]);
   const reasons = [];
-  if (Object.keys(row).some(key => !fields.includes(key)) || fields.some(key => !Object.hasOwn(row, key))) reasons.push("unexpected-fields");
+  if (Reflect.ownKeys(row).some(key => !fields.includes(key)) || fields.some(key => !Object.hasOwn(row, key))) reasons.push("unexpected-fields");
   if ("month" in row && (typeof row.month !== "string" || !MONTH.test(row.month))) reasons.push("invalid-month");
   if ("quarter" in row && (typeof row.quarter !== "string" || !QUARTER.test(row.quarter))) reasons.push("invalid-quarter");
   if ("country" in row && (typeof row.country !== "string" || !COUNTRY.test(row.country))) reasons.push("invalid-country");
