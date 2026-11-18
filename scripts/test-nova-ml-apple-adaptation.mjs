@@ -4,7 +4,7 @@ import test from "node:test";
 
 const source = (path) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
-test("four unique Nova ML extensions do not modify the canonical 22 research workspaces", () => {
+test("four Apple ML extensions and one gated model-research extension preserve the canonical 22 workspaces", () => {
   const catalogue = source("apps/portal/data/nova-ml-modules.ts");
   const original = source("apps/portal/data/intelligence-workspaces.ts");
   const slugs = [...catalogue.matchAll(/slug: "(nova-[a-z-]+)"/g)].map((match) => match[1]);
@@ -12,9 +12,10 @@ test("four unique Nova ML extensions do not modify the canonical 22 research wor
     "nova-ml-studio",
     "nova-core-runtime",
     "nova-device-intelligence",
-    "nova-generative-assist"
+    "nova-generative-assist",
+    "nova-model-microscope"
   ]);
-  assert.equal(new Set(slugs).size, 4);
+  assert.equal(new Set(slugs).size, 5);
   assert.equal([...original.matchAll(/slug: "/g)].length, 22);
   assert.match(catalogue, /isNovaMlWorkspaceSlug/);
   assert.match(catalogue, /novaMlExperienceGuidance/);
@@ -22,7 +23,7 @@ test("four unique Nova ML extensions do not modify the canonical 22 research wor
   assert.doesNotMatch(catalogue, /productionApproved: true|state: "live"/);
 });
 
-test("four extensions use existing verified SSR portal routing, not public bypasses", () => {
+test("all five extensions use existing verified SSR portal routing, not public bypasses", () => {
   const routes = source("apps/portal/data/routes.ts");
   const page = source("apps/portal/app/[[...slug]]/page.tsx");
   const view = source("apps/portal/components/medicines-intelligence.tsx");
