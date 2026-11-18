@@ -4,6 +4,12 @@
 const MODES = new Set(["experiment", "training", "batch-inference"]);
 const ACCELERATORS = new Set(["cpu", "gpu"]);
 const HASH = /^sha256:[a-f0-9]{64}$/;
+// Explicit metadata allowlist: never accept raw datasets, prompts, patient records or secrets.
+const PROPOSAL_KEYS = new Set([
+  "mode", "accelerator", "datasetDigest", "modelDigest", "purpose", "dataClass",
+  "containsPersonalData", "cpuCores", "gpuCount", "memoryGiB", "durationMinutes",
+  "retentionDays", "region", "estimatedCostGbp"
+]);
 const NUMBER_LIMITS = Object.freeze({
   cpuCores: [1, 32],
   gpuCount: [0, 4],
@@ -16,13 +22,15 @@ const boundedInteger = (value, [min, max]) => Number.isSafeInteger(value) && val
 
 export function assessComputeProposal(proposal, policy = {}) {
   const reasons = [];
-  if (!proposal || typeof proposal !== "object" || Array.isArray(proposal)) {
-    return Object.freeze({ schemaVersion: 1, status: "blocked", executionEnabled: false, reasons: ["invalid-proposal"] });
+  if (!proposal || typeof proposal !== "object" || Array.isArray(proposal) ||
+      (Object.getPrototypeOf(proposal) !== Object.prototype && Object.getPrototypeOf(proposal) !== null)) {
+    return Object.freeze({ schemaVersion: 1, status: "blocked", executionEnabled: false, reasons: Object.freeze(["invalid-proposal"]) });
   }
+  if (Object.keys(proposal).some((name) => !PROPOSAL_KEYS.has(name))) fail(reasons, "unexpected-fields");
   if (!MODES.has(proposal.mode)) fail(reasons, "invalid-mode");
   if (!ACCELERATORS.has(proposal.accelerator)) fail(reasons, "invalid-accelerator");
-  if (!HASH.test(proposal.datasetDigest ?? "")) fail(reasons, "unversioned-dataset");
-  if (!HASH.test(proposal.modelDigest ?? "")) fail(reasons, "unversioned-model");
+  if (typeof proposal.datasetDigest !== "string" || !HASH.test(proposal.datasetDigest)) fail(reasons, "unversioned-dataset");
+  if (typeof proposal.modelDigest !== "string" || !HASH.test(proposal.modelDigest)) fail(reasons, "unversioned-model");
   if (proposal.purpose !== "non-clinical-research") fail(reasons, "unapproved-purpose");
   if (proposal.dataClass !== "public-approved" && proposal.dataClass !== "internal-nonpersonal-approved") {
     fail(reasons, "data-class-not-admitted");
