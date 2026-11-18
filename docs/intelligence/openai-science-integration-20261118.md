@@ -87,3 +87,27 @@ The user supplied ten URL occurrences: one immunology URL appeared twice. The de
 These are *reference and application design patterns*, not operational scientific APIs. No access has been obtained from OpenAI, Ginkgo Bioworks, Molecule.one, a health-care provider or a scientific data publisher on the basis of reading a research story. The studies are author/publisher reports; NovaPharm has not independently reproduced their findings. Onboard future public-domain/official life-sciences sources only with field-level rights, record-level provenance, non-patient test datasets and secure backend adapters. Clinical/patient/genomic work would need separate legal, privacy, ethics, regulatory, safety and specialist acceptance.
 
 User-specified `https://openai.com` and `https://openai.com/news/science/` are changing web indexes rather than static research papers. The registry snapshot was reviewed 18 November 2026 and does not imply current future news accuracy. No background polling, autonomous chemistry, genomic diagnosis, open-ended simulation or patient-facing model use was enabled.
+
+
+## 18 November 2026: Evidence lifecycle incorporated into Intelligence DNA
+
+Source reference ingestion is intentionally **not** scientific claim acceptance. Every external research case now has an explicit validation track, publisher-verification flag, correction/retraction verification flag and primary-study inspection flag. All nine cases currently indicate **not independently assessed**, **retractions/corrections not checked**, **primary study evidence not inspected** and **no approved research dataset**. Published descriptions are education/research context only, not clinical, economic, regulatory, chemical or biological facts accepted by NovaPharm.
+
+The eight immutable lifecycle prerequisites in `src/core/intelligence-science-evidence-dossier.mjs` are:
+
+1. `source_identity`: exact source, publication, version, authors and timestamp
+2. `legal_rights`: rights for reading, processing, quoting and AI use in the correct jurisdiction
+3. `source_corrections`: corrections, errata, expression of concern, retractions and later revisions
+4. `provenance`: immutable, attributable artifact lineage and valid source fingerprints
+5. `independent_method_validation`: suitable replication, formal proof, calculation, reference-test or specialist methodology verification
+6. `conflicts_and_uncertainty`: disconfirming evidence, alternatives, limits and uncertainty
+7. `qualified_review`: scientific reviewer identity, independence, expertise and documented approval
+8. `release_review`: separately accountable signoff for any specific internal/public/regulated use
+
+The dossier is a **non-executing design contract**. It accepts only a known reference case, a matching canonical workspace, a `research:` plus 64-character hexadecimal fingerprint and up to 12 unique `evidence:` hexadecimal references. It rejects any free-text/patient-like input, invalid IDs or cross-workspace bypasses. Fingerprints are **not** signatures, immutable evidence, authorization, licenses, accepted results or promises of anonymity; they require independent trusted verification. All eight stages are always returned `not_independently_verified`. Client flags `approved` or `externalModelKeyPresent` cannot enable scientific conclusions, model calls, laboratory execution, clinical decisions or customer publication.
+
+Tracks are `formal`, `experimental`, `clinical_research`, `computational` and `discovery`; homepage/news index entries remain discovery-only and cannot be treated as primary evidence. The cross-workspace readiness report now exposes only applicable reference IDs, method validation tracks, the eight required stages and `scientificDossierIndependentEvidenceAccepted:false` for all 22 modules. The executive release-readiness report records zero independently verified stages and no source-correction certification. The protected web and offline native UI label the external publisher reporting/unchecked corrections explicitly.
+
+Mobile TypeScript validation lists the Science screen and both shared research catalogues explicitly. CI tests include invalid scopes, repeated evidence references, forged approval flags, unverifiable clinical claims and no-model/no-lab/no-release guarantees.
+
+**Not a completed production workflow:** source review and verification tools, scientific audit infrastructure, model API licenses, research data ingestion, paid/cloud environments, native signing, end-to-end deployed user acceptance and independent regulated release remain unverified. The draft must not be merged to production merely because a test for a read-only preview passes.
