@@ -139,3 +139,21 @@ test("all 22 workspace readiness reports share the nine reviewed research method
     assert.equal(workspace.productionAccepted, false);
   }
 });
+
+test("source snapshot timestamps reject invalid calendar rollover and noncanonical UTC", () => {
+  const run = sourceSnapshotAt => assessIntelligence22Workspaces({
+    catalogue, capabilityReport, sourceCounts: counts, sourceSnapshotAt
+  });
+  assert.equal(run("2026-11-14T17:00:00Z").sourceSnapshotAt, "2026-11-14T17:00:00Z");
+  assert.equal(run("2026-11-14T17:00:00.1Z").sourceSnapshotAt, "2026-11-14T17:00:00.1Z");
+  assert.equal(run("2026-11-14T17:00:00.123Z").sourceSnapshotAt, "2026-11-14T17:00:00.123Z");
+  for (const invalid of [
+    "2026-02-30T17:00:00Z",
+    "2026-11-31T17:00:00Z",
+    "2026-11-14T17:00:00+00:00",
+    "2026-11-14T17:00:00.1234Z",
+    "2026-13-01T17:00:00Z"
+  ]) {
+    assert.throws(() => run(invalid), /Invalid private Intelligence workspace implementation assessment/, invalid);
+  }
+});
