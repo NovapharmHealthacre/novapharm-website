@@ -22,6 +22,7 @@ export const CANDIDATE_API_BINDINGS=Object.freeze({
   "global-global-ncbi-pubmed":"global-pubmed",
   "global-global-chembl":"global-chembl",
   "global-global-pubchem":"global-pubchem",
+  "europe-poland-nfz-drug-program-statistics":"pl-nfz-drug-program",
   "europe-spain-aemps-cima":"es-aemps-cima",
   "north-america-united-states-fda-openfda":"us-fda-drugsfda",
   "north-america-canada-health-canada-drug-product-database":"ca-health-canada-dpd"

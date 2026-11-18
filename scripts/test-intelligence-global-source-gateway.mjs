@@ -30,8 +30,8 @@ function permit({ sourceId = "global-clinicaltrials", tenantId = "tenant1", coun
 }
 
 
-test("only eight documented HTTPS source plans are reachable through fixed-path plans", () => {
-  assert.equal(Object.keys(sourcePlans).length, 8);
+test("only nine documented HTTPS source plans are reachable through fixed-path plans", () => {
+  assert.equal(Object.keys(sourcePlans).length, 9);
   for (const sourceId of Object.keys(sourcePlans)) {
     const p = buildGovSourcePlan({ sourceId, term: "Apixaban", limit: 5 });
     assert.equal(new URL(p.url).protocol, "https:");
@@ -45,6 +45,7 @@ test("only eight documented HTTPS source plans are reachable through fixed-path 
   assert.match(buildGovSourcePlan({ sourceId: "global-pubmed", term: "Apixaban" }).url, /esearch.fcgi\?db=pubmed.*retmax=5.*retmode=json/);
   assert.match(buildGovSourcePlan({ sourceId: "global-chembl", term: "Apixaban" }).url, /search.json\?q=Apixaban.*limit=5/);
   assert.match(buildGovSourcePlan({ sourceId: "global-pubchem", term: "Apixaban" }).url, /compound\/name\/Apixaban\/cids\/JSON/);
+  assert.match(buildGovSourcePlan({ sourceId: "pl-nfz-drug-program", term: "Apixaban" }).url, /drug-costs-by-active-substance\?active-substance=Apixaban.*limit=5.*format=json/);
 });
 test("bounds reject query injection, unsupported hosts and unbounded pages", () => {
   for (const term of ['" OR true', "https://evil.example", "a", " ".repeat(100), "a\nb"]) {
@@ -201,4 +202,21 @@ test("new global discovery adapters reject non-JSON or unrecognized schema", () 
     assert.throws(() => normaliseGovSourceResult(buildGovSourcePlan({ sourceId, term: "Apixaban" }), {}), /Unexpected source schema/);
     assert.throws(() => buildGovSourcePlan({ sourceId, term: "a/b" }), /Invalid search term/);
   }
+});
+
+test("Polish NFZ keeps active-substance codes and does not manufacture price or market share", () => {
+  const plan = buildGovSourcePlan({ sourceId: "pl-nfz-drug-program", term: "Apixaban" });
+  const result = normaliseGovSourceResult(plan, {
+    meta: { count: 1, page: 1 },
+    data: [{ data: [{ "active-substance-code": "010203", "active-substance-name": "APIXABANUM", refund: 2500 }] }]
+  });
+  assert.equal(result.records[0].localId, "010203");
+  assert.equal(result.records[0].label, "APIXABANUM");
+  assert.equal(result.records[0].provenanceDomain, "NFZ drug-program reimbursement (substance identity only)");
+  assert.equal(result.jurisdiction, "PL");
+  assert.equal(result.canPublish, false);
+  assert.equal(Object.hasOwn(result.records[0], "refund"), false);
+  assert.equal(Object.hasOwn(result.records[0], "price"), false);
+  assert.equal(result.dataState, "unreconciled_upstream_preview");
+  assert.throws(() => normaliseGovSourceResult(plan, {wrong:[]}), /Unexpected source schema/);
 });

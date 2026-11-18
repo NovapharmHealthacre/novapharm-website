@@ -14,6 +14,10 @@ function responseRows(sourceId,raw){
   if(sourceId==="global-pubmed")return raw?.esearchresult?.idlist;
   if(sourceId==="global-chembl")return raw?.molecules;
   if(sourceId==="global-pubchem")return raw?.IdentifierList?.CID;
+  if(sourceId==="pl-nfz-drug-program"){
+    if(!Array.isArray(raw?.data))return raw?.data;
+    return raw.data.flatMap(entry=>Array.isArray(entry?.data)?entry.data:[entry]);
+  }
   if(sourceId==="es-aemps-cima")return raw?.resultados;
   reject("unsupported source");
 }

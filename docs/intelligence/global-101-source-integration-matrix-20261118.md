@@ -37,7 +37,7 @@ Every entry remains unverified for production, has no approved source reuse term
 | 25 | Sweden | [Fass and TLV](https://api.fass.se/documentation/index.html) | Restricted/API | access or interface review | No source adapter code |
 | 26 | Norway | [DMP medicine FHIR service](https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service) | API | documented api candidate | No source adapter code |
 | 27 | Finland | [Fimea](https://fimea.fi/en/databases_and_registers) | Portal/Download | versioned official file candidate | No source adapter code |
-| 28 | Poland | [NFZ drug-program statistics](https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs) | API | documented api candidate | No source adapter code |
+| 28 | Poland | [NFZ drug-program statistics](https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs) | API | documented api candidate | Code: bounded API preview |
 | 29 | Poland | [URPL](https://rejestry.ezdrowie.gov.pl/rpl/search/public) | Portal | portal or licensed export review | No source adapter code |
 | 30 | Czechia | [SÚKL](https://sukl.gov.cz/) | Download | versioned official file candidate | No source adapter code |
 | 31 | Austria | [BASG](https://www.basg.gv.at/en/) | Portal/Download | versioned official file candidate | No source adapter code |

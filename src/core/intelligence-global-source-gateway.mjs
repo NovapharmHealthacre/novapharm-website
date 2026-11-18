@@ -48,6 +48,11 @@ export const sourcePlans = Object.freeze({
     path: "/rest/pug/compound/name/",
     documentation: "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest"
   }),
+  "pl-nfz-drug-program": Object.freeze({
+    country: "PL", domain: "drug-program-reimbursement", origin: "https://api.nfz.gov.pl",
+    path: "/app-stat-api-pl/drug-costs-by-active-substance",
+    documentation: "https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs"
+  }),
   "es-aemps-cima": Object.freeze({
     country: "ES", domain: "authorisation", origin: "https://cima.aemps.es",
     path: "/cima/rest/medicamentos",
@@ -98,6 +103,12 @@ export function buildGovSourcePlan({ sourceId, term, limit = 5 }) {
     url.searchParams.set("limit", String(limit));
   } else if (sourceId === "global-pubchem") {
     url.pathname = "/rest/pug/compound/name/" + encodeURIComponent(query) + "/cids/JSON";
+  } else if (sourceId === "pl-nfz-drug-program") {
+    url.searchParams.set("active-substance", query);
+    url.searchParams.set("page", "1");
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("format", "json");
+    url.searchParams.set("api-version", "1.0");
   } else if (sourceId === "es-aemps-cima") {
     url.searchParams.set("nombre", query);
     url.searchParams.set("pagina", "1");
@@ -189,6 +200,20 @@ export function normaliseGovSourceResult(plan, data) {
       label: Number.isSafeInteger(cid) && cid > 0 ? "CID " + cid : null,
       provenanceDomain: "PubChem CID discovery"
     }));
+  } else if (plan.sourceId === "pl-nfz-drug-program") {
+    if (!Array.isArray(data?.data)) throw new Error("Unexpected source schema");
+    // NFZ uses JSON API response envelopes and may nest a grouped data array.
+    const groups = data.data.flatMap((entry) =>
+      Array.isArray(entry?.data) ? entry.data : [entry]
+    );
+    rows = groups.map((entry) => {
+      const value = entry?.attributes && typeof entry.attributes === "object" ? entry.attributes : entry;
+      return {
+        localId: safeString(value?.["active-substance-code"]),
+        label: safeString(value?.["active-substance-name"]),
+        provenanceDomain: "NFZ drug-program reimbursement (substance identity only)"
+      };
+    });
   } else if (plan.sourceId === "es-aemps-cima") {
     if (!Array.isArray(data?.resultados)) throw new Error("Unexpected source schema");
     rows = data.resultados.map((record) => ({
