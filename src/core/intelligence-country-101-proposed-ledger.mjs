@@ -13,6 +13,19 @@ export const PROPOSED_NEW_COUNTRY_ISO2 = Object.freeze({
   "Armenia":"AM","Cambodia":"KH","Georgia":"GE","Mongolia":"MN","Myanmar":"MM",
   "Botswana":"BW","Cameroon":"CM","Côte d’Ivoire":"CI","Namibia":"NA","Senegal":"SN","Tunisia":"TN","Zambia":"ZM","Zimbabwe":"ZW"
 });
+const COUNTRY_REGION = Object.freeze({
+  "Cyprus":"Europe","Iceland":"Europe","Liechtenstein":"Europe","Luxembourg":"Europe","Malta":"Europe",
+  "Bolivia":"Americas","Costa Rica":"Americas","Dominican Republic":"Americas","Guatemala":"Americas","Panama":"Americas","Paraguay":"Americas",
+  "Armenia":"Asia","Cambodia":"Asia","Georgia":"Asia","Mongolia":"Asia","Myanmar":"Asia",
+  "Botswana":"Africa","Cameroon":"Africa","Côte d’Ivoire":"Africa","Namibia":"Africa","Senegal":"Africa","Tunisia":"Africa","Zambia":"Africa","Zimbabwe":"Africa"
+});
+const REGION_AUTHORITIES = Object.freeze({
+  Europe:"www.ema.europa.eu",Americas:"www.paho.org",Asia:"www.who.int",Africa:"risp.auda-nepad.org"
+});
+const EXPECTED_ENTRY_KEYS = Object.freeze([
+  "apiEndpoint","apiValidated","authorityDirectory","country","customerCountryLive",
+  "datasetAdmitted","iso2","region","rightsStatus","sourceDiscovery"
+]);
 const REGION_COUNT = Object.freeze({Europe:5,Americas:6,Asia:5,Africa:8});
 const fail = why => {throw new Error("101-country proposed ledger rejected: "+why);};
 const newCountryState = "GEOGRAPHIC_RESEARCH_SCOPE_ONLY_NO_DATA_SOURCE";
@@ -47,8 +60,12 @@ export function buildProposedCountry101Ledger(registry, plan) {
         !Object.hasOwn(PROPOSED_NEW_COUNTRY_ISO2,entry.country) ||
         entry.iso2!==PROPOSED_NEW_COUNTRY_ISO2[entry.country] ||
         !Object.hasOwn(regionalCounts,entry.region) ||
+        entry.region!==COUNTRY_REGION[entry.country] ||
+        Object.keys(entry).length!==EXPECTED_ENTRY_KEYS.length ||
+        EXPECTED_ENTRY_KEYS.some(key=>!Object.hasOwn(entry,key)) ||
         typeof entry.authorityDirectory!=="string" ||
         !/^https:\/\/(?:www\.ema\.europa\.eu|www\.paho\.org|www\.who\.int|risp\.auda-nepad\.org)\//u.test(entry.authorityDirectory) ||
+        new URL(entry.authorityDirectory).hostname!==REGION_AUTHORITIES[entry.region] ||
         entry.apiEndpoint!==null || entry.apiValidated!==false ||
         entry.sourceDiscovery!=="pending" ||
         entry.rightsStatus!=="not-reviewed" ||
