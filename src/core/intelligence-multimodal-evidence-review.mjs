@@ -33,11 +33,24 @@ function comparable(value) {
  * A trusted backend must separately verify source rights, tenant and purpose.
  */
 export function assessMultimodalEvidence(input) {
-  const candidate = input && typeof input === "object" && !Array.isArray(input) ? input : {};
+  // Inspect own data-property descriptors before accessing any input. This
+  // prevents getters, inherited flags and extra private/AI approval fields from
+  // being mistaken for valid manually supplied evidence.
+  const plain = input !== null && typeof input === "object" &&
+    !Array.isArray(input) && Object.getPrototypeOf(input) === Object.prototype;
+  const allowed = [...FIELDS, "userInitiated", "nonSensitiveMaterialConfirmed", "purpose"];
+  const descriptors = plain ? Object.getOwnPropertyDescriptors(input) : {};
+  const unsafeShape = !plain || Reflect.ownKeys(descriptors).some((key) =>
+    typeof key !== "string" || !allowed.includes(key) ||
+    !Object.hasOwn(descriptors[key], "value"));
+  const candidate = unsafeShape ? {} : Object.fromEntries(
+    allowed.filter((key) => Object.hasOwn(descriptors,key))
+      .map((key) => [key, descriptors[key].value])
+  );
   const values = Object.fromEntries(FIELDS.map((key) => [key, clean(candidate[key])]));
   const signals = [];
   // Fail closed rather than silently accepting a truncated or spoofed value.
-  const invalidInput = FIELDS.some((key) => candidate[key] !== undefined &&
+  const invalidInput = unsafeShape || FIELDS.some((key) => candidate[key] !== undefined &&
     (typeof candidate[key] !== "string" || candidate[key].length > MAX_FIELD_LENGTH ||
       SUSPICIOUS_FORMATTING.test(candidate[key])));
   if (invalidInput) signals.push("invalid_or_oversized_input");
