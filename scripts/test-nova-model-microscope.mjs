@@ -154,3 +154,42 @@ test("interpretability is registered as a non-operational model use case with ri
   assert.match(evidenceVector.implementation, /no neural weights/i);
   assert.ok(!models.models.some((entry) => entry.id === "model-microscope-live"));
 });
+
+test("short-lived grant expiry during asynchronous loading or independent verification denies output", async () => {
+  for (const ticks of [
+    [now, now + 5 * 60 * 1000],
+    [now, now + 60 * 1000, now + 5 * 60 * 1000]
+  ]) {
+    let index = 0;
+    const d = deps();
+    await assert.rejects(
+      inspect({ request: scope, now: () => ticks[Math.min(index++, ticks.length - 1)], ...d }),
+      /authorisation expired/
+    );
+    assert.equal(d.loads, 1);
+    assert.equal(d.verifications, ticks.length === 2 ? 0 : 1);
+  }
+  await assert.rejects(inspect({ request: scope, now: () => NaN, ...deps() }), /invalid clock/);
+});
+
+test("scope is immutable across asynchronous authorizer and record callbacks", async () => {
+  const mutable = { ...scope };
+  const d = deps();
+  const result = await inspect({
+    request: mutable, now,
+    authorizeRead: async requested => {
+      assert.equal(Object.isFrozen(requested), true);
+      assert.equal(requested.featureId, scope.featureId);
+      mutable.featureId = "replaced-after-authorisation";
+      return authorised;
+    },
+    loadRecord: async selected => {
+      assert.equal(Object.isFrozen(selected), true);
+      assert.equal(selected.featureId, scope.featureId);
+      return record;
+    },
+    verifyEvidence: d.verifyEvidence
+  });
+  assert.equal(result.featureId, scope.featureId);
+  assert.equal(mutable.featureId, "replaced-after-authorisation");
+});

@@ -34,27 +34,36 @@ function requireRequest(request) {
  * verifier. They must not trust assertions carried inside artifact records.
  * No client-provided approval fields are examined.
  */
-export async function inspectGovernedModelFeature({ request, authorizeRead, loadRecord, verifyEvidence, now = Date.now() }) {
+export async function inspectGovernedModelFeature({ request, authorizeRead, loadRecord, verifyEvidence, now = Date.now }) {
   requireRequest(request);
+  // Pin the authorized scope before invoking asynchronous adapters. The caller
+  // cannot mutate request identity halfway through a protected read.
+  const scopedRequest = Object.freeze({ ...Object.fromEntries(keys.map(key => [key, request[key]])), purpose: MODEL_MICROSCOPE_PURPOSE });
+  const readClock = () => {
+    const tick = typeof now === "function" ? now() : now;
+    if (!Number.isFinite(tick)) fail("invalid clock");
+    return tick;
+  };
   if (typeof authorizeRead !== "function" || typeof loadRecord !== "function" || typeof verifyEvidence !== "function") {
     fail("trusted backend adapters missing");
   }
-  if (!Number.isFinite(now)) fail("invalid clock");
+  const requestTime = readClock();
 
   // Permission MUST precede even the metadata lookup; client metadata is untrusted.
-  const grant = await authorizeRead(Object.freeze({ ...Object.fromEntries(keys.map(k => [k, request[k]])), purpose: MODEL_MICROSCOPE_PURPOSE }));
-  if (!grant || grant.allowed !== true || !sameScope(grant, request) ||
+  const grant = await authorizeRead(scopedRequest);
+  if (!grant || grant.allowed !== true || !sameScope(grant, scopedRequest) ||
       grant.purpose !== MODEL_MICROSCOPE_PURPOSE || grant.channel !== "protected_backend" ||
       !strictText(grant.grantId, 128) || typeof grant.expiresAt !== "string" ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(grant.expiresAt) ||
       !Number.isFinite(Date.parse(grant.expiresAt)) || new Date(Date.parse(grant.expiresAt)).toISOString() !== grant.expiresAt ||
-      Date.parse(grant.expiresAt) <= now ||
-      Date.parse(grant.expiresAt) - now > 5 * 60 * 1000) {
+      Date.parse(grant.expiresAt) <= requestTime ||
+      Date.parse(grant.expiresAt) - requestTime > 5 * 60 * 1000) {
     fail("missing, mismatched or expired authorisation");
   }
 
-  const record = await loadRecord(Object.freeze({ ...Object.fromEntries(keys.map(k => [k, request[k]])) }));
-  if (!record || !sameScope(record, request) ||
+  const record = await loadRecord(Object.freeze({ ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])) }));
+  if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired while loading artifact");
+  if (!record || !sameScope(record, scopedRequest) ||
       record.privacyClass !== "approved_non_patient" ||
       record.rightsReview !== "approved" ||
       record.provenanceVerified !== true ||
@@ -76,7 +85,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
   // source rights, QA and reviewer separation. Neither client-supplied grants
   // nor a record's own approval flags can promote an artifact to verified.
   const verification = await verifyEvidence(Object.freeze({
-    ...Object.fromEntries(keys.map(k => [k, request[k]])),
+    ...Object.fromEntries(keys.map(k => [k, scopedRequest[k]])),
     datasetRef: record.datasetRef,
     evaluationRef: record.evaluationRef,
     rightsGrantId: record.rightsGrantId,
@@ -85,7 +94,8 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     modelArtifactSha256: record.modelArtifactSha256,
     authorizationGrantId: grant.grantId
   }));
-  if (!verification || !sameScope(verification, request) ||
+  if (Date.parse(grant.expiresAt) <= readClock()) fail("authorisation expired during independent verification");
+  if (!verification || !sameScope(verification, scopedRequest) ||
       verification.provenanceSha256 !== record.provenanceSha256 ||
       verification.visualizationSha256 !== record.visualizationSha256 ||
       verification.modelArtifactSha256 !== record.modelArtifactSha256 ||
@@ -106,10 +116,10 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
   return Object.freeze({
     contract: MODEL_MICROSCOPE_CONTRACT,
     state: "research_candidate_only",
-    modelId: request.modelId,
-    modelVersion: request.modelVersion,
-    layerId: request.layerId,
-    featureId: request.featureId,
+    modelId: scopedRequest.modelId,
+    modelVersion: scopedRequest.modelVersion,
+    layerId: scopedRequest.layerId,
+    featureId: scopedRequest.featureId,
     architecture: record.architecture,
     featureHypothesis: record.featureHypothesis,
     datasetRef: record.datasetRef,
