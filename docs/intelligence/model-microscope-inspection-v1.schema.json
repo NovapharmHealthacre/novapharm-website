@@ -18,6 +18,7 @@
     "evaluationRef",
     "provenanceSha256",
     "visualizationSha256",
+    "modelArtifactSha256",
     "explanationState",
     "authorisationChannel",
     "canPublish",
@@ -96,6 +97,10 @@
     },
     "commercialDecisionReady": {
       "const": false
+    },
+    "modelArtifactSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     }
   }
 }

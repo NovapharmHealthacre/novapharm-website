@@ -18,11 +18,12 @@ const record = {
   explanationState: "hypothesis_only", architecture: "Test vision network",
   featureHypothesis: "Possible curved-edge feature, not proven",
   datasetRef: "approved-synthetic-set", evaluationRef: "eval-17", rightsGrantId: "rights-31",
-  provenanceSha256: "a".repeat(64), visualizationSha256: "b".repeat(64),
+  provenanceSha256: "a".repeat(64), visualizationSha256: "b".repeat(64), modelArtifactSha256: "d".repeat(64),
   rawTensor: ["SENSITIVE_DO_NOT_RETURN"], patientName: "SENSITIVE_DO_NOT_RETURN"
 };
 const verified = {
   ...scoped, provenanceSha256: record.provenanceSha256,
+  visualizationSha256: record.visualizationSha256, modelArtifactSha256: record.modelArtifactSha256,
   datasetRef: record.datasetRef, evaluationRef: record.evaluationRef,
   rightsGrantId: record.rightsGrantId, authorizationGrantId: authorised.grantId,
   reviewState: "independently_verified", modelRightsApproved: true,
@@ -67,6 +68,7 @@ test("rejects model, rights, privacy and provenance scope mismatches", async () 
     { patientContentPresent: true }, { provenanceVerified: false },
     { inspectionState: "unreviewed" }, { modelReleaseApproval: "production" },
     { explanationState: "verified_fact" }, { provenanceSha256: "invalid" },
+    { visualizationSha256: "invalid" }, { modelArtifactSha256: "invalid" },
     { rightsGrantId: "another-rights-grant" }
   ];
   for (const change of changes) {
@@ -90,6 +92,8 @@ test("independent evidence verifier must bind rights, tenant, digest and reviewe
   for (const proof of [null, {},
     { ...verified, tenantId: "tenant-b" },
     { ...verified, provenanceSha256: "c".repeat(64) },
+    { ...verified, visualizationSha256: "c".repeat(64) },
+    { ...verified, modelArtifactSha256: "c".repeat(64) },
     { ...verified, rightsGrantId: "rights-other" },
     { ...verified, authorizationGrantId: "fake-authorization" },
     { ...verified, datasetRightsApproved: false },

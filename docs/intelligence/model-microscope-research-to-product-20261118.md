@@ -74,3 +74,7 @@ The current registry was reviewed against `docs/ai-model-register.json` and `src
 | `openai-zdr` | Approval-gated external AI adapter, not operational | **Unavailable**; a hosted inference API does not grant internal layer/neuron access |
 
 **Admitted inspectable model artifacts in this implementation: zero.** Do not use the existing sparse *lexical* retrieval model as evidence that an artificial neural network feature inspector exists. Future model IDs must be separately versioned, rights-reviewed and explicitly supported by the actual architecture-specific introspection runner; this PR contains no such runner.
+
+### Artifact identity binding (November 2026 hardening)
+
+An approved inspection record now requires **three distinct SHA-256 digests** — the source/provenance manifest, the visualization artifact and the exact neural model artifact. Each digest must be independently attested by the same trusted verifier and match before the strictly scoped research metadata is returned. A filename, mutable model version label or self-reported `verified` flag is not sufficient. These are SHA-256 *identifiers*, not a claim that actual signed files or model weights have been verified in production.

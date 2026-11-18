@@ -67,6 +67,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
       !validId(record.rightsGrantId) ||
       !shaPattern.test(record.provenanceSha256) ||
       !shaPattern.test(record.visualizationSha256) ||
+      !shaPattern.test(record.modelArtifactSha256) ||
       !strictText(record.evaluationRef, 128)) {
     fail("unreviewed, unproven or incompatible artifact");
   }
@@ -79,10 +80,14 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     evaluationRef: record.evaluationRef,
     rightsGrantId: record.rightsGrantId,
     provenanceSha256: record.provenanceSha256,
+    visualizationSha256: record.visualizationSha256,
+    modelArtifactSha256: record.modelArtifactSha256,
     authorizationGrantId: grant.grantId
   }));
   if (!verification || !sameScope(verification, request) ||
       verification.provenanceSha256 !== record.provenanceSha256 ||
+      verification.visualizationSha256 !== record.visualizationSha256 ||
+      verification.modelArtifactSha256 !== record.modelArtifactSha256 ||
       verification.datasetRef !== record.datasetRef ||
       verification.evaluationRef !== record.evaluationRef ||
       verification.rightsGrantId !== record.rightsGrantId ||
@@ -110,6 +115,7 @@ export async function inspectGovernedModelFeature({ request, authorizeRead, load
     evaluationRef: record.evaluationRef,
     provenanceSha256: record.provenanceSha256,
     visualizationSha256: record.visualizationSha256,
+    modelArtifactSha256: record.modelArtifactSha256,
     explanationState: "hypothesis_only",
     authorisationChannel: "protected_backend",
     canPublish: false,
