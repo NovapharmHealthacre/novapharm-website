@@ -11,6 +11,7 @@ import {
 const MAX_BYTES = 262144;
 const MAX_RESULTS = 10;
 const TIMEOUT_MS = 6000;
+const HSA_DATASET = "d_767279312753558cbf19d48344577084";
 
 export const secondarySourcePlans = Object.freeze({
   "sg-hsa-products": Object.freeze({
@@ -63,7 +64,7 @@ export function buildSecondarySourcePlan({ sourceId, term, limit = 5 } = {}) {
   const url = new URL(source.path, source.origin);
   switch (sourceId) {
     case "sg-hsa-products":
-      url.searchParams.set("resource_id", "d_767279312753558cbf19d48344577084");
+      url.searchParams.set("resource_id", HSA_DATASET);
       // data.gov.sg documents datastore q as a JSON object keyed by column;
       // a bare string is not a schema-bound product-name query.
       url.searchParams.set("q", JSON.stringify({ Productname: query }));
@@ -92,15 +93,26 @@ export function normaliseSecondarySourceResult(plan, data) {
   }
   let rows;
   switch (plan.sourceId) {
-    case "sg-hsa-products":
-      if (data?.success !== true || !Array.isArray(data?.result?.records)) {
-        throw new Error("Unexpected source schema");
+    case "sg-hsa-products": {
+      // The official CKAN response binds both resource_id and fields to a
+      // published source. Records without these cannot prove dataset identity.
+      const resource = data?.result;
+      const fields = resource?.fields;
+      if (data?.success !== true ||
+          resource?.resource_id !== HSA_DATASET ||
+          !Array.isArray(fields) ||
+          !fields.some((f) => f?.id === "LicenceNo") ||
+          !fields.some((f) => f?.id === "Productname") ||
+          !Array.isArray(resource?.records) ||
+          resource.records.length > plan.limit) {
+        throw new Error("Unexpected HSA resource identity or schema");
       }
-      rows = data.result.records.map((r) => ({
+      rows = resource.records.map((r) => ({
         localId: r?.LicenceNo,
         label: r?.Productname
       }));
       break;
+    }
     case "gb-nhsbsa-dataset-catalogue":
       if (data?.success !== true || !Array.isArray(data?.result?.results)) {
         throw new Error("Unexpected source schema");
