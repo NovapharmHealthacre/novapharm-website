@@ -22,6 +22,17 @@ type VisualResponse = Readonly<{
   regulatoryStatusVerified: false;
 }>;
 
+function approvedSourceUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:" && Boolean(parsed.hostname) &&
+      !parsed.username && !parsed.password && !parsed.hash &&
+      (parsed.port === "" || parsed.port === "443");
+  } catch {
+    return false;
+  }
+}
+
 /** Only authenticated board sessions can request the candidate endpoint. */
 export function ClipVisualSearch() {
   const [query, setQuery] = useState("");
@@ -43,7 +54,7 @@ export function ClipVisualSearch() {
           !response.humanReviewRequired || !response.similarityIsNotEvidence ||
           response.productIdentityVerified !== false || response.regulatoryStatusVerified !== false ||
           !Array.isArray(response.results) || response.results.length > 5 ||
-          response.results.some((item) => item.status !== "unverified_visual_match" || !item.sourceUrl.startsWith("https://"))) {
+          response.results.some((item) => item.status !== "unverified_visual_match" || !approvedSourceUrl(item.sourceUrl))) {
         throw new Error("The visual search response failed its evidence boundary.");
       }
       setResults(response.results);
