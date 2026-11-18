@@ -5,6 +5,8 @@
  * These 22 descriptions are future research purposes, not live features.
  * The explicit map prevents a new UI route from silently inheriting AI access.
  */
+import { multimodalResearchRegistryVersion, multimodalEvaluationDimensions } from "./intelligence-multimodal-research-basis.mjs";
+
 export const multimodalWorkspacePolicy = Object.freeze({
   "medicine-search": "research_only_visual_text_retrieval",
   "medicine-overview": "research_only_cross_modal_evidence_summary",
@@ -51,6 +53,8 @@ export function assessMultimodalWorkspacePolicy(workspaceSlug) {
     Object.hasOwn(multimodalWorkspacePolicy, workspaceSlug);
   return Object.freeze({
     contract: "novapharm.intelligence.multimodal-workspace-policy.v1",
+    researchBasisContract: multimodalResearchRegistryVersion,
+    researchDimensionCount: Object.keys(multimodalEvaluationDimensions).length,
     workspaceSlug: valid ? workspaceSlug : null,
     plannedResearchPurpose: valid ? multimodalWorkspacePolicy[workspaceSlug] : "unknown_workspace_denied",
     state: valid ? "research_plan_only" : "blocked_unknown_workspace",
