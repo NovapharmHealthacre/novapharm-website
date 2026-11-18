@@ -70,7 +70,7 @@ jobs:
           console.log("Official source HTTP and schema confirmed; no record publication or production admission.");
           NODE
       - name: Archive SHA-256 and publication-free evidence receipts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: intelligence-official-source-live-receipts
           path: artifacts/live-public-source-observations/receipts.json
