@@ -1,19 +1,20 @@
 /**
- * One-way handoff from a verified Cognito identity to NovaPharm's private
- * server-authorised Stripe Checkout Session. No browser Price IDs, Stripe
- * credentials, payment status or entitlements are accepted here.
- *
- * The private AWS service remains OFF until independent production acceptance;
- * an unavailable service always returns null without taking a payment.
+ * Optional server-to-server handoff after signed OIDC identity verification.
+ * Not a payment, tenant grant, ledger acceptance, or entitlement.
+ * Disabled unless explicitly released; private checkout must enforce its
+ * own independently approved billing and customer gates.
  */
 export async function requestIntelligenceSubscriptionCheckout({
-  idToken, plan, cycle, fetchImpl = fetch,
+  idToken, plan, cycle, enabled = process.env["NPI_SUBSCRIPTION_CHECKOUT_HANDOFF_ENABLED"] === "true",
+  fetchImpl = fetch,
 }: {
   idToken: string;
   plan: string | null | undefined;
   cycle: string | null | undefined;
+  enabled?: boolean;
   fetchImpl?: typeof fetch;
 }): Promise<string | null> {
+  if (!enabled) return null;
   if (!((plan === "starter" || plan === "professional") && (cycle === "monthly" || cycle === "annual"))) return null;
   if (typeof idToken !== "string" || idToken.length < 100 || idToken.length > 16384) return null;
   try {
@@ -37,15 +38,16 @@ export async function requestIntelligenceSubscriptionCheckout({
     if (raw.length < 20 || raw.length > 4500) return null;
     const data: unknown = JSON.parse(raw);
     if (!data || typeof data !== "object") return null;
-    const object = data as Record<string, unknown>;
-    if (object.ok !== true || object.code !== "checkout_session_created_no_entitlement" || typeof object.checkoutUrl !== "string") return null;
-    const parsed = new URL(object.checkoutUrl);
-    if (parsed.protocol !== "https:" || parsed.hostname !== "checkout.stripe.com" ||
-        parsed.port || parsed.username || parsed.password || parsed.hash ||
-        !parsed.pathname.startsWith("/c/pay/") || !parsed.pathname.includes("cs_live_")) return null;
+    const payload = data as Record<string, unknown>;
+    if (payload.ok !== true || payload.code !== "checkout_session_created_no_entitlement" || typeof payload.checkoutUrl !== "string") return null;
+    const parsed = new URL(payload.checkoutUrl);
+    // Inspect parsed origin and the whole path, never a host substring.
+    if (parsed.origin !== "https://checkout.stripe.com" || parsed.username ||
+        parsed.password || parsed.search || parsed.hash ||
+        !/^\/c\/pay\/cs_live_[A-Za-z0-9_-]{4,}$/.test(parsed.pathname)) return null;
     return parsed.href;
   } catch {
-    // No account, session, Stripe, raw error or token data is logged.
+    // Never log JWTs, checkout URLs, customer identifiers or Stripe data.
     return null;
   }
 }

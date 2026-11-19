@@ -133,6 +133,14 @@ async function packageApi() {
     copyTree(path.join(root, "packages", "portal-contracts", "src"), path.join(destination, "packages", "portal-contracts", "src")),
     fs.copyFile(path.join(root, "server.mjs"), path.join(destination, "server.mjs")),
   ]);
+  // The API Science readiness module imports this exact static reference.
+  // Copy only this reviewed catalogue; never include arbitrary docs or private data.
+  const scienceReference = "openai-science-methods-20261118.json";
+  await fs.mkdir(path.join(destination, "docs", "intelligence"), { recursive: true });
+  await fs.copyFile(
+    path.join(root, "docs", "intelligence", scienceReference),
+    path.join(destination, "docs", "intelligence", scienceReference),
+  );
   await fs.mkdir(path.join(destination, "_secure"), { recursive: true });
   await fs.writeFile(path.join(destination, "package.json"), `${JSON.stringify({ name: "novapharm-api-release", private: true, type: "module", engines: { node: "24.x" } }, null, 2)}\n`);
   return copyProductionDependencyClosure(destination);
@@ -148,7 +156,10 @@ async function validateArtifact(name) {
   const forbidden = files.filter((file) => {
     const relative = path.relative(directory, file);
     const firstPartyPath = !relative.startsWith("node_modules/");
-    return (firstPartyPath && /(?:^|\/)(?:\.git|\.github|test|tests|docs|artifacts|private-content|tmp)(?:\/|$)/.test(relative))
+    const approvedScienceReference = name === "api" &&
+      relative === "docs/intelligence/openai-science-methods-20261118.json";
+    return (firstPartyPath && !approvedScienceReference &&
+      /(?:^|\/)(?:\.git|\.github|test|tests|docs|artifacts|private-content|tmp)(?:\/|$)/.test(relative))
       || /(?:^|\/)(?:\.env|\.DS_Store)$/.test(relative)
       || /\.(?:map|sqlite|sqlite-shm|sqlite-wal)$/i.test(relative);
   });

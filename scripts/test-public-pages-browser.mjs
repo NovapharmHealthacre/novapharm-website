@@ -17,15 +17,17 @@ const routes = [
   { path: "/distribution/", name: "distribution", required: "Global distribution" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
-  { path: "/technology/", name: "technology", required: "Technology" },
+  { path: "/technology/", name: "technology", required: "Medicine is complex." },
   { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
   { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },
   { path: "/products/nutraxin/bag/", name: "nutraxin-bag", required: "Your Bag." },
   { path: "/products/esco/", name: "esco-collection", required: "ESCO" },
   { path: "/products/marketplace/", name: "marketplace", required: "Everything, together." },
+  { path: "/news-insights/three-pillar-pharmaceutical-sourcing-model/", name: "sourcing-insight", required: "Three-Pillar Sourcing" },
   { path: "/account-application/", name: "business-account", required: "An account is approved through evidence" },
-  { path: "/legal/privacy/", name: "privacy", required: "Privacy" }
+  { path: "/legal/privacy/", name: "privacy", required: "Privacy" },
+  { path: "/legal/cookies/", name: "cookies", required: "Cookie and storage notice" }
 ];
 const routeViewports = [
   { name: "mobile-390", width: 390, height: 844 },
@@ -280,6 +282,66 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            // Verify computed pointer-target geometry, not only checked-in
+            // CSS declarations: later styles must not erase these improvements.
+            const smallPublicNavigationTargets = await page.evaluate(() => {
+              const selector = [
+                ".npd-footer .npd-footer-top div > a:not(.footer-brand)",
+                ".npd-footer .npd-footer-legal :is(a, button)",
+                ".npd-footer .npd-footer-bottom a",
+                "nav.breadcrumb[aria-label='Breadcrumb'] > a",
+                "nav.npd-breadcrumb[aria-label='Breadcrumb'] .container > a"
+              ].join(", ");
+              return [...document.querySelectorAll(selector)]
+                .filter((element) => {
+                  const style = getComputedStyle(element);
+                  const rect = element.getBoundingClientRect();
+                  return style.display !== "none" && style.visibility !== "hidden" &&
+                    rect.width > 0 && rect.height > 0;
+                }).map((element) => ({
+                  text: (element.getAttribute("aria-label") || element.textContent || "").trim().slice(0,60),
+                  height: Number(element.getBoundingClientRect().height.toFixed(1))
+                })).filter((entry) => entry.height < 27.5);
+            });
+            assert.deepEqual(smallPublicNavigationTargets, [],
+              `${engineName} ${viewport.name} ${route.path}: public footer/breadcrumb targets must render >= 28 CSS px`);
+            // Apple HIG-inspired accessibility contract: actual keyboard and
+            // speech-friendly navigation behaviour, not only source assertions.
+            if (route.name === "home") {
+              const label = `${engineName} ${viewport.name}: navigation accessibility`;
+              const primaryNav = page.locator("[data-site-nav]");
+              const currentLinks = await primaryNav.locator('[aria-current="page"]').count();
+              assert.equal(currentLinks, 0, `${label}: home must not announce Company as the current page`);
+              const mobileToggle = page.locator("[data-nav-toggle]");
+              if (await mobileToggle.isVisible()) {
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Open navigation", label);
+                await mobileToggle.click();
+                assert.equal(await mobileToggle.getAttribute("aria-expanded"), "true", label);
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Close navigation", label);
+                await page.keyboard.press("Escape");
+                assert.equal(await mobileToggle.getAttribute("aria-expanded"), "false", label);
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Open navigation", label);
+                assert.equal(await mobileToggle.evaluate((node) => node === document.activeElement), true,
+                  `${label}: Escape must return focus to the toggle`);
+              }
+              if (viewport.name === "desktop-1440" && await page.locator("[data-mega-trigger]").count()) {
+                const trigger = page.locator("[data-mega-trigger]").first();
+                await trigger.focus();
+                assert.equal(await trigger.getAttribute("aria-expanded"), "true",
+                  `${label}: keyboard focus should reveal the category panel`);
+                await page.keyboard.press("ArrowDown");
+                assert.equal(await page.locator("[data-mega-panel].is-open a:focus").count(), 1,
+                  `${label}: ArrowDown should focus the first destination`);
+                await page.keyboard.press("Escape");
+                assert.equal(await trigger.getAttribute("aria-expanded"), "false",
+                  `${label}: Escape should dismiss category navigation`);
+                assert.equal(await trigger.evaluate((node) => node === document.activeElement), true,
+                  `${label}: Escape should return focus to its trigger`);
+              }
+              const motion = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+              assert.equal(motion, "auto", `${label}: OS Reduce Motion must disable smooth scrolling`);
+            }
+
             // Forensic Safari regression: a supplied PNG in source is not enough.
             // The real computed header must render the logo instead of pseudo-text.
             if (["home", "oncology", "products-overview", "capabilities"].includes(route.name)) {
@@ -306,6 +368,47 @@ for (const [engineName, browserType] of engines) {
             }
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
+
+            if (route.name === "privacy") {
+              const label = `${engineName} ${viewport.name}: privacy consent`;
+              const overview = page.locator("#privacy-overview");
+              assert.equal(await overview.isVisible(), true, `${label}: privacy overview is not visible`);
+              assert.equal(await overview.getByRole("heading", { name: "Your information. Your choice." }).count(), 1,
+                `${label}: readable privacy promise is missing`);
+              const primaryAction = overview.getByRole("button", { name: "Manage cookie preferences" });
+              assert.equal(await primaryAction.count(), 1, `${label}: privacy choice action is missing`);
+              const primaryBox = await primaryAction.boundingBox();
+              assert.ok(primaryBox && primaryBox.height >= 44, `${label}: privacy action touch target is too small`);
+              const quicklinks = overview.locator('nav[aria-label="Explore this privacy notice"] a[href^="#"]');
+              assert.equal(await quicklinks.count(), 6, `${label}: privacy topic navigation is incomplete`);
+              for (const href of await quicklinks.evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")))) {
+                assert.ok(href && await page.locator(href).count() === 1,
+                  `${label}: privacy link has no unique on-page target: ${href}`);
+              }
+              assert.equal(await page.locator("#privacy-by-design").count(), 1, `${label}: approved privacy-by-design article missing from generated artifact`);
+              assert.match(await page.locator("dl.policy-meta").innerText(), /15 November 2026/, `${label}: revised review date not published`);
+              assert.match(await page.locator("dl.policy-meta").innerText(), /1\.4/, `${label}: current privacy notice version not published`);
+              assert.equal(await page.locator("#protected-device-resources").count(), 1, `${label}: protected-resource explanation not published`);
+              const settings = page.locator("[data-cookie-settings]").first();
+              await settings.click();
+              const dialog = page.locator("dialog.cookie-dialog");
+              await dialog.waitFor({ state: "visible" });
+              assert.equal(await dialog.locator('input[name="analytics"]').isChecked(), false, `${label}: analytics must be off by default`);
+              assert.equal(await dialog.locator('input[name="marketing"]').isDisabled(), true, `${label}: inactive marketing cannot be authorised`);
+              await dialog.locator('[data-consent-action="reject"]').click();
+              await dialog.waitFor({ state: "hidden" });
+              const consent = await page.evaluate(() => JSON.parse(window.localStorage.getItem("np_cookie_consent") ?? "null"));
+              assert.equal(consent?.version, "2026-11-15-v1.3", `${label}: current preference format not stored`);
+              assert.deepEqual(consent?.categories, { necessary: true, preferences: false, analytics: false, marketing: false }, `${label}: rejection did not persist`);
+            }
+
+            if (route.name === "cookies") {
+              const label = `${engineName} ${viewport.name}: cookie notice`;
+              const metadata = await page.locator("dl.policy-meta").innerText();
+              assert.match(metadata, /15 November 2026/, `${label}: reviewed cookie notice date not published`);
+              assert.match(metadata, /1\.3/, `${label}: reviewed cookie notice version not published`);
+              assert.ok(await page.getByRole("button", { name: "Cookie settings" }).count() >= 1, `${label}: settings action missing`);
+            }
 
             if (route.name === "capabilities") {
               const state = await page.evaluate(() => {
@@ -435,8 +538,8 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
             if (route.name === "technology") {
-              // Four-plan comparison: verify real layout and non-binding access
-              // actions in Chromium/WebKit, rather than the removed trial banner
+              // Four-plan comparison: verify exact live subscription links and
+              // transparent payment terms in Chromium/WebKit, not the retired trial banner
               // and obsolete annual-price toggle.
               const pricing = page.locator("#intelligence-pricing");
               const grid = pricing.locator("[data-npi-pricing-grid]");
@@ -451,22 +554,17 @@ for (const [engineName, browserType] of engines) {
                   plan + ": exactly one clear customer action");
                 const action = card.locator(".npi-plan-cta");
                 const href = await action.getAttribute("href");
-                if (plan === "enterprise") {
-                  assert.ok(href?.startsWith("/contact/?") && href.includes("intelligencePlan=enterprise"),
-                    "Enterprise must remain a contractual sales enquiry");
+                if (plan === "starter" || plan === "professional") {
+                  const expected = plan === "starter" ? "https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" : "https://buy.stripe.com/6oUeV64t2bm16NobqYdby01";
+                  assert.equal(href, expected, plan + ": use the exact verified live Stripe-hosted Checkout link");
+                  assert.equal(await action.getAttribute("data-npi-live-stripe"), plan,
+                    plan + ": billing link must be plan-specific");
+                } else if (plan === "trial") {
+                  assert.equal(href, "https://intelligence.novapharmhealthcare.com/auth/customer/register",
+                    "No-card free-trial account entry must never trigger Stripe billing");
                 } else {
-                  assert.ok(href?.startsWith("https://intelligence.novapharmhealthcare.com/auth/customer/register"),
-                    plan + ": route to protected Cognito registration, not contact or Stripe directly");
-                  if (plan === "trial") {
-                    assert.equal(new URL(href ?? "").searchParams.has("plan"), false, "Free trial requires no payment selection");
-                  } else {
-                    assert.equal(new URL(href ?? "").searchParams.get("plan"), plan);
-                    assert.equal(new URL(href ?? "").searchParams.get("cycle"), "monthly");
-                    const login = card.locator(".npi-plan-existing");
-                    assert.equal(await login.count(), 1, plan + ": existing customers get a sign-in path");
-                    const loginHref = await login.getAttribute("href");
-                    assert.equal(new URL(loginHref ?? "").searchParams.get("plan"), plan);
-                  }
+                  assert.ok(href?.startsWith("/contact/?") && href.includes("intelligencePlan=enterprise"),
+                    "Enterprise needs a custom contract, not an assumed price");
                 }
               }
               const freeTrial = grid.locator('[data-npi-plan="trial"][data-npi-starter-trial="approved"]');
@@ -486,8 +584,12 @@ for (const [engineName, browserType] of engines) {
               const expectedColumns = viewport.width > 1120 ? 4 : viewport.width > 640 ? 2 : 1;
               assert.equal(style.columns, expectedColumns,
                 engineName + " " + viewport.name + ": responsive pricing columns must match viewport");
-              assert.equal(await pricing.getByText("No payment will be collected here", { exact: false }).count(), 1,
-                "Pricing section must disclose non-binding enquiries");
+              assert.equal(await pricing.getByText("Paid subscriptions are charged immediately at Checkout", { exact: false }).count(), 1,
+                "Pricing section must transparently disclose immediate recurring billing");
+              assert.equal(await pricing.getByText("may not be available immediately", { exact: false }).count(), 1,
+                "Pricing section must disclose that workspace provisioning is separate");
+              assert.equal(await pricing.getByRole("link", { name: "Manage subscription" }).getAttribute("href"),
+                "https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00", "Customers must be able to manage and cancel subscriptions in Stripe");
 
               const medicineField = page.locator("[data-npi-query]");
               const marketField = page.locator("[data-npi-market]");
@@ -691,6 +793,17 @@ for (const [engineName, browserType] of engines) {
               `${engineName} ${viewport.name} ${route.path}: serious/critical accessibility violations`
             );
 
+            // Route interactions (notably privacy consent) can scroll to a
+            // control. Snapshot the same page origin in Chromium and WebKit,
+            // rather than comparing unrelated scroll positions.
+            await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+            const snapshotOrigin = await page.evaluate(() => ({
+              x: Math.round(window.scrollX),
+              y: Math.round(window.scrollY)
+            }));
+            assert.deepEqual(snapshotOrigin, { x: 0, y: 0 },
+              `${engineName} ${viewport.name} ${route.path}: screenshot must start at document origin`);
+
             const directory = path.join(artifactRoot, engineName, viewport.name);
             await mkdir(directory, { recursive: true });
             await page.screenshot({
@@ -706,6 +819,63 @@ for (const [engineName, browserType] of engines) {
       } finally {
         await context.close();
       }
+    }
+
+    // Apple HIG touch hit-area acceptance: emulate a coarse-pointer mobile
+    // device in each browser engine. Existing desktop/mobile source assertions
+    // alone cannot establish that @media(pointer:coarse) actually applies.
+    const touchContext = await browser.newContext({
+      baseURL: baseUrl,
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      locale: "en-GB",
+      reducedMotion: "reduce",
+      colorScheme: "light"
+    });
+    try {
+      const touchPage = await touchContext.newPage();
+      for (const route of [
+        "/",
+        "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+        "/products/nutraxin/womens-multivitamin-complex-60-tablets/"
+      ]) {
+        const response = await touchPage.goto(route, { waitUntil: "networkidle", timeout: 30_000 });
+        assert.equal(response?.status(), 200, `${engineName} touch ${route}: navigation failed`);
+        await touchPage.locator("main").waitFor({ state: "visible", timeout: 15_000 });
+        await dismissConsent(touchPage);
+        const touchTargets = await touchPage.evaluate(() => {
+          if (!window.matchMedia("(pointer: coarse)").matches) {
+            return [{ label: "coarse-pointer media query did not match", width: 0, height: 0 }];
+          }
+          const selector = [
+            ".npd-footer .npd-footer-top div > a:not(.footer-brand)",
+            ".npd-footer .npd-footer-legal :is(a, button)",
+            ".npd-footer .npd-footer-bottom a",
+            "nav.breadcrumb[aria-label='Breadcrumb'] > a",
+            "nav.npd-breadcrumb[aria-label='Breadcrumb'] .container > a"
+          ].join(", ");
+          return [...document.querySelectorAll(selector)].filter((element) => {
+            const style = getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return style.display !== "none" && style.visibility !== "hidden" &&
+              rect.width > 0 && rect.height > 0;
+          }).map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              label: (element.getAttribute("aria-label") || element.textContent || "").trim().slice(0, 45),
+              width: Number(rect.width.toFixed(1)),
+              height: Number(rect.height.toFixed(1))
+            };
+          }).filter((target) => target.width < 43.5 || target.height < 43.5);
+        });
+        assert.deepEqual(touchTargets, [],
+          `${engineName} coarse-pointer ${route}: footer and breadcrumb hit targets must render >=44x44 CSS px`);
+      }
+      await touchPage.close();
+    } finally {
+      await touchContext.close();
     }
 
     for (const viewport of homeGeometryViewports) {

@@ -5,10 +5,11 @@
  * and an independently owned signed-grant verification service.
  */
 import { createHash } from "node:crypto";
+import { medicineRightsUniqueIndexSpec } from "./atlas-private-medicine-rights-index.mjs";
 
 const WORKSPACE = "novapharm-internal-staging";
 const DATABASE = "novapharm_intelligence_production";
-const COLLECTION = "npi_source_rights";
+const COLLECTION = medicineRightsUniqueIndexSpec.collection;
 const PURPOSE = "private_observed_prescribing_ingestion";
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
 const SHA = /^[0-9a-f]{64}$/u;
@@ -23,10 +24,12 @@ const fields = [
 // The existing production collection has no unique grant index yet. Refuse
 // positive rights receipts until that operational migration is independently
 // installed and verified against MongoDB's actual listIndexes metadata.
-const requiredUniqueKeys = Object.freeze({
-  workspace_id: 1, source_id: 1, source_version: 1,
-  resource_id: 1, resource_sha256: 1, rights_revision: 1
-});
+const requiredUniqueKeys = medicineRightsUniqueIndexSpec.keys;
+const requiredUniqueName = medicineRightsUniqueIndexSpec.name;
+const sameOrderedKeys = actual =>
+  actual && typeof actual === "object" && !Array.isArray(actual) &&
+  JSON.stringify(Object.entries(actual)) ===
+    JSON.stringify(Object.entries(requiredUniqueKeys));
 async function hasRequiredUniqueIndex(collection) {
   if (typeof collection?.listIndexes !== "function") return false;
   try {
@@ -34,15 +37,21 @@ async function hasRequiredUniqueIndex(collection) {
     if (typeof cursor?.toArray !== "function") return false;
     const indexes = await cursor.toArray();
     if (!Array.isArray(indexes) || indexes.length > 32) return false;
-    const requiredKeys = Object.entries(requiredUniqueKeys);
-    return indexes.some(index =>
-      index && index.unique === true &&
-      index.sparse !== true &&
-      index.partialFilterExpression == null &&
-      (index.collation == null || index.collation.locale === "simple") &&
-      index.key && typeof index.key === "object" &&
-      JSON.stringify(Object.entries(index.key)) === JSON.stringify(requiredKeys)
-    );
+    // The production migrator and the independent four-index preflight both
+    // require this exact name, not merely a same-key unique index. An
+    // obsolete duplicate name is a conflict even when a valid index exists.
+    const related = indexes.filter(index =>
+      index?.name === requiredUniqueName || sameOrderedKeys(index?.key));
+    return related.length === 1 &&
+      related[0].name === requiredUniqueName &&
+      related[0].unique === true &&
+      related[0].sparse !== true &&
+      related[0].hidden !== true &&
+      related[0].partialFilterExpression == null &&
+      related[0].expireAfterSeconds == null &&
+      (related[0].collation == null ||
+        related[0].collation.locale === "simple") &&
+      sameOrderedKeys(related[0].key);
   } catch {
     return false;
   }

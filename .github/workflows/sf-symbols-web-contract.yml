@@ -1,0 +1,40 @@
+name: SF Symbols web-safe contract
+on:
+  pull_request:
+    paths:
+      - "assets/css/symbol-system.css"
+      - "assets/css/novapharm.css"
+      - "assets/css/novapharm.bundle.css"
+      - "assets/css/novapharm-hig-colours.css"
+      - "apps/**/app/layout.tsx"
+      - "packages/design-system/src/symbols.tsx"
+      - "packages/design-system/src/index.ts"
+      - "packages/design-system/test/symbols.test.tsx"
+      - "scripts/build-css-bundle.mjs"
+      - "scripts/test-sf-symbols-web-contract.mjs"
+      - ".github/workflows/sf-symbols-web-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/css/symbol-system.css"
+      - "assets/css/novapharm.bundle.css"
+      - "packages/design-system/src/symbols.tsx"
+      - "scripts/test-sf-symbols-web-contract.mjs"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  symbol-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Enforce semantic symbol and accessibility contract
+        run: node scripts/test-sf-symbols-web-contract.mjs
+      - name: Verify generated public stylesheet reproduces exactly
+        run: |
+          node scripts/build-css-bundle.mjs
+          git diff --exit-code -- assets/css/novapharm.bundle.css

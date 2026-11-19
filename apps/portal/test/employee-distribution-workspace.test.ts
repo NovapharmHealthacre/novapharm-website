@@ -41,3 +41,38 @@ test("employee UX is calm, typography-led and refuses fabricated commerce state"
   assert.match(stylesheet, /@media\(max-width:570px\)/);
   assert.match(stylesheet, /prefers-reduced-motion/);
 });
+
+test("the existing employee warehouse route renders the evidence-first WMS control tower", () => {
+  assert.match(dashboard, /module\.code === "employee\.warehouse"/);
+  assert.match(workspace, /moduleCode === "employee\.warehouse"/);
+  assert.match(workspace, /Every batch\. Accounted for\./);
+  assert.match(workspace, /Site- and batch-level reconciliation required/);
+  assert.match(workspace, /FEFO review only; no automatic reservation or dispatch/);
+  assert.match(stylesheet, /\.distribution-wms-principles/);
+  assert.doesNotMatch(workspace, /warehouseCommandIssued|reserveStock\(|createDispatch\(/);
+});
+
+test("WMS page describes real operating journeys without claiming live 3PL execution", () => {
+  for (const phrase of [
+    "From receipt to proof of delivery.",
+    "Receive and reconcile.",
+    "Control every exception.",
+    "Follow every movement.",
+    "no independently authenticated",
+    "Only authorised quality decisions",
+  ]) assert.ok(workspace.includes(phrase), phrase);
+  assert.match(stylesheet, /\.distribution-wms-journey-list/);
+  assert.match(stylesheet, /@media\(max-width:780px\)/);
+  assert.doesNotMatch(workspace, /receiveStock\(|issueRecall\(|placePurchaseOrder\(/);
+});
+
+test("five WMS decision layers stay inside already-governed employee routes", () => {
+  for (const title of [
+    "Commercial control", "Inventory visibility", "Quality and release",
+    "Order orchestration", "Distribution intelligence",
+  ]) assert.ok(workspace.includes(title), title);
+  assert.match(workspace, /aria-label="Five WMS control layers"/);
+  assert.match(workspace, /modules\.get\(area\.code\)/);
+  assert.match(stylesheet, /\.distribution-wms-control-nav a:focus-visible/);
+  assert.doesNotMatch(workspace, /<button[^>]+onClick[^>]+(?:reserve|dispatch|release)/i);
+});

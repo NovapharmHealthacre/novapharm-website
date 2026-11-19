@@ -1,6 +1,9 @@
 import { RefreshCw } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import { getStatusSnapshot, type OverallState, type ServiceState } from "@/lib/status";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { interfaceLabel, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -28,14 +31,15 @@ const overallLabels: Readonly<Record<OverallState, string>> = {
 
 export default async function StatusPage() {
   const snapshot = await getStatusSnapshot();
-  const checked = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(snapshot.checkedAt));
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
+  const checked = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(snapshot.checkedAt));
   return (
     <main id="status-main">
       <header className="status-header">
         <a className="brand" href="https://novapharmhealthcare.com/" aria-label="NovaPharm Healthcare home">
           <Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="2048" height="258" priority />
         </a>
-        <span>Service status</span>
+        <span lang={locale}>{interfaceLabel(locale, "Service status")}</span>
       </header>
       <section className="status-hero" aria-labelledby="status-title">
         <p className="eyebrow">Digital estate availability</p>
@@ -45,7 +49,7 @@ export default async function StatusPage() {
         <div className="status-meta">
           <span className={`overall overall-${snapshot.overall}`}>{overallLabels[snapshot.overall]}</span>
           <span>Checked {checked} UTC</span>
-          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" />Refresh</a>
+          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" /><span lang={locale}>{interfaceLabel(locale, "Refresh")}</span></a>
         </div>
       </section>
       <section className="service-band" aria-labelledby="services-title">
@@ -53,9 +57,9 @@ export default async function StatusPage() {
           <p className="eyebrow">Monitored boundaries</p>
           <h2 id="services-title">Current service position</h2>
         </div>
-        <div className="service-list">
+        <ul className="service-list">
           {snapshot.services.map((service) => (
-            <article className="service-row" key={service.code}>
+            <li className="service-row" key={service.code}>
               <div>
                 <span className={`state-dot state-${service.state}`} aria-hidden="true" />
                 <h3>{service.name}</h3>
@@ -67,13 +71,14 @@ export default async function StatusPage() {
               ) : (
                 <span className="private-boundary">{destinationLabels[service.visibility]}</span>
               )}
-            </article>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
       <footer className="status-footer">
         <p>NovaPharm Healthcare Ltd. Status data is intentionally limited to operational availability.</p>
-        <a href="https://novapharmhealthcare.com/contact/">Contact NovaPharm Healthcare</a>
+        <nav aria-label="Status privacy and support"><a href="https://novapharmhealthcare.com/legal/privacy/">Privacy notice</a><a href="https://novapharmhealthcare.com/contact/">Contact NovaPharm Healthcare</a></nav>
+        <InterfaceLocaleSwitcher locale={locale} />
       </footer>
     </main>
   );

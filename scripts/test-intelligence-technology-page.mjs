@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { runInNewContext } from "node:vm";
@@ -8,6 +9,8 @@ const read = (path) => readFileSync(resolve(root, path), "utf8");
 const source = read("src/content/technology-intelligence.html");
 const published = read("technology/index.html");
 const styles = read("assets/css/technology-intelligence.css");
+const publicTechnologyCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/technology-intelligence.css"))).digest("hex");
+const expectedTechnologyCssHref = `href="/assets/css/technology-intelligence.css?v=20261111-forensic-design-v3&amp;sha256=${publicTechnologyCssSha256}"`;
 const materialiser = read("scripts/apply-corporate-product-discipline.mjs");
 const metadata = read("src/content/site-content.mjs");
 
@@ -49,7 +52,7 @@ assert.equal((source.match(/<main\b/g) || []).length, 1, "Exactly one main landm
 assert.equal((source.match(/<\/main>/g) || []).length, 1, "Main landmark is closed");
 assert.equal((source.match(/<section\b/g) || []).length, (source.match(/<\/section>/g) || []).length, "Sections are balanced");
 assert.ok(source.includes('id="intelligence-roadmap"'));
-assert.ok(published.includes('href="/assets/css/technology-intelligence.css"'));
+assert.ok(published.includes(expectedTechnologyCssHref), "Published Technology stylesheet must match its exact CSS bytes and approved version");
 assert.ok(published.includes('<link rel="canonical" href="https://novapharmhealthcare.com/technology/">'));
 assert.ok(published.includes("<title>NovaPharm Intelligence"));
 assert.ok(metadata.includes('title: "NovaPharm Intelligence | Medicines, Evidence & Analytics"'));
@@ -180,20 +183,21 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(pricing.includes('data-monthly-gbp="199" data-annual-gbp="2030"'));
   assert.ok(pricing.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
   assert.ok(pricing.includes("£2,799") && pricing.includes("Custom"));
-  assert.ok(pricing.includes("paid checkout currently remains separately gated") && pricing.includes("No payment is collected by this page"));
+  assert.ok(pricing.includes("Paid subscriptions are charged immediately at Checkout") && pricing.includes("may not be available immediately"), label + " must disclose live recurring billing and provisioning delay");
   assert.ok(pricing.includes("Approved monthly prices in GBP") && pricing.includes("actual tax depends"));
   assert.ok(!pricing.includes('npi-trial-offer') && !pricing.includes('npi-billing-switch'), label + " must not have a separate trial banner or unapproved billing toggle");
   assert.ok(!pricing.includes("Coming soon") && !pricing.includes("Enrolment not yet open"), label + " must not use disabled-plan marketing buttons");
-  for (const plan of ["starter","professional"]) {
-    assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=' + plan + '&amp;cycle=monthly"'), label + " paid plan must use secure Cognito registration with fixed plan and cycle");
-    assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=' + plan + '&amp;cycle=monthly"'), label + " existing customers must have matching signed sign-in entry");
-    assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=' + plan), label + " paid plans must not fall back to contact form");
-  }
-  assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register"'), label + " free trial must initiate no-card identity registration");
-  assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " bespoke Enterprise requires contractual enquiry");
-  assert.ok(pricing.includes("Create free account") && pricing.includes("Choose Starter") && pricing.includes("Choose Professional") && pricing.includes("Contact sales"));
-  assert.ok(pricing.includes("Stripe-hosted payment is requested only after verified identity"));
-  assert.ok(!pricing.includes("checkout.stripe.com"), label + " public source must not expose direct Stripe payment links");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter"'), label + " must use the verified live Stripe Starter link");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional"'), label + " must use the verified live Stripe Professional link");
+  assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register"'), label + " must use no-card account registration for Free Trial");
+  assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " must retain custom Enterprise sales");
+  assert.ok(pricing.includes("Create free account") && pricing.includes("Subscribe") && pricing.includes("Contact sales"));
+  assert.ok(pricing.includes("renew monthly until cancelled") && pricing.includes("Payment is not an automatic medicine-data entitlement"), label + " must disclose what is and is not activated");
+  assert.ok(pricing.includes('href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a>'), label + " must offer self-service Stripe billing management");
+  assert.ok(!pricing.includes("checkout.stripe.com"), label + " must use approved Stripe hosted payment links, not constructed sessions");
+  assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter') &&
+            !pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional'),
+            label + " paid cards must not direct customers to contact form");
 }
 assert.ok(styles.includes("Four-plan Intelligence pricing") && styles.includes("repeat(4, minmax(0,1fr))"), "Four-column responsive layout contract");
 assert.ok(styles.includes("#0071e3") && styles.includes("#f5f5f7"), "Approved Apple-style palette is retained");
@@ -220,13 +224,19 @@ const workspacesHtml = read("technology/workspaces/index.html");
 const workspaceCss = read("assets/css/intelligence-workspace-product.css");
 const workspaceJs = read("assets/js/intelligence-workspace-product.js");
 const workspaceEmbeddedCss = read("assets/css/intelligence-workspace-embedded.css");
+const publicEmbeddedCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/intelligence-workspace-embedded.css"))).digest("hex");
+const expectedEmbeddedCssHref = `href="/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${publicEmbeddedCssSha256}"`;
 const workspaceEmbeddedJs = read("assets/js/intelligence-workspace-embedded.js");
 for (const [label, html] of [["canonical source", source], ["published page", published]]) {
   assert.match(html, /id="npi-exp-shell"/, label + " must render the native interactive experience");
   assert.equal((html.match(/<h1\b/g) || []).length, 1, label + " must have one document h1 after native workspace integration");
   assert.match(html, /<section class="section" aria-labelledby="npi-directory-title">/, label + " native experience must use the existing visible section heading");
   assert.doesNotMatch(html, /npi-exp-main-heading/, label + " must not introduce a duplicate hidden title");
-  assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  if (label === "published page") {
+    assert.ok(html.includes(expectedEmbeddedCssHref), label + " must load the exact content-bound scoped app styles");
+  } else {
+    assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  }
   assert.match(html, /src="\/assets\/js\/intelligence-workspace-embedded\.js"/, label + " must load the CSP-safe app runtime");
   assert.match(html, /npi-directory-groups" hidden aria-hidden="true"/, label + " must not display the obsolete accordion");
   assert.doesNotMatch(html, /id="npi-experience-iframe"/, label + " must not depend on CSP-blocked frames");

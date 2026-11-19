@@ -80,7 +80,9 @@ test("conflicting index properties deny mutation", async () => {
     {...unique,partialFilterExpression:{status:"active"}},
     {...unique,key:{workspace_id:1}},
     {...unique,collation:{locale:"en"}},
-    {...unique,expireAfterSeconds:30}
+    {...unique,expireAfterSeconds:30},
+    {...unique,hidden:true},
+    {...unique,name:"historical_rights_unique"}
   ]) {
     const x=fake([i]);
     await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({database:x.database}),
@@ -88,6 +90,18 @@ test("conflicting index properties deny mutation", async () => {
     assert.equal(x.totals().writes,0);
   }
 });
+test("idempotent migration rejects conflicting same-key duplicate rights indexes",async()=>{
+  for(const extra of [
+    {...unique,name:"historical_rights_unique"},
+    {...unique,unique:false,name:"historical_rights_unique"}
+  ]){
+    const x=fake([unique,extra]);
+    await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({database:x.database}),
+      /Conflicting rights index/);
+    assert.deepEqual(x.totals(),{writes:0,authorizations:0});
+  }
+});
+
 test("forged createIndex acknowledgment is not successful", async () => {
   const x=fake(); x.collection.createIndex=async()=>spec.name;
   await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({
@@ -143,6 +157,48 @@ function g2Fixture({missing = null, nonempty = null, conflicting = null} = {}) {
   return {database,authorizeMigration,stats:()=>({writes,approvals})};
 }
 const names = Object.keys(g2MedicineUniqueIndexSpecs);
+test("all G2 migrators share atomic-store field order and canonical g2_unique names",async()=>{
+  const {atlasG2RequiredUniqueIndexKeys}=await import(
+    "../src/data/atlas-medicine-g2-atomic-store.mjs");
+  assert.deepEqual(Object.keys(g2MedicineUniqueIndexSpecs),Object.keys(atlasG2RequiredUniqueIndexKeys));
+  for(const [collection,required] of Object.entries(atlasG2RequiredUniqueIndexKeys)){
+    assert.equal(g2MedicineUniqueIndexSpecs[collection].name,"g2_unique");
+    assert.deepEqual(g2MedicineUniqueIndexSpecs[collection].keys,required);
+  }
+});
+test("same-key historical alternate names must be reconciled, not silently marked ready",async()=>{
+  for(const [name,required] of Object.entries(g2MedicineUniqueIndexSpecs)){
+    const x=g2Fixture({missing:name});
+    const alternate=name==="npi_medicine_evidence"?"g2_evidence_unique_source_row":
+      name==="npi_evidence_manifests"?"g2_manifest_unique_digest":"g2_audit_unique_event";
+    const collection=x.database.collection(name);
+    collection.listIndexes=()=>({toArray:async()=>[
+      {name:"_id_",key:{_id:1},unique:true},
+      {name:alternate,key:required.keys,unique:true,collation:{locale:"simple"}}
+    ]});
+    await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({database:x.database}),
+      /Conflicting G2 unique index/);
+    assert.deepEqual(x.stats(),{writes:0,approvals:0});
+  }
+});
+test("G2 migration refuses hidden canonical indexes or same-key duplicate aliases",async()=>{
+  for (const [name,spec] of Object.entries(g2MedicineUniqueIndexSpecs)) {
+    for (const defect of [
+      {name:spec.name,key:spec.keys,unique:true,hidden:true},
+      {name:"historical_g2_unique",key:spec.keys,unique:true}
+    ]) {
+      const x=g2Fixture({missing:name});
+      const collection=x.database.collection(name);
+      collection.listIndexes=()=>({toArray:async()=>[
+        {name:spec.name,key:spec.keys,unique:true,collation:{locale:"simple"}}, defect
+      ]});
+      await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({database:x.database}),
+        /Conflicting G2 unique index/);
+      assert.deepEqual(x.stats(),{writes:0,approvals:0});
+    }
+  }
+});
+
 test("three G2 compound constraints are dry-run verified without writes", async()=>{
   const x=g2Fixture({missing:names[0]});
   const result=await ensureG2PrivateMedicineUniqueIndexes({database:x.database});

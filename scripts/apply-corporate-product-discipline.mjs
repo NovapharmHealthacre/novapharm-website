@@ -2,6 +2,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { company, leadership } from "../src/content/site-content.mjs";
 import { validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
+
+const accountCtaLabel = getPlatformCapabilities(resolvePlatformMode()).accountApplication
+  ? "Apply for a business account" : "Discuss account eligibility";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -41,7 +45,8 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 })[character]);
 
 function globalSection(route) {
-  if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
+  if (route === "/") return "";
+  if (route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
   if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
@@ -69,7 +74,7 @@ const globalNavigation = [
 // remains usable as ordinary links without JavaScript.
 const megaNavigation = {
   company: [
-    ["Explore", [["Company overview", "/about/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Explore", [["Company overview", "/about/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
     ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
     ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
   ],
@@ -134,10 +139,10 @@ function footer() {
           <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
-        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
+        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
-        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
+        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       <div class="npd-footer-notices">
@@ -202,7 +207,9 @@ function responsiveImage(base, alt, options = {}) {
 
 function productPicture(product, eager = false, sizes = "(max-width: 720px) 84vw, 28vw") {
   const base = `/assets/media/products/nutraxin/${product.imageBase}`;
-  return `<picture class="npd-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const width = product.imageBase === "collagen-gold-30-tablets" ? 980 : 700;
+  const height = product.imageBase === "collagen-gold-30-tablets" ? 654 : 700;
+  return `<picture class="npd-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="${width}" height="${height}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function homeMain() {
@@ -568,7 +575,7 @@ function accountMain(existingHtml) {
   const managedStatus = existingHtml.match(/<div class="alert application-status"[\s\S]*?<\/div>/)?.[0] || "";
   const control = managedForm && managedStatus ? `<div class="npd-managed-control">${managedForm}${managedStatus}</div>` : `<div class="npd-managed-control">${notice("information", "Managed application required", "This public information release does not accept account applications or business documents. No application data is collected here. The workflow remains unavailable until secure managed storage, identity, review and monitoring are verified.")}${verifiedEmailFallback({ subject: "NovaPharm business account eligibility", label: "Discuss account eligibility", context: "You may email a non-confidential expression of business interest to vishal@novapharmhealthcare.com. Do not attach licences, dossiers, identity records or other confidential evidence." })}</div>`;
   const stages = ["Business interest", "Initial qualification", "Application invitation", "Company information", "Regulatory and quality evidence", "Controlled document review", "Credit and commercial review", "Approval decision", "Identity provisioning", "Portal access and ongoing review"];
-  return `<main id="main" class="npd-main">${hero({ route: "/account-application/", eyebrow: "Business account", title: "An account is approved through evidence, not created by a public form.", lead: "NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access." })}<section class="npd-section"><div class="container npd-account-layout"><div>${sectionIntro("Governed lifecycle", "Ten distinct stages from interest to controlled access.")}<ol class="npd-account-stages">${stages.map((stage, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${stage}</strong></li>`).join("")}</ol>${notice("regulatory", "Account status", "An enquiry or application does not create an approved trading account, confirm product availability, establish credit terms or permit regulated supply.")}</div>${control}</div></section></main>`;
+  return `<main id="main" class="npd-main">${hero({ route: "/account-application/", eyebrow: "Business account", title: "An account is approved through evidence, not created by a public form.", lead: "NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access." })}<section class="npd-section"><div class="container npd-account-layout"><div>${sectionIntro("Governed lifecycle", "Ten distinct stages from interest to controlled access.")}<ol class="npd-account-stages">${stages.map((stage, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${stage}</strong></li>`).join("")}</ol><details class="npd-account-guidance"><summary>What happens after I express business interest?</summary><div><p>Public browsing does not require an account. A non-confidential enquiry is reviewed for eligibility before NovaPharm issues a separate, controlled application invitation; it does not create a password, regulated account or permission to order medicines.</p><p>Private identity documents, regulatory evidence and contracts must only be supplied through an authorised secure workflow. The managed application is not active on this public page.</p><p><a href="/trust-centre/">Security and trust</a> · <a href="/legal/privacy/#business-enquiries">Business enquiry privacy</a></p></div></details>${notice("regulatory", "Account status", "An enquiry or application does not create an approved trading account, confirm product availability, establish credit terms or permit regulated supply.")}</div>${control}</div></section></main>`;
 }
 
 function replaceMain(html, main) {
@@ -579,7 +586,7 @@ function replaceMain(html, main) {
 
 function replaceChrome(html, route) {
   html = html.replace(/<header\s+class="site-header(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/header>/, header(route));
-  html = html.replace(/<footer class="site-footer"[\s\S]*?<\/footer>/, footer());
+  html = html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());
   html = html.replace(/<body([^>]*)>/, (_match, attributes) => {
     const governedAttributes = attributes
       .replace(/\sdata-family="[^"]*"/g, "")
@@ -727,7 +734,7 @@ materialize("technology/index.html", "/technology/", technologyMain());
 materialize("news-insights/index.html", "/news-insights/", insightsMain());
 materialize("contact/index.html", "/contact/", contactMain(contactTemplate));
 materialize("account-application/index.html", "/account-application/", accountMain(accountTemplate), {
-  title: "Open a Business Account | NovaPharm Healthcare",
+  title: "Register business interest | NovaPharm Healthcare",
   description: "Review NovaPharm's controlled B2B account pathway from non-confidential interest through qualification, private evidence, approval, identity provisioning and portal access.",
   robots: "noindex, follow"
 });
@@ -773,6 +780,11 @@ const otherChromeRoutes = [
   ["legal/modern-slavery/index.html", "/legal/modern-slavery/"], ["legal/environment-carbon/index.html", "/legal/environment-carbon/"],
   ["portal/index.html", "/portal/"]
 ];
+// Article generation precedes this pass; maintain the same semantic header,
+// mobile navigation and keyboard-accessible footer on every Insights article.
+for (const article of articles) {
+  otherChromeRoutes.push([`news-insights/${article.slug}/index.html`, `/news-insights/${article.slug}/`]);
+}
 for (const [relative, route] of otherChromeRoutes) {
   if (existsSync(join(root, relative))) write(relative, replaceChrome(read(relative), route));
 }

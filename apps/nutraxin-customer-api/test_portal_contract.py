@@ -71,7 +71,14 @@ BOTO3 = types.ModuleType("boto3")
 BOTO3.resource = lambda *args, **kw: types.SimpleNamespace(Table=lambda name: DDB)
 BOTO3.client = lambda name, **kw: COGNITO if name == "cognito-idp" else DummySSM()
 KEY_MOD = types.ModuleType("boto3.dynamodb.conditions")
-KEY_MOD.Key = lambda name: types.SimpleNamespace(eq=lambda value: ("eq", name, value))
+class DummyCondition(tuple):
+    def __and__(self, other):
+        return ("and", tuple(self), tuple(other))
+
+KEY_MOD.Key = lambda name: types.SimpleNamespace(
+    eq=lambda value: DummyCondition(("eq", name, value)),
+    begins_with=lambda value: DummyCondition(("begins_with", name, value))
+)
 sys.modules["boto3"] = BOTO3
 sys.modules["boto3.dynamodb"] = types.ModuleType("boto3.dynamodb")
 sys.modules["boto3.dynamodb.conditions"] = KEY_MOD
@@ -101,6 +108,89 @@ class PortalSecurityTests(unittest.TestCase):
             e["body"] = json.dumps(body)
         return e
 
+    def test_nutraxin_checkout_terms_layout_and_portal_payment_return(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event:{
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            body=page["body"]
+            for expected in ('id="shop-repeat-section"',
+                             'aria-labelledby="shop-repeat-title" hidden',
+                             'class="shop-retail-consent-copy"',
+                             'id="shop-payment-refresh"',
+                             ".shop-retail-consent{display:grid;",
+                             'id="shop-retail-checkout"',
+                             'id="shop-retail-terms"',
+                             "Repeat a business request.",
+                             "Nutraxin retail sales use Stripe Checkout"):
+                self.assertIn(expected,body)
+            self.assertNotIn("No payment is collected here.",body)
+            js=PORTAL.CUSTOMER_PRODUCTS_JS
+            for signal in ("sessionStorage.setItem(basketKey",
+                           "restoreBasket();","handleRetailReturn();",
+                           "/api/retail/order-status/","d.paid===true",
+                           "repeatSection.hidden=!qualified",
+                           "Check payment status"):
+                self.assertIn(signal,js)
+        finally:
+            PORTAL.session=previous
+
+    def test_products_top_basket_uses_accessible_dialog_without_permanent_sidebar(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event:{
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            response=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            for required in (
+                'id="shop-basket-open"',
+                'aria-controls="shop-basket-drawer"',
+                'aria-haspopup="dialog" aria-expanded="false"',
+                'id="shop-nav-count"',
+                'class="shop-basket-symbol" aria-hidden="true"',
+                'id="shop-basket-backdrop" class="shop-basket-backdrop" hidden',
+                'id="shop-basket-drawer" class="shop-basket" role="dialog"',
+                'aria-modal="true"',
+                'id="shop-basket-close"',
+                '.editorial-customer .shop-layout{display:block}',
+                'position:sticky;top:0;z-index:50;',
+                '#shop-basket-drawer[hidden],#shop-basket-backdrop[hidden]{display:none!important}',
+                'id="shop-retail-checkout"',
+                'id="shop-submit"'):
+                self.assertIn(required,body)
+            self.assertNotIn('<aside class="shop-basket"',body)
+            self.assertNotIn('position:sticky;top:22px;border:1px solid',body.split('/* Full-width editorial product grid.')[1])
+            for signal in (
+                'function openBasket(){','function closeBasket(){',
+                'function basketKeyboard(event){',
+                'basketToggle.addEventListener("click",openBasket)',
+                'basketClose.addEventListener("click",closeBasket)',
+                'basketBackdrop.addEventListener("click",closeBasket)',
+                'document.addEventListener("keydown",basketKeyboard)',
+                'navCount.textContent=String(quantity)',
+                'basketToggle.setAttribute("aria-label"',
+                'if(q.get("checkout")==="cancelled"){openBasket();',
+                'if(q.get("checkout")==="return"){openBasket();',
+                'sessionStorage.setItem(basketKey',
+                'fetch("/api/retail/checkout"',
+                'd.paid===true&&d.status==="PAID"'):
+                self.assertIn(signal,PORTAL.CUSTOMER_PRODUCTS_JS)
+            # Existing application routes other than Products must not expose a dummy basket.
+            account=PORTAL.handler(self.event("/portal/account/"),None)
+            self.assertNotIn('id="shop-basket-open"',account["body"])
+        finally:
+            PORTAL.session=previous
+
+    def test_server_records_fixed_retail_channel_for_private_stripe_worker(self):
+        source=(ROOT/"apps/nutraxin-customer-api/index.py").read_text()
+        self.assertIn('"checkoutChannel": {"S": "PORTAL_RETAIL"}',source)
+        self.assertNotIn("window.location.assign(data.checkoutUrl)",PORTAL.CUSTOMER_PRODUCTS_JS)
+
     def test_unified_customer_routes_are_server_authenticated(self):
         self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_MODULES),18)
         self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_ROUTES),18)
@@ -126,7 +216,10 @@ class PortalSecurityTests(unittest.TestCase):
                 self.assertIn("no-store",result["headers"]["cache-control"])
                 self.assertIn('name="robots" content="noindex,nofollow"',result["body"])
                 self.assertIn(label,result["body"])
-                self.assertNotIn("Stripe Checkout",result["body"])
+                if route=="/portal/products/":
+                    self.assertIn("Nutraxin retail sales use Stripe Checkout",result["body"])
+                else:
+                    self.assertNotIn("Stripe Checkout",result["body"])
             dashboard=PORTAL.handler(self.event("/portal/dashboard/"),None)
             self.assertEqual(dashboard["body"].count('class="tile"'),0)
             self.assertIn('class="editorial-customer"',dashboard["body"])
@@ -773,6 +866,45 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA=old
 
+    def test_owner_declared_stripe_gb_tax_basis_is_fail_closed(self):
+        saved_ssm=PORTAL.SSM
+        saved_param=PORTAL.OWNER_ATTESTATION_PARAMETER
+        owner={
+            "schema":"novapharm.nutraxin.owner_attestation.v1",
+            "product_owner_authorised":True,
+            "food_business_registration_owner_attested":True,
+            "owner_direct_fulfilment_authorised":True,
+            "owner_uk_dispatch_committed":True,
+            "stripe_gb_standard_tax_registration_active":True,
+            "owner_authorized_stripe_gb_tax_basis":True,
+            "consumer_terms_owner_approved":True,
+            "vat_rate_bps":2000,
+            "payment_collection_authorised":True,
+        }
+        class OwnerSSM:
+            def get_parameter(self, **kw):
+                if kw.get("Name")=="/synthetic/merchant":
+                    return {"Parameter":{"Value":json.dumps(owner)}}
+                return saved_ssm.get_parameter(**kw)
+        try:
+            PORTAL.SSM=OwnerSSM()
+            PORTAL.OWNER_ATTESTATION_PARAMETER="/synthetic/merchant"
+            pricing=json.loads(saved_ssm.get_parameter()["Parameter"]["Value"])
+            pricing["owner_retail_sale_authorised"]=True
+            self.assertTrue(PORTAL.retail_sale_authorised(pricing))
+            for key in ("stripe_gb_standard_tax_registration_active",
+                        "owner_authorized_stripe_gb_tax_basis",
+                        "consumer_terms_owner_approved","payment_collection_authorised"):
+                value=owner.pop(key)
+                self.assertFalse(PORTAL.retail_sale_authorised(pricing),key)
+                owner[key]=value
+            owner["vat_rate_bps"]=0
+            self.assertFalse(PORTAL.retail_sale_authorised(pricing))
+            self.assertNotIn("vat_number",json.dumps(owner).lower())
+        finally:
+            PORTAL.SSM=saved_ssm
+            PORTAL.OWNER_ATTESTATION_PARAMETER=saved_param
+
     def test_nutraxin_public_site_credentials_cors_and_preflight(self):
         e=self.event("/api/retail/checkout","OPTIONS",origin="https://novapharmhealthcare.com")
         r=PORTAL.handler(e,None)
@@ -950,7 +1082,7 @@ class PortalSecurityTests(unittest.TestCase):
         try:
             page=PORTAL.handler(self.event("/portal/products/"),None)
             self.assertEqual(page["statusCode"],200)
-            self.assertIn("My Products.",page["body"])
+            self.assertIn('id="customer-products-title">Products</h1>',page["body"])
             self.assertIn('src="/customer-products.js"',page["body"])
             self.assertIn("shop-basket",page["body"])
             self.assertIn("novapharm-healthcare-logo.svg",page["body"])
@@ -1062,6 +1194,504 @@ class PortalSecurityTests(unittest.TestCase):
             self.assertIn('window.location.assign(dest.href)', js)
         finally:
             PORTAL.session = previous
+
+    def test_customer_modules_share_apple_inspired_header_and_support_form(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-A","email":"verified@example.invalid"}
+        try:
+            for path in ("/portal/dashboard/","/portal/products/","/portal/orders/",
+                         "/portal/documents/","/portal/support/"):
+                response=PORTAL.handler(self.event(path),None)
+                self.assertEqual(response["statusCode"],200,path)
+                body=response["body"]
+                self.assertIn('class="editorial-customer"',body)
+                self.assertIn("novapharm-healthcare-logo.svg",body)
+                self.assertIn("editorial-topnav",body)
+                self.assertIn("customer",body.lower())
+            support=PORTAL.handler(self.event("/portal/support/"),None)["body"]
+            self.assertIn('id="case-form"',support)
+            self.assertIn('src="/customer-support.js"',support)
+            self.assertIn("Do not include patient details",support)
+            self.assertNotIn("Support ticket created.",support)
+            js=PORTAL.handler(self.event("/customer-support.js"),None)
+            self.assertEqual(js["statusCode"],200)
+            self.assertIn("/api/customer/support-cases",js["body"])
+            self.assertIn("textContent",js["body"])
+            self.assertNotIn("innerHTML",js["body"])
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_cases_are_verified_scoped_nonbinding_and_do_not_send_email(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner","email":"owner@example.invalid"}
+        case_id="aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        payload={"case_id":case_id,"category":"product_availability",
+                 "subject":"Availability enquiry","details":"Please check this reference and advise if supply can be confirmed."}
+        try:
+            event=self.event("/api/customer/support-cases","POST",payload)
+            event["headers"]["content-type"]="application/json"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],201)
+            message=json.loads(response["body"])
+            self.assertEqual(message["status"],"RECEIVED_AWAITING_REVIEW")
+            self.assertEqual(message["reference"],"NPS-"+case_id)
+            self.assertEqual(len(DDB.items),1)
+            saved=DDB.items[0]
+            self.assertEqual(saved["pk"],"USER#sub-owner")
+            self.assertEqual(saved["sk"],"CASE#"+case_id)
+            self.assertFalse(saved["financially_binding"])
+            self.assertFalse(saved["inventory_reserved"])
+            self.assertFalse(saved["customer_email_sent"])
+            self.assertFalse(saved["staff_notification_sent"])
+            self.assertFalse(saved["regulated_quality_report"])
+            self.assertNotIn("payment_intent",str(saved))
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_api_denies_cross_origin_bad_schema_and_unverified_customer(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner"}
+        case_id="aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        good={"case_id":case_id,"category":"order_request","subject":"Need help with request",
+              "details":"Please review my existing request and its latest status."}
+        try:
+            wrong_origin=self.event("/api/customer/support-cases","POST",good,"https://other.invalid")
+            wrong_origin["headers"]["content-type"]="application/json"
+            self.assertEqual(PORTAL.handler(wrong_origin,None)["statusCode"],403)
+            for malformed in ({**good,"account_id":"different-customer"},
+                              {**good,"category":"quality_complaint"},
+                              {**good,"details":"too short"},
+                              {**good,"case_id":"not-a-uuid"}):
+                call=self.event("/api/customer/support-cases","POST",malformed)
+                call["headers"]["content-type"]="application/json"
+                self.assertEqual(PORTAL.handler(call,None)["statusCode"],400)
+            unauthenticated=self.event("/api/customer/support-cases")
+            PORTAL.session=lambda event:None
+            self.assertEqual(PORTAL.handler(unauthenticated,None)["statusCode"],401)
+            PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner"}
+            COGNITO.enabled=False
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/support-cases"),None)["statusCode"],403)
+            self.assertEqual(len(DDB.items),0)
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_cases_query_never_reads_another_customer_partition(self):
+        previous_session,previous_table=PORTAL.session,PORTAL.TABLE
+        PORTAL.session=lambda event: {"username":"verified","sub":"tenant-A"}
+        class ScopeTable:
+            def query(self,**kwargs):
+                self_args=kwargs.get("KeyConditionExpression")
+                self_test=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","CASE#"))
+                if self_args!=self_test:
+                    raise AssertionError("Case records accessed outside current account")
+                return {"Items":[{"pk":"USER#tenant-A","sk":"CASE#aaa",
+                                  "reference":"NPS-test","category":"account",
+                                  "subject":"Account update enquiry","status":"RECEIVED_AWAITING_REVIEW",
+                                  "created_at":1700000000}]}
+        PORTAL.TABLE=ScopeTable()
+        try:
+            response=PORTAL.handler(self.event("/api/customer/support-cases"),None)
+            self.assertEqual(response["statusCode"],200)
+            items=json.loads(response["body"])["cases"]
+            self.assertEqual(len(items),1)
+            self.assertEqual(items[0]["reference"],"NPS-test")
+            self.assertNotIn("tenant-B",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE=previous_session,previous_table
+
+    def test_repeat_request_history_is_trade_approved_and_partition_scoped(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda event: {"username":"approved","sub":"tenant-A","email":"approved@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class ScopedHistory:
+            def query(self,**kw):
+                expected=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","RQ#"))
+                if kw.get("KeyConditionExpression")!=expected:
+                    raise AssertionError("Request history accessed outside account or unbounded sort key")
+                if kw.get("Limit")!=20 or kw.get("ConsistentRead") is not True:
+                    raise AssertionError("Expected bounded, consistent account query")
+                return {"Items":[{"pk":"USER#tenant-A","sk":"RQ#original",
+                    "receipt_id":"NPQ-original","status":"PENDING_MANUAL_REVIEW",
+                    "created_at":1700000000,"lines":[
+                        {"sku":"NUT-UK-VD3-T120","quantity":2,"collection":"nutraxin"},
+                        {"sku":"ESCO-CAT-0001","quantity":3,"collection":"esco"}]},
+                    {"pk":"USER#tenant-A","sk":"CASE#not-an-order",
+                    "receipt_id":"NPS-case","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]},
+                    {"pk":"USER#tenant-B","sk":"RQ#cross-account",
+                    "receipt_id":"NPQ-other-tenant","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}]}
+        PORTAL.TABLE=ScopedHistory()
+        try:
+            response=PORTAL.handler(self.event("/api/customer/quote-requests"),None)
+            self.assertEqual(response["statusCode"],200)
+            data=json.loads(response["body"])
+            self.assertEqual(len(data["requests"]),1)
+            record=data["requests"][0]
+            self.assertEqual(record["receipt_id"],"NPQ-original")
+            self.assertEqual(record["lines"],[
+                {"sku":"NUT-UK-VD3-T120","quantity":2},
+                {"sku":"ESCO-CAT-0001","quantity":3}])
+            self.assertFalse(record["financially_binding"])
+            self.assertTrue(record["price_and_availability_revalidated_on_new_request"])
+            self.assertNotIn("payment_intent",response["body"])
+            self.assertNotIn("tenant-B",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_repeat_request_never_bypasses_trade_approval_or_customer_identity(self):
+        old_session,old_groups,old_table=PORTAL.session,COGNITO.groups,PORTAL.TABLE
+        PORTAL.session=lambda event: {"username":"approved","sub":"tenant-A"}
+        COGNITO.groups=[]
+        class FailIfQueried:
+            def query(self,**kw):raise AssertionError("Unapproved account accessed request database")
+        PORTAL.TABLE=FailIfQueried()
+        try:
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],403)
+            COGNITO.groups=[PORTAL.APPROVED_GROUP]
+            COGNITO.verified_email=False
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],403)
+            COGNITO.verified_email=True
+            PORTAL.session=lambda event: None
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],401)
+        finally:
+            PORTAL.session,COGNITO.groups,PORTAL.TABLE=old_session,old_groups,old_table
+            COGNITO.verified_email=True
+
+    def test_repeat_request_is_visible_and_requires_fresh_submission(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"tenant-A",
+                                     "email":"customer@example.invalid"}
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn('id="shop-repeat"',page["body"])
+            self.assertIn('id="shop-repeat-list"',page["body"])
+            script=PORTAL.handler(self.event("/customer-products.js"),None)
+            self.assertEqual(script["statusCode"],200)
+            code=script["body"]
+            self.assertIn('fetch("/api/customer/quote-requests"',code)
+            self.assertIn("async function loadRepeatRequests()",code)
+            self.assertIn("Review the current references and quantities",code)
+            self.assertIn("submit.addEventListener",code)
+            self.assertNotIn("innerHTML",code)
+        finally:
+            PORTAL.session=old_session
+
+    def test_order_tracking_reads_only_real_customer_requests_without_dispatch_claims(self):
+        previous_session,previous_table,previous_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"tenant-A","email":"buyer@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class OwnRequests:
+            def query(self,**kwargs):
+                expected=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","RQ#"))
+                if kwargs.get("KeyConditionExpression")!=expected:
+                    raise AssertionError("Tracking query escaped customer request partition")
+                if kwargs.get("Limit")!=10:
+                    raise AssertionError("Tracking history is not bounded")
+                return {"Items":[
+                    {"pk":"USER#tenant-A","sk":"RQ#111","receipt_id":"NPQ-111",
+                     "status":"PENDING_MANUAL_REVIEW","created_at":1700000000},
+                    {"pk":"USER#tenant-B","sk":"RQ#222","receipt_id":"NPQ-222",
+                     "status":"APPROVED_FOR_PAYMENT","created_at":1700000000}
+                ]}
+        PORTAL.TABLE=OwnRequests()
+        try:
+            response=PORTAL.handler(self.event("/portal/order-tracking/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            self.assertIn("NPQ-111",body)
+            self.assertNotIn("NPQ-222",body)
+            self.assertIn("Received — awaiting manual review",body)
+            self.assertIn("No stock allocation",body)
+            self.assertIn("Support &amp; Supply Enquiries",body)
+            self.assertNotIn("Shipped —",body)
+            COGNITO.groups=[]
+            denied=PORTAL.handler(self.event("/portal/order-tracking/"),None)
+            self.assertEqual(denied["statusCode"],200)
+            self.assertIn("separately approved business account",denied["body"])
+            self.assertNotIn("NPQ-111",denied["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=previous_session,previous_table,previous_groups
+
+
+    def test_owner_direct_retail_declarations_remove_unnecessary_supplier_gates(self):
+        # Owner declarations are sufficient for the *internal* ownership,
+        # food-business and dispatch policies without pretending a third party
+        # verified them. VAT and the customer terms remain independent gates.
+        flags={
+            "retail_sales_authorised":True,
+            "vat_registration_verified":True,
+            "food_business_registration_owner_attested":True,
+            "owner_direct_fulfilment_authorised":True,
+            "owner_uk_dispatch_committed":True,
+            "consumer_terms_verified":True,
+            "model_assumptions":{
+                "uk_delivery_charge_pence":0,
+                "uk_delivery_cost_borne_by_seller":True,
+            },
+        }
+        self.assertTrue(PORTAL.retail_sale_authorised(flags))
+        for name in ("retail_sales_authorised","vat_registration_verified",
+                     "food_business_registration_owner_attested",
+                     "owner_direct_fulfilment_authorised",
+                     "owner_uk_dispatch_committed","consumer_terms_verified"):
+            denied=dict(flags)
+            denied.pop(name)
+            self.assertFalse(PORTAL.retail_sale_authorised(denied), name)
+        quote_only=dict(flags)
+        quote_only["vat_registration_verified"]=False
+        self.assertFalse(PORTAL.retail_sale_authorised(quote_only))
+        wrong_shipping=dict(flags)
+        wrong_shipping["model_assumptions"]={"uk_delivery_charge_pence":200,
+                                             "uk_delivery_cost_borne_by_seller":True}
+        self.assertFalse(PORTAL.retail_sale_authorised(wrong_shipping))
+
+
+    def test_dashboard_activity_strict_customer_isolation(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"buyer-A",
+                                  "email":"buyer-a@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        calls=[]
+        class ScopedLedger:
+            def query(self,**params):
+                condition=params.get("KeyConditionExpression")
+                allowed=[
+                    ("and",("eq","pk","USER#buyer-A"),("begins_with","sk","RQ#")),
+                    ("and",("eq","pk","USER#buyer-A"),("begins_with","sk","CASE#"))
+                ]
+                if condition not in allowed:
+                    raise AssertionError("Unscoped account activity query")
+                if params.get("Limit")!=20 or params.get("ConsistentRead") is not True:
+                    raise AssertionError("Activity query must be bounded and consistent")
+                calls.append(condition)
+                if condition==allowed[0]:
+                    return {"Items":[
+                        {"pk":"USER#buyer-A","sk":"RQ#a","receipt_id":"NPQ-A"},
+                        {"pk":"USER#buyer-B","sk":"RQ#b","receipt_id":"NPQ-B"},
+                        {"pk":"USER#buyer-A","sk":"CASE#unrelated","receipt_id":"NPS-X"}
+                    ]}
+                return {"Items":[
+                    {"pk":"USER#buyer-A","sk":"CASE#a","reference":"NPS-A"},
+                    {"pk":"USER#buyer-B","sk":"CASE#b","reference":"NPS-B"}
+                ]}
+        PORTAL.TABLE=ScopedLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            self.assertIn("Your account. At a glance.",body)
+            self.assertIn("Purchase requests",body)
+            self.assertIn("Support enquiries",body)
+            self.assertEqual(body.count('class="editorial-activity-value">1</p>'),2)
+            self.assertIn("In the most recent 20 saved records",body)
+            self.assertIn("not accepted orders",body)
+            self.assertEqual(len(calls),2)
+            self.assertNotIn("NPQ-B",body)
+            self.assertNotIn("NPS-B",body)
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_dashboard_activity_denies_unapproved_trade_data(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"personal","sub":"buyer-A",
+                                  "email":"customer@example.invalid"}
+        COGNITO.groups=[]
+        class PersonalCaseLedger:
+            def query(self,**params):
+                condition=params.get("KeyConditionExpression")
+                if condition!=("and",("eq","pk","USER#buyer-A"),("begins_with","sk","CASE#")):
+                    raise AssertionError("Personal customer read trade request history")
+                return {"Items":[]}
+        PORTAL.TABLE=PersonalCaseLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            self.assertIn("Trade access required",response["body"])
+            self.assertIn("No support enquiries were found",response["body"])
+            self.assertNotIn("0 accepted orders",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_dashboard_activity_unavailable_is_not_misreported_as_zero(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"buyer-A",
+                                  "email":"customer@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class UnavailableLedger:
+            def query(self,**params):
+                raise PORTAL.ClientError({"Error":{"Code":"ServiceUnavailable","Message":"Temporary"}},
+                                         "Query")
+        PORTAL.TABLE=UnavailableLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            self.assertEqual(response["body"].count('class="editorial-activity-value">Unavailable</p>'),2)
+            self.assertIn("No count has been inferred.",response["body"])
+            self.assertNotIn('class="editorial-activity-value">0</p>',response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+
+class PersonalAccountEditingTests(unittest.TestCase):
+    """The live transitional Cognito BFF persists customer-owned contact data, not trade approval."""
+
+    class Ledger:
+        def __init__(self):
+            self.records={}
+        def get_item(self, **kw):
+            key=kw["Key"]
+            entry=self.records.get((key["pk"],key["sk"]))
+            if not entry:return {}
+            # boto3 reads DynamoDB numbers as Decimal rather than int.
+            from decimal import Decimal
+            return {"Item":{**entry,"version":Decimal(str(entry["version"]))}}
+        def put_item(self,**kw):
+            item=kw["Item"]
+            key=(item["pk"],item["sk"])
+            old=self.records.get(key)
+            if kw["ConditionExpression"]=="attribute_not_exists(pk)" and old is not None:
+                raise AssertionError("Creation cannot overwrite a previously saved profile")
+            if old and kw["ConditionExpression"]=="#v = :previous":
+                assert old["version"]==kw["ExpressionAttributeValues"][":previous"]
+            self.records[key]=item
+            return {}
+
+    def setUp(self):
+        self.old_table,self.old_session=PORTAL.TABLE,PORTAL.session
+        self.ledger=self.Ledger()
+        PORTAL.TABLE=self.ledger
+        self.subject="personal-owner-123"
+        PORTAL.session=lambda _:{"username":"personal-test","sub":self.subject,
+                                 "email":"customer@example.invalid"}
+        COGNITO.enabled=True
+        COGNITO.user_status="CONFIRMED"
+        COGNITO.verified_email=True
+        COGNITO.groups=[]
+
+    def tearDown(self):
+        PORTAL.TABLE,PORTAL.session=self.old_table,self.old_session
+        COGNITO.groups=[]
+
+    def request(self,method="GET",body=None,origin="https://portal.example.invalid",
+                csrf=True):
+        headers={"origin":origin,"sec-fetch-site":"same-origin"}
+        if method=="POST":
+            headers.update({"content-type":"application/json"})
+            if csrf:headers["x-np-account-csrf"]="A"*43
+        return {"rawPath":"/api/customer/account-details",
+            "requestContext":{"http":{"method":method}},
+            "headers":headers,
+            "cookies":["__Host-np_signup_csrf="+"A"*43] if csrf else [],
+            "body":json.dumps(body) if body is not None else None}
+
+    def send(self,method="GET",body=None,**kw):
+        return PORTAL.handler(self.request(method,body,**kw),None)
+
+    def test_existing_account_page_exposes_real_edit_forms_and_external_script(self):
+        page=PORTAL.handler({"rawPath":"/portal/account/",
+            "requestContext":{"http":{"method":"GET"}},
+            "headers":{"origin":"https://portal.example.invalid"},
+            "cookies":[]},None)
+        self.assertEqual(page["statusCode"],200)
+        for marker in ('id="account-details-form"','id="account-address-form"',
+                       'id="account-new-address"','name="organisationName"',
+                       'name="postcode"','name="countryCode"',
+                       'src="/customer-account.js"'):
+            self.assertIn(marker,page["body"])
+        self.assertIn("separate",page["body"].lower())
+        self.assertNotIn("Stripe Checkout",page["body"])
+        js=PORTAL.handler({"rawPath":"/customer-account.js",
+            "requestContext":{"http":{"method":"GET"}}},None)
+        self.assertEqual(js["statusCode"],200)
+        self.assertIn("/api/customer/account-details",js["body"])
+        self.assertIn("X-NP-Account-CSRF",js["body"])
+        self.assertNotIn("innerHTML",js["body"])
+
+    def test_profile_save_is_owner_scoped_and_survives_reload(self):
+        empty=json.loads(self.send()["body"])
+        self.assertEqual(empty["addresses"],[])
+        self.assertEqual(empty["version"],0)
+        data={"action":"profile","version":0,"profile":{
+            "fullName":"Customer Test","phone":"+44 20 1234 5678",
+            "organisationName":"Example trading name"}}
+        saved=self.send("POST",data)
+        self.assertEqual(saved["statusCode"],200,saved)
+        self.assertEqual(json.loads(saved["body"])["version"],1)
+        own=json.loads(self.send()["body"])
+        self.assertEqual(own["profile"]["fullName"],"Customer Test")
+        self.assertEqual(own["email"],"customer@example.invalid")
+        self.assertEqual(own["businessAccess"],"separately_reviewed")
+        self.subject="different-customer-456"
+        other=json.loads(self.send()["body"])
+        self.assertEqual(other["version"],0)
+        self.assertEqual(other["profile"]["fullName"],"")
+        self.assertEqual(len(self.ledger.records),1)
+
+    def test_multiple_address_types_update_and_prior_order_is_not_mutated(self):
+        address={"kind":"delivery","label":"Home","recipientName":"Customer Test",
+            "phone":"+44 20 1234 5678","line1":"10 Example Street","line2":"",
+            "city":"London","region":"","postcode":"SW1A 1AA",
+            "countryCode":"gb","instructions":"","isDefault":False}
+        added=self.send("POST",{"action":"addAddress","version":0,"address":address})
+        self.assertEqual(added["statusCode"],200,added)
+        read=json.loads(self.send()["body"])
+        self.assertEqual(read["addresses"][0]["countryCode"],"GB")
+        self.assertTrue(read["addresses"][0]["isDefault"])
+        first_id=read["addresses"][0]["id"]
+        amended={**address,"label":"Office","postcode":"EC2N 2DB"}
+        edited=self.send("POST",{"action":"editAddress","version":1,
+                                  "id":first_id,"address":amended})
+        self.assertEqual(edited["statusCode"],200,edited)
+        self.assertEqual(json.loads(self.send()["body"])["addresses"][0]["label"],"Office")
+        self.assertEqual(self.send("POST",{"action":"deleteAddress","version":2,
+                                          "id":first_id})["statusCode"],200)
+        self.assertEqual(json.loads(self.send()["body"])["addresses"],[])
+        self.assertEqual(set(self.ledger.records),{("USER#personal-owner-123","ACCOUNT")})
+
+    def test_default_address_fallback_when_previous_default_is_unselected(self):
+        address={"kind":"delivery","label":"Home","recipientName":"Customer Test",
+            "phone":"+44 20 1234 5678","line1":"10 Example Street","line2":"",
+            "city":"London","region":"","postcode":"SW1A 1AA",
+            "countryCode":"GB","instructions":"","isDefault":False}
+        first=self.send("POST",{"action":"addAddress","version":0,"address":address})
+        self.assertEqual(first["statusCode"],200,first)
+        second=self.send("POST",{"action":"addAddress","version":1,
+            "address":{**address,"label":"Office","line1":"22 Example Road"}})
+        self.assertEqual(second["statusCode"],200,second)
+        initial=json.loads(self.send()["body"])
+        first_id,second_id=[a["id"] for a in initial["addresses"]]
+        self.assertEqual([a["id"] for a in initial["addresses"] if a["isDefault"]],[first_id])
+        # Removing the default flag from the first of two delivery locations
+        # must promote the other location, never leave checkout without one.
+        changed=self.send("POST",{"action":"editAddress","version":2,"id":first_id,
+            "address":{**address,"label":"Home edited","isDefault":False}})
+        self.assertEqual(changed["statusCode"],200,changed)
+        result=json.loads(self.send()["body"])
+        self.assertEqual([a["id"] for a in result["addresses"] if a["isDefault"]],[second_id])
+        self.assertEqual(result["addresses"][0]["label"],"Home edited")
+        # Customer can explicitly set the first delivery address back as default.
+        back=self.send("POST",{"action":"editAddress","version":3,"id":first_id,
+            "address":{**address,"isDefault":True}})
+        self.assertEqual(back["statusCode"],200,back)
+        latest=json.loads(self.send()["body"])
+        self.assertEqual([a["id"] for a in latest["addresses"] if a["isDefault"]],[first_id])
+
+
+    def test_csrf_ownership_and_validation_fail_closed(self):
+        profile={"action":"profile","version":0,
+                 "profile":{"fullName":"Test User","phone":"","organisationName":""}}
+        self.assertEqual(self.send("POST",profile,csrf=False)["statusCode"],403)
+        self.assertEqual(self.send("POST",profile,origin="https://attacker.example")["statusCode"],403)
+        bad={"action":"profile","version":0,
+             "profile":{"fullName":"<script>alert(1)</script>","phone":"text","organisationName":""}}
+        self.assertEqual(self.send("POST",bad)["statusCode"],400)
+        self.assertEqual(self.send("POST",profile)["statusCode"],200)
+        self.assertEqual(self.send("POST",profile)["statusCode"],409)
+        COGNITO.verified_email=False
+        self.assertEqual(self.send()["statusCode"],403)
+        self.assertEqual(self.send("POST",{**profile,"version":1})["statusCode"],403)
+        self.assertEqual(len(self.ledger.records),1)
+
 
 if __name__ == "__main__":
     unittest.main()

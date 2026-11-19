@@ -80,8 +80,14 @@ async function audit() {
                   const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
                   if(!link||!link.getClientRects().length)return null;
                   const contact=document.querySelector('.desktop-nav a[href="/contact/"]') as HTMLElement|null;
-                  return {before:getComputedStyle(link,"::before").content,
+                  return {text:link.textContent?.trim()??"",
+                    before:getComputedStyle(link,"::before").content,
                     after:getComputedStyle(link,"::after").content,
+                    color:getComputedStyle(link).color,
+                    portalVisible:(()=>{
+                      const portal=document.querySelector(".desktop-nav a:last-child") as HTMLElement|null;
+                      return !!portal&&portal.textContent?.trim()==="Secure Portal"&&portal.getClientRects().length>0;
+                    })(),
                     right:link.getBoundingClientRect().right,
                     contactLeft:contact?.getBoundingClientRect().left??0};
                 })(),
@@ -134,7 +140,7 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
-            if(data.navHeight<58||data.navHeight>80)faults.push(`Inconsistent header: ${data.navHeight}`);
+            if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
             if(data.brokenImages.length)faults.push(`Broken images: ${data.brokenImages.slice(0,5).join(" / ")}`);
@@ -144,8 +150,10 @@ async function audit() {
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
             if(route==="/"&&vp.width>=1440){
               const nav=data.homeNavLabel;
-              if(!nav||nav.before!=='"Intelligence"'||nav.after!=='""')
-                faults.push(`Homepage Intelligence label uses incorrect pseudo-element: ${JSON.stringify(nav)}`);
+              if(!nav||nav.text!=="NovaPharm Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
+                faults.push(`Homepage Intelligence must use real, contrasting link text: ${JSON.stringify(nav)}`);
+              if(nav&&!nav.portalVisible)
+                faults.push(`Homepage Secure Portal link must remain visible: ${JSON.stringify(nav)}`);
               if(nav&&nav.contactLeft<nav.right-1)
                 faults.push(`Homepage Intelligence and Contact links overlap: ${JSON.stringify(nav)}`);
             }

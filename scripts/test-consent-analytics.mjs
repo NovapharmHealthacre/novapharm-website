@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
+import { APPROVED_NUTRAXIN_PRODUCT_PATHS, validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
 
 assert.equal(validGa4Id("G-ABCD123456"), true);
 for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
@@ -9,6 +9,40 @@ for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
 assert.equal(publicAnalyticsRoute("/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/vitamin-d3-120-tablets/"), true);
+// GA4 must be opt-in AND limited to exact reviewed public product URLs.
+const approvedRetail = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
+assert.equal(approvedRetail.length, 19, "Review the product allowlist whenever the catalogue changes");
+assert.deepEqual(
+  [...APPROVED_NUTRAXIN_PRODUCT_PATHS].sort(),
+  approvedRetail.map((product) => "/products/nutraxin/" + product.slug + "/").sort(),
+  "Consent analytics may allow exactly the current 19 reviewed public product pages, without extra or missing slugs"
+);
+for (const product of approvedRetail) {
+  assert.equal(publicAnalyticsRoute("/products/nutraxin/" + product.slug + "/"), true, "Approved informational product must remain eligible: " + product.slug);
+}
+for (const privatePath of [
+  "/products/nutraxin/bag/", "/products/nutraxin/account/",
+  "/products/nutraxin/checkout/", "/products/nutraxin/order-request/",
+  "/products/nutraxin/confirmation/", "/products/nutraxin/orders/",
+  "/products/nutraxin/receipt/", "/products/nutraxin/payment/",
+  "/products/nutraxin/my-orders/", "/products/nutraxin/forgot-password/",
+  "/products/nutraxin/unreviewed-future-page/",
+  "/products/nutraxin/vitamin-d3-120-tablets/orders/"
+]) {
+  assert.equal(publicAnalyticsRoute(privatePath), false, "No analytics on a transactional, account, nested or unapproved route: " + privatePath);
+  assert.equal(sanitiseMarketingEvent({ event: "add_to_cart" }, privatePath), null, "No funnel event on private route: " + privatePath);
+}
+for (const publicPath of ["/products/", "/products/strategic-portfolio/", "/products/marketplace/", "/products/esco/"]) {
+  assert.equal(publicAnalyticsRoute(publicPath), true, "Approved informational product page must remain eligible: " + publicPath);
+}
+for (const privatePath of [
+  "/products/orders/", "/products/checkout/", "/products/payment/",
+  "/products/track/", "/products/esco/checkout/", "/products/marketplace/bag/",
+  "/products/private-future-page/", "/products/strategic-portfolio/account/"
+]) {
+  assert.equal(publicAnalyticsRoute(privatePath), false, "Do not measure unreviewed product route: " + privatePath);
+  assert.equal(sanitiseMarketingEvent({ event: "cta_click", ctaId: "checkout" }, privatePath), null);
+}
 assert.equal(publicAnalyticsRoute("/technology/"), true);
 for (const forbidden of ["/portal/", "/contact/", "/account-application/", "/admin/", "/employee/", "/legal/privacy/", "/products/nutraxin/order-request/", "/products/nutraxin/checkout/"]) {
   assert.equal(publicAnalyticsRoute(forbidden), false, "Private or sensitive route must not be measured: " + forbidden);
@@ -45,6 +79,9 @@ assert.match(source, /analytics_storage: "granted"/);
 assert.match(source, /cookie_expires: 90 \* 24 \* 60 \* 60/);
 assert.match(source, /page_referrer: ""/);
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
+assert.match(generator, /publicAnalyticsRoute\(route\)/, "Publisher must use same exact route allowlist as browser");
+assert.match(generator, /html = html\.replace\(\/<meta name=/, "Rebuild must strip stale GA metadata from private routes");
+assert.match(generator, /html = html\.replace\(\/<script type=/, "Rebuild must strip stale analytics script from private routes");
 assert.match(generator, /PUBLIC_GA4_MEASUREMENT_ID/);
 assert.match(store, /emitRetailFunnelEvent\("add_to_cart"\)/);
 assert.match(store, /emitRetailFunnelEvent\("begin_checkout"\)/);
@@ -61,6 +98,11 @@ assert.equal(analyticsPagePath("/products/nutraxin/vitamin-d3-120-tablets/"), "/
 assert.equal(analyticsPagePath("/products/nutraxin/bag/"), "/products/nutraxin/bag/");
 assert.match(readFileSync("assets/js/cookie-consent.js", "utf8"), /Google Analytics 4/);
 assert.match(readFileSync("legal/cookies/index.html", "utf8"), /Google Analytics 4/);
+for (const path of ["products/nutraxin/bag/index.html", "products/nutraxin/account/index.html"]) {
+  const page = readFileSync(path, "utf8");
+  assert.doesNotMatch(page, /<meta name="novapharm-ga4-id"/, "Sensitive page must not ship GA4 measurement ID: " + path);
+  assert.doesNotMatch(page, /src="\/assets\/js\/consent-analytics\.js"/, "Sensitive page must not ship analytics script: " + path);
+}
 assert.match(readFileSync("legal/privacy/index.html", "utf8"), /optional-website-analytics/);
 assert.match(generator, /G-897L1VS8BX/, "Use the confirmed public NovaPharm Analytics web stream, not a portfolio stream");
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);

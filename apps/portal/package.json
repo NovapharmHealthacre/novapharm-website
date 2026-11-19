@@ -9,7 +9,7 @@
     "dev": "next dev -p 4303",
     "build": "npm run sync:assets && next build && node ../../scripts/prepare-next-standalone.mjs portal assets/brand/novapharm-healthcare-logo.svg",
     "start": "node .next/standalone/apps/portal/server.js",
-    "lint": "biome check app components data lib scripts test next.config.ts proxy.ts",
+    "lint": "biome check --max-diagnostics=100 app components data lib scripts test next.config.ts proxy.ts",
     "typecheck": "next typegen && tsc --noEmit",
     "pretest": "npm run sync:assets",
     "test": "tsx --test test/*.test.ts",
@@ -21,8 +21,8 @@
   "dependencies": {
     "@novapharm/portal-contracts": "0.1.0",
     "@novapharm/security": "0.1.0",
-    "lucide-react": "0.468.0",
-    "next": "16.4.5",
+    "lucide-react": "1.72.0",
+    "next": "16.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sharp": "0.35.5"

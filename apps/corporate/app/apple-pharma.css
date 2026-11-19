@@ -166,7 +166,6 @@ p { max-width: 64ch; }
 .pharma-home-media img {
   object-fit: cover;
   object-position: center;
-  animation: pharmaHeroDrift 18s cubic-bezier(.2, .65, .2, 1) infinite alternate;
 }
 .pharma-home-shade {
   z-index: -1;
@@ -190,11 +189,6 @@ p { max-width: 64ch; }
     background: rgba(7, 21, 29, .76);
     color: rgba(255, 255, 255, .9);
   }
-}
-
-@keyframes pharmaHeroDrift {
-  from { transform: scale(1.015) translate3d(0, 0, 0); }
-  to { transform: scale(1.045) translate3d(-.6%, 0, 0); }
 }
 
 /* Batch-integrity evidence story */

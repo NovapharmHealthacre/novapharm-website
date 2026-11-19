@@ -332,10 +332,18 @@ export async function searchMedicines(query, context, requestedLimit = 30, reque
   const { rows, totalRows } = await medicineSearchRows(term, limit, page);
   const source = await one(`SELECT
     (SELECT MAX(reporting_period) FROM source_resources WHERE source_id = 'nhsbsa.bnf-current') AS period,
-    (SELECT MAX(source_last_seen_at) FROM dim_medicine WHERE source_id = 'nhsbsa.bnf-current') AS freshness`);
+    (SELECT MAX(source_last_seen_at) FROM dim_medicine WHERE source_id = 'nhsbsa.bnf-current') AS freshness,
+    (CASE WHEN EXISTS (
+      SELECT 1 FROM dim_medicine
+      WHERE source_id = 'nhsbsa.bnf-current' AND valid_to IS NULL
+    ) THEN 1 ELSE 0 END) AS current_identity_exists`);
   return {
     query: String(query).trim(), normalisedQuery: term, source: "NHSBSA BNF Code Information - Current Year",
-    sourcePeriod: source?.period || null, demandFactsIncluded: false, results: rows.map((row) => ({
+    sourcePeriod: source?.period || null,
+    // Repository import state is not proof of licensed production/customer release.
+    catalogueState: Number(source?.current_identity_exists || 0) > 0
+      ? "current_repository_identities_present" : "no_current_repository_identities",
+    demandFactsIncluded: false, results: rows.map((row) => ({
       medicineId: row.medicine_id, canonicalName: row.canonical_name, presentationCode: row.bnf_presentation_code,
       productName: row.product_name, productCode: row.product_code, chemicalSubstance: row.chemical_substance,
       chemicalSubstanceCode: row.chemical_substance_code, identityStatus: "bnf_current_identity_only",

@@ -6,8 +6,7 @@ export const dynamic = "force-dynamic";
 /** Cognito-managed identity and recovery. Neither path issues a customer session. */
 export function GET(request?: NextRequest): Response {
   try {
-    // Plan is validated by the core allowlist and bound into a signed
-    // PKCE transaction. Query text must never become a Stripe price ID.
+    // The core validates and HMAC-binds any requested billing intent.
     const requestedPlan = request?.nextUrl.searchParams.get("plan") ?? undefined;
     const requestedCycle = request?.nextUrl.searchParams.get("cycle") ?? undefined;
     const transaction = createCustomerLoginTransaction({

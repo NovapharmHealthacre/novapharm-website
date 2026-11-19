@@ -51,7 +51,8 @@ const sample = () => {
     records: [row]
   };
 };
-function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
+function fake({ indexMissing = null, invalidIndex = null, extraSameKeyIndex = false,
+  denyAuthority = false, denyRights = false,
   denyIdentity = false, denySource = false, failAudit = false,
   hideQuarantineReadback = false, verifyIdentityCallback = null } = {}) {
   const names = Object.keys(keys);
@@ -61,7 +62,14 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
   const coll = name => ({
     listIndexes() {
       const valid = {name:"g2_unique", key:keys[name], unique:true};
-      return {toArray:async()=>indexMissing === name ? [] : [{name:"_id_",key:{_id:1},unique:true},valid]};
+      if (invalidIndex && name === "npi_medicine_evidence") {
+        Object.assign(valid, invalidIndex);
+      }
+      const indexes = [{name:"_id_",key:{_id:1},unique:true},valid];
+      if (extraSameKeyIndex && name === "npi_medicine_evidence") {
+        indexes.push({name:"historical_same_key",key:keys[name],unique:true});
+      }
+      return {toArray:async()=>indexMissing === name ? [] : indexes};
     },
     async findOne(filter) {
       if (name === "npi_audit_events" && hideQuarantineReadback &&
@@ -178,6 +186,27 @@ test("no unique indexes means no evidence or audit writes", async()=>{
     await assert.rejects(s.store.commitAtomic(sample()),e=>e.code==="unique_index_unavailable");
     assert.equal(s.stats().started,0);
     assert.ok(Object.values(s.data).every(rows=>rows.length===0));
+  }
+});
+
+test("G2 admission rejects wrong-name, expiring, hidden, partial, nonunique or duplicate indexes", async()=>{
+  const variants = [
+    {invalidIndex:{name:"historical_same_key"}},
+    {invalidIndex:{unique:false}},
+    {invalidIndex:{sparse:true}},
+    {invalidIndex:{hidden:true}},
+    {invalidIndex:{expireAfterSeconds:3600}},
+    {invalidIndex:{partialFilterExpression:{status:"active"}}},
+    {invalidIndex:{collation:{locale:"en"}}},
+    {invalidIndex:{key:{other:1}}},
+    {extraSameKeyIndex:true}
+  ];
+  for (const options of variants) {
+    const s=fake(options);
+    await assert.rejects(s.store.commitAtomic(sample()),
+      e=>e.code==="unique_index_unavailable");
+    assert.ok(Object.values(s.data).every(rows=>rows.length===0));
+    assert.deepEqual(s.stats(),{started:0,committed:0,rolledBack:0});
   }
 });
 

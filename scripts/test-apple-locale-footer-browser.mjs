@@ -1,0 +1,187 @@
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { chromium, webkit } from "playwright";
+
+const origin = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
+const localeVersion = createHash("sha256").update(readFileSync("assets/js/rtl-localization.js")).digest("hex").slice(0, 16);
+// The source build remains unversioned for exact generator golden tests;
+// final Pages staging pins the verified JavaScript hash.
+const expectedLocaleScript = process.env.REQUIRE_VERSIONED_LOCALE === "1"
+  ? "/assets/js/rtl-localization.js?v=" + localeVersion
+  : "/assets/js/rtl-localization.js";
+const viewports = [
+  { width: 320, height: 720 },
+  { width: 390, height: 844 },
+  { width: 1440, height: 900 },
+];
+const locales = ["en-GB", "ar", "he"];
+
+for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]]) {
+  const browser = await engine.launch({ headless: true });
+  try {
+    for (const viewport of viewports) {
+      for (const locale of locales) {
+        // Isolated browser context: no user accounts, API mutations or reused
+        // browser cookies. The source public site is allowed to load directly.
+        const context = await browser.newContext({ viewport });
+        try {
+          if (locale !== "en-GB") {
+            await context.addCookies([{ name: "np_locale", value: locale, url: origin }]);
+          }
+          const page = await context.newPage();
+          const response = await page.goto(origin + "/", { waitUntil: "domcontentloaded" });
+          assert.equal(response?.status(), 200, engineName + " public home returned non-200");
+          const scriptUrls = await page.locator('script[src*="/assets/js/rtl-localization.js"]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute("src")));
+          assert.deepEqual(scriptUrls, [expectedLocaleScript], engineName + ": homepage is missing versioned locale JS");
+          const selector = page.locator("[data-np-locale-control]");
+          await selector.waitFor({ state: "visible" });
+          assert.equal(await selector.count(), 1, "Exactly one language selector is permitted");
+          const info = await selector.evaluate((node) => {
+            const element = node;
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            const select = element.querySelector("select");
+            const field = select ? getComputedStyle(select) : null;
+            const host = element.closest(".npd-footer-bottom, .site-footer, footer");
+            return {
+              insideFooter: Boolean(host),
+              insideLegalFooterRow: Boolean(element.closest(".npd-footer-bottom")),
+              position: style.position,
+              background: style.backgroundColor,
+              border: [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth],
+              shadow: style.boxShadow,
+              fieldBorder: field?.borderTopWidth,
+              fieldHeight: select?.getBoundingClientRect().height ?? 0,
+              left: rect.left,
+              right: rect.right,
+              screenWidth: document.documentElement.clientWidth,
+              locale: document.documentElement.lang,
+              direction: document.documentElement.dir,
+              chosen: select?.value,
+              noteVisible: !getComputedStyle(element.querySelector(".np-locale-note")).clipPath.startsWith("inset("),
+              text: element.textContent,
+            };
+          });
+          const label = engineName + " / " + locale + " / " + viewport.width;
+          assert.equal(info.insideFooter, true, label + ": not integrated into site footer");
+          assert.equal(info.insideLegalFooterRow, true, label + ": control must be within the footer legal utility row");
+          assert.equal(info.position, "static", label + ": overlay could obscure content");
+          assert.match(info.background, /rgba?\(0,\s*0,\s*0,\s*0\)/, label + ": card fill still visible");
+          assert.ok(info.border.every((x) => x === "0px"), label + ": boxed border still visible");
+          assert.equal(info.shadow, "none", label + ": card shadow still visible");
+          assert.equal(info.fieldBorder, "0px", label + ": dropdown field border still visible");
+          assert.ok(info.fieldHeight >= 43, label + ": dropdown hit target too small");
+          assert.ok(info.left >= -2 && info.right <= info.screenWidth + 2, label + ": selector clipped");
+          assert.equal(info.locale, locale, label + ": selected language not applied");
+          assert.equal(info.direction, locale === "en-GB" ? "ltr" : "rtl", label + ": page direction mismatch");
+          assert.equal(info.chosen, locale, label + ": selected option not shown");
+          assert.equal(info.noteVisible, locale !== "en-GB", label + ": incomplete translation disclosure incorrectly hidden");
+          assert.ok(info.text?.includes("preview") || locale === "ar" || locale === "he",
+            label + ": preview disclosure missing");
+          await page.locator("#np-interface-locale").focus();
+          assert.equal(await page.evaluate(() => document.activeElement?.id), "np-interface-locale",
+            label + ": keyboard focus is unavailable");
+          const footerDirectory = page.locator("footer.npd-footer .npd-footer-top");
+          assert.equal(await footerDirectory.getAttribute("data-np-apple-footer"), "enhanced",
+            label + ": shared web footer was not progressively enhanced");
+          const sections = footerDirectory.locator("details.np-apple-footer-disclosure");
+          assert.equal(await sections.count(), 4, label + ": four corporate footer link groups required");
+          const sectionStates = await sections.evaluateAll((nodes) => nodes.map((node) => node.open));
+          if (viewport.width <= 833) {
+            assert.deepEqual(sectionStates, [false, false, false, false],
+              label + ": mobile directory must start collapsed, Apple-style");
+            const first = sections.first();
+            await first.locator("summary").click();
+            assert.equal(await first.evaluate((node) => node.open), true,
+              label + ": mobile disclosure does not expand");
+            assert.equal(await first.locator("a").first().isVisible(), true,
+              label + ": mobile navigation link is not visible when expanded");
+            await first.locator("summary").click();
+            assert.equal(await first.evaluate((node) => node.open), false,
+              label + ": mobile disclosure does not close");
+          } else {
+            assert.deepEqual(sectionStates, [true, true, true, true],
+              label + ": desktop footer directory must display all link groups");
+          }
+          const footerSurface = await page.locator("footer.npd-footer").evaluate((node) => {
+            const inner = node.querySelector(":scope > .container");
+            const notes = node.querySelector(".npd-footer-notices");
+            const directory = node.querySelector(".npd-footer-top");
+            const noticesBox = notes?.getBoundingClientRect();
+            const directoryBox = directory?.getBoundingClientRect();
+            return {
+              color: getComputedStyle(node).backgroundColor,
+              innerWidth: inner?.getBoundingClientRect().width ?? 0,
+              notesBeforeDirectory: Boolean(noticesBox && directoryBox && noticesBox.top < directoryBox.top),
+            };
+          });
+          assert.match(footerSurface.color, /rgb\(245,\s*245,\s*247\)/,
+            label + ": corporate footer must use Apple web's light neutral background");
+          assert.ok(footerSurface.innerWidth <= Math.min(viewport.width, 980) + 1,
+            label + ": footer content must retain Apple's constrained reading width");
+          assert.equal(footerSurface.notesBeforeDirectory, true,
+            label + ": regulatory notes must precede footer directory");
+          // Check the rendered brand, not merely the presence of an image tag.
+          // Without this scroll/load check, full-page WebKit screenshots can
+          // silently omit the actual wordmark at the bottom of a long page.
+          const footerWordmark = page.locator(".npd-footer .npd-footer-identity .brand-logo img");
+          assert.equal(await footerWordmark.count(), 1, label + ": expected one approved footer wordmark");
+          await footerWordmark.scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => {
+            const image = document.querySelector(".npd-footer .npd-footer-identity .brand-logo img");
+            return Boolean(image && image.complete && image.naturalWidth > 0);
+          }, null, { timeout: 10000 });
+          const wordmarkAppearance = await footerWordmark.evaluate((image) => {
+            const container = image.closest("a");
+            const style = container ? getComputedStyle(container) : null;
+            return {
+              width: image.getBoundingClientRect().width,
+              loading: image.loading,
+              background: style?.backgroundColor,
+              padding: style ? [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft] : [],
+              shadow: style?.boxShadow,
+            };
+          });
+          assert.ok(wordmarkAppearance.width >= 120, label + ": footer wordmark is not visibly sized");
+          assert.equal(wordmarkAppearance.loading, "eager", label + ": footer logo fetch remains deferred");
+          assert.match(wordmarkAppearance.background ?? "", /rgba?\(0,\s*0,\s*0,\s*0\)/,
+            label + ": legacy white card still surrounds footer brand");
+          assert.ok(wordmarkAppearance.padding.every((value) => value === "0px"),
+            label + ": footer brand retains boxed padding");
+          assert.equal(wordmarkAppearance.shadow, "none", label + ": footer brand retains a card shadow");
+          console.log("Footer language acceptance passed:", label);
+        } finally {
+          await context.close();
+        }
+      }
+    }
+    // The Contact journey uses a standalone visible footer and hides the
+    // legacy global footer. Never bury the language selector in that shell.
+    for (const locale of ["en-GB", "ar"]) {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      try {
+        if (locale !== "en-GB") {
+          await context.addCookies([{ name: "np_locale", value: locale, url: origin }]);
+        }
+        const page = await context.newPage();
+        const response = await page.goto(origin + "/contact/", { waitUntil: "domcontentloaded" });
+        assert.equal(response?.status(), 200, engineName + " Contact page must load");
+        const contactScript = await page.locator('script[src*="/assets/js/rtl-localization.js"]').first().getAttribute("src");
+        assert.equal(contactScript, expectedLocaleScript, engineName + ": Contact has stale RTL asset URL");
+        const selector = page.locator("[data-np-locale-control]");
+        await selector.waitFor({ state: "visible" });
+        assert.equal(await selector.count(), 1, "Contact must expose one visible locale selector");
+        assert.equal(await selector.evaluate((node) =>
+          Boolean(node.closest(".np-contact-reference-footer-inner"))), true,
+          engineName + " / " + locale + ": selector inserted into hidden legacy Contact footer");
+        assert.equal(await page.locator("#np-interface-locale").inputValue(), locale);
+        console.log("Standalone Contact footer locale acceptance passed:", engineName, locale);
+      } finally {
+        await context.close();
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}

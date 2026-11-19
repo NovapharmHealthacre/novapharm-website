@@ -7,6 +7,7 @@ import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactExperience } from "./contact-experience";
+import { CookieSettingsButton } from "./cookie-controls";
 import { IntelligencePricing } from "./intelligence-pricing";
 import { NutraxinKnowMore } from "./nutraxin-know-more";
 import { NutraxinOrderAccess } from "./nutraxin-order-access";
@@ -395,7 +396,18 @@ function LegalHubPage() {
 }
 
 function PolicyPage({ page }: { readonly page: CorporatePage }) {
-  return <><PageHero eyebrow="Legal and responsibility" title={page.heroTitle} intro={page.intro} /><section className="policy-meta"><div className="shell"><dl><div><dt>Effective</dt><dd>30 July 2026</dd></div><div><dt>Last reviewed</dt><dd>30 July 2026</dd></div><div><dt>Version</dt><dd>2.0</dd></div><div><dt>Document owner</dt><dd>NovaPharm Board</dd></div><div><dt>Review schedule</dt><dd>Annual or after material change</dd></div><div><dt>Approval status</dt><dd>Company policy; external legal review where noted</dd></div></dl></div></section><section className="section"><div className="shell policy-layout"><nav aria-label="Legal documents"><strong>Legal documents</strong>{legalItems.map(([title, href]) => <Link href={href} key={href}>{title}</Link>)}</nav><div className="policy-body">{page.sections?.map((section, index) => <section id={page.slug === "legal/privacy" && index === 2 ? "business-enquiries" : undefined} key={section.title}><span className="section-number">{String(index + 1).padStart(2, "0")}</span><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.bullets ? <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul> : null}{section.source ? <a href={section.source.href}>{section.source.label}</a> : null}</section>)}</div></div></section></>;
+  const isPrivacy = page.slug === "legal/privacy";
+  const isCookies = page.slug === "legal/cookies";
+  const effective = isPrivacy || isCookies ? "11 July 2026" : "30 July 2026";
+  const reviewed = isPrivacy ? "15 November 2026 (technical update; legal review pending)" : isCookies ? "9 November 2026 (technical update; legal review pending)" : "30 July 2026";
+  const version = isPrivacy ? "1.4 · technical amendment" : isCookies ? "1.2 · technical amendment" : "2.0";
+  return <><PageHero eyebrow="Legal and responsibility" title={page.heroTitle} intro={page.intro} />
+    {isPrivacy ? <section className="section" aria-label="Privacy actions"><div className="shell">
+      <p>Control optional cookies without losing access to public information. Your browser also controls permissions such as location, camera and microphone.</p>
+      <div className="privacy-actions"><CookieSettingsButton className="button button-primary" /><Link href="/legal/cookies/">How cookies and analytics work</Link><Link href="/contact/?enquiry=General%20enquiry">Contact the Privacy Lead</Link></div>
+    </div></section> : null}
+    <section className="policy-meta"><div className="shell"><dl><div><dt>Effective</dt><dd>{effective}</dd></div><div><dt>Last reviewed</dt><dd>{reviewed}</dd></div><div><dt>Version</dt><dd>{version}</dd></div><div><dt>Document owner</dt><dd>NovaPharm Board</dd></div><div><dt>Review schedule</dt><dd>Annual or after material change</dd></div><div><dt>Approval status</dt><dd>Technical implementation; independent legal review remains pending where noted</dd></div></dl></div></section>
+    <section className="section"><div className="shell policy-layout"><nav aria-label="Legal documents"><strong>Legal documents</strong>{legalItems.map(([title, href]) => <Link href={href} key={href}>{title}</Link>)}</nav><div className="policy-body">{page.sections?.map((section, index) => <section id={isPrivacy && index === 2 ? "business-enquiries" : undefined} key={section.title}><span className="section-number">{String(index + 1).padStart(2, "0")}</span><h2>{section.title}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.bullets ? <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul> : null}{section.source ? <a href={section.source.href}>{section.source.label}</a> : null}</section>)}</div></div></section></>;
 }
 
 function FaqSection({ items }: { readonly items: readonly (readonly string[])[] }) {

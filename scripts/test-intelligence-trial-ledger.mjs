@@ -1,3 +1,4 @@
+import "./test-intelligence-trial-private-worker.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
