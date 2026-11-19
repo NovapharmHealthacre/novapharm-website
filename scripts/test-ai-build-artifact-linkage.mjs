@@ -17,7 +17,9 @@ test("public site build materializes approved AI index and source-controlled bro
 
 test("source index excludes sensitive pages and enforces public-only source rules", () => {
   assert.match(builder, /excludedRoutes = new Set/);
-  for (const name of ["contact", "legal/privacy", "legal/cookies", "legal/terms"]) assert.ok(builder.includes('"' + name + '"'));
+  for (const name of ["contact", "account-application", "investor-information", "careers"]) assert.ok(builder.includes('"' + name + '"'));
+  assert.match(builder, /slug === "legal" \|\| slug\.startsWith\("legal\/"\)/);
+  assert.match(builder, /\.filter\(\(\[slug\]\) => !excludedPublicRoute\(slug\)\)/);
   assert.match(builder, /if \(\/noindex\/i\.test\(/);
   assert.match(builder, /readFileSync\(join\(root, source\.file\), "utf8"\)/);
   for (const boundary of ["portal and private routes", "customer and supplier records", "uploaded documents", "supplier pricing"]) {
