@@ -605,10 +605,10 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 });
 
 test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
-  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 53);
-  assert.equal(tracker.meta.platformsAssessed, 159);
+  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 57);
+  assert.equal(tracker.meta.platformsAssessed, 171);
   assert.equal(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
-    .filter(x => x.state !== "unassessed").length, 159);
+    .filter(x => x.state !== "unassessed").length, 171);
   assert.equal(tracker.topics.filter(x => x.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
@@ -679,8 +679,8 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 53);
-  assert.equal(report.assessedPlatformDecisions, 159);
+  assert.equal(report.independentlyDocumentedArticleReviews, 57);
+  assert.equal(report.assessedPlatformDecisions, 171);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 4);
   assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
@@ -924,4 +924,35 @@ test("optional read-only rendered public HIG evidence sampling",
     " observations, " + result.failed + " gaps. This is NOT a production conformance certificate.");
   assert.equal(result.total,12);
   assert.equal(result.failed,0,"Observed public browser/accessibility gaps: see screenshot and JSON artifact");
+});
+
+test("four further Apple official HIG critical topics are source-specific, not production assertions", () => {
+  const titles = ["Typography","Gestures","Menus and actions","Machine learning"];
+  for (const name of titles) {
+    const item = tracker.topics.find(t => t.title === name);
+    assert.ok(item,name);
+    assert.equal(item.guidelineReview,"reviewed",name);
+    assert.equal(item.guidelineReviewEvidence.length,3,name);
+    assert.ok(item.guidelineReviewEvidence[0].includes(item.markdown),name);
+    assert.ok(item.guidelineReviewEvidence[0].includes("2026-11-19"),name);
+    for (const platform of ["web","ios","android"]) {
+      const d = item.platformApplicability[platform];
+      assert.equal(d.state,"applicable",name+"/"+platform);
+      assert.ok(d.rationale.length >= 110,name+"/"+platform);
+      assert.deepEqual(item[platform+"Evidence"],[],name+"/"+platform);
+    }
+    assert.equal(item.implementation,"not_verified",name);
+    assert.deepEqual(item.releaseEvidence,[],name);
+  }
+  assert.ok(tracker.topics.find(t=>t.title==="Typography")
+    .guidelineReviewEvidence[0].includes("Dynamic Type"));
+  assert.ok(tracker.topics.find(t=>t.title==="Gestures")
+    .guidelineReviewEvidence[0].includes("non-gesture alternative"));
+  assert.ok(tracker.topics.find(t=>t.title==="Menus and actions")
+    .guidelineReviewEvidence[0].includes("collection group"));
+  assert.ok(tracker.topics.find(t=>t.title==="Machine learning")
+    .guidelineReviewEvidence[0].includes("limitations"));
+  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,57);
+  assert.equal(tracker.meta.platformsAssessed,171);
+  assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
 });
