@@ -14,6 +14,9 @@ on:
       - 'assets/js/**'
       - 'packages/design-system/**'
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-attachment-evidence-20261118.json'
+      - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
+      - 'scripts/test-apple-hig-attachment-audit.mjs'
       - 'docs/design/apple-hig-172-topic-adoption-20261118.md'
       - 'apps/portal/app/globals.css'
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
@@ -43,6 +46,8 @@ jobs:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - run: node --check scripts/test-apple-hig-attachment-audit.mjs
+      - run: node --test scripts/test-apple-hig-attachment-audit.mjs
 
   remote-apple-link-audit:
     name: Manual Apple HIG 210-URL and section-anchor audit (not guideline review)
