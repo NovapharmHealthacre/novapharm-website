@@ -679,8 +679,8 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 80);
-  assert.equal(report.assessedPlatformDecisions, 240);
+  assert.equal(report.independentlyDocumentedArticleReviews, 90);
+  assert.equal(report.assessedPlatformDecisions, 270);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 6);
   assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
@@ -1085,12 +1085,59 @@ test("12 additional current Apple HIG articles establish reasoned non-applicabil
     .guidelineReviewEvidence[0].includes("visible value"));
   assert.ok(tracker.topics.find(t=>t.title==="Toggles")
     .guidelineReviewEvidence[0].includes("more than color"));
-  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,80);
+  assert.ok(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length>=80);
   const actual = tracker.topics.flatMap(t=>Object.values(t.platformApplicability))
     .filter(v=>v.state!=="unassessed").length;
-  assert.equal(actual,240);
+  assert.ok(actual>=240);
   assert.equal(tracker.meta.platformsAssessed,actual);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("10 official HIG productivity/commerce topics have bounded platform-specific source reviews", () => {
+  const names = ["Designing for iPadOS","Multitasking","Keyboards","Drag and drop",
+    "Widgets","Apple Pay","Apple In-App Purchase","Content","Status","Inputs"];
+  assert.equal(new Set(names).size,10);
+  const indexes = new Set(["Content","Status","Inputs"]);
+  for(const name of names) {
+    const t=tracker.topics.find(x=>x.title===name);
+    assert.ok(t,name);
+    assert.equal(t.guidelineReview,"reviewed",name);
+    assert.equal(t.guidelineReviewEvidence.length,3,name);
+    assert.ok(t.guidelineReviewEvidence[0].includes(t.markdown),name);
+    assert.ok(t.guidelineReviewEvidence[0].includes("2026-11-19"),name);
+    assert.equal(t.sourceType==="Category",indexes.has(name),name);
+    for(const p of ["web","ios","android"]) {
+      assert.ok(["applicable","not_applicable"].includes(t.platformApplicability[p].state),
+        name+"/"+p);
+      assert.ok(t.platformApplicability[p].rationale.length>100,name+"/"+p);
+      assert.deepEqual(t[p+"Evidence"],[],name+"/"+p);
+    }
+    assert.equal(t.implementation,"not_verified",name);
+    assert.deepEqual(t.releaseEvidence,[],name);
+  }
+  for (const name of ["Apple Pay","Apple In-App Purchase","Widgets","Designing for iPadOS"])
+    assert.equal(tracker.topics.find(x=>x.title===name).platformApplicability.android.state,
+      "not_applicable", "No Apple-native exclusive API is shipped by Android for "+name);
+  assert.equal(tracker.topics.find(x=>x.title==="Apple Pay").platformApplicability.web.state,
+    "applicable");
+  assert.equal(tracker.topics.find(x=>x.title==="Apple In-App Purchase").platformApplicability.web.state,
+    "not_applicable", "Apple StoreKit is not the public Stripe website payment API");
+  assert.equal(tracker.topics.find(x=>x.title==="Apple In-App Purchase").platformApplicability.ios.state,
+    "applicable", "Native digital content requires separate StoreKit/App Review classification");
+  assert.equal(tracker.topics.find(x=>x.title==="Widgets").platformApplicability.ios.state,
+    "applicable", "Native WidgetKit is different from web dashboard cards");
+  assert.equal(tracker.topics.find(x=>x.title==="Widgets").platformApplicability.web.state,
+    "not_applicable");
+  assert.ok(tracker.topics.find(x=>x.title==="Multitasking")
+    .guidelineReviewEvidence[0].includes("restoring working context"));
+  assert.ok(tracker.topics.find(x=>x.title==="Keyboards")
+    .guidelineReviewEvidence[0].includes("Full Keyboard Access"));
+  assert.ok(tracker.topics.find(x=>x.title==="Drag and drop")
+    .guidelineReviewEvidence[0].includes("safe undo"));
+  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,90);
+  assert.equal(tracker.meta.platformsAssessed,270);
+  assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
