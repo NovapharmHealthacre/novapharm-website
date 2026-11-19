@@ -415,7 +415,7 @@ test("source-only Model Microscope paths never trigger unrelated AWS contact or 
   for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
     const contents = get(workflow);
     const caseLine = contents.split("\n").find((line) =>
-      line.trim().startsWith("apps/portal/*|.github/workflows/browser-acceptance.yml|"));
+      line.trim().startsWith("apps/portal/*|"));
     assert.ok(caseLine, "Private release classifier missing from " + workflow);
     const cases = caseLine.trim().replace(/\)$/, "").split("|");
     for (const source of sourceOnly) {
