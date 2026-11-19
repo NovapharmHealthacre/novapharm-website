@@ -16,6 +16,8 @@ on:
       - "config/apple-marketing-release.json"
       - "config/intelligence/owner-production-constraints.json"
       - "scripts/test-apple-commerce-release.mjs"
+      - "scripts/test-apple-commerce-classification.mjs"
+      - "src/core/apple-commerce-classification.mjs"
       - ".github/workflows/apple-commerce-release.yml"
   workflow_dispatch:
 permissions:
