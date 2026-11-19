@@ -3,41 +3,34 @@
  * No HTTP, credentials, customer records or source facts are included.
  * Existing web workspace states and global source candidates remain non-live.
  */
-import React, { useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import {
   FlatList,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   useWindowDimensions,
   View
 } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
 type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "maps" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
-const palette = Object.freeze({
-  canvas: "#FFFFFF",
-  grouped: "#F5F5F7",
-  raised: "#E8E8ED",
-  border: "#D2D2D7",
-  primary: "#1D1D1F",
-  secondary: "#424245",
-  tertiary: "#595961",
-  accent: "#E3120B"
-});
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
 const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
@@ -52,6 +45,7 @@ const pilotSlugs = new Set([
 ]);
 
 function SectionHeading({ title, detail }: { title: string; detail?: string }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View style={styles.sectionHeading}>
       <Text style={styles.sectionTitle} accessibilityRole="header">{title}</Text>
@@ -61,6 +55,7 @@ function SectionHeading({ title, detail }: { title: string; detail?: string }) {
 }
 
 function Metric({ number, label }: { number: string; label: string }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View style={styles.metric} accessible accessibilityLabel={number + ". " + label}>
       <Text style={styles.metricNumber}>{number}</Text>
@@ -70,6 +65,7 @@ function Metric({ number, label }: { number: string; label: string }) {
 }
 
 function WorkspaceCard({ item, onPress }: { item: Workspace; onPress: () => void }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <Pressable
       accessibilityRole="button"
@@ -90,6 +86,7 @@ function WorkspaceCard({ item, onPress }: { item: Workspace; onPress: () => void
 }
 
 function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View
       accessible
@@ -106,6 +103,7 @@ function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean })
 }
 
 function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSelect: (screen: Screen) => void; largeText: boolean }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
@@ -128,6 +126,9 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
 }
 
 export default function App() {
+  const darkMode = useColorScheme() === "dark";
+  const styles = darkMode ? darkStyles : lightStyles;
+  const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
   const { width, fontScale } = useWindowDimensions();
   const largeText = fontScale >= 1.4;
   const twoColumns = width >= 760 && !largeText;
@@ -193,8 +194,10 @@ export default function App() {
   );
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaProvider>
+      <ThemeContext.Provider value={{ styles, palette }}>
+        <SafeAreaView style={styles.root} edges={["top", "right", "bottom", "left"]}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       <View style={styles.appHeader}>
         <Text style={styles.brand}>NOVAPHARM</Text>
         <Text style={styles.appTitle} accessibilityRole="header">Intelligence</Text>
@@ -292,13 +295,13 @@ export default function App() {
               ))}
             </>
           )}
-          {screen === "review" && <MultimodalReviewScreen />}
-          {screen === "maps" && <MapsResearchScreen />}
-
+          {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
+          {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
           {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
             const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
             if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
           }} />}
+
           {screen === "research" && (
             <>
               <SectionHeading
@@ -378,11 +381,14 @@ export default function App() {
         </ScrollView>
       )}
       <Navigation selected={screen} onSelect={changeScreen} largeText={largeText} />
-    </SafeAreaView>
+        </SafeAreaView>
+      </ThemeContext.Provider>
+    </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: MobilePalette) {
+  return StyleSheet.create({
   root: { flex: 1, backgroundColor: palette.canvas },
   appHeader: { paddingHorizontal: 24, paddingTop: 18, paddingBottom: 16, borderBottomWidth: 1, borderColor: palette.border },
   brand: { fontSize: 11, fontWeight: "700", letterSpacing: 1.8, color: palette.accent, marginBottom: 7 },
@@ -416,7 +422,7 @@ const styles = StyleSheet.create({
   cardAction: { color: palette.secondary, fontSize: 14, marginLeft: 10 },
   description: { color: palette.secondary, fontSize: 17, lineHeight: 26, marginTop: 6 },
   meta: { color: palette.tertiary, fontSize: 14, lineHeight: 21, marginTop: 10 },
-  input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, minHeight: 48, padding: 13, borderRadius: 10 },
+  input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, fontSize: 17, minHeight: 48, padding: 13, borderRadius: 10 },
   regionScroller: { flexGrow: 0, marginBottom: 15, marginTop: 12 },
   regionRow: { gap: 8, paddingBottom: 2 },
   regionOption: { minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderWidth: 1, borderColor: palette.border, borderRadius: 22 },
@@ -435,4 +441,9 @@ const styles = StyleSheet.create({
   navItemActive: { backgroundColor: palette.primary },
   navLabel: { fontSize: 14, fontWeight: "600", color: palette.secondary, textAlign: "center" },
   navLabelActive: { color: palette.canvas }
-});
+  });
+}
+
+const lightStyles = createStyles(mobileLightPalette);
+const darkStyles = createStyles(mobileDarkPalette);
+const ThemeContext = createContext<{ styles: ReturnType<typeof createStyles>; palette: MobilePalette }>({ styles: lightStyles, palette: mobileLightPalette });
