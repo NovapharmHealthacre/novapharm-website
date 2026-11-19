@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 204,
+    "platformsAssessed": 240,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -1239,7 +1239,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/motion",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/motion.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1251,23 +1251,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use browser reduced-motion media queries and runtime preference changes to reduce transitions, avoid animated-only status for medicine data, retain visible text for validation, and verify cancellation/keyboard interaction across actual corporate and protected pages."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS native motion settings and Reduce Motion awareness, short state-following transitions and accessibility alternatives; real device and VoiceOver tests are necessary before release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android system animator scale/Reduce Motion equivalents, support TalkBack and motion-free state feedback in native screens, and do not import Apple SF Symbol animation assets."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/motion.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/motion.md. Apple's Motion article advises purposeful, brief, cancellable feedback and making animation optional; motion cannot be the sole signal and should respect comfort/preferences. It warns against gratuitous frequent-interface animations, with additional peripheral/large-object guidance specific to visionOS.",
+        "NovaPharm web assessment: Use browser reduced-motion media queries and runtime preference changes to reduce transitions, avoid animated-only status for medicine data, retain visible text for validation, and verify cancellation/keyboard interaction across actual corporate and protected pages.",
+        "Native scope: iOS — Use iOS native motion settings and Reduce Motion awareness, short state-following transitions and accessibility alternatives; real device and VoiceOver tests are necessary before release.; Android — Use Android system animator scale/Reduce Motion equivalents, support TalkBack and motion-free state feedback in native screens, and do not import Apple SF Symbol animation assets.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Foundations",
@@ -1622,7 +1627,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1634,23 +1639,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For workspace exports and team sharing, label permission scope and recipient access plainly, keep role-bound copy/export disabled without authorization, and never leak clinical, customer or licensed pharmaceutical records into public links."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where a signed iOS collaboration feature is truly approved, use the system share sheet, explain view/edit/invite permissions, offer revoke/manage controls, respect data rights and VoiceOver. Do not assume CloudKit or Messages is connected."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Offer Android Sharesheet only for approved data, with explicit recipients, tenant isolation, audit/revocation and TalkBack; avoid implying Apple ShareLink/CloudKit APIs run on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing.md. Apple recommends discoverable Share and Collaboration controls, succinct permission summaries, minimal share choices, clear active collaboration indication, and management/notification routes. The native guidance discusses ShareLink, CloudKit, iCloud Drive, Messages and SharePlay, none of which demonstrates NovaPharm collaboration.",
+        "NovaPharm web assessment: For workspace exports and team sharing, label permission scope and recipient access plainly, keep role-bound copy/export disabled without authorization, and never leak clinical, customer or licensed pharmaceutical records into public links.",
+        "Native scope: iOS — Where a signed iOS collaboration feature is truly approved, use the system share sheet, explain view/edit/invite permissions, offer revoke/manage controls, respect data rights and VoiceOver. Do not assume CloudKit or Messages is connected.; Android — Offer Android Sharesheet only for approved data, with explicit recipients, tenant isolation, audit/revocation and TalkBack; avoid implying Apple ShareLink/CloudKit APIs run on Android.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Patterns",
@@ -2854,7 +2864,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/boxes",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/boxes.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2866,23 +2876,28 @@
       "sourceRequestedPlatforms": "Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use semantic fieldsets, headings or grouped regions only when logical content benefits; avoid excessive card nesting on dense Portal/Intelligence tables, keep mobile padding readable and keyboard group boundaries navigable."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native grouped visual containers only when they improve hierarchy, with clear VoiceOver group title, native secondary/tertiary surfaces and Dynamic Type reflow; SwiftUI GroupBox is not proof of a release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Material-native grouping/cards or semantic sections with visible headings and TalkBack navigation; do not claim AppKit NSBox APIs are Android behavior."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/boxes.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/boxes.md. A box groups logically related content with a small bounded border/background, optional concise title and helpful padding/alignment. Apple cautions against near-screen-sized or deeply nested boxes that clutter views; group labels can aid VoiceOver.",
+        "NovaPharm web assessment: Use semantic fieldsets, headings or grouped regions only when logical content benefits; avoid excessive card nesting on dense Portal/Intelligence tables, keep mobile padding readable and keyboard group boundaries navigable.",
+        "Native scope: iOS — Use native grouped visual containers only when they improve hierarchy, with clear VoiceOver group title, native secondary/tertiary surfaces and Dynamic Type reflow; SwiftUI GroupBox is not proof of a release.; Android — Use Material-native grouping/cards or semantic sections with visible headings and TalkBack navigation; do not claim AppKit NSBox APIs are Android behavior.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -2891,7 +2906,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/collections",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/collections.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2903,23 +2918,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use grid/gallery treatment only for visually useful catalogue or product images, while medicines and invoices need readable list/table alternatives; preserve keyboard order, item identity, focus and stable sorting across responsive changes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For native iOS galleries or document tiles, use familiar collection layouts and large selectable regions, preserve focus/selection under reflow and verify VoiceOver on real phone/tablet screens."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use accessible Android RecyclerView/Lazy grid equivalents with stable IDs, TalkBack labels and sensible state restoration; no assumption that UICollectionView exists on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/collections.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/collections.md. Apple recommends familiar horizontal-row/grid layouts primarily for image-oriented collections, table/list layouts for textual data, padding for target focus, and predictable selection. It warns against spontaneous layout rearrangement during user interaction.",
+        "NovaPharm web assessment: Use grid/gallery treatment only for visually useful catalogue or product images, while medicines and invoices need readable list/table alternatives; preserve keyboard order, item identity, focus and stable sorting across responsive changes.",
+        "Native scope: iOS — For native iOS galleries or document tiles, use familiar collection layouts and large selectable regions, preserve focus/selection under reflow and verify VoiceOver on real phone/tablet screens.; Android — Use accessible Android RecyclerView/Lazy grid equivalents with stable IDs, TalkBack labels and sensible state restoration; no assumption that UICollectionView exists on Android.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -3128,7 +3148,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/outline-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/outline-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3140,23 +3160,28 @@
       "sourceRequestedPlatforms": "Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A browser tree/treegrid for medicine classification or warehouse categories could follow the hierarchy, focus, expansion and column-label guidance; this is a web analog, not an Apple native OutlineView. Require keyboard tree semantics if used."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Official Apple NSOutlineView-style component is macOS-only, not supported for iOS/iPadOS. A separate iPhone hierarchical list can be reviewed against Lists and tables, without claiming this native control implemented."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Android does not implement Apple's macOS-only NSOutlineView; any Android tree/list alternative requires its own Material/TalkBack controls rather than an Apple-native implementation claim."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/outline-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/outline-views.md. Apple describes macOS hierarchical multi-column outline views: hierarchy in the first column, disclosure control, descriptive headings, optional sort/column resize, retained expansion choices and meaningful truncation. The native system outline view is expressly unsupported on iOS/iPadOS/tvOS/visionOS/watchOS.",
+        "NovaPharm web assessment: A browser tree/treegrid for medicine classification or warehouse categories could follow the hierarchy, focus, expansion and column-label guidance; this is a web analog, not an Apple native OutlineView. Require keyboard tree semantics if used.",
+        "Native scope: iOS — Official Apple NSOutlineView-style component is macOS-only, not supported for iOS/iPadOS. A separate iPhone hierarchical list can be reviewed against Lists and tables, without claiming this native control implemented.; Android — Android does not implement Apple's macOS-only NSOutlineView; any Android tree/list alternative requires its own Material/TalkBack controls rather than an Apple-native implementation claim.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -3449,7 +3474,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/edit-menus",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/edit-menus.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3461,23 +3486,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Keep browser native selection/copy on public prose, only add custom edit actions when authorized, distinguish Cut from Delete, support undo where safe and prevent clipboard extraction of protected data. Test accessible keyboard and menu state."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use system iOS edit menu for selectable text and document work, verify native touch/selection, context-appropriate operations, safe undo and VoiceOver; avoid exposing tenant-protected records to pasteboard."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android standard text selection and contextual action modes with TalkBack and permitted copy/share only; do not port UIKit UIMenu or Apple-specific edit-menu layouts."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/edit-menus.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/edit-menus.md. Apple advises retaining familiar system editing commands, context-relevant cut/copy/paste and undo, allowing copy of noneditable content where appropriate, short custom verbs, and native menu presentation that differs between iOS touch and iPad keyboard.",
+        "NovaPharm web assessment: Keep browser native selection/copy on public prose, only add custom edit actions when authorized, distinguish Cut from Delete, support undo where safe and prevent clipboard extraction of protected data. Test accessible keyboard and menu state.",
+        "Native scope: iOS — Use system iOS edit menu for selectable text and document work, verify native touch/selection, context-appropriate operations, safe undo and VoiceOver; avoid exposing tenant-protected records to pasteboard.; Android — Use Android standard text selection and contextual action modes with TalkBack and permitted copy/share only; do not port UIKit UIMenu or Apple-specific edit-menu layouts.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -3960,7 +3990,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/token-fields",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/token-fields.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3972,23 +4002,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only if web filters/search or recipient entry uses token chips, provide clear chip labels, keyboard remove/reorder semantics, moderated suggestions and accessible announcements; a web combobox/chip is a platform analog, not NSTokenField."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple explicitly lists native token fields as unsupported on iOS/iPadOS. A custom SwiftUI chip editor, if introduced, must be separately scoped and accessibility-tested; do not mark the Apple native control shipped."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "macOS NSTokenField is not an Android component. Android filter chips or tokenized search require independent Material behavior and TalkBack acceptance, never automatic Apple HIG component adoption."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/token-fields.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/token-fields.md. Apple's macOS-only token field converts typed recipient or search phrases into individually editable, rearrangeable tokens, supports suggestions and contextual actions; comma/Return can commit tokens and suggestion timing should avoid distractions. Native TokenField is not supported on iOS or iPadOS.",
+        "NovaPharm web assessment: Only if web filters/search or recipient entry uses token chips, provide clear chip labels, keyboard remove/reorder semantics, moderated suggestions and accessible announcements; a web combobox/chip is a platform analog, not NSTokenField.",
+        "Native scope: iOS — Apple explicitly lists native token fields as unsupported on iOS/iPadOS. A custom SwiftUI chip editor, if introduced, must be separately scoped and accessibility-tested; do not mark the Apple native control shipped.; Android — macOS NSTokenField is not an Android component. Android filter chips or tokenized search require independent Material behavior and TalkBack acceptance, never automatic Apple HIG component adoption.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -4439,7 +4474,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/combo-boxes",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/combo-boxes.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4451,23 +4486,28 @@
       "sourceRequestedPlatforms": "Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For product/customer search, use HTML input/listbox or ARIA combobox only with complete keyboard and screen-reader patterns, controlled custom value acceptance, readable suggestions and input validation; do not claim macOS NSComboBox implementation."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The specified Apple native combo box is unsupported on iOS/iPadOS, although other pickers or search-field patterns are available and need their own reviews."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple NSComboBox is not an Android-native API; a Material exposed dropdown or editable text + list is separate and must satisfy TalkBack/autocomplete behavior."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/combo-boxes.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/combo-boxes.md. Apple's macOS-only combo box combines editable free text with selectable predefined choices; recommend a meaningful default, introductory label, relevant suggestions and widths that avoid truncation. Native Apple combo boxes are expressly unsupported in iOS/iPadOS.",
+        "NovaPharm web assessment: For product/customer search, use HTML input/listbox or ARIA combobox only with complete keyboard and screen-reader patterns, controlled custom value acceptance, readable suggestions and input validation; do not claim macOS NSComboBox implementation.",
+        "Native scope: iOS — The specified Apple native combo box is unsupported on iOS/iPadOS, although other pickers or search-field patterns are available and need their own reviews.; Android — Apple NSComboBox is not an Android-native API; a Material exposed dropdown or editable text + list is separate and must satisfy TalkBack/autocomplete behavior.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -4476,7 +4516,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/digit-entry-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4488,23 +4528,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No tvOS product and no TVUIKit integration are in NovaPharm's web scope. Secure browser OTP/MFA fields are a different control and are covered by Text fields and account/security guidance."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple explicitly does not support the TVDigitEntryViewController digit-entry view on iOS/iPadOS. The iPhone's actual secure OTP UI must be designed independently and never inferred from tvOS review."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Android does not use Apple's tvOS-only full-screen digit-entry view; Android secure PIN/OTP input is a distinct authenticated design and remains unverified."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md. Apple's digit entry view fills the Apple TV display for a numeric PIN, requires an explanatory prompt and masked secure digits. Official platform considerations say it is unsupported on iOS, iPadOS, macOS, visionOS and watchOS; underlying developer API TVDigitEntryViewController is tvOS-specific.",
+        "NovaPharm web assessment: No tvOS product and no TVUIKit integration are in NovaPharm's web scope. Secure browser OTP/MFA fields are a different control and are covered by Text fields and account/security guidance.",
+        "Native scope: iOS — Apple explicitly does not support the TVDigitEntryViewController digit-entry view on iOS/iPadOS. The iPhone's actual secure OTP UI must be designed independently and never inferred from tvOS review.; Android — Android does not use Apple's tvOS-only full-screen digit-entry view; Android secure PIN/OTP input is a distinct authenticated design and remains unverified.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -4671,7 +4716,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/steppers",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/steppers.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4683,23 +4728,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For nonclinical quantity controls, label plus/minus, announce the current value and bounds, offer direct numeric entry for large ranges, disable invalid quantities and ensure user-authorized price/stock state. Do not conflate a visual stepper with successful checkout."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS-native stepper only for bounded values, accessible VoiceOver-adjustable control, labelled current value and low/high range testing; note macOS Shift-click is not an iPhone requirement."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android numerical stepper or accessible decrement/increment buttons with bounds and TalkBack announcements; do not copy Apple's UIStepper interface as an Android entitlement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/steppers.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/steppers.md. A stepper is a two-part increment/decrement control adjacent to a visible value. Apple recommends pairing it with direct numeric text entry for broad ranges and optionally large macOS Shift-click changes; users must always understand the affected quantity.",
+        "NovaPharm web assessment: For nonclinical quantity controls, label plus/minus, announce the current value and bounds, offer direct numeric entry for large ranges, disable invalid quantities and ensure user-authorized price/stock state. Do not conflate a visual stepper with successful checkout.",
+        "Native scope: iOS — Use iOS-native stepper only for bounded values, accessible VoiceOver-adjustable control, labelled current value and low/high range testing; note macOS Shift-click is not an iPhone requirement.; Android — Use Android numerical stepper or accessible decrement/increment buttons with bounds and TalkBack announcements; do not copy Apple's UIStepper interface as an Android entitlement.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -4750,7 +4800,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/toggles",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/toggles.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4762,23 +4812,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use real checkbox/switch/aria-pressed semantics, explicit on/off labels and focus states; changes to consent, privacy and customer account settings require persisted authorization with error and rollback handling. Don't claim active billing/notification from UI alone."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS use native list-row switches or pressed-state buttons as appropriate, visually and via VoiceOver expose on/off status, preserve user choice and enforce real backend permissions on approved builds."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android use accessible Material Switch/Checkbox/Radio controls with checked/indeterminate state and TalkBack; do not replicate UIKit-specific list-row constraints as an API."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/toggles.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/toggles.md. A toggle represents one of two opposing states; Apple requires clear context and state conveyed with more than color. iOS favors switches in list rows and toggle-like buttons elsewhere; macOS additionally differentiates switches, checkboxes, mixed states and radio groups.",
+        "NovaPharm web assessment: Use real checkbox/switch/aria-pressed semantics, explicit on/off labels and focus states; changes to consent, privacy and customer account settings require persisted authorization with error and rollback handling. Don't claim active billing/notification from UI alone.",
+        "Native scope: iOS — On iOS use native list-row switches or pressed-state buttons as appropriate, visually and via VoiceOver expose on/off status, preserve user choice and enforce real backend permissions on approved builds.; Android — On Android use accessible Material Switch/Checkbox/Radio controls with checked/indeterminate state and TalkBack; do not replicate UIKit-specific list-row constraints as an API.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Components",
@@ -5885,7 +5940,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/pointing-devices",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/pointing-devices.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5897,23 +5952,28 @@
       "sourceRequestedPlatforms": "Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For desktop and tablet browser flows support hover/secondary click alongside keyboard and touch, avoid hover-only essential controls and preserve meaningful focus even when pointer styles differ. Keep visual hover effects restrained."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For iOS/iPadOS device scope, allow pointer as optional input and never replace touch/VoiceOver; test native hover and focus on supported devices, not just mouse simulation. iPad-specific pointer lift effects do not imply iPhone support."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For Android tablets/Chromebooks support mouse/trackpad alongside touch and TalkBack, native pointer semantics and adequate hit targets, without mimicking iPadOS Liquid Glass pointer API."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pointing-devices.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary Apple HIG Markdown inspected individually 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/pointing-devices.md. Apple advises consistent mouse/trackpad gestures, preserving system gestures and complementary touch/keyboard/eye methods; familiar pointers and adequate hit padding. iPadOS uses specific highlight/lift/hover effects, but Apple's custom cursor effects should not be transplanted to other platforms.",
+        "NovaPharm web assessment: For desktop and tablet browser flows support hover/secondary click alongside keyboard and touch, avoid hover-only essential controls and preserve meaningful focus even when pointer styles differ. Keep visual hover effects restrained.",
+        "Native scope: iOS — For iOS/iPadOS device scope, allow pointer as optional input and never replace touch/VoiceOver; test native hover and focus on supported devices, not just mouse simulation. iPad-specific pointer lift effects do not imply iPhone support.; Android — For Android tablets/Chromebooks support mouse/trackpad alongside touch and TalkBack, native pointer semantics and adequate hit targets, without mimicking iPadOS Liquid Glass pointer API.. Platform choice is a documented design decision, not a source implementation, customer authentication, production release or independent physical-device accessibility receipt."
+      ]
     },
     {
       "section": "Inputs",
