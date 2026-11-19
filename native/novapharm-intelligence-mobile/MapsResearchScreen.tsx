@@ -3,8 +3,10 @@
  * No position permission, background tracking, network fetch or map credential.
  * Apple Maps URLs open the operating system's external map/browser on demand.
  */
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 function decimal(value: string, minimum: number, maximum: number): number | null {
   if (!/^[+-]?(?:\d+\.?\d*|\.\d+)$/u.test(value.trim())) return null;
@@ -12,7 +14,9 @@ function decimal(value: string, minimum: number, maximum: number): number | null
   return Number.isFinite(result) && result >= minimum && result <= maximum ? result : null;
 }
 
-export function MapsResearchScreen() {
+export function MapsResearchScreen({ darkMode = false }: { darkMode?: boolean }) {
+  const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
+  const styles = useMemo(() => createStyles(palette), [darkMode]);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [label, setLabel] = useState("");
@@ -46,15 +50,15 @@ export function MapsResearchScreen() {
       <Text style={styles.label}>Latitude</Text>
       <TextInput accessibilityLabel="Latitude in decimal degrees" value={latitude} onChangeText={setLatitude}
         placeholder="e.g. 51.500" keyboardType="numbers-and-punctuation" autoCapitalize="none"
-        style={styles.input} placeholderTextColor="#595961" />
+        style={styles.input} placeholderTextColor={palette.tertiary} />
       <Text style={styles.label}>Longitude</Text>
       <TextInput accessibilityLabel="Longitude in decimal degrees" value={longitude} onChangeText={setLongitude}
         placeholder="e.g. -0.120" keyboardType="numbers-and-punctuation" autoCapitalize="none"
-        style={styles.input} placeholderTextColor="#595961" />
+        style={styles.input} placeholderTextColor={palette.tertiary} />
       <Text style={styles.label}>Reference label (optional)</Text>
       <TextInput accessibilityLabel="Reference label" value={label} onChangeText={setLabel}
         placeholder="Organisation or site reference" maxLength={80} style={styles.input}
-        placeholderTextColor="#595961" />
+        placeholderTextColor={palette.tertiary} />
       <Pressable accessibilityRole="button" accessibilityLabel="Open reference in external maps" disabled={opening}
         style={[styles.button, opening && styles.disabled]} onPress={() => void openMap()}>
         <Text style={styles.buttonText}>Open in Maps</Text>
@@ -65,16 +69,18 @@ export function MapsResearchScreen() {
   </View>;
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: MobilePalette) {
+  return StyleSheet.create({
   wrapper: { paddingVertical: 12 },
-  heading: { color: "#1D1D1F", fontSize: 23, lineHeight: 31, fontWeight: "700", marginBottom: 8 },
-  description: { color: "#424245", fontSize: 17, lineHeight: 25, marginBottom: 18 },
-  form: { gap: 10, borderColor: "#D2D2D7", borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 16 },
-  label: { color: "#1D1D1F", fontSize: 15, lineHeight: 21, fontWeight: "600" },
-  input: { minHeight: 48, color: "#1D1D1F", borderColor: "#D2D2D7", borderWidth: 1, borderRadius: 10, paddingHorizontal: 13, fontSize: 17 },
-  button: { minHeight: 52, alignItems: "center", justifyContent: "center", backgroundColor: "#1D1D1F", borderRadius: 12, marginTop: 10 },
+  heading: { color: palette.primary, fontSize: 23, lineHeight: 31, fontWeight: "700", marginBottom: 8 },
+  description: { color: palette.secondary, fontSize: 17, lineHeight: 25, marginBottom: 18 },
+  form: { gap: 10, borderColor: palette.border, borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 16 },
+  label: { color: palette.primary, fontSize: 15, lineHeight: 21, fontWeight: "600" },
+  input: { minHeight: 48, color: palette.primary, borderColor: palette.border, borderWidth: 1, borderRadius: 10, paddingHorizontal: 13, fontSize: 17 },
+  button: { minHeight: 52, alignItems: "center", justifyContent: "center", backgroundColor: palette.primary, borderRadius: 12, marginTop: 10 },
   disabled: { opacity: 0.5 },
-  buttonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "600" },
-  status: { color: "#424245", fontSize: 14, lineHeight: 21, marginTop: 4 },
-  note: { color: "#595961", fontSize: 14, lineHeight: 22 }
-});
+  buttonText: { color: palette.canvas, fontSize: 16, fontWeight: "600" },
+  status: { color: palette.secondary, fontSize: 14, lineHeight: 21, marginTop: 4 },
+  note: { color: palette.tertiary, fontSize: 14, lineHeight: 22 }
+  });
+}
