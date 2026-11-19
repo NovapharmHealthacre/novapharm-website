@@ -154,6 +154,119 @@ export function buildGlobalSourceOnboardingCoverage(registry,{adapterPlans=sourc
     sourceEntries:Object.freeze(entries)
   });
 }
+
+/**
+ * Official publisher-page pre-screen, 19 Nov 2026. These are public terms
+ * references, NOT grants, legal sign-off, source responses or ingestion.
+ * Country-level customer release remains governed by separate signed
+ * dataset/field/use-specific rights and independent production acceptance.
+ */
+export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
+  "north-america-united-states-fda-openfda": Object.freeze({
+    termsUrl: "https://open.fda.gov/terms/",
+    scope: "Drugs@FDA machine-readable regulatory search, not all FDA submissions",
+    publishedTermsPosture: "CC0_DEFAULT_WITH_THIRD_PARTY_EXCEPTIONS",
+    outstanding: Object.freeze([
+      "Pin the exact endpoint and response fields",
+      "Exclude or clear copyrightable private-party submissions and warned fields",
+      "Record attribution, rate limits, terms checksum and independently signed permitted-use decision"
+    ])
+  }),
+  "europe-spain-aemps-cima": Object.freeze({
+    termsUrl: "https://sede.aemps.gob.es/datos-abiertos/",
+    scope: "AEMPS CIMA REST catalogue, not non-CIMA licensed dossiers",
+    publishedTermsPosture: "OFFICIAL_OPEN_DATA_LISTING_ATTRIBUTION_CONDITIONS",
+    outstanding: Object.freeze([
+      "Check the current CIMA REST and AEMPS legal notices together",
+      "Resolve bulk, cache, derivative and commercial/AI-use conditions for the exact CIMA fields",
+      "Record the current notice checksum and independently signed permitted-use decision"
+    ])
+  }),
+  "north-america-canada-health-canada-drug-product-database": Object.freeze({
+    termsUrl: "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe",
+    scope: "Health Canada Drug Product Database publication; API and file versions must be matched",
+    publishedTermsPosture: "PUBLISHED_OPEN_GOVERNMENT_LICENCE_CANADA",
+    outstanding: Object.freeze([
+      "Bind API and file fields to the exact licensed DPD publication/version",
+      "Confirm excluded third-party content, attribution and intended commercial/AI uses",
+      "Record exact resource checksum and independently signed permitted-use decision"
+    ])
+  }),
+  "europe-united-kingdom-nhsbsa-english-prescribing-dataset": Object.freeze({
+    termsUrl: "https://opendata.nhsbsa.net/pages/terms-and-conditions",
+    scope: "NHSBSA EPD with SNOMED dataset; code systems and terminology have separate rights",
+    publishedTermsPosture: "DATASET_SPECIFIC_OGL_WITH_THIRD_PARTY_TERMINOLOGY",
+    outstanding: Object.freeze([
+      "Record the exact EPD dataset resource licence, version and publisher attribution",
+      "Independently clear SNOMED CT, BNF and dm+d fields for the requested uses",
+      "Obtain source/reviewer grant and complete immutable row-level admission"
+    ])
+  }),
+  "global-global-us-clinicaltrials-gov": Object.freeze({
+    termsUrl: "https://clinicaltrials.gov/terms-conditions",
+    scope: "ClinicalTrials.gov trial registry metadata, not third-party works in trial records",
+    publishedTermsPosture: "PUBLIC_REGISTRY_WITH_THIRD_PARTY_CONTENT_CAVEAT",
+    outstanding: Object.freeze([
+      "Identify copyrighted third-party record content and permitted metadata fields",
+      "Check attribution, data version, intended commercial/AI uses and retention",
+      "Record a signed source/field/use decision before production access"
+    ])
+  })
+});
+
+/**
+ * Complete, read-only worklist across 101 source CANDIDATES, not 101 licensed
+ * national feeds. A publisher's open-data notice is insufficient for tenant
+ * rights, AI reuse, regulatory identity reconciliation or customer publication.
+ *
+ * No caller argument can turn a public terms link into a signed grant.
+ */
+export function buildPublisherRightsPrescreenWorklist(registry) {
+  const coverage = buildGlobalSourceOnboardingCoverage(registry);
+  const knownKeys = new Set(coverage.sourceEntries.map(entry => entry.candidateKey));
+  const unknownScreenedKeys = Object.keys(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119)
+    .filter(key => !knownKeys.has(key));
+  if (unknownScreenedKeys.length !== 0) deny("publisher terms review references an unknown registry source");
+  const sourceEntries = coverage.sourceEntries.map(entry => {
+    const evidence = PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119[entry.candidateKey] ?? null;
+    return Object.freeze({
+      candidateKey: entry.candidateKey,
+      jurisdictionLabel: entry.jurisdictionLabel,
+      provider: entry.provider,
+      onboardingRoute: entry.onboardingRoute,
+      proposedAdapterId: entry.implementationId,
+      officialReferenceUrl: entry.officialReferenceUrl,
+      publisherTermsUrl: evidence?.termsUrl ?? null,
+      termsPosture: evidence?.publishedTermsPosture ?? "UNASSESSED",
+      termsScreeningStatus: evidence
+        ? "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING"
+        : "PUBLIC_TERMS_NOT_YET_SCREENED",
+      datasetScope: evidence?.scope ?? null,
+      outstandingRightsRequirements: evidence?.outstanding ?? Object.freeze([
+        "Locate current official publisher terms for exact dataset and intended use",
+        "Obtain independent rights acceptance before source admission"
+      ]),
+      exactDatasetVersion: null,
+      termsSha256IndependentlyVerified: null,
+      signedGrantReceiptSha256: null,
+      legallyAcceptedUses: Object.freeze([]),
+      productionRightsGranted: false,
+      liveIngestedRecordCount: 0,
+      productionDatasetAdmitted: false,
+      customerLive: false
+    });
+  });
+  return Object.freeze({
+    contract: "novapharm.intelligence.publisher-terms-prescreen.v1",
+    reviewedOn: "2026-11-19",
+    totalSourceCandidates: sourceEntries.length,
+    publicPublisherNoticesLocated: sourceEntries.filter(row => row.publisherTermsUrl !== null).length,
+    independentlyLicensedSourceCandidates: 0,
+    customerLiveSourceCandidates: 0,
+    sourceEntries: Object.freeze(sourceEntries)
+  });
+}
+
 export function assertAllCountriesLive(_coverage){
   deny("country-complete runtime coverage cannot be asserted from source metadata");
 }
