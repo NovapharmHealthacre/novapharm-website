@@ -347,3 +347,32 @@ test("30 exact user workbook anchors and 5 supporting Apple resources remain ind
   }
   assert.equal(targets.size, 210);
 });
+
+
+test("all 172 HIG topics are within the owner's reported completed review, without claiming independent source or release proof", () => {
+  const owner = tracker.meta.ownerReviewAttestation;
+  assert.equal(owner.status, "completed_as_reported_by_owner");
+  assert.equal(owner.attestedOn, "2026-11-19");
+  assert.equal(owner.indexedTopicsWithinAttestedCoverage, 172);
+  assert.equal(owner.fullTextReviewIndependentlyVerifiedForAll172, false);
+  assert.equal(owner.platformApplicabilityApprovedForAll516, false);
+  assert.equal(owner.implementationOrProductionConformanceCertified, false);
+  assert.equal(tracker.topics.length, 172);
+  assert.equal(new Set(tracker.topics.map(t => t.markdown)).size, 172);
+  for (const topic of tracker.topics) {
+    assert.equal(topic.ownerReviewAttestation?.status, "included_in_owner_reported_coverage", topic.title);
+    assert.equal(topic.ownerReviewAttestation?.attestedOn, "2026-11-19", topic.title);
+    assert.equal(topic.ownerReviewAttestation?.sourceMarkdown, topic.markdown, topic.title);
+    assert.equal(topic.implementation, "not_verified", "Owner review is not a shipped implementation: " + topic.title);
+  }
+  // Exact article-level evidence remains separate from the owner's broader statement.
+  const evidenced = tracker.topics.filter(t => t.guidelineReview === "reviewed");
+  assert.ok(evidenced.length <= owner.indexedTopicsWithinAttestedCoverage);
+  for (const topic of evidenced) {
+    assert.ok(Array.isArray(topic.guidelineReviewEvidence) && topic.guidelineReviewEvidence.length > 0);
+  }
+  assert.equal(tracker.meta.platformsAssessed,
+    tracker.topics.flatMap(t => Object.values(t.platformApplicability)).filter(x => x.state !== "unassessed").length);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
