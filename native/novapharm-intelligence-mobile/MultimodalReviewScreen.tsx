@@ -2,10 +2,12 @@
  * Same offline, fail-closed research contract used by protected Nova ML web.
  * No camera, OCR, network, persistence, medical content or inference service.
  */
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { assessMultimodalEvidence, type MultimodalReviewResult } from "../../src/core/intelligence-multimodal-evidence-review.mjs";
 import { assessMultimodalResearchBasis } from "../../src/core/intelligence-multimodal-research-basis.mjs";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 const fieldsInitial = {
   sourceReference: "", country: "", visionMedicineName: "", imageTextMedicineName: "",
@@ -29,7 +31,9 @@ const labels: ReadonlyArray<readonly [Key, string]> = [
 ];
 const researchPlan = assessMultimodalResearchBasis();
 
-export function MultimodalReviewScreen() {
+export function MultimodalReviewScreen({ darkMode = false }: { darkMode?: boolean }) {
+  const styles = useMemo(() => createReviewStyles(darkMode ? mobileDarkPalette : mobileLightPalette), [darkMode]);
+  const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
   const [fields, setFields] = useState(fieldsInitial);
   const [consent, setConsent] = useState(false);
   const [result, setResult] = useState<MultimodalReviewResult | null>(null);
@@ -45,7 +49,7 @@ export function MultimodalReviewScreen() {
     {labels.map(([key,label]) => <View style={styles.field} key={key}>
       <Text style={styles.label}>{label}</Text>
       <TextInput value={fields[key]} onChangeText={(v)=>update(key,v)}
-        accessibilityLabel={label} accessibilityHint="Local research sample only. Do not enter patient or confidential information." style={styles.input} maxLength={240}
+        accessibilityLabel={label} accessibilityHint="Local research sample only. Do not enter patient or confidential information." style={styles.input} selectionColor={palette.accent} maxLength={240}
         autoCorrect={false} autoCapitalize="none" />
     </View>)}
     <Pressable accessibilityRole="checkbox" accessibilityState={{checked:consent}} accessibilityLabel="Confirm non-sensitive approved material" accessibilityHint="Required before submitting research samples for an offline conflict check"
@@ -67,16 +71,18 @@ export function MultimodalReviewScreen() {
     </View>}
   </View>;
 }
-const styles=StyleSheet.create({
-  root:{paddingTop:6,paddingBottom:26},heading:{fontSize:23,fontWeight:"700",color:"#1D1D1F",marginBottom:8},
-  paragraph:{fontSize:16,lineHeight:24,color:"#424245",marginBottom:10},
-  field:{marginTop:12},label:{fontSize:16,fontWeight:"600",color:"#1D1D1F",marginBottom:6},
-  input:{borderWidth:1,borderColor:"#A5A5AA",borderRadius:10,minHeight:48,paddingHorizontal:12,color:"#1D1D1F",fontSize:17},
+function createReviewStyles(palette: MobilePalette) {
+  return StyleSheet.create({
+  root:{paddingTop:6,paddingBottom:26},heading:{fontSize:23,fontWeight:"700",color:palette.primary,marginBottom:8},
+  paragraph:{fontSize:16,lineHeight:24,color:palette.secondary,marginBottom:10},
+  field:{marginTop:12},label:{fontSize:16,fontWeight:"600",color:palette.primary,marginBottom:6},
+  input:{borderWidth:1,borderColor:palette.border,backgroundColor:palette.canvas,borderRadius:10,minHeight:48,paddingHorizontal:12,color:palette.primary,fontSize:17},
   checkboxRow:{flexDirection:"row",gap:12,alignItems:"center",minHeight:54,marginTop:18},
-  checkbox:{width:21,height:21,borderRadius:5,borderWidth:2,borderColor:"#606068"},checked:{backgroundColor:"#1D1D1F"},
-  checkboxText:{flex:1,fontSize:16,lineHeight:24,color:"#424245"},
-  primary:{backgroundColor:"#1D1D1F",borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:12},
-  primaryText:{color:"#fff",fontWeight:"700",fontSize:16},secondary:{borderWidth:1,borderColor:"#C7C7CC",borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:10},
-  secondaryText:{color:"#1D1D1F",fontWeight:"600",fontSize:16},output:{padding:16,backgroundColor:"#F5F5F7",borderRadius:12,marginTop:18},
-  outputHeading:{color:"#1D1D1F",fontWeight:"700",fontSize:16,marginBottom:8}
-});
+  checkbox:{width:21,height:21,borderRadius:5,borderWidth:2,borderColor:palette.border},checked:{backgroundColor:palette.primary},
+  checkboxText:{flex:1,fontSize:16,lineHeight:24,color:palette.secondary},
+  primary:{backgroundColor:palette.primary,borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:12},
+  primaryText:{color:palette.canvas,fontWeight:"700",fontSize:16},secondary:{borderWidth:1,borderColor:palette.border,borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:10},
+  secondaryText:{color:palette.primary,fontWeight:"600",fontSize:16},output:{padding:16,backgroundColor:palette.grouped,borderRadius:12,marginTop:18},
+  outputHeading:{color:palette.primary,fontWeight:"700",fontSize:16,marginBottom:8}
+  });
+}
