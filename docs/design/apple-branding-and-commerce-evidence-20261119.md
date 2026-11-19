@@ -39,6 +39,20 @@ These links are current-source references, not perpetual regulatory/legal approv
 
 `config/apple-commerce-release.json` records the verified inspection fingerprint and explicit unapproved statuses; `scripts/test-apple-commerce-release.mjs` checks its disabled native/marketing/region fields against the existing empty marketing manifest and the unchanged owner hold. The independent `.github/workflows/apple-commerce-release.yml` validates relevant PR changes without new services or credentials. Any future enabled sale requires a new versioned policy, independently reviewed real-world evidence and release-appropriate tests; **do not merely flip flags or relax tests to claim integration**.
 
+## Verified November 2026 regional-policy details (not implemented permissions)
+
+- **European Union:** Apple's Developer Program Licence Agreement update of **18 August 2026** describes changes effective **1 October 2026**; the current EU guide describes alongside-IAP alternative payment possibilities, new child-safety obligations and a 12-month choice-of-payment-method commitment. Contract, storefront, disclosure and entitlement requirements must be independently reviewed, not inferred from an IP address or browser locale.
+- **Brazil:** the published Apple guide describes alternatives beginning on **iOS 26.5 and later**, subject to StoreKit External Purchases or Offers Entitlement and reporting/business terms.
+- **Japan:** the published Apple guide describes alternatives beginning on **iOS 26.2 and later**, subject to StoreKit External Purchases or Offers Entitlement and reporting/business terms.
+- **United States:** the App Review guidance also describes storefront-specific external call-to-action exceptions. The absence of a user prompt or entitlement is not itself approval for NovaPharm to activate a new commerce route.
+- The same screen may have different Apple requirements by storefront, platform, app category and contracted distribution. Do **not** use a single global alternative-payment toggle.
+
+## Cross-platform review-only classification implementation
+
+`src/core/apple-commerce-classification.mjs` returns an immutable, **never enabled** review outcome for web, iOS and Android. It distinguishes consumer digital, organization-only enterprise and physical-goods paths and does not supply any payment URL, product ID, transaction, entitlement or customer grant. Its 15 source-only tests in `scripts/test-apple-commerce-classification.mjs` exercise product/surface cases and BR/EU/JP alternative-payment denial. The separate Apple commerce CI workflow executes these cases on relevant file changes.
+
+**This is an architecture acceptance rule, not a native checkout or a claimed Play Store policy certification.** No production flag may be inferred from the review classification.
+
 ## Production and acceptance blockers
 
 1. Establish Apple Developer account, accepted legal/trademark and market terms, native app identifiers and genuinely signed builds.
