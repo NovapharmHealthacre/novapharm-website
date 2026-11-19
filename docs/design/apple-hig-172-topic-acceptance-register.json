@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 159,
+    "platformsAssessed": 171,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -1310,7 +1310,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/typography",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/typography.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1322,23 +1322,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a cross-platform design goal: use readable semantic CSS type scales, browser-based 200/400% zoom/reflow, accessible font stacks and unclipped medicine tables and labels; this does not grant redistribution rights to downloaded SF binaries, and real all-route browser rendering remains outstanding."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as direct iOS native guidance: use native text styles and Dynamic Type across accessibility size categories, adapt line wrapping and layout, avoid truncation, test VoiceOver and physical devices. Use platform-provided system fonts rather than distributing Apple's proprietary font files."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as readable typography and adaptability using Android-native system fonts, font scaling and accessibility services; apply Material/Android semantics and TalkBack testing instead of copying iOS points or SwiftUI Font APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/typography.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/typography.md. Official article emphasizes minimum readable text sizes by Apple platform (iOS/iPadOS 17pt default and 11pt minimum), weight and readable hierarchy; Dynamic Type must preserve meaning, avoid truncation and allow adaptive stacking. Custom typefaces require equivalent accessibility scaling; do not embed proprietary Apple system fonts in applications.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Foundations",
@@ -3065,7 +3070,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3077,23 +3082,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a web inventory and design classification for ordinary HTML buttons, accessible disclosures, context actions, keyboard/focus-return menus and links. Each actual action has to be mapped to a child-topic acceptance test and verified on public or protected routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as an Apple-native component index, but each child control is scoped to supported iOS/iPadOS capabilities; Dock menus and desktop menu bars must not be marked implemented on iPhone because the index contains links to them."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a comparison index for Android commands, contextual actions, long-press and overflow navigation; preserve Android Material semantics, TalkBack and Back rather than importing Apple ActivityView, AppKit menu bar or system toolbar APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md. The official Menus and actions page is a collection group linking activity views, buttons, context menus, edit menus, menus, pull-down/pop-up buttons, toolbars and platform-specific system menus. It is a taxonomy for additional child-article review, not an independently testable universal framework component.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Components",
@@ -5528,7 +5538,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/gestures",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/gestures.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5540,23 +5550,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to swipe-to-reveal filters, mobile menus and tables only when visible click/keyboard equivalents exist, targets are large enough and focus/announcements are preserved; browser touch gestures must never be the only way to submit a business enquiry or complete regulated workflow."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to actual iPhone/iPad gestures and standard Apple navigation/undo expectations; offer discoverable accessible buttons and VoiceOver/Switch Control alternatives, respect edge-swipe system navigation and do not override system gestures for commercial tasks."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable via Android-native touch, drag, long-press and system Back gestures, with visible alternatives, TalkBack/keyboard support and no gesture-only payment/medicine decisions; Apple three-finger and shake-to-undo behavior is not an Android API requirement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gestures.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/gestures.md. Official article recommends expected tap/swipe/drag behavior, feedback and disabled states, avoiding custom gestures unless needed; provide a non-gesture alternative for critical actions and do not conflict with platform system gestures. iOS three-finger undo/redo and iPad four-finger switching are platform-specific, not universal web shortcuts.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Inputs",
@@ -6421,7 +6436,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/machine-learning",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/machine-learning.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6433,23 +6448,28 @@
       "sourceRequestedPlatforms": "Intelligence",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to NovaPharm Intelligence search/ranking and model explanations as design obligations: no silent pharmaceutical certainty, distinguish accepted clinical facts from model inferences, show provenance and corrections, protect tenancy, require licensed data and avoid training or activating unapproved research models."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to iOS ML-powered user journeys only when an approved signed feature actually exists; use clear user control, permissions, error correction and privacy boundaries with VoiceOver. Core ML/Create ML documentation does not itself prove any NovaPharm native deployment."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable on Android as comparable model-transparency, privacy, source attribution and corrections goals; integrate only approved Android-capable inference and TalkBack behavior, never infer Core ML entitlement or signed Android app acceptance from Apple design guidance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/machine-learning.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/machine-learning.md. Official article classifies ML as critical or complementary, public or private, proactive/reactive, visible/invisible and dynamic/static; stresses sensitivity, privacy, optional feedback, calibration, honest limitations and accessible correction of mistakes. Attribution and human-correctable results matter especially when incorrect suggestions have consequences.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Technologies",
