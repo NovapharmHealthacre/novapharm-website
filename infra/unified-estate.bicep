@@ -448,12 +448,17 @@ module founderApp './modules/web-app.bicep' = {
   }
 }
 
+@secure()
+@description('Optional origin-restricted public MapKit JS token, matched to the immutable portal browser build. Never supply an Apple private signing key.')
+param mapKitJsToken string = ''
+
 var portalSettings = union(nextBaseSettings, {
   PUBLIC_ORIGIN: resolvedPortalOrigin
   PORTAL_ORIGIN: resolvedPortalOrigin
   PUBLIC_API_ORIGIN: resolvedApiOrigin
   INTERNAL_API_ORIGIN: resolvedApiOrigin
   NEXT_PUBLIC_ENTRA_LOGIN_ENABLED: string(enableEntraAuthentication)
+  NEXT_PUBLIC_APPLE_MAPS_TOKEN: mapKitJsToken
   PORTAL_GATEWAY_SECRET: '@Microsoft.KeyVault(VaultName=${dataPlatform.outputs.portalKeyVaultName};SecretName=${portalGatewaySecretName})'
 }, enableEntraAuthentication ? {
   ENTRA_CLIENT_SECRET: '@Microsoft.KeyVault(VaultName=${dataPlatform.outputs.portalKeyVaultName};SecretName=${entraClientSecretName})'
@@ -485,6 +490,7 @@ module portalApp './modules/web-app.bicep' = {
       'INTERNAL_API_ORIGIN'
       'PORTAL_GATEWAY_SECRET'
       'ENTRA_CLIENT_SECRET'
+      'NEXT_PUBLIC_APPLE_MAPS_TOKEN'
       'PREVIEW_LABEL'
     ]
     alwaysOn: true
