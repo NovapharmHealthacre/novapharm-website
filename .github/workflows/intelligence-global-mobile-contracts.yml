@@ -82,8 +82,19 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Install candidate-native dependencies in the isolated app
-        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Generate reviewable Expo dependency lockfile (candidate only)
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          node -e 'const p=require("./package.json"),l=require("./package-lock.json"); if (l.lockfileVersion !== 3 || l.packages?.[""]?.name !== p.name) process.exit(1)'
+      - name: Upload isolated mobile lockfile for human dependency review
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-intelligence-mobile-lockfile-${{ github.sha }}
+          path: native/novapharm-intelligence-mobile/package-lock.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Verify clean install using generated dependency lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify TypeScript and exact React Native imports
         run: npm run typecheck
       - name: Compile offline JavaScript bundles for both platforms
