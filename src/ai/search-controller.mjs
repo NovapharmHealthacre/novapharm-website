@@ -16,12 +16,18 @@ async function fetchJson(url) {
 }
 
 function knowledgeIndex() {
-  knowledgePromise ||= fetchJson(INDEX_URL);
+  knowledgePromise ||= fetchJson(INDEX_URL).catch((error) => {
+    knowledgePromise = null;
+    throw error;
+  });
   return knowledgePromise;
 }
 
 function sourceManifest() {
-  manifestPromise ||= fetchJson(MANIFEST_URL);
+  manifestPromise ||= fetchJson(MANIFEST_URL).catch((error) => {
+    manifestPromise = null;
+    throw error;
+  });
   return manifestPromise;
 }
 
@@ -97,6 +103,7 @@ export async function initialiseSearchDialog(dialog) {
   let semanticRequest = null;
   let previousFocus = null;
   let persistentCacheAvailable = true;
+  let queryVersion = 0;
 
   const announce = (message) => {
     status.textContent = message;
@@ -161,6 +168,7 @@ export async function initialiseSearchDialog(dialog) {
   const semanticSearch = (query) => new Promise((resolve, reject) => {
     if (!worker || !semanticReady) return resolve([]);
     const requestId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+    if (semanticRequest) semanticRequest.resolve([]);
     semanticRequest = { requestId, resolve, reject };
     worker.postMessage({ type: "search", requestId, query, limit: 8 });
     setTimeout(() => {
@@ -171,20 +179,28 @@ export async function initialiseSearchDialog(dialog) {
   });
 
   const runSearch = async (query) => {
-    announce("Searching approved public information...");
+    const version = ++queryVersion;
+    const isCurrent = () => version === queryVersion && dialog.open;
+    if (!query) return renderMessage("Enter a question or search term.");
+    // Check sensitive AI requests before loading or ranking any source material.
+    if (mode !== "search") {
+      const policy = evaluatePublicPolicy(query);
+      if (!policy.allowed) return renderMessage(policy.message, policy.category === "empty" ? "information" : "refusal");
+    }
+    announce(mode === "search" ? "Searching published pages..." : "Checking approved published evidence...");
     results.setAttribute("aria-busy", "true");
     try {
       const knowledge = await knowledgeIndex();
+      if (!isCurrent()) return;
       const keywordResults = searchKeywordIndex(knowledge.keywordIndex, knowledge.chunks, query);
       if (mode === "search") return renderSearchResults(keywordResults);
-      const policy = evaluatePublicPolicy(query);
-      if (!policy.allowed) return renderMessage(policy.message, policy.category === "empty" ? "information" : "refusal");
       const semanticResults = semanticReady ? await semanticSearch(query) : [];
+      if (!isCurrent()) return;
       renderAnswer(mergeResults(keywordResults, semanticResults), query);
     } catch {
-      renderMessage("Published-evidence search is temporarily unavailable. Please use the website navigation or try again later.", "information");
+      if (isCurrent()) renderMessage("Published-evidence search is temporarily unavailable. Conventional navigation remains available; retry the search when ready.", "information");
     } finally {
-      results.removeAttribute("aria-busy");
+      if (isCurrent()) results.removeAttribute("aria-busy");
     }
   };
 
@@ -205,7 +221,8 @@ export async function initialiseSearchDialog(dialog) {
       }
       if (event.data.type === "ready") {
         semanticReady = true;
-        semanticEnable.textContent = "Private semantic retrieval enabled";
+        semanticEnable.disabled = false;
+        semanticEnable.textContent = "Disable private semantic retrieval";
         semanticCancel.hidden = true;
         cacheClear.hidden = !persistentCacheAvailable;
         progress.hidden = true;
@@ -245,6 +262,26 @@ export async function initialiseSearchDialog(dialog) {
     worker.postMessage({ type: "init", knowledge, useCache: true });
   };
 
+  const stopSemantic = (reason = "disabled") => {
+    if (semanticRequest) {
+      semanticRequest.resolve([]);
+      semanticRequest = null;
+    }
+    worker?.terminate();
+    worker = null;
+    semanticReady = false;
+    semanticEnable.disabled = false;
+    semanticEnable.textContent = "Enable private semantic retrieval";
+    semanticCancel.hidden = true;
+    cacheClear.hidden = true;
+    progress.hidden = true;
+    if (reason !== "closed") {
+      progressLabel.textContent = reason === "cancelled"
+        ? "Download cancelled. Conventional search still works."
+        : "Semantic retrieval disabled. Previously downloaded optional assets may remain in browser storage; re-enable retrieval to clear the cache.";
+    }
+  };
+
   modeButtons.forEach((button) => button.addEventListener("click", () => {
     mode = button.dataset.aiMode;
     modeButtons.forEach((candidate) => candidate.setAttribute("aria-pressed", String(candidate === button)));
@@ -259,20 +296,19 @@ export async function initialiseSearchDialog(dialog) {
     event.preventDefault();
     runSearch(input.value.trim());
   });
-  semanticEnable.addEventListener("click", () => startSemantic().catch(() => {
-    semanticEnable.disabled = false;
-    semanticCancel.hidden = true;
-    progress.hidden = true;
-    announce("Semantic retrieval could not be enabled. Conventional search remains available.");
-  }));
+  semanticEnable.addEventListener("click", () => {
+    if (semanticReady) {
+      stopSemantic();
+      announce("Semantic retrieval disabled. Conventional search remains available.");
+      return;
+    }
+    startSemantic().catch(() => {
+      stopSemantic();
+      announce("Semantic retrieval could not be enabled. Conventional search remains available.");
+    });
+  });
   semanticCancel.addEventListener("click", () => {
-    worker?.terminate();
-    worker = null;
-    semanticReady = false;
-    semanticEnable.disabled = false;
-    semanticCancel.hidden = true;
-    progress.hidden = true;
-    progressLabel.textContent = "Download cancelled. Conventional search still works.";
+    stopSemantic("cancelled");
     announce("Semantic model download cancelled.");
   });
   cacheClear.addEventListener("click", () => worker?.postMessage({ type: "clear-cache" }));
@@ -286,7 +322,18 @@ export async function initialiseSearchDialog(dialog) {
     }
   });
   dialog.querySelector("[data-ai-close]").addEventListener("click", () => dialog.close());
-  dialog.addEventListener("close", () => previousFocus?.focus());
+  dialog.addEventListener("close", () => {
+    // Clear retained text and in-memory retrieval state when the user exits.
+    ++queryVersion;
+    stopSemantic("closed");
+    input.value = "";
+    currentAnswer = "";
+    results.replaceChildren();
+    results.removeAttribute("aria-busy");
+    copyButton.hidden = true;
+    announce("");
+    previousFocus?.focus();
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
