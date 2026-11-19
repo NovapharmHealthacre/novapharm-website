@@ -4,7 +4,7 @@
 
 ## Uploaded archive: direct inspection
 
-The owner-supplied `apple-in-app-purchase-brand.zip` was inspected locally, not copied into this public repository. SHA-256 `f20c8dcbf6baedb10d288f26552e4fe6b3c2277296569c1e64be792cad78df1d`; 125,813,389 compressed bytes; **888 files** in **48 localizations**, consisting of 270 SVG, 270 EPS and 348 PNG. There are 192 Apple In-App Purchase badge variants and 696 lockup assets. ZIP CRC, PNG image metadata and SVG parsing passed. EPS binary-preview headers were recognized. These checks do not verify permission to use the trademark, Apple signing, source provenance, locale suitability or a functioning purchase flow.
+The owner-supplied `apple-in-app-purchase-brand.zip` was inspected locally, not copied into this public repository. SHA-256 `f20c8dcbf6baedb10d288f26552e4fe6b3c2277296569c1e64be792cad78df1d`; 125,813,389 compressed bytes; **888 usable artwork files** (plus 70 macOS .DS_Store metadata files) in **48 localizations**, consisting of 270 SVG, 270 EPS and 348 PNG. There are 192 Apple In-App Purchase badge variants and 696 lockup assets. ZIP CRC, PNG image metadata and SVG parsing passed. EPS binary-preview headers were recognized. These checks do not verify permission to use the trademark, Apple signing, source provenance, locale suitability or a functioning purchase flow.
 
 **Do not confuse the IAP mark/lockup in this upload with an App Store download badge.** The existing App Store download artwork policy and unpublished badge component remain governed by `docs/apple-app-store-badges.md`. Do not commit or publish the uploaded archive by default.
 
@@ -49,7 +49,9 @@ These links are current-source references, not perpetual regulatory/legal approv
 
 ## Cross-platform review-only classification implementation
 
-`src/core/apple-commerce-classification.mjs` returns an immutable, **never enabled** review outcome for web, iOS and Android. It distinguishes consumer digital, organization-only enterprise and physical-goods paths and does not supply any payment URL, product ID, transaction, entitlement or customer grant. Its 15 source-only tests in `scripts/test-apple-commerce-classification.mjs` exercise product/surface cases and BR/EU/JP alternative-payment denial. The separate Apple commerce CI workflow executes these cases on relevant file changes.
+`src/core/apple-commerce-classification.mjs` returns an immutable, **never enabled** review outcome for web, iOS and Android. It distinguishes consumer digital, organization-only enterprise and physical-goods paths and does not supply any payment URL, product ID, transaction, entitlement or customer grant. Its 47 source-only tests in `scripts/test-apple-commerce-classification.mjs` exercise product/surface cases and BR/EU/JP alternative-payment denial. The separate Apple commerce CI workflow executes these cases on relevant file changes.
+
+Apple's EU payment options apply across the **27 individual member-country App Store storefronts**, not a fictitious `EU` storefront. The policy rejects `EU` as an input, and maps verified-looking country codes to the common EU review dependency; source-only input classification is **not** proof of a signed App Store storefront. Consumer purchases incorrectly labelled as enterprise are routed back to the platform-appropriate purchase review. The code never enables alternative payment links. The region selection must ultimately come from trustworthy StoreKit/storefront signals and current agreements, not IP geolocation, browser locale, or untrusted client fields.
 
 **This is an architecture acceptance rule, not a native checkout or a claimed Play Store policy certification.** No production flag may be inferred from the review classification.
 
