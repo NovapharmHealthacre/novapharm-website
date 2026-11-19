@@ -376,3 +376,31 @@ test("all 172 HIG topics are within the owner's reported completed review, witho
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
+
+
+test("nine additionally reviewed current HIG primary articles have per-platform rationale without false release completion", () => {
+  const topics = ["Design principles","Designing for iOS","Branding","Writing","Loading","Entering data","Managing accounts","Searching","Generative AI"];
+  const reviewed = topics.map(name => tracker.topics.find(t => t.title === name));
+  assert.ok(reviewed.every(Boolean));
+  for(const item of reviewed){
+    assert.equal(item.guidelineReview,"reviewed",item.title);
+    assert.ok(item.guidelineReviewEvidence.length >= 2,item.title);
+    assert.ok(item.guidelineReviewEvidence[0].includes(item.markdown),item.title);
+    assert.equal(item.implementation,"not_verified",item.title);
+    assert.ok(item.releaseEvidence.length===0,item.title);
+    for(const platform of ["web","ios","android"]){
+      const decision=item.platformApplicability[platform];
+      assert.ok(["applicable","not_applicable"].includes(decision.state),item.title+"/"+platform);
+      assert.ok(decision.rationale.length>=40,item.title+"/"+platform);
+    }
+  }
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.web.state,"not_applicable");
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.ios.state,"applicable");
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.android.state,"not_applicable");
+  assert.equal(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length,11);
+  assert.equal(tracker.meta.platformsAssessed,33);
+  assert.ok(tracker.topics.every(x=>x.implementation!=="verified"));
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
