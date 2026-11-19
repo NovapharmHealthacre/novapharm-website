@@ -27,6 +27,8 @@ test("authorised geography consumes accepted postcode centroid and renders no fa
   const map = read("apps/portal/components/governed-healthcare-map.tsx");
   assert.match(workspace, /<GovernedHealthcareMap origin=\{response\.origin\}/);
   assert.match(map, /NEXT_PUBLIC_APPLE_MAPS_TOKEN/);
+  assert.ok(map.includes('const token = process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN;'));
+  assert.ok(read('apps/portal/lib/next-public-pilot-env.d.ts').includes('NEXT_PUBLIC_APPLE_MAPS_TOKEN?: string'));
   assert.ok(map.includes("https://cdn.apple-mapkit.com/mk/6/mapkit.core.js"));
   assert.match(map, /showsUserLocation: false/);
   assert.match(map, /showsUserLocationControl: false/);
