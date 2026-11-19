@@ -6,6 +6,8 @@ on:
       - "config/apple-marketing-release.json"
       - "config/intelligence/owner-production-constraints.json"
       - "scripts/test-apple-commerce-release.mjs"
+      - "scripts/test-apple-commerce-classification.mjs"
+      - "src/core/apple-commerce-classification.mjs"
       - ".github/workflows/apple-commerce-release.yml"
   push:
     branches: [main]
@@ -30,4 +32,4 @@ jobs:
         with:
           node-version: "24"
       - name: Verify fail-closed Apple commerce and brand policy
-        run: node scripts/test-apple-commerce-release.mjs
+        run: node scripts/test-apple-commerce-release.mjs && node --test scripts/test-apple-commerce-classification.mjs
