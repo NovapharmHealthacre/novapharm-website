@@ -5,7 +5,10 @@ import {
   buildGlobalSourceOnboardingCoverage,
   CANDIDATE_API_BINDINGS,
   assertAllCountriesLive,
-  EXPECTED_SOURCE_CANDIDATES
+  EXPECTED_SOURCE_CANDIDATES,
+  PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119,
+  SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118,
+  buildPublisherRightsPrescreenWorklist
 } from "../src/core/intelligence-global-source-onboarding.mjs";
 import {sourcePlans} from "../src/core/intelligence-global-source-gateway.mjs";
 const registry=JSON.parse(readFileSync(new URL("../docs/intelligence/global-pharma-sources-20261117.json",import.meta.url),"utf8")).sources;
@@ -89,4 +92,266 @@ test("unreviewed source registry rejects private and malformed HTTPS hosts", () 
       /untrusted source reference (host|URL)/, url);
   }
   assert.equal(buildGlobalSourceOnboardingCoverage(registry).totalSourceCandidates, 101);
+});
+
+
+test("all 101 candidates have a complete, closed publisher-rights worklist", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.contract, "novapharm.intelligence.publisher-terms-prescreen.v1");
+  assert.equal(worklist.totalSourceCandidates, 101);
+  assert.equal(worklist.publicPublisherNoticesLocated, 10);
+  assert.equal(worklist.publisherAccessApplicationRequired, 1);
+  assert.equal(worklist.publiclyRestrictedBetaBusinessSources, 1);
+  assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+  assert.deepEqual(
+    new Set(worklist.sourceEntries.map(x => x.candidateKey)),
+    new Set(registry.map(x => x.candidateKey))
+  );
+  for (const entry of worklist.sourceEntries) {
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(entry.productionDatasetAdmitted, false);
+    assert.equal(entry.liveIngestedRecordCount, 0);
+    assert.equal(entry.termsSha256IndependentlyVerified, null);
+    assert.equal(entry.signedGrantReceiptSha256, null);
+    assert.deepEqual(entry.legallyAcceptedUses, []);
+    assert.ok(entry.outstandingRightsRequirements.length >= 2);
+    assert.equal(Object.isFrozen(entry), true);
+  }
+});
+
+test("ten official publisher terms notices are not grants", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const notices = new Map(worklist.sourceEntries
+    .filter(entry => entry.publisherTermsUrl !== null)
+    .map(entry => [entry.candidateKey, entry]));
+  // Access-application entries (Norway DMP) have no publisherTermsUrl:
+  // count them as protected publisher-access requirements, not licences.
+  const publisherNoticeKeys = Object.entries(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119)
+    .filter(([, entry]) => typeof entry.termsUrl === "string")
+    .map(([key]) => key);
+  assert.equal(publisherNoticeKeys.length, 10);
+  assert.equal(notices.size, 10);
+  assert.deepEqual(new Set(notices.keys()), new Set(publisherNoticeKeys));
+  assert.equal(notices.has("europe-norway-dmp-medicine-fhir-service"), false);
+  const expected = new Map([
+    ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
+    ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
+    ["oceania-australia-tga-artg", "https://www.tga.gov.au/about-us/using-our-website/copyright"],
+    ["europe-france-ansm-bdpm", "https://base-donnees-publique.medicaments.gouv.fr/telechargement"],
+    ["europe-ireland-hpra-authorised-medicines", "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products"],
+    ["europe-european-union-eea-ema-pms-public-api", "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf"],
+    ["asia-pacific-singapore-hsa-data-gov-sg", "https://developers.data.gov.sg/open-data-licence"],
+    ["north-america-canada-health-canada-drug-product-database", "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe"],
+    ["europe-united-kingdom-nhsbsa-english-prescribing-dataset", "https://opendata.nhsbsa.net/pages/terms-and-conditions"],
+    ["global-global-us-clinicaltrials-gov", "https://clinicaltrials.gov/terms-conditions"]
+  ]);
+  for (const [key, url] of expected) {
+    const row = notices.get(key);
+    assert.ok(row, key);
+    assert.equal(row.publisherTermsUrl, url);
+    assert.equal(row.termsScreeningStatus, "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING");
+    assert.equal(row.productionRightsGranted, false);
+    assert.equal(row.customerLive, false);
+    assert.equal(row.exactDatasetVersion, null);
+    assert.deepEqual(row.legallyAcceptedUses, []);
+    assert.ok(row.outstandingRightsRequirements.every(value => typeof value === "string"));
+    assert.equal(Object.isFrozen(row.outstandingRightsRequirements), true);
+    assert.equal(new URL(row.publisherTermsUrl).protocol, "https:");
+  }
+  assert.equal(worklist.sourceEntries.filter(row =>
+    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 89);
+});
+
+test("public licence notices cannot override tampered registry or proof-of-rights gates", () => {
+  const tampered = registry.map((row, i) =>
+    i === 0 ? {...row, rightsStatus: "approved", allowedUses: ["commercial", "external-ai"]} : row
+  );
+  assert.throws(
+    () => buildPublisherRightsPrescreenWorklist(tampered),
+    /candidate state invalid/
+  );
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.sourceEntries.some(row => row.productionRightsGranted), false);
+  assert.equal(worklist.sourceEntries.some(row => row.customerLive), false);
+  assert.equal(worklist.sourceEntries.some(row => row.productionDatasetAdmitted), false);
+  assert.equal(worklist.sourceEntries.some(row => row.legallyAcceptedUses.length > 0), false);
+  assert.throws(() => assertAllCountriesLive(worklist), /cannot be asserted/);
+});
+
+test("four official public HTTP CI receipts are historical and never customer/live rights", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
+  const observed = worklist.sourceEntries
+    .filter(row => row.sourceOnlyHttpProbeCiCheckpoint !== null);
+  assert.deepEqual(
+    new Set(observed.map(row => row.candidateKey)),
+    new Set(Object.keys(SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118))
+  );
+  for (const entry of observed) {
+    const checkpoint = entry.sourceOnlyHttpProbeCiCheckpoint;
+    const expected = SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118[entry.candidateKey];
+    assert.equal(checkpoint.verifiedCheckpointDate, "2026-11-18");
+    assert.equal(checkpoint.stage, "ONE_RECORD_UPSTREAM_CI_ONLY_NOT_PRODUCTION");
+    assert.equal(checkpoint.upstreamSourceId, expected.upstreamSourceId);
+    assert.equal(checkpoint.pullRequestUrl,
+      `https://github.com/NovapharmHealthacre/novapharm-website/pull/${expected.pullRequest}`);
+    assert.equal(checkpoint.workflowRunUrl,
+      `https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/${expected.workflowRun}`);
+    assert.equal(checkpoint.sourceRightsVerified, false);
+    assert.equal(checkpoint.productionConnected, false);
+    assert.equal(checkpoint.customerLive, false);
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(Object.isFrozen(checkpoint), true);
+  }
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+});
+
+test("Singapore HSA data licence and API conditions are separate and do not grant rights", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const hsa = worklist.sourceEntries.find(row =>
+    row.candidateKey === "asia-pacific-singapore-hsa-data-gov-sg");
+  assert.ok(hsa);
+  assert.equal(hsa.publisherTermsUrl, "https://developers.data.gov.sg/open-data-licence");
+  assert.equal(hsa.publisherApiTermsUrl, "https://data.gov.sg/privacy-and-terms");
+  assert.equal(hsa.officialDatasetUrl,
+    "https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view");
+  assert.match(hsa.termsPosture, /SINGAPORE_ODL_1/);
+  assert.equal(hsa.termsScreeningStatus, "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING");
+  assert.equal(hsa.productionRightsGranted, false);
+  assert.deepEqual(hsa.legallyAcceptedUses, []);
+  assert.equal(hsa.customerLive, false);
+  assert.equal(hsa.productionDatasetAdmitted, false);
+});
+
+test("EMA PMS beta explicitly forbids business use; no EU commercial source admission", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const ema = worklist.sourceEntries.find(row =>
+    row.candidateKey === "europe-european-union-eea-ema-pms-public-api");
+  assert.ok(ema);
+  assert.equal(ema.jurisdictionLabel, "European Union / EEA");
+  assert.equal(ema.publisherExplicitlyForbidsBusinessUse, true);
+  assert.equal(ema.publisherRegistrationRequired, true);
+  assert.equal(ema.termsPosture, "EMA_PMS_BETA_BUSINESS_USE_NOT_PERMITTED");
+  assert.equal(ema.publisherTermsUrl,
+    "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf");
+  assert.equal(ema.sourceOnlyHttpProbeCiCheckpoint, null);
+  assert.equal(ema.productionRightsGranted, false);
+  assert.equal(ema.productionDatasetAdmitted, false);
+  assert.equal(ema.customerLive, false);
+  assert.deepEqual(ema.legallyAcceptedUses, []);
+  assert.ok(ema.outstandingRightsRequirements.some(s =>
+    s.includes("Do not use") && s.includes("business")));
+  assert.ok(ema.outstandingRightsRequirements.some(s =>
+    s.includes("prior EMA authorisation")));
+  assert.equal(worklist.publiclyRestrictedBetaBusinessSources, 1);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+});
+
+test("other publisher pre-screens never inherit EMA restricted beta policy", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const restricted = worklist.sourceEntries.filter(row =>
+    row.publisherExplicitlyForbidsBusinessUse);
+  assert.deepEqual(restricted.map(row => row.candidateKey),
+    ["europe-european-union-eea-ema-pms-public-api"]);
+  for (const entry of worklist.sourceEntries) {
+    assert.equal(typeof entry.publisherExplicitlyForbidsBusinessUse, "boolean");
+    assert.equal(typeof entry.publisherRegistrationRequired, "boolean");
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+  }
+});
+
+test("France and Ireland official open-data licences require per-resource attribution and independent approval", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const france = worklist.sourceEntries.find(x => x.candidateKey === "europe-france-ansm-bdpm");
+  const ireland = worklist.sourceEntries.find(x => x.candidateKey === "europe-ireland-hpra-authorised-medicines");
+  assert.ok(france && ireland);
+  assert.equal(france.publisherTermsUrl,
+    "https://base-donnees-publique.medicaments.gouv.fr/telechargement");
+  assert.equal(france.termsPosture,
+    "FRANCE_BDPM_OPEN_LICENCE_WITH_ATTRIBUTION_AND_UPDATE_DUTIES");
+  assert.match(france.officialDatasetUrl, /^https:\/\/www\.data\.gouv\.fr\//);
+  assert.ok(france.outstandingRightsRequirements.some(x => x.includes("non-endorsement")));
+  assert.equal(ireland.publisherTermsUrl,
+    "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products");
+  assert.equal(ireland.termsPosture,
+    "IRELAND_HPRA_CC_BY_4_ATTRIBUTION_WITH_THIRD_PARTY_EXCLUSIONS");
+  assert.ok(ireland.officialDatasetUrl.endsWith("6987c2af-0c40-48da-8207-76b5da141266"));
+  for (const entry of [france, ireland]) {
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.productionDatasetAdmitted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(entry.sourceOnlyHttpProbeCiCheckpoint, null);
+    assert.equal(entry.termsSha256IndependentlyVerified, null);
+    assert.equal(entry.signedGrantReceiptSha256, null);
+    assert.deepEqual(entry.legallyAcceptedUses, []);
+    assert.equal(entry.sourceAccessApprovalRequired, false);
+  }
+});
+
+test("Norway DMP FHIR must apply for access; publisher access notice is not data licence", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const norway = worklist.sourceEntries.find(x =>
+    x.candidateKey === "europe-norway-dmp-medicine-fhir-service");
+  assert.ok(norway);
+  assert.equal(norway.publisherAccessRequirementsUrl,
+    "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/how-to-access-the-fhir-service");
+  assert.equal(norway.termsScreeningStatus, "PUBLISHER_ACCESS_APPLICATION_REQUIRED");
+  assert.equal(norway.publisherTermsUrl, null);
+  assert.equal(norway.publisherRegistrationRequired, true);
+  assert.equal(norway.sourceAccessApprovalRequired, true);
+  assert.equal(norway.publisherExplicitlyForbidsBusinessUse, false);
+  assert.equal(norway.productionRightsGranted, false);
+  assert.equal(norway.productionDatasetAdmitted, false);
+  assert.equal(norway.customerLive, false);
+  assert.equal(norway.sourceOnlyHttpProbeCiCheckpoint, null);
+  assert.equal(worklist.publicPublisherNoticesLocated, 10);
+  assert.equal(worklist.publisherAccessApplicationRequired, 1);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+});
+
+test("TGA copyright notice requires prior written commercial reuse permission unless a specific dataset licence applies", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const tga = worklist.sourceEntries.find(x =>
+    x.candidateKey === "oceania-australia-tga-artg");
+  assert.ok(tga);
+  assert.equal(tga.publisherTermsUrl,
+    "https://www.tga.gov.au/about-us/using-our-website/copyright");
+  assert.equal(tga.writtenCommercialPermissionRequired, true);
+  assert.equal(tga.termsPosture,
+    "TGA_WEBSITE_COMMERCIAL_REUSE_REQUIRES_PRIOR_WRITTEN_PERMISSION_UNLESS_OTHER_NOTICE");
+  assert.equal(tga.termsScreeningStatus, "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING");
+  assert.equal(tga.productionRightsGranted, false);
+  assert.equal(tga.productionDatasetAdmitted, false);
+  assert.equal(tga.customerLive, false);
+  assert.ok(tga.outstandingRightsRequirements.some(x =>
+    x.includes("prior written permission")));
+  assert.equal(worklist.publishedWebsiteCommercialPermissionRequired, 1);
+});
+
+test("PBS monthly public Schedule API documentation never becomes a redistribution licence or high-volume live feed", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const pbs = worklist.sourceEntries.find(x =>
+    x.candidateKey === "oceania-australia-pbs");
+  assert.ok(pbs);
+  assert.equal(pbs.officialApiDocumentationUrl, "https://data.pbs.gov.au/document/91327.html");
+  assert.equal(pbs.publisherTermsUrl, null);
+  assert.equal(pbs.termsScreeningStatus, "OFFICIAL_API_DOCUMENTATION_RIGHTS_REVIEW_REQUIRED");
+  assert.equal(pbs.termsPosture, "PBS_PUBLIC_API_DOCUMENTED_REUSE_LICENCE_NOT_REVIEWED");
+  assert.ok(pbs.outstandingRightsRequirements.some(x => x.includes("one request per 20 seconds")));
+  assert.ok(pbs.outstandingRightsRequirements.some(x => x.includes("embargo API")));
+  assert.equal(pbs.sourceOnlyHttpProbeCiCheckpoint, null);
+  assert.equal(pbs.productionRightsGranted, false);
+  assert.equal(pbs.productionDatasetAdmitted, false);
+  assert.equal(pbs.customerLive, false);
+  assert.equal(worklist.officialApiDocumentationWithoutRightsNotice, 1);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
 });

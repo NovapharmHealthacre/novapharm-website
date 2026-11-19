@@ -37,8 +37,8 @@ test("approved public main pushes retain immutable AWS contact release while pri
   for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
     assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
   }
-  assert.match(dispatcher, /if: steps\.private_release\.outputs\.skip != 'true'/);
-  const guardedAwsSteps = dispatcher.match(/if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
+  assert.match(dispatcher, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true'/);
+  const guardedAwsSteps = dispatcher.match(/if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
   assert.equal(guardedAwsSteps.length, 2, "both the AWS health check and contact dispatch must skip for private-only merges");
   assert.match(dispatcher, /gh workflow run publish-aws-contact-production\.yml/);
   assert.match(dispatcher, /expected_sha="\$EXPECTED_SHA"/);
@@ -618,6 +618,68 @@ test("IMDF venue-rights source-only merges cannot dispatch the unrelated AWS con
     assert.match(source, /found_ml=true/);
     assert.match(source, /private_only=false/);
   }
+});
+
+test("explicit owner production hold blocks AWS contact dispatch and publisher even if source classifier is public", () => {
+  const owner = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json", "utf8"));
+  const approval = payload => payload?.productionSignoff === "granted" &&
+    payload?.productionPermissions?.activatePublicCustomerAccess === true;
+  assert.equal(approval(owner), false, "current owner policy must not silently permit AWS");
+  assert.equal(approval({ productionSignoff: "granted", productionPermissions: { activatePublicCustomerAccess: false } }), false);
+  assert.equal(approval({ productionSignoff: "not_granted", productionPermissions: { activatePublicCustomerAccess: true } }), false);
+  assert.equal(approval({ productionSignoff: "granted", productionPermissions: { activatePublicCustomerAccess: true } }), true);
+  const query = '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true';
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  for (const [name, source] of [["dispatcher", dispatch], ["publisher", publish]]) {
+    assert.ok(source.includes(query), name + " must test both owner production permissions");
+    assert.ok(source.includes("id: owner_hold"), name + " must hold before AWS calls");
+    assert.ok(source.includes('echo "hold=true" >> "$GITHUB_OUTPUT"'), name + " must fail closed");
+    assert.ok(source.includes('echo "hold=false" >> "$GITHUB_OUTPUT"'), name + " must record explicit grant");
+    assert.ok(source.includes("config/intelligence/owner-production-constraints.json"), name + " must load the recorded policy");
+  }
+  const guarded = "steps.owner_hold.outputs.hold == 'false'";
+  assert.ok(dispatch.includes(guarded), "dispatch must be held without explicit approval");
+  const gatedAWS = dispatch.match(/- name: Verify AWS contact candidate is already activated\s*\n\s*if: ([^\n]+)/)?.[1] ?? "";
+  const gatedDispatch = dispatch.match(/- name: Dispatch independently verified exact-SHA contact release\s*\n\s*if: ([^\n]+)/)?.[1] ?? "";
+  assert.ok(gatedAWS.includes(guarded) && gatedDispatch.includes(guarded),
+    "both AWS health and workflow dispatch must explicitly test the owner hold");
+  assert.match(publish, /if \[ "\$\{\{ steps\.owner_hold\.outputs\.hold \}\}" != "false" \]; then\s*\n\s*echo "release_needed=false"/,
+    "publisher must force a release-scope denial before build and deployment");
+  assert.match(publish, /if: github\.ref == 'refs\/heads\/main' && needs\.release_scope\.outputs\.release_needed == 'true'/,
+    "publisher still requires a positive release-scope decision");
+});
+
+
+test("private enterprise readiness artifacts cannot dispatch the unrelated public contact publisher", () => {
+  const files = [
+    "src/core/intelligence-enterprise-readiness.mjs",
+    "scripts/audit-intelligence-enterprise-readiness.mjs",
+    "scripts/test-intelligence-enterprise-readiness.mjs",
+    "docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md",
+    ".github/workflows/intelligence-enterprise-readiness.yml"
+  ];
+  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
+  const publisher = get("publish-aws-contact-production.yml");
+  const protectedPaths = (source, name) => {
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line?.trim().endsWith(")"), name + " must retain the private changed-file case arm");
+    return new Set(line.trim().slice(0, -1).split("|"));
+  };
+  const dispatcherPaths = protectedPaths(dispatcher, "dispatcher");
+  const publisherPaths = protectedPaths(publisher, "publisher");
+  for (const path of files) {
+    assert.ok(dispatcherPaths.has(path), "contact dispatcher must treat source-only audit as private: " + path);
+    assert.ok(publisherPaths.has(path), "public publisher must treat source-only audit as private: " + path);
+  }
+  // A risk-register entry is a meaningful protected ML source change, so the
+  // existing found_ml=true & private_only=true condition can safely deny publication.
+  assert.ok(dispatcherPaths.has("docs/ai-risk-register.md"));
+  assert.ok(publisherPaths.has("docs/ai-risk-register.md"));
+  assert.match(dispatcher, /found_ml=true/);
+  assert.match(publisher, /release_needed=false/);
+  // Publisher policy-only changes remain neutral, not an automatic private exemption.
+  assert.match(publisher, /A publisher policy-only update must not be silently skipped/);
 });
 
 test("country release-ledger is private-only and cannot dispatch the corporate AWS publisher", () => {
