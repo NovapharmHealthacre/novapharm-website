@@ -52,7 +52,7 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
   practices: readonly Record<string, unknown>[];
   radiusKm: number;
 }>) {
-  const mapElement = useRef<HTMLDivElement>(null);
+  const mapElement = useRef<HTMLElement>(null);
   const [status, setStatus] = useState("Map not initialised");
   const points = useMemo(() => [
     ...acceptedPoints(pharmacies, "pharmacy"),
@@ -130,7 +130,7 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         Only organisations with accepted coordinates receive markers.
       </p>
     </header>
-    {token ? <div ref={mapElement} role="region" aria-label={`Interactive map centred on ${origin.postcode}`}
+    {token ? <section ref={mapElement} aria-label={`Interactive map centred on ${origin.postcode}`}
       style={{ width: "100%", height: 360, minHeight: 200, border: "1px solid #D2D2D7", borderRadius: 14, overflow: "hidden" }} /> : null}
     <p role="status" aria-live="polite" style={{ color: "#424245", marginTop: 10 }}>{status}</p>
     <p><a href={query} target="_blank" rel="noopener noreferrer">View postcode centroid in Apple Maps (opens external map)</a></p>
