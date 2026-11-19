@@ -145,6 +145,18 @@ jobs:
         with:
           fetch-depth: 2
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
+      - name: Enforce owner-approved contact-production permission
+        id: owner_hold
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
+          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "hold=true" >> "$GITHUB_OUTPUT"
+            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+          fi
       - name: Exclude Nova ML-only changes from unrelated public AWS contact publication
         id: classify
         shell: bash
@@ -152,6 +164,11 @@ jobs:
           EXPECTED_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
         run: |
           set -euo pipefail
+          if [ "${{ steps.owner_hold.outputs.hold }}" != "false" ]; then
+            echo "release_needed=false" >> "$GITHUB_OUTPUT"
+            echo "Contact publication is blocked by the owner production hold; neither AWS nor Pages may run."
+            exit 0
+          fi
           # Both automatic and manually dispatched releases must classify the
           # exact checked-out commit. A dispatch is not proof of public scope.
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
