@@ -185,6 +185,8 @@ jobs:
         if: inputs.action == 'deploy'
         env:
           NEXT_PUBLIC_ENTRA_LOGIN_ENABLED: ${{ vars.NOVAPHARM_ENABLE_ENTRA_AUTH }}
+          # GitHub environment-scoped public Maps token; never an Apple private signing key.
+          NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}
         run: |
           set -euo pipefail
           npm ci --ignore-scripts
