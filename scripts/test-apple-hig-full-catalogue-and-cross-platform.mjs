@@ -696,8 +696,8 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 90);
-  assert.equal(report.assessedPlatformDecisions, 270);
+  assert.equal(report.independentlyDocumentedArticleReviews, 99);
+  assert.equal(report.assessedPlatformDecisions, 297);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 6);
   assert.equal(report.allTopicsIndependentlyDispositioned, false);
@@ -1157,8 +1157,8 @@ test("10 official HIG productivity/commerce topics have bounded platform-specifi
     .guidelineReviewEvidence[0].includes("Full Keyboard Access"));
   assert.ok(tracker.topics.find(x=>x.title==="Drag and drop")
     .guidelineReviewEvidence[0].includes("safe undo"));
-  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,90);
-  assert.equal(tracker.meta.platformsAssessed,270);
+  assert.ok(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length>=90);
+  assert.ok(tracker.meta.platformsAssessed>=270);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
@@ -1175,5 +1175,53 @@ test("full HIG completion distinguishes approved out-of-scope topics from shippe
   assert.deepEqual(tv.releaseEvidence,[]);
   assert.equal(tracker.topics.some(t=>t.implementation==="not_applicable"),false);
   assert.equal(tracker.topics.some(t=>t.implementation==="verified"),false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("nine original Apple HIG native system/media article reviews preserve platform boundary and source proof",()=>{
+  const names=["Printing","Web views","Image views","App Shortcuts","Live Activities",
+    "Status bars","Home Screen quick actions","Going full screen","Playing video"];
+  assert.equal(new Set(names).size,9);
+  for(const name of names){
+    const t=tracker.topics.find(x=>x.title===name);
+    assert.ok(t,name);
+    assert.equal(t.guidelineReview,"reviewed",name);
+    assert.equal(t.sourceType,"Guideline",name);
+    assert.equal(t.guidelineReviewEvidence.length,3,name);
+    assert.ok(t.guidelineReviewEvidence[0].includes(t.markdown),name);
+    assert.ok(t.guidelineReviewEvidence[0].includes("2026-11-19"),name);
+    for(const p of ["web","ios","android"]){
+      const d=t.platformApplicability[p];
+      assert.ok(["applicable","not_applicable"].includes(d.state),name+"/"+p);
+      assert.ok(d.rationale.length>100,name+"/"+p);
+      assert.deepEqual(t[p+"Evidence"],[],name+"/"+p);
+    }
+    assert.equal(t.implementation,"not_verified",name);
+    assert.deepEqual(t.releaseEvidence,[],name);
+  }
+  for(const name of ["Web views","App Shortcuts","Live Activities",
+    "Status bars","Home Screen quick actions"]){
+    assert.equal(tracker.topics.find(x=>x.title===name).platformApplicability.web.state,
+      "not_applicable", "Native embedded or OS-level Apple experiences are not a web site's shipped APIs: "+name);
+    assert.equal(tracker.topics.find(x=>x.title===name).platformApplicability.ios.state,
+      "applicable",name);
+    assert.equal(tracker.topics.find(x=>x.title===name).platformApplicability.android.state,
+      "not_applicable",name);
+  }
+  assert.equal(tracker.topics.find(x=>x.title==="Image views").platformApplicability.web.state,
+    "applicable");
+  assert.equal(tracker.topics.find(x=>x.title==="Printing").platformApplicability.web.state,
+    "applicable");
+  assert.equal(tracker.topics.find(x=>x.title==="Going full screen").platformApplicability.web.state,
+    "applicable");
+  assert.equal(tracker.topics.find(x=>x.title==="Playing video").platformApplicability.web.state,
+    "applicable");
+  assert.ok(tracker.topics.find(x=>x.title==="Live Activities")
+    .guidelineReviewEvidence[0].includes("privacy-redacted"));
+  assert.ok(tracker.topics.find(x=>x.title==="App Shortcuts")
+    .guidelineReviewEvidence[0].includes("up to ten"));
+  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,99);
+  assert.equal(tracker.meta.platformsAssessed,297);
+  assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
