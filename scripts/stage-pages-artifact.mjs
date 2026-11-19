@@ -81,6 +81,7 @@ const requiredPublicPaths = [
   "da125ceca8032e01fc98782c388f894f.txt",
   "feed.xml",
   "assets",
+  "assets/js/ai-search.js",
   "assets/ai/runtime/search-controller.mjs",
   "assets/ai/runtime/semantic-worker.mjs",
   "assets/ai/company-source-manifest.json",
@@ -224,6 +225,10 @@ for (const runtime of aiRuntimePaths) {
   if (!readFileSync(sourceFile).equals(readFileSync(stagedFile))) {
     throw new Error("Stale/mismatched AI browser runtime: " + runtime);
   }
+}
+if (!readFileSync(join(root, "src/ai/search-bootstrap.mjs"))
+    .equals(readFileSync(join(output, "assets/js/ai-search.js")))) {
+  throw new Error("Public AI entrypoint differs from reviewed source");
 }
 const aiManifest = JSON.parse(readFileSync(join(output, "assets/ai/company-source-manifest.json"), "utf8"));
 const aiKnowledge = JSON.parse(readFileSync(join(output, "assets/ai/company-knowledge-index.json"), "utf8"));
