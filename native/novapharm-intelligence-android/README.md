@@ -64,6 +64,12 @@ This separate Kotlin research-only scorer does not activate a model, access phar
 
 The independent `src/main/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceipt.kt` test candidate is source-only and is not wired to the Android sparse-circuit application. It is a deterministic denial contract, not a production model, data-rights check or signed Android service. See `ALIGNMENT_RESEARCH_README.md` for synthetic tests and independent approval gates.
 
+## Isolated CLIP Kotlin/JVM research adapter
+
+CLIP is a separate, **source-only and unconnected** Kotlin/JVM adapter, not an Android APK, application sign-in, model runtime or clinical service. This offline source-test build intentionally uses `clipResearch/settings.gradle.kts` and `clipResearch/build.gradle.kts` **independently** of the pinned Android `:app` project so its JVM compiler and dependencies never replace the sparse-circuit prototype's Gradle configuration. Its source sets reference `../src/main/kotlin` and `../src/test/kotlin` containing `NovaClipVisualSearch.kt` and denial tests.
+
+With JDK 17 and Gradle 8.14.3 available, run `gradle -p native/novapharm-intelligence-android/clipResearch test --no-daemon`. The existing `gradle -p native/novapharm-intelligence-android :app:testDebugUnitTest :app:assembleDebug` remains independent. CLIP code is **not** packaged automatically into that APK. A future Android release must separately verify authenticated/CSRF-bound sessions, network security, source rights, app identity, physical-device accessibility, signing and Play distribution before integration. See [CLIP enterprise acceptance #827](https://github.com/NovapharmHealthacre/novapharm-website/issues/827).
+
 ## Android HIG-inspired adaptive appearance and edge-to-edge correction — 19 November 2026
 
 The offline Android research shell previously declared a permanently light `Theme.Material.Light.NoActionBar` and rendered fixed white canvas / graphite text irrespective of Android Dark Theme. On Android 15, edge-to-edge can also put content behind status/navigation bars without window-inset handling.

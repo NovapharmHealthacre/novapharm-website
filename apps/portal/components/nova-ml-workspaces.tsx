@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
 import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { ClipVisualSearch } from "./clip-visual-search";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
 import { NovaSignalsResearch } from "./nova-signals-research";
@@ -70,6 +71,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         </div>
       )}</dl>
     </section>}
+
+    {kind === "nova-device-intelligence" ? <ClipVisualSearch /> : null}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
       <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
