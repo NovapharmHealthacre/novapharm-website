@@ -52,7 +52,7 @@ test("separate iOS and Android native code stays permission-free and source-gate
   assert.match(swift, /import MapKit/);
   assert.match(swift, /Map\(position: \$camera\)/);
   assert.match(swiftPackage, /NovaMapKitView\.swift/);
-  assert.ok(kotlin.includes("https://maps.apple.com"));
+  assert.ok(kotlin.split("\n").some((line) => line.trim() === 'Locale.ROOT, "https://maps.apple.com/?ll=%.6f,%.6f&q=%s",'));
   assert.doesNotMatch(android, /android\\.permission\\.(?:ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|INTERNET)/);
 });
 
