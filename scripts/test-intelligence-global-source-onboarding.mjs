@@ -7,6 +7,7 @@ import {
   assertAllCountriesLive,
   EXPECTED_SOURCE_CANDIDATES,
   PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119,
+  SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118,
   buildPublisherRightsPrescreenWorklist
 } from "../src/core/intelligence-global-source-onboarding.mjs";
 import {sourcePlans} from "../src/core/intelligence-global-source-gateway.mjs";
@@ -98,7 +99,8 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   assert.equal(worklist.contract, "novapharm.intelligence.publisher-terms-prescreen.v1");
   assert.equal(worklist.totalSourceCandidates, 101);
-  assert.equal(worklist.publicPublisherNoticesLocated, 5);
+  assert.equal(worklist.publicPublisherNoticesLocated, 6);
+  assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
   assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
   assert.equal(worklist.customerLiveSourceCandidates, 0);
   assert.deepEqual(
@@ -118,7 +120,7 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   }
 });
 
-test("five official publisher notices must never become production licence approvals", () => {
+test("six official publisher notices must never become production licence approvals", () => {
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   const notices = new Map(worklist.sourceEntries
     .filter(entry => entry.publisherTermsUrl !== null)
@@ -130,6 +132,7 @@ test("five official publisher notices must never become production licence appro
   const expected = new Map([
     ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
     ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
+    ["asia-pacific-singapore-hsa-data-gov-sg", "https://developers.data.gov.sg/open-data-licence"],
     ["north-america-canada-health-canada-drug-product-database", "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe"],
     ["europe-united-kingdom-nhsbsa-english-prescribing-dataset", "https://opendata.nhsbsa.net/pages/terms-and-conditions"],
     ["global-global-us-clinicaltrials-gov", "https://clinicaltrials.gov/terms-conditions"]
@@ -148,7 +151,7 @@ test("five official publisher notices must never become production licence appro
     assert.equal(new URL(row.publisherTermsUrl).protocol, "https:");
   }
   assert.equal(worklist.sourceEntries.filter(row =>
-    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 96);
+    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 95);
 });
 
 test("public licence notices cannot override tampered registry or proof-of-rights gates", () => {
@@ -165,4 +168,51 @@ test("public licence notices cannot override tampered registry or proof-of-right
   assert.equal(worklist.sourceEntries.some(row => row.productionDatasetAdmitted), false);
   assert.equal(worklist.sourceEntries.some(row => row.legallyAcceptedUses.length > 0), false);
   assert.throws(() => assertAllCountriesLive(worklist), /cannot be asserted/);
+});
+
+test("four official public HTTP CI receipts are historical and never customer/live rights", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
+  const observed = worklist.sourceEntries
+    .filter(row => row.sourceOnlyHttpProbeCiCheckpoint !== null);
+  assert.deepEqual(
+    new Set(observed.map(row => row.candidateKey)),
+    new Set(Object.keys(SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118))
+  );
+  for (const entry of observed) {
+    const checkpoint = entry.sourceOnlyHttpProbeCiCheckpoint;
+    const expected = SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118[entry.candidateKey];
+    assert.equal(checkpoint.verifiedCheckpointDate, "2026-11-18");
+    assert.equal(checkpoint.stage, "ONE_RECORD_UPSTREAM_CI_ONLY_NOT_PRODUCTION");
+    assert.equal(checkpoint.upstreamSourceId, expected.upstreamSourceId);
+    assert.equal(checkpoint.pullRequestUrl,
+      `https://github.com/NovapharmHealthacre/novapharm-website/pull/${expected.pullRequest}`);
+    assert.equal(checkpoint.workflowRunUrl,
+      `https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/${expected.workflowRun}`);
+    assert.equal(checkpoint.sourceRightsVerified, false);
+    assert.equal(checkpoint.productionConnected, false);
+    assert.equal(checkpoint.customerLive, false);
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(Object.isFrozen(checkpoint), true);
+  }
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+});
+
+test("Singapore HSA data licence and API conditions are separate and do not grant rights", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const hsa = worklist.sourceEntries.find(row =>
+    row.candidateKey === "asia-pacific-singapore-hsa-data-gov-sg");
+  assert.ok(hsa);
+  assert.equal(hsa.publisherTermsUrl, "https://developers.data.gov.sg/open-data-licence");
+  assert.equal(hsa.publisherApiTermsUrl, "https://data.gov.sg/privacy-and-terms");
+  assert.equal(hsa.officialDatasetUrl,
+    "https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view");
+  assert.match(hsa.termsPosture, /SINGAPORE_ODL_1/);
+  assert.equal(hsa.termsScreeningStatus, "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING");
+  assert.equal(hsa.productionRightsGranted, false);
+  assert.deepEqual(hsa.legallyAcceptedUses, []);
+  assert.equal(hsa.customerLive, false);
+  assert.equal(hsa.productionDatasetAdmitted, false);
 });
