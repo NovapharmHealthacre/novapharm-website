@@ -48,6 +48,14 @@ jobs:
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs
       - run: node --test scripts/test-apple-hig-attachment-audit.mjs
+      - name: Preserve 172-topic HIG production acceptance gaps (not a compliance certificate)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: apple-hig-production-audit-${{ github.sha }}
+          path: artifacts/apple-hig-production-audit/172-topic-gap-ledger.json
+          if-no-files-found: warn
+          retention-days: 30
 
   remote-apple-link-audit:
     name: Manual Apple HIG 210-URL and section-anchor audit (not guideline review)
