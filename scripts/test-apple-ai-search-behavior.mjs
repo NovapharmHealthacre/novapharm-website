@@ -76,9 +76,19 @@ test("cancel/close before index fetch completes never constructs a detached sema
 test("enabled semantic retrieval can be turned off and its worker terminated", async () => {
   const savedWorker = globalThis.Worker;
   const savedDocument = globalThis.document;
+  const savedIndexedDB = globalThis.indexedDB;
   const workers = [];
+  const deleted = [];
   try {
     globalThis.document = { createElement: control };
+    globalThis.indexedDB = {
+      deleteDatabase(name) {
+        deleted.push(name);
+        const request = {};
+        queueMicrotask(() => request.onsuccess?.());
+        return request;
+      }
+    };
     globalThis.Worker = class {
       constructor() { this.terminated = false; this.callbacks = []; workers.push(this); }
       addEventListener(type, cb) { if (type === "message") this.callbacks.push(cb); }
@@ -99,9 +109,15 @@ test("enabled semantic retrieval can be turned off and its worker terminated", a
     nodes["semantic-enable"].emit("click");
     assert.equal(workers[0].terminated, true);
     assert.equal(nodes["semantic-enable"].textContent, "Enable private semantic retrieval");
+    assert.equal(nodes["cache-clear"].hidden, false);
+    nodes["cache-clear"].emit("click");
+    await turn();
+    assert.deepEqual(deleted, ["novapharm-public-ai"]);
+    assert.match(nodes.status.textContent, /assets cleared/);
     dialog.close();
   } finally {
     globalThis.Worker = savedWorker;
     globalThis.document = savedDocument;
+    globalThis.indexedDB = savedIndexedDB;
   }
 });
