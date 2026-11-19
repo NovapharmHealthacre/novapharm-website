@@ -131,3 +131,47 @@ test("Expo recognizes shared first-party mjs reference in both platform bundles"
   assert.match(metro, /"mjs"/);
   assert.match(metro, /watchFolders/);
 });
+
+test("Signals research uses the existing More → Nova ML research page without replacing other mobile features", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
+  const shared = read("apps/portal/data/nova-signals-research.ts");
+  assert.match(app, /"more" \| "review" \| "research"/);
+  assert.match(app, /screen: "research", label: "Nova ML research"/);
+  assert.match(app, /screen === "research" && \(/);
+  assert.match(app, /<SignalsResearchScreen\s*\/>/);
+  assert.match(app, /<MultimodalReviewScreen/);
+  assert.match(app, /<MapsResearchScreen/);
+  assert.match(app, /<CountryDirectoryScreen/);
+  assert.match(screen, /novaSignalsResearchSources/);
+  assert.match(screen, /novaSignalsResearchGroups/);
+  assert.match(screen, /accessibilityRole="link"/);
+  assert.match(screen, /accessibilityState=\{\{ expanded \}\}/);
+  assert.match(screen, /minHeight: 44/);
+  assert.match(screen, /No OpenAI account access, patient data, voice capture/);
+  assert.match(screen, /only three are candidates/);
+  assert.equal((shared.match(/id: "[a-z0-9-]+", group:/g) ?? []).length, 15);
+  assert.equal((shared.match(/url: "https:\/\/(?:openai\.com|cdn\.openai\.com)\//g) ?? []).length, 15);
+  assert.doesNotMatch(screen + app, /fetch\(|XMLHttpRequest|WebSocket\(|getUserMedia|expo-av|Audio\.Recording|SecureStore|openAIKey/i);
+});
+test("mobile research opens only curated OpenAI source URLs on explicit tap", () => {
+  const screen = read("native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx");
+  assert.ok(screen.includes(String.raw`(?:openai\.com|cdn\.openai\.com)`));
+  assert.match(screen, /if \(!validSourceUrl\(url\)\)/);
+  assert.match(screen, /onPress=\{\(\) => \{ void openSource\(source\.url\); \}\}/);
+  assert.match(screen, /Linking\.openURL\(url\)/);
+  assert.match(screen, /catch \{/);
+});
+test("source candidates remain 77 unverified country or territory labels rather than 101 live countries", () => {
+  const register = JSON.parse(read("docs/intelligence/global-pharma-sources-20261117.json"));
+  const labels = new Set(register.sources.map((source) => source.country));
+  const nationalLabels = new Set([...labels].filter(label => label !== "Global" && label !== "European Union / EEA"));
+  assert.equal(register.sources.length, 101);
+  assert.equal(nationalLabels.size, 77);
+  assert.ok(register.sources.every(source => source.integrationStatus === "candidate-only" && source.dataAdmission === "not-admitted" && source.rightsStatus === "not-reviewed" && source.activeAdapterId === null));
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(app, /countryTerritoryCandidateLabels/);
+  assert.match(app, /Country\/territory labels \(unverified\)/);
+  assert.match(app, /Source entries are not verified country integrations/);
+  assert.doesNotMatch(app, /101 countries integrated|101 live countries|101 country APIs connected/i);
+});

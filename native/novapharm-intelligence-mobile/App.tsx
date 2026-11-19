@@ -22,6 +22,7 @@ import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intellige
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { SignalsResearchScreen } from "./SignalsResearchScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
@@ -35,6 +36,9 @@ type Source = (typeof sourceRegister.sources)[number];
 
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
+const countryTerritoryCandidateLabels = new Set(sourceRegister.sources
+  .map((item) => item.country)
+  .filter((label) => label !== "Global" && label !== "European Union / EEA")).size;
 const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
@@ -160,7 +164,7 @@ export default function App() {
       <Text style={styles.noticeTitle}>Research preview · private and unconnected</Text>
       <Text style={styles.noticeText}>
         No live medicine data, customer session, payments, external API calls or AI inference is enabled.
-        Every source needs independent rights and data acceptance.
+        Every source needs independent rights and data acceptance. Source entries are not verified country integrations.
       </Text>
     </View>
   );
@@ -236,6 +240,7 @@ export default function App() {
               <View style={styles.metricGrid}>
                 <Metric number={String(intelligenceWorkspaceCatalogue.length)} label="Canonical workspaces" />
                 <Metric number={String(sourceRegister.sources.length)} label="Source candidates" />
+                <Metric number={String(countryTerritoryCandidateLabels)} label="Country/territory labels (unverified)" />
                 <Metric number={String(sourceRegions.length - 1)} label="Source regions" />
               </View>
               <View style={styles.rule} />
@@ -331,6 +336,7 @@ export default function App() {
                 This screen reads bundled, non-sensitive governance metadata only.
                 No model weights, pharmaceutical data, patient imagery, external requests or verification receipts are loaded.
               </Text>
+              <SignalsResearchScreen />
               <View style={styles.rule} />
               <SectionHeading
                 title="Nova ML research"

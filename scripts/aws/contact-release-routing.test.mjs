@@ -994,3 +994,14 @@ test("private publisher Bash case arms have exactly one terminating parenthesis"
     assert.equal(patterns.has("scripts/build-site.mjs"), false);
   }
 });
+
+test("Signals read-only research source is publisher-private without granting a mobile-directory wildcard", () => {
+  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
+  const publisher = get("publish-aws-contact-production.yml");
+  const exactPath = "native/novapharm-intelligence-mobile/SignalsResearchScreen.tsx";
+  for (const [name, source] of [["dispatcher", dispatcher], ["publisher", publisher]]) {
+    assert.ok(source.includes("|" + exactPath + "|"), name + " must explicitly exclude unsigned research screen from public contact publication");
+    assert.ok(!source.includes("native/novapharm-intelligence-mobile/*"), name + " must not use unreviewed private mobile wildcard");
+    assert.match(source, /private_only=true|release_needed=false/, name + " must retain publisher rejection state");
+  }
+});
