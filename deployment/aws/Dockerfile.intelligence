@@ -14,11 +14,13 @@ RUN npm run build --workspace=@novapharm/portal
 
 FROM node:24-alpine3.23 AS runtime
 RUN apk upgrade --no-cache
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="NovaPharm Intelligence Medicines Terminal" \
       org.opencontainers.image.revision="${SOURCE_SHA}" \
       novapharm.release-gate="production-candidate-not-approved"
-ENV NODE_ENV=production \
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN} \
+    NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     PORT=4303
 WORKDIR /app
