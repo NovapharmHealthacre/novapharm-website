@@ -157,6 +157,46 @@ final class NovaMLAppleTests: XCTestCase {
         XCTAssertThrowsError(try fakeTruth.validateForResearchDisplay())
     }
 
+    func testCLIPClientRejectsUntrustedOriginBeforeNetworkAccess() throws {
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "https://unapproved.example")!
+        ))
+        XCTAssertThrowsError(try NovaClipVisualSearch(
+            trustedPortalOrigin: URL(string: "http://portal.novapharmhealthcare.com")!
+        ))
+    }
+
+    func testCLIPSourceUrlsEnforcePublicHttpsAttribution() throws {
+        for text in [
+            "https://127.0.0.1/private",
+            "https://[::1]/private",
+            "https://warehouse.internal/secret",
+            "https://docs.local/secret",
+            "https://attacker@novapharmhealthcare.com/public",
+            "https://novapharmhealthcare.com:8443/public",
+            "https://novapharmhealthcare.com/public#fragment",
+            "http://novapharmhealthcare.com/public"
+        ] {
+            XCTAssertFalse(NovaClipVisualSearch.sourceAllowed(URL(string: text)!), text)
+        }
+        XCTAssertTrue(NovaClipVisualSearch.sourceAllowed(
+            URL(string: "https://novapharmhealthcare.com/products/")!
+        ))
+    }
+
+    func testCLIPClientRejectsRedirectableOrInjectedOrigins() throws {
+        let invalid = [
+            "https://portal.novapharmhealthcare.com:8443/",
+            "https://portal.novapharmhealthcare.com/?redirect=1",
+            "https://portal.novapharmhealthcare.com/#fragment",
+            "https://user@portal.novapharmhealthcare.com/",
+            "https://portal.novapharmhealthcare.com/evil"
+        ]
+        for text in invalid {
+            XCTAssertThrowsError(try NovaClipVisualSearch(trustedPortalOrigin: URL(string: text)!))
+        }
+    }
+
     func testSparseCircuitReaderIsDisplayOnlyAndFailClosed() throws {
         let base: [String: Any] = [
             "schemaVersion": "npi.sparse-circuit.v1",
