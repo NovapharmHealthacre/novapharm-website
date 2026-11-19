@@ -49,7 +49,9 @@
       "URL",
       "Markdown"
     ],
-    "workbookFullReviewCaveat": "All 10 workbook parsed sheets read and both 172-row tables and 6 section views fieldwise matched to owner CSV. This is an inventory/metadata audit, not official full-text HIG review, native device acceptance or audit of archive contents."
+    "workbookFullReviewCaveat": "All 10 workbook parsed sheets read and both 172-row tables and 6 section views fieldwise matched to owner CSV. This is an inventory/metadata audit, not official full-text HIG review, native device acceptance or audit of archive contents.",
+    "originalWorkbookSectionAnchorDriftFindings": 1,
+    "remoteLinkHealthPriorAudit": "2026-11-19 GitHub Actions run 44448141447: 209/210 original URL/section checks reached; one original Siri in-page heading not present. This is a documented source drift, not conformance failure or a reconstructed original link."
   },
   "topics": [
     {
@@ -5856,7 +5858,16 @@
       "sourceDescription": "Make app commands useful with Siri and shortcuts.",
       "url": "https://developer.apple.com/design/human-interface-guidelines/siri#Shortcuts-and-suggestions",
       "parentUrl": "https://developer.apple.com/design/human-interface-guidelines/siri",
-      "sectionVerified": false
+      "sectionVerified": false,
+      "auditFinding": {
+        "state": "original_anchor_missing",
+        "observedOn": "2026-11-19",
+        "originalOwnerWorkbookUrl": "https://developer.apple.com/design/human-interface-guidelines/siri#Shortcuts-and-suggestions",
+        "currentArticle": "https://developer.apple.com/design/human-interface-guidelines/siri.md",
+        "explanation": "The official Siri page currently has no heading 'Shortcuts and suggestions'. The page change log records a June 8, 2026 revision for Siri AI. Preserve the owner workbook URL exactly while tracking a current relevant section separately.",
+        "replacementReference": "https://developer.apple.com/design/human-interface-guidelines/siri#Getting-your-app-to-work-with-Siri",
+        "replacementHeading": "Getting your app to work with Siri"
+      }
     }
   ],
   "supportingResources": [
