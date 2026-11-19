@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/public-pages-browser-acceptance.yml
+      - scripts/ci/public-pages-static-server.mjs
       - assets/css/**
       - legal/**
       - assets/js/cookie-consent.js
@@ -40,6 +41,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/public-pages-browser-acceptance.yml
+      - scripts/ci/public-pages-static-server.mjs
       - assets/css/**
       - legal/**
       - assets/js/cookie-consent.js
@@ -79,11 +81,21 @@ permissions:
 
 jobs:
   rendered-public-estate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --shm-size=1gb
     timeout-minutes: 25
     steps:
       - name: Check out exact public release source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust exact checkout for release provenance
+        run: |
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
       - name: Use Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -93,20 +105,14 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Marketplace stock DOM and image audit regression
         run: node --test scripts/test-marketplace-stock-dom-stability.mjs
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit binaries (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Validate locked Playwright and both bundled browsers
+        run: |
+          node -e "const fs=require('node:fs'); const p=require('playwright/package.json'); const b=require('playwright'); if(p.version!=='1.61.1') process.exit(1); for(const engine of [b.chromium,b.webkit]) { const file=engine.executablePath(); if(!fs.existsSync(file)) {console.error('Missing browser '+file); process.exit(1);} }"
       - name: Build safe public-only estate
         run: npm run build:public-only
       - name: Serve generated public estate
         run: |
-          python3 -m http.server 4310 --bind 127.0.0.1 > /tmp/novapharm-public-server.log 2>&1 &
+          node scripts/ci/public-pages-static-server.mjs --bind 127.0.0.1 > /tmp/novapharm-public-server.log 2>&1 &
           echo $! > /tmp/novapharm-public-server.pid
       - name: Audit every public sitemap route and commerce shell geometry
         env:
