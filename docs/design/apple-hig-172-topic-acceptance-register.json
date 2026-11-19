@@ -51,7 +51,19 @@
     ],
     "workbookFullReviewCaveat": "All 10 workbook parsed sheets read and both 172-row tables and 6 section views fieldwise matched to owner CSV. This is an inventory/metadata audit, not official full-text HIG review, native device acceptance or audit of archive contents.",
     "originalWorkbookSectionAnchorDriftFindings": 1,
-    "remoteLinkHealthPriorAudit": "2026-11-19 GitHub Actions run 44448141447: 209/210 original URL/section checks reached; one original Siri in-page heading not present. This is a documented source drift, not conformance failure or a reconstructed original link."
+    "remoteLinkHealthPriorAudit": "2026-11-19 GitHub Actions run 44448141447: 209/210 original URL/section checks reached; one original Siri in-page heading not present. This is a documented source drift, not conformance failure or a reconstructed original link.",
+    "ownerReviewAttestation": {
+      "status": "completed_as_reported_by_owner",
+      "attestedOn": "2026-11-19",
+      "ownerStatement": "I have done the review of Apple HIG coverage",
+      "scope": "The user-provided 172-topic Apple HIG section-wise index including six sections and eight nested Components groups",
+      "indexedTopicsWithinAttestedCoverage": 172,
+      "evidenceBasis": "Owner's direct conversation attestation and existing indexed guide/CSV, not 172 independently reproduced full-text article audits",
+      "articleLevelEvidenceIndependentlyDocumentedAtAttestation": 2,
+      "fullTextReviewIndependentlyVerifiedForAll172": false,
+      "platformApplicabilityApprovedForAll516": false,
+      "implementationOrProductionConformanceCertified": false
+    }
   },
   "topics": [
     {
@@ -84,6 +96,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/getting-started.md"
       }
     },
     {
@@ -116,6 +133,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/design-principles.md"
       }
     },
     {
@@ -148,6 +170,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ios.md"
       }
     },
     {
@@ -180,6 +207,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados.md"
       }
     },
     {
@@ -212,6 +244,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md"
       }
     },
     {
@@ -244,6 +281,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos.md"
       }
     },
     {
@@ -276,6 +318,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos.md"
       }
     },
     {
@@ -308,6 +355,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos.md"
       }
     },
     {
@@ -340,6 +392,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games.md"
       }
     },
     {
@@ -372,6 +429,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo.md"
       }
     },
     {
@@ -404,6 +466,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/foundations.md"
       }
     },
     {
@@ -441,7 +508,12 @@
         "2026-11-19 official complete Markdown article review: https://developer.apple.com/design/human-interface-guidelines/accessibility.md (Discussion, Vision, Hearing, Mobility, Speech, Cognitive, Platform considerations, resources and change log).",
         "Source requirements recorded: larger text (aim for 200% where relevant), legible contrast in both appearances, information beyond color, VoiceOver labeling, caption/transcript alternatives, clear touch/control spacing, simpler gestures and alternatives, physical keyboard/Voice Control/Switch Control, motion reduction and Assistive Access considerations.",
         "Platform-specific nuance: Apple's iOS 44x44 pt is a recommended default control size, not the listed minimum (28x28 pt); distinguish web CSS pixels from native points. This is an article-level review only, without device or production acceptance."
-      ]
+      ],
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/accessibility.md"
+      }
     },
     {
       "section": "Foundations",
@@ -473,6 +545,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-icons.md"
       }
     },
     {
@@ -505,6 +582,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/branding.md"
       }
     },
     {
@@ -542,7 +624,12 @@
         "2026-11-19 official complete Markdown article review: https://developer.apple.com/design/human-interface-guidelines/color.md (Discussion, Best practices, Inclusive color, System colors, Liquid Glass color, Color management, Platform considerations, Specifications and change log).",
         "Source requirements recorded: consistent semantic purpose; light, dark and increased-contrast adaptations; non-color status cues; contextual contrast for labels and maps; appropriate iOS semantic system colors; restrained tinted controls; device/lighting tests and color-profile fidelity.",
         "Scope boundary: article text reviewed, not a certificate of NovaPharm CSS/native color conformity; physical contrast/appearance, protected sessions and deployed/signed releases remain unverified."
-      ]
+      ],
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/color.md"
+      }
     },
     {
       "section": "Foundations",
@@ -574,6 +661,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/dark-mode.md"
       }
     },
     {
@@ -606,6 +698,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/icons.md"
       }
     },
     {
@@ -638,6 +735,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/images.md"
       }
     },
     {
@@ -670,6 +772,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/immersive-experiences.md"
       }
     },
     {
@@ -702,6 +809,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/inclusion.md"
       }
     },
     {
@@ -734,6 +846,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/layout.md"
       }
     },
     {
@@ -766,6 +883,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/materials.md"
       }
     },
     {
@@ -798,6 +920,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/motion.md"
       }
     },
     {
@@ -830,6 +957,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/privacy.md"
       }
     },
     {
@@ -862,6 +994,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/right-to-left.md"
       }
     },
     {
@@ -894,6 +1031,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols.md"
       }
     },
     {
@@ -926,6 +1068,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/spatial-layout.md"
       }
     },
     {
@@ -958,6 +1105,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/typography.md"
       }
     },
     {
@@ -990,6 +1142,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/writing.md"
       }
     },
     {
@@ -1022,6 +1179,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/patterns.md"
       }
     },
     {
@@ -1054,6 +1216,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/charting-data.md"
       }
     },
     {
@@ -1086,6 +1253,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/collaboration-and-sharing.md"
       }
     },
     {
@@ -1118,6 +1290,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop.md"
       }
     },
     {
@@ -1150,6 +1327,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/entering-data.md"
       }
     },
     {
@@ -1182,6 +1364,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/feedback.md"
       }
     },
     {
@@ -1214,6 +1401,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/file-management.md"
       }
     },
     {
@@ -1246,6 +1438,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/going-full-screen.md"
       }
     },
     {
@@ -1278,6 +1475,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/launching.md"
       }
     },
     {
@@ -1310,6 +1512,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps.md"
       }
     },
     {
@@ -1342,6 +1549,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/loading.md"
       }
     },
     {
@@ -1374,6 +1586,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/managing-accounts.md"
       }
     },
     {
@@ -1406,6 +1623,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/managing-notifications.md"
       }
     },
     {
@@ -1438,6 +1660,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/modality.md"
       }
     },
     {
@@ -1470,6 +1697,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/multitasking.md"
       }
     },
     {
@@ -1502,6 +1734,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/offering-help.md"
       }
     },
     {
@@ -1534,6 +1771,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/onboarding.md"
       }
     },
     {
@@ -1566,6 +1808,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-audio.md"
       }
     },
     {
@@ -1598,6 +1845,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-haptics.md"
       }
     },
     {
@@ -1630,6 +1882,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-video.md"
       }
     },
     {
@@ -1662,6 +1919,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/printing.md"
       }
     },
     {
@@ -1694,6 +1956,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews.md"
       }
     },
     {
@@ -1726,6 +1993,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/searching.md"
       }
     },
     {
@@ -1758,6 +2030,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/settings.md"
       }
     },
     {
@@ -1790,6 +2067,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/undo-and-redo.md"
       }
     },
     {
@@ -1822,6 +2104,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/workouts.md"
       }
     },
     {
@@ -1854,6 +2141,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/components.md"
       }
     },
     {
@@ -1886,6 +2178,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/content.md"
       }
     },
     {
@@ -1918,6 +2215,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/charts.md"
       }
     },
     {
@@ -1950,6 +2252,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/image-views.md"
       }
     },
     {
@@ -1982,6 +2289,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/text-views.md"
       }
     },
     {
@@ -2014,6 +2326,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/web-views.md"
       }
     },
     {
@@ -2046,6 +2363,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/layout-and-organization.md"
       }
     },
     {
@@ -2078,6 +2400,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/boxes.md"
       }
     },
     {
@@ -2110,6 +2437,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/collections.md"
       }
     },
     {
@@ -2142,6 +2474,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/column-views.md"
       }
     },
     {
@@ -2174,6 +2511,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls.md"
       }
     },
     {
@@ -2206,6 +2548,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/labels.md"
       }
     },
     {
@@ -2238,6 +2585,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables.md"
       }
     },
     {
@@ -2270,6 +2622,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/lockups.md"
       }
     },
     {
@@ -2302,6 +2659,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/outline-views.md"
       }
     },
     {
@@ -2334,6 +2696,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/split-views.md"
       }
     },
     {
@@ -2366,6 +2733,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tab-views.md"
       }
     },
     {
@@ -2398,6 +2770,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md"
       }
     },
     {
@@ -2430,6 +2807,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/activity-views.md"
       }
     },
     {
@@ -2462,6 +2844,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/buttons.md"
       }
     },
     {
@@ -2494,6 +2881,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/context-menus.md"
       }
     },
     {
@@ -2526,6 +2918,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/dock-menus.md"
       }
     },
     {
@@ -2558,6 +2955,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/edit-menus.md"
       }
     },
     {
@@ -2590,6 +2992,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions.md"
       }
     },
     {
@@ -2622,6 +3029,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/menus.md"
       }
     },
     {
@@ -2654,6 +3066,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/ornaments.md"
       }
     },
     {
@@ -2686,6 +3103,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md"
       }
     },
     {
@@ -2718,6 +3140,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md"
       }
     },
     {
@@ -2750,6 +3177,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md"
       }
     },
     {
@@ -2782,6 +3214,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/toolbars.md"
       }
     },
     {
@@ -2814,6 +3251,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/navigation-and-search.md"
       }
     },
     {
@@ -2846,6 +3288,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/path-controls.md"
       }
     },
     {
@@ -2878,6 +3325,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/search-fields.md"
       }
     },
     {
@@ -2910,6 +3362,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sidebars.md"
       }
     },
     {
@@ -2942,6 +3399,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tab-bars.md"
       }
     },
     {
@@ -2974,6 +3436,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/token-fields.md"
       }
     },
     {
@@ -3006,6 +3473,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/presentation.md"
       }
     },
     {
@@ -3038,6 +3510,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/action-sheets.md"
       }
     },
     {
@@ -3070,6 +3547,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/alerts.md"
       }
     },
     {
@@ -3102,6 +3584,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/page-controls.md"
       }
     },
     {
@@ -3134,6 +3621,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/panels.md"
       }
     },
     {
@@ -3166,6 +3658,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/popovers.md"
       }
     },
     {
@@ -3198,6 +3695,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/scroll-views.md"
       }
     },
     {
@@ -3230,6 +3732,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sheets.md"
       }
     },
     {
@@ -3262,6 +3769,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/windows.md"
       }
     },
     {
@@ -3294,6 +3806,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/selection-and-input.md"
       }
     },
     {
@@ -3326,6 +3843,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/color-wells.md"
       }
     },
     {
@@ -3358,6 +3880,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/combo-boxes.md"
       }
     },
     {
@@ -3390,6 +3917,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md"
       }
     },
     {
@@ -3422,6 +3954,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/image-wells.md"
       }
     },
     {
@@ -3454,6 +3991,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pickers.md"
       }
     },
     {
@@ -3486,6 +4028,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/segmented-controls.md"
       }
     },
     {
@@ -3518,6 +4065,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sliders.md"
       }
     },
     {
@@ -3550,6 +4102,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/steppers.md"
       }
     },
     {
@@ -3582,6 +4139,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/text-fields.md"
       }
     },
     {
@@ -3614,6 +4176,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/toggles.md"
       }
     },
     {
@@ -3646,6 +4213,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards.md"
       }
     },
     {
@@ -3678,6 +4250,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/status.md"
       }
     },
     {
@@ -3710,6 +4287,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/activity-rings.md"
       }
     },
     {
@@ -3742,6 +4324,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gauges.md"
       }
     },
     {
@@ -3774,6 +4361,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md"
       }
     },
     {
@@ -3806,6 +4398,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/rating-indicators.md"
       }
     },
     {
@@ -3838,6 +4435,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/system-experiences.md"
       }
     },
     {
@@ -3870,6 +4472,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-shortcuts.md"
       }
     },
     {
@@ -3902,6 +4509,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/complications.md"
       }
     },
     {
@@ -3934,6 +4546,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/controls.md"
       }
     },
     {
@@ -3966,6 +4583,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-activities.md"
       }
     },
     {
@@ -3998,6 +4620,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/notifications.md"
       }
     },
     {
@@ -4030,6 +4657,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/snippets.md"
       }
     },
     {
@@ -4062,6 +4694,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/status-bars.md"
       }
     },
     {
@@ -4094,6 +4731,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/top-shelf.md"
       }
     },
     {
@@ -4126,6 +4768,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/watch-faces.md"
       }
     },
     {
@@ -4158,6 +4805,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/widgets.md"
       }
     },
     {
@@ -4190,6 +4842,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/inputs.md"
       }
     },
     {
@@ -4222,6 +4879,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/action-button.md"
       }
     },
     {
@@ -4254,6 +4916,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble.md"
       }
     },
     {
@@ -4286,6 +4953,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/camera-control.md"
       }
     },
     {
@@ -4318,6 +4990,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/digital-crown.md"
       }
     },
     {
@@ -4350,6 +5027,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/eyes.md"
       }
     },
     {
@@ -4382,6 +5064,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/focus-and-selection.md"
       }
     },
     {
@@ -4414,6 +5101,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/game-controls.md"
       }
     },
     {
@@ -4446,6 +5138,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gestures.md"
       }
     },
     {
@@ -4478,6 +5175,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md"
       }
     },
     {
@@ -4510,6 +5212,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/keyboards.md"
       }
     },
     {
@@ -4542,6 +5249,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/nearby-interactions.md"
       }
     },
     {
@@ -4574,6 +5286,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pointing-devices.md"
       }
     },
     {
@@ -4606,6 +5323,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/remotes.md"
       }
     },
     {
@@ -4638,6 +5360,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/technologies.md"
       }
     },
     {
@@ -4670,6 +5397,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/airplay.md"
       }
     },
     {
@@ -4702,6 +5434,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/always-on.md"
       }
     },
     {
@@ -4734,6 +5471,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-clips.md"
       }
     },
     {
@@ -4766,6 +5508,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase.md"
       }
     },
     {
@@ -4798,6 +5545,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pay.md"
       }
     },
     {
@@ -4830,6 +5582,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/augmented-reality.md"
       }
     },
     {
@@ -4862,6 +5619,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/carekit.md"
       }
     },
     {
@@ -4894,6 +5656,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/carplay.md"
       }
     },
     {
@@ -4926,6 +5693,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/game-center.md"
       }
     },
     {
@@ -4958,6 +5730,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/generative-ai.md"
       }
     },
     {
@@ -4990,6 +5767,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/healthkit.md"
       }
     },
     {
@@ -5022,6 +5804,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/homekit.md"
       }
     },
     {
@@ -5054,6 +5841,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/icloud.md"
       }
     },
     {
@@ -5086,6 +5878,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/id-verifier.md"
       }
     },
     {
@@ -5118,6 +5915,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md"
       }
     },
     {
@@ -5150,6 +5952,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-photos.md"
       }
     },
     {
@@ -5182,6 +5989,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst.md"
       }
     },
     {
@@ -5214,6 +6026,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/machine-learning.md"
       }
     },
     {
@@ -5246,6 +6063,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/maps.md"
       }
     },
     {
@@ -5278,6 +6100,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/nfc.md"
       }
     },
     {
@@ -5310,6 +6137,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/photo-editing.md"
       }
     },
     {
@@ -5342,6 +6174,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/researchkit.md"
       }
     },
     {
@@ -5374,6 +6211,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/shareplay.md"
       }
     },
     {
@@ -5406,6 +6248,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/shazamkit.md"
       }
     },
     {
@@ -5438,6 +6285,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md"
       }
     },
     {
@@ -5470,6 +6322,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/siri.md"
       }
     },
     {
@@ -5502,6 +6359,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tap-to-pay-on-iphone.md"
       }
     },
     {
@@ -5534,6 +6396,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/voiceover.md"
       }
     },
     {
@@ -5566,6 +6433,11 @@
           "state": "unassessed",
           "rationale": null
         }
+      },
+      "ownerReviewAttestation": {
+        "status": "included_in_owner_reported_coverage",
+        "attestedOn": "2026-11-19",
+        "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/wallet.md"
       }
     }
   ],
