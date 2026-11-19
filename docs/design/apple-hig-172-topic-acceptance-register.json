@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 270,
+    "platformsAssessed": 297,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -1842,7 +1842,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/going-full-screen",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/going-full-screen.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1854,23 +1854,28 @@
       "sourceRequestedPlatforms": "macOS, iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If a web intelligence chart or video offers browser fullscreen, retain accessible navigation/escape, visible controls or a discoverable restore path, keyboard and focus state, and never hide regulated warnings or clinical provenance."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS/iPadOS native immersive cover or full-screen display only where task-appropriate; preserve essential focus/control, system gestures, restore state, Dynamic Type and device safe areas rather than forcing an app-window size."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android immersive mode similarly requires user-exit, system gesture and Back safety, focus/controls, TalkBack and state restoration; Apple's macOS full-screen Dock behavior is not an Android requirement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/going-full-screen.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/going-full-screen.md. Apple recommends optional full-screen only for immersive media or focused tasks, retaining essential controls, subtle layout changes, preserving work across interruptions and user control of exit. It notes iOS/iPadOS/macOS support, not watchOS/tvOS/visionOS full-screen mode.",
+        "Web applicability and NovaPharm acceptance: If a web intelligence chart or video offers browser fullscreen, retain accessible navigation/escape, visible controls or a discoverable restore path, keyboard and focus state, and never hide regulated warnings or clinical provenance.",
+        "Native applicability: iOS — Use iOS/iPadOS native immersive cover or full-screen display only where task-appropriate; preserve essential focus/control, system gestures, restore state, Dynamic Type and device safe areas rather than forcing an app-window size.; Android — Android immersive mode similarly requires user-exit, system gesture and Back safety, focus/controls, TalkBack and state restoration; Apple's macOS full-screen Dock behavior is not an Android requirement.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Patterns",
@@ -2326,7 +2331,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/playing-video",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/playing-video.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2338,23 +2343,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For any NovaPharm educational/product explainer video, use browser video with discernible user controls and accurate captions/transcripts where needed, original aspect ratio, reduced-motion safe autoplay behavior and no patient/clinical claims without approved content rights."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use AVKit/native iOS player for approved clips rather than hand-coded bespoke controls, test orientation, aspect ratio, captions/VoiceOver and hardware keyboard play/pause; don't claim a player shipped simply because an article was reviewed."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android Media3/ExoPlayer or equivalent accessible native media with TalkBack, original aspect ratio, captions and hardware keyboard options; do not conflate Apple AVKit with Android playback APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-video.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/playing-video.md. Apple favors familiar system players, preserving original aspect ratio without hardcoded embedded letterbox bars, fit/fill expectations and intuitive Space-key playback across input devices; custom players should preserve familiar controls and clear context. Additional platform considerations cover visionOS/tvOS/watchOS.",
+        "Web applicability and NovaPharm acceptance: For any NovaPharm educational/product explainer video, use browser video with discernible user controls and accurate captions/transcripts where needed, original aspect ratio, reduced-motion safe autoplay behavior and no patient/clinical claims without approved content rights.",
+        "Native applicability: iOS — Use AVKit/native iOS player for approved clips rather than hand-coded bespoke controls, test orientation, aspect ratio, captions/VoiceOver and hardware keyboard play/pause; don't claim a player shipped simply because an article was reviewed.; Android — Use Android Media3/ExoPlayer or equivalent accessible native media with TalkBack, original aspect ratio, captions and hardware keyboard options; do not conflate Apple AVKit with Android playback APIs.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Patterns",
@@ -2363,7 +2373,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/printing",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/printing.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2375,23 +2385,28 @@
       "sourceRequestedPlatforms": "Web, iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Browser printing of authorized invoices, shipment documents and corporate content needs a discoverable print action and valid CSS print output, clear role/tenant scope and no leakage of protected medicine/customer data. Browser window.print is a web analogy, not Apple UIKit PrintInteractionController."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS/iPadOS native print interaction when relevant and available, conditionally hide disabled print actions, provide accessible previews and paper options, and protect confidential documents; validate physical device behavior before release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android print framework/print service is distinct from Apple UIPrintInteractionController. If enabled, test appropriate Android print dialogue, TalkBack, permission/tenant security and accurate PDF/label results."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/printing.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/printing.md. Apple recommends discoverable printing in standard system locations, only offering Print when usable, and using system-supported page ranges, copies, duplex and preview; this article explicitly excludes tvOS and watchOS.",
+        "Web applicability and NovaPharm acceptance: Browser printing of authorized invoices, shipment documents and corporate content needs a discoverable print action and valid CSS print output, clear role/tenant scope and no leakage of protected medicine/customer data. Browser window.print is a web analogy, not Apple UIKit PrintInteractionController.",
+        "Native applicability: iOS — Use iOS/iPadOS native print interaction when relevant and available, conditionally hide disabled print actions, provide accessible previews and paper options, and protect confidential documents; validate physical device behavior before release.; Android — Android print framework/print service is distinct from Apple UIPrintInteractionController. If enabled, test appropriate Android print dialogue, TalkBack, permission/tenant security and accurate PDF/label results.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Patterns",
@@ -2726,7 +2741,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/image-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/image-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2738,23 +2753,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use actual img/picture or accessible background media when content merits it, meaningful alternative text for functional images, button/link semantics for clickable images, noncropped medicine/brand assets and contrast-safe overlay text across breakpoints."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS use native image/display components with accessible descriptions, correct fit/fill and lawful assets; interactive pictures should be buttons rather than clickable UIImageView, tested with Dynamic Type and VoiceOver."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android ImageView/Compose Image needs correct content descriptions, contrast, scaling and distinct Button semantics for interactive photos; do not claim Apple UIImageView or SF Symbols rights apply on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/image-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/image-views.md. Apple states image views are primarily non-interactive single-image/sequence containers, unlike a real button; use system button semantics for clickable imagery, maintain image-to-text contrast and uniform animation frame size, and distinguish interface symbols from image content.",
+        "Web applicability and NovaPharm acceptance: Use actual img/picture or accessible background media when content merits it, meaningful alternative text for functional images, button/link semantics for clickable images, noncropped medicine/brand assets and contrast-safe overlay text across breakpoints.",
+        "Native applicability: iOS — On iOS use native image/display components with accessible descriptions, correct fit/fill and lawful assets; interactive pictures should be buttons rather than clickable UIImageView, tested with Dynamic Type and VoiceOver.; Android — Android ImageView/Compose Image needs correct content descriptions, contrast, scaling and distinct Button semantics for interactive photos; do not claim Apple UIImageView or SF Symbols rights apply on Android.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
@@ -2805,7 +2825,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/web-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/web-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2817,23 +2837,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A normal public site in Safari/Chromium is not a native embedded WKWebView. Web navigation still needs separate browser tests, but this Apple-specific in-app web view component is outside the public site's implementation inventory."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where signed iOS app screens really embed web content, use bounded WKWebView navigation, trusted-domain allowlists, visible back/forward when needed, safe cookie/session separation, VoiceOver and security review. Do not count a browser-opened web site as a shipped WKWebView."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple WKWebView is not an Android API. Android WebView, if used, requires separate trust, navigation, TalkBack, origin/cookie and native implementation acceptance; it cannot be certified by Apple's WKWebView article."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/web-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/web-views.md. Apple HIG defines a web view as rich embedded web content displayed inside an app, recommends explicit forward/back controls when visiting multiple pages, and discourages building a second Safari. Native WebKit WKWebView is supported on iOS/iPadOS/macOS/visionOS, not tvOS/watchOS.",
+        "Web applicability and NovaPharm acceptance: A normal public site in Safari/Chromium is not a native embedded WKWebView. Web navigation still needs separate browser tests, but this Apple-specific in-app web view component is outside the public site's implementation inventory.",
+        "Native applicability: iOS — Where signed iOS app screens really embed web content, use bounded WKWebView navigation, trusted-domain allowlists, visible back/forward when needed, safe cookie/session separation, VoiceOver and security review. Do not count a browser-opened web site as a shipped WKWebView.; Android — Apple WKWebView is not an Android API. Android WebView, if used, requires separate trust, navigation, TalkBack, origin/cookie and native implementation acceptance; it cannot be certified by Apple's WKWebView article.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
@@ -3536,7 +3561,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3548,23 +3573,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A web/PWA context menu is not a native iPhone Home Screen quick action. If NovaPharm provides PWA quick links those require separate install/manifest and accessible browser testing."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A signed NovaPharm iOS/iPadOS app may offer up to four safe static/dynamic app-icon quick actions such as Search, with clear titles and approved symbols; never bypass MFA or open sensitive tenant routes without real authorization."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple UIApplicationShortcutItem is not Android launcher shortcut API. Android deep-linked launcher actions require separate Android native and policy review and no assumption that Apple SF Symbols transfer."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions.md. Apple Home Screen quick actions trigger from touching and holding an app icon, with at most four high-value actions, concise localized labels and appropriate monochrome SF symbols; avoid unpredictable menu reordering. This is iOS/iPadOS supported, not macOS/tvOS/visionOS/watchOS.",
+        "Web applicability and NovaPharm acceptance: A web/PWA context menu is not a native iPhone Home Screen quick action. If NovaPharm provides PWA quick links those require separate install/manifest and accessible browser testing.",
+        "Native applicability: iOS — A signed NovaPharm iOS/iPadOS app may offer up to four safe static/dynamic app-icon quick actions such as Search, with clear titles and approved symbols; never bypass MFA or open sensitive tenant routes without real authorization.; Android — Apple UIApplicationShortcutItem is not Android launcher shortcut API. Android deep-linked launcher actions require separate Android native and policy review and no assumption that Apple SF Symbols transfer.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
@@ -5136,7 +5166,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/app-shortcuts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/app-shortcuts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5148,23 +5178,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple App Intents/App Shortcuts cannot be implemented in a conventional NovaPharm browser site. Web deep links or PWA shortcuts are separate experiences requiring their own route and entitlement testing."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only if a signed NovaPharm iOS/iPadOS app has authorized App Intents may high-value shortcuts be advertised. Prevent unauthenticated order/clinical actions, require recipient/tenant authority, accessible audio text, clear parameters and real Siri/Spotlight device tests."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple App Intents and Siri/Spotlight App Shortcuts are not Android native APIs. Android app shortcuts or Assistant intents need a distinct Android-specific entitlement/security/UX assessment; do not mark them Apple shortcuts."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-shortcuts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/app-shortcuts.md. Apple App Shortcuts expose up to ten important app actions via App Intents to Siri, Spotlight, Shortcuts and supported hardware. The 2026 page adds app-schema advice, recommends brief natural phrases, optional limited parameters, discoverability and full spoken dialogue for audio-only use; not supported on tvOS.",
+        "Web applicability and NovaPharm acceptance: Apple App Intents/App Shortcuts cannot be implemented in a conventional NovaPharm browser site. Web deep links or PWA shortcuts are separate experiences requiring their own route and entitlement testing.",
+        "Native applicability: iOS — Only if a signed NovaPharm iOS/iPadOS app has authorized App Intents may high-value shortcuts be advertised. Prevent unauthenticated order/clinical actions, require recipient/tenant authority, accessible audio text, clear parameters and real Siri/Spotlight device tests.; Android — Apple App Intents and Siri/Spotlight App Shortcuts are not Android native APIs. Android app shortcuts or Assistant intents need a distinct Android-specific entitlement/security/UX assessment; do not mark them Apple shortcuts.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
@@ -5247,7 +5282,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/live-activities",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/live-activities.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5259,23 +5294,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A live delivery/status widget on a website is not Apple's ActivityKit Live Activity. Public stock indicators and protected delivery tracking require independent browser privacy and data-freshness tests rather than asserting Dynamic Island integration."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only where an approved signed iOS/iPadOS ActivityKit extension exists should short in-progress order/delivery updates appear; redact customers, products and clinical information on Lock Screen, support consent/opt-out, adapt layouts, exact end state and actual device/standby acceptance."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple ActivityKit/Dynamic Island are not Android APIs. Android foreground notifications/live updates require distinct OS policy, privacy, TalkBack and release acceptance; do not treat Android notifications as Apple's Live Activities."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-activities.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/live-activities.md. Apple's 2026 Live Activities article describes short/medium bounded events normally below eight hours, compact/minimal/expanded/Lock Screen surfaces including iPhone Dynamic Island, privacy-redacted glanceable data, Night Mode and appropriate termination; avoid ads, promotions and over-alerting.",
+        "Web applicability and NovaPharm acceptance: A live delivery/status widget on a website is not Apple's ActivityKit Live Activity. Public stock indicators and protected delivery tracking require independent browser privacy and data-freshness tests rather than asserting Dynamic Island integration.",
+        "Native applicability: iOS — Only where an approved signed iOS/iPadOS ActivityKit extension exists should short in-progress order/delivery updates appear; redact customers, products and clinical information on Lock Screen, support consent/opt-out, adapt layouts, exact end state and actual device/standby acceptance.; Android — Apple ActivityKit/Dynamic Island are not Android APIs. Android foreground notifications/live updates require distinct OS policy, privacy, TalkBack and release acceptance; do not treat Android notifications as Apple's Live Activities.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
@@ -5363,7 +5403,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/status-bars",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/status-bars.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5375,23 +5415,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A website's progress header or account status bar is not the iOS system status bar. Browser safe-area layout and mobile notch support remain separate web responsibilities and do not constitute native status-bar implementation."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "iPhone/iPad native screens must respect system-owned status bar safe areas, readable contrast and scroll-edge effects, not obscure navigation/tappable controls, and restore the bar outside temporary full-screen media; verify across devices/themes."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple UIKit UIStatusBarStyle is not Android's status-bar control. Android system bars/insets are separate Android-native issues with own color, inset, cutout and TalkBack verification."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/status-bars.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple HIG current primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/status-bars.md. Apple defines the iPhone/iPad OS status bar as system-owned time/connectivity/battery at the top edge, cautions against overlapping interactive controls or reducing legibility under transparency, and allows temporary hide only for immersive media with easy restoration; unsupported on macOS/tvOS/visionOS/watchOS.",
+        "Web applicability and NovaPharm acceptance: A website's progress header or account status bar is not the iOS system status bar. Browser safe-area layout and mobile notch support remain separate web responsibilities and do not constitute native status-bar implementation.",
+        "Native applicability: iOS — iPhone/iPad native screens must respect system-owned status bar safe areas, readable contrast and scroll-edge effects, not obscure navigation/tappable controls, and restore the bar outside temporary full-screen media; verify across devices/themes.; Android — Apple UIKit UIStatusBarStyle is not Android's status-bar control. Android system bars/insets are separate Android-native issues with own color, inset, cutout and TalkBack verification.. Source review only: this is not evidence of deployed, signed, protected-service, approved payment or fully accessible app behavior."
+      ]
     },
     {
       "section": "Components",
