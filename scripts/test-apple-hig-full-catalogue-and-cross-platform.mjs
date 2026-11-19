@@ -397,9 +397,32 @@ test("nine additionally reviewed current HIG primary articles have per-platform 
   assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.web.state,"not_applicable");
   assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.ios.state,"applicable");
   assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.android.state,"not_applicable");
-  assert.equal(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length,11);
-  assert.equal(tracker.meta.platformsAssessed,33);
+  assert.equal(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length,19);
+  assert.equal(tracker.meta.platformsAssessed,57);
   assert.ok(tracker.topics.every(x=>x.implementation!=="verified"));
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("eight additional Apple component and VoiceOver article reviews retain source and release boundaries",()=>{
+  const names=["Buttons","Alerts","Tab bars","Search fields","Progress indicators","Labels","Charts","VoiceOver"];
+  for(const name of names){
+    const t=tracker.topics.find(x=>x.title===name);
+    assert.equal(t?.guidelineReview,"reviewed",name);
+    assert.ok(t.guidelineReviewEvidence[0].includes(t.markdown),name);
+    assert.ok(t.guidelineReviewEvidence.length>=2,name);
+    for(const platform of ["web","ios","android"]){
+      const decision=t.platformApplicability[platform];
+      assert.ok(["applicable","not_applicable"].includes(decision.state),name+"/"+platform);
+      assert.ok(decision.rationale.length>40,name+"/"+platform);
+    }
+    assert.equal(t.implementation,"not_verified",name);
+    assert.deepEqual(t.releaseEvidence,[],name);
+  }
+  assert.equal(tracker.topics.find(t=>t.title==="VoiceOver").platformApplicability.android.state,"not_applicable");
+  assert.equal(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length,19);
+  assert.equal(tracker.meta.platformsAssessed,57);
   assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,172);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
