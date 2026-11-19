@@ -693,3 +693,66 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     reviewed + "/172 primary reviews, " + decisions + "/516 platform decisions. " +
     "Detailed gap ledger: " + dir + "/172-topic-gap-ledger.json");
 });
+
+test("optional read-only public website HTML sample (not HIG compliance)",
+  { skip: process.env.HIG_SAMPLE_PUBLIC_ORIGIN !== "1", timeout: 150000 }, async () => {
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  // This survey does not call AWS, authenticate, submit forms, send email,
+  // deploy assets or visit untrusted URLs. Limit navigation to four fixed
+  // public pages and do not store any response bodies or private content.
+  const origin = "https://novapharmhealthcare.com";
+  const routes = ["/", "/legal/accessibility/", "/contact/", "/products/"];
+  const results = [];
+  for (const route of routes) {
+    const row = {route, httpStatus:null, contentType:null, lang:null,
+      h1Count:null, sourceSha:null, errors:[], scope:"read_only_html"};
+    try {
+      const response = await fetch(origin + route, {
+        method:"GET", redirect:"manual", signal:AbortSignal.timeout(22000),
+        headers:{"Accept":"text/html", "User-Agent":"NovaPharm-HIG-read-only-source-evidence/1"}
+      });
+      row.httpStatus = response.status;
+      row.contentType = response.headers.get("content-type");
+      if (response.status !== 200) row.errors.push("HTTP status " + response.status);
+      if (!row.contentType?.toLowerCase().includes("text/html"))
+        row.errors.push("Response not HTML");
+      const size = Number(response.headers.get("content-length") || 0);
+      if (size > 1600000) throw new Error("HTML exceeds read-only sample size budget");
+      const html = (await response.text()).slice(0, 1600001);
+      if (html.length > 1600000) throw new Error("HTML exceeds read-only sample size budget");
+      row.lang = html.match(/<html\\b[^>]*\\blang=["']([^"']+)["']/i)?.[1] || null;
+      row.h1Count = [...html.matchAll(/<h1(?:\\s[^>]*)?>/gi)].length;
+      const meta = html.match(/<meta\\b[^>]*name=["']novapharm-source-sha["'][^>]*>/i)?.[0] || "";
+      row.sourceSha = meta.match(/\\bcontent=["']([a-f0-9]{40})["']/i)?.[1] || null;
+      if (!row.lang || !/^en(?:-|$)/i.test(row.lang)) row.errors.push("Missing English HTML language");
+      if (row.h1Count !== 1) row.errors.push("Missing or duplicate H1");
+      if (!row.sourceSha) row.errors.push("No published provenance SHA");
+      if (route === "/legal/accessibility/" &&
+          !/does not claim full conformance|does not claim full WCAG|does not claim full compliance/i.test(html))
+        row.errors.push("Current accessibility disclosure cannot be confirmed");
+    } catch (error) {
+      row.errors.push(String(error.message || error).slice(0, 250));
+    }
+    results.push(row);
+  }
+  const directory = "artifacts/apple-hig-production-audit";
+  mkdirSync(directory, {recursive:true});
+  const report = {
+    schema:"novapharm.hig-public-html-sample.v1",
+    observedAt:new Date().toISOString(),
+    origin, observedBy:"read-only Node HTTP HTML; NOT rendered browser",
+    testedRouteCount:routes.length,
+    passedRoutes:results.filter(row => row.errors.length === 0).length,
+    notTested:["JavaScript behavior","browser layout","keyboard navigation",
+      "assistive technology","screen readers","authenticated customer routes",
+      "native mobile devices","source rights","HIG conformance"],
+    results
+  };
+  writeFileSync(directory + "/public-origin-sample.json",
+    JSON.stringify(report,null,2)+"\\n");
+  console.log("Public HIG HTML evidence " + report.passedRoutes +
+    "/" + routes.length + " sampled routes passed narrow HTTP/landmark checks; " +
+    "NOT production HIG acceptance.");
+  assert.equal(report.passedRoutes, routes.length,
+    "Read-only live HTML sample gaps: see public-origin-sample.json");
+});
