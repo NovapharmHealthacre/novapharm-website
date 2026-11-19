@@ -1,0 +1,141 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Nutraxin consumer-only Cognito identity. Products-hosted PKCE login, no workforce or wholesale grants.",
+  "Resources": {
+    "NutraxinConsumerPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "UserPoolName": "novapharm-production-nutraxin-consumer-identity",
+        "DeletionProtection": "ACTIVE",
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "UsernameAttributes": [
+          "email"
+        ],
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailConfiguration": {
+          "EmailSendingAccount": "COGNITO_DEFAULT"
+        },
+        "MfaConfiguration": "OPTIONAL",
+        "EnabledMfas": [
+          "SOFTWARE_TOKEN_MFA"
+        ],
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 12,
+            "RequireUppercase": true,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true
+          }
+        },
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE"
+        },
+        "Schema": [
+          {
+            "Name": "email",
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Required": true
+          }
+        ],
+        "UserPoolTags": {
+          "novapharm:environment": "production",
+          "novapharm:scope": "nutraxin-consumer-only"
+        }
+      }
+    },
+    "NutraxinConsumerWeb": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "novapharm-nutraxin-products-web-pkce",
+        "UserPoolId": {
+          "Ref": "NutraxinConsumerPool"
+        },
+        "GenerateSecret": false,
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthScopes": [
+          "openid",
+          "email",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ],
+        "CallbackURLs": [
+          "https://novapharmhealthcare.com/products/nutraxin/account/"
+        ],
+        "LogoutURLs": [
+          "https://novapharmhealthcare.com/products/nutraxin/account/"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "ExplicitAuthFlows": [
+          "ALLOW_REFRESH_TOKEN_AUTH",
+          "ALLOW_USER_SRP_AUTH"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "EnableTokenRevocation": true,
+        "AccessTokenValidity": 60,
+        "IdTokenValidity": 60,
+        "RefreshTokenValidity": 1,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        }
+      }
+    },
+    "NutraxinConsumerDomain": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": "novapharm-nutraxin-production-250675045172",
+        "UserPoolId": {
+          "Ref": "NutraxinConsumerPool"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "UserPoolId": {
+      "Value": {
+        "Ref": "NutraxinConsumerPool"
+      },
+      "Description": "Consumer-only identity; NEVER workforce auth",
+      "Export": {
+        "Name": "novapharm-nutraxin-consumer-user-pool-id"
+      }
+    },
+    "UserPoolClientId": {
+      "Value": {
+        "Ref": "NutraxinConsumerWeb"
+      },
+      "Description": "Public PKCE client ID, no secret",
+      "Export": {
+        "Name": "novapharm-nutraxin-consumer-client-id"
+      }
+    },
+    "CognitoDomain": {
+      "Value": "novapharm-nutraxin-production-250675045172.auth.eu-north-1.amazoncognito.com"
+    },
+    "AccountCallback": {
+      "Value": "https://novapharmhealthcare.com/products/nutraxin/account/"
+    }
+  }
+}

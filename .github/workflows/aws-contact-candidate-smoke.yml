@@ -1,0 +1,27 @@
+name: Verify AWS production contact health without customer submissions
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/contact-production/**'
+      - 'infra/aws/contact-production.json'
+      - '.github/workflows/aws-contact-candidate-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-health-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check production contact health without POST or external notifications
+        env:
+          CONTACT_API: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 4 --retry-delay 3 --max-time 15 \
+            -H 'Cache-Control: no-cache' "$CONTACT_API/health" > health.json
+          jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' health.json
+          echo 'Verified current AWS production contact GET /health. No contact POST, customer submission or outbound email was performed.'

@@ -18,3 +18,8 @@ _secure/
 private-content/
 tmp/
 assets/media/home/*-source.png
+
+# ESCO private commercial drafts and variant-level release evidence
+docs/commerce/esco-2026-merchant-release-matrix.csv
+docs/commerce/esco-2026-release-evidence-draft.json
+docs/commerce/esco-2026-reviewed-sale-evidence*.json

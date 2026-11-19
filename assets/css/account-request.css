@@ -1,0 +1,30 @@
+/* A minimal, accessible account-interest experience. Active only after a verified AWS release. */
+.npd-account-request-panel {
+  --np-ar-ink: #182b3c;
+  color: var(--np-ar-ink);
+  background: #ffffff;
+  border: 1px solid #e3e7ec;
+  border-radius: 18px;
+  box-shadow: 0 18px 64px rgb(16 35 54 / 0.07);
+  padding: clamp(24px, 3vw, 48px);
+}
+.npd-account-request-heading { margin-bottom: 26px; }
+.npd-account-request-heading h2 { margin: 0 0 14px; font-size: clamp(1.7rem, 3vw, 2.8rem); line-height: 1.13; }
+.npd-account-request-heading p:last-child { color: #536477; line-height: 1.65; max-width: 56ch; margin: 0; }
+.npd-account-request-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+.npd-account-request-grid label { font-size: .88rem; font-weight: 650; display: flex; flex-direction: column; gap: 7px; }
+.npd-account-request-grid label span { color: #697889; font-weight: 400; }
+.npd-account-request-grid input, .npd-account-request-grid select { display: block; width: 100%; min-height: 50px; padding: 12px 14px; background: #fff; color: #182b3c; border: 1px solid #bac6d2; border-radius: 9px; font: inherit; font-weight: 400; }
+.npd-account-request-grid input:focus-visible, .npd-account-request-grid select:focus-visible { outline: 3px solid #1971ab; outline-offset: 2px; }
+.npd-account-request-trap { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
+.npd-account-request-consent { display: flex; align-items: flex-start; gap: 12px; margin-top: 20px; color: #475669; font-size: .88rem; line-height: 1.55; cursor: pointer; }
+.npd-account-request-consent input { width: 18px; height: 18px; flex: 0 0 18px; margin: 2px 0 0; accent-color: #b30e09; }
+.npd-account-request-consent a, .npd-account-request-footnote a { color: #174b6d; text-decoration: underline; text-underline-offset: 3px; }
+.npd-account-request-submit { margin-top: 26px; width: 100%; border-radius: 10px; min-height: 52px; cursor: pointer; }
+.npd-account-request-submit:disabled { opacity: .6; cursor: wait; }
+.npd-account-request-status { min-height: 24px; font-size: .94rem; line-height: 1.55; color: #285e49; }
+.npd-account-request-footnote { margin: 20px 0 0; font-size: .79rem; color: #647285; line-height: 1.65; }
+@media (max-width: 740px) {
+  .npd-account-request-grid { grid-template-columns: minmax(0, 1fr); }
+  .npd-account-request-panel { border-radius: 12px; }
+}

@@ -1,0 +1,269 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cost-gated private AWS service interface endpoints for NovaPharm Intelligence Fargate; no ECS task/service, customer data, public ingress, external data or billing is activated.",
+  "Parameters": {
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Dedicated NovaPharm Intelligence VPC only"
+    },
+    "PrivateSubnetIds": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "Exactly two AZ-distinct Intelligence private task subnets, never public subnets"
+    },
+    "ActivationApproval": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "APPROVED"
+      ]
+    },
+    "OperatingCostAcceptance": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "APPROVED"
+      ],
+      "Description": "Hourly charge per interface endpoint per AZ plus data processing; require reviewed AWS budget and alarms before APPROVED"
+    }
+  },
+  "Conditions": {
+    "ProvisionInterfaceEndpoints": {
+      "Fn::And": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "ActivationApproval"
+            },
+            "APPROVED"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "OperatingCostAcceptance"
+            },
+            "APPROVED"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "IntelligenceInterfaceEndpointSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Condition": "ProvisionInterfaceEndpoints",
+      "Properties": {
+        "GroupDescription": "TLS-only from dedicated Intelligence Fargate private subnet CIDRs to AWS interface endpoints",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "10.80.10.0/24",
+            "Description": "Fargate private subnet A TLS only"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "10.80.11.0/24",
+            "Description": "Fargate private subnet B TLS only"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "10.80.10.0/24",
+            "Description": "No public egress: private subnet A only"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "10.80.11.0/24",
+            "Description": "No public egress: private subnet B only"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "cost-approved-private-service-connectivity"
+          }
+        ]
+      }
+    },
+    "IntelligenceEcrApiEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Condition": "ProvisionInterfaceEndpoints",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "VpcEndpointType": "Interface",
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.ecr.api"
+        },
+        "SubnetIds": {
+          "Ref": "PrivateSubnetIds"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "IntelligenceInterfaceEndpointSecurityGroup"
+          }
+        ],
+        "PrivateDnsEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "cost-approved-private-service-connectivity"
+          }
+        ]
+      }
+    },
+    "IntelligenceEcrDkrEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Condition": "ProvisionInterfaceEndpoints",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "VpcEndpointType": "Interface",
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.ecr.dkr"
+        },
+        "SubnetIds": {
+          "Ref": "PrivateSubnetIds"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "IntelligenceInterfaceEndpointSecurityGroup"
+          }
+        ],
+        "PrivateDnsEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "cost-approved-private-service-connectivity"
+          }
+        ]
+      }
+    },
+    "IntelligenceLogsEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Condition": "ProvisionInterfaceEndpoints",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "VpcEndpointType": "Interface",
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.logs"
+        },
+        "SubnetIds": {
+          "Ref": "PrivateSubnetIds"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "IntelligenceInterfaceEndpointSecurityGroup"
+          }
+        ],
+        "PrivateDnsEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "cost-approved-private-service-connectivity"
+          }
+        ]
+      }
+    },
+    "IntelligenceSecretsEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Condition": "ProvisionInterfaceEndpoints",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "VpcEndpointType": "Interface",
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.secretsmanager"
+        },
+        "SubnetIds": {
+          "Ref": "PrivateSubnetIds"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "IntelligenceInterfaceEndpointSecurityGroup"
+          }
+        ],
+        "PrivateDnsEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "cost-approved-private-service-connectivity"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ActivationState": {
+      "Value": {
+        "Fn::If": [
+          "ProvisionInterfaceEndpoints",
+          "ENDPOINTS PROVISIONED: still not an application, customer login, licensed data source, AI inference or paid subscription",
+          "BLOCKED: no hourly interface endpoints; need explicit activation AND operating cost acceptance"
+        ]
+      }
+    },
+    "UsageBoundary": {
+      "Value": "Private ECR api/dkr, CloudWatch Logs and Secrets Manager only; no general Internet, Cognito/Atlas/model egress, AWS customer charges, ECS runtime or data rights"
+    }
+  }
+}

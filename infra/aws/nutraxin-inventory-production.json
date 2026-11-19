@@ -1,0 +1,62 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Owner-attested Nutraxin stock ledger, separate from order reservation and fulfilment; deployed as novapharm-production-nutraxin-inventory-v2.",
+  "Resources": {
+    "Stock": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-production-nutraxin-inventory",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "sku",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "sku",
+            "KeyType": "HASH"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "Nutraxin"
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          },
+          {
+            "Key": "Purpose",
+            "Value": "OwnerAttestedStock"
+          },
+          {
+            "Key": "ManagedBy",
+            "Value": "CloudFormation"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "TableName": {
+      "Value": {
+        "Ref": "Stock"
+      }
+    }
+  }
+}

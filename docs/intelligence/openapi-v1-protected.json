@@ -1,0 +1,779 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NovaPharm Intelligence protected read-only API (candidate)",
+    "version": "0.1.0",
+    "description": "Draft implementation contract for existing authorised BNF medicine identity, NHSBSA EPD/PCA observations and UK nearby healthcare organisations. These routes remain session and board/admin scope protected. No global coverage, forecast, NOVA AI or production deployment is asserted."
+  },
+  "servers": [
+    {
+      "url": "/api/v1/intelligence",
+      "description": "Authenticated API server only; not the public GitHub Pages site"
+    }
+  ],
+  "security": [
+    {
+      "portalSession": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Medicine identity"
+    },
+    {
+      "name": "Observed market"
+    },
+    {
+      "name": "Geography"
+    }
+  ],
+  "paths": {
+    "/medicines/search": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "searchMedicinesV1",
+        "summary": "Search the currently ingested BNF identity catalogue",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current identity matches, not verified demand",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicineSearch"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/medicines/{medicineId}": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "medicineDetailV1",
+        "summary": "Show canonical record and code history for a scoped identity",
+        "parameters": [
+          {
+            "name": "medicineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^medicine-[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medicine identity record including aliases, code history and source limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "medicine",
+                    "aliases",
+                    "codeHistory",
+                    "analyticalAvailability",
+                    "limitations",
+                    "identityRelationships",
+                    "investigationPassport"
+                  ],
+                  "properties": {
+                    "medicine": {
+                      "type": "object"
+                    },
+                    "aliases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "codeHistory": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "analyticalAvailability": {
+                      "type": "object"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "identityRelationships": {
+                      "type": "object",
+                      "description": "Source-backed BNF/alias relationships from protected authorised medicine identity only. Does not establish clinical equivalence, marketing authorisation or demand.",
+                      "required": [
+                        "contract",
+                        "dataState",
+                        "sourceId",
+                        "nodes",
+                        "relationships",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.identity-relationships.v1"
+                        },
+                        "dataState": {
+                          "const": "derived_from_authorised_identity_records"
+                        },
+                        "sourceId": {
+                          "type": "string"
+                        },
+                        "nodes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "to",
+                              "relation"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              },
+                              "relation": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "investigationPassport": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only, explicit evidence gaps and next verification steps. Does not grant source rights or imply commercial readiness.",
+                      "required": [
+                        "contract",
+                        "status",
+                        "medicineId",
+                        "decisionReady",
+                        "lenses",
+                        "requiredBeforeDecision"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.investigation-passport.v1"
+                        },
+                        "status": {
+                          "const": "investigation_only"
+                        },
+                        "medicineId": {
+                          "type": "string"
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "lenses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "state",
+                              "sourceRights",
+                              "decisionUsable"
+                            ],
+                            "additionalProperties": true
+                          }
+                        },
+                        "requiredBeforeDecision": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/markets/observations": {
+      "get": {
+        "tags": [
+          "Observed market"
+        ],
+        "operationId": "medicineObservationsV1",
+        "summary": "Query accepted EPD/PCA observations without imputing missing data",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "epd",
+                "pca"
+              ]
+            }
+          },
+          {
+            "name": "medicineId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-dependent analytical result; dataState must be inspected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "dataState",
+                    "rows",
+                    "series",
+                    "limitations"
+                  ],
+                  "properties": {
+                    "dataState": {
+                      "type": "string",
+                      "enum": [
+                        "accepted_facts",
+                        "no_matching_facts",
+                        "source_not_ingested"
+                      ]
+                    },
+                    "rows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "series": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "observedChange": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only derived observation from three consecutive accepted months for a single canonical medicine. Not a forecast, source licence, or decision.",
+                      "required": [
+                        "contract",
+                        "state",
+                        "decisionReady",
+                        "methodology",
+                        "observation",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.observed-medicine-change.v1"
+                        },
+                        "state": {
+                          "enum": [
+                            "observed_change_candidate_requires_review",
+                            "insufficient_comparable_evidence"
+                          ]
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "methodology": {
+                          "type": "string"
+                        },
+                        "observation": {
+                          "oneOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "required": [
+                                "sourceId",
+                                "dataset",
+                                "metric",
+                                "fromMonth",
+                                "throughMonth",
+                                "absoluteChange",
+                                "percentageChange"
+                              ],
+                              "properties": {
+                                "sourceId": {
+                                  "type": "string"
+                                },
+                                "dataset": {
+                                  "type": "string"
+                                },
+                                "metric": {
+                                  "type": "string"
+                                },
+                                "fromMonth": {
+                                  "type": "string"
+                                },
+                                "throughMonth": {
+                                  "type": "string"
+                                },
+                                "absoluteChange": {
+                                  "type": "number"
+                                },
+                                "percentageChange": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/geographies/nearby": {
+      "get": {
+        "tags": [
+          "Geography"
+        ],
+        "operationId": "nearbyHealthcareV1",
+        "summary": "Search postcode-scoped pharmacy and practice records",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "radiusKm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-backed nearby organizations subject to existing source limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/readiness": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "readIntelligenceReleaseReadiness",
+        "summary": "Authorised evidence, source ingestion and model readiness, never a production certification",
+        "description": "Read-only board/admin diagnostics. All NOVA, forecasting, global data and workspace operational states remain unapproved until separately certified.",
+        "responses": {
+          "200": {
+            "description": "Non-public source and model release-readiness inventory",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "contract",
+                    "sourceRegister",
+                    "nova",
+                    "forecasting",
+                    "pandora",
+                    "production"
+                  ],
+                  "properties": {
+                    "contract": {
+                      "const": "novapharm.intelligence.release-readiness.v1"
+                    },
+                    "sourceRegister": {
+                      "type": "object"
+                    },
+                    "nova": {
+                      "type": "object"
+                    },
+                    "forecasting": {
+                      "type": "object"
+                    },
+                    "pandora": {
+                      "type": "object"
+                    },
+                    "production": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/regulatory/us/fda-labels": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "readUsFdaPublicLabelDiscovery",
+        "summary": "Source-attributed US FDA drug label discovery, not authorisation or clinical advice",
+        "description": "Read-only live lookup to openFDA. API keys are configured only server-side when required. Access remains executive-scoped and source and jurisdiction limitations are returned.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "drug",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80,
+              "description": "Generic medicine name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-backed label lookup with explicit dataState, source ID and uncertainty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "sourceId",
+                    "jurisdiction",
+                    "dataState",
+                    "records",
+                    "limitations"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "description": "External source temporarily unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "portalSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "np_session",
+        "description": "Existing authenticated portal session, with server-side board/admin scope enforcement."
+      }
+    },
+    "schemas": {
+      "MedicineSearch": {
+        "type": "object",
+        "required": [
+          "query",
+          "source",
+          "demandFactsIncluded",
+          "results"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourcePeriod": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "demandFactsIncluded": {
+            "const": false
+          },
+          "dataFreshness": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "medicineId",
+                "canonicalName",
+                "identityStatus"
+              ],
+              "properties": {
+                "medicineId": {
+                  "type": "string"
+                },
+                "canonicalName": {
+                  "type": "string"
+                },
+                "identityStatus": {
+                  "const": "bnf_current_identity_only"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "HTTP 400",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "HTTP 401",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "HTTP 403",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "HTTP 429",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "HTTP 404",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

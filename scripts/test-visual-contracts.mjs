@@ -17,7 +17,8 @@ const bundleCss = text("assets/css/novapharm.bundle.css");
 const tokenCss = text("assets/css/tokens.css");
 assert.match(css, /--corporate-product-discipline-contract:\s*1/);
 assert.match(css, /--npd-container:\s*1200px/);
-assert.match(css, /--npd-header:\s*56px/);
+assert.match(css, /--npd-header:\s*68px/);
+assert.match(css, /@media \(max-width: 760px\)\s*\{\s*:root\s*\{\s*--npd-header:\s*60px/);
 assert.match(css, /--npd-system:\s*-apple-system, BlinkMacSystemFont/);
 assert.match(css, /letter-spacing:\s*0/);
 assert.match(css, /@media \(max-width:\s*360px\)/);
@@ -30,6 +31,12 @@ assert.ok(css.includes("-webkit-backdrop-filter: none;"), "reduced transparency 
 const publicAppleCss = text("assets/css/apple-pharma-public.css");
 assert.ok(publicAppleCss.includes("outline: 3px solid #0a66c2;"), "keyboard focus uses a solid high-contrast outline");
 assert.ok(!publicAppleCss.includes("rgba(180, 35, 46, 0.36)"), "translucent focus ring must not return");
+assert.doesNotMatch(publicAppleCss, /body\[data-page="home"\]\s+h[1-4]\b/,
+  "homepage heading scale must stay inside main, not bleed into the footer");
+assert.match(publicAppleCss, /body\[data-page="home"\] main h2/,
+  "homepage editorial section headings must still receive their approved scale");
+assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*var\(--np-type-caption-size,\s*0\.875rem\)/s,
+  "shared footer typography requires an explicitly scoped 14px caption role");
 
 function contrastOnWhite(hex) {
   assert.match(hex, /^#[0-9a-f]{6}$/i);
@@ -54,10 +61,11 @@ assert.match(homepageCss, /prefers-reduced-motion: reduce/, "editorial motion mu
 assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must ship inside the production CSS bundle");
 
 const home = text("index.html");
-assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
-assert.match(home, /Medicine\.<br><span>Where it needs to be\.<\/span>/);
-assert.match(home, /supply-network-hero\.avif/);
-assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home" lang="en-GB" data-np-untranslated>/, "Published homepage must retain the approved main landmark with an explicit English-language boundary");
+assert.match(home, /<h1(?:\s+[^>]*)?>Medicine\. Where it needs to be\.<\/h1>/, "homepage preserves the approved semantic hero headline");
+assert.match(home, /class="npd-apple-hero nph-earth-hero"/, "approved Earth-horizon hero layout");
+assert.match(home, /class="nph-earth-hero-landscape"/, "approved morning-Earth image placement");
+assert.match(home, /earth-reference-1400\.jpg/, "approved high-resolution morning Earth image remains present");
 assert.match(home, /Three routes\.<br>One evidence standard\./);
 assert.equal((home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length, 3, "homepage must present three evidence-gated sourcing routes");
 assert.equal((home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length, 3, "homepage must stage three authentic catalogue product references");
@@ -70,27 +78,43 @@ assert.match(home, /PLPI activity requires the relevant licence/);
 assert.match(home, /Let's build something meaningful\./);
 assert.doesNotMatch(home, /<svg|lucide|<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
 
-const expectedNavigation = [
+const approvedHeaderCss = text("assets/css/homepage-editorial.css");
+assert.doesNotMatch(approvedHeaderCss, /content:\s*"NOVAPHARM"/, "never replace the supplied logo with generated black typography");
+assert.match(approvedHeaderCss, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/, "the official image must render in the header");
+
+const expectedHomeNavigation = [
   ["Company", "/about/"],
   ["Capabilities", "/capabilities/"],
+  ["Distribution", "/distribution/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
-  ["NovaPharm Intelligence", "/technology/"],
-  ["Insights", "/news-insights/"],
+  ["Intelligence", "/technology/"],
   ["Contact", "/contact/"],
-  ["Secure Portal", "/portal/"],
+  ["Secure Portal", "https://portal.novapharmhealthcare.com/"],
 ];
-for (const [label, href] of expectedNavigation) assert.match(home, new RegExp(`<a href="${href.replaceAll("/", "\\/")}"[^>]*>${label}<\\/a>`));
+const primaryNavStart = home.indexOf('<nav class="site-nav npd-global-nav"');
+const primaryNavEnd = home.indexOf("</nav>", primaryNavStart);
+const homepagePrimaryNav = primaryNavStart >= 0 && primaryNavEnd > primaryNavStart ? home.slice(primaryNavStart, primaryNavEnd) : "";
+assert.ok(homepagePrimaryNav, "homepage must expose an accessible primary navigation");
+assert.equal((homepagePrimaryNav.match(/<a /g) ?? []).length, expectedHomeNavigation.length, "approved homepage must expose Distribution and all corporate destinations plus Secure Portal");
+for (const [label, href] of expectedHomeNavigation) {
+  assert.ok(homepagePrimaryNav.includes(`href="${href}"`), `homepage navigation must link to ${href}`);
+  assert.ok(homepagePrimaryNav.includes(`>${label}</a>`), `homepage navigation must label ${href} accurately`);
+}
+const secondaryPage = text("about/index.html");
+assert.match(secondaryPage, /NovaPharm Intelligence/, "other corporate pages retain full Intelligence brand name");
+assert.match(secondaryPage, /Insights/, "other corporate pages retain Insights navigation");
+assert.match(secondaryPage, /Secure Portal/, "other corporate pages retain secure Portal navigation");
 assert.match(home, /<span data-menu-label>Menu<\/span>/, "mobile navigation must use the visible word Menu");
 assert.match(home, /data-mega-trigger="intelligence"/, "global header must expose Intelligence navigation");
 assert.match(home, /data-mega-panel="intelligence"/, "Intelligence navigation must offer contextual destinations");
 
 const routeContracts = [
-  ["capabilities/index.html", "The right route depends on the evidence already in place."],
+  ["capabilities/index.html", "class=\"ncap-title-line\">From evidence</span>"],
   ["services/index.html", "npd-service-ledger"],
   ["regulatory-services/index.html", "npd-roadmap npd-roadmap-large"],
   ["cro/index.html", "Define the programme before assembling the delivery model."],
-  ["oncology/index.html", "Oncology demands<br>more than supply."],
+  ["oncology/index.html", "A Hope for<br>Tomorrow."],
   ["partner-with-us/index.html", "npd-horizontal-steps"],
   ["technology/index.html", "npi-dash-analytics-grid"],
   ["news-insights/index.html", "Regulated-market thinking, written to be challenged."],
@@ -107,15 +131,24 @@ const contact = text("contact/index.html");
 assert.match(contact, /class="npd-main np-contact np-contact-reference"/, "Contact retains the approved standalone presentation");
 assert.match(contact, /Let&#39;s talk\./, "Contact has the reference's direct headline");
 assert.match(contact, /How can we help\?/, "Contact has the reference form heading");
-assert.match(contact, /class="np-contact-reference-grid"/, "Contact fields have the reference two-column grid");
 assert.match(contact, /class="np-contact-reference-footer"/, "Contact has a restrained legal footer");
 assert.match(contact, /Business enquiries only\./, "Contact retains regulated-business scope");
 assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact preserves MHRA safety routing");
 assert.match(contact, /legal\/privacy\//);
-if (contact.includes("data-contact-form")) {
+// The AWS-backed managed form retains the standard form-grid class and the
+// approved editorial class. The email-draft-only variant uses its separate
+// reference grid; never require both incompatible variants in one document.
+if (contact.includes("data-contact-form") || contact.includes("data-live-b2b-enquiry-form")) {
+  assert.match(contact, /<form class="form-grid contact-form np-contact-reference-form"/,
+    "Managed Contact must retain its approved editorial form and structured fields");
   assert.match(contact, /name="privacyAcknowledgement"/);
   assert.match(contact, /name="safetyConfirmation"/);
+  assert.doesNotMatch(contact, /data-email-enquiry-form/);
 } else {
+  assert.match(contact, /<form class="np-contact-reference-form"/,
+    "Public Contact must retain its approved email-draft form");
+  assert.match(contact, /class="np-contact-reference-grid"/,
+    "Public Contact fields must retain the two-column editorial grid");
   assert.match(contact, /data-email-enquiry-form/, "Public contact should open only an email draft");
   assert.match(contact, /action="mailto:vishal@novapharmhealthcare\.com"/);
   assert.match(contact, /This public information release does not collect or transmit enquiry details/);
@@ -127,16 +160,24 @@ assert.match(contactCss, /np-contact-reference-submit/);
 assert.match(contactCss, /@media \(max-width: 700px\)/);
 
 const products = text("products/index.html");
-const priorityPosition = products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = products.indexOf("Strategic pharmaceutical portfolio");
-assert.ok(priorityPosition >= 0 && strategicPosition > priorityPosition, "Food Supplement Portfolio Review must be the first substantive product section");
-assert.equal((products.match(/Food Supplement Portfolio Review/g) ?? []).length, 1);
+const approvedCollections = ["np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"];
+const collectionPositions = approvedCollections.map((marker) => products.indexOf(marker));
+assert.ok(collectionPositions.every((pos) => pos >= 0) &&
+  collectionPositions.every((pos, i) => i === 0 || pos > collectionPositions[i - 1]),
+  "approved Products experience must present Nutraxin, ESCO and pharmaceutical portfolio as one ordered story");
+assert.match(products, /<h1 id="np-products-title">Different products\.<br>One purpose\.<\/h1>/);
+assert.match(products, /Food Supplement Portfolio Review/, "genuine Nutraxin catalogue provenance remains present");
 assert.match(products, /href="\/products\/nutraxin\/"/);
 assert.match(products, /href="\/products\/strategic-portfolio\/"/);
 assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
 
 const register = JSON.parse(text("apps/corporate/data/nutraxin-product-register.json"));
+const retail = JSON.parse(text("assets/data/nutraxin-retail-catalogue.json"));
+const retailBySku = new Map(retail.products.map((item) => [item.sku, item]));
+assert.equal(retail.price_authority, "approved_consumer_retail");
+assert.equal(retail.currency, "GBP");
 assert.equal(register.products.length, 19);
+assert.equal(retailBySku.size, 19);
 const nutraxin = text("products/nutraxin/index.html");
 assert.equal((nutraxin.match(/class="nx-product-card"/g) ?? []).length, 19);
 for (const product of register.products) {
@@ -145,7 +186,22 @@ for (const product of register.products) {
   const detail = text(route);
   assert.match(detail, new RegExp(`<h1>${product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h1>`));
   assert.match(detail, /"@type":"Product"/);
-  assert.doesNotMatch(detail, /"offers"|Add to basket|Buy now|In stock|£|\bGBP\b/);
+  const sku = retailBySku.get(product.sku);
+  assert.ok(sku && sku.slug === product.slug, `Approved retail reference missing for ${product.slug}`);
+  const amount = (sku.retail_price_pence / 100).toFixed(2);
+  const availability = retail.delivery_verified === true &&
+    retail.checkout_enabled === true && retail.payment_collection_enabled === true &&
+    sku.ordering_enabled === true && sku.available_to_sell === true ? "InStock" : "OutOfStock";
+  assert.ok(detail.includes("£" + amount), `Visible GBP price mismatch for ${product.slug}`);
+  assert.ok(detail.includes(`data-merchant-sku="${product.sku}"`));
+  const offer = [...detail.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+    .map((m) => JSON.parse(m[1])).find((item) => item["@type"] === "Product" && item.sku === product.sku)?.offers;
+  assert.ok(offer, `Product Offer markup missing for ${product.slug}`);
+  assert.equal(offer.price, amount);
+  assert.equal(offer.priceCurrency, "GBP");
+  assert.equal(offer.availability, "https://schema.org/" + availability);
+  if (availability === "OutOfStock") assert.match(detail, /Currently unavailable to order online/);
+  assert.doesNotMatch(detail, /Add to basket|Buy now/i);
 }
 
 const legacyProducts = text("product-portfolio/index.html");
@@ -207,7 +263,13 @@ if (login.includes("data-login-form")) {
 }
 
 assert.match(text("scripts/build-site.mjs"), /apply-corporate-product-discipline\.mjs/);
-assert.match(text("assets/js/novapharm.js"), /visibleLabel\.textContent = isOpen \? "Close" : "Menu"/);
+const mobileNavigationJs = text("assets/js/novapharm.js");
+assert.match(mobileNavigationJs, /const localizedMenuLabels = \{/, "mobile menu must localize without changing navigation semantics");
+assert.match(mobileNavigationJs, /ar:\s*\{\s*open:\s*"فتح القائمة", close:\s*"إغلاق القائمة"/, "Arabic menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /he:\s*\{\s*open:\s*"פתיחת תפריט", close:\s*"סגירת תפריט"/, "Hebrew menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /open:\s*"Open navigation", close:\s*"Close navigation", menu:\s*"Menu", closed:\s*"Close", nav:\s*"Primary navigation"/, "English fallback must remain available");
+assert.match(mobileNavigationJs, /visibleLabel\.textContent = isOpen \? menuLabels\.closed : menuLabels\.menu/, "visible menu label must follow the active locale and expanded state");
+assert.match(mobileNavigationJs, /navToggle\.setAttribute\("aria-label", isOpen \? menuLabels\.close : menuLabels\.open\)/, "screen-reader menu action must follow the active locale");
 assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
 
 console.log("Visual contracts passed for the corporate product-discipline system, seven-destination navigation, 19 canonical Nutraxin product routes, truthful fail-closed workflows, responsive media and asset budgets.");

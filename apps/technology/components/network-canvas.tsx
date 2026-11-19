@@ -117,9 +117,33 @@ export function NetworkCanvas() {
       pointer.y = -1000;
     };
 
+    // A WebKit or slow-hydration layout can initially report a zero-sized hero.
+    // Observe its containing box and repaint only when the rendered size changes.
+    // This preserves real canvas output rather than hiding a blank canvas.
+    const redrawForSize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (Math.abs(rect.width - width) < 0.5 && Math.abs(rect.height - height) < 0.5) return;
+      resize();
+      if (media.matches) draw();
+    };
+    // Resizing the backing-store bitmap changes canvas layout metrics in WebKit.
+    // Defer any write until the next animation frame, outside the observer's
+    // notification loop, and coalesce redundant geometry events.
+    let resizeFrame = 0;
+    const scheduleResize = () => {
+      if (resizeFrame) return;
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = 0;
+        redrawForSize();
+      });
+    };
+    const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleResize);
+    sizeObserver?.observe(canvas.parentElement ?? canvas);
+    const onWindowResize = scheduleResize;
+
     resize();
     draw();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", onWindowResize);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerleave", onPointerLeave);
     const onPreference = () => {
@@ -130,7 +154,9 @@ export function NetworkCanvas() {
 
     return () => {
       window.cancelAnimationFrame(animation);
-      window.removeEventListener("resize", resize);
+      window.cancelAnimationFrame(resizeFrame);
+      window.removeEventListener("resize", onWindowResize);
+      sizeObserver?.disconnect();
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerleave", onPointerLeave);
       media.removeEventListener("change", onPreference);

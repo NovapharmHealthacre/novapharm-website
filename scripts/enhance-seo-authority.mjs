@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
   INDEXNOW_KEY_URL,
@@ -16,6 +17,7 @@ import {
 
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
+const materialPageReleaseDate = (route) => ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
@@ -232,7 +234,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
-          dateModified: releaseDate
+          dateModified: materialPageReleaseDate(route)
         };
       }
       schema = JSON.parse(JSON.stringify(schema).replaceAll("#organisation", "#organization"));
@@ -285,6 +287,15 @@ function addEditorialTrust(html, article) {
   return html.replace("</main>", `${block}</main>`);
 }
 
+// Free, first-party link sharing. No LinkedIn SDK, tracking pixel, login or
+// account permission is loaded until a visitor explicitly opens LinkedIn.
+function addNativeArticleShare(html, article, canonical) {
+  if (!article || html.includes("data-native-article-share")) return html;
+  const destination = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(canonical);
+  const block = `<section class="section" data-native-article-share aria-label="Share this analysis"><div class="container"><p class="section-kicker">Continue the conversation</p><a class="btn btn-secondary" href="${destination}" target="_blank" rel="noopener noreferrer external" referrerpolicy="no-referrer">Share on LinkedIn <span class="sr-only">(opens a new tab)</span></a></div></section>`;
+  return html.replace("</main>", `${block}</main>`);
+}
+
 function addLegalEditorialStandards(html, route) {
   if (route !== "/legal/" || html.includes('id="editorial-standards"')) return html;
   const section = `<section class="section" id="editorial-standards"><div class="container"><div class="section-head"><span class="section-kicker">Editorial governance</span><h2>Standards for pharmaceutical and corporate content.</h2><p>NovaPharm publishes corporate B2B information, operating frameworks and analysis under evidence, authorship and correction controls.</p></div><div class="grid grid-3"><article class="card"><h3>Authorship and review</h3><p>Named authors and reviewers are used where their verified role and contribution support the subject. “Medically reviewed” is not used unless a suitably qualified reviewer actually performs that review.</p></article><article class="card"><h3>Sources and updates</h3><p>Primary sources such as legislation, competent authorities, ICH, official filings and peer-reviewed literature are preferred. Material updates change the displayed modified date; cosmetic builds do not create false freshness.</p></article><article class="card"><h3>Corrections and conflicts</h3><p>Material factual errors are corrected transparently. Commercial relationships, future intentions and professional interpretation must not be presented as independent regulatory approval or current product availability.</p></article></div><div class="regulatory-notice"><strong>Scope limitation</strong><p>The website does not provide patient-level diagnosis, treatment or medicine-use advice. Questions about a published fact or correction may be submitted through the <a href="/contact/">corporate contact route</a>.</p></div></div></section>`;
@@ -328,6 +339,9 @@ if (existsSync(nutraxinProductDirectory)) {
     }
   }
 }
+// ESCO is generated before SEO enhancement, not stored as a checked-in HTML directory.
+// Its public collection page needs a canonical sitemap URL and consistent metadata.
+publicFiles.push("products/esco/index.html");
 publicFiles.push("account-application/index.html");
 
 const pageRecords = [];
@@ -341,10 +355,30 @@ for (const file of [...new Set(publicFiles)]) {
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
+  // Keep the editorial trust notice last: the downstream authorship reconciler
+  // replaces its terminal section, so the native share link must precede it.
+  html = addNativeArticleShare(html, article, canonical);
   html = addEditorialTrust(html, article);
   html = addLegalEditorialStandards(html, route);
   html = addFooterEditorialLink(html);
   html = addAttributionSignals(html);
+  const measurementId = process.env.PUBLIC_GA4_MEASUREMENT_ID || "G-897L1VS8BX";
+  const analyticsApproved = process.env.PUBLIC_ANALYTICS_PRIVACY_APPROVED === "true";
+  if (analyticsApproved && measurementId && !validGa4Id(measurementId)) {
+    throw new Error("Approved GA4 measurement identifier is invalid.");
+  }
+  // Every rebuild must remove stale GA4 tags from routes that are no longer
+  // explicitly approved. Previously enhanced HTML is not evidence of consent.
+  html = html.replace(/<meta name="novapharm-ga4-id" content="[^"]*">\s*\n?/g, "");
+  html = html.replace(/<script type="module" src="\/assets\/js\/consent-analytics\.js"><\/script>\s*\n?/g, "");
+  // The HTML publisher and the browser share exactly the same fail-closed
+  // allowlist. Owner activation alone never enables a protected route.
+  if (analyticsApproved && validGa4Id(measurementId) && publicAnalyticsRoute(route)) {
+    html = html.replace("</head>", `  <meta name="novapharm-ga4-id" content="${measurementId}">\n</head>`);
+    if (!html.includes('/assets/js/consent-analytics.js')) {
+      html = html.replace("</body>", '<script type="module" src="/assets/js/consent-analytics.js"></script>\n</body>');
+    }
+  }
   write(file, html);
 
   const title = textContent(extract(html, /<title>([\s\S]*?)<\/title>/i));
@@ -370,7 +404,7 @@ for (const file of [...new Set(publicFiles)]) {
 
 const sitemapEntries = pageRecords.filter((page) => page.indexable).map((page) => {
   const article = page.route.startsWith("/news-insights/") ? articleBySlug.get(page.route.split("/")[2]) : null;
-  const lastmod = article ? (article.updated || article.published) : releaseDate;
+  const lastmod = article ? (article.updated || article.published) : materialPageReleaseDate(page.route);
   return `<url><loc>${escXml(page.canonical)}</loc><lastmod>${lastmod}</lastmod></url>`;
 });
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapEntries.join("")}</urlset>\n`);

@@ -1,0 +1,181 @@
+name: Dispatch verified AWS contact go-live
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: novapharm-contact-dispatch-once
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact merge to inspect publisher trigger paths
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+      - name: Enforce owner-approved contact-production permission
+        id: owner_hold
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
+          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "hold=true" >> "$GITHUB_OUTPUT"
+            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+          fi
+      - name: Skip contact publication for Nova ML-only main merges
+        if: steps.owner_hold.outputs.hold == 'false'
+        id: private_release
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Private model/HIG source changes do not justify public AWS contact
+          # publication. On unexpected or mixed paths retain the public release gates.
+          private_only=true
+          changed_any=false
+          found_ml=false
+          while IFS= read -r changed; do
+            [ -n "$changed" ] || continue
+            changed_any=true
+            case "$changed" in
+              apps/portal/*|.github/workflows/intelligence-country-release-gates.yml|docs/intelligence/77-country-101-source-complete-register-20261118.md|docs/intelligence/country-101-release-gates-20261118.md|scripts/render-intelligence-country-release-ledger.mjs|scripts/test-intelligence-country-release-ledger.mjs|src/core/intelligence-country-iso-identifiers.mjs|src/core/intelligence-country-markdown-cell.mjs|src/core/intelligence-country-release-ledger.mjs|src/core/intelligence-country-source-baseline.mjs|src/core/intelligence-enterprise-readiness.mjs|scripts/audit-intelligence-enterprise-readiness.mjs|scripts/test-intelligence-enterprise-readiness.mjs|docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md|.github/workflows/intelligence-enterprise-readiness.yml|docs/design/apple-hig-attachment-evidence-20261118.json|docs/design/apple-hig-source-and-attachment-audit-20261118.md|scripts/test-apple-hig-attachment-audit.mjs|native/novapharm-intelligence-mobile/MapsResearchScreen.tsx|native/novapharm-intelligence-mobile/appearance.ts|native/novapharm-intelligence-mobile/app.json|native/novapharm-intelligence-mobile/package.json|native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs|docs/design/apple-hig-172-topic-acceptance-register.json|docs/design/apple-hig-172-topic-adoption-20261118.md|docs/design/apple-hig-three-platform-adoption-20261118.md|native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx|native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs|scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs|.github/workflows/apple-hig-cross-platform-detail.yml|.github/workflows/browser-acceptance.yml|.github/workflows/corporate-live-full-acceptance.yml|scripts/test-corporate-live-publication-gate.mjs|.github/workflows/intelligence-global-101-onboarding.yml|docs/intelligence/global-101-source-integration-matrix-20261118.md|scripts/test-intelligence-global-intake-workflow.mjs|scripts/test-intelligence-global-source-gateway.mjs|scripts/test-intelligence-global-source-onboarding.mjs|src/core/intelligence-global-evidence-contract.mjs|src/core/intelligence-global-intake-quality.mjs|src/core/intelligence-global-intake-workflow.mjs|src/core/intelligence-global-source-gateway.mjs|src/core/intelligence-global-source-onboarding.mjs|native/novapharm-intelligence-apple/*|src/ai/compute-admission.mjs|scripts/test-nova-compute-admission.mjs|scripts/test-nova-infrastructure-integration.mjs|native/novapharm-intelligence-android/*|docs/architecture/deep-learning-infrastructure-20261118.md|docs/ai-system-card.md|docs/ai-risk-register.md|.github/workflows/nova-ml-infrastructure-contract.yml|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/nova-ml-private-ingress-acceptance.yml|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/intelligence-global-mobile-contracts.yml|.github/workflows/nova-ml-alignment-research.yml|.github/workflows/nova-ml-l0-sparsity.yml|docs/ai-dependency-and-model-sbom.json|docs/ai-model-register.json|docs/ai-use-case-register.json|docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md|docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md|native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs|native/novapharm-intelligence-mobile/tsconfig.json|packages/medicines-intelligence/src/l0-sparsity.ts|packages/medicines-intelligence/test/l0-sparsity.test.ts|scripts/test-nova-alignment-governance.mjs|scripts/test-nova-alignment-research.mjs|scripts/test-nova-l0-governance.mjs|src/core/ai/nova-alignment-research.mjs|tooling/python/nova_l0_sparsity.py|tooling/python/test_nova_l0_sparsity.py|.github/workflows/nova-ml-native-apple.yml|.github/workflows/intelligence-sparse-circuit-assurance.yml|.github/workflows/intelligence-sparse-transformer-experiment.yml|.github/workflows/nova-sparse-circuit-android.yml|docs/architecture/nova-scientific-intelligence-programme.md|docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md|docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md|docs/intelligence/npi-sparse-circuit-summary-v1.schema.json|native/novapharm-intelligence-mobile/App.tsx|native/novapharm-intelligence-mobile/README.md|native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs|scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json|scripts/research/tiny-sparse-transformer-experiment.py|scripts/research/toy-sparse-circuit-intervention.mjs|scripts/research/validate-trained-sparse-transformer-report.mjs|scripts/test-intelligence-sparse-circuit-assurance.mjs|scripts/test-intelligence-sparse-circuit-cross-platform.mjs|scripts/test-intelligence-sparse-circuit-toy-intervention.mjs|scripts/test-intelligence-sparse-circuit-upstream-governance.mjs|scripts/test-intelligence-trained-sparse-transformer-report.mjs|src/ai/model-registry.mjs|src/core/ai/model-registry.mjs|src/core/intelligence-sparse-circuit-assurance.mjs|.github/workflows/intelligence-global-secondary-source-contracts.yml|docs/intelligence/global-secondary-source-api-contracts-20261118.md|scripts/test-intelligence-global-secondary-source-gateway.mjs|scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs|src/core/intelligence-global-secondary-source-gateway.mjs|src/core/intelligence-singapore-hsa-bulk-candidate.mjs|.github/workflows/intelligence-official-live-pharma-probes.yml|docs/intelligence/official-live-pharma-probes-20261118.md|scripts/run-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-quarantine.mjs|scripts/test-intelligence-official-live-pharma-server-gate.mjs|src/core/intelligence-official-live-pharma-probes.mjs|.github/workflows/intelligence-es-cima-public-live-probe.yml|docs/intelligence/spain-cima-official-live-probe-20261118.md|scripts/run-intelligence-es-cima-public-live-probe.mjs|scripts/test-intelligence-es-cima-live-quarantine.mjs|scripts/test-intelligence-es-cima-public-live-probe.mjs|src/core/intelligence-es-cima-public-live-probe.mjs|.github/workflows/intelligence-canada-dpd-public-live-source.yml|docs/intelligence/canada-dpd-public-live-source-20261118.md|scripts/run-intelligence-canada-dpd-public-live-probe.mjs|scripts/test-intelligence-canada-dpd-public-live-probe.mjs|src/core/intelligence-canada-dpd-public-live-probe.mjs|.github/workflows/intelligence-clip-research-contract.yml|docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md|docs/intelligence/visual-search-cross-platform-contract.json|scripts/test-intelligence-visual-search.mjs|services/clip/*|src/core/intelligence-visual-search.mjs|.github/workflows/imdf-venue-evidence-preflight.yml|docs/maps/imdf-venue-preflight-20261119.md|scripts/imdf/venue-preflight.mjs|scripts/imdf/venue-preflight.test.mjs|native/novapharm-intelligence-mobile/clip-research.ts|native/novapharm-intelligence-mobile/tests/clip-contract.test.mjs|native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs|docs/intelligence/country-101-new-24-publisher-research-20261118.json|scripts/test-intelligence-24-publisher-research.mjs|.github/workflows/intelligence-country-web-mobile-parity.yml|docs/intelligence/country-101-client-catalog-20261118.json|scripts/generate-intelligence-country-client-catalog.mjs|scripts/test-intelligence-country-client-catalog.mjs|native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx|src/core/intelligence-country-101-proposed-ledger.mjs|scripts/test-intelligence-country-101-proposed-ledger.mjs|scripts/render-intelligence-country-101-proposed-ledger.mjs|.github/workflows/intelligence-country-101-scope-audit.yml|docs/intelligence/country-101-scope-proposal-20261118.json|docs/intelligence/country-101-scope-proposal-20261118.md|scripts/test-intelligence-country-101-scope-proposal.mjs|.github/workflows/intelligence-science-research-contracts.yml|docs/intelligence/openai-science-integration-20261118.md|docs/intelligence/openai-science-methods-20261118.json|docs/intelligence/science-research-capabilities-20261118.json|native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx|scripts/package-unified-estate.mjs|scripts/test-intelligence-22-workspace-readiness.mjs|scripts/test-intelligence-readiness.mjs|scripts/test-intelligence-science-evidence-dossier.mjs|scripts/test-intelligence-science-methodology.mjs|scripts/test-intelligence-science-research.mjs|scripts/test-unified-release-artifacts.mjs|src/core/intelligence-22-workspace-readiness.mjs|src/core/intelligence-release-readiness.mjs|src/core/intelligence-science-evidence-dossier.mjs|src/core/intelligence-science-methodology.mjs|src/core/intelligence-science-research-contract.mjs|src/core/intelligence-science-research-principles.mjs|.github/workflows/intelligence-model-microscope.yml|docs/ai-model-licence-review.md|docs/intelligence/model-microscope-inspection-v1.schema.json|docs/intelligence/model-microscope-research-to-product-20261118.md|native/novapharm-intelligence-mobile/metro.config.cjs|scripts/test-nova-model-microscope-end-to-end.mjs|scripts/test-nova-model-microscope-signed-evidence.mjs|scripts/test-nova-model-microscope-synthetic-reference.mjs|scripts/test-nova-model-microscope.mjs|src/core/ai/model-microscope-signed-evidence.mjs|src/core/ai/model-microscope-synthetic-reference.d.mts|src/core/ai/model-microscope-synthetic-reference.mjs|src/core/ai/model-microscope.mjs)
+                found_ml=true
+                ;;
+              server.mjs)
+                # Only the exact reviewed default-OFF, board-scoped probe route is source-only.
+                # All other server changes, including mixed customer/public edits, require public gates.
+                server_delta=$(git diff --unified=0 "$GITHUB_SHA^1" "$GITHUB_SHA" -- "$changed" | grep -E '^(\+[^+]|-[^-]|\+$|-$)' || true)
+                server_sha=$(printf '%s\n' "$server_delta" | sha256sum | cut -d' ' -f1)
+                original_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                candidate_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$server_sha" = '56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2' ] || { [ "$original_blob" = '4e8c233d1dbf085545763de4bd4de093ea95ec11' ] && [ "$candidate_blob" = '12dd72527ae561d6506d9573d418959d6f337189' ]; }; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              package.json)
+                # Only the exact reviewed additional offline CLIP test script is research-only.
+                # Other root dependencies, scripts and engine changes retain normal publication gates.
+                original_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                candidate_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$original_blob" = '733efc6571364754e46bfcadb8141d5d6c3481ba' ] && [ "$candidate_blob" = 'c2ad27febc151c09e9629ed602ad989a01e90213' ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              apps/corporate/app/design-system.css)
+                # Source-reviewed #856 breadcrumb target only; future CSS changes are public releases.
+                old_css_blob=$(git rev-parse "HEAD^1:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                new_css_blob=$(git rev-parse "HEAD:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                if [ "$old_css_blob" = "35a79b8b0051ac353d98e6f70ae9446d44955b5c" ] && [ "$new_css_blob" = "85ca93d1f501de09e99f4114852daacb4d1b77f1" ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              .github/workflows/visual-refinement.yml|scripts/audit-website-hig-source.mjs|scripts/test-apple-hig-census.mjs)
+                # HIG test and source-audit changes do not alter customer contact infrastructure.
+                found_ml=true
+                ;;
+              packages/medicines-intelligence/src/index.ts)
+                # Shared barrel: only the reviewed L0 export insertion is research-only.
+                export_diff=$(git diff --unified=0 "$GITHUB_SHA^1" "$GITHUB_SHA" -- "$changed" | grep -E '^[+-][^+-]' || true)
+                if [ "$export_diff" = '+export * from "./l0-sparsity.ts";' ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              scripts/aws/contact-release-routing.test.mjs|.github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml)
+                ;;
+              scripts/check-syntax.mjs)
+                # This one audited Node 24 syntax-parser migration is source-only.
+                # Other shared-tool changes retain normal public release verification.
+                prior_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                proposed_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$prior_blob" != "51c1abd00a10856395c3283a992f5c53e6de7cea" ] || [ "$proposed_blob" != "e186036b0f29d8c67d6e942311aa2585d41e37c0" ]; then
+                  private_only=false
+                fi
+                ;;
+              *)
+                private_only=false
+                ;;
+            esac
+          done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
+          if [ "$changed_any" = true ] && [ "$found_ml" = true ] && [ "$private_only" = true ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Protected source-only merge: no AWS contact call or public Pages overwrite."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Other changes: preserve the verified contact publisher workflow."
+          fi
+      - name: Avoid a duplicate release for a directly published commit
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true'
+        id: publisher
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # GitHub gives this protected publisher one pending slot per
+          # concurrency group. Never dispatch another release for a commit
+          # that already triggered the authoritative push publisher.
+          # A GitHub API error aborts instead of risking a duplicate publish.
+          existing=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/publish-aws-contact-production.yml/runs?head_sha=$GITHUB_SHA&event=push&per_page=100" \
+            --jq ".workflow_runs | map(select(.head_sha == \"$GITHUB_SHA\" and .event == \"push\")) | length")
+          if [[ "$existing" =~ ^[0-9]+$ ]] && (( existing > 0 )); then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Publisher push run is already registered for the exact commit. No duplicate dispatch."
+            exit 0
+          fi
+          # An extra static defence covers publisher path filtering during
+          # the short interval before GitHub registers a sibling push run.
+          while IFS= read -r changed; do
+            case "$changed" in
+              products/nutraxin/*|src/content/nutraxin-showcase.html|assets/js/nutraxin-retail-store.js|assets/js/contact-production.js|assets/js/consent-analytics.js|assets/js/marketing-attribution.js|assets/js/esco-catalogue.js|assets/js/esco-bag.js|scripts/esco-merchandising.mjs|assets/css/esco-catalogue.css|assets/data/esco-catalogue.json|scripts/apply-esco-catalogue.mjs|scripts/test-esco-catalogue.mjs|scripts/build-site.mjs|scripts/build-css-bundle.mjs|assets/css/novapharm.bundle.css|assets/css/novapharm-apple-27-web-adaptation.css|assets/css/novapharm-hig-motion.css|assets/data/nutraxin-retail-catalogue.json|scripts/apply-corporate-product-discipline.mjs|scripts/stage-pages-artifact.mjs|scripts/apply-markets-editorial.mjs|assets/css/markets-editorial.css|scripts/test-global-distribution-foundation.mjs|.github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml)
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                echo "Dedicated contact publisher handles this commit. Not dispatching a duplicate."
+                exit 0
+                ;;
+            esac
+          done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+      - name: Verify AWS contact candidate is already activated
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
+        env:
+          CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
+            -H 'Cache-Control: no-cache' "$CONTACT_ORIGIN/health" > /tmp/contact-health.json
+          jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' /tmp/contact-health.json
+          echo 'Confirmed AWS contact intake is enabled. No real enquiry data was read.'
+      - name: Dispatch independently verified exact-SHA contact release
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+          CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          gh workflow run publish-aws-contact-production.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f expected_sha="$EXPECTED_SHA" \
+            -f contact_api_origin="$CONTACT_ORIGIN"
+          echo "Published release job dispatched for ${EXPECTED_SHA}; only its independent synthetic acceptance may update GitHub Pages."

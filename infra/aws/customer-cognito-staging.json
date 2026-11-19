@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Separate NovaPharm customer identity foundation. Staging only. Default admin-invite-only until email verification, private customer API, approval ledger and HTTPS are independently proven. Does not activate customer sign-up or trading.",
+  "Resources": {
+    "CustomerIdentityPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "UserPoolName": "novapharm-staging-customer-identity",
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "UsernameAttributes": [
+          "email"
+        ],
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        },
+        "UserAttributeUpdateSettings": {
+          "AttributesRequireVerificationBeforeUpdate": [
+            "email"
+          ]
+        },
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 12,
+            "RequireUppercase": true,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "TemporaryPasswordValidityDays": 7
+          }
+        },
+        "MfaConfiguration": "OPTIONAL",
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Priority": 1,
+              "Name": "verified_email"
+            }
+          ]
+        },
+        "DeletionProtection": "ACTIVE",
+        "UserPoolTags": {
+          "application": "novapharm",
+          "environment": "staging",
+          "identity": "customer-only",
+          "activation": "disabled",
+          "dataClassification": "synthetic-only"
+        },
+        "EnabledMfas": [
+          "SOFTWARE_TOKEN_MFA"
+        ]
+      }
+    },
+    "CustomerStagingClient": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "ClientName": "novapharm-staging-customer-client",
+        "UserPoolId": {
+          "Ref": "CustomerIdentityPool"
+        },
+        "GenerateSecret": false,
+        "ExplicitAuthFlows": [
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "EnableTokenRevocation": true,
+        "AccessTokenValidity": 30,
+        "IdTokenValidity": 30,
+        "RefreshTokenValidity": 7,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        },
+        "ReadAttributes": [
+          "email",
+          "email_verified"
+        ],
+        "WriteAttributes": [
+          "email"
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "UserPoolId": {
+      "Value": {
+        "Ref": "CustomerIdentityPool"
+      }
+    },
+    "CustomerAppClientId": {
+      "Value": {
+        "Ref": "CustomerStagingClient"
+      }
+    },
+    "ActivationPolicy": {
+      "Value": "Self sign-up disabled, no hosted login, no callback, no customer rights and no production connection"
+    }
+  }
+}

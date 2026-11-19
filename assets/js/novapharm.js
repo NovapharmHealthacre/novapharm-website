@@ -1,16 +1,42 @@
 const navToggle = document.querySelector("[data-nav-toggle]");
 const siteNav = document.querySelector("[data-site-nav]");
+// Static pages keep the correct screen-reader labels when users toggle the
+// mobile menu after choosing the Arabic/Hebrew RTL layout preview.
+const navigationLocale = document.documentElement.lang;
+const localizedMenuLabels = {
+  ar: { open: "فتح القائمة", close: "إغلاق القائمة", menu: "القائمة", closed: "إغلاق", nav: "التنقل الرئيسي" },
+  he: { open: "פתיחת תפריט", close: "סגירת תפריט", menu: "תפריט", closed: "סגירה", nav: "ניווט ראשי" },
+};
+const menuLabels = localizedMenuLabels[navigationLocale] || {
+  open: "Open navigation", close: "Close navigation", menu: "Menu", closed: "Close", nav: "Primary navigation",
+};
 
 if (navToggle && siteNav) {
+  // A parent section is not the current page. Announce only exact destinations
+  // to VoiceOver and other screen readers (including legacy generated headers).
+  const normaliseNavigationPath = (path) => {
+    const canonical = path.endsWith("/index.html") ? path.slice(0, -"index.html".length) : path;
+    return canonical.endsWith("/") ? canonical : canonical + "/";
+  };
+  const currentPath = normaliseNavigationPath(window.location.pathname);
+  siteNav.querySelectorAll("a[href^='/']").forEach((link) => {
+    const linkPath = normaliseNavigationPath(new URL(link.getAttribute("href"), window.location.href).pathname);
+    if (linkPath === currentPath) link.setAttribute("aria-current", "page");
+    else if (link.getAttribute("aria-current") === "page") link.removeAttribute("aria-current");
+  });
+
   const setNavigation = (isOpen) => {
     siteNav.classList.toggle("open", isOpen);
     navToggle.setAttribute("aria-expanded", String(isOpen));
+    navToggle.setAttribute("aria-label", isOpen ? menuLabels.close : menuLabels.open);
     const label = navToggle.querySelector(".sr-only");
-    if (label) label.textContent = isOpen ? "Close navigation" : "Open navigation";
+    if (label) label.textContent = isOpen ? menuLabels.close : menuLabels.open;
     const visibleLabel = navToggle.querySelector("[data-menu-label]");
-    if (visibleLabel) visibleLabel.textContent = isOpen ? "Close" : "Menu";
+    if (visibleLabel) visibleLabel.textContent = isOpen ? menuLabels.closed : menuLabels.menu;
   };
 
+  navToggle.setAttribute("aria-label", menuLabels.open);
+  siteNav.setAttribute("aria-label", menuLabels.nav);
   navToggle.addEventListener("click", () => setNavigation(!siteNav.classList.contains("open")));
   siteNav.addEventListener("click", (event) => {
     if (event.target.closest("a")) setNavigation(false);
@@ -61,6 +87,18 @@ if (megaHeader) {
   triggers.forEach((trigger) => {
     trigger.addEventListener("pointerenter", () => openMega(trigger));
     trigger.addEventListener("focus", () => openMega(trigger));
+    // A top-level category click opens its choices like a menu. Each panel
+    // contains the category overview link; without JS, the anchor still works.
+    // Never intercept browser/system modified-click shortcuts.
+    trigger.addEventListener("click", (event) => {
+      if (!desktop.matches || event.button !== 0 ||
+          event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const panel = panels.find((candidate) => candidate.dataset.megaPanel === trigger.dataset.megaTrigger);
+      if (!panel) return;
+      event.preventDefault();
+      openMega(trigger);
+      panel.querySelector("a")?.focus({ preventScroll: true });
+    });
     trigger.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowDown" || !desktop.matches) return;
       event.preventDefault();
@@ -69,7 +107,26 @@ if (megaHeader) {
       panel?.querySelector("a")?.focus();
     });
   });
-  megaHeader.addEventListener("pointerleave", closeMega);
+  // Tabbing to an unrelated header control must not leave an overlay expanded.
+  // Moving into the active panel (or another category trigger) remains allowed.
+  megaHeader.addEventListener("focusin", (event) => {
+    const target = event.target;
+    if (!activeTrigger || activeTrigger.contains(target)) return;
+    const inOpenPanel = panels.some((panel) => panel.classList.contains("is-open") && panel.contains(target));
+    if (!inOpenPanel && !target.closest("[data-mega-trigger]")) closeMega();
+  });
+  // Mouse hover must not collapse a menu while its trigger or a menu link
+  // retains keyboard focus. Otherwise the focused link becomes display:none
+  // and disappears from the accessibility and keyboard navigation tree.
+  const focusWithinActiveMega = () => {
+    if (!activeTrigger) return false;
+    const focused = document.activeElement;
+    return activeTrigger === focused || panels.some((panel) =>
+      panel.classList.contains("is-open") && panel.contains(focused));
+  };
+  megaHeader.addEventListener("pointerleave", () => {
+    if (!focusWithinActiveMega()) closeMega();
+  });
   megaHeader.addEventListener("click", (event) => {
     if (event.target.closest(".npd-mega a")) closeMega();
   });
@@ -99,22 +156,42 @@ if (siteHeader) {
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
 
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const saveData = navigator.connection?.saveData === true;
-
-if (!reducedMotion && !saveData) {
-  document.documentElement.dataset.motion = "ready";
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add("is-visible");
-      observer.unobserve(entry.target);
-    }
-  }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
-  document.querySelectorAll("[data-reveal]").forEach((node) => revealObserver.observe(node));
-
+const revealNodes = [...document.querySelectorAll("[data-reveal]")];
+let revealObserver;
+// An optional animation must never hide page content if observer setup fails.
+const revealAll = () => {
+  delete document.documentElement.dataset.motion;
+  revealObserver?.disconnect();
+  revealNodes.forEach((node) => node.classList.add("is-visible"));
+};
+if (revealNodes.length && !motionPreference.matches && !saveData && typeof IntersectionObserver !== "undefined" && typeof window.IntersectionObserver === "function") {
+  try {
+    revealObserver = new window.IntersectionObserver((entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
+    revealNodes.forEach((node) => revealObserver.observe(node));
+    document.documentElement.dataset.motion = "ready";
+  } catch {
+    revealAll();
+  }
 } else {
-  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
+  revealAll();
+}
+// Mid-session Reduce Motion changes remain immediately usable, even on
+// older browsers exposing the deprecated MediaQueryList.addListener method.
+const updateMotionPreference = () => {
+  if (motionPreference.matches) revealAll();
+};
+if (typeof motionPreference.addEventListener === "function") {
+  motionPreference.addEventListener?.("change", updateMotionPreference);
+} else {
+  motionPreference.addListener?.(updateMotionPreference);
 }
 
 const networkStory = document.querySelector("[data-network-story]");
@@ -246,6 +323,12 @@ if (contactForm) {
     const option = [...enquirySelect.options].find((candidate) => candidate.value.toLowerCase() === requestedEnquiry.toLowerCase());
     if (option) enquirySelect.value = option.value;
   }
+  const quoteMessage = new URLSearchParams(window.location.search).get("quote");
+  const messageField = contactForm.elements.message;
+  if (quoteMessage?.startsWith("ESCO Anand UK quotation request") && quoteMessage.length <= 850 &&
+      messageField instanceof HTMLTextAreaElement && !messageField.value) {
+    messageField.value = quoteMessage;
+  }
 
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -285,4 +368,63 @@ if (contactForm) {
       if (submit) submit.disabled = false;
     }
   });
+}
+
+// Nutraxin consumer storefront loads only on its public collection and detail routes.
+// The static bag cannot authorise payments: the server verifies all commercial data.
+if (window.location.pathname.startsWith("/products/nutraxin/") &&
+    !window.location.pathname.startsWith("/products/nutraxin/order-request/")) {
+  void import("/assets/js/nutraxin-retail-store.js").catch(() => {
+    // Static catalogue remains available if shopping enhancement cannot load.
+  });
+}
+
+
+/* Keep the approved public wordmark visible in full-page WebKit captures
+   and on quick navigation to the footer. It is a small, shared brand asset. */
+for (const image of document.querySelectorAll(".npd-footer .npd-footer-identity .brand-logo img")) {
+  image.loading = "eager";
+}
+
+/* Apple-style mobile web footer disclosure. The source links remain visible
+   without JS; only enhance the ordinary public corporate footer groups. */
+for (const directory of document.querySelectorAll(
+  "footer.site-footer .npd-footer-top, footer.site-footer .footer-grid"
+)) {
+  if (directory.dataset.npAppleFooter === "enhanced") continue;
+  const columns = [...directory.children].filter((child) =>
+    child.tagName === "DIV" &&
+    !child.classList.contains("npd-footer-identity") &&
+    !child.classList.contains("footer-intro")
+  );
+  if (!columns.length) continue;
+  const compact = window.matchMedia("(max-width: 833px)");
+  const disclosures = [];
+  for (const column of columns) {
+    const heading = column.querySelector(":scope > h2, :scope > h3");
+    if (!heading) continue;
+    const details = document.createElement("details");
+    details.className = "np-apple-footer-disclosure";
+    const summary = document.createElement("summary");
+    summary.append(heading);
+    const links = document.createElement("div");
+    links.className = "np-apple-footer-disclosure-links";
+    while (column.firstChild) links.append(column.firstChild);
+    details.append(summary, links);
+    column.append(details);
+    disclosures.push({ details, summary });
+  }
+  if (disclosures.length) {
+    const syncDisclosureMode = () => {
+      for (const { details, summary } of disclosures) {
+        // On desktop the directory is always visible, not interactive.
+        // On mobile use native details/summary so VoiceOver and keyboard work.
+        details.open = !compact.matches;
+        summary.tabIndex = compact.matches ? 0 : -1;
+      }
+    };
+    syncDisclosureMode();
+    compact.addEventListener("change", syncDisclosureMode);
+    directory.dataset.npAppleFooter = "enhanced";
+  }
 }

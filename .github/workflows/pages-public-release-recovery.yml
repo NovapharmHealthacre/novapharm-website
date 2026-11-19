@@ -1,13 +1,16 @@
 name: Recover public GitHub Pages publication
 
 on:
-  push:
-    branches: [main]
+  # Manual, controlled recovery only. The AWS-backed publisher owns main-branch
+  # releases; duplicate push triggers compete for the same github-pages queue.
   pull_request:
     paths:
       - .github/workflows/pages-public-release-recovery.yml
       - assets/css/apple-pharma-public.css
       - assets/css/homepage-editorial.css
+      - assets/media/home/earth-reference-1400.jpg
+      - apps/corporate/components/concise-home.tsx
+      - apps/corporate/app/homepage-editorial.css
       - assets/css/oncology-editorial.css
       - oncology/index.html
       - apps/corporate/components/oncology-editorial.tsx
@@ -35,7 +38,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: novapharm-github-pages-${{ github.event_name }}-${{ github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-verified-customer-publication-v2' }}
   cancel-in-progress: false
 
 env:
@@ -71,7 +74,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
-          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
+          test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
@@ -80,8 +86,8 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'Oncology demands' _site/oncology/index.html
-          grep -Fq 'class="npoc-hero"' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
+          grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
@@ -112,6 +118,20 @@ jobs:
             -f description="Building the owner-approved public release" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 
+      - name: Stop recovery from downgrading an activated customer form
+        run: |
+          set -euo pipefail
+          url="$LIVE_ORIGIN/contact/?recovery-guard=$GITHUB_SHA-$GITHUB_RUN_ID"
+          curl --fail --silent --show-error --location --retry 2 --retry-delay 2 \
+            --max-time 20 -H 'Cache-Control: no-cache, no-store' "$url" -o /tmp/recovery-existing-contact.html
+          if grep -Fq 'data-live-b2b-enquiry-form' /tmp/recovery-existing-contact.html; then
+            echo "::error::AWS-backed contact is live. Public-only recovery would overwrite it. Use reviewed AWS-backed contact publication or coordinated rollback."
+            exit 1
+          fi
+          grep -Fq 'This public information release does not collect or transmit enquiry details' /tmp/recovery-existing-contact.html || {
+            echo "::error::Unrecognized public contact state. Refusing destructive overwrite."
+            exit 1
+          }
       - name: Verify checked-in public source is default-deny
         run: node scripts/test-static-public-source-safety.mjs
 
@@ -128,7 +148,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
-          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
+          test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
@@ -137,8 +160,8 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'Oncology demands' _site/oncology/index.html
-          grep -Fq 'class="npoc-hero"' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
+          grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
@@ -206,7 +229,7 @@ jobs:
     steps:
       - name: Deploy the public artifact
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
       - name: Verify the deployed Pages URL
         env:
@@ -219,10 +242,12 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/regulatory-services/?${cache_key}-${attempt}" > /tmp/deployed-regulatory.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/markets/?${cache_key}-${attempt}" > /tmp/deployed-markets.html || true
             if grep -Fq 'Medicine. Where it needs to be' /tmp/deployed-home.html \
-              && grep -Fq 'class="npd-apple-hero"' /tmp/deployed-home.html \
+              && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/deployed-home.html \
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/deployed-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/deployed-regulatory.html \
+              && grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/deployed-markets.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
               && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
               && ! grep -Fq 'data-login-form' /tmp/deployed-portal.html \
@@ -249,18 +274,20 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/markets/?${cache_key}-${attempt}" > /tmp/live-markets.html || true
             search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
             if grep -Fq 'Medicine. Where it needs to be' /tmp/live-home.html \
-              && grep -Fq 'class="npd-apple-hero"' /tmp/live-home.html \
+              && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/live-home.html \
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/live-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/live-regulatory.html \
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
+              && grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/live-markets.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
-              && grep -Fq 'Oncology demands' /tmp/live-oncology.html \
-              && grep -Fq 'class="npoc-hero"' /tmp/live-oncology.html \
+              && grep -Fq 'A Hope for' /tmp/live-oncology.html \
+              && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-oncology.html \
               && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
               && grep -Fq 'class="np-contact-reference-hero"' /tmp/live-contact.html \
               && grep -Fq 'data-email-enquiry-form' /tmp/live-contact.html \

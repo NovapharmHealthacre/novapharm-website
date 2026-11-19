@@ -15,8 +15,83 @@ if (form instanceof HTMLFormElement) {
     const requestedType = new URLSearchParams(location.search).get("enquiry");
     const topic = form.elements.namedItem("enquiryType");
     if (topic instanceof HTMLSelectElement && requestedType) {
-      const match = [...topic.options].find(option => option.value.toLowerCase() === requestedType.toLowerCase());
+      // Canonical public links use concise section names; the receiving
+      // business form uses more specific, controlled enquiry categories.
+      const intent = requestedType.trim().toLowerCase();
+      const preferredTopic = intent === "distribution" ? "Distribution partnership"
+        : intent.startsWith("oncology") ? "Oncology & specialist medicines"
+        : requestedType;
+      const match = [...topic.options].find(option => option.value.toLowerCase() === preferredTopic.toLowerCase());
       if (match) topic.value = match.value;
+    }
+    // Product details arrive only as public, non-sensitive URL hints. They
+    // prefill a customer-controlled enquiry, never an order or a price.
+    // Treat URL content as untrusted and insert it only using input.value.
+    const intent = new URLSearchParams(location.search);
+    const productName = intent.get("product") || "";
+    const sku = intent.get("sku") || "";
+    const messageField = form.elements.namedItem("message");
+    // Strictly enumerated, non-sensitive subscription proposal interests.
+    // No URL-supplied price or entitlements are accepted, and this does not
+    // create a paid subscription or customer account.
+    const requestedIntelligencePlan = intent.get("intelligencePlan") || "";
+    const intelligencePlans = Object.freeze({
+      starter: "Starter",
+      professional: "Professional",
+      enterprise: "Enterprise"
+    });
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && Object.hasOwn(intelligencePlans, requestedIntelligencePlan)
+        && !intent.has("basket") && !intent.has("quote") && !intent.has("product")) {
+      messageField.value = "NovaPharm Intelligence " + intelligencePlans[requestedIntelligencePlan] +
+        " proposal request.\n\nPlease confirm product availability, the proposed scope, user entitlements, data-source licensing, regional price and tax treatment, and commercial terms before any purchase or account activation. This is a non-binding business enquiry.";
+    }
+
+    // ESCO quote-list hints are untrusted. Accept only model-independent
+    // catalogue IDs and safe quantities; no buyer-provided HTML or pricing.
+    const rawEscoQuote = intent.get("quote") || "";
+    if (messageField instanceof HTMLTextAreaElement && !messageField.value.trim()
+        && rawEscoQuote.startsWith("ESCO Anand UK quotation request")
+        && rawEscoQuote.length <= 850
+        && !/[<>\u0000-\u001f\u007f]/u.test(rawEscoQuote)) {
+      const items = [...rawEscoQuote.matchAll(/\b(ESCO-CAT-\d{4}) qty ([1-9][0-9]{0,2}|1000)\b/gu)];
+      const unique = new Set(items.map((item) => item[1]));
+      if (items.length > 0 && items.length <= 12 && unique.size === items.length) {
+        messageField.value = "ESCO Anand 2026 catalogue: request for a non-binding UK procurement quotation.\n\n" +
+          items.map((item) => "- " + item[1] + ": " + item[2] + " units").join("\n") +
+          "\n\nPlease confirm the precise product variants, UK market compliance, delivered prices excluding and including applicable VAT, and lead times. This is not an order or an instruction to collect payment.";
+      }
+    }
+    // Basket hints contain SKU and requested units only. Validate length,
+    // syntax, duplicates and quantity before touching the visible enquiry.
+    // They must not be interpreted as confirmed or priced orders.
+    const rawBasket = intent.get("basket") || "";
+    const orderLines = rawBasket && rawBasket.length <= 1250 ? rawBasket.split(",") : [];
+    const seenOrderSkus = new Set();
+    const basketValid = orderLines.length > 0 && orderLines.length <= 19 && orderLines.every((line) => {
+      const match = /^(NUT-UK-[A-Z0-9-]{3,48}):([1-9][0-9]{0,3}|10000)$/u.exec(line);
+      if (!match || seenOrderSkus.has(match[1])) return false;
+      seenOrderSkus.add(match[1]);
+      return true;
+    });
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && basketValid) {
+      const items = orderLines.map((line) => {
+        const [productSku, count] = line.split(":");
+        return `- ${productSku}: ${count} units`;
+      });
+      messageField.value = `Please review this preliminary Nutraxin business purchase request and provide a formal quotation, subject to customer qualification, current availability, approved selling prices, delivery costs, UK VAT status and applicable terms.\n\n${items.join("\n")}\n\nThis is a non-binding quotation request, not a confirmed order. No payment is authorised.`;
+    }
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && !rawBasket
+        && productName.length > 0 && productName.length <= 160
+        && !/[<>\u0000-\u001f\u007f]/u.test(productName)) {
+      const validSku = /^NUT-UK-[A-Z0-9-]{3,48}$/u.test(sku) ? sku : "";
+      const reference = validSku ? ` (SKU: ${validSku})` : "";
+      messageField.value = `I would like to discuss a qualified NovaPharm business account and future purchasing for ${productName}${reference}.\n\nThis is a non-binding business enquiry, not an order or a request to pay.`;
     }
     form.addEventListener("submit", async event => {
       event.preventDefault();

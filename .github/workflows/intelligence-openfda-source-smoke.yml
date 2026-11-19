@@ -1,0 +1,41 @@
+name: US FDA official-source discovery acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/regulatory/openfda-labels.mjs'
+      - 'scripts/test-openfda-labels.mjs'
+      - '.github/workflows/intelligence-openfda-source-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-official-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Test provenance, privacy and fail-closed source mapping without external data
+        run: node --test scripts/test-openfda-labels.mjs
+
+      - name: Verify public FDA label API responds to a synthetic generic-name lookup
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --retry-delay 2 \
+            --connect-timeout 8 --max-time 20 \
+            -H 'Accept: application/json' \
+            'https://api.fda.gov/drug/label.json?search=openfda.generic_name%3A%22apixaban%22&limit=1' \
+            -o /tmp/novapharm-openfda-smoke.json
+          jq -e '.results | type == "array" and length > 0' /tmp/novapharm-openfda-smoke.json
+          jq -e '.results[0].openfda.generic_name | type == "array"' /tmp/novapharm-openfda-smoke.json
+          echo "Official public US FDA API responded to a medicine label lookup. This does not certify NovaPharm private deployment, data completeness or medical use."

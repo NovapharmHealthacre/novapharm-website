@@ -2,10 +2,17 @@
 
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
+import type { InterfaceLocale } from "../../../src/core/interface-locale";
+import { isNovaMlWorkspaceSlug } from "../data/nova-ml-modules";
+import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
+import { AccountAccessHelp } from "./account-access-help";
+import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { DistributionBrand } from "./distribution-brand";
+import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
 
@@ -34,23 +41,23 @@ function readable(value: unknown): string {
   return String(value).replaceAll("_", " ").replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function formatted(value: unknown, type = "", row: Record<string, unknown> = {}): string {
+function formatted(value: unknown, type = "", row: Record<string, unknown> = {}, locale: InterfaceLocale = "en-GB"): string {
   if (value === null || value === undefined || value === "") return "Not recorded";
-  if (type === "money") return new Intl.NumberFormat("en-GB", { style: "currency", currency: String(row["currency"] ?? "GBP") }).format(Number(value) / 100);
-  if (type === "number") return new Intl.NumberFormat("en-GB").format(Number(value));
-  if (type === "basis_points") return `${(Number(value) / 100).toFixed(0)}%`;
+  if (type === "money") return new Intl.NumberFormat(locale, { style: "currency", currency: String(row["currency"] ?? "GBP") }).format(Number(value) / 100);
+  if (type === "number") return new Intl.NumberFormat(locale).format(Number(value));
+  if (type === "basis_points") return new Intl.NumberFormat(locale, { style: "percent", maximumFractionDigits: 0 }).format(Number(value) / 10000);
   if (type === "status") return readable(value);
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return new Date(value).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return new Date(value).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" });
   return String(value);
 }
 
-function MetricGrid({ metrics }: Readonly<{ metrics: readonly Metric[] }>) {
+function MetricGrid({ metrics, locale }: Readonly<{ metrics: readonly Metric[]; locale: InterfaceLocale }>) {
   if (!metrics.length) return null;
-  return <div className="metric-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong>{formatted(metric.value, metric.format)}</strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" /></a> : null}</article>)}</div>;
+  return <div className="metric-grid np-hig-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong><bdi dir="auto">{formatted(metric.value, metric.format, {}, locale)}</bdi></strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" className="np-symbol" /></a> : null}</article>)}</div>;
 }
 
-function DataTable({ section }: Readonly<{ section: DataSection }>) {
-  return <section className="data-section"><header><div><h2>{section.title}</h2>{section.description ? <p>{section.description}</p> : null}</div><span>{section.source ?? "Canonical application database"}</span></header>{/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll wide operational tables. */}<section className="table-region" tabIndex={0} aria-label={`Scrollable ${section.title} table`}><table><thead><tr>{section.columns.map(([key, label]) => <th key={key} scope="col">{label}</th>)}</tr></thead><tbody>{section.rows.length ? section.rows.map((row) => <tr key={section.columns.map(([key]) => String(row[key] ?? "")).join("|")}>{section.columns.map(([key, label, type]) => <td key={key} data-label={label} data-state={type === "status" ? String(row[key] ?? "unknown").toLowerCase() : undefined}>{formatted(row[key], type, row)}</td>)}</tr>) : <tr><td className="empty-cell" colSpan={Math.max(1, section.columns.length)}>{section.emptyState}</td></tr>}</tbody></table></section></section>;
+function DataTable({ section, locale }: Readonly<{ section: DataSection; locale: InterfaceLocale }>) {
+  return <section className="data-section"><header><div><h2>{section.title}</h2>{section.description ? <p>{section.description}</p> : null}</div><span>{section.source ?? "Canonical application database"}</span></header>{/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll wide operational tables. */}<section className="table-region np-hig-table-region" tabIndex={0} aria-label={`Scrollable ${section.title} table`}><table><thead><tr>{section.columns.map(([key, label]) => <th key={key} scope="col">{label}</th>)}</tr></thead><tbody>{section.rows.length ? section.rows.map((row) => <tr key={section.columns.map(([key]) => String(row[key] ?? "")).join("|")}>{section.columns.map(([key, label, type]) => <td key={key} data-label={label} data-state={type === "status" ? String(row[key] ?? "unknown").toLowerCase() : undefined} data-np-number={["money", "number", "basis_points"].includes(type ?? "") ? "true" : undefined} data-np-medicine-code={/^(sku|gtin|ean|batch|medicine_code|snomed|dm_d|product_id|order_id)$/i.test(key) ? "true" : undefined}><bdi dir={/^(sku|gtin|ean|batch|medicine_code|snomed|dm_d|product_id|order_id)$/i.test(key) ? "ltr" : "auto"}>{formatted(row[key], type, row, locale)}</bdi></td>)}</tr>) : <tr><td className="empty-cell" colSpan={Math.max(1, section.columns.length)}>{section.emptyState}</td></tr>}</tbody></table></section></section>;
 }
 
 function AreaSwitcher({ user }: Readonly<{ user: PortalUser }>) {
@@ -63,30 +70,48 @@ function gatewayActionPath(endpoint: string): string {
   return endpoint.slice(5);
 }
 
-function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: Snapshot; onComplete: () => Promise<void>; onMessage: (message: string) => void }>) {
-  async function submit(endpoint: string, body: unknown, success: string) {
+function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: Snapshot; onComplete: () => Promise<boolean>; onMessage: (message: string) => void }>) {
+  // React's disabled-button state alone does not prevent same-tick double submissions.
+  const requestInFlight = useRef(false);
+  const [sending, setSending] = useState(false);
+  async function submit(endpoint: string, body: unknown, success: string): Promise<boolean> {
+    if (requestInFlight.current) return false;
+    requestInFlight.current = true;
+    setSending(true);
+    onMessage("Submitting your controlled request.");
+    let accepted = false;
     try {
       await protectedMutation(gatewayActionPath(endpoint), body);
-      await onComplete();
-      onMessage(success);
+      accepted = true;
+      const refreshed = await onComplete();
+      onMessage(refreshed ? success : "The service accepted the request, but the updated records could not be verified. Check the workspace before submitting again.");
+      return true;
     } catch (error) {
+      if (accepted) {
+        onMessage("The service accepted the request, but the workspace could not refresh. Check the record before submitting again.");
+        return true;
+      }
       onMessage(professionalError(error));
+      return false;
+    } finally {
+      requestInFlight.current = false;
+      setSending(false);
     }
   }
 
   if (!snapshot.actions.length) return null;
   const productRows = snapshot.sections.flatMap((section) => section.rows).filter((row) => row["id"] && row["lifecycle_status"]);
-  return <section className="available-actions"><header><h2>Controlled actions</h2><p>Every change is validated, authorised and audit logged by the server.</p></header><div className="action-grid">{snapshot.actions.map((action) => {
-    if (action.code === "create_support_ticket" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = Object.fromEntries(new FormData(event.currentTarget)); void submit(action.endpoint as string, values, "Support ticket created."); event.currentTarget.reset(); }}><h3>{action.label}</h3><label>Subject<input name="subject" required maxLength={200} /></label><label>Category<select name="category" defaultValue="account"><option value="account">Account</option><option value="order">Order</option><option value="document">Document</option><option value="technical">Technical</option></select></label><label>Priority<select name="priority" defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></select></label><label>Description<textarea name="description" required minLength={10} maxLength={2000} rows={4} /></label><button type="submit">Create ticket</button></form>;
-    if (action.code === "request_return" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order line."); void submit(action.endpoint as string, { orderId: option["order_id"], orderLineId: option["order_line_id"], quantity: Number(values.get("quantity")), reasonCode: values.get("reasonCode") }, "Return request created."); form.reset(); }}><h3>{action.label}</h3><label>Delivered order line<select name="option" required defaultValue=""><option value="" disabled>Select an order line</option>{action.options?.map((option, index) => <option key={String(option["order_line_id"])} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quantity<input name="quantity" type="number" min="1" step="1" required /></label><label>Reason<select name="reasonCode" defaultValue="other"><option value="damaged">Damaged</option><option value="incorrect">Incorrect item</option><option value="other">Other</option></select></label><button type="submit">Request return</button></form>;
-    if (action.code === "open_quality_complaint" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order and product."); void submit(action.endpoint as string, { orderId: option["order_id"], productId: option["product_id"], description: values.get("description"), severity: "untriaged", safetyInformationPresent: false }, "Quality complaint opened."); form.reset(); }}><h3>{action.label}</h3><p className="action-warning">Do not include adverse-event, patient-identifiable or urgent medical information.</p><label>Order and product<select name="option" required defaultValue=""><option value="" disabled>Select an order and product</option>{action.options?.map((option, index) => <option key={`${String(option["order_id"])}-${String(option["product_id"])}`} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quality issue<textarea name="description" required minLength={20} maxLength={2000} rows={5} /></label><button type="submit">Open complaint</button></form>;
-    if (action.code === "advance_workflow" && action.endpoint) return <div className="compact-action" key={`${action.code}-${action.endpoint}`}><h3>{action.label}</h3><p>Advance only after completing the evidence required by the active workflow step.</p><button type="button" onClick={() => void submit(action.endpoint as string, {}, "Workflow advanced to its next governed step.")}>Advance workflow</button></div>;
-    if (action.code === "product_transition" && action.endpointTemplate) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = new FormData(event.currentTarget); const productId = encodeURIComponent(String(values.get("productId") ?? "")); const endpoint = (action.endpointTemplate as string).replace("{id}", productId); void submit(endpoint, { status: values.get("status") }, "Product lifecycle transition recorded."); }}><h3>{action.label}</h3><label>Product<select name="productId" required defaultValue=""><option value="" disabled>Select product</option>{productRows.map((product) => <option key={String(product["id"])} value={String(product["id"])}>{String(product["sku"])} · {String(product["product_name"])} · {readable(product["lifecycle_status"])}</option>)}</select></label><label>Next state<select name="status" defaultValue="review"><option value="review">Review</option><option value="approved">Approved</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="draft">Draft</option><option value="retired">Retired</option></select></label><button type="submit">Record transition</button></form>;
+  return <section className="available-actions" aria-busy={sending}><header><h2>Controlled actions</h2><p>Every change is validated, authorised and audit logged by the server.</p></header><div className="action-grid">{snapshot.actions.map((action) => {
+    if (action.code === "create_support_ticket" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form)); void submit(action.endpoint as string, values, "Support ticket created.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><label>Subject<input name="subject" required maxLength={200} /></label><label>Category<select name="category" defaultValue="account"><option value="account">Account</option><option value="order">Order</option><option value="document">Document</option><option value="technical">Technical</option></select></label><label>Priority<select name="priority" defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></select></label><label>Description<textarea name="description" required minLength={10} maxLength={2000} rows={4} /></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Create ticket"}</button></form>;
+    if (action.code === "request_return" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order line."); void submit(action.endpoint as string, { orderId: option["order_id"], orderLineId: option["order_line_id"], quantity: Number(values.get("quantity")), reasonCode: values.get("reasonCode") }, "Return request created.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><label>Delivered order line<select name="option" required defaultValue=""><option value="" disabled>Select an order line</option>{action.options?.map((option, index) => <option key={String(option["order_line_id"])} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quantity<input name="quantity" type="number" min="1" step="1" required /></label><label>Reason<select name="reasonCode" defaultValue="other"><option value="damaged">Damaged</option><option value="incorrect">Incorrect item</option><option value="other">Other</option></select></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Request return"}</button></form>;
+    if (action.code === "open_quality_complaint" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order and product."); void submit(action.endpoint as string, { orderId: option["order_id"], productId: option["product_id"], description: values.get("description"), severity: "untriaged", safetyInformationPresent: false }, "Quality complaint opened.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><p className="action-warning">Do not include adverse-event, patient-identifiable or urgent medical information.</p><label>Order and product<select name="option" required defaultValue=""><option value="" disabled>Select an order and product</option>{action.options?.map((option, index) => <option key={`${String(option["order_id"])}-${String(option["product_id"])}`} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quality issue<textarea name="description" required minLength={20} maxLength={2000} rows={5} /></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Open complaint"}</button></form>;
+    if (action.code === "advance_workflow" && action.endpoint) return <div className="compact-action" key={`${action.code}-${action.endpoint}`}><h3>{action.label}</h3><p>Advance only after completing the evidence required by the active workflow step.</p><button type="button" disabled={sending} onClick={() => void submit(action.endpoint as string, {}, "Workflow advanced to its next governed step.")}>{sending ? "Submitting..." : "Advance workflow"}</button></div>;
+    if (action.code === "product_transition" && action.endpointTemplate) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = new FormData(event.currentTarget); const productId = encodeURIComponent(String(values.get("productId") ?? "")); const endpoint = (action.endpointTemplate as string).replace("{id}", productId); void submit(endpoint, { status: values.get("status") }, "Product lifecycle transition recorded."); }}><h3>{action.label}</h3><label>Product<select name="productId" required defaultValue=""><option value="" disabled>Select product</option>{productRows.map((product) => <option key={String(product["id"])} value={String(product["id"])}>{String(product["sku"])} · {String(product["product_name"])} · {readable(product["lifecycle_status"])}</option>)}</select></label><label>Next state<select name="status" defaultValue="review"><option value="review">Review</option><option value="approved">Approved</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="draft">Draft</option><option value="retired">Retired</option></select></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Record transition"}</button></form>;
     return <div className="compact-action unavailable" key={`${action.code}-${action.label}`}><h3>{action.label}</h3><p>{action.enabled === false ? "This request requires a separate controlled review workflow." : "No approved interactive workflow is available for this action."}</p></div>;
   })}</div></section>;
 }
 
-export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; subview: MedicinesIntelligenceSubview | undefined }>) {
+export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ module: PortalModule; subview: MedicinesIntelligenceSubview | undefined; locale?: InterfaceLocale }>) {
   const [user, setUser] = useState<PortalUser | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [status, setStatus] = useState("");
@@ -94,6 +119,14 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<readonly SearchResult[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchBusy, setSearchBusy] = useState(false);
+  const [searchAnnouncement, setSearchAnnouncement] = useState("");
+  const [searchFailure, setSearchFailure] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchGeneration = useRef(0);
+  const searchResultsId = useId();
+  const searchScopeId = useId();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -102,25 +135,42 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       const session = await gatewayJson<{ user: PortalUser }>("portal/session");
       if (session.user.mustChangePassword) {
         window.location.replace("/portal/change-password/");
-        return;
+        return false;
       }
       const requiredScope = areaScopes[module.area];
       if (!session.user.accessScopes.includes(requiredScope) && !session.user.accessScopes.includes("admin")) {
         setStatus("This identity is not authorised for the requested workspace.");
         setUser(session.user);
         setSnapshot(null);
-        return;
+        return false;
       }
-      const moduleSnapshot = await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
+      // Nova ML governance must not fetch the unrelated medicine module snapshot.
+      // Keep the existing verified session and board scope checks unchanged.
+      const privateModelGovernance = module.code === "executive.nhs-data" && isNovaMlWorkspaceSlug(subview ?? "");
+      const moduleSnapshot: Snapshot = privateModelGovernance
+        ? {
+            module,
+            environment: "protected",
+            dataState: "not_applicable",
+            dataFreshness: "not_applicable",
+            readOnly: true,
+            metrics: [],
+            sections: [],
+            notices: [],
+            actions: [],
+          }
+        : await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
       setUser(session.user);
       setSnapshot(moduleSnapshot);
+      return true;
     } catch (error) {
       setStatus(professionalError(error));
       if ((error as { status?: number }).status === 401) window.location.replace("/");
+      return false;
     } finally {
       setLoading(false);
     }
-  }, [module.area, module.code]);
+  }, [module, subview]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -134,28 +184,86 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     }
   }
 
-  async function search(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const query = String(new FormData(event.currentTarget).get("query") ?? "").trim();
-    if (query.length < 2) {
-      setSearchResults([]);
-      setSearchOpen(true);
-      return;
-    }
+  const runSearch = useCallback(async (query: string) => {
+    if (query.length < 2) return;
+    const generation = ++searchGeneration.current;
+    setSearchResults([]);
+    setSearchFailure(null);
+    setSearchBusy(true);
+    setSearchOpen(true);
+    setSearchAnnouncement("Searching authorised records.");
     try {
       const result = await gatewayJson<{ results: readonly SearchResult[] }>(`enterprise/search?q=${encodeURIComponent(query)}`);
+      if (generation !== searchGeneration.current) return;
       setSearchResults(result.results);
-      setSearchOpen(true);
+      setSearchFailure(null);
+      setSearchAnnouncement(`${result.results.length} authorised ${result.results.length === 1 ? "record" : "records"} found.`);
     } catch (error) {
-      setStatus(professionalError(error));
+      if (generation !== searchGeneration.current) return;
+      setSearchResults([]);
+      const failure = professionalError(error);
+      setSearchFailure(failure);
+      setSearchAnnouncement(failure);
+    } finally {
+      if (generation === searchGeneration.current) setSearchBusy(false);
     }
+  }, []);
+
+  function updateSearch(value: string) {
+    ++searchGeneration.current;
+    setSearchText(value);
+    setSearchResults([]);
+    setSearchBusy(false);
+    setSearchOpen(false);
+    setSearchAnnouncement(value.trim().length >= 2 ? "Refining authorised results…" : "Enter at least two characters.");
+  }
+
+  useEffect(() => {
+    const query = searchText.trim().slice(0, 120);
+    if (query.length < 2) return;
+    const timer = window.setTimeout(() => { void runSearch(query); }, 450);
+    return () => window.clearTimeout(timer);
+  }, [searchText, runSearch]);
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === searchInputRef.current) {
+        event.preventDefault();
+        ++searchGeneration.current;
+        setSearchText("");
+        setSearchResults([]);
+        setSearchBusy(false);
+        setSearchOpen(false);
+        setSearchAnnouncement("Search cleared.");
+      }
+    }
+    window.addEventListener("keydown", handleShortcut);
+    return () => { ++searchGeneration.current; window.removeEventListener("keydown", handleShortcut); };
+  }, []);
+
+  function search(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    ++searchGeneration.current;
+    void runSearch(searchText.trim().slice(0, 120));
+  }
+
+  function clearSearch() {
+    updateSearch("");
+    setSearchOpen(false);
+    setSearchFailure(null);
+    setSearchAnnouncement("Search cleared.");
+    searchInputRef.current?.focus();
   }
 
   if (module.code === "executive.nhs-data" && user && snapshot) {
     return <MedicinesIntelligence
       loading={loading}
       onLogout={logout}
-      onRefresh={load}
+      onRefresh={async () => { await load(); }}
       parentStatus={status}
       snapshot={snapshot}
       subview={subview}
@@ -163,22 +271,78 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     />;
   }
 
+  const selectedNutraxinProduct = typeof window !== "undefined" && module.code === "customer.products"
+    ? nutraxinProductForSelection(window.location.search) : null;
   const navigation = modulesByArea[module.area];
-  return <main className="workspace-shell">
-    <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
-      <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" /></button></div>
+  const isEditorialCustomerDashboard = module.code === "customer.dashboard";
+  const isEditorialEmployeeDistribution = module.code === "employee.dashboard" || module.code === "employee.orders" || module.code === "employee.warehouse";
+  const isEditorialPortal = isEditorialCustomerDashboard || isEditorialEmployeeDistribution;
+  return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard"
+    : isEditorialEmployeeDistribution ? "workspace-shell employee-distribution-shell" : "workspace-shell"}>
+    {!isEditorialPortal ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
+      <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" className="np-symbol" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
       <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span><small>{entry.releaseClassificationLabel}</small></a></li>)}</ul></nav>
-      <div className="sidebar-security"><ShieldCheck aria-hidden="true" /><span>Server-enforced access<br />No public caching</span></div>
-    </aside>
+      <div className="sidebar-security"><ShieldCheck aria-hidden="true" className="np-symbol" /><span>Server-enforced access<br />No public caching</span></div>
+    </aside> : null}
     <section className="workspace-main">
-      <header className="workspace-topbar"><button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out"><LogOut aria-hidden="true" /></button></div></header>
+      <header className="workspace-topbar">
+        {isEditorialCustomerDashboard ? <>
+          <PortalBrand home={areaLandingRoutes.customer} />
+          <nav className="customer-primary-nav" aria-label="Customer workspace primary navigation">
+            {(["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.support"] as const).map((code) => {
+              const entry = navigation.find((candidate) => candidate.code === code);
+              return entry ? <a key={entry.code} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "customer.dashboard" ? "Overview" : entry.title.replace(/^My /, "")}</a> : null;
+            })}
+          </nav>
+        </> : null}
+        {isEditorialEmployeeDistribution ? <>
+          <DistributionBrand home={areaLandingRoutes.employee} />
+          <nav className="employee-primary-nav" aria-label="Employee distribution navigation">
+            {(["employee.dashboard", "employee.orders", "employee.customers", "employee.warehouse", "employee.finance", "employee.quality"] as const).map((code) => {
+              const entry = navigation.find((candidate) => candidate.code === code);
+              return entry ? <a key={entry.code} href={entry.route}
+                aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "employee.dashboard" ? "Overview"
+                  : entry.code === "employee.orders" ? "Telesales" : entry.title}</a> : null;
+            })}
+          </nav>
+        </> : null}
+        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input ref={searchInputRef} id="portal-search" name="query" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchScopeId} aria-controls={searchOpen ? searchResultsId : undefined} aria-busy={searchBusy || undefined} placeholder={`Search ${areaLabels[module.area].toLowerCase()} records`} value={searchText} onChange={(event) => updateSearch(event.currentTarget.value)} />{searchText ? <button type="button" className="search-clear" aria-label="Clear authorised record search" onClick={clearSearch}>Clear</button> : null}<button type="submit" disabled={searchBusy}>Search</button>{searchOpen ? <section className="search-results" id={searchResultsId} aria-label="Authorised search results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchBusy ? <p>Searching current records…</p> : searchFailure ? <div role="alert"><p>Search could not be completed. {searchFailure}</p><button type="button" onClick={() => void runSearch(searchText.trim().slice(0, 120))} disabled={searchBusy}>Retry authorised search</button></div> : searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found in this scope.</p>}</section> : null}</form><p className="portal-search-scope" id={searchScopeId}>Search scope: your authorised {areaLabels[module.area].toLowerCase()} records. No search history saved.</p><p className="sr-only" role="status" aria-live="polite">{searchAnnouncement}</p></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
       <div className="workspace-content">
-        <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
+        {/* The route and scope are already verified on the server. Generic, non-sensitive
+            guidance is rendered immediately so account data loading cannot cause CLS.
+            Users can replay the optional onboarding from their account/help modules. */}
+        {(module.route === areaLandingRoutes[module.area] || [
+          "customer.account", "customer.settings", "customer.support",
+          "employee.administration", "executive.command-centre",
+        ].includes(module.code))
+          ? <AccountAccessHelp
+              audience={module.area === "executive" ? "board" : module.area}
+              authenticated
+              replay={module.route !== areaLandingRoutes[module.area]}
+            /> : null}
+        {/* Customer navigation is static and server-route-protected: reserve its
+            layout before data fetch resolves to prevent mobile CLS. It does not
+            include account records, prices, orders, or entitlements. */}
+        {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
+          ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
+        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
+        {module.area === "employee" && isEditorialEmployeeDistribution
+          ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
+        {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
+          <p className="nutraxin-selection-kicker">MY PRODUCTS / SELECTED REFERENCE</p>
+          <h2 id="nutraxin-selection-title">{selectedNutraxinProduct.name}</h2>
+          <p>{selectedNutraxinProduct.packSize} · {selectedNutraxinProduct.sku}</p>
+          <p>Your selection is held within My Products. Pricing, eligibility, stock and checkout are verified by the shared NovaPharm customer service; a catalogue reference is not a confirmed order.</p>
+          <div className="nutraxin-selection-actions">
+            <a href="/portal/products/">Browse My Products</a>
+            <a href="/portal/orders/">My Orders</a>
+          </div>
+        </section> : null}
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
-        {loading ? <div className="loading-state"><Activity aria-hidden="true" /><span>Loading authorised records…</span></div> : null}
-        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
+        {loading ? <div className="loading-state"><Activity aria-hidden="true" className="np-symbol" /><span>Loading authorised records…</span></div> : null}
+        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString(locale)}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} locale={locale} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} locale={locale} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
       </div>
     </section>
   </main>;

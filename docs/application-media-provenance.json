@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewedAt": "2026-08-26",
+  "reviewedAt": "2026-11-10",
   "policy": {
     "scope": "Application identity, founder social-preview and retired fallback assets not covered by the corporate photography registers.",
     "noThirdPartyRuntimeRequests": true,
@@ -14,7 +14,9 @@
       "source": "Original repository-authored founder-platform identity mark",
       "licence": "Original NovaPharm founder-platform project work",
       "semanticPurpose": "Founder-platform browser identity",
-      "pageUsage": ["Founder metadata and web manifest"],
+      "pageUsage": [
+        "Founder metadata and web manifest"
+      ],
       "reviewStatus": "approved-existing-application-asset"
     },
     {
@@ -23,7 +25,9 @@
       "source": "Repository-authored Open Graph composition using approved founder metadata and the owner-supplied Vishal portrait",
       "licence": "Original founder-platform composition; portrait use inherits the owner-authorised NovaPharm project-media boundary",
       "semanticPurpose": "Founder-platform default social preview",
-      "pageUsage": ["Founder homepage and default social metadata"],
+      "pageUsage": [
+        "Founder homepage and default social metadata"
+      ],
       "reviewStatus": "rendered-and-editorially-reviewed"
     },
     {
@@ -32,7 +36,9 @@
       "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
       "licence": "Original founder-platform project work",
       "semanticPurpose": "Essay-specific social preview",
-      "pageUsage": ["Founder essay social metadata"],
+      "pageUsage": [
+        "Founder essay social metadata"
+      ],
       "reviewStatus": "rendered-and-editorially-reviewed"
     },
     {
@@ -41,7 +47,9 @@
       "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
       "licence": "Original founder-platform project work",
       "semanticPurpose": "Essay-specific social preview",
-      "pageUsage": ["Founder essay social metadata"],
+      "pageUsage": [
+        "Founder essay social metadata"
+      ],
       "reviewStatus": "rendered-and-editorially-reviewed"
     },
     {
@@ -50,7 +58,9 @@
       "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
       "licence": "Original founder-platform project work",
       "semanticPurpose": "Essay-specific social preview",
-      "pageUsage": ["Founder essay social metadata"],
+      "pageUsage": [
+        "Founder essay social metadata"
+      ],
       "reviewStatus": "rendered-and-editorially-reviewed"
     },
     {
@@ -59,7 +69,9 @@
       "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
       "licence": "Original founder-platform project work",
       "semanticPurpose": "Essay-specific social preview",
-      "pageUsage": ["Founder essay social metadata"],
+      "pageUsage": [
+        "Founder essay social metadata"
+      ],
       "reviewStatus": "rendered-and-editorially-reviewed"
     },
     {
@@ -68,7 +80,9 @@
       "source": "Approved existing NIT vector identity asset retained from the owner-controlled NIT property",
       "licence": "Owner-authorised NovaPharm Innovation Technology digital identity use",
       "semanticPurpose": "NIT browser and application identity",
-      "pageUsage": ["NIT metadata, navigation and web manifest"],
+      "pageUsage": [
+        "NIT metadata, navigation and web manifest"
+      ],
       "reviewStatus": "approved-existing-application-asset"
     },
     {
@@ -77,7 +91,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/primary_transparent/pharmascope-logo.svg",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Primary PharmaScope wordmark for light analytical surfaces",
-      "pageUsage": ["Protected PharmaScope application identity"],
+      "pageUsage": [
+        "Protected PharmaScope application identity"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -86,7 +102,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/reverse_white/pharmascope-logo-white.svg",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Reverse PharmaScope wordmark for the protected navigation surface",
-      "pageUsage": ["Protected PharmaScope left navigation"],
+      "pageUsage": [
+        "Protected PharmaScope left navigation"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -95,7 +113,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Pulse/pulse-mark.svg",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Pulse analysis-mode identity for temporal medicine intelligence",
-      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "pageUsage": [
+        "Protected PharmaScope analysis-mode control"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -104,7 +124,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Vector/vector-mark.svg",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Vector analysis-mode identity for geographic medicine intelligence",
-      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "pageUsage": [
+        "Protected PharmaScope analysis-mode control"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -113,7 +135,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Helix/helix-mark.svg",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Helix analysis-mode identity for longitudinal and forecast intelligence",
-      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "pageUsage": [
+        "Protected PharmaScope analysis-mode control"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -122,7 +146,9 @@
       "source": "Owner-supplied PharmaScope Logo Asset Pack; 04_apple_app_icons/AppIcon/AppIcon-1024x1024.png",
       "licence": "Owner-authorised PharmaScope product-identity use",
       "semanticPurpose": "Store and native-application icon master; not evidence of a submitted application",
-      "pageUsage": ["Native release asset register"],
+      "pageUsage": [
+        "Native release asset register"
+      ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
@@ -142,6 +168,50 @@
       "semanticPurpose": "Retired pre-materialisation fallback retained for deterministic recovery only",
       "pageUsage": [],
       "reviewStatus": "retired-not-permitted-in-production-render"
+    },
+    {
+      "path": "assets/media/oncology/hope-tomorrow-portrait.jpg",
+      "id": "oncology-hope-hope-tomorrow-portrait",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "semanticPurpose": "Illustrative AI-created portrait from the owner-approved A Hope of Tomorrow visual concept; not a photographed patient or treatment outcome",
+      "pageUsage": [
+        "/oncology/"
+      ],
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
+    },
+    {
+      "path": "assets/media/oncology/solid-tumours.jpg",
+      "id": "oncology-hope-solid-tumours",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "semanticPurpose": "AI-created scientific visual illustrating the solid tumour strategic category, not an approved medicine",
+      "pageUsage": [
+        "/oncology/"
+      ],
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
+    },
+    {
+      "path": "assets/media/oncology/haematological-cancers.jpg",
+      "id": "oncology-hope-haematological-cancers",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "semanticPurpose": "AI-created scientific visual illustrating haematological cancer strategic category, not an approved medicine",
+      "pageUsage": [
+        "/oncology/"
+      ],
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
+    },
+    {
+      "path": "assets/media/oncology/supportive-care.jpg",
+      "id": "oncology-hope-supportive-care",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "semanticPurpose": "AI-created molecular visual illustrating supportive-care category, not an approved medicine",
+      "pageUsage": [
+        "/oncology/"
+      ],
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
     }
   ]
 }

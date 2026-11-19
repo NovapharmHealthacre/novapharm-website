@@ -1,0 +1,171 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm regulated distribution: private, synthetic-only staging evidence and append-only journal foundations. No IAM writers, APIs, commerce, authorisation or regulated inventory live.",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Default": "staging",
+      "AllowedValues": [
+        "staging"
+      ],
+      "Description": "The only permitted deployment environment until reviewed MHRA/GDP approvals and a separate production change"
+    }
+  },
+  "Resources": {
+    "DistributionEvidenceLedger": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "${AWS::StackName}-evidence"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-distribution"
+          },
+          {
+            "Key": "environment",
+            "Value": {
+              "Ref": "Environment"
+            }
+          },
+          {
+            "Key": "dataClassification",
+            "Value": "synthetic-only"
+          },
+          {
+            "Key": "access",
+            "Value": "private-no-writers"
+          },
+          {
+            "Key": "regulatedSupplyEnabled",
+            "Value": "false"
+          }
+        ]
+      }
+    },
+    "DistributionEventJournal": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "${AWS::StackName}-events"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-distribution"
+          },
+          {
+            "Key": "environment",
+            "Value": {
+              "Ref": "Environment"
+            }
+          },
+          {
+            "Key": "dataClassification",
+            "Value": "synthetic-only"
+          },
+          {
+            "Key": "access",
+            "Value": "private-no-writers"
+          },
+          {
+            "Key": "regulatedSupplyEnabled",
+            "Value": "false"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "EvidenceTableName": {
+      "Value": {
+        "Ref": "DistributionEvidenceLedger"
+      }
+    },
+    "EventTableName": {
+      "Value": {
+        "Ref": "DistributionEventJournal"
+      }
+    },
+    "EvidenceTableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DistributionEvidenceLedger",
+          "Arn"
+        ]
+      }
+    },
+    "EventTableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DistributionEventJournal",
+          "Arn"
+        ]
+      }
+    },
+    "ActivationPolicy": {
+      "Value": "Staging-only private tables; no execution role/API/writer, customer access, live inventory, medicine release, ordering, payment or shipping granted. Independent UK regulatory/quality approval required for any production change."
+    }
+  }
+}

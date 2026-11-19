@@ -29,6 +29,28 @@ test("forecasting rejects temporal leakage and false-precision horizons", () => 
   assert.throws(() => forecastMonthlySeries(series(), { horizon: 3, featureCutoff: "2026-01" }));
 });
 
+test("forecasting rejects nonconsecutive monthly histories rather than hiding gaps", () => {
+  const historyWithMissingMonth = series(12).filter((point) => point.period !== "2023-06");
+  assert.throws(
+    () => forecastMonthlySeries(historyWithMissingMonth, { horizon: 3 }),
+    /consecutive calendar months/u,
+  );
+  const historyWithMissingYear = [...series(12).slice(0, 6), ...series(24).slice(12, 18)];
+  assert.throws(
+    () => forecastMonthlySeries(historyWithMissingYear, { horizon: 3 }),
+    /consecutive calendar months/u,
+  );
+});
+
+test("forecasting rejects malformed and out-of-range feature cutoffs", () => {
+  for (const featureCutoff of ["not-a-month", "2024-13", "2024-00", "2024-1", "2025-12T00:00:00Z"]) {
+    assert.throws(
+      () => forecastMonthlySeries(series(), { horizon: 3, featureCutoff }),
+      /feature cutoff must use YYYY-MM/u,
+    );
+  }
+});
+
 test("sparse histories use a deterministic fallback rather than fake seasonality", () => {
   const result = forecastMonthlySeries(series(8), { horizon: 3, seasonLength: 12 });
   assert.equal(result.model, "holt_linear");

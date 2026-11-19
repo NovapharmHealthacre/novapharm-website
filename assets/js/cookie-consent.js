@@ -1,5 +1,5 @@
 export const CONSENT_STORAGE_KEY = "np_cookie_consent";
-export const CONSENT_VERSION = "2026-07-14-v1.1";
+export const CONSENT_VERSION = "2026-11-15-v1.3";
 export const CONSENT_MAX_AGE_MS = 180 * 24 * 60 * 60 * 1000;
 export const DEFAULT_CATEGORIES = Object.freeze({ necessary: true, preferences: false, analytics: false, marketing: false });
 
@@ -8,7 +8,8 @@ function categoriesFrom(value = {}) {
     necessary: true,
     preferences: value.preferences === true,
     analytics: value.analytics === true,
-    marketing: value.marketing === true
+    // An inactive provider cannot be authorised by a manually modified storage record.
+    marketing: false
   };
 }
 
@@ -17,7 +18,7 @@ export function parseConsent(raw, now = Date.now()) {
   try {
     const parsed = JSON.parse(raw);
     const timestamp = Date.parse(parsed.timestamp);
-    if (parsed.version !== CONSENT_VERSION || !Number.isFinite(timestamp) || timestamp > now || now - timestamp > CONSENT_MAX_AGE_MS) return null;
+    if (parsed.version !== CONSENT_VERSION || parsed.categories?.necessary !== true || !Number.isFinite(timestamp) || timestamp > now || now - timestamp > CONSENT_MAX_AGE_MS) return null;
     if (!/^[a-f0-9-]{16,64}$/i.test(String(parsed.id || ""))) return null;
     return { version: CONSENT_VERSION, id: parsed.id, timestamp: new Date(timestamp).toISOString(), categories: categoriesFrom(parsed.categories) };
   } catch {
@@ -67,29 +68,36 @@ function button(label, className, action) {
   return element;
 }
 
+function browserStorage() {
+  // Some privacy configurations deny access even to the storage getter.
+  try { return window.localStorage; }
+  catch { return null; }
+}
+
 function initialiseConsentInterface() {
-  const existing = readConsent(window.localStorage);
+  const existing = readConsent(browserStorage());
   if (existing) applyConsent(existing);
 
   const banner = document.createElement("section");
   banner.className = "cookie-banner";
   banner.setAttribute("aria-label", "Cookie choices");
   banner.hidden = Boolean(existing);
-  banner.innerHTML = `<div class="cookie-banner-inner"><div><h2>Your privacy choices</h2><p>NovaPharm uses necessary security and portal technologies. Optional preferences, analytics and marketing remain off unless you choose them. <a href="/legal/cookies/">Read the cookie notice</a>.</p></div><div class="cookie-actions"></div></div>`;
+  banner.innerHTML = `<div class="cookie-banner-inner"><div><h2>Your privacy choices</h2><p>NovaPharm uses necessary security and portal technologies. Google Analytics 4, if enabled on public pages, loads only after you choose Analytics. Advertising and marketing trackers are not active. <a href="/legal/cookies/">Read the cookie notice</a>.</p></div><div class="cookie-actions"></div></div>`;
   const actions = banner.querySelector(".cookie-actions");
-  actions.append(button("Accept all", "btn btn-primary", "accept"), button("Reject non-essential", "btn btn-primary", "reject"), button("Manage preferences", "btn btn-outline", "manage"));
+  actions.append(button("Accept optional analytics", "btn btn-primary", "accept"), button("Reject non-essential", "btn btn-primary", "reject"), button("Manage preferences", "btn btn-outline", "manage"));
 
   const dialog = document.createElement("dialog");
   dialog.className = "cookie-dialog";
   dialog.setAttribute("aria-labelledby", "cookie-dialog-title");
-  dialog.innerHTML = `<form method="dialog" class="cookie-preferences"><div class="cookie-dialog-heading"><div><span class="section-kicker">Privacy control</span><h2 id="cookie-dialog-title">Cookie preferences</h2></div><button class="cookie-close" type="button" data-consent-action="close" aria-label="Close cookie preferences">×</button></div><p>Choose optional categories. Necessary technologies support security, forms and requested portal sessions and cannot be switched off here.</p><fieldset><legend>Categories</legend><label><span><strong>Strictly necessary</strong><small>CSRF protection, secure sessions and your saved choice.</small></span><input type="checkbox" checked disabled></label><label><span><strong>Preferences</strong><small>Remember optional display or service choices.</small></span><input type="checkbox" name="preferences"></label><label><span><strong>Analytics</strong><small>Measure public-site use. No analytics provider is currently enabled.</small></span><input type="checkbox" name="analytics"></label><label><span><strong>Marketing</strong><small>Advertising or campaign measurement. No marketing provider is currently enabled.</small></span><input type="checkbox" name="marketing"></label></fieldset><div class="cookie-dialog-actions"><button class="btn btn-primary" type="button" data-consent-action="save">Save preferences</button><button class="btn btn-outline" type="button" data-consent-action="reject">Reject non-essential</button></div><p class="field-help">Your choice is stored in this browser for 180 days and can be changed from the footer at any time.</p></form>`;
+  dialog.innerHTML = `<form method="dialog" class="cookie-preferences"><div class="cookie-dialog-heading"><div><span class="section-kicker">Privacy control</span><h2 id="cookie-dialog-title">Cookie preferences</h2></div><button class="cookie-close" type="button" data-consent-action="close" aria-label="Close cookie preferences">×</button></div><p>Choose optional categories. Necessary technologies support security, forms and requested portal sessions and cannot be switched off here.</p><fieldset><legend>Categories</legend><label><span><strong>Strictly necessary</strong><small>CSRF protection, secure sessions and your saved choice.</small></span><input type="checkbox" checked disabled></label><label><span><strong>Preferences</strong><small>Remember optional display or service choices.</small></span><input type="checkbox" name="preferences"></label><label><span><strong>Analytics</strong><small>Google Analytics 4: optional public-site visits and coarse interactions only. The Google tag does not load before your consent.</small></span><input type="checkbox" name="analytics"></label><label><span><strong>Marketing tracking</strong><small>Not active. Any future provider requires a fresh, specific choice.</small></span><input type="checkbox" name="marketing" disabled></label></fieldset><div class="cookie-dialog-actions"><button class="btn btn-primary" type="button" data-consent-action="save">Save preferences</button><button class="btn btn-outline" type="button" data-consent-action="reject">Reject non-essential</button></div><p class="field-help">Your choice is stored in this browser for 180 days and can be changed from the footer at any time.</p></form>`;
   const preferenceForm = dialog.querySelector("form");
 
   const openDialog = () => {
-    const record = readConsent(window.localStorage);
-    for (const category of ["preferences", "analytics", "marketing"]) {
+    const record = readConsent(browserStorage());
+    for (const category of ["preferences", "analytics"]) {
       preferenceForm.elements[category].checked = categoryAllowed(record, category);
     }
+    preferenceForm.elements.marketing.checked = false;
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
   };
@@ -98,21 +106,39 @@ function initialiseConsentInterface() {
     else dialog.removeAttribute("open");
   };
   const choose = (categories) => {
-    const record = saveConsent(window.localStorage, categories);
-    applyConsent(record);
-    banner.hidden = true;
-    closeDialog();
+    try {
+      const storage = browserStorage();
+      if (!storage) throw new Error("Browser storage is unavailable");
+      const record = saveConsent(storage, categories);
+      applyConsent(record);
+      banner.hidden = true;
+      closeDialog();
+    } catch {
+      // Never present optional tracking as consented if the visitor's choice
+      // could not be persisted. Keep the notice accessible for retry.
+      applyConsent({ version: CONSENT_VERSION, categories: DEFAULT_CATEGORIES });
+      banner.hidden = false;
+      let notice = banner.querySelector("[data-cookie-storage-error]");
+      if (!notice) {
+        notice = document.createElement("p");
+        notice.dataset.cookieStorageError = "";
+        notice.setAttribute("role", "status");
+        banner.querySelector(".cookie-banner-inner")?.append(notice);
+      }
+      notice.textContent = "This browser cannot save your cookie choice. Optional analytics stays off. Check browser storage permissions to save a preference.";
+      closeDialog();
+    }
   };
 
   const handleAction = (action) => {
-    if (action === "accept") choose({ preferences: true, analytics: true, marketing: true });
+    if (action === "accept") choose({ preferences: false, analytics: true, marketing: false });
     if (action === "reject") choose(DEFAULT_CATEGORIES);
     if (action === "manage") openDialog();
     if (action === "close") closeDialog();
     if (action === "save") choose({
       preferences: preferenceForm.elements.preferences.checked,
       analytics: preferenceForm.elements.analytics.checked,
-      marketing: preferenceForm.elements.marketing.checked
+      marketing: false
     });
   };
 
@@ -121,7 +147,13 @@ function initialiseConsentInterface() {
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-cookie-settings]")) openDialog();
   });
-  document.body.append(banner, dialog);
+  // Place choices in reading order immediately before the main content.
+  // This reserves the actual space for consent rather than covering forms,
+  // headlines or mobile navigation while optional categories remain off.
+  const main = document.querySelector("main");
+  if (main?.parentElement === document.body) main.before(banner);
+  else document.body.prepend(banner);
+  document.body.append(dialog);
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {

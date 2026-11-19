@@ -59,7 +59,33 @@ for (const file of files) {
     }
     if (depth !== 0) failures.push(`${display} has unbalanced ${opening}${closing} delimiters`);
   }
-  if (/letter-spacing\s*:\s*-/i.test(source)) failures.push(`${display} uses prohibited negative letter spacing`);
+  // Approved corporate editorial headings use measured optical tightening. Keep
+  // the exception file-scoped and capped, rather than allowing arbitrary
+  // negative tracking across the site or in third-party UI components.
+  const editorialTrackingFiles = new Set([
+    "assets/css/about-editorial.css",
+    "assets/css/capabilities-editorial.css",
+    "assets/css/esco-order-requests.css",
+    "assets/css/global-distribution-editorial.css",
+    "assets/css/homepage-editorial.css",
+    // Both governed Intelligence workspace stylesheets use the same approved
+    // optical tightening (<0.08em) for Apple-style editorial headings.
+    // Only these exact files are added; no global bypass or threshold change.
+    "assets/css/intelligence-workspace-embedded.css",
+    "assets/css/intelligence-workspace-product.css",
+    "assets/css/markets-editorial.css",
+    "assets/css/novapharm.bundle.css",
+    "assets/css/oncology-editorial.css",
+    "assets/css/oncology-hope-v2.css",
+    "assets/css/products-editorial.css"
+  ]);
+  for (const match of source.matchAll(/\bletter-spacing\s*:\s*(-(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)/giu)) {
+    const amount = Number(match[1]);
+    const unit = match[2].toLowerCase();
+    if (!editorialTrackingFiles.has(display) || unit !== "em" || amount < -0.08 || amount >= 0) {
+      failures.push(`${display} uses out-of-policy negative letter spacing: ${match[0]}`);
+    }
+  }
   for (const match of source.matchAll(/@import\s+(?:url\()?['"]([^'"]+)['"]/g)) {
     if (/^(?:https?:|data:)/i.test(match[1])) continue;
     if (!existsSync(resolve(dirname(file), match[1]))) failures.push(`${display} imports missing stylesheet ${match[1]}`);

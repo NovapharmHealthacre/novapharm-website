@@ -103,6 +103,9 @@ for (const item of register) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
   const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   html = html.replace("</head>", `${serialized}\n</head>`);
+  // A second public build must not accumulate empty head lines before the
+  // governed social block. No metadata values or ordering are changed.
+  html = html.replace(/\n(?:[ \t]*\n)+(?=[ \t]*<!-- page-specific-social-start -->)/g, "\n");
   html = html.replace(/[ \t]+$/gm, "");
   writeFileSync(pagePath, html);
   Object.assign(item, next);

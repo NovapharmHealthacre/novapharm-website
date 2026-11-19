@@ -1,0 +1,32 @@
+name: Validate Medicines Terminal Azure staging without provisioning
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/intelligence-azure-staging-whatif.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch-read-only-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Dispatch immutable Azure staging what-if without changing services
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="$GITHUB_SHA"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]]
+          gh workflow run azure-deploy.yml \
+            --repo "$GITHUB_REPOSITORY" --ref main \
+            -f target=staging \
+            -f action=what-if \
+            -f expected_sha="$sha" \
+            -f run_schema_migrations=false
+          echo "Dispatched staging WHAT-IF at exact SHA $sha. No resource creation, migrations, API calls, production access or slot swaps are requested."

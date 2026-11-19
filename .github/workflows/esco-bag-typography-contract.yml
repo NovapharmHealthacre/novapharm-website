@@ -1,0 +1,27 @@
+name: ESCO Bag typography and CSS release contract
+
+on:
+  pull_request:
+    paths:
+      - 'assets/css/esco-catalogue.css'
+      - '.github/workflows/esco-bag-typography-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  css-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Enforce real site-wide CSS safety without disabling validation
+        run: node scripts/check-css.mjs
+      - name: Preserve ESCO Bag and checkout release gating
+        run: npm run test:esco-catalogue

@@ -1,0 +1,25 @@
+name: Intelligence official open-data discovery contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-official-open-data-discovery.mjs'
+      - 'scripts/test-intelligence-official-open-data-discovery.mjs'
+      - '.github/workflows/intelligence-official-open-data-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-discovery-boundaries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify fixed official APIs and fail-closed source acceptance
+        run: node --test scripts/test-intelligence-official-open-data-discovery.mjs
+      - name: Preserve Intelligence source acceptance ledger
+        run: npm run intelligence:requirements:validate

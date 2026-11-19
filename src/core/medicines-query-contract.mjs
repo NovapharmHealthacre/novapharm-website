@@ -40,6 +40,9 @@ function monthIndex(period) {
   return year * 12 + monthNumber - 1;
 }
 
+const permittedSortFields = new Set(["month_key", "canonical_name", "metric_value", "items", "quantity", "nic", "actual_cost"]);
+const permittedSortDirections = new Set(["asc", "desc"]);
+
 export function normaliseAnalyticsQuery(input) {
   const dataset = text(input, "dataset", 8) ?? "epd";
   if (!datasets.has(dataset)) throw new Error("dataset must be epd or pca.");
@@ -75,7 +78,11 @@ export function normaliseAnalyticsQuery(input) {
     throw new Error("Select a medicine identity or provide a governed medicine filter.");
   }
   if (dataset === "pca" && (filters.practiceCode || filters.postcode)) throw new Error("Practice and postcode filters require EPD; PCA does not identify a prescribing practice.");
-  return Object.freeze({ dataset, metric, filters, page: integer(input, "page", 1, 1, 10_000), pageSize: integer(input, "pageSize", 50, 1, 100) });
+  const sortBy = text(input, "sortBy", 32) ?? "month_key";
+  const sortDirection = text(input, "sortDirection", 4) ?? "desc";
+  if (!permittedSortFields.has(sortBy)) throw new Error("sortBy must name an approved analytical column.");
+  if (!permittedSortDirections.has(sortDirection)) throw new Error("sortDirection must be asc or desc.");
+  return Object.freeze({ dataset, metric, filters, page: integer(input, "page", 1, 1, 10_000), pageSize: integer(input, "pageSize", 50, 1, 100), sortBy, sortDirection });
 }
 
 export function normaliseNearbyQuery(input) {

@@ -1,0 +1,22 @@
+/* Nutraxin: Apple-inspired, price-free, non-binding B2B order request. */
+.nx-order{--nx-ink:#17181c;--nx-muted:#686d76;--nx-line:#e4e5e9;background:#f5f5f7;color:var(--nx-ink);min-height:80vh}
+.nx-order .nx-order-wrap{max-width:980px;margin:0 auto;padding:84px 28px 108px}
+.nx-order .nx-order-eyebrow{font-size:12px;font-weight:650;color:#636a75;text-transform:uppercase;letter-spacing:.09em;margin:0 0 16px}
+.nx-order h1{font-size:clamp(39px,6.5vw,70px);letter-spacing:normal;font-weight:700;line-height:1.07;margin:0 0 20px}
+.nx-order .nx-order-lead{font-size:clamp(18px,2.2vw,24px);line-height:1.46;max-width:760px;color:#50545b;margin:0 0 12px}
+.nx-order .nx-order-disclosure{color:#686d76;font-size:14px;line-height:1.6;margin:0 0 36px;max-width:760px}
+.nx-order form{background:#fff;border:1px solid #e5e6e9;border-radius:22px;padding:22px 30px 32px}
+.nx-order .nx-order-tablehead{display:grid;grid-template-columns:minmax(0,1fr) 126px;gap:20px;align-items:center;color:#69717d;font-size:12px;font-weight:600;letter-spacing:.03em;padding:9px 0 16px;border-bottom:1px solid var(--nx-line)}
+.nx-order .nx-order-line{display:grid;grid-template-columns:minmax(0,1fr) 126px;gap:20px;align-items:center;padding:17px 0;border-bottom:1px solid var(--nx-line)}
+.nx-order .nx-order-line:last-of-type{border-bottom:0}
+.nx-order .nx-order-name{display:block;font-size:16px;font-weight:600;line-height:1.35}
+.nx-order .nx-order-pack{display:block;color:var(--nx-muted);font-size:13px;margin-top:4px}
+.nx-order input[type=number]{font:inherit;font-size:16px;width:100%;padding:13px 10px;background:#fafafa;border:1px solid #c9cdd4;border-radius:10px;text-align:center;color:#17181c}
+.nx-order input:focus-visible,.nx-order button:focus-visible,.nx-order a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.nx-order .nx-order-fineprint{font-size:13px;color:#5d626d;line-height:1.65;margin:22px 0}
+.nx-order .nx-order-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.nx-order .nx-order-submit{border:0;border-radius:999px;background:#0071e3;color:#fff;padding:13px 25px;font-size:15px;font-weight:600;cursor:pointer}
+.nx-order .nx-order-submit:hover{background:#0064ca}
+.nx-order .nx-order-back{border-radius:999px;background:#f5f5f7;color:#24262d;padding:13px 22px;font-size:15px;text-decoration:none}
+.nx-order .nx-order-feedback{font-size:14px;color:#4a505b;min-height:22px;margin:20px 0 0}
+@media(max-width:560px){.nx-order .nx-order-wrap{padding:52px 18px 80px}.nx-order form{padding:18px 16px 26px;border-radius:16px}.nx-order .nx-order-line,.nx-order .nx-order-tablehead{grid-template-columns:minmax(0,1fr) 96px;gap:12px}.nx-order .nx-order-name{font-size:14px}.nx-order input[type=number]{padding:12px 5px}}

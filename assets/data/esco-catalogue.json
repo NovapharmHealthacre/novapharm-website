@@ -1,0 +1,3839 @@
+{
+  "source": "Eastern Surgical Company ESCO 2026 catalogue, owner-supplied PDF",
+  "lastReviewed": "2026-11-09",
+  "notes": "Indexed catalogue entries are not independently saleable variants. Images on collection are category examples, not verified images of each listed item. No prices or availability are asserted.",
+  "currency": "GBP",
+  "targetGrossMargin": 0.25,
+  "checkoutEnabled": false,
+  "requestQuoteOnly": true,
+  "entriesTotal": 373,
+  "modelCodedEntries": 73,
+  "categories": [
+    {
+      "id": "esco-1",
+      "name": "Hospital Furniture",
+      "representativeImage": "esco-hospital-furniture.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0001",
+          "name": "Fowler Bed",
+          "subcategory": "Hospital Beds",
+          "model": "EHF 106",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0002",
+          "name": "Semi-Fowler Bed",
+          "subcategory": "Hospital Beds",
+          "model": "EHF 105",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0003",
+          "name": "Pediatric Bed",
+          "subcategory": "Hospital Beds",
+          "model": "EHF 113P",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0004",
+          "name": "ICU Bed — Manual / Electric",
+          "subcategory": "Hospital Beds",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0005",
+          "name": "Attendant Bed",
+          "subcategory": "Hospital Beds",
+          "model": "EHF 110",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0006",
+          "name": "2-Function Manual Bed",
+          "subcategory": "Hospital Beds",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0007",
+          "name": "3-Function Manual Bed",
+          "subcategory": "Hospital Beds",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0008",
+          "name": "5-Function Electric Bed",
+          "subcategory": "Hospital Beds",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0009",
+          "name": "Orthopaedic Bed",
+          "subcategory": "Hospital Beds",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0010",
+          "name": "Infant Bed / Baby Crib",
+          "subcategory": "Hospital Beds",
+          "model": "EHF 153",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0011",
+          "name": "Examination Table",
+          "subcategory": "Examination & Consultation",
+          "model": "EHF 119",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0012",
+          "name": "2-Section Examination Couch",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0013",
+          "name": "3-Section Examination Table",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0014",
+          "name": "Electric Examination Table",
+          "subcategory": "Examination & Consultation",
+          "model": "EHF 119E",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0015",
+          "name": "Hydraulic Examination Table",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0016",
+          "name": "Examination Chair",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0017",
+          "name": "Doctor Chair",
+          "subcategory": "Examination & Consultation",
+          "model": "EHF 159",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0018",
+          "name": "Doctor Stool",
+          "subcategory": "Examination & Consultation",
+          "model": "EHF 162",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0019",
+          "name": "Blood Donor Chair",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0020",
+          "name": "Dialysis Chair",
+          "subcategory": "Examination & Consultation",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0021",
+          "name": "Delivery / Labour Bed",
+          "subcategory": "Obstetric & Gynaecology",
+          "model": "EHF 133",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0022",
+          "name": "Obstetric Examination Table",
+          "subcategory": "Obstetric & Gynaecology",
+          "model": "EHF 120",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0023",
+          "name": "Gynaecology Examination Table",
+          "subcategory": "Obstetric & Gynaecology",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0024",
+          "name": "Gynaecology Chair",
+          "subcategory": "Obstetric & Gynaecology",
+          "model": "EHF 123",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0025",
+          "name": "Leg Supports / Knee Crutches",
+          "subcategory": "Obstetric & Gynaecology",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0026",
+          "name": "Hospital Foam Mattress",
+          "subcategory": "Mattresses & Bed Accessories",
+          "model": "EHF 195",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0027",
+          "name": "Waterproof Mattress",
+          "subcategory": "Mattresses & Bed Accessories",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0028",
+          "name": "Bed Rails",
+          "subcategory": "Mattresses & Bed Accessories",
+          "model": "EHF 199",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0029",
+          "name": "Front & back panels",
+          "subcategory": "Mattresses & Bed Accessories",
+          "model": "EHF 197",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0030",
+          "name": "Mattress Protectors",
+          "subcategory": "Mattresses & Bed Accessories",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0031",
+          "name": "Bedside Cabinet",
+          "subcategory": "Patient Room Furniture",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0032",
+          "name": "ABS Bedside Cabinet",
+          "subcategory": "Patient Room Furniture",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0033",
+          "name": "SS Top Bedside Cabinet",
+          "subcategory": "Patient Room Furniture",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0034",
+          "name": "Overbed Table",
+          "subcategory": "Patient Room Furniture",
+          "model": "EHF 158",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0035",
+          "name": "Bedside Screen",
+          "subcategory": "Patient Room Furniture",
+          "model": "EHF 143",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0036",
+          "name": "Attendant Chair",
+          "subcategory": "Patient Room Furniture",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0037",
+          "name": "Visitor Chair",
+          "subcategory": "Patient Room Furniture",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0038",
+          "name": "Medical Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0039",
+          "name": "Medicine Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0040",
+          "name": "Instrument Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": "EHF 149",
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0041",
+          "name": "Glass-Door Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0042",
+          "name": "Linen Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0043",
+          "name": "Mobile Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0044",
+          "name": "Drawer Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0045",
+          "name": "Wall-Mounted Cabinet",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0046",
+          "name": "Storage Cupboard",
+          "subcategory": "Storage & Cabinets",
+          "model": null,
+          "sourceIndexPage": 6,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-2",
+      "name": "Ward Equipment",
+      "representativeImage": "esco-ward-equipment.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0047",
+          "name": "Walking Frame",
+          "subcategory": "Patient Mobility & Transfer",
+          "model": "EHF 166",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0048",
+          "name": "Crutches",
+          "subcategory": "Patient Mobility & Transfer",
+          "model": "EHF 165",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0049",
+          "name": "Commode Chair",
+          "subcategory": "Patient Mobility & Transfer",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0050",
+          "name": "Wheelchair",
+          "subcategory": "Patient Mobility & Transfer",
+          "model": "EHF 160",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0051",
+          "name": "Commode Wheelchair",
+          "subcategory": "Patient Mobility & Transfer",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0052",
+          "name": "Foot-Operated Dustbins",
+          "subcategory": "Waste & Infection Control",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0053",
+          "name": "Biomedical Waste Bins",
+          "subcategory": "Waste & Infection Control",
+          "model": "EHS 025",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0054",
+          "name": "Sharps Containers",
+          "subcategory": "Waste & Infection Control",
+          "model": "ESS 004",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0055",
+          "name": "Waste Segregation Bins",
+          "subcategory": "Waste & Infection Control",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0056",
+          "name": "Biohazard Containers",
+          "subcategory": "Waste & Infection Control",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0057",
+          "name": "Bowl Stand",
+          "subcategory": "Ward & Patient Care",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0058",
+          "name": "Foot Step",
+          "subcategory": "Ward & Patient Care",
+          "model": "EHF 171",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0059",
+          "name": "Patient Feeding Table",
+          "subcategory": "Ward & Patient Care",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0060",
+          "name": "Patient Transfer Board",
+          "subcategory": "Ward & Patient Care",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0061",
+          "name": "Patient Stretcher on Trolley",
+          "subcategory": "Ward & Patient Care",
+          "model": "EHF 104",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0062",
+          "name": "Stools",
+          "subcategory": "Ward Utility Equipment",
+          "model": null,
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0063",
+          "name": "Kick Bucket",
+          "subcategory": "Ward Utility Equipment",
+          "model": "ESS 049",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0064",
+          "name": "Oxygen Cylinder Trolley",
+          "subcategory": "Ward Utility Equipment",
+          "model": "EHF 138",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0065",
+          "name": "Saline Stand (IV Stand)",
+          "subcategory": "Infusion Equipment",
+          "model": "EHF 157",
+          "sourceIndexPage": 18,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-3",
+      "name": "Hospital Trolleys",
+      "representativeImage": "esco-hospital-trolleys.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0066",
+          "name": "Clinical Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": "EHF 128",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0067",
+          "name": "Treatment Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0068",
+          "name": "Medicine Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": "EHF 137",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0069",
+          "name": "Procedure Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0070",
+          "name": "Utility Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0071",
+          "name": "Nursing Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0072",
+          "name": "Bowl Stand Trolley",
+          "subcategory": "Clinical & Patient Care Trolleys",
+          "model": "EHF 181",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0073",
+          "name": "Instrument Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": "EHF 135",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0074",
+          "name": "SS Instrument Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0075",
+          "name": "2-Shelf Instrument Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0076",
+          "name": "3-Shelf Instrument Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0077",
+          "name": "Dressing Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": "EHF 139",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0078",
+          "name": "Mayo Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": "EHF 136",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0079",
+          "name": "OT Utility Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0080",
+          "name": "Anaesthesia Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0081",
+          "name": "Sterile Instrument Trolley",
+          "subcategory": "OT & Procedure Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0082",
+          "name": "Crash Cart",
+          "subcategory": "Emergency Trolleys",
+          "model": "EHF 156",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0083",
+          "name": "Emergency Trolley",
+          "subcategory": "Emergency Trolleys",
+          "model": "EHF 151",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0084",
+          "name": "Resuscitation Trolley",
+          "subcategory": "Emergency Trolleys",
+          "model": "EHF 152",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0085",
+          "name": "Emergency Medicine Trolley",
+          "subcategory": "Emergency Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0086",
+          "name": "ICU Trolley",
+          "subcategory": "Emergency Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0087",
+          "name": "Clean Linen Trolley",
+          "subcategory": "Linen & Waste Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0088",
+          "name": "Dirty Linen Trolley",
+          "subcategory": "Linen & Waste Trolleys",
+          "model": "EHF 142",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0089",
+          "name": "Waste Trolley",
+          "subcategory": "Linen & Waste Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0090",
+          "name": "Biomedical Waste Trolley",
+          "subcategory": "Linen & Waste Trolleys",
+          "model": "EHS 028",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0091",
+          "name": "Laundry Trolley",
+          "subcategory": "Linen & Waste Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0092",
+          "name": "Food Service Trolley",
+          "subcategory": "Hospital Service Trolleys",
+          "model": "EHF 140",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0093",
+          "name": "Kitchen Trolley",
+          "subcategory": "Hospital Service Trolleys",
+          "model": "EHF 141",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0094",
+          "name": "Housekeeping Trolley",
+          "subcategory": "Hospital Service Trolleys",
+          "model": null,
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0095",
+          "name": "File / Record Trolley",
+          "subcategory": "Hospital Service Trolleys",
+          "model": "EHF 107",
+          "sourceIndexPage": 25,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-4",
+      "name": "SS Hollowware",
+      "representativeImage": "esco-ss-hollowware.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0096",
+          "name": "Kidney Tray",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0097",
+          "name": "Dressing Tray",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0098",
+          "name": "Instrument Tray",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0099",
+          "name": "Perforated Tray",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0100",
+          "name": "Emesis Basin",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0101",
+          "name": "Procedure Tray",
+          "subcategory": "Trays & Basins",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0102",
+          "name": "Bowl",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0103",
+          "name": "Gallipot",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0104",
+          "name": "Dressing Bowl",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0105",
+          "name": "Sponge Bowl",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0106",
+          "name": "Lotion Bowl",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0107",
+          "name": "Solution Bowl",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0108",
+          "name": "Forceps Jar",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0109",
+          "name": "Bucket with Handle",
+          "subcategory": "Bowls & Containers",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0110",
+          "name": "Urinal",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0111",
+          "name": "Male Urinal",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0112",
+          "name": "Female Urinal",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0113",
+          "name": "Bedpan",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0114",
+          "name": "Feeding Cup",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0115",
+          "name": "Measuring Cup",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0116",
+          "name": "Medicine Cup",
+          "subcategory": "Patient-Care Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0117",
+          "name": "Sterilizing Basket",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0118",
+          "name": "Sterilizing Drum",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0119",
+          "name": "Sterilizing Tray",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0120",
+          "name": "Instrument Container",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0121",
+          "name": "Sterilizing Box",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0122",
+          "name": "Perforated Container",
+          "subcategory": "Sterilization Hollowware",
+          "model": null,
+          "sourceIndexPage": 32,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-5",
+      "name": "Hospital Sundries",
+      "representativeImage": "esco-hospital-sundries.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0123",
+          "name": "Sputum Specimen Container",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0124",
+          "name": "Stool Specimen Container",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0125",
+          "name": "Urine Specimen Container",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0126",
+          "name": "General Specimen Container",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0127",
+          "name": "Sample Collection Container",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0128",
+          "name": "Specimen Transport Bag",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0129",
+          "name": "Biohazard Specimen Bag",
+          "subcategory": "Specimen Collection",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0130",
+          "name": "Disposable Emesis Bags",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0131",
+          "name": "Medicine Cups",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0132",
+          "name": "Tongue Depressors",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0133",
+          "name": "Cotton Applicators",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0134",
+          "name": "Patient ID Bands",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0135",
+          "name": "Medical Labels",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0136",
+          "name": "Sharps Containers",
+          "subcategory": "General Hospital Sundries",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0137",
+          "name": "Plastic Zip-Lock Drug Bags",
+          "subcategory": "Bags & Packaging",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0138",
+          "name": "Medicine Bags",
+          "subcategory": "Bags & Packaging",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0139",
+          "name": "Sample Bags",
+          "subcategory": "Bags & Packaging",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0140",
+          "name": "Biohazard Bags",
+          "subcategory": "Bags & Packaging",
+          "model": null,
+          "sourceIndexPage": 38,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-6",
+      "name": "Hospital Linen & OT Textiles",
+      "representativeImage": "esco-hospital-linen-ot-textiles.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0141",
+          "name": "Surgeon Suits",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": "EHD 084",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0142",
+          "name": "Scrub Tops & Pants",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": "EHD 091",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0143",
+          "name": "Surgeon Caps",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": "EHD 085",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0144",
+          "name": "Shoe Covers",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0145",
+          "name": "Face Masks",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0146",
+          "name": "Doctor Coats",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": "EHD 086",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0147",
+          "name": "Surgical Gowns",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0148",
+          "name": "Reinforced Surgical Gowns",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0149",
+          "name": "Disposable Surgical Gowns",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0150",
+          "name": "Bouffant Caps",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0151",
+          "name": "Head Covers",
+          "subcategory": "OT Linen / Surgical Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0152",
+          "name": "Surgical Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0153",
+          "name": "Fenestrated Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0154",
+          "name": "Laparotomy Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0155",
+          "name": "C-Section Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0156",
+          "name": "Delivery Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0157",
+          "name": "Orthopaedic Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0158",
+          "name": "Ophthalmic Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0159",
+          "name": "ENT Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0160",
+          "name": "Urology Drape",
+          "subcategory": "OT Linen / Surgical Drapes",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0161",
+          "name": "OT Table Cover",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0162",
+          "name": "Mayo Stand Cover",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0163",
+          "name": "Back Table Cover",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0164",
+          "name": "Instrument Table Cover",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0165",
+          "name": "Equipment Covers",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0166",
+          "name": "Armboard Covers",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0167",
+          "name": "Leg / Lithotomy Covers",
+          "subcategory": "OT Linen / Equipment Covers",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0168",
+          "name": "Minor Surgery Set",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0169",
+          "name": "Major Surgery Set",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0170",
+          "name": "Laparotomy Set",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0171",
+          "name": "C-Section Set",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0172",
+          "name": "Delivery Set",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0173",
+          "name": "Specialty Procedure Sets",
+          "subcategory": "Surgical & Procedure Sets",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0174",
+          "name": "Bed Sheets",
+          "subcategory": "Patient & Ward Linen",
+          "model": "EHD 092",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0175",
+          "name": "Draw Sheets",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0176",
+          "name": "Patient Blankets",
+          "subcategory": "Patient & Ward Linen",
+          "model": "EHD 102",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0177",
+          "name": "Cotton Cloth / Tetra",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0178",
+          "name": "Towels",
+          "subcategory": "Patient & Ward Linen",
+          "model": "EHD 095",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0179",
+          "name": "Pillow Covers",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0180",
+          "name": "Mattress Covers",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0181",
+          "name": "Waterproof Bed Sheets",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0182",
+          "name": "Bed Covers",
+          "subcategory": "Patient & Ward Linen",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0183",
+          "name": "Patient Suits",
+          "subcategory": "Patient Apparel",
+          "model": "EHD 087",
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0184",
+          "name": "Reusable Aprons",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0185",
+          "name": "Disposable Aprons",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0186",
+          "name": "Patient Gowns",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0187",
+          "name": "Patient Robes",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0188",
+          "name": "Maternity Gowns",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0189",
+          "name": "Isolation Gowns",
+          "subcategory": "Patient Apparel",
+          "model": null,
+          "sourceIndexPage": 43,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-7",
+      "name": "Sterilization & Refrigeration Equipment",
+      "representativeImage": "esco-sterilization-refrigeration-equipment.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0190",
+          "name": "Pressure Cooker Type Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0191",
+          "name": "Electric Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0192",
+          "name": "Non-Electric Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0193",
+          "name": "Tabletop Autoclaves",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0194",
+          "name": "Vertical Autoclaves",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0195",
+          "name": "Horizontal Autoclaves",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0196",
+          "name": "Steam Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0197",
+          "name": "Dry Heat Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0198",
+          "name": "Instrument Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0199",
+          "name": "Portable Sterilizers",
+          "subcategory": "Sterilizers",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0200",
+          "name": "Deep Freezer",
+          "subcategory": "Refrigeration",
+          "model": "ESL 029",
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0201",
+          "name": "Laboratory Refrigerator",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0202",
+          "name": "Vaccine (Medical) Refrigerator",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0203",
+          "name": "Pharmacy Refrigerator",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0204",
+          "name": "Blood Bank Refrigerator",
+          "subcategory": "Refrigeration",
+          "model": "ESL 156",
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0205",
+          "name": "Laboratory Freezer",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0206",
+          "name": "Ultra-Low Temperature Freezer",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0207",
+          "name": "Ice-Lined Refrigerator",
+          "subcategory": "Refrigeration",
+          "model": "ESL 158",
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0208",
+          "name": "Cold Box",
+          "subcategory": "Refrigeration",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0209",
+          "name": "Sterilization Pouches",
+          "subcategory": "Sterilization Consumables & Accessories",
+          "model": "ESL 086",
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0210",
+          "name": "Sterilization Reels",
+          "subcategory": "Sterilization Consumables & Accessories",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0211",
+          "name": "Chemical Indicators",
+          "subcategory": "Sterilization Consumables & Accessories",
+          "model": null,
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0212",
+          "name": "Autoclave Indicators",
+          "subcategory": "Sterilization Consumables & Accessories",
+          "model": "ESL 089",
+          "sourceIndexPage": 50,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-8",
+      "name": "Laboratory Equipment",
+      "representativeImage": "esco-laboratory-equipment.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0213",
+          "name": "Centrifuges",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0214",
+          "name": "Incubators",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0215",
+          "name": "Laboratory Ovens",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0216",
+          "name": "Water Baths",
+          "subcategory": "Laboratory Equipment",
+          "model": "ESL 024",
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0217",
+          "name": "Shakers",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0218",
+          "name": "Vortex Mixers",
+          "subcategory": "Laboratory Equipment",
+          "model": "ESL 049",
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0219",
+          "name": "Hot Plates",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0220",
+          "name": "Magnetic Stirrers",
+          "subcategory": "Laboratory Equipment",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0221",
+          "name": "Binocular Microscope",
+          "subcategory": "Microscopy",
+          "model": "ESL 011",
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0222",
+          "name": "Compound Microscope",
+          "subcategory": "Microscopy",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0223",
+          "name": "Trinocular Microscope",
+          "subcategory": "Microscopy",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0224",
+          "name": "Digital Microscope",
+          "subcategory": "Microscopy",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0225",
+          "name": "Fume Hood",
+          "subcategory": "Laboratory Safety & Ventilation",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0226",
+          "name": "Bio-Safety Cabinet",
+          "subcategory": "Laboratory Safety & Ventilation",
+          "model": "ESL 154",
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0227",
+          "name": "Laboratory Refrigerators",
+          "subcategory": "Laboratory Refrigeration & Storage",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0228",
+          "name": "Laboratory Freezers",
+          "subcategory": "Laboratory Refrigeration & Storage",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0229",
+          "name": "Temperature-Controlled Storage",
+          "subcategory": "Laboratory Refrigeration & Storage",
+          "model": null,
+          "sourceIndexPage": 56,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-9",
+      "name": "Laboratory Glassware & Consumables",
+      "representativeImage": "esco-laboratory-glassware-consumables.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0230",
+          "name": "Beakers — Borosilicate Glass",
+          "subcategory": "Laboratory Glassware",
+          "model": "ELG 151",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0231",
+          "name": "Conical / Erlenmeyer Flasks",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0232",
+          "name": "Round-Bottom Flasks",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0233",
+          "name": "Flat-Bottom Flasks",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0234",
+          "name": "Volumetric Flasks",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0235",
+          "name": "Measuring Cylinders",
+          "subcategory": "Laboratory Glassware",
+          "model": "ELG 161",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0236",
+          "name": "Burettes",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0237",
+          "name": "Pipettes",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0238",
+          "name": "Test Tubes",
+          "subcategory": "Laboratory Glassware",
+          "model": "ELG 121",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0239",
+          "name": "Reagent Bottles",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0240",
+          "name": "Glass Funnels",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0241",
+          "name": "Separatory Funnels",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0242",
+          "name": "Watch Glasses",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0243",
+          "name": "Petri Dishes",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0244",
+          "name": "Glass Rods",
+          "subcategory": "Laboratory Glassware",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0245",
+          "name": "Microscope Slides",
+          "subcategory": "Laboratory Consumables",
+          "model": "ELG 102",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0246",
+          "name": "Cover Slips",
+          "subcategory": "Laboratory Consumables",
+          "model": "ELG 103",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0247",
+          "name": "Slide Boxes",
+          "subcategory": "Laboratory Consumables",
+          "model": "ESL 014",
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0248",
+          "name": "Centrifuge Tubes",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0249",
+          "name": "Pipette Tips",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0250",
+          "name": "Serological Pipettes",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0251",
+          "name": "Transfer Pipettes",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0252",
+          "name": "Cryovials",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0253",
+          "name": "Sample Containers",
+          "subcategory": "Laboratory Consumables",
+          "model": null,
+          "sourceIndexPage": 62,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-10",
+      "name": "Laboratory Plasticware",
+      "representativeImage": "esco-laboratory-plasticware.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0254",
+          "name": "PP Beakers",
+          "subcategory": "Plastic Measuring & Handling",
+          "model": "ELP 119",
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0255",
+          "name": "Measuring Cylinders",
+          "subcategory": "Plastic Measuring & Handling",
+          "model": "ELP 115",
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0256",
+          "name": "Funnels",
+          "subcategory": "Plastic Measuring & Handling",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0257",
+          "name": "Wash Bottles",
+          "subcategory": "Plastic Measuring & Handling",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0258",
+          "name": "Droppers",
+          "subcategory": "Plastic Measuring & Handling",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0259",
+          "name": "Reagent Bottles",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": "ELP 103",
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0260",
+          "name": "Storage Bottles",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0261",
+          "name": "Sample Containers",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0262",
+          "name": "Specimen Containers",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0263",
+          "name": "Wide-Mouth Bottles",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0264",
+          "name": "Dropper Bottles",
+          "subcategory": "Plastic Bottles & Containers",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0265",
+          "name": "Test Tubes",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": "ELP 188",
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0266",
+          "name": "Centrifuge Tubes",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0267",
+          "name": "Micro Tubes",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0268",
+          "name": "Cryovials",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0269",
+          "name": "Tube Racks",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0270",
+          "name": "Pipette Tip Boxes",
+          "subcategory": "Plastic Tubes & Racks",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0271",
+          "name": "Petri Dishes",
+          "subcategory": "Plastic Cultureware",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0272",
+          "name": "Culture Plates",
+          "subcategory": "Plastic Cultureware",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0273",
+          "name": "Multiwell Plates",
+          "subcategory": "Plastic Cultureware",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0274",
+          "name": "PCR Plates",
+          "subcategory": "Plastic Cultureware",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0275",
+          "name": "Slide Boxes",
+          "subcategory": "Plastic Laboratory Accessories",
+          "model": "ESL 014",
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0276",
+          "name": "Pipette Stands",
+          "subcategory": "Plastic Laboratory Accessories",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0277",
+          "name": "Bottle Racks",
+          "subcategory": "Plastic Laboratory Accessories",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0278",
+          "name": "Laboratory Trays",
+          "subcategory": "Plastic Laboratory Accessories",
+          "model": null,
+          "sourceIndexPage": 67,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-11",
+      "name": "Surgical Instruments",
+      "representativeImage": "esco-surgical-instruments.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0279",
+          "name": "Scissors",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0280",
+          "name": "Forceps",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0281",
+          "name": "Hemostatic Forceps",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0282",
+          "name": "Clamps",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0283",
+          "name": "Retractors",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0284",
+          "name": "Probes",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0285",
+          "name": "Dilators",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0286",
+          "name": "Specula",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0287",
+          "name": "Suction Cannulae",
+          "subcategory": "General Surgery",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0288",
+          "name": "Mayo-Hegar Needle Holders",
+          "subcategory": "Needle Holders",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0289",
+          "name": "Mathieu Needle Holders",
+          "subcategory": "Needle Holders",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0290",
+          "name": "Olsen-Hegar Needle Holders",
+          "subcategory": "Needle Holders",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0291",
+          "name": "TC Needle Holders",
+          "subcategory": "Needle Holders",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0292",
+          "name": "Specialty Needle Holders",
+          "subcategory": "Needle Holders",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0293",
+          "name": "Vaginal Specula",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0294",
+          "name": "Uterine Instruments",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0295",
+          "name": "Obstetric Forceps",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0296",
+          "name": "Cervical Instruments",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0297",
+          "name": "Dilators",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0298",
+          "name": "Curettes",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0299",
+          "name": "Delivery Instruments",
+          "subcategory": "Gynaecology & Obstetrics",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0300",
+          "name": "Bone Cutters",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0301",
+          "name": "Osteotomes",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0302",
+          "name": "Rongeurs",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0303",
+          "name": "Bone Holding Forceps",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0304",
+          "name": "Elevators",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0305",
+          "name": "Retractors",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0306",
+          "name": "Plaster Instruments",
+          "subcategory": "Orthopaedic",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0307",
+          "name": "Urological Forceps",
+          "subcategory": "Urology",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0308",
+          "name": "Retractors",
+          "subcategory": "Urology",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0309",
+          "name": "Dilators",
+          "subcategory": "Urology",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0310",
+          "name": "Catheterisation Instruments",
+          "subcategory": "Urology",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0311",
+          "name": "Urology Sets",
+          "subcategory": "Urology",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0312",
+          "name": "Ear Instruments",
+          "subcategory": "ENT",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0313",
+          "name": "Nasal Instruments",
+          "subcategory": "ENT",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0314",
+          "name": "Throat Instruments",
+          "subcategory": "ENT",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0315",
+          "name": "ENT Forceps",
+          "subcategory": "ENT",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0316",
+          "name": "ENT Specula",
+          "subcategory": "ENT",
+          "model": null,
+          "sourceIndexPage": 71,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0317",
+          "name": "Ophthalmic Forceps",
+          "subcategory": "Ophthalmic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0318",
+          "name": "Ophthalmic Scissors",
+          "subcategory": "Ophthalmic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0319",
+          "name": "Eye Specula",
+          "subcategory": "Ophthalmic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0320",
+          "name": "Ophthalmic Retractors",
+          "subcategory": "Ophthalmic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0321",
+          "name": "Extraction Forceps",
+          "subcategory": "Dental & Oral",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0322",
+          "name": "Dental Elevators",
+          "subcategory": "Dental & Oral",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0323",
+          "name": "Dental Scissors",
+          "subcategory": "Dental & Oral",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0324",
+          "name": "Dental Forceps",
+          "subcategory": "Dental & Oral",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0325",
+          "name": "Oral Examination Instruments",
+          "subcategory": "Dental & Oral",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0326",
+          "name": "Cardiovascular Forceps",
+          "subcategory": "Cardiovascular",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0327",
+          "name": "Vascular Clamps",
+          "subcategory": "Cardiovascular",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0328",
+          "name": "Vessel Dilators",
+          "subcategory": "Cardiovascular",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0329",
+          "name": "Specialty Retractors",
+          "subcategory": "Cardiovascular",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0330",
+          "name": "Neurosurgical Forceps",
+          "subcategory": "Neurosurgical",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0331",
+          "name": "Retractors",
+          "subcategory": "Neurosurgical",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0332",
+          "name": "Scissors",
+          "subcategory": "Neurosurgical",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0333",
+          "name": "Dissection Instruments",
+          "subcategory": "Neurosurgical",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0334",
+          "name": "Laparoscopic Graspers",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0335",
+          "name": "Dissecting Forceps",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0336",
+          "name": "Laparoscopic Scissors",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0337",
+          "name": "Needle Holders",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0338",
+          "name": "Suction / Irrigation Instruments",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0339",
+          "name": "Laparoscopic Instrument Sets",
+          "subcategory": "Laparoscopic",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0340",
+          "name": "Scalpel Handles",
+          "subcategory": "Scalpels & Knives",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0341",
+          "name": "Surgical Blades",
+          "subcategory": "Scalpels & Knives",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0342",
+          "name": "Surgical Knives",
+          "subcategory": "Scalpels & Knives",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0343",
+          "name": "Diagnostic Sets",
+          "subcategory": "Diagnostic Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0344",
+          "name": "Tuning Forks",
+          "subcategory": "Diagnostic Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0345",
+          "name": "Tongue Depressors",
+          "subcategory": "Diagnostic Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0346",
+          "name": "Examination Instruments",
+          "subcategory": "Diagnostic Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0347",
+          "name": "Plaster Shears",
+          "subcategory": "Plaster & Casting Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0348",
+          "name": "Plaster Spreaders",
+          "subcategory": "Plaster & Casting Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0349",
+          "name": "Plaster Breakers",
+          "subcategory": "Plaster & Casting Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0350",
+          "name": "Cast Cutters",
+          "subcategory": "Plaster & Casting Instruments",
+          "model": null,
+          "sourceIndexPage": 72,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0351",
+          "name": "Instrument Trays",
+          "subcategory": "Sterilization Instruments",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0352",
+          "name": "Sterilization Forceps",
+          "subcategory": "Sterilization Instruments",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0353",
+          "name": "Sterilization Baskets",
+          "subcategory": "Sterilization Instruments",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0354",
+          "name": "Instrument Containers",
+          "subcategory": "Sterilization Instruments",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0355",
+          "name": "General Surgery Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0356",
+          "name": "Minor Surgery Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0357",
+          "name": "Major Surgery Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0358",
+          "name": "Dressing Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0359",
+          "name": "Gynaecology Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0360",
+          "name": "Obstetric Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0361",
+          "name": "Orthopaedic Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0362",
+          "name": "ENT Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0363",
+          "name": "Urology Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0364",
+          "name": "Dental Sets",
+          "subcategory": "Instrument Sets",
+          "model": null,
+          "sourceIndexPage": 73,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    },
+    {
+      "id": "esco-12",
+      "name": "OT & Surgical Lights",
+      "representativeImage": "esco-ot-surgical-lights.webp",
+      "illustrationOnly": true,
+      "entries": [
+        {
+          "id": "ESCO-CAT-0365",
+          "name": "LED OT Lights",
+          "subcategory": "Operating Theatre Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0366",
+          "name": "Single-Dome OT Lights",
+          "subcategory": "Operating Theatre Lights",
+          "model": "EOL 121",
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0367",
+          "name": "Double-Dome OT Lights",
+          "subcategory": "Operating Theatre Lights",
+          "model": "EOL 123",
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0368",
+          "name": "Ceiling-Mounted OT Lights",
+          "subcategory": "Operating Theatre Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0369",
+          "name": "Mobile / Floor-Standing OT Lights",
+          "subcategory": "Operating Theatre Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0370",
+          "name": "Examination Lights",
+          "subcategory": "Examination & Minor Procedure Lights",
+          "model": "EOL 128",
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0371",
+          "name": "Minor OT Lights",
+          "subcategory": "Examination & Minor Procedure Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0372",
+          "name": "Procedure Lights",
+          "subcategory": "Examination & Minor Procedure Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        },
+        {
+          "id": "ESCO-CAT-0373",
+          "name": "Mobile Examination Lights",
+          "subcategory": "Examination & Minor Procedure Lights",
+          "model": null,
+          "sourceIndexPage": 78,
+          "sellable": false,
+          "priceGbp": null,
+          "photoVerified": false
+        }
+      ]
+    }
+  ]
+}

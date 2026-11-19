@@ -1,0 +1,21 @@
+name: Customer approval ledger storage isolation
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/customer-approval-ledger-staging.json'
+      - 'scripts/aws/customer-approval-ledger-staging.test.mjs'
+      - '.github/workflows/customer-approval-ledger.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  private-customer-ledger-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verify encryption, recovery and default-deny customer access
+        run: node --test scripts/aws/customer-approval-ledger-staging.test.mjs

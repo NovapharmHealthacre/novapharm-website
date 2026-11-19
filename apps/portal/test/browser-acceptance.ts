@@ -133,7 +133,7 @@ async function login(browser: Browser, area: PortalArea): Promise<StoredBrowserS
     await page.getByLabel("Password", { exact: true }).fill(credentials.password as string);
     await Promise.all([
       page.waitForURL((url) => url.pathname === destinationByArea[area], { timeout: 20_000 }),
-      page.getByRole("button", { name: "Sign in securely" }).click(),
+      page.getByRole("button", { name: "Sign in", exact: true }).click(),
     ]);
     await page.locator(".data-context").waitFor({ state: "visible" });
     assert.equal(await page.locator(".workflow-status").textContent(), "");
@@ -156,7 +156,7 @@ async function verifyAuthenticationBoundaries(browser: Browser, engine: string):
     await page.goto(portalOrigin, { waitUntil: "domcontentloaded" });
     await page.getByLabel("Username or business email").fill(credentials.username as string);
     await page.getByLabel("Password", { exact: true }).fill("Synthetic-invalid-password-9!zQ");
-    await page.getByRole("button", { name: "Sign in securely" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await page.getByText("Invalid username or password.", { exact: true }).waitFor();
     assert.equal(await page.getByText("The string did not match the expected pattern.").count(), 0);
   } finally {
@@ -167,8 +167,21 @@ async function verifyAuthenticationBoundaries(browser: Browser, engine: string):
 async function capture(page: Page, engine: string, viewport: string, name: string, fullPage: boolean): Promise<void> {
   const directory = path.join(artifactRoot, "screenshots", engine, viewport);
   await fs.mkdir(directory, { recursive: true });
-  await page.screenshot({ path: path.join(directory, `${name}.png`), animations: "disabled", fullPage });
-  screenshots += 1;
+  const screenshotPath = path.join(directory, `${name}.png`);
+  // Chromium can intermittently reject a screenshot after a large visual
+  // matrix. Keep exact screenshot coverage and fail if a bounded retry fails.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await page.screenshot({ path: screenshotPath, animations: "disabled", fullPage });
+      screenshots += 1;
+      return;
+    } catch (error) {
+      const transientCaptureFailure = /Unable to capture screenshot/.test(String(error));
+      if (!transientCaptureFailure || attempt === 3) throw error;
+      console.warn(`${engine} ${viewport} ${name}: screenshot capture retry ${attempt}/3`);
+      await page.waitForTimeout(attempt * 400);
+    }
+  }
 }
 
 async function settleAtViewportTop(page: Page): Promise<void> {
@@ -187,6 +200,16 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
   const layout = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
     documentWidth: document.documentElement.scrollWidth,
+    layoutVersion: getComputedStyle(document.documentElement).getPropertyValue("--np-layout-contract").trim(),
+    unboundedGrids: [...document.querySelectorAll(".metric-grid.np-hig-grid")].filter((grid) => {
+      const bounds = grid.getBoundingClientRect();
+      return bounds.width > 0 && (bounds.left < -2 || bounds.right > document.documentElement.clientWidth + 2);
+    }).length,
+    unboundedTables: [...document.querySelectorAll(".table-region.np-hig-table-region")].filter((region) => {
+      const bounds = region.getBoundingClientRect();
+      const computed = getComputedStyle(region);
+      return bounds.width > 0 && (bounds.left < -2 || bounds.right > document.documentElement.clientWidth + 2 || !["auto", "scroll"].includes(computed.overflowX));
+    }).length,
     blankMain: !(document.querySelector("main")?.textContent ?? "").trim(),
     brokenImages: [...document.images]
       .filter((image) => image.complete && image.naturalWidth === 0)
@@ -196,6 +219,9 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
       document.body.innerText.includes("Secure portal backend is not active on this static host yet") ||
       document.body.innerText.includes("Internal Server Error"),
   }));
+  assert.equal(layout.layoutVersion, "1", `${label}: shared Apple HIG layout CSS was not loaded`);
+  assert.equal(layout.unboundedGrids, 0, `${label}: metrics grid extends outside the viewport`);
+  assert.equal(layout.unboundedTables, 0, `${label}: data table is not bounded to its own scrolling region`);
   assert.equal(layout.blankMain, false, `${label}: main content is blank`);
   assert.ok(layout.documentWidth <= layout.viewportWidth + 1, `${label}: horizontal overflow (${layout.documentWidth} > ${layout.viewportWidth})`);
   assert.deepEqual(layout.brokenImages, [], `${label}: broken portal image`);
@@ -242,7 +268,7 @@ async function inspectModule(
     } else {
       await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     }
-    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.title;
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.code === "employee.dashboard" ? "One network. Clear decisions." : module.code === "employee.orders" ? "Telesales, without friction." : module.title;
     assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
@@ -252,8 +278,40 @@ async function inspectModule(
       assert.equal(await page.getByText("by NovaPharm Healthcare", { exact: true }).count(), 1);
       assert.equal(await page.getByText("Know where medicine is moving.", { exact: true }).count(), 0);
     } else {
-      assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
-      assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+      const isDistributionRoute = [
+        "employee.dashboard", "employee.orders", "employee.warehouse",
+      ].includes(module.code);
+      if (isDistributionRoute) {
+        assert.equal(await page.locator('img[alt="NovaPharm Distribution"]').count(), 1);
+        assert.match(await page.locator('img[alt="NovaPharm Distribution"]').getAttribute("src") ?? "", /novapharm-distribution-logo\.svg/);
+        assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 0);
+      } else {
+        assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
+        assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+        assert.equal(await page.locator('img[alt="NovaPharm Distribution"]').count(), 0);
+      }
+      if (module.code === "customer.dashboard") {
+        assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
+        assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
+        await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
+      }
+    }
+    // Authenticated account/help routes must allow the optional first-run
+    // guidance to be replayed without granting a new role or loading records.
+    if ([
+      "customer.account", "customer.settings", "customer.support",
+      "employee.administration", "executive.command-centre",
+    ].includes(module.code)) {
+      const disclosure = page.locator("details.account-access-help");
+      assert.equal(await disclosure.count(), 1, `${module.code}: replayable account help missing`);
+      const summary = disclosure.locator("summary");
+      assert.equal(await summary.textContent(), "Review account access and onboarding");
+      if (viewport.name === "desktop-1440") {
+        await summary.focus();
+        await page.keyboard.press("Enter");
+        assert.equal(await disclosure.getAttribute("open"), "", "Keyboard Enter did not open account guidance");
+        await page.getByText("Optional tips for your current workspace.", { exact: false }).waitFor({ state: "visible" });
+      }
     }
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
@@ -312,17 +370,24 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await employeeContext.newPage();
     await page.goto(`${portalOrigin}/employee/dashboard/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
-    await page.getByRole("button", { name: "Open navigation" }).click();
-    assert.match(await page.locator(".workspace-sidebar").getAttribute("class") ?? "", /open/);
-    await page.getByRole("button", { name: "Close navigation" }).click();
+    // The new text-first employee header replaces the legacy icon-driven drawer.
+    // All 13 governed employee routes must remain keyboard-accessible on mobile.
+    await page.getByRole("navigation", { name: "Employee distribution navigation" }).waitFor();
+    assert.equal(await page.locator(".distribution-employee-all a").count(), 13,
+      engine + ": all 13 employee workspaces must remain accessible");
+    await page.getByRole("link", { name: "Telesales", exact: true }).waitFor();
     await page.getByLabel("Search authorised records").fill("Nutraxin");
     await page.locator('.portal-search > button[type="submit"]').click();
-    await page.locator(".search-results").waitFor();
+    // The results panel opens before the async authorised search completes.
+    // Wait for a genuine seeded product link, not merely the empty panel shell.
+    await page.locator(".search-results a").first().waitFor({ state: "visible", timeout: 15_000 });
     assert.ok(await page.locator(".search-results a").count() > 0, `${engine}: authorised search returned no seeded products`);
     await captureInteractionState(page, engine, mobileViewport, "interaction.search-results");
     await page.getByLabel("Search authorised records").fill("no-authorised-record-matches-this-query");
     await page.locator('.portal-search > button[type="submit"]').click();
-    await page.getByText("No authorised records found.", { exact: true }).waitFor();
+    // Require the API success announcement, not a transient empty-state render.
+    await page.getByText("0 authorised records found.", { exact: true }).waitFor();
+    await page.getByText("No authorised records found in this scope.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, mobileViewport, "interaction.empty-search");
   } finally {
     await employeeContext.close();
@@ -414,20 +479,25 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByText("No governed intelligence data loaded", { exact: true }).waitFor();
     await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
     assert.equal(await page.getByText("Analysis mode", { exact: true }).count(), 0, `${engine}: decorative analysis modes reappeared`);
+    await page.keyboard.press("Control+k");
+    assert.equal(await page.getByLabel("Medicine name, brand or code").evaluate((element) => element === document.activeElement), true, `${engine}: Ctrl+K must focus the medicine search`);
+    await page.keyboard.press("Escape");
+    assert.equal(await page.getByLabel("Medicine name, brand or code").getAttribute("aria-keyshortcuts"), "Meta+K Control+K");
     await page.getByLabel("Medicine name, brand or code").fill("Apixaban");
     await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
-    await page.getByText("No current BNF identity matched that search.", { exact: true }).waitFor();
+    await page.getByText("This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-empty-search");
 
     const validationMedicineId = "medicine-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     await page.route("**/gateway/enterprise/medicines/**", async (route) => {
       const requestUrl = new URL(route.request().url());
       const response = requestUrl.pathname.endsWith("/search") ? {
-        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", demandFactsIncluded: false,
+        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", catalogueState: "current_repository_identities_present", demandFactsIncluded: false,
         results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
         dataFreshness: "2026-08-24T00:00:00.000Z",
+        pagination: { page: Number(requestUrl.searchParams.get("page") || 1), pageSize: Number(requestUrl.searchParams.get("limit") || 30), totalRows: 1, totalPages: 1 },
       } : requestUrl.pathname.endsWith("/analytics") ? {
-        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50 }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
+        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50, sortBy: requestUrl.searchParams.get("sortBy") || "month_key", sortDirection: requestUrl.searchParams.get("sortDirection") || "desc" }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
         rows: [{ month_key: "2026-06", medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", region_code: "Y00", region_name: "Repository validation region", items: 12, quantity: 24, nic: 36, actual_cost: 30, registered_population: 1200, metric_value: 12 }],
         series: [{ month_key: "2026-06", items: 12, quantity: 24, nic: 36, actual_cost: 30, metric_value: 12 }],
         summary: { totalItems: 12, totalQuantity: 24, totalNic: 36, totalActualCost: 30, practiceCount: 1, geographyCount: 1, latestItemsPer1000: 10, firstMonth: "2026-06", latestMonth: "2026-06", sourceCutoffAt: "2026-07-31T00:00:00.000Z" },
@@ -443,6 +513,18 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         aliases: [], codeHistory: [], hierarchy: [{ code: "02", name: "Repository validation chapter", level: "2", validFrom: "2026-06-01", validTo: null }],
         analyticalAvailability: { epd: true, pca: false, scmd: false, forecast: false }, limitations: ["Repository validation fixture only; no production identity is asserted."],
       };
+      if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05") {
+        const evidence = response as Extract<typeof response, { series: { month_key: string }[] }>;
+        const initialRow = evidence.rows[0];
+        if (!initialRow) throw new Error("Expected accepted-facts validation fixture to contain an initial row.");
+        const previous = { ...initialRow, month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
+        evidence.rows = [previous, ...evidence.rows];
+        evidence.series = [previous, ...evidence.series];
+        evidence.sourcePeriods = ["2026-05", "2026-06"];
+        evidence.summary = { ...evidence.summary, totalItems: 20, totalQuantity: 40, totalNic: 60, totalActualCost: 50, firstMonth: "2026-05" };
+        evidence.pagination = { ...evidence.pagination, totalRows: 2 };
+        evidence.reconciliation = { ...evidence.reconciliation, tableTotal: 20, seriesTotal: 20 };
+      }
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
     });
     await page.getByLabel("Medicine name, brand or code").fill("Repository validation medicine");
@@ -458,6 +540,8 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByLabel("Region").fill("Repository validation region");
     await page.getByRole("button", { name: "Reset filters", exact: true }).click();
     assert.equal(await page.getByLabel("Region").inputValue(), "", `${engine}: one-action filter reset did not clear the grouped filters`);
+    await page.getByLabel("Table order").selectOption("items");
+    await page.getByLabel("Sort direction").selectOption("desc");
     await page.getByLabel("Start month").fill("2026-06");
     await page.getByLabel("End month").fill("2026-06");
     await page.getByRole("button", { name: "Run governed query", exact: true }).click();
@@ -466,6 +550,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(await page.getByText("No governed intelligence data loaded", { exact: true }).count(), 0, `${engine}: stale empty-source state remained after accepted analytics loaded`);
     await page.getByText("One accepted period is available", { exact: true }).waitFor();
     assert.equal(await page.getByRole("heading", { name: "Accepted analytical rows", exact: true }).count(), 1, `${engine}: accepted analytical rows did not render`);
+    await page.getByText(/Server-sorted by items \(desc\)/).waitFor();
     assert.equal(await page.getByText("999", { exact: true }).count(), 0, `${engine}: a validation-sample sentinel leaked into rendered analytics`);
     const evidenceGates = page.locator("details").filter({ hasText: "Regulatory, patent and SPC evidence" });
     assert.equal(await evidenceGates.getAttribute("open"), null, `${engine}: optional evidence gates were not initially collapsed`);
@@ -487,6 +572,16 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.setViewportSize({ width: desktopViewport.width, height: desktopViewport.height });
     await settleAtViewportTop(page);
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-analytics");
+    await page.getByLabel("Start month").fill("2026-05");
+    await page.getByRole("button", { name: "Run governed query", exact: true }).click();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).waitFor();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).click();
+    const trendData = page.getByRole("table", { name: "Accepted monthly items data from Repository validation fixture" });
+    await trendData.getByRole("rowheader", { name: "2026-05" }).waitFor();
+    await trendData.getByRole("rowheader", { name: "2026-06" }).waitFor();
+    assert.equal(await trendData.locator("tbody tr").count(), 2, `${engine}: accepted trend table must match two source periods`);
+    await page.getByText("Observed items range: 8 to 12", { exact: true }).waitFor();
+
     await page.unroute("**/gateway/enterprise/medicines/**");
 
     const intelligenceViews = [
@@ -510,15 +605,64 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
       }
       await inspectLayout(page, `${engine} medicines-intelligence ${subview}`);
     }
+    await page.route("**/gateway/v1/intelligence/regulatory/us/fda-labels**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          query: "apixaban",
+          sourceId: "us.fda.openfda-labels",
+          publisher: "US Food and Drug Administration",
+          jurisdiction: "United States",
+          retrievedAt: "2026-11-09T09:00:00Z",
+          recordType: "published-drug-label",
+          dataState: "public_source_observations",
+          records: [{
+            recordId: "example-source-record",
+            setId: "example-source-set",
+            effectiveDate: "20261015",
+            genericNames: ["Apixaban"],
+            brandNames: ["Example label brand"],
+            applicationNumbers: ["NDA012345"],
+            productTypes: ["HUMAN PRESCRIPTION DRUG"],
+          }],
+          truncated: false,
+          limitations: ["A source label record is not proof of marketing approval."],
+        }),
+      });
+    });
+    const regulatoryResponse = await page.goto(
+      portalOrigin + "/portal/executive-platform/medicines-intelligence/regulatory-intelligence/",
+      { waitUntil: "domcontentloaded" },
+    );
+    assert.equal(regulatoryResponse?.status(), 200, engine + ": Regulatory Intelligence route did not resolve");
+    await page.getByRole("heading", { name: "Official drug-label records." }).waitFor();
+    await page.getByLabel("Generic medicine name").fill("apixaban");
+    await page.getByRole("button", { name: "Search FDA labels" }).click();
+    await page.getByRole("heading", { name: "Observed source records" }).waitFor();
+    await page.getByText("Example label brand", { exact: true }).waitFor();
+    await page.getByText("A source label record is not proof of marketing approval.", { exact: true }).waitFor();
+    await inspectLayout(page, engine + " medicines-intelligence us-regulatory-labels");
+    await page.unroute("**/gateway/v1/intelligence/regulatory/us/fda-labels**");
+
     const rejectedSubview = await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/unapproved-view/`, { waitUntil: "domcontentloaded" });
     assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
 
     const hiddenModules = portalModules.filter((entry) => !entry.visibleInNavigation);
+    // Keep the same authenticated executive context, but avoid reusing a
+    // heavily navigated page for every denied route in WebKit.
+    // Each dependency-blocked route MUST still return 404; no retries,
+    // security bypasses or exception suppression are introduced.
     for (const [index, module] of hiddenModules.entries()) {
-      const response = await page.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
-      assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
-      await page.getByRole("heading", { name: "Portal route not found" }).waitFor();
-      if (index === 0) await captureInteractionState(page, engine, desktopViewport, "interaction.hidden-module-not-found");
+      const hiddenPage = await boardContext.newPage();
+      try {
+        const response = await hiddenPage.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
+        assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
+        await hiddenPage.getByRole("heading", { name: "Portal route not found" }).waitFor();
+        if (index === 0) await captureInteractionState(hiddenPage, engine, desktopViewport, "interaction.hidden-module-not-found");
+      } finally {
+        await hiddenPage.close();
+      }
     }
   } finally {
     await boardContext.close();
@@ -529,6 +673,49 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await boardMobileContext.newPage();
     await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/`, { waitUntil: "domcontentloaded" });
     await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
+    // Mobile drawers are overlays, not off-screen keyboard destinations. A
+    // closed drawer must leave the accessibility/Tab tree, and Escape must
+    // return focus to the button that opened it (Chromium + WebKit).
+    const medicineNav = page.locator("#medicines-navigation-panel");
+    const contextPanel = page.locator("#medicines-context-panel");
+    const navToggle = page.locator('button[aria-controls="medicines-navigation-panel"]');
+    const filterToggle = page.locator('button[aria-controls="medicines-context-panel"]');
+    assert.equal(await medicineNav.isVisible(), false, `${engine}: closed mobile navigation remains accessible`);
+    assert.equal(await contextPanel.isVisible(), false, `${engine}: closed filters remain accessible`);
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "false");
+    await navToggle.click();
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "true");
+    assert.equal(await medicineNav.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-navigation-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close navigation";
+    });
+    assert.equal(await medicineNav.getByRole("button", { name: "Close navigation", exact: true }).evaluate(
+      (node) => node === document.activeElement), true, `${engine}: mobile navigation did not receive focus`);
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(await medicineNav.evaluate((panel) => panel.contains(document.activeElement)), true,
+      `${engine}: reverse Tab escaped the navigation drawer`);
+    await page.keyboard.press("Escape");
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "false");
+    await medicineNav.waitFor({ state: "hidden" });
+    assert.equal(await medicineNav.isVisible(), false);
+    assert.equal(await navToggle.evaluate((node) => node === document.activeElement), true,
+      `${engine}: navigation Escape did not return focus`);
+    await filterToggle.click();
+    assert.equal(await filterToggle.getAttribute("aria-expanded"), "true");
+    assert.equal(await contextPanel.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-context-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close filters";
+    });
+    assert.equal(await contextPanel.getByRole("button", { name: "Close filters", exact: true }).evaluate(
+      (node) => node === document.activeElement), true, `${engine}: filters did not receive focus`);
+    await page.keyboard.press("Escape");
+    assert.equal(await filterToggle.getAttribute("aria-expanded"), "false");
+    await contextPanel.waitFor({ state: "hidden" });
+    assert.equal(await contextPanel.isVisible(), false);
+    assert.equal(await filterToggle.evaluate((node) => node === document.activeElement), true,
+      `${engine}: filter Escape did not return focus`);
     await inspectLayout(page, `${engine} ${mobileViewport.name} medicines-intelligence`);
     const touchTargets = await page.locator(".intelligence-local-nav a:visible, .medicines-intelligence button:visible, .intelligence-query input:visible, .intelligence-query select:visible").evaluateAll((elements) => elements.map((element) => ({
       element: `${element.tagName.toLowerCase()}.${element.className || "unclassed"}`,
@@ -546,15 +733,18 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
 }
 
 async function runEngine(engine: string, browserType: BrowserType): Promise<void> {
+  // The matrix and the interaction suite share serialised, role-scoped test
+  // sessions, not a long-lived browser process. WebKit can become unstable
+  // after the complete responsive and accessibility sweep.
+  const states = new Map<PortalArea, StoredBrowserState>();
   const browser = await browserType.launch({ headless: true });
   try {
     await verifyAuthenticationBoundaries(browser, engine);
-    const states = new Map<PortalArea, StoredBrowserState>();
     for (const area of areas) states.set(area, await login(browser, area));
 
     for (const viewport of interactionOnly ? [] : viewports) {
       const anonymous = await browser.newContext(contextOptions(viewport));
-      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "One governed entry point. Four precise access boundaries.", "login");
+      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Sign in to the right workspace", "login");
       await anonymous.close();
 
       for (const area of areas) {
@@ -575,9 +765,18 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
       }
       console.log(`${engine}: completed ${viewport.name}`);
     }
-    await verifyInteractions(browser, engine, states);
   } finally {
     await browser.close();
+  }
+
+  // Start a fresh process for interaction acceptance without skipping any
+  // viewport, role, route or interaction assertion. Reuse only the scoped
+  // synthetic cookies captured by the login fixtures.
+  const interactionBrowser = await browserType.launch({ headless: true });
+  try {
+    await verifyInteractions(interactionBrowser, engine, states);
+  } finally {
+    await interactionBrowser.close();
   }
 }
 

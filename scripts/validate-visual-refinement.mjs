@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero nph-earth-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero npi-hero--editorial"' : name === "nutraxin" ? 'class="nx-hero"' : name === "capabilities" ? 'class="npd-hero ncap-hero"' : name === "products" ? 'class="np-products-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -59,7 +59,7 @@ for (const [name, html] of Object.entries(pages)) {
 [
   [pages.home, "Medicine. Where it needs to be.", "Homepage single proposition"],
   [pages.home, "Three routes. One evidence standard.", "Homepage sourcing hierarchy"],
-  [pages.home, 'class="npd-apple-hero"', "Homepage premium editorial hero"],
+  [pages.home, 'class="npd-apple-hero nph-earth-hero"', "Homepage premium editorial hero"],
   [pages.home, 'class="npd-apple-oncology"', "Homepage specialist-medicine visual chapter"],
   [pages.home, 'class="npd-apple-product-grid"', "Homepage evidence-governed real-product gallery"],
   [pages.home, 'class="npd-apple-nova-art"', "Homepage NOVA explicitly conceptual showcase"],
@@ -70,13 +70,13 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
   [pages.technology, 'class="npi-roadmap-grid"', "Intelligence product development roadmap"],
   [pages.technology, 'class="npi-provenance-list"', "Intelligence evidence provenance taxonomy"],
-  [pages.products, "Food Supplement Portfolio Review", "Products priority portfolio"],
+  [pages.products, "Different products.", "Approved three-collection Products hero"],
+  [pages.products, 'href="/products/esco/"', "Products canonical ESCO route"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
   [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
   [pages.nutraxin, 'class="nx-featured-grid"', "Nutraxin featured product stage"],
   [pages.contact, "How can we help?", "Contact information hierarchy"],
-  [pages.contact, 'class="np-contact-reference-form"', "Contact minimal reference form"],
   [leadership, "/assets/media/leadership/vishal-chakravarty-1200.jpg", "Vishal approved portrait"],
   [leadership, "/assets/media/leadership/prabhakar-lahare-960.jpg", "Prabhakar approved portrait"],
   [leadership, "/assets/media/leadership/girish-achliya-960.jpg", "Girish approved portrait"],
@@ -85,19 +85,35 @@ for (const [name, html] of Object.entries(pages)) {
   [girish, "/assets/media/leadership/girish-achliya-960.jpg", "Girish profile portrait"],
   [css, "--corporate-product-discipline-contract: 1", "Corporate design contract"],
   [css, "--npd-container: 1200px", "Measured corporate grid"],
-  [css, "--npd-header: 56px", "Measured navigation geometry"],
+  [css, "--npd-header: 68px", "Shared desktop navigation geometry matches the approved homepage"],
+  [css, "--npd-header: 60px", "Shared mobile navigation geometry matches the approved homepage"],
   [css, "-apple-system", "Lawful system-font stack"],
   [css, "@media (max-width: 360px)", "Compact mobile art direction"],
   [css, "@media (prefers-reduced-motion: reduce)", "Reduced-motion design"],
   [css, "@media (forced-colors: active)", "Forced-colours support"],
   [css, "@media print", "Print acceptance layer"],
   [bundleCss, "--corporate-product-discipline-contract: 1", "Bundled corporate design contract"],
-  [javascript, 'visibleLabel.textContent = isOpen ? "Close" : "Menu"', "Textual mobile menu control"],
+  // The mobile-menu label must retain its English fallback and the reviewed
+  // Arabic/Hebrew variants. The old hard-coded "Close" / "Menu" check became
+  // invalid when the RTL handler was made locale-aware.
+  [javascript, 'const localizedMenuLabels = {', "Textual mobile menu localization table"],
+  [javascript, 'menu: "Menu", closed: "Close", nav: "Primary navigation"', "English mobile menu fallback"],
+  [javascript, 'if (visibleLabel) visibleLabel.textContent = isOpen ? menuLabels.closed : menuLabels.menu;', "Textual mobile menu control"],
+  [javascript, 'if (label) label.textContent = isOpen ? menuLabels.close : menuLabels.open;', "Accessible mobile menu control"],
+  [javascript, 'navToggle.setAttribute("aria-label", menuLabels.open)', "Accessible mobile navigation label"],
   [build, 'import("./apply-corporate-product-discipline.mjs")', "Deterministic corporate transformation"],
 ].forEach(([content, text, label]) => requireText(content, text, label));
 
+// The public email-draft variant has a single form class. The managed AWS
+// variant retains the two base form classes and adds the approved editorial
+// class. Reject a missing, renamed or unapproved form instead of requiring
+// the obsolete single-class spelling in both modes.
+if (!/<form class="(?:np-contact-reference-form|form-grid contact-form np-contact-reference-form)"(?:\s|>)/u.test(pages.contact)) {
+  failures.push("Contact form presentation: missing the approved public or managed form class");
+}
+
 if (pages.contact.includes('data-contact-form')) {
-  requireText(pages.contact, 'class="form-grid contact-form"', "Managed contact form presentation");
+  requireText(pages.contact, 'class="form-grid contact-form np-contact-reference-form"', "Managed contact form presentation");
   requireText(pages.contact, "Your information is transmitted to the secure NovaPharm API", "Managed contact authority boundary");
 } else {
   requireText(pages.contact, "This public information release does not collect or transmit enquiry details.", "Public contact fail-closed state");
@@ -114,10 +130,15 @@ if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governanc
 const nutraxinProducts = (pages.nutraxin.match(/class="nx-product-card"/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
 
-const productFeaturePosition = pages.products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = pages.products.indexOf("Strategic pharmaceutical portfolio");
-if (productFeaturePosition < 0 || strategicPosition < 0 || productFeaturePosition > strategicPosition) {
-  failures.push("Products hierarchy: Food Supplement Portfolio Review must be the first substantive portfolio route.");
+const collectionPanels = [
+  '<section class="np-products-panel np-products-panel-nutraxin"',
+  '<section class="np-products-panel np-products-panel-esco"',
+  '<section class="np-products-panel np-products-panel-pharma"'
+];
+const panelPositions = collectionPanels.map((marker) => pages.products.indexOf(marker));
+if (panelPositions.some((position) => position < 0) ||
+    panelPositions.some((position, index) => index > 0 && position <= panelPositions[index - 1])) {
+  failures.push("Products hierarchy: approved Nutraxin, ESCO and pharmaceutical collections must appear in order.");
 }
 
 for (const prohibited of [

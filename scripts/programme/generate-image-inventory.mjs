@@ -118,7 +118,13 @@ function crossPlatformComparable(report) {
 }
 
 const tracked = trackedFiles().filter((file) => existsSync(path.join(root, file)));
-const mediaFiles = tracked.filter((file) => mediaPattern.test(file));
+// Build-time original concept SVGs are not uploaded supplier photographs and have
+// no independent image licence/photographic provenance. They are generated from
+// source metadata for the ESCO shopping display and tested in test-esco-catalogue.
+// Preserve the audited physical-source media inventory without presenting
+// algorithmic derivatives as supplier-owned photographic assets.
+const generatedEscoConcept = (file) => /^assets\/media\/esco\/previews\/esco-cat-[0-9]{4}\.svg$/.test(file);
+const mediaFiles = tracked.filter((file) => mediaPattern.test(file) && !generatedEscoConcept(file));
 const textFiles = tracked.filter((file) => textPattern.test(file) && file !== "audit/generated/image-inventory.json");
 const textCorpus = [];
 for (const file of textFiles) {
@@ -140,6 +146,27 @@ const [assetRegister, productRegister, moduleRegister, provenanceRegister, modul
 ]);
 
 const registry = new Map();
+// Provenance-specific records for the 61 source PDF photos. This establishes
+// source and model-code links, NOT an assumption that publication rights or
+// exact supply variants are independently approved.
+const escoSupplierPhotos = await json("assets/data/esco-model-photo-map.json");
+for (const [catalogueReference, image] of Object.entries(escoSupplierPhotos.images ?? {})) {
+  if (!/^ESCO-CAT-[0-9]{4}$/.test(catalogueReference) ||
+      !/^\/assets\/media\/esco\/esco-p[0-9]{2}-image[0-9]{2}\.webp$/.test(image.path)) throw Error("Unreviewed ESCO photo reference");
+  addRegistryRecord(registry, image.path, {
+    id: catalogueReference,
+    source: "Owner-supplied Eastern Surgical Company ESCO 2026 PDF, page " + image.sourcePage,
+    licence: "Manufacturer website usage rights pending confirmation",
+    altText: "ESCO supplier catalogue photograph associated with model " + image.model,
+    caption: "Printed model-code match only; actual supplied variant may differ",
+    semanticPurpose: "Illustrative supplier product photograph",
+    pageUsage: ["products/esco/index.html"],
+    reviewStatus: "Model-code matched; image rights and exact variant unconfirmed",
+    technicalStatus: "source-catalogue-provenance-registered-rights-pending",
+    provenanceRecord: "assets/data/esco-model-photo-map.json#" + catalogueReference
+  });
+}
+
 for (const asset of assetRegister.assets ?? []) {
   addRegistryRecord(registry, asset.path, {
     id: asset.path,
@@ -505,6 +532,32 @@ if (process.argv.includes("--check")) {
       process.exit(1);
     }
     if (crossPlatformComparable(currentReport) !== crossPlatformComparable(report)) {
+      // Make a failed immutable-media review actionable without weakening the
+      // comparison. Native dHash candidate differences remain advisory.
+      const currentByPath = new Map((currentReport.assets ?? []).map((asset) => [asset.path, asset]));
+      const skip = new Set(["perceptualHash", "perceptualDuplicateCandidateGroup"]);
+      let diagnostics = 0;
+      for (const expected of report.assets) {
+        const existing = currentByPath.get(expected.path);
+        if (!existing) {
+          console.error("Media inventory missing asset:", expected.path);
+          diagnostics += 1;
+          continue;
+        }
+        for (const key of Object.keys(expected)) {
+          if (skip.has(key)) continue;
+          if (JSON.stringify(existing[key]) === JSON.stringify(expected[key])) continue;
+          const preview = (value) => JSON.stringify(value)?.slice(0, 180);
+          console.error("Media inventory mismatch:", expected.path, key,
+            "stored=", preview(existing[key]), "expected=", preview(expected[key]));
+          diagnostics += 1;
+          if (diagnostics >= 24) break;
+        }
+        if (diagnostics >= 24) break;
+      }
+      if (!diagnostics) {
+        console.error("Media inventory report summary, structure, or asset ordering differs from regenerated source");
+      }
       console.error("Image inventory authoritative fields are stale. Run npm run images:inventory and review the resulting provenance gaps.");
       process.exit(1);
     }

@@ -8,8 +8,18 @@ if (emailDraft) {
   const topic = emailDraft.elements.namedItem("enquiryType");
   const requestedTopic = new URLSearchParams(window.location.search).get("enquiry");
   if (topic instanceof HTMLSelectElement && requestedTopic) {
-    const match = [...topic.options].find((option) => option.value.toLowerCase() === requestedTopic.toLowerCase());
+    const intent = requestedTopic.trim().toLowerCase();
+    const preferredTopic = intent === "distribution" ? "Distribution partnership"
+      : intent.startsWith("oncology") ? "Oncology & specialist medicines"
+      : requestedTopic;
+    const match = [...topic.options].find((option) => option.value.toLowerCase() === preferredTopic.toLowerCase());
     if (match) topic.value = match.value;
+  }
+  const quoteMessage = new URLSearchParams(window.location.search).get("quote");
+  const messageField = emailDraft.elements.namedItem("message");
+  if (quoteMessage?.startsWith("ESCO Anand UK quotation request") && quoteMessage.length <= 850 &&
+      messageField instanceof HTMLTextAreaElement && !messageField.value) {
+    messageField.value = quoteMessage;
   }
 
   emailDraft.addEventListener("submit", (event) => {

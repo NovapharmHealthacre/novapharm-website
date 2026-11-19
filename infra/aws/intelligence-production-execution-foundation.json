@@ -1,0 +1,122 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Intelligence private ECS execution identity and bounded log retention only. No ECS service, public ingress, customer identity, data access, secrets, Stripe or AI activation.",
+  "Resources": {
+    "IntelligenceEcsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/ecs/novapharm-intelligence-production",
+        "RetentionInDays": 30,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "no-customer-runtime"
+          }
+        ]
+      }
+    },
+    "IntelligenceExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Description": "Private Intelligence Fargate execution role: read only the dedicated ECR image and write container logs. Not a task application role.",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "intelligence-private-image-pull-and-container-logs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "AuthorizeEcrImageTokenOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Sid": "PullOnlyDedicatedIntelligenceImage",
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/novapharm/intelligence/production"
+                  }
+                },
+                {
+                  "Sid": "WriteOnlyIntelligenceContainerStreams",
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "IntelligenceEcsLogGroup",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "no-customer-runtime"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ExecutionRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IntelligenceExecutionRole",
+          "Arn"
+        ]
+      },
+      "Description": "Fargate image-pull and logs execution role ONLY, never an application data role"
+    },
+    "LogGroupName": {
+      "Value": {
+        "Ref": "IntelligenceEcsLogGroup"
+      }
+    },
+    "RuntimeState": {
+      "Value": "FOUNDATION ONLY: no task definition, ECR image, ECS service, API, ALB, login, source dataset, NOVA or Stripe activation"
+    }
+  }
+}

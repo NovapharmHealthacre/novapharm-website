@@ -30,12 +30,15 @@ assert.equal(rejected.categories.necessary, true);
 for (const category of ["preferences", "analytics", "marketing"]) assert.equal(categoryAllowed(rejected, category), false);
 
 const accepted = saveConsent(storage, { preferences: true, analytics: true, marketing: true }, { now, id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" });
-for (const category of ["necessary", "preferences", "analytics", "marketing"]) assert.equal(categoryAllowed(accepted, category), true);
+for (const category of ["necessary", "preferences", "analytics"]) assert.equal(categoryAllowed(accepted, category), true);
+assert.equal(categoryAllowed(accepted, "marketing"), false, "Inactive marketing providers must fail closed even if a saved record requests true");
 assert.equal(readConsent(storage, now.getTime()).id, accepted.id);
 
 const expired = JSON.stringify({ ...accepted, timestamp: new Date(now.getTime() - CONSENT_MAX_AGE_MS - 1).toISOString() });
 assert.equal(parseConsent(expired, now.getTime()), null);
 assert.equal(parseConsent(JSON.stringify({ ...accepted, version: "retired" }), now.getTime()), null);
+assert.equal(parseConsent(JSON.stringify({ ...accepted, categories: { ...accepted.categories, necessary: false } }), now.getTime()), null, "Forged records cannot remove the mandatory necessary flag");
+assert.equal(parseConsent(JSON.stringify({ ...accepted, categories: { analytics: true } }), now.getTime()), null, "Missing mandatory consent category must fail closed");
 assert.equal(parseConsent("not-json", now.getTime()), null);
 assert.ok(storage.getItem(CONSENT_STORAGE_KEY));
 
@@ -45,6 +48,11 @@ const serverSource = readFileSync(resolve(root, "server.mjs"), "utf8");
 assert.doesNotMatch(clientSource, /\bgtag\s*\(/);
 assert.doesNotMatch(serverSource, /googletagmanager|google-analytics/);
 assert.match(readFileSync(resolve(root, "index.html"), "utf8"), /cookie-consent\.js/);
+const consentClientSource = readFileSync(resolve(root, "assets/js/cookie-consent.js"), "utf8");
+const publicDesignSource = readFileSync(resolve(root, "assets/css/corporate-product-discipline.css"), "utf8");
+assert.match(consentClientSource, /main\.before\(banner\)/, "Consent notice must be inserted ahead of main content");
+assert.doesNotMatch(consentClientSource, /document\.body\.append\(banner, dialog\)/, "Fixed overlay insertion must not return");
+assert.match(publicDesignSource, /Forensic static consent: non-obscuring/, "In-flow consent rules must ship in public CSS");
 assert.match(readFileSync(resolve(root, "legal/cookies/index.html"), "utf8"), /data-cookie-settings/);
 
 console.log("Cookie consent tests passed: optional categories default off, rejection persists, granular acceptance persists, expired records fail closed, and no analytics loader is enabled.");

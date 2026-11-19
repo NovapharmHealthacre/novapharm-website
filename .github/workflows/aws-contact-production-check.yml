@@ -13,6 +13,11 @@ on:
       - 'assets/js/contact-production.js'
       - 'scripts/build-site.mjs'
       - '.github/workflows/aws-contact-production-check.yml'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/pages-live-publish.yml'
+      - '.github/workflows/pages-public-release-recovery.yml'
+      - '.github/workflows/release-contact-only.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
 
 permissions:
   contents: read
@@ -32,4 +37,4 @@ jobs:
         run: |
           node --check infra/aws/contact-production/index.js
           node --check assets/js/contact-production.js
-          node --test scripts/aws/contact-production.test.mjs scripts/contact-activation.test.mjs
+          node --test scripts/aws/contact-production.test.mjs scripts/contact-activation.test.mjs scripts/aws/contact-release-routing.test.mjs

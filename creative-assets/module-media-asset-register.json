@@ -93,7 +93,9 @@
           "byteSize": 12092,
           "sha256": "e7d14bad21d73be78565993c69af72b5d037332a01a39606c74affe101e9fd32"
         }
-      }
+      },
+      "publicationStatus": "retired",
+      "retirementReason": "Superseded on the approved About page by the owner-supplied NovaPharm warehouse photograph; retained only for provenance and immutable audit history."
     },
     {
       "id": "company-corporate-structure",
@@ -1524,9 +1526,10 @@
       "caption": "Representative release control; NovaPharm regulated wholesale supply has not commenced",
       "allowedRoutes": [
         "/news-insights/",
-        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+        "/distribution/"
       ],
-      "maxReuse": 2,
+      "maxReuse": 3,
       "focalPoint": {
         "desktop": "54% 50%",
         "mobile": "58% 50%"

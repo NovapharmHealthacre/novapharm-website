@@ -16,6 +16,7 @@ const allowedKeys = new Set([
   "name", "email", "company", "role", "country", "telephone", "enquiryType", "message",
   "website", "safetyConfirmation", "privacyAcknowledgement"
 ]);
+const intakeActivated = process.env.CONTACT_INTAKE_ENABLED === "true";
 const noCache = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "X-Robots-Tag": "noindex, nofollow" };
 function response(code, value, origin) {
   return {
@@ -46,9 +47,10 @@ exports.handler = async (event) => {
   const headers = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
   const origin = headers.origin || "";
   if (method === "GET" && path === "/health") {
-    return response(200, { service: "novapharm-contact-intake", ready: true, environment: "production" }, origin);
+    return response(200, { service: "novapharm-contact-intake", ready: intakeActivated, environment: "production", acceptingPublicSubmissions: intakeActivated }, origin);
   }
   if (method !== "POST" || path !== "/contact") return response(404, { error: "Not found" }, origin);
+  if (!intakeActivated) return response(503, { error: "Secure business enquiry intake is not yet activated" }, origin);
   if (!allowedOrigins.has(origin)) return response(403, { error: "Origin not permitted" });
   if (headers["x-novapharm-intake"] !== "v1") return response(403, { error: "Form request required" }, origin);
   if (!/^application\/json(?:;|$)/i.test(headers["content-type"] || "")) return response(415, { error: "JSON content required" }, origin);

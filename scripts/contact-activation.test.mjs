@@ -21,6 +21,8 @@ test("explicitly accepted endpoint creates real contact with declared privacy, c
   assert.match(html, /data-api-origin="https:\/\/abc123\.execute-api\.eu-north-1\.amazonaws\.com"/);
   assert.match(html, /name="privacyAcknowledgement"/);
   assert.match(html, /name="safetyConfirmation"/);
+  assert.match(html, /<div class="np-contact-reference-confirmations" role="group" aria-label="Enquiry confirmations"><label class="np-contact-reference-consent"><input name="safetyConfirmation".*?<\/label><label class="np-contact-reference-consent"><input name="privacyAcknowledgement".*?<\/label><\/div><div class="np-contact-reference-actions">/);
+  assert.equal((html.match(/class="np-contact-reference-consent"/g) || []).length, 2);
   assert.match(html, /name="role"/);
   assert.match(html, /name="telephone"/);
   assert.match(html, /src="\/assets\/js\/contact-production\.js"/);

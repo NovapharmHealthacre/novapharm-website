@@ -1,0 +1,7 @@
+{
+  "$comment": "Release-gated Apple marketing metadata. Empty until a native App Store listing and authentic screen captures are verified. Web portal/PWA access is not App Store availability.",
+  "schemaVersion": 1,
+  "nativeAppListings": [],
+  "appPreviews": [],
+  "webProductWalkthroughs": []
+}

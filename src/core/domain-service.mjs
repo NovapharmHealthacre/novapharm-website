@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { allocateNumber, audit, enqueue, insertIgnore, nowIso, one, run, stableHash, transaction, all } from "../data/database.mjs";
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
+import { assertEnterpriseOrderSubmissionAllowed } from "./enterprise-order-release-gate.mjs";
 
 function required(value, name) {
   const clean = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
@@ -491,6 +492,9 @@ export async function activateCustomer(applicationId, actor) {
 }
 
 export async function createOrder(input, actor, scopedCustomerId = null) {
+  // In production/staging, no order, number, reservation or outbox write may
+  // occur until an independently accepted release authority is integrated.
+  assertEnterpriseOrderSubmissionAllowed();
   const customerId = scopedCustomerId || required(input.customerId, "Customer");
   const customer = await one("SELECT * FROM customers WHERE id = ?", customerId);
   if (!customer || customer.lifecycle_status !== "active") throw Object.assign(new Error("Customer account is not active."), { statusCode: 409 });
@@ -500,6 +504,11 @@ export async function createOrder(input, actor, scopedCustomerId = null) {
   for (const line of lines) {
     const product = await one("SELECT * FROM products WHERE id = ? AND lifecycle_status = 'active' AND marketing_status = 'marketed' AND mhra_status IN ('approved', 'licensed')", required(line.productId, "Product"));
     if (!product) throw Object.assign(new Error("Product is unavailable for ordering."), { statusCode: 409 });
+    // Owner-supplied Nutraxin catalogue is not yet an approved ordering offer.
+    // Do not allow a stale/misconfigured lifecycle flag to create a zero-VAT sale.
+    if (product.source_system === "owner_supplied_nutraxin_catalogue") {
+      throw Object.assign(new Error("Nutraxin order submission remains unavailable until UK VAT, live pricing, inventory, delivery and fulfilment controls are approved."), { statusCode: 409 });
+    }
     const quantity = integer(line.quantity, "Quantity", 1);
     const unitPriceMinor = product.list_price_minor;
     priced.push({ id: randomUUID(), productId: product.id, quantity, unitPriceMinor, lineTotalMinor: quantity * unitPriceMinor });

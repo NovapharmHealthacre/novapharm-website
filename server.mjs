@@ -52,6 +52,12 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
+import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
+import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
+import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
+import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
+import { searchClinicalTrialsStudies } from "./src/core/regulatory/clinicaltrials-studies.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -79,6 +85,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
+import { probeVisualSearchReadiness, searchApprovedVisualCatalogue } from "./src/core/intelligence-visual-search.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -813,7 +820,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/portal/session" && request.method === "GET") {
       const session = await getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
-      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword } });
+      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword,
+        // Server-owned canonical account association; never trust a browser-provided customer id.
+        customerAccountLinked: session.accessType === "customer" && Boolean(enterpriseContext(session).customerId) } });
       return;
     }
 
@@ -968,7 +977,78 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (["/api/enterprise/medicines/search", "/api/v1/pharmascope/medicines/search"].includes(pathname) && request.method === "GET") {
+    if (pathname === "/api/v1/intelligence/tenders/uk/discovery" && request.method === "GET") {
+      if (!await rateLimit(request, "intelligence-uk-tender-discovery", 10, 60 * 1000)) return json(response, 429, { error: "Too many procurement source queries. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await discoverUkTenderNotices(url.searchParams.get("q") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/regulatory/us/fda-labels" && request.method === "GET") {
+      if (!await rateLimit(request, "openfda-label-discovery", 10, 60 * 1000)) return json(response, 429, { error: "Too many FDA source queries. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await searchOpenFdaLabels(url.searchParams.get("drug") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/evidence/us/clinical-trials" && request.method === "GET") {
+      if (!await rateLimit(request, "clinical-trials-registry-discovery", 10, 60 * 1000)) return json(response, 429, { error: "Too many clinical registry queries. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await searchClinicalTrialsStudies(url.searchParams.get("intervention") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe" && request.method === "GET") {
+      if (!await rateLimit(request, "nhsbsa-private-source-probe", 4, 60 * 1000)) {
+        return json(response, 429, { error: "Publisher source-review rate limit reached." });
+      }
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      if (process.env.NPI_NHSBSA_PRIVATE_API_PROBE_ENABLED !== "true") {
+        return json(response, 503, { error: "Private official-source review has not been activated." });
+      }
+      json(response, 200, await inspectNhsbsaEpdPrivateApi({
+        period: url.searchParams.get("period"),
+        presentationCode: url.searchParams.get("presentationCode"),
+        limit: Number(url.searchParams.get("limit") || 2),
+        serverVerifiedBoardSession: true,
+        privateReviewEnabled: true,
+      }));
+      return;
+    }
+
+    // Non-clinical, board-only research candidate. Separate approved deployment required.
+    if (pathname === "/api/v1/intelligence/visual/readiness" && request.method === "GET") {
+      if (!await rateLimit(request, "clip-visual-readiness", 20, 60 * 1000)) return json(response, 429, { error: "Too many requests." });
+      if (!await scopedAuthentication(request, response, ["board"])) return;
+      return json(response, 200, await probeVisualSearchReadiness());
+    }
+
+    if (pathname === "/api/v1/intelligence/visual/search" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "clip-visual-search", 5, 60 * 1000)) return json(response, 429, { error: "Visual retrieval rate limit reached." });
+      if (!await scopedAuthentication(request, response, ["board"])) return;
+      let body;
+      try { body = JSON.parse((await readRawBody(request, 4096)).toString("utf8")); }
+      catch (error) {
+        if (error.statusCode === 413) throw error;
+        return json(response, 400, { error: "A bounded JSON search request is required." });
+      }
+      return json(response, 200, await searchApprovedVisualCatalogue(body));
+    }
+
+    if (pathname === "/api/v1/intelligence/readiness" && request.method === "GET") {
+      if (!await rateLimit(request, "intelligence-readiness", 30, 60 * 1000)) return json(response, 429, { error: "Too many readiness requests. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await intelligenceReleaseReadiness(enterpriseContext(session)));
+      return;
+    }
+
+    if (["/api/enterprise/medicines/search", "/api/v1/pharmascope/medicines/search", "/api/v1/intelligence/medicines/search"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-search", 120, 60 * 1000)) return json(response, 429, { error: "Too many medicine searches. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -976,11 +1056,12 @@ export async function handleRequest(request, response) {
         url.searchParams.get("q") || "",
         enterpriseContext(session),
         Number(url.searchParams.get("limit") || 30),
+        Number(url.searchParams.get("page") || 1),
       ));
       return;
     }
 
-    if (["/api/enterprise/medicines/analytics", "/api/v1/pharmascope/analytics"].includes(pathname) && request.method === "GET") {
+    if (["/api/enterprise/medicines/analytics", "/api/v1/pharmascope/analytics", "/api/v1/intelligence/markets/observations"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-analytics", 120, 60 * 1000)) return json(response, 429, { error: "Too many analytical requests. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -988,7 +1069,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (["/api/enterprise/medicines/nearby", "/api/v1/pharmascope/geography/nearby"].includes(pathname) && request.method === "GET") {
+    if (["/api/enterprise/medicines/nearby", "/api/v1/pharmascope/geography/nearby", "/api/v1/intelligence/geographies/nearby"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-geography", 120, 60 * 1000)) return json(response, 429, { error: "Too many geography requests. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -996,7 +1077,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    const medicineIdentityMatch = pathname.match(/^\/api\/(?:enterprise\/medicines|v1\/pharmascope\/medicines)\/(medicine-[a-f0-9]{32})$/);
+    const medicineIdentityMatch = pathname.match(/^\/api\/(?:enterprise\/medicines|v1\/pharmascope\/medicines|v1\/intelligence\/medicines)\/(medicine-[a-f0-9]{32})$/);
     if (medicineIdentityMatch && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -1011,6 +1092,26 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/enterprise/wms/pilot-feedback-summary" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, await summariseWmsPilotFeedback(enterpriseContext(session)));
+      return;
+    }
+    if (pathname === "/api/enterprise/wms/pilot-feedback" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, await listWmsPilotFeedback(enterpriseContext(session)));
+      return;
+    }
+    if (pathname === "/api/enterprise/wms/pilot-feedback" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "wms-pilot-feedback", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many feedback updates. Try again later." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 201, { feedback: await submitWmsPilotFeedback(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
     if (pathname === "/api/enterprise/customer/support" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "customer-support", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many support requests. Try again later." });

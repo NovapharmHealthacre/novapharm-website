@@ -2,6 +2,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { company, leadership } from "../src/content/site-content.mjs";
 import { validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
+
+const accountCtaLabel = getPlatformCapabilities(resolvePlatformMode()).accountApplication
+  ? "Apply for a business account" : "Discuss account eligibility";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -41,8 +45,10 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 })[character]);
 
 function globalSection(route) {
-  if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
+  if (route === "/") return "";
+  if (route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
+  if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
   if (route.startsWith("/oncology/")) return "oncology";
   if (route.startsWith("/products/") || route.startsWith("/product-portfolio/")) return "products";
@@ -55,19 +61,20 @@ function globalSection(route) {
 const globalNavigation = [
   ["Company", "/about/", "company"],
   ["Capabilities", "/capabilities/", "capabilities"],
+  ["Distribution", "/distribution/", "distribution"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
   ["NovaPharm Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
-  ["Secure Portal", "/portal/", "portal"]
+  ["Secure Portal", "https://portal.novapharmhealthcare.com/", "portal"]
 ];
 
 // A single category-navigation contract across corporate pages. Navigation
 // remains usable as ordinary links without JavaScript.
 const megaNavigation = {
   company: [
-    ["Explore", [["Company overview", "/about/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Explore", [["Company overview", "/about/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
     ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
     ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
   ],
@@ -76,20 +83,25 @@ const megaNavigation = {
     ["Specialist work", [["Clinical Research & CRO", "/cro/"], ["Oncology", "/oncology/"]]],
     ["Technology", [["NovaPharm Intelligence", "/technology/"], ["Governance", "/about/governance/"]]]
   ],
+  distribution: [
+    ["Explore", [["Distribution overview", "/distribution/"], ["Market access", "/market-access/"], ["International markets", "/markets/"]]],
+    ["Products & pathways", [["Generics, OTC & licensed medicines", "/distribution/#distribution-categories"], ["Oncology & specialist medicines", "/oncology/"], ["Nutraceuticals & medical equipment", "/products/"]]],
+    ["Work with NovaPharm", [["Discuss distribution", "/contact/?enquiry=Distribution"], ["Manufacturer partnerships", "/partner-with-us/"]]]
+  ],
   oncology: [
     ["Explore oncology", [["Oncology overview", "/oncology/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
     ["Our approach", [["Regulatory & Quality", "/regulatory-services/"], ["Sourcing services", "/services/"]]],
     ["Connect", [["Discuss an opportunity", "/contact/?enquiry=Oncology"]]]
   ],
   products: [
-    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["ESCO Anand", "/products/esco/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
     ["Discover", [["Oncology", "/oncology/"], ["Market access", "/services/"]]],
     ["Partner", [["Distribution enquiries", "/contact/?enquiry=Distribution"], ["Business account", "/account-application/"]]]
   ],
   intelligence: [
     ["Explore", [["NovaPharm Intelligence", "/technology/"], ["The Medicines Terminal", "/technology/#intelligence-platform"], ["NOVA & PANDORA", "/technology/#intelligence-ecosystem"]]],
     ["Intelligence workspaces", [["Medicine identity", "/technology/#intelligence-workspaces"], ["Markets & geography", "/technology/#intelligence-platform"], ["Trends & forecasting", "/technology/#intelligence-platform"]]],
-    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"]]]
+    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"], ["Sign in to Intelligence", "https://intelligence.novapharmhealthcare.com/"]]]
   ],
   insights: [
     ["Explore", [["Insights overview", "/news-insights/"], ["Supply-chain traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"]]],
@@ -100,14 +112,19 @@ const megaNavigation = {
 
 function header(route) {
   const current = globalSection(route);
+  // The public homepage retains concise navigation but must never hide the
+  // explicit secure portal entry. Insights remains available through site links.
+  const headerLinks = route === "/"
+    ? globalNavigation.filter(([, href]) => href !== "/news-insights/")
+    : globalNavigation;
   return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
-        <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
+        <picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
+        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${route === "/" && href === "/technology/" ? "Intelligence" : label}</a>`).join("")}
       </nav>
     </div>
     ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
@@ -122,10 +139,10 @@ function footer() {
           <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
-        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
-        <div><h2>Capabilities</h2><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
-        <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
-        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="/portal/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
+        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
+        <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
+        <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
+        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       <div class="npd-footer-notices">
@@ -147,7 +164,7 @@ const localFamilies = {
     ["Clinical Research & CRO", "/cro/"], ["Technology", "/technology/"]
   ],
   products: [
-    ["Overview", "/products/"], ["Nutraxin", "/products/nutraxin/"],
+    ["Overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["ESCO Anand", "/products/esco/"],
     ["Strategic Pharmaceutical Portfolio", "/products/strategic-portfolio/"]
   ]
 };
@@ -190,29 +207,26 @@ function responsiveImage(base, alt, options = {}) {
 
 function productPicture(product, eager = false, sizes = "(max-width: 720px) 84vw, 28vw") {
   const base = `/assets/media/products/nutraxin/${product.imageBase}`;
-  return `<picture class="npd-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const width = product.imageBase === "collagen-gold-30-tablets" ? 980 : 700;
+  const height = product.imageBase === "collagen-gold-30-tablets" ? 654 : 700;
+  return `<picture class="npd-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="${width}" height="${height}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function homeMain() {
   const featured = [products[0], products[4], products[13]];
   return `<main id="main" class="npd-main npd-home npd-apple-home">
-    <section class="npd-apple-hero" aria-labelledby="home-title">
-      <div class="container npd-apple-hero-inner">
-        <div class="npd-apple-hero-copy">
-          <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
-          <h1 id="home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br><span>Where it needs to be.</span></h1>
-          <p class="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
-          <div class="npd-apple-actions">
-            <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
-            <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
-          </div>
 
+    <section class="npd-apple-hero nph-earth-hero" aria-labelledby="home-title">
+      <div class="container nph-earth-hero-content">
+        <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
+        <h1 id="home-title">Medicine. Where it needs to be.</h1>
+        <p class="npd-apple-lead">A better way to understand, access and move medicine.</p>
+        <div class="npd-apple-actions">
+          <a class="nph-earth-primary" href="/about/">Explore NovaPharm <span aria-hidden="true">›</span></a>
+          <a class="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
         </div>
-        <figure class="npd-apple-hero-art">
-          <picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width="1672" height="941" fetchpriority="high" decoding="async"></picture>
-
-        </figure>
       </div>
+      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-reference-1400.jpg" alt="" width="1400" height="305" fetchpriority="high" decoding="async">
     </section>
     <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
       <div class="container npd-apple-center">
@@ -359,12 +373,31 @@ function croMain() {
 
 function oncologyMain() {
   return `<main id="main" class="npd-main npoc-page">
-  <nav class="npoc-subnav" aria-label="Oncology page sections"><div class="container"><strong>Oncology</strong><div><a href="#approach">Approach</a><a href="#evidence">Evidence</a><a href="#programmes">Programmes</a><a href="#governance">Governance</a><a href="#oncology-enquiry">Partner with us</a></div></div></nav>
-  <section class="npoc-hero" aria-labelledby="npoc-title">
-    <div class="npoc-hero-visual" aria-hidden="true"><picture><source srcset="/assets/media/products/oncology-vial-handling-960.avif 960w, /assets/media/products/oncology-vial-handling.avif 1600w" sizes="(max-width: 760px) 100vw, 65vw" type="image/avif"><source srcset="/assets/media/products/oncology-vial-handling-960.webp 960w, /assets/media/products/oncology-vial-handling.webp 1600w" sizes="(max-width: 760px) 100vw, 65vw" type="image/webp"><img src="/assets/media/products/oncology-vial-handling.jpg" srcset="/assets/media/products/oncology-vial-handling-960.jpg 960w, /assets/media/products/oncology-vial-handling.jpg 1600w" sizes="(max-width: 760px) 100vw, 65vw" alt="" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
+  <section class="npoc-hero npoc-hope-hero" aria-labelledby="npoc-title">
+    <div class="npoc-hero-visual" aria-hidden="true"><img src="/assets/media/oncology/hope-tomorrow-portrait.jpg" alt="" width="890" height="550" fetchpriority="high" decoding="async"></div>
     <div class="npoc-hero-shade" aria-hidden="true"></div>
-    <div class="container npoc-hero-content"><div class="npoc-hero-copy"><p class="npoc-eyebrow">NOVAPHARM / ONCOLOGY</p><h1 id="npoc-title">Oncology demands<br>more than supply.</h1><p class="npoc-hero-lead">Product identity. Qualified sourcing. Regulatory readiness.</p><p class="npoc-hero-detail">An evidence-led approach to evaluating specialist-medicine opportunities, built around the details that matter.</p><div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="/contact/?enquiry=Oncology%20%26%20specialist%20medicines">Discuss a partnership</a><a class="npoc-button npoc-button-light" href="#approach">Explore our approach</a></div></div></div>
-    <p class="npoc-image-note">Representative scientific photography. No NovaPharm product, facility or active oncology programme is depicted.</p>
+    <div class="container npoc-hero-content"><div class="npoc-hero-copy">
+      <p class="npoc-eyebrow">ONCOLOGY</p>
+      <h1 id="npoc-title">A Hope for<br>Tomorrow.</h1>
+      <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to patients. A more hopeful future.</p>
+      <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore Our Oncology Portfolio</a></div>
+    </div></div>
+  </section>
+  <section class="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
+    <div class="container npoc-focus-layout">
+      <div class="npoc-focus-copy">
+        <p class="npoc-eyebrow">OUR ONCOLOGY PORTFOLIO</p>
+        <h2 id="npoc-focus-title">Selected Therapies.<br>Real Impact.</h2>
+        <p>A growing portfolio of oncology medicines, built to improve access, expand treatment options and support better outcomes.</p>
+        <a class="npoc-focus-link" href="/products/strategic-portfolio/">Explore the Portfolio</a>
+      </div>
+      <div class="npoc-focus-cards" aria-label="Oncology portfolio areas of interest">
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities"><img src="/assets/media/oncology/solid-tumours.jpg" alt="" width="325" height="237" loading="lazy" decoding="async"><span>Solid tumours</span></a>
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20haematological%20cancers" aria-label="Discuss haematological cancer opportunities"><img src="/assets/media/oncology/haematological-cancers.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Haematological cancers</span></a>
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20supportive%20care" aria-label="Discuss supportive care opportunities"><img src="/assets/media/oncology/supportive-care.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Supportive care</span></a>
+      </div>
+    </div>
+    <p class="container npoc-focus-disclosure">Illustrative programme categories only. No oncology medicine is represented as approved, stocked or available from NovaPharm.</p>
   </section>
   <aside class="npoc-status" id="scope-boundary" aria-label="Current oncology scope"><div class="container"><strong>Strategic B2B focus</strong><p>Regulated wholesale supply has not commenced. Oncology products are not presented as approved, stocked or available from NovaPharm. All activity remains subject to relevant authorisations and applicable controls.</p><a href="#oncology-faqs">Read our current scope</a></div></aside>
   <section class="npoc-section npoc-introduction" id="approach" aria-labelledby="npoc-approach-title"><div class="container npoc-narrow"><p class="npoc-eyebrow">THE PRINCIPLE</p><h2 id="npoc-approach-title">Every detail<br>matters.</h2><p class="npoc-intro-lead">A medicine is more than its name. Its identity, evidence, source, handling and accountable decisions must remain connected through every hand-off.</p><p class="npoc-intro-support">Commercial interest opens a question. It does not establish a right to supply, the quality of the evidence or readiness for regulated activity.</p></div></section>
@@ -390,12 +423,12 @@ function oncologyMain() {
 <details><summary>What does oncology continuity mean here?</summary><p>It means connecting product identity, evidence, source, condition, demand assumptions and accountable decisions so gaps are visible before supply or release decisions. It is a governance framework, not a guarantee of availability.</p></details>
 <details><summary>Does NovaPharm operate its own cold chain, laboratory or manufacturing site?</summary><p>No such ownership is claimed. Product-specific manufacture, testing, release, storage and transport would require appropriately qualified and authorised organisations with explicit responsibilities and evidence.</p></details>
 <details><summary>How can a product owner or qualified partner begin a discussion?</summary><p>Start with a non-confidential description of the opportunity through the business enquiry route. Do not send patient information, adverse-event reports, urgent medical details or a confidential dossier through the public contact page.</p></details></div></div></section>
-  <section class="npoc-section npoc-enquiry" id="oncology-enquiry" aria-labelledby="npoc-enquiry-title"><div class="container npoc-narrow"><p class="npoc-eyebrow">QUALIFIED COLLABORATION</p><h2 id="npoc-enquiry-title">The next conversation starts here.</h2><p>Product and dossier owners, qualified manufacturers, CMO/CDMOs, authorised supply partners and specialist providers can begin with a non-confidential opportunity summary.</p><div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="/contact/?enquiry=Oncology%20%26%20specialist%20medicines">Start a partnership enquiry</a><a class="npoc-button npoc-button-outline" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Oncology%20Partnership%20Enquiry">Email our team</a></div><p class="npoc-enquiry-note">The contact page prepares an email draft; it does not submit or store enquiries. Sending and delivery occur in your email application. Do not send confidential dossiers, patient-identifiable information, adverse-event reports or urgent medical information through this route.</p></div></section>
+  <section class="npoc-section npoc-enquiry" id="oncology-enquiry" aria-labelledby="npoc-enquiry-title"><div class="container npoc-narrow"><p class="npoc-eyebrow">QUALIFIED COLLABORATION</p><h2 id="npoc-enquiry-title">The next conversation starts here.</h2><p>Product and dossier owners, qualified manufacturers, CMO/CDMOs, authorised supply partners and specialist providers can begin with a non-confidential opportunity summary.</p><div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="/contact/?enquiry=Oncology%20%26%20specialist%20medicines">Start a partnership enquiry</a><a class="npoc-button npoc-button-outline" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Oncology%20Partnership%20Enquiry">Email our team</a></div><p class="npoc-enquiry-note">Use the Contact page for a non-confidential business enquiry, or email our team directly. Submission and receipt handling are explained on the Contact page. Do not send confidential dossiers, patient-identifiable information, adverse-event reports or urgent medical information through either route.</p></div></section>
 </main>`;
 }
 
 function productsMain() {
-  return `<main id="main" class="npd-main">${hero({ route: "/products/", family: "products", eyebrow: "Products", title: "Two portfolios. Two different decisions.", lead: "Nutraxin is presented as a verified catalogue-reference experience. The strategic pharmaceutical portfolio describes non-commerce opportunity priorities. Neither is a statement of current stock or permission to supply." })}
+  return `<main id="main" class="npd-main">${hero({ route: "/products/", family: "products", eyebrow: "Products", title: "Three collections. Distinct decisions.", lead: "Explore Nutraxin wellness, ESCO Anand healthcare equipment, and our strategic pharmaceutical priorities. Product-specific availability, pricing and UK regulatory permission are assessed independently." })}
   <section class="npd-section npd-product-feature" id="food-supplement-portfolio-review" data-portfolio-priority="first"><div class="container npd-products-lead"><div>${sectionIntro("Nutraxin UK catalogue reference", "Food Supplement Portfolio Review", "Nineteen owner-supplied catalogue records are available for qualified B2B review with approved pack imagery and source-transcribed composition. Availability, price, stock, claims and regulatory acceptance are not asserted.")}<dl class="npd-inline-facts"><div><dt>References</dt><dd>19</dd></div><div><dt>Classification</dt><dd>Food supplements</dd></div><div><dt>Last reviewed</dt><dd>22 August 2026</dd></div></dl>${actions("Review the food supplement portfolio", "/products/nutraxin/", "Discuss a distribution opportunity", "/contact/?enquiry=Product%20opportunity")}</div>${productPicture(products[0], true, "(max-width: 720px) 84vw, 420px")}</div></section>
   <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Strategic pharmaceutical portfolio", "Opportunity priorities, not a public product catalogue.", "Selected oncology, specialty, oral-liquid, generics and hard-to-source categories are assessed product by product. Rights, source, evidence, regulatory route, quality and commercial viability must be established separately.")}${actions("Review the strategic portfolio", "/products/strategic-portfolio/")}</div>${responsiveImage("/assets/media/modules/product-portfolio-evidence", "Team reviewing pharmaceutical portfolio evidence", )}</div></section>
   <section class="npd-section npd-section-soft"><div class="container">${sectionIntro("Product governance", "Visibility is not release.", "Every substantive product statement remains subject to the Claims Registry and its underlying evidence.")}<ol class="npd-horizontal-steps"><li><span>01</span><strong>Identity</strong></li><li><span>02</span><strong>Rights</strong></li><li><span>03</span><strong>Source</strong></li><li><span>04</span><strong>Regulatory scope</strong></li><li><span>05</span><strong>Quality and release</strong></li></ol></div></section></main>`;
@@ -415,9 +448,49 @@ function nutraxinMain() {
   return rendered;
 }
 
+function nutraxinBagMain() {
+  // Authoritative public Bag markup. Keep in sync with the commerce release test.
+  return `<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>
+    <p class="nx-shop-eyebrow">NUTRAXIN / YOUR BAG</p>
+    <h1>Your Bag.</h1>
+    <p class="nx-shop-intro">One simple checkout. Review your selection, enter your details, pay securely and receive your order confirmation.</p>
+    <nav class="nx-purchase-progress" aria-label="Order journey">
+      <ol>
+        <li class="is-current" aria-current="step"><span>01</span><strong>Your Bag</strong></li>
+        <li><span>02</span><strong>Details</strong></li>
+        <li><span>03</span><strong>Payment</strong></li>
+        <li><span>04</span><strong>Confirmation</strong></li>
+      </ol>
+    </nav>
+    <div class="nx-checkout-identity" aria-labelledby="nx-checkout-identity-title">
+      <div><p class="nx-shop-eyebrow">YOUR CHECKOUT</p><h2 id="nx-checkout-identity-title">Simple from start to finish.</h2><p>You can complete your purchase as a guest. Your email and UK delivery address are collected securely during checkout, without a separate business portal.</p></div>
+      <div class="nx-checkout-identity-meta"><strong>Guest checkout available</strong><span><a href="/products/nutraxin/account/">Sign in or create your Nutraxin account</a>. Account access activates only after verified email and production security checks.</span></div>
+    </div>
+    <div class="nx-bag-grid">
+      <section aria-label="Items in your bag"><div data-nx-bag-items><p class="nx-bag-empty">Loading your saved selections...</p></div><a href="/products/nutraxin/" class="nx-shop-link">Continue shopping</a></section>
+      <aside class="nx-bag-summary" aria-label="Order summary"><h2>Bag summary</h2><dl>
+        <div><dt>Products</dt><dd data-nx-bag-subtotal>Pending</dd></div>
+        <div><dt>Delivery</dt><dd data-nx-bag-delivery>Included · UK</dd></div>
+        <div><dt>Taxes</dt><dd data-nx-bag-tax>20% VAT included</dd></div>
+        <div class="nx-bag-total"><dt>Estimated total</dt><dd data-nx-bag-total>Calculating…</dd></div>
+      </dl><label class="nx-store-consumer-terms"><input type="checkbox" data-nx-consumer-terms><span>I accept the <a href="/legal/terms/#nutraxin-consumer-sales">Nutraxin consumer shopping terms and rights</a> and understand these supplements are fulfilled by the manufacturer, not reserved as warehouse stock. I acknowledge the stated delivery expectation may be up to 30 days.</span></label><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Continue to secure checkout</button>
+      <p class="nx-store-note" role="status" data-nx-checkout-note>Your final amount is recalculated by NovaPharm’s server. Stripe securely handles your payment details.</p>
+      <a class="nx-shop-link" href="/products/nutraxin/">Back to products</a></aside>
+    </div>
+  </main>`;
+}
+
+function nutraxinOrderRequestMain() {
+  const lines = products.map((product) => `<div class="nx-order-line" data-nutraxin-line="${esc(product.sku)}"><label for="nx-qty-${esc(product.sku)}"><span class="nx-order-name">${esc(product.name)}</span><span class="nx-order-pack">${esc(product.packSize)}</span></label><input id="nx-qty-${esc(product.sku)}" type="number" min="0" max="10000" step="1" value="0" inputmode="numeric" aria-label="Requested units: ${esc(product.name)}"></div>`).join("");
+  return `<main id="main" class="npd-main nx-order">${localNavigation("products", "/products/nutraxin/order-request/")}<section class="nx-order-wrap"><p class="nx-order-eyebrow">NUTRAXIN / QUALIFIED BUSINESS ACCOUNTS</p><h1>Prepare your order request.</h1><p class="nx-order-lead">Select the Nutraxin products and quantities you would like NovaPharm to quote.</p><p class="nx-order-disclosure">This is a non-binding request for a quotation, not a purchase or accepted order. Product availability, customer qualification, compliance, prices, delivery and any applicable VAT must be confirmed by NovaPharm before an order can be accepted. No payment is requested.</p><form data-nutraxin-order-request><div class="nx-order-tablehead"><span>Product reference</span><span>Units requested</span></div>${lines}<p class="nx-order-fineprint">Continue to the secure business enquiry form to provide your company details and submit this request. No financial information is collected here.</p><div class="nx-order-actions"><button type="submit" class="nx-order-submit">Continue to business enquiry</button><a class="nx-order-back" href="/products/nutraxin/">Return to collection</a></div><p class="nx-order-feedback" role="status" aria-live="polite" data-nutraxin-order-feedback>Select a product and enter a quantity to prepare your enquiry.</p><noscript><p>To request a quotation without JavaScript, <a href="/contact/?enquiry=Pharmacy%20or%20wholesaler%20account">contact our business team</a> with the requested products and quantities.</p></noscript></form></section></main>`;
+}
+
 function nutraxinProductMain(product) {
   const evidence = product.notes?.length ? "Composition review required" : "Catalogue transcription reviewed";
-  return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}<div class="npd-publisher-action">${nutraxinOfficialReference(product.slug)}<p>External publisher information. Pack details, claims and availability require separate verification.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.")}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
+  const compositionNote = (product.notes ?? []).some((note) => note.includes("publisher"))
+    ? "The values below use current Nutraxin UK publisher corrections where expressly noted. The exact approved physical-pack label remains unverified."
+    : "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.";
+  return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Request business ordering access", `/contact/?enquiry=Pharmacy%20or%20wholesaler%20account&product=${encodeURIComponent(product.name)}&sku=${encodeURIComponent(product.sku)}`, "Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}<p class="npd-product-order-request"><a href="/products/nutraxin/order-request/?sku=${encodeURIComponent(product.sku)}">Select quantity for a business order request</a></p><div class="npd-publisher-action">${nutraxinOfficialReference(product.slug)}<p>External publisher information. Pack details, claims and availability require separate verification.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", compositionNote)}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
 }
 
 function strategicPortfolioMain() {
@@ -502,7 +575,7 @@ function accountMain(existingHtml) {
   const managedStatus = existingHtml.match(/<div class="alert application-status"[\s\S]*?<\/div>/)?.[0] || "";
   const control = managedForm && managedStatus ? `<div class="npd-managed-control">${managedForm}${managedStatus}</div>` : `<div class="npd-managed-control">${notice("information", "Managed application required", "This public information release does not accept account applications or business documents. No application data is collected here. The workflow remains unavailable until secure managed storage, identity, review and monitoring are verified.")}${verifiedEmailFallback({ subject: "NovaPharm business account eligibility", label: "Discuss account eligibility", context: "You may email a non-confidential expression of business interest to vishal@novapharmhealthcare.com. Do not attach licences, dossiers, identity records or other confidential evidence." })}</div>`;
   const stages = ["Business interest", "Initial qualification", "Application invitation", "Company information", "Regulatory and quality evidence", "Controlled document review", "Credit and commercial review", "Approval decision", "Identity provisioning", "Portal access and ongoing review"];
-  return `<main id="main" class="npd-main">${hero({ route: "/account-application/", eyebrow: "Business account", title: "An account is approved through evidence, not created by a public form.", lead: "NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access." })}<section class="npd-section"><div class="container npd-account-layout"><div>${sectionIntro("Governed lifecycle", "Ten distinct stages from interest to controlled access.")}<ol class="npd-account-stages">${stages.map((stage, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${stage}</strong></li>`).join("")}</ol>${notice("regulatory", "Account status", "An enquiry or application does not create an approved trading account, confirm product availability, establish credit terms or permit regulated supply.")}</div>${control}</div></section></main>`;
+  return `<main id="main" class="npd-main">${hero({ route: "/account-application/", eyebrow: "Business account", title: "An account is approved through evidence, not created by a public form.", lead: "NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access." })}<section class="npd-section"><div class="container npd-account-layout"><div>${sectionIntro("Governed lifecycle", "Ten distinct stages from interest to controlled access.")}<ol class="npd-account-stages">${stages.map((stage, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${stage}</strong></li>`).join("")}</ol><details class="npd-account-guidance"><summary>What happens after I express business interest?</summary><div><p>Public browsing does not require an account. A non-confidential enquiry is reviewed for eligibility before NovaPharm issues a separate, controlled application invitation; it does not create a password, regulated account or permission to order medicines.</p><p>Private identity documents, regulatory evidence and contracts must only be supplied through an authorised secure workflow. The managed application is not active on this public page.</p><p><a href="/trust-centre/">Security and trust</a> · <a href="/legal/privacy/#business-enquiries">Business enquiry privacy</a></p></div></details>${notice("regulatory", "Account status", "An enquiry or application does not create an approved trading account, confirm product availability, establish credit terms or permit regulated supply.")}</div>${control}</div></section></main>`;
 }
 
 function replaceMain(html, main) {
@@ -513,7 +586,7 @@ function replaceMain(html, main) {
 
 function replaceChrome(html, route) {
   html = html.replace(/<header\s+class="site-header(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/header>/, header(route));
-  html = html.replace(/<footer class="site-footer"[\s\S]*?<\/footer>/, footer());
+  html = html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());
   html = html.replace(/<body([^>]*)>/, (_match, attributes) => {
     const governedAttributes = attributes
       .replace(/\sdata-family="[^"]*"/g, "")
@@ -547,6 +620,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
   let html = template ?? read(relative);
   if (route !== "/") {
     html = html.replace(/\s*<link rel="preload" as="image" href="\/assets\/media\/home\/supply-network-hero\.avif"[^>]*>\n?/g, "\n");
+  } else {
+    // Do not preload the retired supply-network illustration on the homepage.
+    html = html.replace(/href="\/assets\/media\/home\/supply-network-hero\.avif"/g, 'href="/assets/media/home/earth-reference-1400.jpg"');
   }
   html = replaceMain(html, main);
   html = replaceChrome(html, route);
@@ -574,6 +650,19 @@ function materialize(relative, route, main, metadata = null, template = null) {
     if (!html.includes('href="/assets/css/oncology-editorial.css"')) {
       html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
     }
+    // The owner-approved white visual system must load after the legacy dark Oncology CSS.
+    // Unique filename prevents browsers from reusing the old cached presentation.
+    if (!html.includes('href="/assets/css/oncology-hope-v2.css"')) {
+      html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-hope-v2.css">\n</head>');
+    }
+    html = html.replace(
+      '<link rel="preload" as="image" href="/assets/media/products/oncology-vial-handling.avif" type="image/avif" fetchpriority="high">',
+      '<link rel="preload" as="image" href="/assets/media/oncology/hope-tomorrow-portrait.jpg" type="image/jpeg" fetchpriority="high">'
+    );
+  }
+  if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
+    html = html.replace("</body>", '  <script type="module" src="/assets/js/nutraxin-order-request.js"></script></body>');
   }
   if (route === "/products/nutraxin/" && !html.includes('href="/assets/css/nutraxin-lineup.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-lineup.css">\n</head>');
@@ -583,6 +672,18 @@ function materialize(relative, route, main, metadata = null, template = null) {
   }
   if (route === "/technology/" && !html.includes('src="/assets/js/medicines-terminal-preview.js"')) {
     html = html.replace("</body>", '<script src="/assets/js/medicines-terminal-preview.js" defer></script></body>');
+  }
+  if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-research-launcher.js"')) {
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-research-launcher.js" defer></script></body>');
+  }
+  if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-live-research.js"')) {
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-live-research.js" defer></script></body>');
+  }
+  if (route === "/technology/") {
+    // Publish one versioned pricing script, even across successive rebuilds.
+    // Old cached JS does not know about the inline-hidden annual CTA.
+    html = html.replace(/<script src="\/assets\/js\/intelligence-pricing\.js(?:\?[^"]*)?" defer><\/script>/g, "");
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1" defer></script></body>');
   }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
@@ -607,12 +708,22 @@ materialize("regulatory-services/index.html", "/regulatory-services/", regulator
 materialize("cro/index.html", "/cro/", croMain());
 materialize("oncology/index.html", "/oncology/", oncologyMain());
 materialize("products/index.html", "/products/", productsMain(), {
-  title: "Products | NovaPharm Healthcare",
-  description: "Review NovaPharm's Nutraxin food supplement catalogue reference and non-commerce strategic pharmaceutical opportunity portfolio."
+  title: "Products | Nutraxin & Pharmaceutical Portfolio | NovaPharm",
+  description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
-  title: "Nutraxin Collection | Explore the Product Range | NovaPharm",
-  description: "Discover Nutraxin's 19 owner-supplied product references across six ranges, with original pack imagery and product details for qualified B2B catalogue evaluation."
+  title: "Nutraxin UK Supplements | Explore 19 Products | NovaPharm",
+  description: "Discover 19 Nutraxin food supplements across six ranges. Explore original pack images, clear product details and build your Bag on the NovaPharm website."
+}, nutraxinTemplate);
+materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutraxinBagMain(), {
+  title: "Your Bag | Nutraxin | NovaPharm Healthcare",
+  description: "Review your Nutraxin Bag, quantities, VAT and delivery information before choosing the next checkout step.",
+  robots: "noindex, follow"
+}, nutraxinTemplate);
+materialize("products/nutraxin/order-request/index.html", "/products/nutraxin/order-request/", nutraxinOrderRequestMain(), {
+  title: "Nutraxin Business Order Request | NovaPharm Healthcare",
+  description: "Prepare a product and quantity request for a non-binding NovaPharm Nutraxin business quotation. No prices, stock or orders are guaranteed.",
+  robots: "noindex, follow"
 }, nutraxinTemplate);
 materialize("products/strategic-portfolio/index.html", "/products/strategic-portfolio/", strategicPortfolioMain(), {
   title: "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
@@ -623,7 +734,7 @@ materialize("technology/index.html", "/technology/", technologyMain());
 materialize("news-insights/index.html", "/news-insights/", insightsMain());
 materialize("contact/index.html", "/contact/", contactMain(contactTemplate));
 materialize("account-application/index.html", "/account-application/", accountMain(accountTemplate), {
-  title: "Open a Business Account | NovaPharm Healthcare",
+  title: "Register business interest | NovaPharm Healthcare",
   description: "Review NovaPharm's controlled B2B account pathway from non-confidential interest through qualification, private evidence, approval, identity provisioning and portal access.",
   robots: "noindex, follow"
 });
@@ -669,6 +780,11 @@ const otherChromeRoutes = [
   ["legal/modern-slavery/index.html", "/legal/modern-slavery/"], ["legal/environment-carbon/index.html", "/legal/environment-carbon/"],
   ["portal/index.html", "/portal/"]
 ];
+// Article generation precedes this pass; maintain the same semantic header,
+// mobile navigation and keyboard-accessible footer on every Insights article.
+for (const article of articles) {
+  otherChromeRoutes.push([`news-insights/${article.slug}/index.html`, `/news-insights/${article.slug}/`]);
+}
 for (const [relative, route] of otherChromeRoutes) {
   if (existsSync(join(root, relative))) write(relative, replaceChrome(read(relative), route));
 }
@@ -683,7 +799,7 @@ for (const relative of [
   "index.html", "about/index.html", "capabilities/index.html", "services/index.html", "regulatory-services/index.html",
   "cro/index.html", "oncology/index.html", "products/index.html", "products/nutraxin/index.html",
   "products/strategic-portfolio/index.html", "partner-with-us/index.html", "technology/index.html", "news-insights/index.html",
-  "contact/index.html", "account-application/index.html"
+  "contact/index.html", "account-application/index.html", "products/nutraxin/order-request/index.html", "products/nutraxin/bag/index.html"
 ]) {
   const html = read(relative);
   if (/<svg\b/i.test(html)) throw new Error(`Corporate product-discipline route contains an inline SVG illustration: ${relative}`);

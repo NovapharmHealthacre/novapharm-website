@@ -17,6 +17,7 @@ assert.deepEqual(files, [
 	"008_source_period_governance.sql",
 	"009_authoritative_bulk_observations.sql",
 	"010_source_scoped_medicine_marts.sql",
+	"011_distribution_pilot_feedback.sql",
 ]);
 
 const sources = Object.fromEntries(
@@ -222,6 +223,15 @@ for (const requiredControl of [
 		`Enterprise migration is missing required control ${requiredControl}.`,
 	);
 }
+
+// Private WMS UAT feedback must have its own bounded, versioned SQL schema.
+const pilotFeedback = sources["011_distribution_pilot_feedback.sql"];
+for (const column of ["tester_username", "workspace_code", "result", "feedback_note", "updated_at"]) {
+	assert.match(pilotFeedback, new RegExp(column, "i"), `Private pilot schema is missing ${column}.`);
+}
+assert.match(pilotFeedback, /UNIQUE\s*\(tester_username,\s*workspace_code\)/i);
+assert.match(pilotFeedback, /CHECK\s*\(result\s+IN\s*\(/i);
+assert.doesNotMatch(pilotFeedback, /\b(?:DROP|DELETE|UPDATE)\s+(?:inventory|orders|shipments)\b/i);
 
 console.log(
 	`Azure SQL migration structure validated: ${files.length} ordered migrations, enterprise domain tables, activation controls, 9 reporting views and least-privilege reporting grants.`,
