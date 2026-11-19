@@ -12,7 +12,7 @@ type GeoPoint = Readonly<{ latitude: number; longitude: number; title: string; k
 type MapOrigin = Readonly<{ postcode: string; latitude: number; longitude: number }>;
 type MapKitNamespace = Readonly<{
   Coordinate: new (latitude: number, longitude: number) => unknown;
-  Map: new (container: HTMLElement, options: { center: unknown; cameraDistance: number; showsUserLocation: boolean }) => {
+  Map: new (container: HTMLElement, options: { center: unknown; cameraDistance: number; showsUserLocation: boolean; showsUserLocationControl: boolean }) => {
     addAnnotation(annotation: unknown): void;
     destroy?: () => void;
   };
@@ -73,7 +73,8 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         map = new kit.Map(mapElement.current, {
           center: new kit.Coordinate(lat, lon),
           cameraDistance: Math.max(1200, Math.min(40000, radiusKm * 2700)),
-          showsUserLocation: false
+          showsUserLocation: false,
+          showsUserLocationControl: false
         });
         map.addAnnotation(new kit.MarkerAnnotation(new kit.Coordinate(lat, lon), {
           title: `Postcode centroid: ${origin.postcode}`, color: "#1D1D1F", glyphText: "C"
@@ -103,7 +104,7 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         // MapKit JS supports nonce-based CSP; read only the non-secret page nonce.
         script.nonce = document.querySelector<HTMLScriptElement>("script[nonce]")?.nonce ?? "";
         script.dataset["callback"] = "__novaGovernedMapsReady";
-        script.dataset["libraries"] = "map,annotations";
+        script.dataset["libraries"] = "full-map";
         script.dataset["token"] = token;
         script.onerror = () => { if (!cancelled) setStatus("Apple Maps could not load. Use the evidence tables instead."); };
         document.head.appendChild(script);
