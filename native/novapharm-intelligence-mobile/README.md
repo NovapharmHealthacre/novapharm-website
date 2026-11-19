@@ -7,7 +7,7 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 ## On a developer machine
 
 1. Install Node 22.13+ and an Android/iOS build environment as appropriate.
-2. From this directory run npm install, then npx expo install --check. Resolve any version mismatch before continuing. Do not use the root npm/pnpm install to bootstrap this isolated app.
+2. Until the standalone lockfile is committed, use `npm install --package-lock-only --ignore-scripts --no-audit --no-fund` followed by `npm ci --ignore-scripts --no-audit --no-fund` and `npx expo install --check`. Review the resolved package-lock.json and compatibility findings before committing it. Once committed, use `npm ci` instead of `npm install`. Do not bootstrap this isolated app with the root npm/pnpm install.
 3. Run npm run typecheck and npm run test:contracts.
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
@@ -88,3 +88,11 @@ The Inspect tab includes an explicitly labelled, user-initiated, locally compute
 The same shared country catalogue now carries a separate `publisherResearchLead` **reference only** for each of the 24 additional geography-only national scopes. Both the protected web country view and the offline Expo Countries tab display the publisher name and why further verification is required. This is not a new source candidate, verified API, commercial reuse licence, medical dataset, national availability record or protected customer feed.
 
 The immutable research references are in `docs/intelligence/country-101-new-24-publisher-research-20261118.json`; their exact country-to-ISO mapping, zero live/rights flags and web/iOS/Android parity are enforced by `scripts/test-intelligence-24-publisher-research.mjs`. No regulator HTTP requests, cookies or authentication are initiated by the Expo app; linking through external source pages in the web UI is ordinary user-directed browsing only. Each country's production ingestion still requires separate legal and technical approval.
+
+## Dependency lockfile CI handoff — 19 November 2026
+
+The mobile CI workflow first generates an isolated `package-lock.json` candidate using npm on Node 24, stores that **candidate** as a seven-day GitHub Actions artifact, then runs a clean `npm ci --ignore-scripts` installation, TypeScript checks and independent offline iOS/Android JavaScript bundle exports. No authentication data, patient data, model weights, app-store identifiers or signing credentials are generated.
+
+**This does not yet make mobile builds reproducible.** A reviewer must retrieve the workflow artifact for the exact PR head, review the dependency graph, licences and transitive advisories, ensure Expo SDK 58 compatibility, and then commit the reviewed lockfile to `native/novapharm-intelligence-mobile/package-lock.json`. Only after that should CI be hardened to run `npm ci` against the checked-in file without generating it dynamically. Exact-head CI must pass again after the lockfile commit. This process remains source-only, not an installed app or TestFlight/Google Play release.
+
+The external npm registry was unavailable from the authoring environment when preparing this handoff, so no resolved dependency versions or lockfile bytes are fabricated in GitHub source. Do not replace this with a hand-written lockfile.
