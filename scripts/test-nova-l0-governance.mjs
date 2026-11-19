@@ -69,9 +69,13 @@ test("Swift and Android research adapters share the same release-denial and sche
   assert.match(file("native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt"), /candidate\.copy\(productionApproved = true\)/);
 });
 
-test("protected Nova ML catalogue acknowledges research, without adding a fifth module or claiming live capability", () => {
+test("protected Nova ML catalogue keeps four original modules plus one gated microscope, without claiming live capability", () => {
   const catalogue = file("apps/portal/data/nova-ml-modules.ts");
-  assert.equal([...catalogue.matchAll(/slug: "(nova-[a-z-]+)"/g)].length, 4);
+  assert.deepEqual([...catalogue.matchAll(/slug: "(nova-[a-z-]+)"/g)].map(x => x[1]), [
+    "nova-ml-studio", "nova-core-runtime", "nova-device-intelligence",
+    "nova-generative-assist", "nova-model-microscope"
+  ]);
+  assert.match(catalogue, /modelMicroscopeInspectionStages/);
   assert.match(catalogue, /Research-only L0 hard-concrete feature gates/);
   assert.doesNotMatch(catalogue, /productionApproved: true|customerVisible: true/);
   const guidance = file("docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md");

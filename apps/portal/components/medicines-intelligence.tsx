@@ -208,7 +208,7 @@ const navigationGroups = [
     label: group,
     items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
   })),
-  { label: "Nova ML · Apple companion", items: novaMlWorkspaceCatalogue.map((module) => [module.slug, module.title, `${novaMlBaseRoute}${module.slug}/`] as const) },
+  { label: "Nova ML & interpretability", items: novaMlWorkspaceCatalogue.map((module) => [module.slug, module.title, `${novaMlBaseRoute}${module.slug}/`] as const) },
   { label: "Scientific research", items: [["science-lab", "Science research", `${baseRoute}science-lab/`] as const] },
 ];
 

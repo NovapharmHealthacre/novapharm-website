@@ -1002,3 +1002,37 @@ test("science and secondary-source Bash classifier arms are syntactically closed
     }
   }
 });
+
+test("source-only Model Microscope paths never trigger unrelated AWS contact or public Pages release", () => {
+  const sourceOnly = [
+    ".github/workflows/intelligence-model-microscope.yml",
+    "docs/ai-model-licence-review.md",
+    "docs/intelligence/model-microscope-inspection-v1.schema.json",
+    "docs/intelligence/model-microscope-research-to-product-20261118.md",
+    "native/novapharm-intelligence-mobile/metro.config.cjs",
+    "native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs",
+    "scripts/test-nova-model-microscope-end-to-end.mjs",
+    "scripts/test-nova-model-microscope-signed-evidence.mjs",
+    "scripts/test-nova-model-microscope-synthetic-reference.mjs",
+    "scripts/test-nova-model-microscope.mjs",
+    "src/core/ai/model-microscope-signed-evidence.mjs",
+    "src/core/ai/model-microscope-synthetic-reference.d.mts",
+    "src/core/ai/model-microscope-synthetic-reference.mjs",
+    "src/core/ai/model-microscope.mjs"
+];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const contents = readFileSync(new URL("../.github/workflows/" + workflow, import.meta.url), "utf8");
+    const caseLine = contents.split("\n").find((line) =>
+      line.trim().startsWith("apps/portal/*|"));
+    assert.ok(caseLine, "Private release classifier missing from " + workflow);
+    const cases = caseLine.trim().replace(/\)$/, "").split("|");
+    for (const source of sourceOnly) {
+      assert.ok(cases.includes(source), workflow + " would publish research-only source: " + source);
+    }
+    assert.ok(contents.includes("private_only=false"), "Unexpected source must remain fail-closed: " + workflow);
+    assert.ok(contents.includes("found_ml=true"), "Private files must mark a protected-only change: " + workflow);
+    for (const publicPath of ["assets/js/contact-production.js", "products/nutraxin/checkout.html", "scripts/build-site.mjs"]) {
+      assert.equal(cases.includes(publicPath), false, "Public release must not be suppressed: " + publicPath);
+    }
+  }
+});
