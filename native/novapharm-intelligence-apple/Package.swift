@@ -29,7 +29,8 @@ let package = Package(
                 "NovaResearchAppIntent.swift",
                 "NovaComputePlan.swift",
                 "NovaSparseCircuitReader.swift",
-                "NovaSparseCircuitResearchView.swift"
+                "NovaSparseCircuitResearchView.swift",
+                "NovaMapKitView.swift"
             ]
         ),
         .testTarget(
