@@ -475,6 +475,29 @@ test("Official pharmaceutical publisher probe source-only changes do not dispatc
   }
 });
 
+test("reviewed #856 breadcrumb CSS never silently exempts future public CSS or contact changes", () => {
+  const oldBlob = "35a79b8b0051ac353d98e6f70ae9446d44955b5c";
+  const newBlob = "85ca93d1f501de09e99f4114852daacb4d1b77f1";
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const privateLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(privateLine && privateLine.endsWith(")"));
+    assert.equal(privateLine.indexOf(")"), privateLine.length - 1);
+    const paths = new Set(privateLine.slice(0, -1).split("|"));
+    assert.equal(paths.has("apps/corporate/app/design-system.css"), false,
+      "Future unreviewed CSS changes must use the ordinary public publisher");
+    const cssCase = source.match(/apps\/corporate\/app\/design-system\.css\)\s*\n([\s\S]*?)\n\s*;;/m)?.[1] ?? "";
+    assert.ok(cssCase.includes('HEAD^1:apps/corporate/app/design-system.css'));
+    assert.ok(cssCase.includes('HEAD:apps/corporate/app/design-system.css'));
+    assert.ok(cssCase.includes(oldBlob) && cssCase.includes(newBlob), "Only exact reviewed CSS may be exempt");
+    assert.ok(cssCase.includes("private_only=false"), "CSS hash mismatch must not bypass release");
+    const auditCase = source.match(/\.github\/workflows\/visual-refinement\.yml\|scripts\/audit-website-hig-source\.mjs\|scripts\/test-apple-hig-census\.mjs\)\s*\n([\s\S]*?)\n\s*;;/m)?.[1] ?? "";
+    assert.ok(auditCase.includes("found_ml=true"));
+    assert.equal(paths.has("assets/js/contact-production.js"), false);
+    assert.equal(paths.has("scripts/build-site.mjs"), false);
+  }
+});
+
 test("IMDF venue-rights source-only merges cannot dispatch the unrelated AWS contact publisher", () => {
   const protectedPaths = [
     ".github/workflows/imdf-venue-evidence-preflight.yml",
