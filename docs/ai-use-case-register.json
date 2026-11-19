@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewedAt": "2026-07-22",
+  "reviewedAt": "2026-11-18",
   "implementedFoundations": [
     {
       "id": "public-keyword-search",
@@ -38,6 +38,23 @@
       "modelRisk": "Incorrect classification or omitted evidence",
       "monitoring": "Audit metadata without prompt bodies",
       "rollback": "Provider none and endpoint disablement"
+    },
+    {
+      "id": "clip-approved-public-visual-retrieval",
+      "maturity": "source-only-gated-not-live",
+      "intendedDecision": "Suggest related rights-approved public catalogue images for manual research review only",
+      "data": "Only independently signed-off, public non-patient image assets with exact SHA-256, per-asset rights record, status and expiry",
+      "lawfulBasis": "Per-source image/embedding/display rights and separate Privacy/Legal assessment required; no customer or patient imagery",
+      "validationPlan": "CLIP model/checkpoint rights; offline index integrity; precision@k, lookalike strength/pack failure evaluation, out-of-distribution and adversarial tests; cross-platform secure-session and accessibility acceptance",
+      "humanOwner": "NovaPharm Intelligence Technology, Quality, Legal, Privacy and Information Security",
+      "prohibitedUse": "Clinical identification, dosage/strength validation, counterfeit authentication, regulatory assertions, supplier release, stock or treatment decisions",
+      "modelRisk": "Nonclinical research model, image/text domain shift, English-only prompts, high-risk fine-grained pharmaceutical confusions",
+      "monitoring": "False matches, near-miss error, rights expiry/revocation, latency, fallback and private session failures",
+      "rollback": "NPI_CLIP_ENABLED false; remove approved source index, preserve source-first manual research, no public model fallback",
+      "website": "Protected Nova Device Intelligence source-only panel",
+      "ios": "Swift package client source only; not signed app",
+      "android": "Kotlin client source only; not Android app",
+      "contract": "novapharm.intelligence.visual-search.v1"
     }
   ],
   "roadmapOnly": [
