@@ -238,6 +238,10 @@ if (aiManifest.corpusHash !== aiKnowledge.corpusHash ||
     aiManifest.corpusHash !== aiEmbeddings.corpusHash ||
     aiManifest.chunkCount !== aiKnowledge.chunks.length ||
     aiManifest.approvedSourceCount !== aiManifest.sources.length ||
+    aiModel.id !== aiEmbeddings.modelId ||
+    aiModel.revision !== aiEmbeddings.modelRevision ||
+    aiKnowledge.privacy?.externalInference !== false ||
+    aiKnowledge.privacy?.portalDataIncluded !== false ||
     aiModel.generation !== false || aiModel.remoteModelLoading !== false) {
   throw new Error("AI source/model manifest consistency gate failed");
 }
