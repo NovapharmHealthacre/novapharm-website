@@ -197,6 +197,40 @@ export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
       "Verify registered account terms, source-element provenance, national-authority precedence and independently reviewed rights for exact permitted uses"
     ])
   }),
+  "europe-france-ansm-bdpm": Object.freeze({
+    termsUrl: "https://base-donnees-publique.medicaments.gouv.fr/telechargement",
+    datasetUrl: "https://www.data.gouv.fr/datasets/base-de-donnees-publique-des-medicaments-base-officielle",
+    scope: "French official BDPM downloadable tables, not third-party documents or current national stock",
+    publishedTermsPosture: "FRANCE_BDPM_OPEN_LICENCE_WITH_ATTRIBUTION_AND_UPDATE_DUTIES",
+    outstanding: Object.freeze([
+      "Pin each BDPM speciality, presentation, composition and other source table version independently",
+      "Preserve source, update dates, changes, meaning and ANSM/HAS/UNCAM non-endorsement attribution",
+      "Verify any excluded third-party medicine documents, commercial AI-derived works and current data refresh before independently approved use"
+    ])
+  }),
+  "europe-ireland-hpra-authorised-medicines": Object.freeze({
+    termsUrl: "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products",
+    datasetUrl: "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products/resource/6987c2af-0c40-48da-8207-76b5da141266",
+    scope: "HPRA Human Medicines - Authorised Products XML list; not all linked SPC, leaflet or third-party documents",
+    publishedTermsPosture: "IRELAND_HPRA_CC_BY_4_ATTRIBUTION_WITH_THIRD_PARTY_EXCLUSIONS",
+    outstanding: Object.freeze([
+      "Record exact CC BY 4.0 licence, source attribution and XML resource edition/date",
+      "Keep Irish market-authorisation identity distinct from centrally authorised EMA PMS beta data",
+      "Screen linked SPC, leaflets, personal data, third-party intellectual property and downstream AI reuse separately"
+    ])
+  }),
+  "europe-norway-dmp-medicine-fhir-service": Object.freeze({
+    accessUrl: "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/how-to-access-the-fhir-service",
+    scope: "Norwegian Medical Products Agency FHIR service; access subject to authority application",
+    publishedTermsPosture: "NORWAY_DMP_FHIR_PUBLISHER_ACCESS_APPLICATION_REQUIRED",
+    requiresPublisherRegistration: true,
+    accessRequiresPublisherApproval: true,
+    outstanding: Object.freeze([
+      "Request DMP authorisation specifying legal entity, contact, purpose, data fields, test/production environment",
+      "Verify the separate terms for product codes sourced from Farmalogg and all external terminologies",
+      "Do not connect or cache DMP FHIR data without assigned access, signed rights and production approval"
+    ])
+  }),
   "europe-spain-aemps-cima": Object.freeze({
     termsUrl: "https://sede.aemps.gob.es/datos-abiertos/",
     scope: "AEMPS CIMA REST catalogue, not non-CIMA licensed dossiers",
@@ -287,6 +321,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
       officialReferenceUrl: entry.officialReferenceUrl,
       publisherTermsUrl: evidence?.termsUrl ?? null,
       publisherApiTermsUrl: evidence?.apiTermsUrl ?? null,
+      publisherAccessRequirementsUrl: evidence?.accessUrl ?? null,
+      sourceAccessApprovalRequired: evidence?.accessRequiresPublisherApproval === true,
       officialDatasetUrl: evidence?.datasetUrl ?? null,
       sourceOnlyHttpProbeCiCheckpoint: historicalProbe === null ? null : Object.freeze({
         verifiedCheckpointDate: "2026-11-18",
@@ -301,9 +337,11 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
       termsPosture: evidence?.publishedTermsPosture ?? "UNASSESSED",
       publisherExplicitlyForbidsBusinessUse: evidence?.commercialAccessBlockedByPublishedTerms === true,
       publisherRegistrationRequired: evidence?.requiresPublisherRegistration === true,
-      termsScreeningStatus: evidence
+      termsScreeningStatus: evidence?.termsUrl
         ? "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING"
-        : "PUBLIC_TERMS_NOT_YET_SCREENED",
+        : evidence?.accessUrl
+          ? "PUBLISHER_ACCESS_APPLICATION_REQUIRED"
+          : "PUBLIC_TERMS_NOT_YET_SCREENED",
       datasetScope: evidence?.scope ?? null,
       outstandingRightsRequirements: evidence?.outstanding ?? Object.freeze([
         "Locate current official publisher terms for exact dataset and intended use",
@@ -326,6 +364,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
     publicPublisherNoticesLocated: sourceEntries.filter(row => row.publisherTermsUrl !== null).length,
     publiclyRestrictedBetaBusinessSources: sourceEntries.filter(row =>
       row.publisherExplicitlyForbidsBusinessUse).length,
+    publisherAccessApplicationRequired: sourceEntries.filter(row =>
+      row.sourceAccessApprovalRequired).length,
     sourceOnlyHttpProbeCiCheckpointCount: sourceEntries.filter(row =>
       row.sourceOnlyHttpProbeCiCheckpoint !== null).length,
     independentlyLicensedSourceCandidates: 0,
