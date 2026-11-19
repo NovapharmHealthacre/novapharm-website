@@ -261,6 +261,9 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
 
 test("HIG-only web and mobile merges never dispatch the unrelated AWS contact release", () => {
   const higPrivatePaths = [
+    "docs/design/apple-hig-attachment-evidence-20261118.json",
+    "docs/design/apple-hig-source-and-attachment-audit-20261118.md",
+    "scripts/test-apple-hig-attachment-audit.mjs",
     "docs/design/apple-hig-172-topic-acceptance-register.json",
     "docs/design/apple-hig-172-topic-adoption-20261118.md",
     "docs/design/apple-hig-three-platform-adoption-20261118.md",
