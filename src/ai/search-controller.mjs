@@ -293,7 +293,7 @@ export async function initialiseSearchDialog(dialog) {
     if (reason !== "closed") {
       progressLabel.textContent = reason === "cancelled"
         ? "Download cancelled. Conventional search still works."
-        : "Semantic retrieval disabled. Optional downloaded assets may remain in this browser; use Clear cached assets to delete them.";
+        : "Semantic retrieval disabled. Optional downloaded assets may remain in this browser; use Clear optional cache to delete them.";
     }
   };
 
