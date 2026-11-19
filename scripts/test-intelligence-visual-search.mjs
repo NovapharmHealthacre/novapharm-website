@@ -191,3 +191,19 @@ test("CLIP readiness requires real private model health, never the env flag alon
     assert.equal(state.state, "unavailable");
   }
 });
+
+
+test("CLIP portal gateway validates methods before creating one fail-closed upstream target", () => {
+  const gateway = readFileSync(new URL("../apps/portal/app/gateway/[...path]/route.ts", import.meta.url), "utf8");
+  const visualRead = gateway.indexOf('path === "v1/intelligence/visual/readiness" && request.method !== "GET"');
+  const visualSearch = gateway.indexOf('path === "v1/intelligence/visual/search" && request.method !== "POST"');
+  const origin = gateway.indexOf("target = new URL(");
+  assert.ok(visualRead > 0 && visualSearch > visualRead && origin > visualSearch,
+    "Reject disallowed CLIP methods without accessing the protected upstream origin");
+  assert.equal(gateway.match(/let target: URL;/gu)?.length, 1,
+    "Exactly one upstream URL declaration is permitted");
+  assert.equal(gateway.match(/target\.search = request\.nextUrl\.search;/gu)?.length, 1,
+    "There must be exactly one upstream query-forwarding path");
+  assert.match(gateway, /if \(!isPermitted\(path\)\)/u);
+  assert.match(gateway, /"Cache-Control": "no-store"/u);
+});
