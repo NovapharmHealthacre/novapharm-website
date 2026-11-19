@@ -300,9 +300,13 @@ export async function initialiseSearchDialog(dialog) {
   // Removing browser assets is separate from inference: users can clear data while AI is off.
   const clearStoredSemanticAssets = () => new Promise((resolve) => {
     if (typeof indexedDB === "undefined") return resolve(false);
-    const request = indexedDB.deleteDatabase("novapharm-public-ai");
-    request.onsuccess = () => resolve(true);
-    request.onerror = request.onblocked = () => resolve(false);
+    try {
+      const request = indexedDB.deleteDatabase("novapharm-public-ai");
+      request.onsuccess = () => resolve(true);
+      request.onerror = request.onblocked = () => resolve(false);
+    } catch {
+      resolve(false);
+    }
   });
 
   modeButtons.forEach((button) => button.addEventListener("click", () => {
