@@ -15,7 +15,7 @@
 | Surface | Source change | Operational boundary |
 | --- | --- | --- |
 | Protected Intelligence web | `apps/portal/components/governed-healthcare-map.tsx` attached to the existing `Geography` `NearbyOrganisations` query | Requires verified board session and successful protected geography response. No map until a restricted token is configured. Only source-returned numeric coordinates are annotated. Existing tables remain available on failure. |
-| Portal CSP | `packages/security/src/index.ts` plus `apps/portal/proxy.ts` | Allows MapKit CDN, images and narrowly scoped Wasm only for the authenticated Geography page **and** when the public token is configured; maintains no camera, microphone or geolocation permissions. Regression-test exact CSP and confirm CDN endpoints in a real browser before production. |
+| Portal CSP | `packages/security/src/index.ts` plus `apps/portal/proxy.ts` | Allows MapKit CDN connections/images plus narrowly scoped blob requests, workers, frames and Wasm only for the protected Geography page **and** when the public token is configured; maintains no camera, microphone or geolocation permissions. Source CSP follows Apple's [MapKit JS loading/CSP instructions](https://developer.apple.com/documentation/mapkitjs/loading-the-latest-version-of-mapkit-js). Regression-test exact CSP and confirm CDN endpoints in a real browser before production. |
 | Expo iOS candidate | `native/novapharm-intelligence-mobile/MapsResearchScreen.tsx` via **More → Maps and location** | User enters a non-sensitive decimal coordinate and optionally a label; opens an external map on user action. No network fetch, location permission, API connection, persistent history or protected dataset. |
 | Expo Android candidate | Same React Native screen | External Apple Maps URL opens a browser/map handler if supported. This is not the native Android map SDK or an in-app live map. |
 | Native Apple research package | `native/novapharm-intelligence-apple/NovaMapKitView.swift` registered in `Package.swift` | Basic SwiftUI MapKit rendering of explicitly supplied sites with coordinate validation. Not bridged into Expo, not tenant-authorised by itself, not signed or App Store released. |
@@ -41,7 +41,7 @@ Do **not** import the generic category CSV as a collection of locations. Do **no
 
 ## Required integration and release gates
 
-- [ ] Configure an Apple Developer MapKit JS token with domain restrictions for the exact authorised host(s). Verify Apple logo/legal notice, JS 6 compatibility, mobile Safari/Chrome and map tile CSP in production-like testing.
+- [ ] Create a domain-restricted **MapKit JS** token in the Apple Developer account. Supply `NEXT_PUBLIC_APPLE_MAPS_TOKEN` at **web build time** and keep the protected runtime CSP policy in sync; `NEXT_PUBLIC_` is a public browser token and never a private signing key. Restrict every authorised deployed host. Verify Apple logo/legal notice, JS 6 compatibility, mobile Safari/Chrome and map tile CSP in production-like testing.
 - [ ] Confirm authorised non-sample geography records include reliable numeric latitude/longitude when precision and rights permit; test privacy and zero-result handling.
 - [ ] Run `node --test scripts/test-governed-maps-contract.mjs` and the existing portal, security and Expo mobile CI workflows against the exact PR commit.
 - [ ] Run real Chromium/WebKit map interactions, keyboard/VoiceOver/TalkBack contrast and accessibility checks on tablet and phone layouts, including failed-token and offline states.
