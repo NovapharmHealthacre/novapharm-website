@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 156,
+    "platformsAssessed": 159,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -63,6 +63,46 @@
       "fullTextReviewIndependentlyVerifiedForAll172": false,
       "platformApplicabilityApprovedForAll516": false,
       "implementationOrProductionConformanceCertified": false
+    },
+    "productionEvidenceAudit": {
+      "reviewedOn": "2026-11-19",
+      "verifiedImplementationCount": 0,
+      "meaning": "Selected public origin observations do not establish complete Apple HIG compliance across NovaPharm web, iOS and Android. Only independently accepted, platform-appropriate production receipts may change implementation to verified.",
+      "scopedPublicEvidence": [
+        {
+          "topic": "Right to left",
+          "sourceRun": 44528135812,
+          "jobId": 135574047765,
+          "jobConclusion": "success",
+          "scope": "Live public RTL layout-preview, not full translation or all routes",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98"
+        }
+      ],
+      "excludedAsAcceptance": [
+        {
+          "run": 44528135827,
+          "workflow": "Corporate live Chromium WebKit Firefox acceptance",
+          "workflowConclusion": "success",
+          "job": "live-browser",
+          "jobConclusion": "skipped",
+          "reason": "Job skipped because upstream publisher deployment was not performed; green workflow is not a live browser receipt."
+        },
+        {
+          "workflow": "Source-only Apple HIG and cross-platform CI",
+          "reason": "Static/browser preview checks do not prove the exact deployed revision, authenticated protected flows, real assistive technology or signed native distribution."
+        }
+      ],
+      "unmetProgrammeGates": [
+        "Individual full-guideline review and three-platform applicability decision for every topic",
+        "Bounded production scope and actual applicable route/application manifest",
+        "Exact production or signed mobile release receipt and immutable source revision",
+        "Browser/device screenshots, keyboard/assistive-technology and 200–400% zoom/reflow acceptance",
+        "Role/tenant/clinical data boundaries where protected services apply",
+        "Independent Quality/Security reviewer approval and owner production authorization where required"
+      ],
+      "productionSignoffSource": "config/intelligence/owner-production-constraints.json",
+      "productionSignoffObserved": "not_granted",
+      "readOnlyEvidenceOnly": true
     }
   },
   "topics": [
@@ -1021,9 +1061,29 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/right-to-left",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/right-to-left.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "workflow": "RTL live public layout-preview proof",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44528135812",
+          "jobId": 135574047765,
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19T12:53:56Z",
+          "publicOrigin": "https://novapharmhealthcare.com/",
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "verifiedScope": "Published public RTL layout-preview assets, language-cookie disclosure, and preserved public B2B contact service as tested by scripts/verify-live-rtl-origin.mjs",
+          "notProven": [
+            "Arabic and Hebrew translation",
+            "all public routes and controls",
+            "authenticated Portal or Intelligence",
+            "iOS/Android signed packages or physical devices",
+            "independent whole-topic acceptance"
+          ]
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -1033,23 +1093,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply directional layout, logical CSS positioning, meaningful control/icon mirroring, mixed-script bidirectional text, locale-aware number handling and exclusion of brand/photo mirroring. Current public RTL layout preview is partial and not translated or production-accepted across all routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, verify native semantic leading/trailing layout, Arabic and Hebrew localization, VoiceOver reading order, intact phone/medicine identifiers, appropriate SF Symbol RTL variants, unchanged logos and exact device signing and release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply Android-native RTL layout direction, localized resource strings, mixed-script number isolation, navigation gesture/control mirroring where appropriate and TalkBack reading order; never borrow native Apple SF Symbols or assume signed Android release."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/right-to-left.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple Right to left article reviewed 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/right-to-left.md. Covers mixed-language paragraph/list alignment, numerals/progress orientation, directional controls, image order, mirrored navigation icons and deliberate non-mirroring of logos, photographs and universal symbols.",
+        "NovaPharm web interpretation: RTL must be a truthfully labelled layout preview until Arabic/Hebrew translation, regional numbers and full customer/commerce flows are accepted; avoid flipping actual branded marks and product photographs. Cross-platform parity requires separate native accessibility/device outcomes.",
+        "Bounded public origin check: GitHub workflow run 44528135812, job 135574047765 executed its read-only public RTL script successfully on 19 November and printed deployed public source d00b2eee866d4a2dd2ff7d87ded583be0d7cab98. This is not article-wide conformance, full translation or protected/mobile go-live."
+      ]
     },
     {
       "section": "Foundations",
