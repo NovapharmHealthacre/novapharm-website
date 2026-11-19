@@ -76,6 +76,33 @@
           "jobConclusion": "success",
           "scope": "Live public RTL layout-preview, not full translation or all routes",
           "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98"
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44532249980,
+          "jobId": 135588345804,
+          "jobConclusion": "success",
+          "scope": "Public Capabilities 6 live rendered Chromium/WebKit viewports; screenshot artifact 14534074840",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44532250088,
+          "jobId": 135588343721,
+          "jobConclusion": "success",
+          "scope": "Public Oncology 8 live rendered Chromium/WebKit viewport/layout checks and exact public CSS bytes; artifact 14534534397",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        },
+        {
+          "topic": "Images",
+          "sourceRun": 44532250088,
+          "jobId": 135588343721,
+          "jobConclusion": "success",
+          "scope": "Public Oncology hero portrait uncropped in 8 live viewport/browser combinations; artifact 14534534397",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
         }
       ],
       "excludedAsAcceptance": [
@@ -102,7 +129,14 @@
       ],
       "productionSignoffSource": "config/intelligence/owner-production-constraints.json",
       "productionSignoffObserved": "not_granted",
-      "readOnlyEvidenceOnly": true
+      "readOnlyEvidenceOnly": true,
+      "distinctObservedPublicLiveRuns": [
+        44528135812,
+        44532249980,
+        44532250088
+      ],
+      "recordedPartialTopicPlatformObservations": 4,
+      "note": "Partial topic records may share one underlying workflow run. Three distinct successful read-only public live runs, four topic/platform partial observations; no full independently signed acceptance."
     }
   },
   "topics": [
@@ -779,7 +813,32 @@
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/images.md",
       "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Oncology live custom-domain Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088/artifacts/14534534397",
+          "jobId": 135588343721,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/oncology/",
+          "checkedJourneys": [
+            "Live hero portrait is visually uncut at widths 390, 768, 1440 and 1728 in Chromium and WebKit",
+            "Oncology hero screenshot artifact preserved"
+          ],
+          "scopeLimits": [
+            "One hero image only, not sitewide imagery",
+            "No image-rights source review in this CI job",
+            "No alt-text/VoiceOver acceptance of all images",
+            "No signed mobile app production proof"
+          ],
+          "provenanceNote": "A page-specific live image crop check; not conformance for Apple's complete Images guidance."
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -900,7 +959,56 @@
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/layout.md",
       "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Live Capabilities Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980/artifacts/14534074840",
+          "jobId": 135588345804,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/capabilities/",
+          "checkedJourneys": [
+            "Read-only rendered page in Chromium and WebKit at widths 390, 768 and 1440",
+            "Approved Capabilities photo/editorial CSS visual acceptance"
+          ],
+          "scopeLimits": [
+            "No full document/brand conformance",
+            "No screen reader/real hardware accessibility testing",
+            "No independent production sign-off",
+            "No proof this live page SHA equals PR #878 head"
+          ],
+          "provenanceNote": "Workflow run anchored to repository SHA bb96952db2e4dcaa19526a8ab321b8081b6aeca7; browser log recorded approved CSS asset hash. Do not invent a live page SHA."
+        },
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Oncology live custom-domain Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088/artifacts/14534534397",
+          "jobId": 135588343721,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/oncology/",
+          "checkedJourneys": [
+            "Read-only live Oncology hero rendering in Chromium and WebKit at widths 390, 768, 1440 and 1728",
+            "Verified exact public oncology-hope-v2.css bytes against source on repository checkout SHA bb96952db2e4dcaa19526a8ab321b8081b6aeca7",
+            "No horizontal overflow, full-bleed hero, three aligned cards, continuous fade"
+          ],
+          "scopeLimits": [
+            "Specific Oncology hero, not every page/element",
+            "No VoiceOver/keyboard/200–400% zoom acceptance",
+            "No independent HIG review or native iOS/Android receipt"
+          ],
+          "provenanceNote": "Exact live oncology CSS bytes checked against GitHub job source commit bb96952db2e4dcaa19526a8ab321b8081b6aeca7; full live HTML source-SHA meta not independently established by this job."
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
