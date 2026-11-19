@@ -1,0 +1,50 @@
+name: Intelligence private paid invoice orchestration
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-billing-event-worker.mjs'
+      - 'scripts/test-intelligence-billing-event-worker.mjs'
+      - '.github/workflows/intelligence-private-billing-orchestration.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/core/intelligence-billing-event-worker.mjs'
+      - 'scripts/test-intelligence-billing-event-worker.mjs'
+      - '.github/workflows/intelligence-private-billing-orchestration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verified-invoice-orchestration:
+    name: No-charge verification of signed invoices and atomic billing fences
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reviewed commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Verify independent Stripe, ownership, risks and atomic replay
+        run: |
+          node --test scripts/test-intelligence-billing-event-worker.mjs
+          node --test scripts/test-intelligence-billing-atomic-ledger.mjs
+          node --test scripts/test-intelligence-billing-reconciliation.mjs
+          node --test scripts/test-intelligence-billing-suspension.mjs
+      - name: Enforce private default-off billing contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'privateAtomicWritesEnabled = false' src/core/intelligence-billing-event-worker.mjs
+          grep -Fq 'readCustomerOwner' src/core/intelligence-billing-event-worker.mjs
+          grep -Fq 'loadSignedQuarantine' src/core/intelligence-billing-event-worker.mjs
+          grep -Fq 'assessIntelligencePaidInvoice' src/core/intelligence-billing-event-worker.mjs
+          grep -Fq 'commitIntelligenceBillingAtomicLedger' src/core/intelligence-billing-event-worker.mjs
+          ! grep -Eq 'sk_live_[A-Za-z0-9]{10,}|rk_live_[A-Za-z0-9]{10,}' src/core/intelligence-billing-event-worker.mjs

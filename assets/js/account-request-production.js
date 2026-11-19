@@ -9,7 +9,7 @@ if (form instanceof HTMLFormElement) {
   const validOrigin = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i.test(origin);
   if (!validOrigin) {
     if (submit) submit.disabled = true;
-    if (status) status.textContent = "Business account requests are temporarily unavailable. Contact NovaPharm through the published corporate email.";
+    if (status) status.textContent = "Business enquiries are temporarily unavailable. Contact NovaPharm through the published corporate email.";
   } else {
     const businessTypes = new Set(["Pharmacy", "Hospital", "Wholesaler", "Clinic", "Healthcare organisation"]);
     form.addEventListener("submit", async event => {
@@ -49,7 +49,7 @@ if (form instanceof HTMLFormElement) {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
       if (submit) submit.disabled = true;
-      if (status) status.textContent = "Sending your account request securely…";
+      if (status) status.textContent = "Submitting business interest…";
       try {
         const response = await fetch(origin + "/contact", {
           method: "POST",
@@ -73,13 +73,13 @@ if (form instanceof HTMLFormElement) {
         if (status) {
           status.replaceChildren();
           const strong = document.createElement("strong");
-          strong.textContent = "Request received. Reference: " + receipt.receiptId;
+          strong.textContent = "Business interest received. Reference: " + receipt.receiptId;
           status.append(strong, document.createTextNode(". Keep this reference for enquiries. Your account is not yet activated; our team will review eligibility."));
         }
       } catch {
         if (status) {
           status.replaceChildren();
-          status.append(document.createTextNode("Your request could not be confirmed. Please try again or email "));
+          status.append(document.createTextNode("The request could not be confirmed. It may have been received. Before submitting it again, email "));
           const link = document.createElement("a");
           link.href = "mailto:vishal@novapharmhealthcare.com";
           link.textContent = "vishal@novapharmhealthcare.com";

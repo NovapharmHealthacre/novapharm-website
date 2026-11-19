@@ -6,11 +6,18 @@ on:
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
+      - legal/privacy/index.html
+      - legal/cookies/index.html
+      - assets/js/cookie-consent.js
+      - assets/js/consent-analytics.js
+      - assets/js/marketing-attribution.js
+      - scripts/test-apple-privacy-contract.mjs
       - src/content/technology-intelligence.html
       - technology/index.html
       - assets/css/technology-intelligence.css
       - scripts/test-intelligence-technology-page.mjs
       - assets/css/apple-pharma-public.css
+      - assets/css/novapharm-hig-motion.css
       - assets/css/homepage-editorial.css
       - assets/media/home/earth-reference-1400.jpg
       - apps/corporate/components/concise-home.tsx

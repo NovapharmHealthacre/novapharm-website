@@ -28,11 +28,24 @@ function escapedLike(value) {
   return value.replace(/[\\%_]/gu, "\\$&");
 }
 
-async function medicineSearchRows(whereSql, whereParams, term, limit) {
-  return all(`WITH matched AS (
-      SELECT medicine_id, MIN(CASE WHEN normalised_alias = ? THEN 0 ELSE 1 END) AS relevance
-      FROM medicine_aliases WHERE ${whereSql} GROUP BY medicine_id
-    )
+async function medicineSearchRows(term, limit, page) {
+  // An expired alias must never resolve to a current medicine identity.
+  const escaped = escapedLike(term);
+  const matchParams = [term, `${escaped}%`, `%${escaped}%`];
+  const matchedSql = `WITH matched AS (
+    SELECT candidate.medicine_id,
+      MIN(CASE WHEN candidate.normalised_alias = ? THEN 0
+        WHEN candidate.normalised_alias LIKE ? ESCAPE '\\' THEN 1 ELSE 2 END) AS relevance
+    FROM medicine_aliases candidate
+    JOIN dim_medicine current_medicine ON current_medicine.medicine_id = candidate.medicine_id
+      AND current_medicine.valid_to IS NULL
+    WHERE candidate.valid_to IS NULL
+      AND candidate.normalised_alias LIKE ? ESCAPE '\\'
+    GROUP BY candidate.medicine_id
+  )`;
+  const count = await one(`${matchedSql} SELECT COUNT(*) AS total_rows FROM matched`, ...matchParams);
+  const totalRows = Number(count?.total_rows || 0);
+  const rows = await all(`${matchedSql}
     SELECT dm.medicine_id, dm.canonical_name,
       MAX(CASE WHEN aliases.alias_type = 'BNF_PRESENTATION_CODE' THEN aliases.alias_text END) AS bnf_presentation_code,
       MAX(CASE WHEN aliases.alias_type = 'BNF_PRODUCT' THEN aliases.alias_text END) AS product_name,
@@ -40,10 +53,12 @@ async function medicineSearchRows(whereSql, whereParams, term, limit) {
       MAX(CASE WHEN aliases.alias_type = 'BNF_CHEMICAL_SUBSTANCE' THEN aliases.alias_text END) AS chemical_substance,
       MAX(CASE WHEN aliases.alias_type = 'BNF_CHEMICAL_SUBSTANCE_CODE' THEN aliases.alias_text END) AS chemical_substance_code,
       matched.relevance
-    FROM matched JOIN dim_medicine dm ON dm.medicine_id = matched.medicine_id AND dm.valid_to IS NULL
-    JOIN medicine_aliases aliases ON aliases.medicine_id = dm.medicine_id
+    FROM matched JOIN dim_medicine dm ON dm.medicine_id = matched.medicine_id
+    JOIN medicine_aliases aliases ON aliases.medicine_id = dm.medicine_id AND aliases.valid_to IS NULL
     GROUP BY dm.medicine_id, dm.canonical_name, matched.relevance
-    ORDER BY matched.relevance, dm.canonical_name, bnf_presentation_code LIMIT ?`, term, ...whereParams, limit);
+    ORDER BY matched.relevance, dm.canonical_name, dm.medicine_id
+    LIMIT ? OFFSET ?`, ...matchParams, limit, (page - 1) * limit);
+  return { rows, totalRows };
 }
 
 function intersect(left, right) {
@@ -306,35 +321,34 @@ export async function medicinesIntelligenceModuleView(snapshot) {
   };
 }
 
-export async function searchMedicines(query, context, requestedLimit = 30) {
+export async function searchMedicines(query, context, requestedLimit = 30, requestedPage = 1) {
   requireExecutive(context);
   const term = normaliseSearch(query);
   if (term.length < 2 || term.length > 120) throw invalid("Enter between 2 and 120 characters to search medicine identities.");
   const limit = Number(requestedLimit);
-  if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw invalid("Medicine search limit is invalid.");
-  const prefixRows = await medicineSearchRows(
-    "normalised_alias >= ? AND normalised_alias < ?",
-    [term, `${term}\uffff`],
-    term,
-    limit,
-  );
-  const escaped = escapedLike(term);
-  const rows = prefixRows.length ? prefixRows : await medicineSearchRows(
-    "normalised_alias LIKE ? ESCAPE '\\'",
-    [`%${escaped}%`],
-    term,
-    limit,
-  );
+  const page = Number(requestedPage);
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50) throw invalid("Medicine search limit is invalid.");
+  if (!Number.isSafeInteger(page) || page < 1 || page > 1000) throw invalid("Medicine search page is invalid.");
+  const { rows, totalRows } = await medicineSearchRows(term, limit, page);
   const source = await one(`SELECT
     (SELECT MAX(reporting_period) FROM source_resources WHERE source_id = 'nhsbsa.bnf-current') AS period,
-    (SELECT MAX(source_last_seen_at) FROM dim_medicine WHERE source_id = 'nhsbsa.bnf-current') AS freshness`);
+    (SELECT MAX(source_last_seen_at) FROM dim_medicine WHERE source_id = 'nhsbsa.bnf-current') AS freshness,
+    (CASE WHEN EXISTS (
+      SELECT 1 FROM dim_medicine
+      WHERE source_id = 'nhsbsa.bnf-current' AND valid_to IS NULL
+    ) THEN 1 ELSE 0 END) AS current_identity_exists`);
   return {
     query: String(query).trim(), normalisedQuery: term, source: "NHSBSA BNF Code Information - Current Year",
-    sourcePeriod: source?.period || null, demandFactsIncluded: false, results: rows.map((row) => ({
+    sourcePeriod: source?.period || null,
+    // Repository import state is not proof of licensed production/customer release.
+    catalogueState: Number(source?.current_identity_exists || 0) > 0
+      ? "current_repository_identities_present" : "no_current_repository_identities",
+    demandFactsIncluded: false, results: rows.map((row) => ({
       medicineId: row.medicine_id, canonicalName: row.canonical_name, presentationCode: row.bnf_presentation_code,
       productName: row.product_name, productCode: row.product_code, chemicalSubstance: row.chemical_substance,
       chemicalSubstanceCode: row.chemical_substance_code, identityStatus: "bnf_current_identity_only",
-    })), dataFreshness: source?.freshness || null, generatedAt: nowIso(),
+    })), pagination: { page, pageSize: limit, totalRows, totalPages: Math.ceil(totalRows / limit) },
+    dataFreshness: source?.freshness || null, generatedAt: nowIso(),
   };
 }
 

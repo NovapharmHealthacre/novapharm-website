@@ -76,6 +76,27 @@ async function audit() {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
+                homeNavLabel:(()=>{
+                  const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
+                  if(!link||!link.getClientRects().length)return null;
+                  const contact=document.querySelector('.desktop-nav a[href="/contact/"]') as HTMLElement|null;
+                  return {text:link.textContent?.trim()??"",
+                    before:getComputedStyle(link,"::before").content,
+                    after:getComputedStyle(link,"::after").content,
+                    color:getComputedStyle(link).color,
+                    portalVisible:(()=>{
+                      const portal=document.querySelector(".desktop-nav a:last-child") as HTMLElement|null;
+                      return !!portal&&portal.textContent?.trim()==="Secure Portal"&&portal.getClientRects().length>0;
+                    })(),
+                    right:link.getBoundingClientRect().right,
+                    contactLeft:contact?.getBoundingClientRect().left??0};
+                })(),
+                managedContactBorders:(()=>{
+                  const field=document.querySelector(".np-contact-reference .np-contact-reference-field");
+                  const input=field?.querySelector('input:not([type="hidden"]), select, textarea');
+                  if(!field||!input)return null;
+                  return {field:getComputedStyle(field).borderTopWidth,input:getComputedStyle(input).borderTopWidth};
+                })(),
                 navHeight:header?Math.round(header.getBoundingClientRect().height):0,
                 font:body.fontFamily,inkToken:root.getPropertyValue("--nph-ink").trim(),
                 surfaceToken:root.getPropertyValue("--nph-silver").trim(),
@@ -83,6 +104,10 @@ async function audit() {
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
                 brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
+                clippedControls:[...document.querySelectorAll("main form input:not([type=hidden]), main form select, main form textarea, main form button")]
+                  .filter(el=>{if(el.closest('[aria-hidden="true"], .honeypot'))return false;const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
+                    const b=el.getBoundingClientRect();return b.width>0&&b.height>0&&(b.left< -2||b.right>document.documentElement.clientWidth+2);})
+                  .map(el=>({tag:el.tagName.toLowerCase(),name:el.getAttribute("name")||el.getAttribute("aria-label")||""})).slice(0,8),
                 // Inspect the rendered heading and actual controls, not only the
                 // document scroll width (which can hide clipped content).
                 headlineBounds: (() => {
@@ -115,13 +140,25 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
-            if(data.navHeight<58||data.navHeight>80)faults.push(`Inconsistent header: ${data.navHeight}`);
+            if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
             if(data.brokenImages.length)faults.push(`Broken images: ${data.brokenImages.slice(0,5).join(" / ")}`);
+            if(data.clippedControls.length)faults.push(`Form controls clipped by viewport: ${JSON.stringify(data.clippedControls)}`);
             if(errors.length)faults.push(`JavaScript console: ${errors.slice(0,4).join(" / ")}`);
             if(errorsFromNetwork.length)faults.push(`Failed requests: ${errorsFromNetwork.slice(0,4).join(" / ")}`);
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
+            if(route==="/"&&vp.width>=1440){
+              const nav=data.homeNavLabel;
+              if(!nav||nav.text!=="NovaPharm Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
+                faults.push(`Homepage Intelligence must use real, contrasting link text: ${JSON.stringify(nav)}`);
+              if(nav&&!nav.portalVisible)
+                faults.push(`Homepage Secure Portal link must remain visible: ${JSON.stringify(nav)}`);
+              if(nav&&nav.contactLeft<nav.right-1)
+                faults.push(`Homepage Intelligence and Contact links overlap: ${JSON.stringify(nav)}`);
+            }
+            if(route==="/contact/"&&data.managedContactBorders&&data.managedContactBorders.input!=="0px")
+              faults.push(`Contact form renders nested input outlines: ${JSON.stringify(data.managedContactBorders)}`);
             records.push({route,viewport:vp.name,status,...data,issues:faults});
             for(const detail of faults)findings.push({route,viewport:vp.name,detail});
           } catch(e) {

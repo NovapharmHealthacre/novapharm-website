@@ -1,0 +1,27 @@
+name: Intelligence G2 private Mongo transaction contract
+on:
+  pull_request:
+    paths:
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - '.github/workflows/intelligence-atlas-g2-atomic-store.yml'
+      - 'docs/intelligence/ATLAS_G2_ATOMIC_STORE_RELEASE_20261113.md'
+  push:
+    branches: [main]
+    paths:
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - '.github/workflows/intelligence-atlas-g2-atomic-store.yml'
+permissions:
+  contents: read
+jobs:
+  atomic-evidence-store-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Assert fail-closed multi-collection commit, readback and quarantine
+        run: node --test scripts/test-atlas-medicine-g2-atomic-store.mjs

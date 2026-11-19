@@ -18,8 +18,11 @@ const permittedPaths = [
   /^v1\/intelligence\/tenders\/uk\/discovery$/,
   /^v1\/intelligence\/evidence\/us\/clinical-trials$/,
   /^v1\/intelligence\/readiness$/,
+  /^v1\/intelligence\/visual\/(?:readiness|search)$/,
   /^enterprise\/search$/,
   /^enterprise\/customer\/(?:support|returns|quality-complaints)$/,
+  /^enterprise\/wms\/pilot-feedback$/,
+  /^enterprise\/wms\/pilot-feedback-summary$/,
   /^enterprise\/workflows\/[a-z0-9._-]+\/advance$/,
   /^enterprise\/products\/[a-z0-9._-]+\/status$/,
   /^admin\/(?:summary|leads\/[a-z0-9._-]+|applications\/[a-z0-9._-]+(?:\/(?:status|activate))?|notifications\/[a-z0-9._-]+\/(?:replay|preview)|users\/[a-z0-9._%~-]+\/sessions\/revoke)$/,
@@ -84,6 +87,12 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   const path = segments.join("/");
   if (!isPermitted(path)) return Response.json({ error: "Portal gateway route is not available." }, { status: 404, headers: { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
   if ((path === "v1/intelligence/regulatory/us/fda-labels" || path === "v1/intelligence/tenders/uk/discovery" || path === "v1/intelligence/evidence/us/clinical-trials" || path === "v1/intelligence/readiness") && request.method !== "GET") return Response.json({ error: "The Intelligence evidence routes are read-only." }, { status: 405, headers: { "Allow": "GET", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
+
+  // CLIP is a board-only, CSRF-protected research candidate, never a public model endpoint.
+  if (path === "v1/intelligence/visual/readiness" && request.method !== "GET")
+    return Response.json({ error: "Readiness is read-only." }, { status: 405, headers: { "Cache-Control": "no-store", "Allow": "GET" } });
+  if (path === "v1/intelligence/visual/search" && request.method !== "POST")
+    return Response.json({ error: "Visual search accepts only protected POST requests." }, { status: 405, headers: { "Cache-Control": "no-store", "Allow": "POST" } });
 
   // Missing or invalid production API origins must deny safely instead of
   // crashing with an internal 500 or revealing server configuration details.

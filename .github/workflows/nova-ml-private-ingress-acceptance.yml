@@ -1,0 +1,53 @@
+name: Nova ML protected production anonymous ingress acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/nova-ml-private-ingress-acceptance.yml'
+      - 'scripts/nova-ml-private-ingress.mjs'
+      - 'scripts/test-nova-ml-private-ingress.mjs'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'apps/portal/data/routes.ts'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/nova-ml-private-ingress-acceptance.yml'
+      - 'scripts/nova-ml-private-ingress.mjs'
+      - 'scripts/test-nova-ml-private-ingress.mjs'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'apps/portal/data/routes.ts'
+  workflow_dispatch:
+  schedule:
+    - cron: '47 5 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate four exact private routes and denial decisions without network access
+        run: node --test scripts/test-nova-ml-private-ingress.mjs
+  live-anonymous-denial:
+    if: github.event_name != 'pull_request'
+    needs: source-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check four live Nova ML paths without credentials or cloud mutations
+        run: node scripts/nova-ml-private-ingress.mjs
+      - name: Record limits of anonymous verification
+        if: success()
+        run: |
+          printf '%s\n' 'Anonymous denial verifies only public-route access restrictions.'
+          printf '%s\n' 'It is not a deployed SHA receipt, authorised board login, functioning model or signed Apple app. Track issue 780.'

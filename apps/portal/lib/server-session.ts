@@ -9,6 +9,9 @@ export function sessionDecision(view: PortalView, user: PortalUser | null): Port
   if (view.kind !== "module") return "allow";
   if (!user || !Array.isArray(user.accessScopes)) return "deny";
   if (user.mustChangePassword) return "change-password";
+  // A customer scope alone is not a canonical account/tenant data authority.
+  // Even an administrator must use a separately authorised customer link.
+  if (view.module.area === "customer" && user.customerAccountLinked !== true) return "deny";
   const required = areaScopes[view.module.area];
   return user.accessScopes.includes(required) || user.accessScopes.includes("admin") ? "allow" : "deny";
 }
@@ -66,6 +69,9 @@ export async function verifiedPortalSession({
     if (typeof fields["displayName"] !== "string" || typeof fields["role"] !== "string") return null;
     if (typeof fields["accessType"] !== "string" || typeof fields["mustChangePassword"] !== "boolean") return null;
     if (!Array.isArray(fields["accessScopes"]) || !fields["accessScopes"].every((scope: unknown) => typeof scope === "string")) return null;
+    if (fields["customerAccountLinked"] !== undefined && typeof fields["customerAccountLinked"] !== "boolean") return null;
+    // A signed session with a customer scope does not establish account ownership.
+    if (fields["accessType"] === "customer" && fields["customerAccountLinked"] !== true) return null;
     return user as PortalUser;
   } catch {
     return null;

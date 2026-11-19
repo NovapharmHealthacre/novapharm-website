@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewedAt": "2026-07-22",
+  "reviewedAt": "2026-11-18",
   "models": [
     {
       "id": "novapharm-evidence-vector-v1",
@@ -17,7 +17,9 @@
       "assetBytes": 3259,
       "dimensions": 384,
       "quantisation": "Sparse normalised decimal vectors; no neural weights or WASM",
-      "language": ["en-GB"],
+      "language": [
+        "en-GB"
+      ],
       "remoteModelLoading": false,
       "runtime": "Browser Web Worker",
       "redistributionRight": "Repository and generated asset may be distributed as part of NovaPharm's website",
@@ -58,9 +60,69 @@
       "redistributionRight": "No model redistribution is authorised",
       "modificationRight": "Adapter may be modified; model rights are model-specific",
       "attributionRequirement": "Model-specific",
-      "restrictions": ["Loopback HTTP only", "Disabled in NODE_ENV=production", "No committed model files", "No prompt-body logs"],
+      "restrictions": [
+        "Loopback HTTP only",
+        "Disabled in NODE_ENV=production",
+        "No committed model files",
+        "No prompt-body logs"
+      ],
       "securityStatus": "Development adapter implemented; activation requires owner decision and model review",
       "updatePolicy": "Pin and review any future local model before use"
+    },
+    {
+      "id": "novapharm-l0-hard-concrete-research-v0",
+      "name": "Nova L0 Hard-Concrete Sparsity Research",
+      "revision": "0.1.0-research",
+      "task": "Research-only differentiable sparsification and feature selection for non-clinical pharmaceutical analytics; no production forecast",
+      "implementation": "First-party PyTorch trainer reference, shared TypeScript offline scorer, Swift and Kotlin hard-concrete math",
+      "softwareLicence": "NovaPharm-owned source; PyTorch is optional for offline experiments and requires dependency/SBOM review",
+      "modelLicence": "Not applicable: no weights, trained model, model package or artefact has been approved",
+      "commercialUseStatus": "No model is approved for customer use or commercial inference",
+      "source": "tooling/python/nova_l0_sparsity.py",
+      "relatedSources": [
+        "packages/medicines-intelligence/src/l0-sparsity.ts",
+        "native/novapharm-intelligence-apple/NovaL0ResearchMath.swift",
+        "native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt"
+      ],
+      "remoteModelLoading": false,
+      "bundledModel": false,
+      "runtime": "Source-only research; no authenticated or public inference endpoint",
+      "securityStatus": "Experimental; feature inputs, data rights, independent validation, signed manifest and device approval are absent",
+      "customerVisible": false,
+      "productionApproved": false,
+      "restrictions": [
+        "No patient data, clinical decision or autonomous stock release",
+        "No rights or data acquisition implied",
+        "No customer prediction, AWS deployment, Core ML, LiteRT or model activation",
+        "Do not infer performance or interpretability from expected active feature count"
+      ],
+      "updatePolicy": "Train and evaluate against independently approved dense and simple baselines, register signed model + preprocessing artifact, verify rights and release gates, then plan a separate authorized deployment"
+    },
+    {
+      "id": "openai-clip-private-research-candidate",
+      "name": "OpenAI CLIP — private NovaPharm research candidate",
+      "revision": "source-only-2026-11-18",
+      "task": "English text-to-image retrieval from separately rights-approved public pharmaceutical artwork",
+      "implementation": "services/clip/serve.py; services/clip/build_index.py; src/core/intelligence-visual-search.mjs",
+      "softwareLicence": "Official openai/CLIP source MIT; retain upstream notice; transitive dependency review outstanding",
+      "modelLicence": "Exact pretrained checkpoint not reviewed, not acquired and not bundled",
+      "commercialUseStatus": "NOT APPROVED — upstream model card describes deployment as outside research scope",
+      "source": "https://openai.com/index/clip/",
+      "upstreamRepository": "https://github.com/openai/CLIP",
+      "upstreamSourceRevision": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+      "runtime": "Local private server candidate; default OFF; board and CSRF gated",
+      "asset": "No model weights, approved images or visual index committed",
+      "remoteModelLoading": false,
+      "redistributionRight": "No model/image redistribution authorised until individual rights reviewed",
+      "restrictions": [
+        "Research-only private pilot candidate; no public/customer rollout",
+        "English prompt only; no medical, dose, batch, supplier, authentication or regulatory decisions",
+        "No patient data, protected documents, health images, faces or surveillance",
+        "Similarity rank is not calibrated confidence or verified product identity",
+        "Requires independent licence, image rights, domain-specific evaluation, security and owner approval"
+      ],
+      "securityStatus": "Source candidate only; no operational model deployment or signed native apps",
+      "updatePolicy": "Immutable model/checkpoint and index hashes, explicit approved rights, independent benchmark, signed review, rollback"
     }
   ]
 }

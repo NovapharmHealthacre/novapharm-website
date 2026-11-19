@@ -1,11 +1,12 @@
 "use client";
 
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { gatewayJson, professionalError } from "../lib/gateway";
 import styles from "./professional-workspaces.module.css";
 
 export type ProfessionalWorkspaceKind =
   | "observed-market"
+  | "signals"
   | "regulatory-intelligence"
   | "tender-intelligence"
   | "portfolio"
@@ -81,6 +82,12 @@ const workflows: Readonly<Record<ProfessionalWorkspaceKind, Readonly<{
     headline: "Observe before you forecast.",
     description: "Examine separate EPD or PCA observations for one medicine. A chart is not a national market estimate without matching coverage, units, periods and source rights.",
     checks: ["Resolve the medicine identity", "Reconcile source, measure and geography", "Confirm permitted analytical use"],
+  },
+  signals: {
+    title: "Signals",
+    headline: "Observed changes need independent verification.",
+    description: "Review a hypothetical threshold against the selected medicine\'s accepted, comparable observed-change evidence. No shortage, pricing movement or supply interruption is inferred.",
+    checks: ["Confirm comparable source periods, units and reconciliation", "Review false positives and alternative explanations", "Require human approval before any event publication or notification"],
   },
   "regulatory-intelligence": {
     title: "Regulatory intelligence",
@@ -161,22 +168,34 @@ function TenderResearch() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<TenderDiscovery | null>(null);
   const [status, setStatus] = useState("Enter an exact procurement or medicine phrase to inspect recent official UK notices.");
+  const generationRef = useRef(0);
+  const scopeId = useId();
+  useEffect(() => () => { generationRef.current += 1; }, []);
+  function clearSearch() {
+    generationRef.current += 1;
+    setPhrase("");
+    setResult(null);
+    setBusy(false);
+    setStatus("Enter an exact procurement or medicine phrase to inspect recent official UK notices.");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const generation = ++generationRef.current;
     setBusy(true);
     setResult(null);
     setStatus("Inspecting a bounded official Find a Tender sample.");
     try {
       const next = await gatewayJson<TenderDiscovery>("v1/intelligence/tenders/uk/discovery?q=" + encodeURIComponent(phrase));
+      if (generation !== generationRef.current) return;
       setResult(next);
       setStatus(next.matches.length
         ? `${next.matches.length} matching source releases in ${next.examinedReleases} examined. Verify notices on the publisher's site.`
         : `No exact-phrase matches among ${next.examinedReleases} examined releases. This is not evidence that no tenders exist.`);
     } catch (error) {
-      setStatus(professionalError(error));
+      if (generation === generationRef.current) setStatus(professionalError(error));
     } finally {
-      setBusy(false);
+      if (generation === generationRef.current) setBusy(false);
     }
   }
 
@@ -187,10 +206,13 @@ function TenderResearch() {
       <label htmlFor={inputId}>Medicine or exact procurement phrase</label>
       <div className={styles.fieldRow}>
         <input id={inputId} type="search" minLength={2} maxLength={80} value={phrase}
-          onChange={(event) => setPhrase(event.currentTarget.value)} placeholder="Search by medicine name" required />
+          onChange={(event) => { generationRef.current += 1; setPhrase(event.currentTarget.value); setResult(null); setBusy(false); }}
+          aria-describedby={scopeId} enterKeyHint="search" autoComplete="off" placeholder="Search by medicine name" required />
+        {phrase ? <button type="button" className={styles.clearSearch} onClick={clearSearch} aria-label="Clear tender search">Clear</button> : null}
         <button type="submit" disabled={busy}>{busy ? "Checking source…" : "Inspect notices"}</button>
       </div>
     </form>
+    <p id={scopeId}>Search scope: a bounded public sample of recent UK Find a Tender releases. No search history is stored.</p>
     <p role="status" aria-live="polite">{status}</p>
     {result ? <div className={styles.results}>
       <p className={styles.eyebrow}>{result.publisher} · {result.retrievedAt}</p>
@@ -210,8 +232,20 @@ function TenderResearch() {
 
 function DraftReport({ kind, detail, analytics }: WorkspaceProps) {
   const [notes, setNotes] = useState("");
+  const [downloadRequested, setDownloadRequested] = useState(false);
+  const [downloadConfirmed, setDownloadConfirmed] = useState(false);
   const notesId = useId();
   const ready = Boolean(detail);
+  const hasUnexportedNotes = Boolean(notes.trim() && !downloadConfirmed);
+  useEffect(() => {
+    if (!hasUnexportedNotes) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [hasUnexportedNotes]);
   const download = () => {
     if (!detail) return;
     const passport = detail.investigationPassport;
@@ -252,15 +286,22 @@ function DraftReport({ kind, detail, analytics }: WorkspaceProps) {
     anchor.href = url;
     anchor.download = `novapharm-${cleanFilePart(kind)}-${cleanFilePart(detail.medicine.medicineId)}-draft.json`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    // Revoke after the browser has been allowed to begin its local download.
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    setDownloadRequested(true);
   };
   return <section className={styles.feature} aria-labelledby="draft-report-title">
     <h3 id="draft-report-title">{kind === "decision-workspace" ? "Prepare a decision review" : "Create an investigation brief"}</h3>
     <p>This local draft contains identity and evidence metadata, never unlicensed raw market rows. It is not saved, signed, sent or published.</p>
     <label htmlFor={notesId}>Review notes and unresolved assumptions (local until download)</label>
-    <textarea id={notesId} maxLength={2000} rows={4} value={notes} onChange={(event) => setNotes(event.currentTarget.value)}
+    <textarea id={notesId} maxLength={2000} rows={4} value={notes}
+      onChange={(event) => { setNotes(event.currentTarget.value); setDownloadRequested(false); setDownloadConfirmed(false); }}
       placeholder="Record alternatives, evidence gaps and questions for the responsible reviewer. Do not include patient or confidential personal data." />
     <button type="button" onClick={download} disabled={!ready}>Download unapproved investigation draft</button>
+    {hasUnexportedNotes ? <p role="status">Unsaved local notes: download your draft before leaving this page. Notes are never stored on our servers by this tool.</p> : null}
+    {downloadRequested ? <div><p role="status">Download requested. No report was published or submitted.</p>
+      {!downloadConfirmed ? <button type="button" onClick={() => setDownloadConfirmed(true)}>I have saved my draft copy</button> : <p role="status">Draft copy confirmed locally. Editing the notes again will require a new download.</p>}
+    </div> : null}
     {!ready ? <p>Select a medicine with the search bar before generating its investigation record.</p> : null}
   </section>;
 }
@@ -294,7 +335,7 @@ export function ProfessionalWorkspace({ kind, detail, analytics }: WorkspaceProp
       : kind === "observed-market" ? "primary_care"
         : kind === "decision-workspace" ? "decision"
           : kind === "portfolio" ? "opportunity"
-            : kind === "alerts" ? "forecast" : "decision";
+            : kind === "alerts" || kind === "signals" ? "forecast" : "decision";
   const lens = passport?.lenses.find((item) => item.id === relatedLens);
   return <section className={styles.workspace} aria-label={workflow.title}>
     <header className={styles.intro}>
@@ -309,7 +350,7 @@ export function ProfessionalWorkspace({ kind, detail, analytics }: WorkspaceProp
       <ol>{workflow.checks.map((check) => <li key={check}>{check}</li>)}</ol>
     </div>
     {kind === "tender-intelligence" ? <TenderResearch /> : null}
-    {kind === "alerts" ? <AlertPreview analytics={analytics} /> : null}
+    {kind === "alerts" || kind === "signals" ? <AlertPreview analytics={analytics} /> : null}
     {kind === "reports" || kind === "decision-workspace" ? <DraftReport kind={kind} detail={detail} analytics={analytics} /> : null}
     {kind === "portfolio" ? <p className={styles.disclaimer}>Portfolio records are not writable until tenant ownership, authorised product rights and durable audit history are proven. No stock or marketing authorisation is inferred.</p> : null}
     {kind === "observed-market" ? <p className={styles.disclaimer}>Use the source-separated filters and charts in the connected market view. Do not combine EPD, PCA, secondary care or private commercial volumes.</p> : null}
