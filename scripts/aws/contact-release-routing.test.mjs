@@ -486,7 +486,7 @@ test("private enterprise readiness artifacts cannot dispatch the unrelated publi
   const dispatcher = get("dispatch-approved-aws-contact-release.yml");
   const publisher = get("publish-aws-contact-production.yml");
   const protectedPaths = (source, name) => {
-    const line = source.match(/case "\\$changed" in\\s*\\n\\s*([^\\n]+)/)?.[1];
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(line?.trim().endsWith(")"), name + " must retain the private changed-file case arm");
     return new Set(line.trim().slice(0, -1).split("|"));
   };
