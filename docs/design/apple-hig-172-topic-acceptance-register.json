@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 240,
+    "platformsAssessed": 270,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -318,7 +318,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -330,23 +330,28 @@
       "sourceRequestedPlatforms": "iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iPad browsers, adapt the real public and protected web layouts to varying window widths, orientation, text scaling and multiple input modes. An iPad responsive web layout is not proof that an installed native iPad app or multitasking stage works."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For a signed iPadOS build, support resizable windows, native split navigation where warranted, touch and hardware keyboard together, Dynamic Type and VoiceOver. Do not equate Expo screenshots or Swift source with physical iPad acceptance."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "This is Apple iPadOS-specific platform guidance. NovaPharm Android tablet and foldable adaptability needs its own Android platform/accessibility acceptance; an iPadOS design pattern does not automatically constitute an Android native requirement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados.md. Official Apple platform article explains large display, variable viewing distance, combined touch/keyboard/trackpad/Pencil/voice inputs, multiscene use and adapting to size/orientation/Dark Mode/Dynamic Type. It prioritizes unobstructed content and appropriately dense responsive controls.",
+        "NovaPharm web relevance and acceptance boundary: On iPad browsers, adapt the real public and protected web layouts to varying window widths, orientation, text scaling and multiple input modes. An iPad responsive web layout is not proof that an installed native iPad app or multitasking stage works.",
+        "Native mapping: iOS — For a signed iPadOS build, support resizable windows, native split navigation where warranted, touch and hardware keyboard together, Dynamic Type and VoiceOver. Do not equate Expo screenshots or Swift source with physical iPad acceptance.; Android — This is Apple iPadOS-specific platform guidance. NovaPharm Android tablet and foldable adaptability needs its own Android platform/accessibility acceptance; an iPadOS design pattern does not automatically constitute an Android native requirement.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Getting started",
@@ -1669,7 +1674,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1681,23 +1686,28 @@
       "sourceRequestedPlatforms": "Web, iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For order lines, category reorder or document upload, offer accessible buttons, move/copy indicators and undo or confirmation; never make drag the sole way to complete a regulated order or alter stock/clinical data."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native accessible drag source/drop descriptors and alternative actions if such a feature exists; test operation semantics, irreversible moves, VoiceOver and permissions on actual devices, not just visual drag handles."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android drag/drop accessibility affordances with TalkBack and keyboard alternatives, stable items and safe data-transfer permissions; Apple-specific descriptor APIs do not transfer to Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/drag-and-drop.md. Apple distinguishes copy versus move based on containers, emphasizes clear drag previews and destination feedback, explicit accessible alternatives, multi-item support when helpful and safe undo. iOS/iPadOS drag is available via touch, pointers and Full Keyboard Access.",
+        "NovaPharm web relevance and acceptance boundary: For order lines, category reorder or document upload, offer accessible buttons, move/copy indicators and undo or confirmation; never make drag the sole way to complete a regulated order or alter stock/clinical data.",
+        "Native mapping: iOS — Use native accessible drag source/drop descriptors and alternative actions if such a feature exists; test operation semantics, irreversible moves, VoiceOver and permissions on actual devices, not just visual drag handles.; Android — Use Android drag/drop accessibility affordances with TalkBack and keyboard alternatives, stable items and safe data-transfer permissions; Apple-specific descriptor APIs do not transfer to Android.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Patterns",
@@ -2116,7 +2126,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/multitasking",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/multitasking.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2128,23 +2138,28 @@
       "sourceRequestedPlatforms": "iPadOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Preserve draft input, filter state and user focus where authorized when tabs/windows move or resize; avoid losing medicine search or unsent order state; never continue protected transactions invisibly in a suspended browser."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For iOS/iPadOS, respect scene lifecycle, background task restrictions, resizable iPad windows and context restoration; provide clear recovery after interruption, and do not claim a sandboxed app supports platform multitasking from static code."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply equivalent Android task lifecycle, process recreation, window/multiwindow size changes, interruption and preserved user work; test on real Android tablets/handsets with TalkBack and secure authenticated state."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/multitasking.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/multitasking.md. The official article requires saving and restoring working context when apps switch, pausing activities that require continuous attention, handling interruption and background operation carefully, sparing notifications, and adapting iPad windows without trying to control system multitasking configuration.",
+        "NovaPharm web relevance and acceptance boundary: Preserve draft input, filter state and user focus where authorized when tabs/windows move or resize; avoid losing medicine search or unsent order state; never continue protected transactions invisibly in a suspended browser.",
+        "Native mapping: iOS — For iOS/iPadOS, respect scene lifecycle, background task restrictions, resizable iPad windows and context restoration; provide clear recovery after interruption, and do not claim a sandboxed app supports platform multitasking from static code.; Android — Apply equivalent Android task lifecycle, process recreation, window/multiwindow size changes, interruption and preserved user work; test on real Android tablets/handsets with TalkBack and secure authenticated state.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Patterns",
@@ -2627,7 +2642,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/content",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/content.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2639,23 +2654,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use this collection solely as an inventory of applicable charts, images, rich text and embedded web content; each real public/portal component needs independent semantic, source-rights, security and accessibility verification."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Treat listed Apple-native content views as candidate controls only when used in signed iOS/iPadOS screens. Separately test accessible charts/images, text editing and secure embedded WKWebView handling."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map collection intent to Android-native text/image/chart/web components without claiming UIKit or SwiftUI content controls exist on Android; validate TalkBack, sandboxing and data provenance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/content.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/content.md. This official collectionGroup lists Charts, Image views, Text views and Web views. It is an organizational index rather than one independently testable content component or blanket authorization to embed arbitrary web material.",
+        "NovaPharm web relevance and acceptance boundary: Use this collection solely as an inventory of applicable charts, images, rich text and embedded web content; each real public/portal component needs independent semantic, source-rights, security and accessibility verification.",
+        "Native mapping: iOS — Treat listed Apple-native content views as candidate controls only when used in signed iOS/iPadOS screens. Separately test accessible charts/images, text editing and secure embedded WKWebView handling.; Android — Map collection intent to Android-native text/image/chart/web components without claiming UIKit or SwiftUI content controls exist on Android; validate TalkBack, sandboxing and data provenance.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Components",
@@ -4884,7 +4904,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/status",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/status.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4896,23 +4916,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Inventory progress, status gauges and any actual rating UI as separate controls; communicate real loading/error without spinners alone and avoid implying pharma stock or medical progress based on decorative rings."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use only relevant iOS status indicators in actual screens and VoiceOver; Apple Watch Activity rings are not a native iPhone medical supply KPI requirement. State transition and data-source correctness are separately verified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use platform-appropriate Material progress/gauge/rating semantics and TalkBack, independently scoped per screen; this category index is not proof of Android production implementation."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/status.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/status.md. Apple's collectionGroup for status points to Activity rings, Gauges, Progress indicators and Rating indicators. It is an index; activity rings are fitness-related, not a universal productivity app requirement.",
+        "NovaPharm web relevance and acceptance boundary: Inventory progress, status gauges and any actual rating UI as separate controls; communicate real loading/error without spinners alone and avoid implying pharma stock or medical progress based on decorative rings.",
+        "Native mapping: iOS — Use only relevant iOS status indicators in actual screens and VoiceOver; Apple Watch Activity rings are not a native iPhone medical supply KPI requirement. State transition and data-source correctness are separately verified.; Android — Use platform-appropriate Material progress/gauge/rating semantics and TalkBack, independently scoped per screen; this category index is not proof of Android production implementation.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Components",
@@ -5449,7 +5474,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/widgets",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/widgets.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5461,23 +5486,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple WidgetKit Home/Lock Screen system widgets are not web dashboard cards; browser or PWA informational panels are separate web UI and cannot be counted as implementing Apple-native widget families."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If an approved iOS/iPadOS WidgetKit extension is built, show minimal permission-safe and timely information, support family sizes, tint/clear/dark treatments, VoiceOver and data minimization. No signed widget extension is currently production verified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple WidgetKit is not an Android framework. Android launcher App Widgets, if developed, require separate Android-specific lifecycle, privacy, TalkBack and deployment testing."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/widgets.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/widgets.md. Apple's WidgetKit system widgets provide glanceable timely information and focused interactions in OS-controlled locations; sizing and rendering vary by device and appearance, with additional accessory and system widget families. This is not a generic web dashboard card.",
+        "NovaPharm web relevance and acceptance boundary: Apple WidgetKit Home/Lock Screen system widgets are not web dashboard cards; browser or PWA informational panels are separate web UI and cannot be counted as implementing Apple-native widget families.",
+        "Native mapping: iOS — If an approved iOS/iPadOS WidgetKit extension is built, show minimal permission-safe and timely information, support family sizes, tint/clear/dark treatments, VoiceOver and data minimization. No signed widget extension is currently production verified.; Android — Apple WidgetKit is not an Android framework. Android launcher App Widgets, if developed, require separate Android-specific lifecycle, privacy, TalkBack and deployment testing.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Inputs",
@@ -5486,7 +5516,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/inputs",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/inputs.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5498,23 +5528,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Maintain an input-support inventory for keyboard, touch, pointer and authorized device features; do not count Apple Watch Crown or Apple TV Remote as required browser interactions merely because they appear in the Apple HIG index."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Scope individually to the installed Apple device features actually supported by a native signed iOS/iPadOS build. Only Apple hardware capabilities available on target devices can be tested/claimed as applicable."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Translate input-accessibility goals to Android keyboard, touch, pointer and supported sensors; do not claim Apple-only Action button, Digital Crown or Apple Pencil APIs as Android native implementations."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/inputs.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/inputs.md. The official Inputs collectionGroup indexes device hardware and human-control modalities including Action button, Apple Pencil, Camera Control, Digital Crown, Eyes, Focus, Game controls, Gyro, Keyboards, Nearby interactions, Pointing devices and Remotes. Several are platform/device-specific, not general web components.",
+        "NovaPharm web relevance and acceptance boundary: Maintain an input-support inventory for keyboard, touch, pointer and authorized device features; do not count Apple Watch Crown or Apple TV Remote as required browser interactions merely because they appear in the Apple HIG index.",
+        "Native mapping: iOS — Scope individually to the installed Apple device features actually supported by a native signed iOS/iPadOS build. Only Apple hardware capabilities available on target devices can be tested/claimed as applicable.; Android — Translate input-accessibility goals to Android keyboard, touch, pointer and supported sensors; do not claim Apple-only Action button, Digital Crown or Apple Pencil APIs as Android native implementations.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Inputs",
@@ -5866,7 +5901,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/keyboards",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/keyboards.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5878,23 +5913,28 @@
       "sourceRequestedPlatforms": "Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Check browser Tab and Shift+Tab traversal, visible focus, Escape dismissal and preserved standard shortcuts on corporate and protected pages; prevent custom key handlers from capturing system navigation or leaking sensitive customer data."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iPhone/iPad keyboard and Full Keyboard Access semantics, preserve native shortcut conventions and native focus; test actual external keyboard, VoiceOver and form completion on signed device builds."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Follow Android hardware keyboard, TalkBack and native focus behavior including Back and escape where appropriate; standard Command shortcuts from macOS must not be assumed to exist on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/keyboards.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/keyboards.md. Apple documents systemwide physical keyboard use, Full Keyboard Access on supported platforms, familiar shortcuts and not remapping standard commands. On iPad, defer native control activation to Full Keyboard Access rather than implementing a conflicting parallel focus system; virtual keyboards are covered elsewhere.",
+        "NovaPharm web relevance and acceptance boundary: Check browser Tab and Shift+Tab traversal, visible focus, Escape dismissal and preserved standard shortcuts on corporate and protected pages; prevent custom key handlers from capturing system navigation or leaking sensitive customer data.",
+        "Native mapping: iOS — Use iPhone/iPad keyboard and Full Keyboard Access semantics, preserve native shortcut conventions and native focus; test actual external keyboard, VoiceOver and form completion on signed device builds.; Android — Follow Android hardware keyboard, TalkBack and native focus behavior including Back and escape where appropriate; standard Command shortcuts from macOS must not be assumed to exist on Android.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Inputs",
@@ -6167,7 +6207,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6179,23 +6219,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "StoreKit Apple In-App Purchase is not a generic web/Stripe subscription checkout. A web paid-tier pricing page follows its own payment, accessibility, consumer and privacy requirements; it does not prove App Store compliance for digital services accessed in a native iOS app."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If NovaPharm ships premium Intelligence content or subscriptions inside a distributed native iOS app, product classification and App Review rules must first be independently resolved; use approved StoreKit offerings/receipts, localized trial-to-paid disclosure, restore/refund flows and a signed physical-device review. No automatic Stripe substitution."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple StoreKit/In-App Purchase is not an Android billing API. Digital subscriptions inside an Android app require separate applicable Play billing/policy review and verified native implementation; do not count Android as satisfying Apple StoreKit."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase.md. Apple's September 2026 In-App Purchase guidance distinguishes StoreKit purchases of digital content/premium features/subscriptions from Apple Pay for physical goods. It requires accurate price, localized subscription/trial terms, availability checks, system confirmation sheets, restoration, refund help and consistency with current App Review Guidelines.",
+        "NovaPharm web relevance and acceptance boundary: StoreKit Apple In-App Purchase is not a generic web/Stripe subscription checkout. A web paid-tier pricing page follows its own payment, accessibility, consumer and privacy requirements; it does not prove App Store compliance for digital services accessed in a native iOS app.",
+        "Native mapping: iOS — If NovaPharm ships premium Intelligence content or subscriptions inside a distributed native iOS app, product classification and App Review rules must first be independently resolved; use approved StoreKit offerings/receipts, localized trial-to-paid disclosure, restore/refund flows and a signed physical-device review. No automatic Stripe substitution.; Android — Apple StoreKit/In-App Purchase is not an Android billing API. Digital subscriptions inside an Android app require separate applicable Play billing/policy review and verified native implementation; do not count Android as satisfying Apple StoreKit.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Technologies",
@@ -6204,7 +6249,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/apple-pay",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pay.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6216,23 +6261,28 @@
       "sourceRequestedPlatforms": "iOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For any actually enabled Nutraxin physical-goods Apple Pay via supported browser/Stripe, show genuine Apple Pay only when available, preserve approved branded button assets, merchant/tax/shipping clarity and transaction failure/cancellation states; a working demo or code path does not prove fulfilment."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Conditional on approved physical-goods Apple Pay use in a signed native application: use PassKit and capability checks, accurate payment sheet and shipping, do not replace native billing for digital in-app content, and independently verify real checkout/regulated permissions."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple Pay/PassKit is not an Android native payment integration. Do not claim Apple Pay is generally available on an Android app; any Android physical-goods wallet checkout needs independently approved payment-provider support and platform-specific testing."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pay.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple primary Markdown individually inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/apple-pay.md. Apple Pay handles physical goods, services and eligible other payments in supported apps and browsers, subject to capability detection and official button/mark rules. Apple asks for cohesive checkout, clear merchant/total, correct shipping, privacy disclosures and actual payment-sheet result and recovery. It is distinct from App Store digital In-App Purchase.",
+        "NovaPharm web relevance and acceptance boundary: For any actually enabled Nutraxin physical-goods Apple Pay via supported browser/Stripe, show genuine Apple Pay only when available, preserve approved branded button assets, merchant/tax/shipping clarity and transaction failure/cancellation states; a working demo or code path does not prove fulfilment.",
+        "Native mapping: iOS — Conditional on approved physical-goods Apple Pay use in a signed native application: use PassKit and capability checks, accurate payment sheet and shipping, do not replace native billing for digital in-app content, and independently verify real checkout/regulated permissions.; Android — Apple Pay/PassKit is not an Android native payment integration. Do not claim Apple Pay is generally available on an Android app; any Android physical-goods wallet checkout needs independently approved payment-provider support and platform-specific testing.. This source review alone does not establish native feature existence, application-store entitlement, payment authorization, user journey, accessibility audit or independently signed release."
+      ]
     },
     {
       "section": "Technologies",
