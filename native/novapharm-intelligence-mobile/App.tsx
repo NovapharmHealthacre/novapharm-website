@@ -23,11 +23,12 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
+import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "maps" | "visual" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "maps" | "countries" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -107,7 +108,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "maps" || selected === "visual" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -204,7 +205,9 @@ export default function App() {
         <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
 
-      {screen === "sources" ? (
+      {screen === "countries" ? (
+        <CountryDirectoryScreen />
+      ) : screen === "sources" ? (
         <FlatList
           key={twoColumns ? "sources-wide" : "sources-narrow"}
           style={styles.list}
@@ -276,6 +279,7 @@ export default function App() {
             <>
               <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
               {([
+                { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },

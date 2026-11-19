@@ -779,6 +779,162 @@ test("country release-ledger is private-only and cannot dispatch the corporate A
   }
 });
 
+test("all 101-country scope proposal paths remain private-only in both AWS/public selectors", () => {
+  const scopePaths = [
+    ".github/workflows/intelligence-country-101-scope-audit.yml",
+    "docs/intelligence/country-101-scope-proposal-20261118.json",
+    "docs/intelligence/country-101-scope-proposal-20261118.md",
+    "scripts/test-intelligence-country-101-scope-proposal.mjs",
+    "src/core/intelligence-country-101-proposed-ledger.mjs",
+    "scripts/test-intelligence-country-101-proposed-ledger.mjs",
+    "scripts/render-intelligence-country-101-proposed-ledger.mjs"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, file + " must have a real changed-file Bash case");
+    assert.ok(classifier.trim().endsWith(")"), file + " must close the exact private Bash case arm");
+    const privatePaths = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
+    for (const path of scopePaths) {
+      assert.ok(privatePaths.has(path), file + " would publish scope-only research: " + path);
+    }
+    assert.ok(source.includes("found_ml=true"), file + " must mark the matched research paths private");
+    assert.ok(source.includes("private_only=true"), file + " must preserve the restrictive default");
+  }
+});
+
+test("country-specific source-only adapters cannot unintentionally dispatch public Pages or AWS", () => {
+  // Exact paths from #838, #842, #846 and #847. Do NOT classify server.mjs
+  // from #844 as private: that real API entry point has separate deploy review.
+  const countrySourcePaths = [
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs",
+    ".github/workflows/intelligence-es-cima-public-live-probe.yml",
+    "docs/intelligence/spain-cima-official-live-probe-20261118.md",
+    "scripts/run-intelligence-es-cima-public-live-probe.mjs",
+    "scripts/test-intelligence-es-cima-live-quarantine.mjs",
+    "scripts/test-intelligence-es-cima-public-live-probe.mjs",
+    "src/core/intelligence-es-cima-public-live-probe.mjs",
+    ".github/workflows/intelligence-canada-dpd-public-live-source.yml",
+    "docs/intelligence/canada-dpd-public-live-source-20261118.md",
+    "scripts/run-intelligence-canada-dpd-public-live-probe.mjs",
+    "scripts/test-intelligence-canada-dpd-public-live-probe.mjs",
+    "src/core/intelligence-canada-dpd-public-live-probe.mjs",
+    ".github/workflows/intelligence-enterprise-readiness.yml",
+    "docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md",
+    "scripts/audit-intelligence-enterprise-readiness.mjs",
+    "scripts/test-intelligence-enterprise-readiness.mjs",
+    "src/core/intelligence-enterprise-readiness.mjs"
+  ];
+  assert.equal(new Set(countrySourcePaths).size, 22);
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, workflow + " missing active source-only classifier");
+    const allowed = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
+    for (const path of countrySourcePaths) {
+      assert.ok(allowed.has(path), workflow + " would publish private pharmaceutical source-only file: " + path);
+    }
+    assert.ok(allowed.has(".github/workflows/browser-acceptance.yml"));
+    assert.ok(allowed.has("docs/ai-risk-register.md"));
+    assert.ok(!allowed.has("server.mjs"), "The protected server entry point must not bypass deployment acceptance");
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
+
+test("inherited 2026-11-18 sparse-circuit research files stay private-only after country PR stack reconciliation", () => {
+  const inherited = [
+      ".github/workflows/nova-ml-native-apple.yml",
+      ".github/workflows/intelligence-sparse-circuit-assurance.yml",
+      ".github/workflows/intelligence-sparse-transformer-experiment.yml",
+      ".github/workflows/nova-sparse-circuit-android.yml",
+      "docs/architecture/nova-scientific-intelligence-programme.md",
+      "docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md",
+      "docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md",
+      "docs/intelligence/npi-sparse-circuit-summary-v1.schema.json",
+      "native/novapharm-intelligence-mobile/App.tsx",
+      "native/novapharm-intelligence-mobile/README.md",
+      "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs",
+      "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json",
+      "scripts/research/tiny-sparse-transformer-experiment.py",
+      "scripts/research/toy-sparse-circuit-intervention.mjs",
+      "scripts/research/validate-trained-sparse-transformer-report.mjs",
+      "scripts/test-intelligence-sparse-circuit-assurance.mjs",
+      "scripts/test-intelligence-sparse-circuit-cross-platform.mjs",
+      "scripts/test-intelligence-sparse-circuit-toy-intervention.mjs",
+      "scripts/test-intelligence-sparse-circuit-upstream-governance.mjs",
+      "scripts/test-intelligence-trained-sparse-transformer-report.mjs",
+      "src/ai/model-registry.mjs",
+      "src/core/ai/model-registry.mjs",
+      "src/core/intelligence-sparse-circuit-assurance.mjs"
+  ];
+  for (const name of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const workflow = get(name);
+    const line = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, name + " must retain real Bash case classifier");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
+    for (const file of inherited) {
+      assert.ok(patterns.includes(file) ||
+        (file.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        name + " would accidentally publish a private sparse-circuit file: " + file);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Actual protected backend runtime changes require independent release acceptance");
+  }
+});
+
+test("101-country web and Expo catalogue paths are private-only; no backend server bypass", () => {
+  const candidatePaths = [
+    ".github/workflows/intelligence-country-web-mobile-parity.yml",
+    "docs/intelligence/country-101-client-catalog-20261118.json",
+    "scripts/generate-intelligence-country-client-catalog.mjs",
+    "scripts/test-intelligence-country-client-catalog.mjs",
+    "apps/portal/components/country-source-coverage.tsx",
+    "apps/portal/components/medicines-intelligence.tsx",
+    "native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx"
+  ];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, workflow+" missing active source classifier");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
+    for (const p of candidatePaths) {
+      assert.ok(patterns.includes(p) ||
+        (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
+        (p.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        workflow+" could publish candidate-only country metadata: "+p);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Real protected server changes must retain independent production acceptance");
+  }
+});
+
+test("all 24 official publisher research references remain private-only and cannot release AWS or Pages",()=>{
+  const paths=[
+    "docs/intelligence/country-101-new-24-publisher-research-20261118.json",
+    "scripts/test-intelligence-24-publisher-research.mjs"
+  ];
+  for(const name of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]){
+    const workflow=get(name);
+    const entry=workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(entry && entry.endsWith(")"),name+" must contain a closed Bash case arm");
+    assert.ok(!entry.includes(")|"),name+" has an early Bash case terminator");
+    const privateEntries=new Set(entry.replace(/\)$/u,"").split("|"));
+    for(const p of paths){
+      assert.ok(privateEntries.has(p),name+" could publish candidate-only official research metadata: "+p);
+    }
+    assert.ok(!privateEntries.has("server.mjs"),
+      "protected backend production must not bypass independent deployment acceptance");
+  }
+});
+
 test("private publisher Bash case arms have exactly one terminating parenthesis", () => {
   const sourcePaths = [
   ".github/workflows/intelligence-global-secondary-source-contracts.yml",
