@@ -6,6 +6,8 @@ on:
       - 'scripts/test-intelligence-quantum-research.mjs'
       - 'scripts/test-intelligence-quantum-cross-platform.mjs'
       - 'scripts/research/quantum-bell-pilot.py'
+      - 'scripts/research/quantum-h2-benchmark.py'
+      - 'scripts/research/test-quantum-h2-benchmark.py'
       - 'docs/intelligence/quantum-research-program-v1.json'
       - '.github/workflows/intelligence-quantum-research.yml'
       - 'native/novapharm-intelligence-mobile/**'
@@ -27,3 +29,6 @@ jobs:
       - run: node --test scripts/test-intelligence-quantum-research.mjs scripts/test-intelligence-quantum-cross-platform.mjs
       - run: python -m py_compile scripts/research/quantum-bell-pilot.py
       - run: python scripts/research/quantum-bell-pilot.py --help
+      - run: python -m py_compile scripts/research/quantum-h2-benchmark.py scripts/research/test-quantum-h2-benchmark.py
+      - run: python scripts/research/test-quantum-h2-benchmark.py -v
+      - run: python scripts/research/quantum-h2-benchmark.py
