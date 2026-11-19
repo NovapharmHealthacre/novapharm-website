@@ -698,7 +698,7 @@ test("inherited 2026-11-18 sparse-circuit research files stay private-only after
     const workflow = get(name);
     const line = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(line, name + " must retain real Bash case classifier");
-    const patterns = line.split("|");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
     for (const file of inherited) {
       assert.ok(patterns.includes(file) ||
         (file.startsWith("native/novapharm-intelligence-mobile/") &&
@@ -707,5 +707,32 @@ test("inherited 2026-11-18 sparse-circuit research files stay private-only after
     }
     assert.ok(!patterns.includes("server.mjs"),
       "Actual protected backend runtime changes require independent release acceptance");
+  }
+});
+
+test("101-country web and Expo catalogue paths are private-only; no backend server bypass", () => {
+  const candidatePaths = [
+    ".github/workflows/intelligence-country-web-mobile-parity.yml",
+    "docs/intelligence/country-101-client-catalog-20261118.json",
+    "scripts/generate-intelligence-country-client-catalog.mjs",
+    "scripts/test-intelligence-country-client-catalog.mjs",
+    "apps/portal/components/country-source-coverage.tsx",
+    "apps/portal/components/medicines-intelligence.tsx",
+    "native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx"
+  ];
+  for (const workflow of ["dispatch-approved-aws-contact-release.yml","publish-aws-contact-production.yml"]) {
+    const source = get(workflow);
+    const line = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, workflow+" missing active source classifier");
+    const patterns = line.trim().replace(/\)$/u, "").split("|");
+    for (const p of candidatePaths) {
+      assert.ok(patterns.includes(p) ||
+        (p.startsWith("apps/portal/") && patterns.includes("apps/portal/*")) ||
+        (p.startsWith("native/novapharm-intelligence-mobile/") &&
+          patterns.includes("native/novapharm-intelligence-mobile/*")),
+        workflow+" could publish candidate-only country metadata: "+p);
+    }
+    assert.ok(!patterns.includes("server.mjs"),
+      "Real protected server changes must retain independent production acceptance");
   }
 });

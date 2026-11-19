@@ -47,6 +47,16 @@ The **Research** tab reads the existing protected web catalogue from `apps/porta
 
 No model inference, on-device PyTorch/Core ML/LiteRT, patient data, auth, server API, private evidence, source licences or operational action is performed. No synthetic score is presented as live, and the view does not establish scientific, clinical or commercial validity. Source-only math and governance tests live in PRs #823 and #826; real authorised native inference needs a separately signed and tested app, registered model, data rights and production approval. Run `npm run test:contracts` and the isolated iOS/Android bundle preflight before considering an app build. This is not an app-store release.
 
+## 101-country source coverage (web / Expo iOS / Expo Android)
+
+The Expo **Countries** tab now reads the **exact same immutable, non-sensitive candidate catalogue** as the protected web Data Sources view: `docs/intelligence/country-101-client-catalog-20261118.json`.
+
+The client matrix is generated from the independent 77-country/101-source release ledger plus the 24 additional country research proposals. It contains **101 countries**, **77 countries with one or more original candidate sources**, **24 geography-only country scopes**, and **zero approved/customer-live countries**. The legacy **Sources** tab still presents all 101 original source entries across national (89), EU/EEA (3) and Global (9) labels.
+
+This is bundled public reference **metadata**, not downloaded national medicine datasets. No direct regulator requests, credentials, protected backend authentication, licensed pharmaceutical records, medical recommendations or production deployment were added. The same Expo source runs on both iOS and Android, but **neither mobile binary is signed or distributed**. It is distinct from the separate native Swift/Kotlin research prototypes.
+
+Validate with `node scripts/generate-intelligence-country-client-catalog.mjs --check` and `node --test scripts/test-intelligence-country-client-catalog.mjs` from the repository root. Review privacy, regulatory reuse licences, authentication, tenant isolation, signed app IDs and actual source ingestion before enabling any live API.
+
 ## System appearance and legibility — 18 November 2026
 
 The Expo candidate now follows iOS/Android system light and dark appearance using original NovaPharm semantic tokens from `appearance.ts` and React Native `useColorScheme()`. `app.json` selects `userInterfaceStyle: automatic`; the isolated app declares `expo-system-ui` version `~58.0.7` and its config plugin for Android SDK 58 native support. Navigation, status-bar content, source cards, search filters and the offline research review share the same system-responsive palette. The canonical corporate red accent is retained on light canvas; a brighter accessible red variant is used on dark surfaces. System font scaling remains enabled. No raw Apple fonts, SF Symbols, credentials or remote data are introduced.
