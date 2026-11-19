@@ -43,3 +43,35 @@ test('releasing a reservation twice makes no additional stock movements',async()
  const result=await repo.release({reservationId:request.reservationId,actorId:'warehouse-123',reason:'checkout_expired'});
  assert.equal(result.alreadyExisted,true);assert.deepEqual(writes,[]);
 });
+
+test('MongoDB session operations are serial inside one reservation transaction',async()=>{
+ let active=0,maxActive=0,reads=0,ends=0;
+ const database={collection:()=>({
+  async findOne(){
+   active++;maxActive=Math.max(maxActive,active);reads++;
+   await Promise.resolve();
+   active--;
+   return null;
+  },
+  find:()=>({async toArray(){return [];}})
+ })};
+ const client={startSession:()=>({
+  async withTransaction(fn){return fn();},
+  async endSession(){ends++;}
+ })};
+ const repo=createAtlasReservationRepository({client,database,clock:()=>new Date('2026-11-11T10:00:00Z')});
+ await assert.rejects(repo.reserve(request),/Product brand or identity mismatch/);
+ assert.equal(reads,7,'reservation plus six separate evidence reads');
+ assert.equal(maxActive,1,'no Promise.all inside a MongoDB transaction');
+ assert.equal(ends,1,'transaction session always closed');
+});
+test('stale or malformed reserved idempotency keys cannot reopen an expired stock hold',async()=>{
+ for(const expiresAt of ['2026-11-11T09:59:59Z','not-a-time',null]){
+  const {repo,writes}=fixture({stock_reservations:{
+   'reserve-123456':{_id:request.reservationId,orderId:request.orderId,
+    productId:request.productId,offerId:request.offerId,quantity:request.quantity,
+    status:'reserved',expiresAt}}});
+  await assert.rejects(repo.reserve(request),/Expired reservation cannot be reused/);
+  assert.deepEqual(writes,[]);
+ }
+});

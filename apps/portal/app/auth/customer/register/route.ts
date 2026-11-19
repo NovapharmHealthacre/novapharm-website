@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { createCustomerLoginTransaction } from "../../../../../../src/core/intelligence-customer-oidc.mjs";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +12,16 @@ export const dynamic = "force-dynamic";
  * Identity self-registration DOES NOT create a tenant, accept commercial
  * contracts, activate Stripe Checkout or grant medicines-data access.
  */
-export function GET(): Response {
+export function GET(request?: NextRequest): Response {
   try {
+    const requestedPlan = request?.nextUrl.searchParams.get("plan") ?? undefined;
+    const requestedCycle = request?.nextUrl.searchParams.get("cycle") ?? undefined;
+    // The core contract rejects partial, unknown and enterprise selections.
+    // Do not rely on the browser query string after this signed transaction.
     const txn = createCustomerLoginTransaction({
       signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+      requestedPlan,
+      requestedCycle,
     });
     const destination = new URL(txn.authorizeUrl);
     if (destination.protocol !== "https:" ||

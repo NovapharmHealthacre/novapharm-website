@@ -226,21 +226,85 @@
 
   <section id="intelligence-workspaces" class="npi-section npi-workspaces" aria-labelledby="npi-workspaces-title">
     <div class="npi-wrap">
-      <div class="npi-section-heading">
-        <p class="npi-kicker">THE WORKSPACES</p>
-        <h2 id="npi-workspaces-title">From the molecule<br>to the market.</h2>
-        <p>Specialised perspectives organised around a shared medicine identity, with each capability released only when its underlying data and controls are ready.</p>
+      <div class="npi-journey" data-npi-journey data-active-stage="1">
+        <div class="npi-journey-scene" aria-hidden="true"></div>
+        <div class="npi-journey-inner">
+          <div class="npi-journey-heading">
+            <p class="npi-journey-eyebrow">THE WORKSPACES</p>
+            <h2 id="npi-workspaces-title">From the molecule<br>to the market.</h2>
+            <p>One connected journey, from a medicine's identity and evidence to market understanding and accountable decisions.</p>
+          </div>
+          <div class="npi-journey-stages" role="group" aria-label="Explore the eight intelligence workspaces">
+          <button class="npi-journey-step is-active" type="button" data-npi-journey-step="0" aria-label="Step 1 of 8: Medicine identity" aria-pressed="true" aria-controls="npi-journey-detail" style="--step:0">
+            <span class="npi-journey-number">01</span>
+            <span class="npi-journey-name">Medicine identity</span>
+            <span class="npi-journey-teaser">Know exactly which medicine you're studying.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="1" aria-label="Step 2 of 8: Evidence &amp; regulation" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:1">
+            <span class="npi-journey-number">02</span>
+            <span class="npi-journey-name">Evidence &amp; regulation</span>
+            <span class="npi-journey-teaser">Bring the evidence into view.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="2" aria-label="Step 3 of 8: Market &amp; geography" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:2">
+            <span class="npi-journey-number">03</span>
+            <span class="npi-journey-name">Market &amp; geography</span>
+            <span class="npi-journey-teaser">See where the opportunities are.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="3" aria-label="Step 4 of 8: Forecasts &amp; signals" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:3">
+            <span class="npi-journey-number">04</span>
+            <span class="npi-journey-name">Forecasts &amp; signals</span>
+            <span class="npi-journey-teaser">Understand what may come next.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="4" aria-label="Step 5 of 8: Supply, pricing &amp; tenders" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:4">
+            <span class="npi-journey-number">05</span>
+            <span class="npi-journey-name">Supply, pricing &amp; tenders</span>
+            <span class="npi-journey-teaser">Connect demand to supply.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="5" aria-label="Step 6 of 8: Biotech &amp; capital" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:5">
+            <span class="npi-journey-number">06</span>
+            <span class="npi-journey-name">Biotech &amp; capital</span>
+            <span class="npi-journey-teaser">Discover what's developing.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="6" aria-label="Step 7 of 8: Portfolio &amp; decisions" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:6">
+            <span class="npi-journey-number">07</span>
+            <span class="npi-journey-name">Portfolio &amp; decisions</span>
+            <span class="npi-journey-teaser">Turn insight into a decision.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="7" aria-label="Step 8 of 8: Reports &amp; integrations" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:7">
+            <span class="npi-journey-number">08</span>
+            <span class="npi-journey-name">Reports &amp; integrations</span>
+            <span class="npi-journey-teaser">Take the intelligence with you.</span>
+          </button>
+          </div>
+          <div class="npi-journey-line" aria-hidden="true">
+            <span class="npi-journey-rail"></span>
+            <span data-npi-journey-marker="0" class="npi-journey-marker is-active" style="--marker-index:0"></span>
+            <span data-npi-journey-marker="1" class="npi-journey-marker" style="--marker-index:1"></span>
+            <span data-npi-journey-marker="2" class="npi-journey-marker" style="--marker-index:2"></span>
+            <span data-npi-journey-marker="3" class="npi-journey-marker" style="--marker-index:3"></span>
+            <span data-npi-journey-marker="4" class="npi-journey-marker" style="--marker-index:4"></span>
+            <span data-npi-journey-marker="5" class="npi-journey-marker" style="--marker-index:5"></span>
+            <span data-npi-journey-marker="6" class="npi-journey-marker" style="--marker-index:6"></span>
+            <span data-npi-journey-marker="7" class="npi-journey-marker" style="--marker-index:7"></span>
+          </div>
+          <div class="npi-journey-bottom">
+            <div id="npi-journey-detail" class="npi-journey-detail" aria-live="polite" aria-atomic="true">
+              <p class="npi-journey-status">SELECTED WORKSPACE <span data-npi-journey-status>01 / 08</span></p>
+              <h3 data-npi-journey-title>Medicine identity</h3>
+              <p data-npi-journey-description>Unify medicine identities, aliases and regulatory codes, with unresolved matches clearly flagged.</p>
+            </div>
+            <div class="npi-journey-controls">
+              <div class="npi-journey-navigation" aria-label="Journey navigation">
+                <button type="button" data-npi-journey-prev aria-label="Previous workspace" disabled>Previous</button>
+                <button type="button" data-npi-journey-next aria-label="Next workspace">Next</button>
+              </div>
+              <a class="npi-journey-see" href="#intelligence-workspace-directory">See it in action</a>
+            </div>
+          </div>
+          <button type="button" class="npi-journey-explore" data-npi-journey-start>Explore the journey</button>
+        </div>
       </div>
-      <div class="npi-workspace-grid">
-        <article><span>01</span><h3>Medicine identity</h3><p>Unify VTM, VMP, AMP, BNF, ATC, SNOMED CT and regulatory identifiers. Make ambiguous or unmatched records explicit.</p></article>
-        <article><span>02</span><h3>Evidence &amp; regulation</h3><p>Trace licences, evidence, scientific literature, regulatory developments, source dates and jurisdiction-specific interpretation.</p></article>
-        <article><span>03</span><h3>Market &amp; geography</h3><p>Examine observed demand, geographical variation, market structure and commercial context without confusing estimates with recorded facts.</p></article>
-        <article><span>04</span><h3>Forecasts &amp; signals</h3><p>Build explainable forecasts with accepted history, assumptions, backtests, intervals and monitored changes. No unsupported AI score.</p></article>
-        <article><span>05</span><h3>Supply, pricing &amp; tenders</h3><p>Connect sourcing intelligence, procurement notices, reimbursement, pricing and supply developments, with source-specific access rules.</p></article>
-        <article><span>06</span><h3>Biotech &amp; capital</h3><p>Investigate assets, clinical programmes, company developments and capital signals as a distinct research layer.</p></article>
-        <article><span>07</span><h3>Portfolio &amp; decisions</h3><p>Bring together opportunities, commercial assumptions, alternatives, watchlists and accountable decision records.</p></article>
-        <article><span>08</span><h3>Reports &amp; integrations</h3><p>Make governed outputs reusable through reports and future partner integrations, with permissions and traceability preserved.</p></article>
-      </div>
+      <script src="/assets/js/technology-journey.js" defer></script>
       <p class="npi-workspace-disclosure">These are intended product workspaces, not a statement that each module or dataset is commercially operational today.</p>
 
       <div class="npi-workspace-directory" id="intelligence-workspace-directory" aria-labelledby="npi-directory-title">
@@ -255,7 +319,28 @@
             <a href="https://intelligence.novapharmhealthcare.com/" class="npi-button npi-button-secondary">Open protected sign-in</a>
           </div>
         </div>
-        <div class="npi-directory-groups">
+        
+        <link rel="stylesheet" href="/assets/css/intelligence-workspace-embedded.css">
+        <div class="npi-workspace-live-experience" id="npi-exp-shell">
+
+<section class="section" aria-labelledby="npi-directory-title">
+  
+  
+  <div class="toolbar"><label class="searchbox"><span class="magnifier" aria-hidden="true"></span><input id="npi-exp-search" type="search" aria-label="Find a workspace" placeholder="Find a workspace" autocomplete="off"><button type="button" id="npi-exp-clear" aria-label="Clear search" hidden>×</button></label></div>
+  <div class="app-layout"><nav class="discipline-rail" aria-label="Workspace disciplines"><span class="rail-label">WORKSPACE DIRECTORY</span><div id="npi-exp-tabs" class="tabs" role="tablist" aria-label="Workspace disciplines"></div><p class="rail-foot">The Living Intelligence of Medicine.<br>Governed by evidence.</p></nav><div class="split"><div class="directory"><p id="npi-exp-category-eyebrow" class="category-eyebrow"></p><h2 id="npi-exp-category-title" class="category-title"></h2><p id="npi-exp-category-description" class="category-description"></p><p id="npi-exp-result-caption" class="result-caption" hidden></p><div class="workspace-list" id="npi-exp-workspace-list"></div></div>
+  <aside class="stage" id="npi-exp-stage" aria-label="Interactive workspace experience"><div class="stage-top"><span class="stage-kicker">PRODUCT EXPERIENCE / INTERACTIVE CONCEPT</span><span id="npi-exp-stage-counter" class="stage-counter"></span></div>
+    <div class="preview-frame"><div class="preview-chrome"><div class="mini-brand">NOVA<i>.</i><span class="mini-sub">Intelligence</span></div><div class="demo-label">DEMO DATA</div></div><div class="preview-content"><p class="preview-overline" id="npi-exp-preview-overline"></p><div class="preview-head"><div><h3 class="preview-title" id="npi-exp-preview-title"></h3><p class="preview-description" id="npi-exp-preview-description"></p></div><select id="npi-exp-medicine-select" class="sample-select" aria-label="Choose an illustrative medicine"><option value="apixaban">Apixaban</option><option value="ondansetron">Ondansetron</option><option value="cetirizine">Cetirizine</option></select></div><div id="npi-exp-mode-tabs" class="mode-tabs" aria-label="Preview modes"></div><div id="npi-exp-demo-content" class="demo-content" aria-live="polite"></div><div class="demo-footer"><span>Illustrative records. Not production evidence.</span><span id="npi-exp-mini-footer-status">Sample only</span></div></div></div>
+    <div class="stage-bottom"><span class="status-note">This is an interactive experience prototype, not an active data connection or customer entitlement.</span><button id="npi-exp-requirements" class="requirements" type="button">View access requirements <span>›</span></button></div>
+  </aside></div></div>
+  <div class="below"><p class="legal">Public workspace previews illustrate intended experiences. Sample figures, sample entities and workflows are not verified medicine observations, regulatory authorisations, clinical advice, supply commitments or executable commercial decisions.</p><div class="actions"><button id="npi-exp-protected" class="cta secondary" type="button">Protected sign-in</button><button id="npi-exp-official" class="cta primary" type="button">Official sources</button></div></div>
+</section>
+<div id="npi-exp-modal" class="modal" hidden><div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="npi-exp-modal-title"><button id="npi-exp-modal-close" class="modal-close" type="button" aria-label="Close dialog">×</button><div class="category-eyebrow" id="npi-exp-modal-eyebrow"></div><h3 id="npi-exp-modal-title"></h3><div id="npi-exp-modal-body"></div></div></div>
+<div class="mini-toast" id="npi-exp-toast" hidden role="status"></div>
+
+
+</div>
+        <script src="/assets/js/intelligence-workspace-embedded.js" defer></script>
+        <div class="npi-directory-groups" hidden aria-hidden="true">
           <details class="npi-directory-group" open>
             <summary><span>Medicine research</span><span>6 workspaces</span></summary>
             <div class="npi-directory-list">
@@ -467,67 +552,63 @@
   <section id="intelligence-pricing" class="npi-section npi-pricing" aria-labelledby="npi-pricing-title">
     <div class="npi-wrap">
       <div class="npi-pricing-intro">
-        <p class="npi-kicker">PLANNED SUBSCRIPTIONS</p>
-        <h2 id="npi-pricing-title">One platform.<br>Three ways to begin.</h2>
-        <p>Focused research, connected team intelligence and bespoke governed infrastructure. Choose the proposed scope that fits your organisation.</p>
-        <p class="npi-pricing-release" role="note"><strong>Commercial preview:</strong> these are proposed India-market launch prices, not live subscriptions. Features and access remain subject to product activation, licences, scope and a signed agreement. No payment will be collected here. Plan requests open the corporate business-enquiry form, with an email alternative.</p>
-        <div class="npi-billing-switch" role="group" aria-label="Compare proposed subscription billing">
-          <button class="is-selected" type="button" data-npi-billing="monthly" aria-pressed="true">Monthly</button>
-          <button type="button" data-npi-billing="annual" aria-pressed="false">Annual <span>Save 15%</span></button>
-        </div>
+        <p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>
+        <h2 id="npi-pricing-title">Intelligence. Made simple.</h2>
+        <p>One platform. Four ways to get started.</p>
       </div>
-      <div class="npi-pricing-grid" data-npi-pricing-grid>
-        <article class="npi-plan" data-npi-plan="starter" data-monthly-inr="24999" data-annual-inr="254990">
-          <div class="npi-plan-heading"><h3>Starter</h3></div>
-          <p class="npi-plan-description">For focused medicine research and source-led exploration.</p>
-          <div class="npi-plan-price"><strong data-npi-plan-price>₹24,999</strong><span data-npi-plan-period>/ month</span></div>
-          <p class="npi-plan-billing" data-npi-plan-billing>Proposed monthly price. No payment requested.</p>
-          <a class="npi-plan-cta" href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter">Request Starter access</a>
-          <a class="npi-plan-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Starter%20proposal">Or request by email</a>
+      <div class="npi-pricing-grid" data-npi-pricing-grid aria-label="Compare four NovaPharm Intelligence plans">
+        <article class="npi-plan npi-trial-plan" data-npi-plan="trial" data-npi-starter-trial="approved" aria-label="Approved 30-day Starter free trial">
+          <div class="npi-plan-heading"><h3>Free Trial</h3></div>
+          <div class="npi-plan-price"><strong>£0</strong><span>for 30 days</span></div>
+          <p class="npi-plan-description">A first look at governed medicine intelligence.</p>
+          <a class="npi-plan-cta" href="https://intelligence.novapharmhealthcare.com/auth/customer/register" aria-label="Create a free account to request an eligible 30-day Starter trial">Create free account</a>
           <ul class="npi-plan-features">
-            <li>Up to 25 governed medicine searches per month, once activated</li>
-            <li>Source-separated medicine identity and overview where accepted</li>
-            <li>Official-source research links and US FDA public-label discovery</li>
-            <li>Clear provenance, jurisdiction and data limitations</li>
-            <li>Professional onboarding by agreement</li>
+            <li><strong>25 total</strong> governed medicine searches during your trial</li>
+            <li>No credit card required</li>
+            <li>No automatic subscription or charges</li>
+            <li>One trial per verified organisation</li>
           </ul>
-          <p class="npi-plan-scope">Proposed single-user entry tier. No forecasts or private commercial data.</p>
         </article>
-        <article class="npi-plan npi-plan-featured" data-npi-plan="professional" data-monthly-inr="89999" data-annual-inr="917990">
-          <div class="npi-plan-heading"><h3>Professional</h3><span class="npi-plan-tag">Recommended for teams</span></div>
-          <p class="npi-plan-description">For market-access and commercial teams that work across evidence and geography.</p>
-          <div class="npi-plan-price"><strong data-npi-plan-price>₹89,999</strong><span data-npi-plan-period>/ month</span></div>
-          <p class="npi-plan-billing" data-npi-plan-billing>Proposed monthly price. No payment requested.</p>
-          <a class="npi-plan-cta" href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional">Discuss Professional</a>
-          <a class="npi-plan-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Professional%20proposal">Or request by email</a>
+        <article class="npi-plan" data-npi-plan="starter" data-monthly-gbp="199" data-annual-gbp="2030">
+          <div class="npi-plan-heading"><h3>Starter</h3></div>
+          <div class="npi-plan-price"><strong>£199</strong><span>/month</span></div>
+          <p class="npi-plan-description">Essential medicine research and source-led exploration.</p>
+          <a class="npi-plan-cta" href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter" aria-label="Subscribe to Starter at £199 per month through secure Stripe Checkout">Subscribe</a>
           <ul class="npi-plan-features">
-            <li>Up to 250 governed medicine searches per month, once activated</li>
-            <li>Medicines Terminal and source-backed regulatory research</li>
-            <li>Observed UK market and geography views where data is accepted</li>
-            <li>Additional team seats by confirmed agreement</li>
-            <li>Alerts, reports and advanced workspaces only after separate release validation</li>
+            <li>Up to 25 governed searches each month, once activated</li>
+            <li>Source-separated medicine research</li>
+            <li>Official-source research and US FDA label discovery</li>
+            <li>Clear source provenance and jurisdiction</li>
           </ul>
-          <p class="npi-plan-scope">Licences, data coverage and user entitlements require scoping.</p>
+        </article>
+        <article class="npi-plan npi-plan-featured" data-npi-plan="professional" data-monthly-gbp="699" data-annual-gbp="7130">
+          <div class="npi-plan-heading"><h3>Professional</h3></div>
+          <div class="npi-plan-price"><strong>£699</strong><span>/month</span></div>
+          <p class="npi-plan-description">For teams connecting medicine evidence and markets.</p>
+          <a class="npi-plan-cta" href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional" aria-label="Subscribe to Professional at £699 per month through secure Stripe Checkout">Subscribe</a>
+          <ul class="npi-plan-features">
+            <li>Up to 250 governed searches each month, once activated</li>
+            <li>Medicines Terminal and source-backed research</li>
+            <li>Observed UK market and geography views where accepted</li>
+            <li>Additional team seats by agreement</li>
+          </ul>
         </article>
         <article class="npi-plan npi-plan-enterprise" data-npi-plan="enterprise">
           <div class="npi-plan-heading"><h3>Enterprise</h3></div>
-          <p class="npi-plan-description">For governed pharmaceutical intelligence at organisational scale.</p>
-          <div class="npi-plan-price npi-plan-custom"><strong>Custom proposal</strong></div>
-          <p class="npi-plan-billing">Indicative planning from ₹3,50,000/month; no binding quote.</p>
-          <a class="npi-plan-cta" href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise">Talk to enterprise sales</a>
-          <a class="npi-plan-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise%20proposal">Or request by email</a>
+          <div class="npi-plan-price npi-plan-custom"><strong>Custom</strong></div>
+          <p class="npi-plan-description">Governed pharmaceutical intelligence at organisational scale.</p>
+          <a class="npi-plan-cta" href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise">Contact sales</a>
           <ul class="npi-plan-features">
-            <li>Negotiated usage, users and documented access controls</li>
-            <li>Project PANDORA workspace roadmap and release-gated modules</li>
+            <li>Indicative planning from £2,799/month</li>
+            <li>Negotiated team access and permissions</li>
+            <li>Governed workspaces and access controls</li>
             <li>Custom integrations subject to licensed source rights</li>
-            <li>Forecasting only after accepted history, backtests and intervals</li>
-            <li>Identity, hosting, audit and service terms scoped contractually</li>
           </ul>
-          <p class="npi-plan-scope">No implied unlimited processing, production SLA or custom data coverage.</p>
         </article>
       </div>
-      <p class="npi-pricing-footnote">Proposed prices in INR, excluding taxes and any separately licensed third-party data. Annual equivalents reflect a proposed 15% commitment discount; any commercial terms, billing start and access require written acceptance. Nothing on this page creates a subscription or constitutes a purchase.</p>
-      <p class="npi-pricing-footnote">Data sources, 22 workspace navigation, NOVA AI and governed forecasts are at different validation stages. <a href="#intelligence-roadmap">Review current product maturity</a> before requesting access.</p>
+      <p class="npi-pricing-more"><a href="#intelligence-roadmap">Explore features and product maturity <span aria-hidden="true">›</span></a> <span aria-hidden="true">·</span> <a href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a></p>
+      <p class="npi-pricing-footnote">Approved monthly prices in GBP, excluding applicable VAT and any separately licensed third-party data; actual tax depends on the supply, customer status and location. Enterprise pricing is indicative and subject to an individual proposal. Starter and Professional use live Stripe-hosted Checkout; your payment details are entered on Stripe, not on this website.</p>
+      <p class="npi-pricing-footnote npi-pricing-availability" role="note">Paid subscriptions are charged immediately at Checkout and renew monthly until cancelled. NovaPharm Intelligence account and workspace access are provisioned separately after organisation verification, and may not be available immediately. Payment is not an automatic medicine-data entitlement. The free trial requires no card, does not automatically convert into a paid subscription, and is subject to account approval.</p>
     </div>
   </section>
 

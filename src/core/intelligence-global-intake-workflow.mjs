@@ -1,0 +1,174 @@
+/**
+ * Internal-only global source intake review, WITHOUT upstream network access,
+ * source-rights grants, storage, database writes or a customer-facing route.
+ *
+ * An independent, trusted backend fetcher supplies RAW bounded bytes and a
+ * protected authorizer supplies a source-/country-/tenant-bound decision.
+ *
+ * This module makes a connection between the five source-adapter candidate
+ * schemas, rights validation and immutable quarantine manifests.
+ * A caller may not treat this as independent legal or signature verification.
+ */
+import {
+  buildGovSourcePlan,
+  normaliseGovSourceResult
+} from "./intelligence-global-source-gateway.mjs";
+import {
+  assertInternalEvaluationPermit,
+  buildEvaluationEnvelope
+} from "./intelligence-global-evidence-contract.mjs";
+import {
+  buildSourceSnapshotQuarantine,
+  classifySourceSnapshotReplay
+} from "./intelligence-source-snapshot-quarantine.mjs";
+import {assessGlobalSourcePageQuality} from "./intelligence-global-intake-quality.mjs";
+
+const MAX_BYTES=262144;
+const EVALUATION_CONTRACT="novapharm.intelligence.global-intake-evaluation.v1";
+const DATASETS=Object.freeze({
+  "us-fda-drugsfda":Object.freeze({publisher:"US Food and Drug Administration",datasetKey:"fda-drugsfda"}),
+  "global-clinicaltrials":Object.freeze({publisher:"ClinicalTrials.gov",datasetKey:"clinicaltrials-v2"}),
+  "ca-health-canada-dpd":Object.freeze({publisher:"Health Canada",datasetKey:"drug-product-database"}),
+  "global-europepmc":Object.freeze({publisher:"Europe PMC",datasetKey:"europepmc-search"}),
+  "global-pubmed":Object.freeze({publisher:"US National Library of Medicine",datasetKey:"pubmed-esearch"}),
+  "global-chembl":Object.freeze({publisher:"European Bioinformatics Institute ChEMBL",datasetKey:"chembl-molecule-search"}),
+  "global-pubchem":Object.freeze({publisher:"US National Center for Biotechnology Information PubChem",datasetKey:"pubchem-cid-search"}),
+  "pl-nfz-drug-program":Object.freeze({publisher:"Narodowy Fundusz Zdrowia",datasetKey:"nfz-drug-program-substance-costs"}),
+  "es-aemps-cima":Object.freeze({publisher:"Agencia Espanola de Medicamentos y Productos Sanitarios",datasetKey:"aemps-cima"})
+});
+function reject(message){throw new Error("Global source intake rejected: "+message);}
+function decodeSourceBytes(bytes){
+  if(!(bytes instanceof Uint8Array)||bytes.byteLength<1||bytes.byteLength>MAX_BYTES)reject("bounded source bytes");
+  let parsed;
+  try{parsed=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes));}
+  catch{reject("source JSON");}
+  return parsed;
+}
+function validateTenant(tenantId){
+  if(typeof tenantId!=="string"||!/^[A-Za-z0-9_-]{2,64}$/.test(tenantId))reject("tenant");
+}
+function assertPreviousEntry(record,tenantId){
+  if(!record||record.contract!==EVALUATION_CONTRACT||record.tenantId!==tenantId||
+    record.canPublish!==false||record.productionAccepted!==false||!record.manifest||
+    record.manifest.canPublish!==false||record.evidence?.canPublish!==false)reject("cross-tenant or untrusted previous receipt");
+}
+export function createGlobalSourceIntakeEvaluator({authorize,now=()=>Date.now()}={}){
+  if(typeof authorize!=="function"||typeof now!=="function")reject("trusted backend authorizer");
+  return Object.freeze({
+    async evaluate({sourceId,term,limit=5,tenantId,metadata,rawBytes}={}){
+      validateTenant(tenantId);
+      const plan=buildGovSourcePlan({sourceId,term,limit});
+      const dataset=DATASETS[plan.sourceId];
+      if(!dataset)reject("unregistered source");
+      if(!metadata||typeof metadata!=="object"||Array.isArray(metadata))reject("metadata");
+
+      // Only the trusted backend may supply this scope. Do not treat a caller
+      // receipt or client-side state as proof of source rights.
+      const rightsScope=Object.freeze({
+        tenantId,sourceId,country:plan.country,domain:plan.domain,
+        purpose:"internal-evaluation"
+      });
+      // Sample the server clock AFTER the asynchronous authorization returns.
+      let decision;
+      try{decision=await authorize(rightsScope);}
+      catch{reject("trusted authorizer unavailable");}
+      let authorisedAt;
+      try{authorisedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(authorisedAt)||authorisedAt<0)reject("server clock");
+      const grant=assertInternalEvaluationPermit({
+        permit:decision,sourceId,tenantId,country:plan.country,
+        domain:plan.domain,now:authorisedAt
+      });
+      const raw=decodeSourceBytes(rawBytes);
+      const normalized=normaliseGovSourceResult(plan,raw);
+      // The independent evaluator has no network call, but processing can
+      // still outlast a grant or observe a regressed/malformed server clock.
+      let capturedAt;
+      try{capturedAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(capturedAt)||capturedAt<authorisedAt||
+        capturedAt>=Date.parse(grant.validUntil))reject("permit expired or server clock");
+      const fetchedAt=new Date(capturedAt).toISOString();
+
+      // Publication/observation dates and version are supplied by a trusted
+      // backend source release inventory, never guessed from HTTP response
+      // arrival or user-controlled parameters.
+      const manifest=buildSourceSnapshotQuarantine({
+        sourceKey:plan.sourceId,
+        jurisdiction:plan.country,
+        publisher:dataset.publisher,
+        datasetKey:dataset.datasetKey,
+        resourceId:metadata.resourceId,
+        schemaVersion:metadata.schemaVersion,
+        resourceUrl:plan.url,
+        expectedOrigin:new URL(plan.url).origin,
+        mediaType:"application/json",
+        observationStart:metadata.observationStart,
+        observationEnd:metadata.observationEnd,
+        publishedOn:metadata.publishedOn,
+        fetchedAt,
+        bytes:rawBytes
+      });
+      const evidence=buildEvaluationEnvelope({
+        plan,normalized,raw,grant,capturedAt
+      });
+      const pageQuality=assessGlobalSourcePageQuality({
+        sourceId,raw,normalized,manifest,limit
+      });
+      // Quarantine and evidence remain memory-only. Reauthorise after parsing
+      // and evidence preparation, before any evaluated result may leave.
+      // Rights may expire, be revoked or be replaced during processing.
+      let finalDecision;
+      try{finalDecision=await authorize(rightsScope);}
+      catch{reject("trusted authorizer unavailable");}
+      let finalAt;
+      try{finalAt=now();}
+      catch{reject("server clock");}
+      if(!Number.isSafeInteger(finalAt)||finalAt<capturedAt||
+         finalAt>=Date.parse(grant.validUntil)) {
+        reject("source rights expired during evaluation");
+      }
+      let finalGrant;
+      try{
+        finalGrant=assertInternalEvaluationPermit({
+          permit:finalDecision,sourceId,tenantId,country:plan.country,
+          domain:plan.domain,now:finalAt
+        });
+      }catch{reject("source rights not approved during evaluation");}
+      if(finalGrant.receiptId!==grant.receiptId||
+         finalGrant.licenseId!==grant.licenseId||
+         finalGrant.rightsVersion!==grant.rightsVersion||
+         finalGrant.validUntil!==grant.validUntil) {
+        reject("source rights changed during evaluation");
+      }
+      return Object.freeze({
+        contract:EVALUATION_CONTRACT,
+        tenantId,
+        sourceId,
+        country:plan.country,
+        domain:plan.domain,
+        sourceRightsReceipt:finalGrant.receiptId,
+        manifest,
+        evidence,
+        pageQuality,
+        canPublish:false,
+        productionAccepted:false,
+        sourceRightsIndependentlyVerified:false,
+        admissionDecision:"DENIED_UNTIL_INDEPENDENT_RIGHTS_AND_DATA_ADMISSION"
+      });
+    },
+    compareReplay(previous,next){
+      if(!Array.isArray(previous)||!next||
+        typeof next.tenantId!=="string")reject("replay entries");
+      validateTenant(next.tenantId);
+      assertPreviousEntry(next,next.tenantId);
+      previous.forEach((x)=>assertPreviousEntry(x,next.tenantId));
+      const result=classifySourceSnapshotReplay(previous.map(x=>x.manifest),next.manifest);
+      return Object.freeze({...result,tenantId:next.tenantId});
+    }
+  });
+}
+export function assertGlobalIntakeCustomerReady(_candidate){
+  reject("independent source rights, canonical identity and customer data admission required");
+}

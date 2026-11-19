@@ -1,0 +1,253 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { runInNewContext } from "node:vm";
+
+const read = (path) => readFileSync(resolve(process.cwd(), path), "utf8");
+const css = read("assets/css/rtl-localization.css");
+const js = read("assets/js/rtl-localization.js");
+
+test("Apple HIG RTL foundation uses logical direction, does not reverse brand imagery or numeric digits", () => {
+  assert.match(css, /--np-rtl-contract:\s*1/);
+  assert.match(css, /\.np-locale-control\s*\{\s*position:\s*static;/, "Locale selector must not intercept underlying controls");
+  assert.doesNotMatch(css, /\.np-locale-control\s*\{[^}]*position:\s*fixed;/s);
+  for (const rule of ["html[dir=\"rtl\"]", "direction: rtl", "direction: ltr",
+    "unicode-bidi: isolate", "input[type=\"email\"]", "input[type=\"tel\"]",
+    "data-np-number", "data-np-medicine-code", "data-np-directional-arrow",
+    "env(safe-area-inset-bottom", "@media (max-width: 420px)", "forced-colors: active",
+    ".desktop-nav a::after", ".roadmap-track li::before", ".status-notice",
+    ".refresh-command", ".service-row > a", ".profile-detail aside",
+    ".medicine-search-results li button", ".article-disclaimer"]) {
+    assert.ok(css.includes(rule), `Missing right-to-left requirement: ${rule}`);
+  }
+  assert.doesNotMatch(css, /html\[dir="rtl"\]\s*:?is\([^)]*(?:img|picture|svg)[^)]*\)\s*\{[^}]*scaleX\(-1\)/s);
+  assert.doesNotMatch(css, /html\[dir="rtl"\]\s*(?:body|main)\s*\{[^}]*transform:/s);
+  assert.match(css, /main\[lang="en-GB"\]/);
+});
+
+test("static locale bootstrap resolves only the supported Arabic and Hebrew choices before rendering", () => {
+  for (const locale of ["en-GB", "ar", "he", "ar-SA", "unexpected"]) {
+    const element = { dataset: {} };
+    const calls = [];
+    const document = {
+      cookie: `np_locale=${locale}; other=x`,
+      documentElement: element,
+      readyState: "loading",
+      addEventListener(event) { calls.push(event); },
+    };
+    runInNewContext(js, { document });
+    const expected = locale === "ar" || locale === "he" ? locale : "en-GB";
+    assert.equal(element.lang, expected);
+    assert.equal(element.dir, expected === "en-GB" ? "ltr" : "rtl");
+    assert.equal(calls[0], "DOMContentLoaded");
+  }
+});
+
+test("five Next.js properties share server-side locale direction and a functional user preference", () => {
+  for (const app of ["corporate", "portal", "technology", "founder", "status"]) {
+    const layout = read(`apps/${app}/app/layout.tsx`);
+    assert.match(layout, /resolveInterfaceLocale\(\(await cookies\(\)\)\.get\("np_locale"\)\?\.value\)/, app);
+    assert.match(layout, /<html[^>]*lang=\{locale\}[^>]*dir=\{directionForLocale\(locale\)\}/, app);
+    const footerSelector = app === "corporate" ? "apps/corporate/components/site-footer.tsx"
+      : app === "technology" ? "apps/technology/components/site-footer.tsx"
+      : app === "founder" ? "apps/founder/components/chrome.tsx"
+      : app === "status" ? "apps/status/app/page.tsx"
+      : null;
+    assert.match(footerSelector ? read(footerSelector) : layout,
+      /<InterfaceLocaleSwitcher locale=\{locale\} \/>/, app);
+    assert.match(layout, /assets\/css\/rtl-localization\.css/, app);
+    assert.match(layout, /lang="en-GB" data-np-untranslated/, app);
+  }
+  for (const client of ["apps/corporate/components/mobile-navigation.tsx", "apps/founder/components/chrome.tsx", "apps/technology/components/site-header.tsx"]) {
+    assert.ok(read(client).startsWith('"use client";'), `Client boundary lost: ${client}`);
+  }
+  const switcher = read("src/components/interface-locale-switcher.tsx");
+  for (const token of ["onChange={onChange}", "document.cookie", "window.location.reload()",
+    "SameSite=Lax", "value=\"ar\"", "value=\"he\"", "full content translation pending"]) {
+    assert.ok(switcher.includes(token), `Missing locale control: ${token}`);
+  }
+});
+
+test("protected workspace formats currencies, numbers and dates using the server locale", () => {
+  const page = read("apps/portal/app/[[...slug]]/page.tsx");
+  const client = read("apps/portal/components/portal-client.tsx");
+  const dashboard = read("apps/portal/components/dashboard.tsx");
+  assert.match(page, /locale=\{locale\}/);
+  assert.match(client, /<Dashboard module=\{module\} subview=\{subview\} locale=\{locale\} \/>/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale, \{ style: "currency"/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale\)\.format/);
+  assert.match(dashboard, /\.toLocaleString\(locale/);
+  assert.match(dashboard, /data-np-number=/);
+  assert.match(dashboard, /data-np-medicine-code=/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale, \{ style: "percent"/);
+  assert.match(read("assets/css/rtl-localization.css"), /safe-area-inset-left/);
+  assert.match(read("scripts/build-public-pages.mjs"), /class="error-shell" lang="en-GB" data-np-untranslated/);
+  // Values and permissions are not translated, only their display format.
+  assert.match(page, /sessionDecision\(view, session\)/);
+});
+
+test("static navigation retains localized accessible names after opening and closing", () => {
+  const menuSource = read("assets/js/novapharm.js").split("/* Desktop category navigation:")[0];
+  for (const [locale, names] of Object.entries({
+    "en-GB": ["Open navigation", "Close navigation", "Menu", "Close", "Primary navigation"],
+    ar: ["فتح القائمة", "إغلاق القائمة", "القائمة", "إغلاق", "التنقل الرئيسي"],
+    he: ["פתיחת תפריט", "סגירת תפריט", "תפריט", "סגירה", "ניווט ראשי"],
+  })) {
+    const attrs = {};
+    const navAttrs = {};
+    const handlers = {};
+    const hiddenLabel = { textContent: "" };
+    const visibleLabel = { textContent: "" };
+    const classes = new Set();
+    const menu = {
+      setAttribute(key, value) { attrs[key] = value; },
+      querySelector(selector) { return selector === ".sr-only" ? hiddenLabel : visibleLabel; },
+      addEventListener(event, fn) { handlers[event] = fn; },
+      contains() { return false; },
+      focus() {},
+    };
+    const nav = {
+      setAttribute(key, value) { navAttrs[key] = value; },
+      querySelectorAll() { return []; },
+      classList: {
+        toggle(name, state) { if (state) classes.add(name); else classes.delete(name); },
+        contains(name) { return classes.has(name); },
+      },
+      addEventListener() {},
+      contains() { return false; },
+    };
+    const document = {
+      documentElement: { lang: locale },
+      querySelector(selector) {
+        if (selector === "[data-nav-toggle]") return menu;
+        if (selector === "[data-site-nav]") return nav;
+        return null;
+      },
+      addEventListener() {},
+    };
+    const window = {
+      location: { pathname: "/" },
+      innerWidth: 390,
+      addEventListener() {},
+    };
+    runInNewContext(menuSource, { document, window, URL });
+    assert.equal(attrs["aria-label"], names[0]);
+    assert.equal(navAttrs["aria-label"], names[4]);
+    handlers.click();
+    assert.equal(attrs["aria-label"], names[1]);
+    assert.equal(attrs["aria-expanded"], "true");
+    assert.equal(hiddenLabel.textContent, names[1]);
+    assert.equal(visibleLabel.textContent, names[3]);
+    handlers.click();
+    assert.equal(attrs["aria-label"], names[0]);
+    assert.equal(hiddenLabel.textContent, names[0]);
+    assert.equal(visibleLabel.textContent, names[2]);
+    assert.equal(attrs["aria-expanded"], "false");
+  }
+});
+
+test("operational table values isolate mixed-language data and logos stay original", () => {
+  const dashboard = read("apps/portal/components/dashboard.tsx");
+  assert.match(dashboard, /<bdi dir=\{/);
+  assert.match(dashboard, /<bdi dir="auto">/);
+  const brand = read("apps/corporate/components/brand.tsx");
+  assert.match(brand, /lang="en-GB" aria-label="NovaPharm Healthcare home"/);
+  const switcher = read("src/components/interface-locale-switcher.tsx");
+  for (const locale of ["en-GB", "ar", "he"]) {
+    assert.ok(switcher.includes('lang="' + locale + '"'), "Picker option language missing: " + locale);
+  }
+  for (const app of ["technology", "status"]) {
+    const layout = read("apps/" + app + "/app/layout.tsx");
+    assert.ok(layout.lastIndexOf('import "../../../assets/css/rtl-localization.css";') >
+      layout.indexOf('import "../../../assets/css/novapharm-apple-27-web-adaptation.css";'),
+      "RTL override must follow adaptation CSS: " + app);
+  }
+});
+
+test("public and protected static shells load RTL script without changing governed legal copy", () => {
+  const publicBuilder = read("scripts/build-public-pages.mjs");
+  const privateBuilder = read("scripts/build-pages.mjs");
+  assert.match(publicBuilder, /<script src="\/assets\/js\/rtl-localization\.js"><\/script>/);
+  assert.match(privateBuilder, /<script src="\/assets\/js\/rtl-localization\.js"><\/script>/);
+  assert.match(publicBuilder, /<main id="main" lang="en-GB" data-np-untranslated>/);
+  assert.match(js, /names\s*=\s*\{[\s\S]*ar:\s*\{[\s\S]*he:\s*\{/);
+  assert.match(js, /\.site-header nav a/);
+});
+
+test("RTL CSS is a reproducible public asset and remains included in all CSS entrypoints", () => {
+  assert.match(read("scripts/build-css-bundle.mjs"), /\["rtl-localization\.css", null\]/);
+  assert.match(read("assets/css/novapharm.css"), /@import url\("\.\/rtl-localization\.css"\)/);
+  const bundle = read("assets/css/novapharm.bundle.css");
+  assert.match(bundle, /Source: rtl-localization\.css/);
+  assert.match(bundle, /--np-rtl-contract:\s*1/);
+});
+
+test("interface localization does not claim that clinical, legal, or regulated editorial content is translated", () => {
+  const source = read("src/core/interface-locale.ts");
+  assert.match(source, /"en-GB": \{\}/);
+  assert.match(source, /return labels\[locale\]\[english\] \?\? english/);
+  assert.match(source, /new Intl\.NumberFormat\(locale\)/);
+  assert.match(source, /new Intl\.DateTimeFormat\(locale,/);
+  assert.equal((read("apps/corporate/components/site-header.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate desktop link branches must translate");
+  assert.equal((read("apps/corporate/components/mobile-navigation.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate mobile link branches must translate");
+  assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
+  assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
+  assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale, "Company links"\)/);
+  assert.match(read("apps/technology/components/site-footer.tsx"), /interfaceLabel\(locale, item.label\)/);
+  assert.match(read("apps/technology/app/layout.tsx"), /<SiteFooter locale=\{locale\} \/>/);
+  assert.match(read("src/core/interface-locale.ts"), /Some navigation labels translated; full content translation pending/);
+  const arrowLink = read("apps/technology/components/arrow-link.tsx");
+  assert.match(arrowLink, /<ArrowRight data-np-directional-arrow="true" \/>/);
+  assert.match(arrowLink, /<ArrowUpRight \/>/);
+});
+
+test("RTL preference disclosure is visible in both the public cookie notice and the compliance register", () => {
+  const notice = read("legal/cookies/index.html");
+  const register = read("compliance/cookie-register.md");
+  const staticLocale = read("assets/js/rtl-localization.js");
+  const managedLocale = read("src/components/interface-locale-switcher.tsx");
+  assert.ok(notice.includes("<code>np_locale</code>"), "Functional cookie must be named publicly");
+  assert.ok(notice.includes("Up to 365 days after selection"), "Cookie duration must be stated");
+  assert.ok(notice.includes("RTL layout preview"), "Arabic/Hebrew must not imply a completed translation");
+  assert.ok(notice.includes("legal review pending"), "Technical amendment must not claim legal sign-off");
+  assert.ok(register.includes("| `np_locale` |"), "Privacy governance register must cover the preference cookie");
+  assert.ok(register.includes("2026-11-15-v1.3"), "GA4 consent schema must stay unchanged");
+  assert.ok(staticLocale.includes("Max-Age=31536000"));
+  assert.ok(managedLocale.includes("Max-Age=31536000"));
+  assert.ok(staticLocale.includes("SameSite=Lax"));
+  assert.ok(managedLocale.includes("SameSite=Lax"));
+});
+
+
+test("Apple-like footer language selector stays unboxed, accessible and honest about preview status", () => {
+  const css = read("assets/css/rtl-localization.css");
+  const staticJs = read("assets/js/rtl-localization.js");
+  const react = read("src/components/interface-locale-switcher.tsx");
+  const block = css.slice(css.indexOf(".np-locale-control {"), css.indexOf('html[dir="rtl"] {'));
+  for (const rule of ["position: static", "background: transparent", "border: 0",
+    "box-shadow: none", "min-block-size: 44px", ".np-locale-select-wrap", "appearance: none"]) {
+    assert.ok(block.includes(rule), "Missing unboxed Apple-like footer contract: " + rule);
+  }
+  assert.doesNotMatch(block, /position: fixed/);
+  assert.match(staticJs, /footerSelectors = \["\.np-contact-reference-footer-inner", "\.npd-footer-bottom",/);
+  assert.match(staticJs, /node\.getClientRects\(\)\.length > 0/);
+  assert.match(staticJs, /\(footer \|\| document\.body\)\.appendChild\(control\)/);
+  assert.match(staticJs, /label\.textContent = locale === "ar" \? "اللغة"/);
+  assert.match(react, /interfaceLabel\(locale, "Language"\)/);
+  assert.match(react, /className="np-locale-select-wrap"/);
+  assert.match(react, /lang=\{locale\} dir=\{directionForLocale\(locale\)\}/);
+  assert.match(react, /Max-Age=31536000; SameSite=Lax/);
+  assert.match(react, /full content translation pending/);
+  assert.match(read("src/core/interface-locale.ts"), /"Language": "اللغة"/);
+  assert.match(read("src/core/interface-locale.ts"), /"Language": "שפה"/);
+  const bundle = read("assets/css/novapharm.bundle.css");
+  const startMarker = "/* Source: rtl-localization.css */\n";
+  const nextMarker = "\n\n/* Source: apple-web-navigation.css */";
+  const start = bundle.indexOf(startMarker);
+  const end = bundle.indexOf(nextMarker, start + startMarker.length);
+  assert.ok(start >= 0 && end > start,
+    "Published bundle must preserve the current RTL source before the navigation layer");
+  assert.equal(bundle.slice(start + startMarker.length, end).trim(), css.trim(),
+    "Checked-in public bundle must contain the exact current footer selector styles");
+});

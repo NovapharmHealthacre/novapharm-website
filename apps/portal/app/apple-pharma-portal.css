@@ -7,13 +7,25 @@
   --portal-red: #E3120B;
   --portal-red-text: #B30E09;
   --portal-red-soft: #fff3f4;
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  --np-type-body-size: 1rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
 }
 
 html,
 body {
   background: var(--portal-white);
   color: var(--portal-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--np-type-ui);
 }
 
 body,
@@ -21,7 +33,7 @@ button,
 input,
 select,
 textarea {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--np-type-ui);
 }
 
 .eyebrow {
@@ -39,7 +51,7 @@ textarea {
 }
 
 .button.primary { background: var(--portal-red); }
-.button.primary:hover { background: #8f1c25; }
+.button.primary:hover { background: var(--portal-red-text); }
 .button.microsoft { border-color: var(--portal-line); }
 
 /* Sign-in: remove the dark enterprise split and keep one calm white surface. */
@@ -229,5 +241,52 @@ textarea {
     transition-duration: .01ms !important;
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+/* All secure workspaces share the same native system-font roles. */
+:where(.workspace-shell, .login-layout) :is(code, kbd, samp, pre, [data-typography="mono"], .sku-code, .batch-code) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+:where(.workspace-shell, .login-layout) :is(table, .metric-value, .numerical-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+:where(.workspace-shell, .login-layout) :is(.dense-table, .wms-table, .operational-table, [data-typography="compact"]) {
+  font-family: var(--np-type-compact);
+}
+:where(.workspace-shell, .login-layout) :is(.editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--np-type-editorial);
+  font-optical-sizing: auto;
+}
+/* Dense application views retain legibility when people enlarge text in a browser. */
+:where(.workspace-shell, .login-layout, .focused-layout) { font-optical-sizing: auto; }
+:where(.workspace-shell, .login-layout, .focused-layout) :where(h1, h2, h3, h4) {
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+}
+:where(.workspace-shell, .login-layout, .focused-layout) :where(p, .field-hint, .help-text) {
+  line-height: var(--np-type-interface-leading);
+}
+:where(.workspace-shell, .login-layout) :where(.detail-body, .description, [data-typography="reading"]) {
+  line-height: var(--np-type-reading-leading);
+  max-width: var(--np-type-measure);
+}
+:where(.workspace-shell, .login-layout) :where(.audit-reference, .batch-number, .lot-number, .sku, [data-typography="mono"]) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+@media (max-width: 640px) {
+  :where(.workspace-shell, .login-layout) :where(h1, h2, h3, p, label, .help-text) {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  :where(.workspace-shell, .login-layout) :where(.action-row, .portal-actions, .toolbar-actions) {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-contrast: more) {
+  :where(.workspace-shell, .login-layout) :where(.help-text, .field-hint, .sidebar-label) {
+    color: var(--portal-ink);
   }
 }

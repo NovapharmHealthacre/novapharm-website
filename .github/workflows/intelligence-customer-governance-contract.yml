@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/core/intelligence-customer-governance.mjs'
       - 'scripts/test-intelligence-customer-governance.mjs'
+      - 'scripts/test-intelligence-two-tenant-isolation.mjs'
       - 'src/core/intelligence-customer-oidc.mjs'
       - 'src/core/intelligence-subscription-entitlements.mjs'
       - 'src/core/intelligence-billing-events.mjs'
@@ -31,6 +32,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Deny unverified identities, tenants, subscriptions and source rights
         run: node --test scripts/test-intelligence-customer-governance.mjs
+      - name: Prove two synthetic tenants remain isolated and revocation-fenced
+        run: node --test scripts/test-intelligence-two-tenant-isolation.mjs
       - name: Preserve signed Cognito customer identity
         run: node --test scripts/test-intelligence-customer-oidc.mjs
       - name: Preserve Stripe subscription and billing event boundaries

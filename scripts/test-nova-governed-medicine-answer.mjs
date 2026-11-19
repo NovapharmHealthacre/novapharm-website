@@ -164,6 +164,53 @@ test("model hallucinated IDs and uncited statements cannot be returned", async (
   }
 });
 
+test("valid citation IDs cannot launder invented quantities or off-platform links", async () => {
+  for (const text of [
+    "The observed apixaban market is 9,999,999 items. [source:fda-label-1]",
+    "The label supports 2026 purchases. [source:fda-label-1]",
+    "See https://unapproved.example/checkout for details. [source:fda-label-1]",
+    "Visit www.unapproved.example to obtain a certificate. [source:fda-label-1]"
+  ]) {
+    const { options } = harness({
+      provider: { id: "openai-zdr", complete: async () => text }
+    });
+    await assert.rejects(
+      () => answerGovernedMedicineQuestion(options),
+      error => error.code === "nova_answer_unverifiable"
+    );
+  }
+});
+
+test("a quantitative factual token passes only when present in the exact accepted passage", async () => {
+  const supported = {
+    ...row,
+    passage: "The accepted official label metadata has 4 recorded entries."
+  };
+  supported.recordContentSha256 = contentHash(supported);
+  const { options } = harness({
+    loadAcceptedEvidence: async () => [supported],
+    provider: {
+      id: "openai-zdr",
+      complete: async () => "The cited metadata has 4 entries. [source:fda-label-1]"
+    }
+  });
+  const result = await answerGovernedMedicineQuestion(options);
+  assert.equal(result.status, "draft_requires_human_review");
+  assert.equal(result.productionCertified, false);
+
+  const unsupported = harness({
+    loadAcceptedEvidence: async () => [supported],
+    provider: {
+      id: "openai-zdr",
+      complete: async () => "The cited metadata has 40 entries. [source:fda-label-1]"
+    }
+  });
+  await assert.rejects(
+    () => answerGovernedMedicineQuestion(unsupported.options),
+    error => error.code === "nova_answer_unverifiable"
+  );
+});
+
 test("unapproved or absent provider cannot be invoked", async () => {
   const { calls, options } = harness({ provider: { id: "none", complete: async () => "No" } });
   await assert.rejects(() => answerGovernedMedicineQuestion(options), error => error.code === "nova_production_dependencies_missing");

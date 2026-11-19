@@ -209,6 +209,19 @@
 .fieldRow input {
   flex: 1;
 }
+.fieldRow .clearSearch {
+  min-width: 56px;
+  min-height: 44px;
+  border: 1px solid #c7c9cd;
+  border-radius: 9px;
+  background: #fff;
+  color: #0059b8;
+  font: inherit;
+  cursor: pointer;
+}
+.fieldRow .clearSearch:focus-visible { outline: 3px solid #70b4f4; outline-offset: 2px; }
+@media (forced-colors: active) { .fieldRow .clearSearch { border-color: CanvasText; color: CanvasText; } }
+
 
 .results {
   display: grid;

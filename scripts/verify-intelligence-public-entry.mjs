@@ -35,7 +35,10 @@ function isSecureTransactionCookie(headers) {
     /;\s*SameSite=Lax(?:;|$)/iu.test(cookie) &&
     /;\s*Path=\/(?:;|$)/iu.test(cookie) &&
     !/;\s*Domain=/iu.test(cookie) &&
-    /;\s*Max-Age=300(?:;|$)/iu.test(cookie)
+    // 300 seconds is the currently deployed version-15 baseline; 900 is
+    // the bounded onboarding candidate. Accept either during the controlled
+    // rollout, but never an arbitrary or unbounded transaction lifetime.
+    /;\s*Max-Age=(?:300|900)(?:;|$)/iu.test(cookie)
   );
 }
 
@@ -46,9 +49,26 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
   const page = await probe(fetchImpl, origin + "/");
   if (page.status !== 200) reject("login_page_not_public");
   const markup = await page.text();
+  const legacyEntry = markup.includes("Understand the medicine") &&
+    (markup.includes("Invitation-only access") ||
+     (markup.includes("Create a business account") &&
+      markup.includes("Subscription checkout and medicines access become available only after")));
+  const approvedHumanEntry = markup.includes("A more human") &&
+    markup.includes("intelligence for") &&
+    markup.includes("medicine.") &&
+    markup.includes("Create a business account") &&
+    markup.includes("Your business email, password and verification are handled by NovaPharm");
+  // The new founder-facing password+TOTP card goes straight to the pinned
+  // Cognito USER_AUTH API. It must still show the approved account, recovery
+  // and secure-sign-in contracts; identity alone never grants a workspace.
+  const approvedCardEntry = markup.includes("A more human") &&
+    markup.includes("intelligence for") &&
+    markup.includes("medicine.") &&
+    markup.includes("Sign in with your business email and password. Authenticator verification follows.") &&
+    markup.includes("Create a business account") &&
+    markup.includes("/auth/customer/start?mode=reset");
   if (markup.length > 2_000_000 ||
-      !markup.includes("Understand the medicine") ||
-      !markup.includes("Invitation-only access") ||
+      !(legacyEntry || approvedHumanEntry || approvedCardEntry) ||
       !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");

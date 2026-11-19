@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
@@ -206,9 +207,11 @@ const homepageCss = text("assets/css/homepage-editorial.css");
 if (/content:\s*["']NOVAPHARM["']/i.test(homepageCss)) fail("Approved public header is still replaced by the old text wordmark");
 if (!/\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/.test(homepageCss)) fail("Official public header image visibility rule is missing");
 if (!/\.site-header \.brand::after\s*\{\s*content:\s*none/.test(homepageCss)) fail("Legacy text-wordmark pseudo-element must remain disabled");
+const publicCssSha256 = createHash("sha256").update(readFileSync(join(root, "assets/css/novapharm.bundle.css"))).digest("hex");
+const expectedPublicCssHref = `href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${publicCssSha256}"`;
 for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
   const page = text(route);
-  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3"')) fail(route + " must link to versioned design CSS");
+  if (!page.includes(expectedPublicCssHref)) fail(route + " must link to the approved design CSS semantic version and exact CSS SHA-256");
   if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");

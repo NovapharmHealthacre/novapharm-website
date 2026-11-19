@@ -26,7 +26,7 @@ ALLOWED = {
     "checkout.session.completed": "PAID",
     "checkout.session.async_payment_succeeded": "PAID",
     "checkout.session.async_payment_failed": "FAILED",
-    "checkout.session.expired": "FAILED"
+    "checkout.session.expired": "EXPIRED"
 }
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,99}$")
 EVENT_ID = re.compile(r"^evt_[A-Za-z0-9]+$")
@@ -65,6 +65,30 @@ def signed_event(raw, signature, secret, now=None):
     return event
 
 
+def nutraxin_checkout(event):
+    """Only this storefront may mutate its own ledger, not other Stripe products.
+
+    Stripe delivers all subscribed account events to each endpoint. A missing
+    Nutraxin session mapping must still retry; explicit foreign sessions must
+    be acknowledged *after* verifying the Stripe signature.
+    """
+    session = (event.get("data") or {}).get("object")
+    if not isinstance(session, dict):
+        raise ValueError("Invalid signed Checkout object")
+    metadata = session.get("metadata")
+    if not isinstance(metadata, dict):
+        raise ValueError("Invalid signed Checkout metadata")
+    order = metadata.get("order_id")
+    ref = session.get("client_reference_id")
+    if (isinstance(order, str) and order.startswith("NUT-") or
+        isinstance(ref, str) and ref.startswith("NUT-")):
+        return True
+    # Defensive legacy compatibility: an in-scope order without an order_id
+    # still needs a durable lookup, never a silent foreign-storefront ACK.
+    return any(k in metadata for k in
+               ("payment_attempt_id", "quote_version", "customer_id"))
+
+
 def attr_value(item, key, attr_type="S"):
     field = item.get(key, {})
     if not isinstance(field, dict) or attr_type not in field:
@@ -93,8 +117,11 @@ def reconcile(event, stored):
         session.get("livemode") is not True):
         raise ValueError("Signed Checkout totals or owner do not reconcile")
     action = ALLOWED[event["type"]]
-    if action == "PAID" and session.get("payment_status") != "paid":
-        return None
+    if action == "PAID":
+        if session.get("payment_status") != "paid":
+            return None
+    elif session.get("payment_status") != "unpaid":
+        raise ValueError("Unpaid Checkout event contradicts payment status")
     return {"action": action, "sessionId": sid, "attemptId": attempt_id,
             "orderId": order_id, "eventId": event["id"]}
 
@@ -130,7 +157,9 @@ def record_once(event, payment):
              "ExpressionAttributeNames": {"#status": "status"},
              "ExpressionAttributeValues": {
                   ":checkoutOpen": {"S": "CHECKOUT_OPEN"},
-                  ":updated": {"S": "PAID" if payment["action"] == "PAID" else "PAYMENT_FAILED"},
+                  ":updated": {"S": ("PAID" if payment["action"] == "PAID" else
+                                   "CHECKOUT_EXPIRED" if payment["action"] == "EXPIRED" else
+                                   "PAYMENT_FAILED")},
                   ":event": {"S": payment["eventId"]},
                   ":session": {"S": payment["sessionId"]}}}}
     ]
@@ -172,6 +201,11 @@ def handler(event, context):
         raw = base64.b64decode(blob, validate=True) if event.get("isBase64Encoded") else blob.encode("utf-8")
         signing = secrets.get_secret_value(SecretId=SIGNING_SECRET_ID)
         secret = signing.get("SecretString", "")
+        # Secrets Manager console pastes may append CR/LF. Stripe signs the
+        # actual whsec_ value, never a trailing transport line terminator.
+        # Strip only CR/LF, not arbitrary secret characters or raw event bytes.
+        if isinstance(secret, str):
+            secret = secret.rstrip("\r\n")
         signed = signed_event(raw, headers.get("stripe-signature"), secret)
     except (ValueError, TypeError, json.JSONDecodeError, UnicodeError):
         return response(400, {"error": "invalid_webhook_signature_or_payload"})
@@ -180,6 +214,8 @@ def handler(event, context):
     if signed.get("type") not in ALLOWED:
         return response(200, {"acknowledged": True, "action": "ignored"})
     try:
+        if not nutraxin_checkout(signed):
+            return response(200, {"acknowledged": True, "action": "ignored_foreign_storefront"})
         session_id = signed.get("data", {}).get("object", {}).get("id", "")
         if not SESSION_ID.fullmatch(str(session_id)):
             return response(400, {"error": "invalid_session_reference"})

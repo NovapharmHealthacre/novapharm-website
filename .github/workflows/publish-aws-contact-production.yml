@@ -12,6 +12,9 @@ on:
       - 'src/content/nutraxin-showcase.html'
       - 'assets/js/nutraxin-retail-store.js'
       - 'assets/js/contact-production.js'
+      - 'assets/js/account-request-production.js'
+      - 'scripts/activate-account-request.mjs'
+      - 'scripts/test-account-request-intake.mjs'
       - 'assets/js/esco-catalogue.js'
       - 'scripts/apply-esco-catalogue.mjs'
       - 'scripts/esco-merchandising.mjs'
@@ -48,6 +51,11 @@ on:
       - 'scripts/build-site.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
+      # The Apple-27-informed web foundation is part of the shipped public CSS.
+      - 'assets/css/novapharm.bundle.css'
+      - 'assets/css/novapharm-apple-27-web-adaptation.css'
+      - 'assets/css/novapharm-hig-motion.css'
+      - 'scripts/build-css-bundle.mjs'
       - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
       # same AWS-backed publisher as the verified live contact service.
@@ -64,6 +72,12 @@ on:
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'technology/index.html'
+      # The interactive customer-facing workspace section and its published assets.
+      - 'technology/workspaces/**'
+      - 'assets/css/intelligence-workspace-embedded.css'
+      - 'assets/js/intelligence-workspace-embedded.js'
+      - 'assets/css/intelligence-workspace-product.css'
+      - 'assets/js/intelligence-workspace-product.js'
       - 'src/content/technology-intelligence.html'
       - 'assets/js/intelligence-live-research.js'
       - 'scripts/test-intelligence-live-public-research.mjs'
@@ -81,6 +95,7 @@ on:
       - 'scripts/validate-public-sitemaps.py'
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
+      - 'assets/js/marketing-attribution.js'
       - 'legal/cookies/index.html'
       - 'legal/privacy/index.html'
       - '.github/workflows/publish-aws-contact-production.yml'
@@ -112,14 +127,141 @@ permissions:
 # Exact-main verification precedes build; a verified artifact may publish later
 # only when last successful Pages deployment and current main prove forward ancestry.
 concurrency:
-  group: novapharm-pages-verified-customer-publication-v2
+  # v3 isolates the guarded AWS-backed publisher from stale v2 Pages recovery locks.
+  # Preserve one active/one pending publisher, independent forward-only ancestry
+  # verification and every contact/commerce acceptance gate below.
+  group: novapharm-pages-verified-aws-customer-publication-v3
   cancel-in-progress: false
 
 jobs:
+  release_scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    outputs:
+      release_needed: ${{ steps.classify.outputs.release_needed }}
+    steps:
+      - name: Checkout exact source to inspect first-parent change scope
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
+      - name: Enforce owner-approved contact-production permission
+        id: owner_hold
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
+          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "hold=true" >> "$GITHUB_OUTPUT"
+            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+          fi
+      - name: Exclude Nova ML-only changes from unrelated public AWS contact publication
+        id: classify
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.owner_hold.outputs.hold }}" != "false" ]; then
+            echo "release_needed=false" >> "$GITHUB_OUTPUT"
+            echo "Contact publication is blocked by the owner production hold; neither AWS nor Pages may run."
+            exit 0
+          fi
+          # Both automatic and manually dispatched releases must classify the
+          # exact checked-out commit. A dispatch is not proof of public scope.
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          changed_paths=$(git diff --name-only "HEAD^1" HEAD)
+          private_only=true
+          found_ml=false
+          found_change=false
+          while IFS= read -r changed; do
+            [ -n "$changed" ] || continue
+            found_change=true
+            case "$changed" in
+              apps/portal/*|.github/workflows/intelligence-country-release-gates.yml|docs/intelligence/77-country-101-source-complete-register-20261118.md|docs/intelligence/country-101-release-gates-20261118.md|scripts/render-intelligence-country-release-ledger.mjs|scripts/test-intelligence-country-release-ledger.mjs|src/core/intelligence-country-iso-identifiers.mjs|src/core/intelligence-country-markdown-cell.mjs|src/core/intelligence-country-release-ledger.mjs|src/core/intelligence-country-source-baseline.mjs|src/core/intelligence-enterprise-readiness.mjs|scripts/audit-intelligence-enterprise-readiness.mjs|scripts/test-intelligence-enterprise-readiness.mjs|docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md|.github/workflows/intelligence-enterprise-readiness.yml|docs/design/apple-hig-attachment-evidence-20261118.json|docs/design/apple-hig-source-and-attachment-audit-20261118.md|scripts/test-apple-hig-attachment-audit.mjs|native/novapharm-intelligence-mobile/MapsResearchScreen.tsx|native/novapharm-intelligence-mobile/appearance.ts|native/novapharm-intelligence-mobile/app.json|native/novapharm-intelligence-mobile/package.json|native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs|docs/design/apple-hig-172-topic-acceptance-register.json|docs/design/apple-hig-172-topic-adoption-20261118.md|docs/design/apple-hig-three-platform-adoption-20261118.md|native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx|native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs|scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs|.github/workflows/apple-hig-cross-platform-detail.yml|.github/workflows/browser-acceptance.yml|.github/workflows/corporate-live-full-acceptance.yml|scripts/test-corporate-live-publication-gate.mjs|.github/workflows/intelligence-global-101-onboarding.yml|docs/intelligence/global-101-source-integration-matrix-20261118.md|scripts/test-intelligence-global-intake-workflow.mjs|scripts/test-intelligence-global-source-gateway.mjs|scripts/test-intelligence-global-source-onboarding.mjs|src/core/intelligence-global-evidence-contract.mjs|src/core/intelligence-global-intake-quality.mjs|src/core/intelligence-global-intake-workflow.mjs|src/core/intelligence-global-source-gateway.mjs|src/core/intelligence-global-source-onboarding.mjs|native/novapharm-intelligence-apple/*|src/ai/compute-admission.mjs|scripts/test-nova-compute-admission.mjs|scripts/test-nova-infrastructure-integration.mjs|native/novapharm-intelligence-android/*|docs/architecture/deep-learning-infrastructure-20261118.md|docs/ai-system-card.md|docs/ai-risk-register.md|.github/workflows/nova-ml-infrastructure-contract.yml|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/intelligence-global-mobile-contracts.yml|.github/workflows/nova-ml-alignment-research.yml|.github/workflows/nova-ml-l0-sparsity.yml|docs/ai-dependency-and-model-sbom.json|docs/ai-model-register.json|docs/ai-use-case-register.json|docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md|docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md|native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs|native/novapharm-intelligence-mobile/tsconfig.json|packages/medicines-intelligence/src/l0-sparsity.ts|packages/medicines-intelligence/test/l0-sparsity.test.ts|scripts/test-nova-alignment-governance.mjs|scripts/test-nova-alignment-research.mjs|scripts/test-nova-l0-governance.mjs|src/core/ai/nova-alignment-research.mjs|tooling/python/nova_l0_sparsity.py|tooling/python/test_nova_l0_sparsity.py|.github/workflows/nova-ml-native-apple.yml|.github/workflows/nova-ml-private-ingress-acceptance.yml|.github/workflows/intelligence-sparse-circuit-assurance.yml|.github/workflows/intelligence-sparse-transformer-experiment.yml|.github/workflows/nova-sparse-circuit-android.yml|docs/architecture/nova-scientific-intelligence-programme.md|docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md|docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md|docs/intelligence/npi-sparse-circuit-summary-v1.schema.json|native/novapharm-intelligence-mobile/App.tsx|native/novapharm-intelligence-mobile/README.md|native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs|scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json|scripts/research/tiny-sparse-transformer-experiment.py|scripts/research/toy-sparse-circuit-intervention.mjs|scripts/research/validate-trained-sparse-transformer-report.mjs|scripts/test-intelligence-sparse-circuit-assurance.mjs|scripts/test-intelligence-sparse-circuit-cross-platform.mjs|scripts/test-intelligence-sparse-circuit-toy-intervention.mjs|scripts/test-intelligence-sparse-circuit-upstream-governance.mjs|scripts/test-intelligence-trained-sparse-transformer-report.mjs|src/ai/model-registry.mjs|src/core/ai/model-registry.mjs|src/core/intelligence-sparse-circuit-assurance.mjs|.github/workflows/intelligence-global-secondary-source-contracts.yml|docs/intelligence/global-secondary-source-api-contracts-20261118.md|scripts/test-intelligence-global-secondary-source-gateway.mjs|scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs|src/core/intelligence-global-secondary-source-gateway.mjs|src/core/intelligence-singapore-hsa-bulk-candidate.mjs|.github/workflows/intelligence-official-live-pharma-probes.yml|docs/intelligence/official-live-pharma-probes-20261118.md|scripts/run-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-quarantine.mjs|scripts/test-intelligence-official-live-pharma-server-gate.mjs|src/core/intelligence-official-live-pharma-probes.mjs|.github/workflows/intelligence-es-cima-public-live-probe.yml|docs/intelligence/spain-cima-official-live-probe-20261118.md|scripts/run-intelligence-es-cima-public-live-probe.mjs|scripts/test-intelligence-es-cima-live-quarantine.mjs|scripts/test-intelligence-es-cima-public-live-probe.mjs|src/core/intelligence-es-cima-public-live-probe.mjs|.github/workflows/intelligence-canada-dpd-public-live-source.yml|docs/intelligence/canada-dpd-public-live-source-20261118.md|scripts/run-intelligence-canada-dpd-public-live-probe.mjs|scripts/test-intelligence-canada-dpd-public-live-probe.mjs|src/core/intelligence-canada-dpd-public-live-probe.mjs|.github/workflows/intelligence-clip-research-contract.yml|docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md|docs/intelligence/visual-search-cross-platform-contract.json|scripts/test-intelligence-visual-search.mjs|services/clip/*|src/core/intelligence-visual-search.mjs|.github/workflows/imdf-venue-evidence-preflight.yml|docs/maps/imdf-venue-preflight-20261119.md|scripts/imdf/venue-preflight.mjs|scripts/imdf/venue-preflight.test.mjs|native/novapharm-intelligence-mobile/clip-research.ts|native/novapharm-intelligence-mobile/tests/clip-contract.test.mjs|native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs|docs/intelligence/country-101-new-24-publisher-research-20261118.json|scripts/test-intelligence-24-publisher-research.mjs|.github/workflows/intelligence-country-web-mobile-parity.yml|docs/intelligence/country-101-client-catalog-20261118.json|scripts/generate-intelligence-country-client-catalog.mjs|scripts/test-intelligence-country-client-catalog.mjs|native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx|src/core/intelligence-country-101-proposed-ledger.mjs|scripts/test-intelligence-country-101-proposed-ledger.mjs|scripts/render-intelligence-country-101-proposed-ledger.mjs|.github/workflows/intelligence-country-101-scope-audit.yml|docs/intelligence/country-101-scope-proposal-20261118.json|docs/intelligence/country-101-scope-proposal-20261118.md|scripts/test-intelligence-country-101-scope-proposal.mjs|.github/workflows/intelligence-science-research-contracts.yml|docs/intelligence/openai-science-integration-20261118.md|docs/intelligence/openai-science-methods-20261118.json|docs/intelligence/science-research-capabilities-20261118.json|native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx|scripts/package-unified-estate.mjs|scripts/test-intelligence-22-workspace-readiness.mjs|scripts/test-intelligence-readiness.mjs|scripts/test-intelligence-science-evidence-dossier.mjs|scripts/test-intelligence-science-methodology.mjs|scripts/test-intelligence-science-research.mjs|scripts/test-unified-release-artifacts.mjs|src/core/intelligence-22-workspace-readiness.mjs|src/core/intelligence-release-readiness.mjs|src/core/intelligence-science-evidence-dossier.mjs|src/core/intelligence-science-methodology.mjs|src/core/intelligence-science-research-contract.mjs|src/core/intelligence-science-research-principles.mjs|.github/workflows/intelligence-model-microscope.yml|docs/ai-model-licence-review.md|docs/intelligence/model-microscope-inspection-v1.schema.json|docs/intelligence/model-microscope-research-to-product-20261118.md|native/novapharm-intelligence-mobile/metro.config.cjs|scripts/test-nova-model-microscope-end-to-end.mjs|scripts/test-nova-model-microscope-signed-evidence.mjs|scripts/test-nova-model-microscope-synthetic-reference.mjs|scripts/test-nova-model-microscope.mjs|src/core/ai/model-microscope-signed-evidence.mjs|src/core/ai/model-microscope-synthetic-reference.d.mts|src/core/ai/model-microscope-synthetic-reference.mjs|src/core/ai/model-microscope.mjs)
+                found_ml=true
+                ;;
+              server.mjs)
+                # Only the exact reviewed default-OFF, board-scoped probe route is source-only.
+                # All other server changes, including mixed customer/public edits, require public gates.
+                server_delta=$(git diff --unified=0 "HEAD^1" HEAD -- "$changed" | grep -E '^(\+[^+]|-[^-]|\+$|-$)' || true)
+                server_sha=$(printf '%s\n' "$server_delta" | sha256sum | cut -d' ' -f1)
+                original_blob=$(git rev-parse "HEAD^1:$changed" 2>/dev/null || true)
+                candidate_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$server_sha" = '56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2' ] || { [ "$original_blob" = '4e8c233d1dbf085545763de4bd4de093ea95ec11' ] && [ "$candidate_blob" = '12dd72527ae561d6506d9573d418959d6f337189' ]; }; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              package.json)
+                # Only the exact reviewed additional offline CLIP test script is research-only.
+                # Other root dependencies, scripts and engine changes retain normal publication gates.
+                original_blob=$(git rev-parse "HEAD^1:$changed" 2>/dev/null || true)
+                candidate_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$original_blob" = '733efc6571364754e46bfcadb8141d5d6c3481ba' ] && [ "$candidate_blob" = 'c2ad27febc151c09e9629ed602ad989a01e90213' ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              apps/corporate/app/design-system.css)
+                # Source-reviewed #856 breadcrumb target only; future CSS changes are public releases.
+                old_css_blob=$(git rev-parse "HEAD^1:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                new_css_blob=$(git rev-parse "HEAD:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                if [ "$old_css_blob" = "35a79b8b0051ac353d98e6f70ae9446d44955b5c" ] && [ "$new_css_blob" = "85ca93d1f501de09e99f4114852daacb4d1b77f1" ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              .github/workflows/visual-refinement.yml|scripts/audit-website-hig-source.mjs|scripts/test-apple-hig-census.mjs)
+                # HIG test and source-audit changes do not alter customer contact infrastructure.
+                found_ml=true
+                ;;
+              packages/medicines-intelligence/src/index.ts)
+                # Shared barrel: only the reviewed L0 export insertion is research-only.
+                export_diff=$(git diff --unified=0 "$GITHUB_SHA^1" "$GITHUB_SHA" -- "$changed" | grep -E '^[+-][^+-]' || true)
+                if [ "$export_diff" = '+export * from "./l0-sparsity.ts";' ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              .github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/aws/contact-release-routing.test.mjs)
+                # A publisher policy-only update must not be silently skipped.
+                ;;
+              scripts/check-syntax.mjs)
+                # This one audited Node 24 syntax-parser migration is source-only.
+                # Other shared-tool changes retain normal public release verification.
+                prior_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                proposed_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$prior_blob" != "51c1abd00a10856395c3283a992f5c53e6de7cea" ] || [ "$proposed_blob" != "e186036b0f29d8c67d6e942311aa2585d41e37c0" ]; then
+                  private_only=false
+                fi
+                ;;
+              *)
+                private_only=false
+                ;;
+            esac
+          done <<< "$changed_paths"
+          if [ "$found_change" = true ] && [ "$found_ml" = true ] && [ "$private_only" = true ]; then
+            echo "release_needed=false" >> "$GITHUB_OUTPUT"
+            echo "Only protected Nova ML source and related release guards changed. Do not contact AWS or publish public Pages."
+          else
+            echo "release_needed=true" >> "$GITHUB_OUTPUT"
+            echo "Public, mixed or publisher-only changes follow the verified public publication gates."
+          fi
   build-and-verify:
-    if: github.ref == 'refs/heads/main'
+    needs: release_scope
+    if: github.ref == 'refs/heads/main' && needs.release_scope.outputs.release_needed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    outputs:
+      bundle_css_sha256: ${{ steps.public_css.outputs.bundle_css_sha256 }}
     steps:
       - name: Checkout exactly approved main
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -160,20 +302,39 @@ jobs:
           node --test scripts/test-nutraxin-retail-store.mjs
           node --test scripts/test-nutraxin-consumer-account.mjs
           npm run test:cookies
+          node --test scripts/test-apple-privacy-contract.mjs
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # Require the exact consent-scoped attribution module in the staged
+          # public artifact before the guarded publisher can deploy it.
+          test -s _site/assets/js/marketing-attribution.js
+          grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return null;' _site/assets/js/marketing-attribution.js
           node --test scripts/test-intelligence-live-public-research.mjs
           test -s _site/technology/index.html
+          # Reject publication when the owner-approved interactive Technology experience
+          # or its CSP-safe native runtime is missing from the staged public artifact.
+          test -s _site/assets/css/intelligence-workspace-embedded.css
+          test -s _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'id="npi-exp-shell"' _site/technology/index.html
+          grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' _site/technology/index.html
+          technology_css_sha256="$(sha256sum _site/assets/css/intelligence-workspace-embedded.css)"
+          technology_css_sha256="${technology_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${technology_css_sha256}\"" _site/technology/index.html
+          grep -Fq 'function renderSupplyMode(mode)' _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'npi-workspace-live-experience' _site/assets/css/intelligence-workspace-embedded.css
           test -s _site/assets/js/intelligence-live-research.js
           grep -Fq 'data-npi-research' _site/technology/index.html
           grep -Fq 'src="/assets/js/intelligence-live-research.js"' _site/technology/index.html
           grep -Fq 'US regulatory and trial searches send the medicine term' _site/technology/index.html
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' _site/assets/js/intelligence-live-research.js
           # Three commercial routes must be included in the same verified release.
+          distribution_css_sha256="$(sha256sum _site/assets/css/global-distribution-editorial.css)"
+          distribution_css_sha256="${distribution_css_sha256%% *}"
           for route in distribution market-access markets; do
             test -s "_site/$route/index.html"
             grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "_site/$route/index.html"
-            grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "_site/$route/index.html"
+            grep -Fq "href=\"/assets/css/global-distribution-editorial.css?v=20261111-forensic-design-v3&amp;sha256=${distribution_css_sha256}\"" "_site/$route/index.html"
             grep -Fq "https://novapharmhealthcare.com/$route/" _site/sitemap.xml
           done
           # Distribution's premium release must not silently fall back to the old page.
@@ -210,7 +371,9 @@ jobs:
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' _site/capabilities/index.html
+          capabilities_css_sha256="$(sha256sum _site/assets/css/capabilities-editorial.css)"
+          capabilities_css_sha256="${capabilities_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5&amp;sha256=${capabilities_css_sha256}\"" _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -221,10 +384,15 @@ jobs:
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' _site/oncology/index.html
+          oncology_css_sha256="$(sha256sum _site/assets/css/oncology-hope-v2.css)"
+          oncology_css_sha256="${oncology_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${oncology_css_sha256}\"" _site/oncology/index.html
           grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
+          grep -Fq 'aspect-ratio:890/550' _site/assets/css/oncology-hope-v2.css
+          grep -Fq 'transparent 8%,rgba(0,0,0,.5) 10%,#000 14%' _site/assets/css/oncology-hope-v2.css
+          grep -Fq 'padding:22px 0 54px' _site/assets/css/oncology-hope-v2.css
           node scripts/verify-nutraxin-merchant-live.mjs --local
           test -s _site/shopping/nutraxin-uk.tsv
           cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
@@ -258,7 +426,9 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css?v=20261111-forensic-design-v3"' _site/products/index.html
+          products_css_sha256="$(sha256sum _site/assets/css/products-editorial.css)"
+          products_css_sha256="${products_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/products-editorial.css?v=20261111-products-layout-v4&amp;sha256=${products_css_sha256}\"" _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
@@ -276,48 +446,37 @@ jobs:
           ! grep -Fq 'novapharm-ga4-id' _site/portal/index.html
           ! grep -Fq 'novapharm-ga4-id' _site/legal/cookies/index.html
           grep -Fq 'Google Analytics 4' _site/legal/cookies/index.html
+          grep -Fq 'id="privacy-by-design"' _site/legal/privacy/index.html
+          grep -Fq 'id="privacy-controls"' _site/legal/privacy/index.html
+          grep -Fq 'data-cookie-settings' _site/legal/privacy/index.html
+          grep -Fq 'data-cookie-settings' _site/legal/cookies/index.html
+          grep -Fq '2026-11-15-v1.3' _site/assets/js/cookie-consent.js
           test -s _site/assets/js/consent-analytics.js
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
           test -s _site/assets/js/account-request-production.js
           test -s _site/assets/css/account-request.css
-      - name: Validate deployed AWS API and record one synthetic business receipt
+      - name: Verify production contact API without sending notifications
         env:
           CONTACT_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           set -euo pipefail
+          # Explicit owner instruction: NO EMAIL to anyone, including SNS
+          # synthetic production receipts. Never submit an accepted enquiry
+          # from this publisher. Test GET health and rejected anonymous POST only.
+          node --test scripts/test-no-email-release-guard.mjs
           [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$ ]] || exit 1
           curl --fail --silent --show-error --max-time 15 \
             -H "Cache-Control: no-cache" \
             "$CONTACT_ORIGIN/health" -o /tmp/novapharm-contact-health.json
           jq -e '.service == "novapharm-contact-intake" and .ready == true and .environment == "production"' /tmp/novapharm-contact-health.json
+          # This request is rejected before storage/SNS; it cannot be a valid enquiry.
           rejected=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-anon.json -w '%{http_code}' \
             -X POST "$CONTACT_ORIGIN/contact" \
             -H 'Content-Type: application/json' -d '{}' )
           test "$rejected" = "403"
-          echo '{
-            "name":"SYNTHETIC-NOVAPHARM-QA",
-            "email":"synthetic@example.com",
-            "company":"NovaPharm QA",
-            "role":"Release acceptance",
-            "country":"United Kingdom",
-            "telephone":"",
-            "enquiryType":"General enquiry",
-            "message":"SYNTHETIC DATA. Verified AWS release acceptance for NovaPharm business enquiry route.",
-            "website":"",
-            "privacyAcknowledgement":"yes",
-            "safetyConfirmation":"yes"
-          }' > /tmp/novapharm-qa-input.json
-          outcome=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-qa-receipt.json -w '%{http_code}' \
-            -X POST "$CONTACT_ORIGIN/contact" \
-            -H 'Origin: https://novapharmhealthcare.com' \
-            -H 'Content-Type: application/json' \
-            -H 'X-Novapharm-Intake: v1' \
-            --data-binary @/tmp/novapharm-qa-input.json)
-          test "$outcome" = "201"
-          jq -e '.ok == true and .persisted == true and .notificationAccepted == true and (.receiptId | test("^[0-9a-f-]{36}$"))' /tmp/novapharm-qa-receipt.json
-          echo "Synthetic AWS durable storage and accepted notification confirmed."
+          echo 'AWS contact health and anonymous rejection verified without email or persisted enquiry.'
       - name: Activate contact on staged Pages artifact only
         env:
           NOVAPHARM_CONTACT_RELEASE_ACCEPTED: "yes"
@@ -332,6 +491,9 @@ jobs:
           grep -Fq 'src="/assets/js/contact-production.js"' _site/contact/index.html
           grep -Fq 'Secure online enquiry storage' _site/legal/privacy/index.html
           grep -Fq 'data-live-account-request-form' _site/account-application/index.html
+          grep -Fq 'Register interest in a business account.' _site/account-application/index.html
+          grep -Fq 'Register business interest</button>' _site/account-application/index.html
+          ! grep -Fq 'Request a business account in minutes' _site/account-application/index.html
           grep -Fq 'data-account-request-status' _site/account-application/index.html
           grep -Fq "data-api-origin=\"$NOVAPHARM_CONTACT_API_ORIGIN\"" _site/account-application/index.html
           grep -Fq 'src="/assets/js/account-request-production.js"' _site/account-application/index.html
@@ -343,6 +505,26 @@ jobs:
           ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
           ! grep -Fq 'type="password"' _site/portal/index.html
+      - name: Bind staged shared stylesheet to deployment receipt
+        id: public_css
+        run: |
+          set -euo pipefail
+          distribution_logo="assets/brand/novapharm-distribution-logo.svg"
+          test -s "$distribution_logo"
+          test -s "_site/$distribution_logo"
+          test -s _site/distribution/index.html
+          grep -Fq "src=\"/$distribution_logo\"" _site/distribution/index.html
+          grep -Fq 'alt="NovaPharm Distribution"' _site/distribution/index.html
+          cmp -s "$distribution_logo" "_site/$distribution_logo"
+          test -s _site/assets/css/novapharm.bundle.css
+          bundle_css_sha256="$(sha256sum _site/assets/css/novapharm.bundle.css)"
+          bundle_css_sha256="${bundle_css_sha256%% *}"
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+          for page in index.html capabilities/index.html oncology/index.html products/index.html; do
+            test -s "_site/$page"
+            grep -Fq "href=\"/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${bundle_css_sha256}\"" "_site/$page"
+          done
+          printf 'bundle_css_sha256=%s\n' "$bundle_css_sha256" >> "$GITHUB_OUTPUT"
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Upload exact verified Pages artifact
@@ -366,8 +548,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
         run: |
           set -euo pipefail
+          [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           node scripts/check-pages-monotonic-release.mjs
       - name: Publish verified Pages artifact
         id: ship
@@ -393,19 +577,30 @@ jobs:
                 && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-contact.html \
                 && grep -Fq 'src="/assets/js/contact-production.js"' /tmp/novapharm-live-contact.html \
                 && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-live-contact.html; then
-                curl --fail --silent --show-error --max-time 15 -o /tmp/novapharm-live-contact.js "https://novapharmhealthcare.com/assets/js/contact-production.js"
-                grep -Fq "data-live-b2b-enquiry-form" /tmp/novapharm-live-contact.js
-                curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
-                  "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" > /tmp/novapharm-live-account.html
-                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html
-                grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html
-                grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html
-                ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html
-                curl --fail --silent --show-error --max-time 15 \
-                  -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js"
-                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js
-                echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
-                exit 0
+                if curl --fail --silent --show-error --max-time 15 -H "Cache-Control: no-cache" \
+                  -o /tmp/novapharm-live-contact.js "https://novapharmhealthcare.com/assets/js/contact-production.js" \
+                  && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-live-contact.js; then
+                  if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
+                    "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" \
+                    > /tmp/novapharm-live-account.html; then
+                    if grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html \
+                      && grep -Fq 'Register interest in a business account.' /tmp/novapharm-live-account.html \
+                      && grep -Fq 'Register business interest</button>' /tmp/novapharm-live-account.html \
+                      && ! grep -Fq 'Request a business account in minutes' /tmp/novapharm-live-account.html \
+                      && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html \
+                      && grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html \
+                      && ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html; then
+                      if curl --fail --silent --show-error --max-time 15 -H "Cache-Control: no-cache" \
+                        -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js" \
+                        && grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js \
+                        && grep -Fq 'Business interest received. Reference:' /tmp/novapharm-live-account.js \
+                        && grep -Fq 'The request could not be confirmed. It may have been received.' /tmp/novapharm-live-account.js; then
+                        echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
+                        exit 0
+                      fi
+                    fi
+                  fi
+                fi
               fi
             fi
             sleep 10
@@ -566,6 +761,36 @@ jobs:
           done
           echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
           exit 1
+      - name: Verify Apple privacy notice and consent version on the live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            cache="privacy-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/privacy/?${cache}" -o /tmp/novapharm-live-privacy.html \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/cookies/?${cache}" -o /tmp/novapharm-live-cookies.html \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/cookie-consent.js?${cache}" -o /tmp/novapharm-live-cookie-consent.js \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/marketing-attribution.js?${cache}" -o /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return null;' /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return false;' /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'class="np-privacy-overview"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'Your information. Your choice.' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'class="np-privacy-primary-action"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'id="privacy-by-design"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'id="privacy-controls"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-cookies.html \
+              && grep -Fq '2026-11-15-v1.3' /tmp/novapharm-live-cookie-consent.js; then
+              echo 'Public privacy choices, reviewed notice sections and consent record version are live.'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo '::error::Apple privacy release could not be verified on the live custom domain.'
+          exit 1
       - name: Verify the approved About page on the production domain
         run: |
           set -euo pipefail
@@ -599,6 +824,8 @@ jobs:
       - name: Verify approved Capabilities Earth, pharmaceutical vial and layout on the live domain
         run: |
           set -euo pipefail
+          capabilities_css_sha256="$(sha256sum assets/css/capabilities-editorial.css)"
+          capabilities_css_sha256="${capabilities_css_sha256%% *}"
           for attempt in $(seq 1 18); do
             url="https://novapharmhealthcare.com/capabilities/?capabilities-$GITHUB_SHA-$attempt-$(date +%s)"
             if curl --fail --silent --show-error --location --max-time 20 \
@@ -611,7 +838,7 @@ jobs:
               && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'Start with one decision.' /tmp/novapharm-live-capabilities.html \
-              && grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' /tmp/novapharm-live-capabilities.html; then
+              && grep -Fq "href=\"/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5&amp;sha256=${capabilities_css_sha256}\"" /tmp/novapharm-live-capabilities.html; then
               curl --fail --silent --show-error --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/capabilities-editorial.css?capabilities-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-capabilities.css
@@ -675,6 +902,8 @@ jobs:
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
           set -euo pipefail
+          oncology_css_sha256="$(sha256sum assets/css/oncology-hope-v2.css)"
+          oncology_css_sha256="${oncology_css_sha256%% *}"
           for attempt in $(seq 1 18); do
             cache="hope-${GITHUB_SHA}-${attempt}-$(date +%s)"
             if curl --fail --silent --show-error --location --max-time 20 \
@@ -682,12 +911,18 @@ jobs:
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
               && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
-              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' /tmp/live-hope-oncology.html \
+              && grep -Fq "href=\"/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${oncology_css_sha256}\"" /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
               && grep -Fq 'object-fit:cover' /tmp/live-hope-oncology.css \
-              && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css; then
+              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css \
+              && grep -Fq '@media (max-width:760px)' /tmp/live-hope-oncology.css \
+              && grep -Fq '@media (min-width:761px) and (max-width:1100px)' /tmp/live-hope-oncology.css \
+              && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css \
+              && grep -Fq 'aspect-ratio:890/550' /tmp/live-hope-oncology.css \
+              && grep -Fq 'transparent 8%,rgba(0,0,0,.5) 10%,#000 14%' /tmp/live-hope-oncology.css \
+              && grep -Fq 'padding:22px 0 54px' /tmp/live-hope-oncology.css; then
               echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
               break
             fi
@@ -698,9 +933,42 @@ jobs:
             sleep 5
           done
 
-      - name: Verify supplied official logo and secure header on four live pages
+      - name: Verify official Distribution logo on live custom domain
         run: |
           set -euo pipefail
+          logo_path="assets/brand/novapharm-distribution-logo.svg"
+          verified=false
+          for attempt in $(seq 1 24); do
+            suffix="distribution-logo-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 20 \
+                 -H 'Cache-Control: no-cache, no-store' \
+                 "https://novapharmhealthcare.com/distribution/?${suffix}" \
+                 -o /tmp/novapharm-distribution-live.html \
+              && curl --fail --silent --show-error --location --max-time 20 \
+                 -H 'Cache-Control: no-cache, no-store' \
+                 "https://novapharmhealthcare.com/${logo_path}?${suffix}" \
+                 -o /tmp/novapharm-distribution-live.svg \
+              && grep -Fq "src=\"/$logo_path\"" /tmp/novapharm-distribution-live.html \
+              && grep -Fq 'class="ndist-brand-logo"' /tmp/novapharm-distribution-live.html \
+              && grep -Fq 'alt="NovaPharm Distribution"' /tmp/novapharm-distribution-live.html \
+              && cmp -s "$logo_path" /tmp/novapharm-distribution-live.svg; then
+              verified=true
+              echo "Official Distribution logo and byte-identical owner-approved SVG verified on live custom domain."
+              break
+            fi
+            sleep 5
+          done
+          test "$verified" = true || {
+            echo '::error::Official Distribution logo not verified on live custom domain.'
+            exit 1
+          }
+      - name: Verify supplied official logo and secure header on four live pages
+        env:
+          EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
+        run: |
+          set -euo pipefail
+          bundle_css_sha256="$EXPECTED_BUNDLE_CSS_SHA256"
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           verified=false
           for attempt in $(seq 1 18); do
             verified=true
@@ -714,8 +982,9 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3"' "$target" \
-                || ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
+              if ! grep -Fq "href=\"/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${bundle_css_sha256}\"" "$target" \
+                || ! grep -Fq '<picture class="brand-logo"' /tmp/owner-final-header.html \
+                || ! grep -Fq 'src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false
                 break
@@ -768,6 +1037,10 @@ jobs:
       - name: Verify live Global Distribution, Market Access and Markets pages
         run: |
           set -euo pipefail
+          distribution_css_sha256="$(sha256sum assets/css/global-distribution-editorial.css)"
+          distribution_css_sha256="${distribution_css_sha256%% *}"
+          markets_css_sha256="$(sha256sum assets/css/markets-editorial.css)"
+          markets_css_sha256="${markets_css_sha256%% *}"
           for route in distribution market-access markets; do
             verified=false
             for attempt in $(seq 1 18); do
@@ -775,7 +1048,7 @@ jobs:
               if curl --fail --silent --show-error --location --max-time 15 \
                   -H 'Cache-Control: no-cache, no-store' "$url" -o "/tmp/novapharm-$route.html" \
                 && grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "/tmp/novapharm-$route.html" \
-                && grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "/tmp/novapharm-$route.html" \
+                && grep -Fq "href=\"/assets/css/global-distribution-editorial.css?v=20261111-forensic-design-v3&amp;sha256=${distribution_css_sha256}\"" "/tmp/novapharm-$route.html" \
                 && grep -Fq "https://novapharmhealthcare.com/$route/" "/tmp/novapharm-$route.html"; then
                 verified=true
                 break
@@ -797,7 +1070,7 @@ jobs:
           # is published, not the earlier soft third-party preview.
           grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/novapharm-markets.html
           grep -Fq 'iss070e075895_lrg.jpg" width="5568" height="3712"' /tmp/novapharm-markets.html
-          grep -Fq 'href="/assets/css/markets-editorial.css?v=20261111-nasa-hd-1"' /tmp/novapharm-markets.html
+          grep -Fq "href=\"/assets/css/markets-editorial.css?v=20261111-nasa-hd-1&amp;sha256=${markets_css_sha256}\"" /tmp/novapharm-markets.html
           if grep -Fq 'd2pn8kiwq2w21t.cloudfront.net' /tmp/novapharm-markets.html; then
             echo '::error::Retired soft Markets hero remains live.'
             exit 1
@@ -840,6 +1113,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          technology_css_sha256="$(sha256sum assets/css/intelligence-workspace-embedded.css)"
+          technology_css_sha256="${technology_css_sha256%% *}"
           key="npi-intel-$GITHUB_SHA-$(date +%s)"
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/technology/?$key" -o /tmp/npi-live-technology.html
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-live-research.js?$key" -o /tmp/npi-live-intelligence.js
@@ -848,6 +1123,16 @@ jobs:
           # Public Intelligence directory must be present on the real customer domain.
           # Source/build success alone never certifies 22 published workspaces.
           grep -Fq 'id="intelligence-workspace-directory"' /tmp/npi-live-technology.html
+          # Source-level 22-entry counts are insufficient: also verify the native
+          # interactive UI and its shipped JS/CSS on the actual custom domain.
+          grep -Fq 'id="npi-exp-shell"' /tmp/npi-live-technology.html
+          grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/npi-live-technology.html
+          grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${technology_css_sha256}\"" /tmp/npi-live-technology.html
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-workspace-embedded.js?$key" -o /tmp/npi-live-workspace-runtime.js
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/css/intelligence-workspace-embedded.css?$key" -o /tmp/npi-live-workspace-styles.css
+          grep -Fq 'function renderSupplyMode(mode)' /tmp/npi-live-workspace-runtime.js
+          grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' /tmp/npi-live-workspace-runtime.js
+          grep -Fq 'npi-workspace-live-experience' /tmp/npi-live-workspace-styles.css
           grep -Fq 'ALL 22 PROFESSIONAL WORKSPACES' /tmp/npi-live-technology.html
           test "$(grep -o 'data-npi-workspace="' /tmp/npi-live-technology.html | wc -l | tr -d '[:space:]')" -eq 22
           grep -Fq 'Public research is available separately' /tmp/npi-live-technology.html

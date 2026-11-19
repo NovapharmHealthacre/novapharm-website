@@ -1,0 +1,27 @@
+name: Intelligence GBP paid invoice assessment and atomic ledger
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-billing-reconciliation.mjs'
+      - 'scripts/test-intelligence-billing-reconciliation.mjs'
+      - 'scripts/test-intelligence-billing-atomic-ledger.mjs'
+      - '.github/workflows/intelligence-gbp-invoice-assessment.yml'
+permissions:
+  contents: read
+jobs:
+  gbp-invoice-negative-and-positive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Validate GBP invoice and atomic ledger contracts
+        run: |
+          node --check src/core/intelligence-billing-reconciliation.mjs
+          node --test scripts/test-intelligence-billing-reconciliation.mjs scripts/test-intelligence-billing-atomic-ledger.mjs
+      - name: Deny obsolete INR invoice currency
+        run: |
+          ! grep -Fq 'paidInvoice.currency !== "inr"' src/core/intelligence-billing-reconciliation.mjs
+          grep -Fq 'paidInvoice.currency !== "gbp"' src/core/intelligence-billing-reconciliation.mjs
