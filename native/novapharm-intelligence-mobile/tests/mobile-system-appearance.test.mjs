@@ -95,7 +95,7 @@ test("research review renders in both appearances without forwarding sensitive r
 test("Maps research stays accessible after the light/dark appearance merge without becoming a live service", () => {
   assert.match(app, /import \{ MapsResearchScreen \} from "\.\/MapsResearchScreen"/);
   assert.match(app, /type Screen = .*"maps".*"account"/);
-  assert.match(app, /selected === "research" \|\| selected === "maps" \|\| selected === "account"/);
+  assert.match(app, /selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "account"/);
   assert.match(app, /\{ screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" \}/);
   assert.match(app, /screen === "maps" && <MapsResearchScreen darkMode=\{darkMode\} \/>/);
   assert.match(app, /useColorScheme\(\) === "dark"/);

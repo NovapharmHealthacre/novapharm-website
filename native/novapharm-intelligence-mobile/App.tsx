@@ -24,8 +24,9 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
-type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
+
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
