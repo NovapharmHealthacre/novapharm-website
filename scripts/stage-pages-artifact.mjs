@@ -81,6 +81,12 @@ const requiredPublicPaths = [
   "da125ceca8032e01fc98782c388f894f.txt",
   "feed.xml",
   "assets",
+  "assets/ai/runtime/search-controller.mjs",
+  "assets/ai/runtime/semantic-worker.mjs",
+  "assets/ai/company-source-manifest.json",
+  "assets/ai/company-knowledge-index.json",
+  "assets/ai/company-embeddings.json",
+  "assets/ai/novapharm-evidence-vector-v1.json",
   "capabilities/index.html",
   "cro/index.html",
   "distribution/index.html",
@@ -198,6 +204,55 @@ for (const forbiddenPath of ["admin", "employee", "entra-complete", "_secure", "
     throw new Error(`Secure or server-dependent path entered the Pages artifact: ${forbiddenPath}`);
   }
 }
+
+// Keep every deployed public-AI runtime byte tied to its reviewed source file.
+// The built artefact must not publish a stale controller or a model index from a
+// different corpus, even when the rest of the public site passes visual checks.
+const aiRuntimePaths = [
+  "keyword-index.mjs",
+  "model-registry.mjs",
+  "citation-resolver.mjs",
+  "policy-engine.mjs",
+  "privacy-guard.mjs",
+  "semantic-worker.mjs",
+  "search-controller.mjs"
+];
+for (const runtime of aiRuntimePaths) {
+  const sourceFile = join(root, "src", "ai", runtime);
+  const stagedFile = join(output, "assets", "ai", "runtime", runtime);
+  if (!existsSync(stagedFile)) throw new Error("Missing staged AI runtime: " + runtime);
+  if (!readFileSync(sourceFile).equals(readFileSync(stagedFile))) {
+    throw new Error("Stale/mismatched AI browser runtime: " + runtime);
+  }
+}
+const aiManifest = JSON.parse(readFileSync(join(output, "assets/ai/company-source-manifest.json"), "utf8"));
+const aiKnowledge = JSON.parse(readFileSync(join(output, "assets/ai/company-knowledge-index.json"), "utf8"));
+const aiEmbeddings = JSON.parse(readFileSync(join(output, "assets/ai/company-embeddings.json"), "utf8"));
+const aiModel = JSON.parse(readFileSync(join(output, "assets/ai/novapharm-evidence-vector-v1.json"), "utf8"));
+if (aiManifest.corpusHash !== aiKnowledge.corpusHash ||
+    aiManifest.corpusHash !== aiEmbeddings.corpusHash ||
+    aiManifest.chunkCount !== aiKnowledge.chunks.length ||
+    aiManifest.approvedSourceCount !== aiManifest.sources.length ||
+    aiModel.generation !== false || aiModel.remoteModelLoading !== false) {
+  throw new Error("AI source/model manifest consistency gate failed");
+}
+for (const asset of Object.values(aiManifest.assets || {})) {
+  if (!asset.path?.startsWith("/assets/ai/") || !/^[a-f0-9]{64}$/.test(asset.sha256)) {
+    throw new Error("AI manifest contains an unapproved asset reference");
+  }
+  const bytes = readFileSync(join(output, asset.path.slice(1)));
+  const digest = createHash("sha256").update(bytes).digest("hex");
+  if (digest !== asset.sha256 || bytes.length !== asset.bytes) {
+    throw new Error("AI asset manifest digest or size mismatch: " + asset.path);
+  }
+}
+for (const source of aiManifest.sources) {
+  if (!source.url?.startsWith("https://novapharmhealthcare.com/") ||
+      /(?:^|\\/)(?:_secure|portal|admin|employee|contact|account-application|legal)(?:\\/|$)/i.test(source.file)) {
+    throw new Error("Unapproved private or form-data source included in AI release");
+  }
+}
+console.log("Verified generated public AI model/index digests, approved corpus and exact source/runtime parity.");
 
 const cname = readFileSync(join(output, "CNAME"), "utf8").trim();
 if (cname !== "novapharmhealthcare.com") {
