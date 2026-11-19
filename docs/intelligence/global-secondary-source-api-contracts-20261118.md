@@ -83,3 +83,36 @@ module's source-contract tests. The test requires exact file-path coverage and
 rejects accidental suppression of real public contact, Nutraxin and website
 publication paths. Owner approval and separate rights/staging validation remain
 required for any real pharmaceutical-data ingestion.
+
+
+## Follow-on safeguard for official live public source probes
+
+This repository-only guard is **stacked after the six-path secondary-source
+containment PR #852**, not a production permission. It handles future candidate
+PRs #844 (FDA/Singapore bounded public reads), #846 (Spain CIMA), and #847
+(Health Canada DPD). Their 18 exact source-specific workflow, document, module,
+runner and test paths are private for AWS **contact/Pages** publication routing
+only. A real public website, Nutraxin, payment or contact change remains outside
+that allowlist and must continue through the independent public-release gates.
+
+The shared backend `server.mjs` is intentionally **never** globally excluded.
+One particular code addition in PR #844 — a disabled-by-default,
+board-authenticated, bounded receipts-only probe route — is permitted to be
+classified as protected source *only* if the complete first-parent added/deleted
+lines match SHA-256
+`56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2`.
+Any changed server import/route, removed security check, amended environment
+default, other code delta, public change or mixed release mismatches the hash and
+must take the normal verified release path; a version update must be separately
+reviewed and re-pinned rather than silently accepted.
+
+This classification is **not** source-rights approval, model execution, native
+signing, AWS deployment authority, clinical validation, product availability,
+customer-data activation or an accepted production pharmaceutical feed. All
+previous owner constraints remain in force: additional paid infrastructure GBP
+0; production signoff not granted; no customer activation. The accompanying
+`scripts/aws/contact-release-routing.test.mjs` regression validates all
+eighteen exact filenames, mixed/public negative cases, shared-server non-wildcard
+protection and this SHA-256 pin. Do not merge this stacked guard until the parent
+#852 is accepted, the branch is retargeted to main, fresh exact-head CI passes
+and an eligible independent reviewer approves release scope.
