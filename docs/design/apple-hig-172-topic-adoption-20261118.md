@@ -83,3 +83,46 @@ The NovaPharm owner explicitly reported: **“I have done the review of Apple HI
 The user-supplied `Apple_HIG_Sectionwise_Guide_2026-11-18.md` and the 172-row CSV are the indexed scope and short descriptions, **not** 172 complete copies of Apple's guideline article texts. The owner review declaration is valuable governance evidence, but does not itself establish which recommendations were adopted, page-level test outcomes, clinical/data rights, assistive-technology results, Apple licences, independently approved production changes or deployed/signed iOS/Android distribution. The existing fail-closed `meta.allGuidelinePagesFullyReviewed=false` and `meta.allPlatformsProductionVerified=false` are intentionally unchanged: they refer to independent evidence and live acceptance, not whether the owner says the review occurred.
 
 This milestone is **documentation only**, to be merged as a private source ledger update. No AWS deployment, protected service activation, asset redistribution or mobile app release should be initiated from it.
+
+## 19 November 2026 — nine additional Apple primary-article reviews (source and scope, not live conformance)
+
+The nine official Apple HIG Markdown articles below were opened and read through their substantive sections and published platform considerations. Each has new article-specific source observations and separate reasoned web/iOS/Android applicability records in the machine-readable register. These reviews extend the previously documented Accessibility and Color articles.
+
+| Article | Verified Apple guidance subject | NovaPharm acceptance evidence still required |
+| --- | --- | --- |
+| [Design principles](https://developer.apple.com/design/human-interface-guidelines/design-principles.md) | Purpose, agency, responsibility, familiarity, flexibility, simplicity, craft and delight | Task-oriented UX, privacy and recovery tests |
+| [Designing for iOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-ios.md) | iPhone ergonomics, system appearance, Dynamic Type, permissions and platform APIs | Actual iOS device and signing acceptance |
+| [Branding](https://developer.apple.com/design/human-interface-guidelines/branding.md) | Brand voice, restrained accent, familiar components, trademark boundaries | Visual/rights acceptance and original NovaPharm assets |
+| [Writing](https://developer.apple.com/design/human-interface-guidelines/writing.md) | Plain language, specific buttons/errors, consistent labels and empty states | Page-level copy and accessibility review |
+| [Loading](https://developer.apple.com/design/human-interface-guidelines/loading.md) | Non-blocking placeholders and honest determinate/indeterminate progress | Real network, offline and assistive-technology tests |
+| [Entering data](https://developer.apple.com/design/human-interface-guidelines/entering-data.md) | Secure input, validated fields and explicit required values | Authenticated forms and permission tests |
+| [Managing accounts](https://developer.apple.com/design/human-interface-guidelines/managing-accounts.md) | Meaningful sign-in, passkeys/MFA and accessible account deletion | Real Cognito roles, retention and deletion acceptance |
+| [Searching](https://developer.apple.com/design/human-interface-guidelines/searching.md) | Scoped search, suggestions, history privacy and iOS Spotlight | Source-licensed results, confidentiality and device checks |
+| [Generative AI](https://developer.apple.com/design/human-interface-guidelines/generative-ai.md) | Responsible AI, privacy, datasets, hallucinations and user control | Protected clinical safety, model rights and signed mobile release |
+
+**Register checkpoint proposed by this change:** owner-attested review coverage remains **172/172**; independently documented article-level reviews increase from **2/172 to 11/172**; explicit platform-applicability decisions increase from **6/516 to 33/516**; implementation verification remains **0**, the independent full-source-review flag remains **false**, and production certification remains **false**. For the iOS-specific article, Apple-only feature requirements are marked not applicable to the web and Android, with explicit rationale. All other platform decisions are about guidance *applicability*, not code implementation. No Apple copyrighted binaries or official article bodies are reproduced.
+
+## 19 November 2026 — eight more current Apple component and accessibility reviews
+
+The following eight full official Apple HIG Markdown articles were inspected, including platform distinctions, and new article-specific assessments are linked in the JSON register: [Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons.md), [Alerts](https://developer.apple.com/design/human-interface-guidelines/alerts.md), [Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars.md), [Search fields](https://developer.apple.com/design/human-interface-guidelines/search-fields.md), [Progress indicators](https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md), [Labels](https://developer.apple.com/design/human-interface-guidelines/labels.md), [Charts](https://developer.apple.com/design/human-interface-guidelines/charts.md), and [VoiceOver](https://developer.apple.com/design/human-interface-guidelines/voiceover.md).
+
+These reviews add **eight article records** and **24 platform decisions** to the nine-article source update above. **Total proposed checkpoint: 19/172 article-level reviews and 57/516 platform decisions**. Owner-reported coverage remains 172/172; live implementation and independent platform test acceptance remain zero. Apple's VoiceOver-only APIs are marked not applicable on Android (where TalkBack review is required) and the article's web/browser support is explicitly scoped to VoiceOver behavior in Apple-supported browsers. A native 44-point button-size guideline is not falsely presented as an automatically equivalent 44-CSS-pixel standard. No proprietary Apple assets, entire article bodies or production code were added.
+
+## 19 November 2026 — eight additional official foundation and icon articles
+
+Eight further current official Apple HIG source articles were examined and their substantive guidance interpreted for the NovaPharm website, iOS and Android source programmes. This is a *source and applicability assessment*, **not** code conformance or release verification.
+
+| Primary Apple article | Guidance assessed | Separate NovaPharm implementation evidence still needed |
+| --- | --- | --- |
+| [Layout](https://developer.apple.com/design/human-interface-guidelines/layout.md) | Hierarchy, progressive disclosure, reading order, RTL, adaptable layouts and safe areas | Responsive viewport, keyboard and native safe-area tests |
+| [Privacy](https://developer.apple.com/design/human-interface-guidelines/privacy.md) | Purpose-limited and just-in-time permissions; security and transparent data use | Actual role, tenant, permission, retention and account-protection checks |
+| [Inclusion](https://developer.apple.com/design/human-interface-guidelines/inclusion.md) | Respectful copy, representation, cultural context and localization | Human review in target locales and assistive-technology acceptance |
+| [Images](https://developer.apple.com/design/human-interface-guidelines/images.md) | Density-aware imaging, color profiles, device variation and platform assets | Actual asset provenance, render quality, alt text and devices |
+| [Icons](https://developer.apple.com/design/human-interface-guidelines/icons.md) | Recognizable single-purpose glyphs and consistent optical treatment | Original icon licence, meaning, label and interaction testing |
+| [SF Symbols](https://developer.apple.com/design/human-interface-guidelines/sf-symbols.md) | Platform-native symbol modes, version availability and licence limits | iOS rights/OS coverage; do not redistribute Apple symbols on web/Android |
+| [Materials](https://developer.apple.com/design/human-interface-guidelines/materials.md) | Liquid Glass control surfaces, standard content materials and contrast | Apple-native iOS material tests; use distinct web/Android surfaces |
+| [App icons](https://developer.apple.com/design/human-interface-guidelines/app-icons.md) | Distinctive app identity, Apple icon formats, layers and appearance variants | Original NovaPharm iOS icon and signed/device icon verification |
+
+The corresponding JSON register now proposes **27/172 source-specific article reviews and 81/516 documented platform decisions**, including 24 new reasoned decisions. **145 articles and 435 platform applicability decisions remain unassessed**. The 172/172 owner coverage attestation has not changed, and all implementation states remain `not_verified`; `allGuidelinePagesFullyReviewed` and `allPlatformsProductionVerified` remain `false`.
+
+Apple-specific SF Symbols, Liquid Glass and Apple app-icon platform APIs are recorded as **not applicable** to generic web and Android implementations. The separate shared design objectives must still be tested with independently licensed assets and platform-appropriate implementation. The records contain no full copyrighted article reproduction, Apple asset binaries, passwords, customer data, AWS publication action, mobile signing or store release.

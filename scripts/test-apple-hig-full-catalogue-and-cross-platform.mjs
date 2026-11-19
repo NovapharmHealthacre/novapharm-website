@@ -376,3 +376,85 @@ test("all 172 HIG topics are within the owner's reported completed review, witho
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
+
+
+test("nine additionally reviewed current HIG primary articles have per-platform rationale without false release completion", () => {
+  const topics = ["Design principles","Designing for iOS","Branding","Writing","Loading","Entering data","Managing accounts","Searching","Generative AI"];
+  const reviewed = topics.map(name => tracker.topics.find(t => t.title === name));
+  assert.ok(reviewed.every(Boolean));
+  for(const item of reviewed){
+    assert.equal(item.guidelineReview,"reviewed",item.title);
+    assert.ok(item.guidelineReviewEvidence.length >= 2,item.title);
+    assert.ok(item.guidelineReviewEvidence[0].includes(item.markdown),item.title);
+    assert.equal(item.implementation,"not_verified",item.title);
+    assert.ok(item.releaseEvidence.length===0,item.title);
+    for(const platform of ["web","ios","android"]){
+      const decision=item.platformApplicability[platform];
+      assert.ok(["applicable","not_applicable"].includes(decision.state),item.title+"/"+platform);
+      assert.ok(decision.rationale.length>=40,item.title+"/"+platform);
+    }
+  }
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.web.state,"not_applicable");
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.ios.state,"applicable");
+  assert.equal(reviewed.find(x => x.title==="Designing for iOS").platformApplicability.android.state,"not_applicable");
+  assert.ok(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length>=19);
+  assert.ok(tracker.meta.platformsAssessed>=57);
+  assert.ok(tracker.topics.every(x=>x.implementation!=="verified"));
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("eight additional Apple component and VoiceOver article reviews retain source and release boundaries",()=>{
+  const names=["Buttons","Alerts","Tab bars","Search fields","Progress indicators","Labels","Charts","VoiceOver"];
+  for(const name of names){
+    const t=tracker.topics.find(x=>x.title===name);
+    assert.equal(t?.guidelineReview,"reviewed",name);
+    assert.ok(t.guidelineReviewEvidence[0].includes(t.markdown),name);
+    assert.ok(t.guidelineReviewEvidence.length>=2,name);
+    for(const platform of ["web","ios","android"]){
+      const decision=t.platformApplicability[platform];
+      assert.ok(["applicable","not_applicable"].includes(decision.state),name+"/"+platform);
+      assert.ok(decision.rationale.length>40,name+"/"+platform);
+    }
+    assert.equal(t.implementation,"not_verified",name);
+    assert.deepEqual(t.releaseEvidence,[],name);
+  }
+  assert.equal(tracker.topics.find(t=>t.title==="VoiceOver").platformApplicability.android.state,"not_applicable");
+  assert.ok(tracker.topics.filter(x=>x.guidelineReview==="reviewed").length>=19);
+  assert.ok(tracker.meta.platformsAssessed>=57);
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("eight more primary HIG foundation/icon articles have unique source findings and platform-specific decisions", () => {
+  const names = ["Layout", "Privacy", "Inclusion", "Images", "Icons", "SF Symbols", "Materials", "App icons"];
+  for (const name of names) {
+    const topic = tracker.topics.find(x => x.title === name);
+    assert.ok(topic, "Missing indexed Apple article: " + name);
+    assert.equal(topic.guidelineReview, "reviewed", name);
+    assert.ok(Array.isArray(topic.guidelineReviewEvidence) && topic.guidelineReviewEvidence.length >= 3, name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes(topic.markdown), name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes("2026-11-19"), name);
+    assert.equal(topic.implementation, "not_verified", name);
+    assert.deepEqual(topic.releaseEvidence, [], name);
+    for (const platform of ["web", "ios", "android"]) {
+      const item = topic.platformApplicability[platform];
+      assert.ok(["applicable", "not_applicable"].includes(item.state), name + "/" + platform);
+      assert.ok(typeof item.rationale === "string" && item.rationale.length >= 80, name + "/" + platform);
+    }
+  }
+  for (const name of ["SF Symbols", "Materials", "App icons"]) {
+    const topic = tracker.topics.find(x => x.title === name);
+    assert.equal(topic.platformApplicability.ios.state, "applicable", name);
+    assert.equal(topic.platformApplicability.android.state, "not_applicable", name);
+    assert.equal(topic.platformApplicability.web.state, "not_applicable", name);
+  }
+  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 27);
+  assert.equal(tracker.meta.platformsAssessed, 81);
+  assert.ok(tracker.topics.every(x => x.implementation === "not_verified"));
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage, 172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
