@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       />
       <section className="section section--paper legal-page">
         <div className="shell legal-page__grid">
-          <aside><p>Last updated</p><strong>21 July 2026</strong></aside>
+          <aside><p>Last updated</p><strong>15 November 2026 (technical review; local legal review pending)</strong></aside>
           <div>
             <section>
               <h2>1. Website enquiries</h2>
@@ -45,7 +45,16 @@ export default function PrivacyPage() {
               <p>Information may be shared with professional advisers, service providers, or appropriately qualified collaborators where reasonably necessary and subject to suitable obligations. Information is retained only for as long as reasonably required for the purpose collected, business record-keeping, dispute management, and legal obligations.</p>
             </section>
             <section>
-              <h2>7. Your rights and contact</h2>
+              <h2>7. Privacy choices and device permissions</h2>
+              <p>Reading the public pages does not require access to your precise location, camera, microphone, contacts or photo library. A future tool that needs a protected browser capability must explain its specific purpose when you choose that feature, use the browser permission interface and work safely if permission is denied. The website does not use native iOS location authorisation or App Tracking Transparency prompts.</p>
+              <p>Optional marketing or cross-site tracking is not enabled by this privacy notice. Browser privacy and site-data controls remain available through your browser settings.</p>
+            </section>
+            <section>
+              <h2>8. Privacy by design</h2>
+              <p>We aim to collect the minimum professional information needed to respond to an enquiry, restrict who can access it and retain records only for a documented business or legal purpose. Website content remains available without providing marketing consent. Do not send patient data, confidential clinical files or identity documents using the general email route.</p>
+            </section>
+            <section>
+              <h2>9. Your rights and contact</h2>
               <p>Applicable privacy rights vary by jurisdiction. To ask a privacy question or make a request, contact <a href="mailto:bd@novapharmhealthcare.com">bd@novapharmhealthcare.com</a>.</p>
             </section>
           </div>

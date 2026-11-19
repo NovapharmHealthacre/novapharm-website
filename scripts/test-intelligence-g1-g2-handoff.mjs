@@ -62,7 +62,7 @@ function fakeStore(onIdentity) {
       assert.ok(Object.hasOwn(unique,name));
       return {
         listIndexes:()=>({toArray:async()=>[{
-          name:"uniqueness",key:unique[name],unique:true
+          name:"g2_unique",key:unique[name],unique:true
         }]}),
         findOne:async()=>null,
         insertMany:async rows=>{writes+=rows.length;return {
@@ -109,7 +109,7 @@ function payload(candidate) {
     records:candidate.records
   };
 }
-test("synthetic official-source G1 to G2 handoff preserves exact leading-zero code", async()=>{
+test("synthetic official-source G1 to G2 handoff preserves exact leading-zero code, and never publishes", async()=>{
   const candidate=prepareOfficialMedicineEvidenceCandidate(fixture());
   assert.equal(candidate.acceptedObservations,0);
   assert.equal(candidate.records[0].source_code,"001234567890");

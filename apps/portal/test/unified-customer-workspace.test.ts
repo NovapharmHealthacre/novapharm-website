@@ -27,6 +27,10 @@ test("Customer dashboard owns the shared collections and has no independent Nutr
   assert.match(component, /ESCO Anand/);
   assert.match(component, /module\.route/);
   assert.match(dashboard, /CustomerCommerceWorkspace/);
+  // The static navigation must exist on first paint; never wait for an API
+  // response to inject a tall module index and shift the mobile viewport.
+  assert.match(dashboard, /module\.area === "customer"/);
+  assert.doesNotMatch(dashboard, /user && snapshot \? <CustomerCommerceWorkspace/);
   assert.doesNotMatch(component, /https?:\/\/[^"\s]*checkout|\/api\/retail\/checkout/);
   assert.doesNotMatch(component, /localStorage|sessionStorage|document\.cookie/);
 });
@@ -35,4 +39,27 @@ test("Customer collection handoff does not change employee, board or admin login
   assert.match(login, /validatedCustomerCommerceIntentQuery/);
   assert.match(login, /isPortalAccessType\(result\.accessType\)/);
   assert.match(login, /result\.accessType !== accessType/);
+});
+
+
+test("Apple-inspired customer overview retains governed navigation and real product photos", () => {
+  const layout = readFileSync(path.join(process.cwd(), "app/layout.tsx"), "utf8");
+  const stylesheet = readFileSync(path.join(process.cwd(), "app/customer-editorial-dashboard.css"), "utf8");
+  const assets = readFileSync(path.join(process.cwd(), "scripts/sync-public-assets.mjs"), "utf8");
+  assert.match(component, /customer-editorial-hub/);
+  assert.match(component, /Everything for your/);
+  assert.match(component, /customer-editorial-packshots/);
+  assert.match(dashboard, /isEditorialCustomerDashboard/);
+  assert.match(dashboard, /customer-primary-nav/);
+  assert.match(layout, /customer-editorial-dashboard\.css/);
+  assert.match(stylesheet, /\.customer-editorial-dashboard\.workspace-shell/);
+  for (const image of [
+    "vitamin-d3-120-tablets-480.webp",
+    "magnesium-complex-60-tablets-480.webp",
+    "collagen-gold-30-tablets-480.webp",
+  ]) {
+    assert.match(component, new RegExp(image.replaceAll(".", "\\.")));
+    assert.match(assets, new RegExp(image.replaceAll(".", "\\.")));
+  }
+  assert.doesNotMatch(component, /<iframe|data:image\/svg|https?:\/\//);
 });

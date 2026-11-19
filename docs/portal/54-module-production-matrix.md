@@ -1,13 +1,37 @@
 # 54-module Portal production matrix
 
-Review date: 22 August 2026
+Original matrix review date: 22 August 2026; AWS status added 14 November 2026
 Canonical source: `packages/portal-contracts/src/module-catalog.json`
 Governed modules: 54
 Repository-visible, informational and read-only: 48
 Hidden until an approved dependency exists: 6
 Production-operational modules: 0
 
-The matrix distinguishes repository implementation from live authority. No module is represented as production-operational. The public website materialises only a fail-closed Portal safety page. Managed Portal routes require accepted Azure hosting, Entra identity, production data, monitoring, security acceptance and owner approval.
+**Current verification:** 14 November 2026 (read-only GitHub, AWS and Atlas evidence; see [release issue #601](https://github.com/NovapharmHealthacre/novapharm-website/issues/601)). **This document originally described the Azure-era August 2026 target**. The tabular Azure SQL, SharePoint and Entra references below remain historical design/data-authority candidates, **not evidence of a functioning Azure or AWS enterprise deployment**. NovaPharm's current cloud target is AWS-first. Do not assume that historic provider-specific dependencies are approved, funded or live.
+
+## What is live today, versus what is merely source-authored
+
+| Boundary | Verified source/runtime state | Can be represented as production-complete? |
+| --- | --- | --- |
+| Full Enterprise Portal module catalogue | 54 source contracts: Customer **18**, Employee **13**, Executive/Board **18**, Admin **5** | **No**: zero module-specific owner production acceptances or production evidence in the activation matrix |
+| Repository presentation and API read models | **48** visible, informational-only read models, and **6** executive modules hidden for safety | **No**: 48 are `DEPENDENCY-BLOCKED`; six are `HIDDEN FOR SAFETY`, not 54 operational modules |
+| Transitional existing customer BFF | Existing AWS Lambda/API Gateway on `portal.novapharmhealthcare.com` serves 18 authenticated Customer Workspace routes; unauthenticated dashboard redirects, legacy Nutraxin route preserved | **Only a bounded customer shell**; no live proof of 18 fully integrated enterprise accounting/stock/order/regulated data modules |
+| Full Next.js 54-module runtime | Existing ECS service `novapharm-staging-portal-private` has desired tasks **0**, running tasks **0**, and no load balancer | **No**: cannot serve the authenticated full 54-module portal on the public hostname |
+| Unified identity/session backend | Separate Intelligence session stack output `CustomerAccessEnabled=false`; four-role customer/employee/board/admin account and tenant acceptance not complete | **No**: no authorised four-workspace production go-live |
+| Production medicine evidence | Atlas `npi_source_rights=0`, `npi_medicine_identity=0`, `npi_medicine_evidence=0` at the 14 Nov readback | **No**: third-party source rights and admitted evidence still required |
+| Finance/release | Owner cap of **£0 incremental monthly spend**, source-only release gates in main; AWS budget alert is not a hard cost limit | **No**: signed zero-marginal-cost, security and rollback proof remain required |
+
+The live transitional Customer Workspace must not be conflated with this matrix's 18 Next.js Customer modules. Source, navigation, mock/synthetic screenshots, workflow checks or a merged PR cannot establish a production account system, invoice ledger, stock reconciliation, secure document store or regulatory licence.
+
+## Module-by-module production acceptance protocol
+
+For **each** of the 54 module codes in the table below, the release owner must record a real source/rights decision, authoritative transaction/document authority, backend route and immutable release ID, approved and denied access for the correct role, customer account and tenant isolation, protected read/write test outcomes, accessible/performance-tested production viewport, audit/monitoring, recovery, **£0 incremental expense proof**, and business-owner acceptance. The six hidden executive modules additionally require their named regulatory, safety, commercial, financial, Microsoft 365 tenant or AI governance dependencies before they may be exposed. Leave their current **hidden** state intact until independently approved.
+
+The canonical up-to-date statuses are `packages/portal-contracts/src/module-catalog.json`, `packages/portal-contracts/src/activation.ts` and `packages/portal-contracts/test/module-completion.test.ts`. They currently encode **zero** `FULLY OPERATIONAL` and **zero** `OPERATIONAL READ-ONLY` production completions; the contract must not be edited to green without actual signed runtime evidence.
+
+**Open release gates:** [#601](https://github.com/NovapharmHealthacre/novapharm-website/issues/601) (DNS/identity/hosting/tenant/rollback), [#55](https://github.com/NovapharmHealthacre/novapharm-website/issues/55) (AWS production), [#454](https://github.com/NovapharmHealthacre/novapharm-website/issues/454) (medicine source-rights admission), and [#517](https://github.com/NovapharmHealthacre/novapharm-website/issues/517) (governed Intelligence integration). Maintain the existing live customer BFF and billing/medicine safety gates during integration.
+
+## Historical module-by-module target matrix (August 2026, **not** current live status)
 
 | ID | Name | Business purpose | Route | Role | Frontend | API | Database | Documents | Integration | Security | Test status | Deployment status | Production status | Blocker |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

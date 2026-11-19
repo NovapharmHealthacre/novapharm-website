@@ -34,6 +34,7 @@
 <script type="module" src="/assets/js/nutraxin-consumer-account.js"></script>
 </head>
 <body>
+<a class="nx-skip-link" href="#main">Skip to account content</a>
 <nav class="nx-account-nav" aria-label="Nutraxin account navigation"><div class="nx-account-nav-inner">
 <a class="nx-account-brand" href="/">NovaPharm Healthcare</a>
 <div class="nx-account-nav-links"><a href="/products/nutraxin/">Nutraxin</a><a href="/products/nutraxin/bag/">Your Bag</a></div>
@@ -45,15 +46,31 @@
 <section class="nx-account-panel" aria-label="Personal customer account">
 <div data-nx-account-public>
 <h2>Your Nutraxin account.</h2>
-<p>Sign in or create your personal account. We verify your email and protect your order details.</p>
+<p>Sign in or create your personal account to see eligible orders and save your own account details. Email verification protects your information. You can browse products and use the guest bag without registering.</p>
 <div class="nx-account-actions">
 <button class="nx-account-button" data-nx-account-signin type="button" disabled>Sign in</button>
 <button class="nx-account-button secondary" data-nx-account-signup type="button" disabled>Create account</button>
 <button class="nx-account-button secondary" data-nx-account-recover type="button" disabled>Reset password</button>
-</div></div>
+</div>
+<details class="nx-account-help">
+<summary>First time here? How account access works</summary>
+<div class="nx-account-help-body">
+<p>An account is optional for browsing. Registration is required only to use verified account features such as linked order history.</p>
+<ol><li>Create a personal account with the secure identity provider, or sign in if you already have one.</li><li>Verify your email and complete any required security checks.</li><li>Return here to view your permitted order history. Business accounts use a separate approval process.</li></ol>
+<p><a href="/products/nutraxin/bag/">Continue without an account</a> · <a href="/legal/privacy/">How your information is used</a></p>
+</div>
+</details>
+</div>
 <div data-nx-account-private hidden>
 <h2>You're signed in.</h2>
 <p data-nx-account-email>Verified account</p>
+<details class="nx-account-help">
+<summary>Getting started with your account</summary>
+<div class="nx-account-help-body">
+<p>Browse the Nutraxin range, check your own verified order history below, and sign out when you finish using a shared device.</p>
+<p>For account privacy and erasure requests, review the <a href="/legal/privacy/">privacy and data-rights information</a>. Your private details are not disclosed to a different account.</p>
+</div>
+</details>
 <h2>Your orders</h2>
 <ul class="nx-account-orders" data-nx-account-orders><li>Loading orders…</li></ul>
 <div class="nx-account-actions"><a class="nx-account-button" href="/products/nutraxin/" style="text-decoration:none;text-align:center">Shop Nutraxin</a>

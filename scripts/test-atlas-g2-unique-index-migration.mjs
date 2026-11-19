@@ -1,188 +1,189 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { atlasG2RequiredUniqueIndexKeys } from "../src/data/atlas-medicine-g2-atomic-store.mjs";
 import {
-  g2UniqueIndexRequirements, planAtlasG2UniqueIndexes,
-  applyAtlasG2UniqueIndexes
+  applyAtlasG2UniqueIndexes, inspectAtlasG2UniqueIndexes,
 } from "../src/data/atlas-g2-unique-index-migration.mjs";
 
-const approved = Object.freeze({
-  environment: "private_schema_only", changeId: "NPI_SCHEMA_CHANGE_20261114",
-  customerAccessEnabled: false, ingestionEnabled: false,
-  independentReviewerVerified: true, operatorConfirmedBackup: true
+const names = Object.keys(atlasG2RequiredUniqueIndexKeys);
+const goodIndex = (name) => ({
+  name: "g2_unique", key: { ...atlasG2RequiredUniqueIndexKeys[name] }, unique: true,
 });
-function makeDatabase({ nonempty = null, colliding = null, missing = null,
-  failCreate = null, failedReadback = null, initialUnique = [] } = {}) {
-  const records = new Map();
+function fake({
+  records = {}, indexes = {}, name = "novapharm_intelligence_production",
+  overrideCreateIndex,
+} = {}) {
+  const state = Object.fromEntries(names.map(n => [n, {
+    count: records[n] ?? 0,
+    indexes: [{ name: "_id_", key: { _id: 1 }, unique: true }, ...(indexes[n] ?? [])],
+  }]));
   const writes = [];
-  for (const req of g2UniqueIndexRequirements) {
-    if (req.collection === missing) continue;
-    const indexes = [{ name: "_id_", key: { _id: 1 }, unique: true }];
-    if (initialUnique.includes(req.collection)) {
-      indexes.push({ name: req.name, key: req.key, unique: true });
-    } else if (req.collection === colliding) {
-      indexes.push({ name: req.name, key: { unexpected: 1 }, unique: false });
-    }
-    records.set(req.collection, { docs: req.collection === nonempty ? 1 : 0, indexes });
-  }
-  const db = {
-    databaseName: "novapharm_intelligence_production",
-    listCollections(filter, opts) {
-      assert.deepEqual(filter, {});
-      assert.deepEqual(opts, {nameOnly:true});
-      return {toArray:async() => [...records.keys()].map(name=>({name}))};
+  const collections = Object.fromEntries(names.map(n => [n, {
+    listIndexes() {
+      return { toArray: async () => structuredClone(state[n].indexes) };
     },
-    collection(name) {
-      if (!records.has(name)) throw Error("Missing collection " + name);
-      const item = records.get(name);
-      return {
-        listIndexes() {
-          return {toArray:async() => item.indexes.map(x=>({...x}))};
-        },
-        async countDocuments(filter) {
-          assert.deepEqual(filter, {});
-          return item.docs;
-        },
-        async createIndex(key, options) {
-          writes.push({ name, key, options });
-          if (name === failCreate) throw Error("simulated transient operator failure");
-          const req = g2UniqueIndexRequirements.find(x=>x.collection === name);
-          assert.deepEqual(key,req.key);
-          assert.deepEqual(options,{
-            name:req.name,unique:true,sparse:false,
-            collation:{locale:"simple"}
-          });
-          if (name !== failedReadback) {
-            item.indexes.push({
-              key:{...key}, name:options.name, unique:true,
-              sparse:false, collation:{locale:"simple"}
-            });
-          }
-          return req.name;
-        }
-      };
-    }
-  };
-  return { db, writes, records };
+    async countDocuments(query, options) {
+      assert.deepEqual(query, {});
+      assert.equal(options.limit, 1);
+      return Math.min(state[n].count, 1);
+    },
+    async createIndex(keys, options) {
+      writes.push({ collection: n, keys, options });
+      if (overrideCreateIndex) return overrideCreateIndex({ name: n, keys, options, state });
+      state[n].indexes.push({ name: options.name, key: { ...keys }, unique: options.unique });
+      return options.name;
+    },
+  }]));
+  return { database: {
+    databaseName: name, collection: n => collections[n],
+  }, writes, state };
 }
-function error(code) {
-  return err => err?.code === code;
-}
+const permitted = async () => ({
+  authorized: true, productionWritesQuiesced: true,
+  operatorId: "operator-001", changeTicket: "change-667",
+});
+const denied = (code) => e => e?.code === code;
 
-test("dry-run inspects all four collections and never creates indexes", async () => {
-  const x = makeDatabase();
-  const plan = await planAtlasG2UniqueIndexes({database:x.db});
-  assert.equal(plan.ready,false);
-  assert.equal(plan.safeToApply,true);
-  assert.equal(plan.sourceRightsGranted,false);
-  assert.equal(plan.customerAccessEnabled,false);
-  assert.equal(plan.collections.length,4);
-  assert.deepEqual(plan.collections.map(y=>y.documentCount),[0,0,0,0]);
-  assert.deepEqual(x.writes,[]);
+test("empty Atlas production collections are index-incomplete without any changes", async () => {
+  const sys = fake();
+  const view = await inspectAtlasG2UniqueIndexes({ database: sys.database });
+  assert.equal(view.ready, false);
+  assert.equal(view.mutationRequired, true);
+  assert.equal(view.checks.length, 3);
+  assert.equal(view.productionIngestionApproved, false);
+  assert.equal(view.customerReleaseApproved, false);
+  assert.ok(view.checks.every(x => !x.verified && x.empty && x.uniqueRequired && x.indexName === "g2_unique"));
+  assert.deepEqual(sys.writes, []);
 });
 
-test("independently approved operator applies exactly four unique indexes and confirms readback",async()=>{
-  const x=makeDatabase();
-  const result=await applyAtlasG2UniqueIndexes({database:x.db,approval:approved});
-  assert.equal(result.applied,true);
-  assert.equal(result.ready,true);
-  assert.equal(result.createdIndexNames.length,4);
-  assert.equal(result.sourceRightsGranted,false);
-  assert.equal(result.productionAdmissionEnabled,false);
-  assert.equal(x.writes.length,4);
-  const after=await planAtlasG2UniqueIndexes({database:x.db});
-  assert.equal(after.ready,true);
-  assert.deepEqual(after.collections.map(y=>y.exactUniqueIndexPresent),
-    [true,true,true,true]);
-});
-
-test("migration is idempotent with exact matching unique indexes",async()=>{
-  const x=makeDatabase({initialUnique:g2UniqueIndexRequirements.map(t=>t.collection)});
-  const result=await applyAtlasG2UniqueIndexes({database:x.db,approval:approved});
-  assert.equal(result.ready,true);
-  assert.deepEqual(result.createdIndexNames,[]);
-  assert.equal(x.writes.length,0);
-});
-
-test("missing independent approval never writes any schema",async()=>{
-  const changes=[
-    undefined, {}, {...approved,independentReviewerVerified:false},
-    {...approved,operatorConfirmedBackup:false},
-    {...approved,ingestionEnabled:true},
-    {...approved,customerAccessEnabled:true},
-    {...approved,changeId:"bad"}
-  ];
-  for(const approval of changes){
-    const x=makeDatabase();
+test("no independent authority, invalid audit callback or unquiesced production cannot mutate", async () => {
+  for (const auth of [
+    undefined, async () => true, async () => ({ authorized: true }),
+    async () => ({ ...await permitted(), productionWritesQuiesced: false }),
+    async () => ({ ...await permitted(), operatorId: null }),
+  ]) {
+    const sys = fake();
     await assert.rejects(
-      applyAtlasG2UniqueIndexes({database:x.db,approval}),
-      error("independent_schema_change_approval_required")
+      applyAtlasG2UniqueIndexes({ database: sys.database, verifyMigrationAuthority: auth }),
+      denied(auth ? "independent_approval_required" : "approval_callback_missing"),
     );
-    assert.equal(x.writes.length,0);
+    assert.equal(sys.writes.length, 0);
+  }
+  const sys = fake();
+  await assert.rejects(applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: "not callable",
+  }), denied("invalid_audit_callback"));
+  assert.deepEqual(sys.writes, []);
+});
+
+test("approved migration creates exactly three unique constraints and audits each", async () => {
+  const sys = fake();
+  const receipts = [];
+  const result = await applyAtlasG2UniqueIndexes({
+    database: sys.database,
+    verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async receipt => {
+      receipts.push(receipt);
+      return { persisted: true };
+    },
+  });
+  assert.deepEqual(result.changed, names);
+  assert.equal(result.ready, true);
+  assert.equal(result.customerReleaseApproved, false);
+  assert.equal(result.productionIngestionApproved, false);
+  assert.equal(receipts.length, 3);
+  assert.deepEqual(sys.writes.map(x => x.collection), names);
+  for (const w of sys.writes) {
+    assert.deepEqual(w.keys, atlasG2RequiredUniqueIndexKeys[w.collection]);
+    assert.equal(w.options.unique, true);
+    assert.equal(w.options.name, "g2_unique");
+    assert.equal(w.options.sparse, false);
+    assert.deepEqual(w.options.collation, { locale: "simple" });
+    assert.deepEqual(w.options.writeConcern, { w: "majority" });
+  }
+  assert.equal((await inspectAtlasG2UniqueIndexes({ database: sys.database })).ready, true);
+  const again = await applyAtlasG2UniqueIndexes({ database: sys.database, verifyMigrationAuthority: async () => {
+    throw new Error("already compliant must not request new authorization");
+  } });
+  assert.deepEqual(again.changed, []);
+  assert.equal(sys.writes.length, 3);
+});
+
+test("partial migration resumes safely without replacing already correct unique indexes", async () => {
+  const sys = fake({ indexes: { [names[0]]: [goodIndex(names[0])] } });
+  const result = await applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async () => ({ persisted: true }),
+  });
+  assert.equal(result.ready, true);
+  assert.deepEqual(result.changed, names.slice(1));
+  assert.equal(sys.writes.length, 2);
+});
+
+test("any existing records in a collection missing its unique index block the entire run", async () => {
+  for (const name of names) {
+    const sys = fake({ records: { [name]: 1 } });
+    await assert.rejects(inspectAtlasG2UniqueIndexes({ database: sys.database }),
+      denied("nonempty_collection_requires_reconciliation"));
+    await assert.rejects(applyAtlasG2UniqueIndexes({
+      database: sys.database, verifyMigrationAuthority: permitted,
+    }), denied("nonempty_collection_requires_reconciliation"));
+    assert.deepEqual(sys.writes, []);
   }
 });
 
-test("nonempty, missing or conflicting target collections block the entire migration",async()=>{
-  for(const req of g2UniqueIndexRequirements) {
-    const setups=[
-      {nonempty:req.collection},
-      {missing:req.collection},
-      {colliding:req.collection}
-    ];
-    for(const opt of setups){
-      const x=makeDatabase(opt);
-      await assert.rejects(
-        applyAtlasG2UniqueIndexes({database:x.db,approval:approved})
-      );
-      assert.equal(x.writes.length,0);
-    }
+test("nonunique, conflicting, sparse and partial G2 indexes fail instead of silently repairing", async () => {
+  for (const wrong of [
+    { name: "g2_unique", unique: false },
+    { name: "g2_unique", unique: true, sparse: true },
+    { name: "g2_unique", unique: true, hidden: true },
+    { name: "g2_unique", unique: true, partialFilterExpression: { status: "active" } },
+    { name: "g2_unique", unique: true, expireAfterSeconds: 3600 },
+    { name: "not_g2_unique", unique: false },
+  ]) {
+    const first = names[0];
+    const sys = fake({ indexes: {
+      [first]: [{
+        key: { ...atlasG2RequiredUniqueIndexKeys[first] },
+        ...wrong,
+      }],
+    } });
+    await assert.rejects(applyAtlasG2UniqueIndexes({
+      database: sys.database, verifyMigrationAuthority: permitted,
+    }), denied("incompatible_existing_index"));
+    assert.deepEqual(sys.writes, []);
   }
 });
 
-test("never operate against a different or ambiguous database handle",async()=>{
-  const x=makeDatabase();
-  x.db.databaseName="novapharm_staging";
-  await assert.rejects(planAtlasG2UniqueIndexes({database:x.db}),
-    error("wrong_or_untrusted_database"));
-  await assert.rejects(applyAtlasG2UniqueIndexes({database:x.db,approval:approved}),
-    error("wrong_or_untrusted_database"));
-  assert.equal(x.writes.length,0);
+test("wrong database and failed native driver readback never claim completion", async () => {
+  const wrong = fake({ name: "novapharm_staging" });
+  await assert.rejects(inspectAtlasG2UniqueIndexes({ database: wrong.database }),
+    denied("wrong_database_or_missing_private_driver"));
+  const sys = fake({ overrideCreateIndex: ({ options }) => options.name });
+  await assert.rejects(applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async () => ({ persisted: true }),
+  }), denied("index_creation_unverified"));
+  assert.equal(sys.writes.length, 1);
 });
 
-test("new ingestion being enabled blocks the change regardless of approval",async()=>{
-  const x=makeDatabase();
-  await assert.rejects(
-    applyAtlasG2UniqueIndexes({database:x.db,approval:approved,
-      productionAdmissionEnabled:true}),
-    error("independent_schema_change_approval_required")
-  );
-  assert.equal(x.writes.length,0);
+test("missing durable migration audit fails closed and never declares release", async () => {
+  const sys = fake();
+  await assert.rejects(applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async () => ({ persisted: false }),
+  }), denied("migration_audit_failed"));
+  assert.equal(sys.writes.length, 1);
+  const state = await inspectAtlasG2UniqueIndexes({ database: sys.database });
+  assert.equal(state.ready, false);
+  assert.equal(state.customerReleaseApproved, false);
 });
 
-test("failed creates require inspected idempotent retry; never claim atomic multi-collection rollback",async()=>{
-  const failOn=g2UniqueIndexRequirements[2].collection;
-  const x=makeDatabase({failCreate:failOn});
-  await assert.rejects(applyAtlasG2UniqueIndexes({database:x.db,approval:approved}),
-    /simulated transient operator failure/);
-  assert.equal(x.writes.length,3);
-  const plan=await planAtlasG2UniqueIndexes({database:x.db});
-  assert.equal(plan.ready,false);
-  assert.deepEqual(plan.collections.map(y=>y.exactUniqueIndexPresent),
-    [true,true,false,false]);
-  const fresh=makeDatabase({
-    initialUnique:g2UniqueIndexRequirements.slice(0,2).map(y=>y.collection)
-  });
-  const retry=await applyAtlasG2UniqueIndexes({database:fresh.db,approval:approved});
-  assert.equal(retry.ready,true);
-  assert.equal(fresh.writes.length,2);
-});
-
-test("index creation response without durable index readback is not accepted",async()=>{
-  const x=makeDatabase({
-    failedReadback:g2UniqueIndexRequirements[0].collection
-  });
-  await assert.rejects(
-    applyAtlasG2UniqueIndexes({database:x.db,approval:approved}),
-    error("index_readback_not_attested")
-  );
-  assert.equal(x.writes.length,1);
+test("missing durable audit callback denies migration before the first write", async () => {
+  const sys = fake();
+  await assert.rejects(applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+  }), denied("durable_migration_audit_required"));
+  assert.deepEqual(sys.writes, []);
 });

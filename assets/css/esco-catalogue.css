@@ -311,7 +311,7 @@
 .esco-catalogue-heading{margin-bottom:29px}
 .esco-storefront .esco-controls{background:#f5f5f7;padding:15px;border-radius:19px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 13px}
 .esco-search-wrap{flex:1 1 390px;min-width:0;position:relative}
-.esco-search-icon{position:absolute;top:50%;left:17px;transform:translateY(-54%);color:#62626a;font-size:1.75rem;line-height:1;pointer-events:none}
+.esco-search-icon{position:absolute;top:50%;left:17px;width:20px;height:20px;transform:translateY(-50%);color:#62626a;pointer-events:none}
 .esco-storefront .esco-search{width:100%;min-width:0;min-height:49px;background:#fff;border:1px solid #e4e4e9;border-radius:12px;padding:12px 16px 12px 47px;font-size:.91rem;color:#1d1d1f;box-shadow:none}
 .esco-storefront .esco-search::placeholder{color:#8b8b94}
 .esco-storefront .esco-filter{min-height:49px;flex:0 1 215px;max-width:100%;min-width:175px;border-radius:12px;border:1px solid #e4e4e9;padding:11px 13px;background:#fff;color:#2b2b32;font-size:.88rem}
@@ -333,7 +333,8 @@
 .esco-storefront .esco-product:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(0,0,0,.065)}
 .esco-product-visual{aspect-ratio:4/3;min-height:0;background:#f5f6f8;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .esco-storefront .esco-product-visual .esco-product-image{width:100%;height:100%;object-fit:contain;margin:0!important;aspect-ratio:4/3!important;padding:16px 20px;background:transparent;border:0;border-radius:0}
-.esco-product-visual .esco-product-art-caption{position:absolute;bottom:9px;left:10px;right:10px;text-align:center;padding:5px 7px;background:rgba(255,255,255,.91);border-radius:6px;font-size:.62rem;color:#7e8590;line-height:1.3;margin:0;min-height:0}
+.esco-product-visual .esco-product-art-caption{position:absolute;bottom:9px;left:10px;right:10px;text-align:center;padding:5px 7px;background:rgba(255,255,255,.96);border-radius:6px;font-size:.75rem;color:#5f6671;line-height:1.4;margin:0;min-height:0}
+.esco-storefront .esco-source{color:#5f6671}
 .esco-product-body{display:flex;flex-direction:column;flex:1;padding:22px 22px 20px}
 .esco-product-kicker{text-transform:uppercase;letter-spacing:.10em;color:#62626a;font-size:.64rem;font-weight:680;margin:0 0 11px}
 .esco-storefront .esco-product h4{color:#1d1d1f;font-size:1.22rem;line-height:1.19;font-weight:680;letter-spacing:0;min-height:0;margin:0 0 8px}
@@ -430,7 +431,7 @@
   .esco-storefront .esco-product{display:grid;grid-template-columns:128px minmax(0,1fr);align-items:stretch;border-radius:18px;min-height:210px}
   .esco-product-visual{aspect-ratio:auto;min-height:0}
   .esco-storefront .esco-product-visual .esco-product-image{object-fit:contain;padding:10px;aspect-ratio:1/1!important}
-  .esco-product-visual .esco-product-art-caption{font-size:.57rem;bottom:8px;padding:4px}
+  .esco-product-visual .esco-product-art-caption{font-size:.75rem;bottom:8px;padding:4px}
   .esco-product-body{padding:15px 13px 14px}
   .esco-storefront .esco-product h4{font-size:1.03rem}
   .esco-product-kicker{font-size:.58rem;margin-bottom:8px}
@@ -688,3 +689,6 @@
 .esco-page .esco-shop-mini-bag[hidden] {
   display: none !important;
 }
+
+.esco-search-scope{margin:4px 3px 12px;color:#626b76;font-size:.85rem;line-height:1.5}
+@media(forced-colors:active){.esco-search-icon{color:CanvasText}.esco-search:focus-visible{outline:3px solid Highlight}}

@@ -1,13 +1,20 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
+import { isNovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
+import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
+import { CountrySourceCoverage } from "./country-source-coverage";
+import { GovernedHealthcareMap } from "./governed-healthcare-map";
 import styles from "./medicines-intelligence.module.css";
+import { NovaMlWorkspace } from "./nova-ml-workspaces";
+import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
+import { ScienceResearchWorkspace } from "./science-research-workspace";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
@@ -45,8 +52,10 @@ type SearchResponse = Readonly<{
   query: string;
   source: string;
   sourcePeriod: string | null;
+  catalogueState: "current_repository_identities_present" | "no_current_repository_identities";
   demandFactsIncluded: false;
   results: readonly MedicineSearchResult[];
+  pagination: Readonly<{ page: number; pageSize: number; totalRows: number; totalPages: number }>;
   dataFreshness: string | null;
 }>;
 
@@ -192,11 +201,16 @@ type MedicinesIntelligenceProps = Readonly<{
 }>;
 
 const baseRoute = "/portal/executive-platform/medicines-intelligence/";
+const novaMlBaseRoute = "/portal/executive-platform/nova-ml/";
 // Show exactly the 22 canonical decision/research workspaces; legacy deep links remain authorised.
-const navigationGroups = intelligenceWorkspaceGroups.map((group) => ({
-  label: group,
-  items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
-}));
+const navigationGroups = [
+  ...intelligenceWorkspaceGroups.map((group) => ({
+    label: group,
+    items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
+  })),
+  { label: "Nova ML & interpretability", items: novaMlWorkspaceCatalogue.map((module) => [module.slug, module.title, `${novaMlBaseRoute}${module.slug}/`] as const) },
+  { label: "Scientific research", items: [["science-lab", "Science research", `${baseRoute}science-lab/`] as const] },
+];
 
 const emptyFilters: AnalyticsFilters = {
   dataset: "epd",
@@ -330,7 +344,9 @@ function TrendChart({ metric, rows, source }: Readonly<{ metric: string; rows: r
   const displayValue = (value: number) => metric === "nic" || metric === "actual_cost"
     ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 2 }).format(value)
     : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(value);
-  const points = rows.map((row) => ({ label: String(row["month_key"] ?? ""), value: Number(row["metric_value"] ?? 0) })).filter((row) => Number.isFinite(row.value));
+  const titleId = useId();
+  const descriptionId = useId();
+  const points = observedTrendPoints(rows);
   if (!points.length) return <div className={styles.designedEmpty}><strong>No accepted trend is available</strong><p>Complete a governed non-sample source ingest, then run a medicine query.</p></div>;
   if (points.length === 1) return <div className={styles.designedEmpty}><strong>One accepted period is available</strong><p>{points[0]?.label}: {displayValue(points[0]?.value ?? 0)} {display(metric).toLocaleLowerCase("en-GB")}. A trend requires at least two accepted periods.</p><p>Source: {source}. Forecasts are not inferred from one observed period.</p></div>;
   const width = 640;
@@ -346,9 +362,9 @@ function TrendChart({ metric, rows, source }: Readonly<{ metric: string; rows: r
     return `${x.toFixed(2)},${y.toFixed(2)}`;
   }).join(" ");
   return <figure className={styles.trendFigure}>
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="trend-title trend-description">
-      <title id="trend-title">Accepted monthly {display(metric)} trend</title>
-      <desc id="trend-description">The series runs from {points[0]?.label} to {points.at(-1)?.label}, based only on accepted governed facts.</desc>
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={`${titleId} ${descriptionId}`}>
+      <title id={titleId}>Accepted monthly {display(metric)} trend</title>
+      <desc id={descriptionId}>The series runs from {points[0]?.label} to {points.at(-1)?.label}, based only on accepted governed facts. Exact values are available in the adjacent table.</desc>
       <line x1={inset} x2={width - inset} y1={height - inset} y2={height - inset} className={styles.chartAxis} />
       <line x1={inset} x2={width - inset} y1={height / 2} y2={height / 2} className={styles.chartGrid} />
       <polyline points={polyline} className={styles.chartLine} />
@@ -540,6 +556,7 @@ function NearbyOrganisations() {
     </div><button type="submit" disabled={busy}>{busy ? "Locating" : "Find organisations"}</button></form>
     <p className={`${styles.liveStatus} medicine-search-status`} role="status" aria-live="polite">{status}</p>
     {response?.truncated ? <p className={styles.advisory}>The response reached its governed result limit. Narrow the radius before drawing conclusions.</p> : null}
+    {response ? <GovernedHealthcareMap origin={response.origin} pharmacies={response.pharmacies} practices={response.practices} radiusKm={response.query.radiusKm} /> : null}
     {pharmacySection ? <EvidenceTable data={pharmacySection} /> : null}
     {practiceSection ? <EvidenceTable data={practiceSection} /> : null}
     {response ? <section className={styles.interpretation}><h3>Interpretation boundary</h3><ul>{response.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul></section> : null}
@@ -671,6 +688,7 @@ function PlatformOverview({ analytics, detail, headingLevel = 1, snapshot }: Rea
 
 export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStatus, snapshot, subview, user }: MedicinesIntelligenceProps) {
   const current = subview ?? "overview";
+  const isNovaMlView = isNovaMlWorkspaceSlug(current);
   // Preserve bookmarked legacy tools without adding them to the 22 canonical workspace menu.
   const legacyTitles: Readonly<Record<string, string>> = {
     prescribers: "Prescribing",
@@ -685,10 +703,82 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     : navigationGroups;
   const searchId = useId();
   const searchFieldRef = useRef<HTMLInputElement>(null);
+  const searchResultsId = useId();
+  const searchHelpId = useId();
+  const issuedSearchRef = useRef("");
+  const [searchText, setSearchText] = useState("");
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+  const filterToggleRef = useRef<HTMLButtonElement>(null);
+  const menuCloseRef = useRef<HTMLButtonElement>(null);
+  const filterCloseRef = useRef<HTMLButtonElement>(null);
   // A superseded deep-link restoration must never reintroduce an earlier medicine.
   const selectionGenerationRef = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // Close controls mount only when a user opens a drawer; the stable ref
+  // callback moves keyboard focus during that same React commit. The effect
+  // below also retries after paint when CSS visibility is transitioning.
+  const focusNavigationClose = useCallback((node: HTMLButtonElement | null) => {
+    menuCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
+  const focusFiltersClose = useCallback((node: HTMLButtonElement | null) => {
+    filterCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
+  useEffect(() => {
+    if (!menuOpen && !filtersOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (filtersOpen) { setFiltersOpen(false); filterToggleRef.current?.focus(); }
+        else if (menuOpen) { setMenuOpen(false); menuToggleRef.current?.focus(); }
+        return;
+      }
+      if (event.key !== "Tab") return;
+      // Mobile drawers cover the page with a scrim: keyboard navigation must
+      // remain inside the open drawer until dismissed or explicitly closed.
+      const activePanel = document.getElementById(
+        filtersOpen ? "medicines-context-panel" : "medicines-navigation-panel"
+      );
+      if (!activePanel || !window.matchMedia("(max-width: 1080px)").matches) return;
+      const focusable = Array.from(activePanel.querySelectorAll<HTMLElement>(
+        'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+      )).filter((element) => element.getClientRects().length > 0);
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) { event.preventDefault(); return; }
+      if (event.shiftKey && (document.activeElement === first || !activePanel.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !activePanel.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    // CSS visibility transitions can leave the opening drawer non-focusable
+    // until the next paint. Move focus after layout, never into a hidden pane.
+    // Wait for the responsive drawer to become actually focusable. React's
+    // ref callback may run while the closed panel still has visibility:hidden;
+    // a single animation frame is not sufficient across browser engines.
+    let focusFrame = 0;
+    let attempts = 0;
+    const focusVisibleClose = () => {
+      const target = filtersOpen ? filterCloseRef.current : menuCloseRef.current;
+      if (!target) return;
+      if (window.getComputedStyle(target).visibility === "visible" && target.getClientRects().length > 0) {
+        target.focus({ preventScroll: true });
+        if (document.activeElement === target) return;
+      }
+      if (++attempts < 20) focusFrame = window.requestAnimationFrame(focusVisibleClose);
+    };
+    focusFrame = window.requestAnimationFrame(focusVisibleClose);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen, filtersOpen]);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
   const [detail, setDetail] = useState<MedicineDetail | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
@@ -698,22 +788,30 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (isNovaMlView) return;
     function handleSearchShortcut(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         searchFieldRef.current?.focus();
       }
       if (event.key === "Escape" && document.activeElement === searchFieldRef.current) {
+        event.preventDefault();
+        selectionGenerationRef.current += 1;
+        issuedSearchRef.current = "";
+        setSearchText("");
         setSearchResponse(null);
+        setSearchStatus("Search cleared.");
+        setBusy(false);
       }
     }
     window.addEventListener("keydown", handleSearchShortcut);
     return () => window.removeEventListener("keydown", handleSearchShortcut);
-  }, []);
+  }, [isNovaMlView]);
 
   // Restore an authorised medicine selection on workspace deep links. The server
   // validates both the session and the exact medicine identifier on each request.
   useEffect(() => {
+    if (isNovaMlView) return;
     const medicineId = new URLSearchParams(window.location.search).get("medicineId");
     if (!medicineId || !/^medicine-[a-f0-9]{32}$/u.test(medicineId)) return;
     let active = true;
@@ -741,7 +839,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     };
     void restore();
     return () => { active = false; };
-  }, []);
+  }, [isNovaMlView]);
 
   function changeFilter(key: keyof AnalyticsFilters, value: string) {
     setFilters((currentFilters) => {
@@ -757,15 +855,15 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setAnalyticsStatus("Filters reset. Select the evidence you need.");
   }
 
-  async function searchMedicine(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const query = String(new FormData(event.currentTarget).get("medicine") ?? "").trim();
+  // Typed queries are debounced against the existing authorised endpoint.
+  // One current-identity request owns the results; older responses cannot reappear.
+  const runMedicineSearch = useCallback(async (query: string) => {
     if (query.length < 2) {
       setSearchStatus("Enter at least two characters.");
       return;
     }
-    // Prevent a fresh query (including a zero-result/error query) from displaying
-    // a previous medicine's identity, charts or accepted observation state.
+    if (issuedSearchRef.current === query) return;
+    issuedSearchRef.current = query;
     selectionGenerationRef.current += 1;
     const generation = selectionGenerationRef.current;
     setDetail(null);
@@ -775,13 +873,66 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     nextUrl.searchParams.delete("medicineId");
     window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     setBusy(true);
-    setSearchStatus("Searching the governed medicine identity register.");
+    setSearchStatus("Searching current authorised medicine identities.");
     setSearchResponse(null);
     try {
-      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30`);
+      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30&page=1`);
       if (generation !== selectionGenerationRef.current) return;
       setSearchResponse(next);
-      setSearchStatus(next.results.length ? `${next.results.length} matching medicine identities.` : "No current BNF identity matched that search.");
+      setSearchStatus(next.pagination.totalRows
+        ? `${next.pagination.totalRows} matching current identities. Page ${next.pagination.page} of ${next.pagination.totalPages}.`
+        : next.catalogueState === "no_current_repository_identities"
+          ? "No current medicine identities are loaded into this search environment. Source approval and ingestion are required before live results."
+          : "No current BNF identity matched that search.");
+    } catch (error) {
+      if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
+    } finally {
+      if (generation === selectionGenerationRef.current) setBusy(false);
+    }
+  }, []);
+
+  function changeMedicineSearch(value: string) {
+    // Invalidate any in-flight response immediately, not after the debounce.
+    selectionGenerationRef.current += 1;
+    issuedSearchRef.current = "";
+    setSearchText(value);
+    setSearchResponse(null);
+    setSearchStatus(value.trim().length >= 2 ? "Refining medicine matches…" : value ? "Enter at least two characters." : "");
+    setBusy(false);
+  }
+
+  useEffect(() => {
+    if (isNovaMlView) return;
+    const query = searchText.trim();
+    if (query.length < 2) return;
+    const timer = window.setTimeout(() => { void runMedicineSearch(query); }, 400);
+    return () => window.clearTimeout(timer);
+  }, [searchText, runMedicineSearch, isNovaMlView]);
+
+  function searchMedicine(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    issuedSearchRef.current = "";
+    void runMedicineSearch(searchText.trim());
+  }
+
+  function clearMedicineSearch() {
+    changeMedicineSearch("");
+    setSearchStatus("Search cleared.");
+    searchFieldRef.current?.focus();
+  }
+
+  async function searchMedicinePage(page: number) {
+    const current = searchResponse;
+    if (!current || page < 1 || page > current.pagination.totalPages || page === current.pagination.page) return;
+    selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
+    setBusy(true);
+    setSearchStatus(`Loading medicine identities, page ${page}.`);
+    try {
+      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(current.query)}&limit=${current.pagination.pageSize}&page=${page}`);
+      if (generation !== selectionGenerationRef.current) return;
+      setSearchResponse(next);
+      setSearchStatus(`Showing page ${next.pagination.page} of ${next.pagination.totalPages}, ${next.pagination.totalRows} current identities.`);
     } catch (error) {
       if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
     } finally {
@@ -872,16 +1023,23 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   if (current === "overview" || current === "medicine-search" || current === "medicine-overview" || current === "identity") central = <PlatformOverview analytics={analytics} detail={detail} snapshot={snapshot} />;
   else if (current === "geography") central = <><NearbyOrganisations /><EvidenceTable data={section(snapshot, "Practice population context")} /><EvidenceTable data={section(snapshot, "Pharmacy geography")} /></>;
   else if (current === "pharmacies") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Governed master</p><h1>All pharmacies</h1><p>Identity, geography and contact-evidence facts remain separate from medicine dispensing and marketing eligibility.</p></header><EvidenceTable data={section(snapshot, "Pharmacy geography")} /><EvidenceTable data={section(snapshot, "Pharmacy contact evidence")} /></section>;
-  else if (current === "data-sources") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source truth</p><h1>Source registry</h1><p>Discovered, schema-validated, sample-validated, ingested and production-operational remain distinct states.</p></header><EvidenceTable data={section(snapshot, "Data sources and quality")} /></section>;
+  else if (current === "data-sources") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source truth</p><h1>Source registry</h1><p>Discovered, schema-validated, sample-validated, ingested and production-operational remain distinct states.</p></header><CountrySourceCoverage /><EvidenceTable data={section(snapshot, "Data sources and quality")} /></section>;
   else if (current === "prescribers") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source-separated analysis</p><h1>Prescriber intelligence</h1><p>Select a governed medicine identity through the global search, then query accepted EPD facts. An empty result remains empty.</p></header><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "observed-market") central = <section className={styles.routeWorkspace}><ProfessionalWorkspace kind="observed-market" detail={detail} analytics={analytics} /><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "forecasts") central = <UnavailableEvidence title="Forecasts" statement="No forecast is displayed because an identity catalogue is not a demand history and cannot support a truthful forecast by itself." requirements={["Leakage-safe historical fact series", "Recorded training and feature cutoffs", "Backtests against accepted baselines", "Uncertainty intervals and owner acceptance"]} />;
   else if (current === "opportunities") central = <UnavailableEvidence title="Commercial opportunities" statement="No pharmacy or medicine is ranked without measured demand, distance, uncertainty and approved commercial evidence." requirements={["Accepted demand facts", "Governed medicine-to-pharmacy eligibility rules", "Versioned transparent score components", "Commercial and Regulatory approval"]} />;
   else if (current === "evidence") central = <ClinicalTrialsDiscovery />;
+  else if (current === "science-lab") central = <ScienceResearchWorkspace />;
+  else if (current === "biotech-intelligence") central = <ClinicalTrialsDiscovery context="biotech" />;
+  else if (current === "signals") central = <ProfessionalWorkspace kind="signals" detail={detail} analytics={analytics} />;
+  else if (current === "medicine-tape" || current === "market-structure" || current === "pricing-reimbursement") {
+    central = <ObservedMedicineWorkspace kind={current} detail={detail} analytics={analytics} />;
+  }
   else if (current === "regulatory-intelligence") central = <><ProfessionalWorkspace kind="regulatory-intelligence" detail={detail} analytics={analytics} /><UsFdaLabelDiscovery /></>;
   else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
     central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
   }
+  else if (isNovaMlWorkspaceSlug(current)) central = <NovaMlWorkspace key={current} kind={current} />;
   else if (current === "campaigns") central = <UnavailableEvidence title="Campaigns" statement="No outreach campaign is active. Imported business contacts are marketing-ineligible by default and are not exposed in this view." requirements={["Lawful-purpose and channel review", "Contact evidence and suppression controls", "Human-approved content and target snapshot", "Audited delivery integration"]} />;
   else {
     const workspace = intelligenceWorkspaceBySlug.get(current);
@@ -893,27 +1051,27 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   }
 
   return <main className={`${styles.shell} medicines-intelligence`}>
-    <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
-      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p><button type="button" onClick={() => setMenuOpen(false)}>Close</button></div>
-      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
+    <aside id="medicines-navigation-panel" className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
+      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p>{menuOpen ? <button ref={focusNavigationClose} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button> : null}</div>
+      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail && !isNovaMlWorkspaceSlug(key) && key !== "science-lab" ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
-    {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} /> : null}
+    {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }} /> : null}
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
-        <button className={styles.mobileMenu} type="button" onClick={() => setMenuOpen(true)}>Navigation</button>
-        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search medicine, BNF, SNOMED, dm+d, brand or supplier" required /><button type="submit" disabled={busy}>Search</button></form>
-          {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>No current BNF identity matched. Try a generic, brand, product or BNF code.</p>}</section> : null}
-        </search>
-        <div className={styles.topActions}><span>Latest accepted period</span><button type="button" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
+        <button ref={menuToggleRef} className={styles.mobileMenu} type="button" aria-expanded={menuOpen} aria-controls="medicines-navigation-panel" onClick={() => setMenuOpen(true)}>Navigation</button>
+        {isNovaMlView ? <p className={styles.novaMlToolbarTitle}>Nova ML <span>Model governance and Apple companion</span></p> : <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchHelpId} aria-controls={searchResponse ? searchResultsId : undefined} title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" spellCheck={false} value={searchText} onChange={(event) => changeMedicineSearch(event.currentTarget.value)} placeholder="Search current medicines, brands or BNF codes" required />{searchText ? <button type="button" onClick={clearMedicineSearch} aria-label="Clear medicine search">Clear</button> : null}<button type="submit" disabled={busy}>Search</button></form><p id={searchHelpId} className={styles.srOnly}>Search only the current authorised medicine identity register. Matches refine as you type after two characters. No search history is saved or displayed.</p>
+          {searchResponse ? <section id={searchResultsId} className={`${styles.searchResults} medicine-search-results`} aria-label="Current authorised medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>{searchResponse.catalogueState === "no_current_repository_identities" ? "This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion." : "No current BNF identity matched. Try a generic, brand, product or BNF code."}</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
+        </search>}
+        <div className={styles.topActions}>{!isNovaMlView ? <><span>Latest accepted period</span><button ref={filterToggleRef} type="button" aria-expanded={filtersOpen} aria-controls="medicines-context-panel" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button></> : null}<button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
       </header>
-      <div className={styles.liveRegion}><p className="workflow-status" aria-live="polite">{parentStatus}</p><p className="medicine-search-status" role="status" aria-live="polite">{searchStatus}</p><p role="status" aria-live="polite">{analyticsStatus}</p></div>
-      <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div>
-      <div className={styles.workspaceGrid}>
-        <section className={styles.central}>{central}<section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section></section>
-        <aside className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2><button type="button" onClick={() => setFiltersOpen(false)}>Close</button></div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside>
+      <div className={styles.liveRegion}><p className="workflow-status" aria-live="polite">{parentStatus}</p>{!isNovaMlView ? <><p className="medicine-search-status" role="status" aria-live="polite">{searchStatus}</p><p role="status" aria-live="polite">{analyticsStatus}</p></> : null}</div>
+      {!isNovaMlView ? <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div> : null}
+      <div className={isNovaMlView ? styles.novaMlCanvas : styles.workspaceGrid}>
+        <section className={styles.central}>{central}{!isNovaMlView ? <section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section> : null}</section>
+        {!isNovaMlView ? <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2>{filtersOpen ? <button ref={focusFiltersClose} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button> : null}</div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside> : null}
       </div>
-      {filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} /> : null}
+      {!isNovaMlView && filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }} /> : null}
     </section>
   </main>;
 }

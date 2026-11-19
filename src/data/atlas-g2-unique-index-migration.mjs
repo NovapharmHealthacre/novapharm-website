@@ -1,161 +1,150 @@
 /**
- * NovaPharm Intelligence G2: PRIVATE schema-only Atlas unique index migration.
+ * G2 index migration for the private Atlas medicine-evidence transaction store.
  *
- * Default behavior is a non-mutating plan. Applying requires an explicit
- * independently reviewed change record and an empty target namespace.
- * This does not grant medicine source rights or make evidence customer-visible.
- *
- * This accepts server-owned MongoDB Driver collections; no connection strings,
- * public routes, payment controls, network or credentials are handled here.
+ * No credentials, connection, filesystem write, network call or launch switch.
+ * A separately authorised, private deployment agent injects the MongoDB driver
+ * database and a trusted approval function. Read-only inspection is the default.
  */
-const DATABASE = "novapharm_intelligence_production";
+import { atlasG2RequiredUniqueIndexKeys } from "./atlas-medicine-g2-atomic-store.mjs";
 
-export const g2UniqueIndexRequirements = Object.freeze([
-  Object.freeze({
-    collection: "npi_source_rights",
-    name: "g2_rights_unique_resource_revision",
-    key: Object.freeze({
-      workspace_id: 1, source_id: 1, source_version: 1,
-      resource_id: 1, resource_sha256: 1, rights_revision: 1
-    })
-  }),
-  Object.freeze({
-    collection: "npi_medicine_evidence",
-    name: "g2_evidence_unique_source_row",
-    key: Object.freeze({
-      workspace_id: 1, source_id: 1, source_version: 1,
-      resource_id: 1, row_id: 1
-    })
-  }),
-  Object.freeze({
-    collection: "npi_evidence_manifests",
-    name: "g2_manifest_unique_workspace_digest",
-    key: Object.freeze({ workspace_id: 1, manifest_sha256: 1 })
-  }),
-  Object.freeze({
-    collection: "npi_audit_events",
-    name: "g2_audit_unique_workspace_event",
-    key: Object.freeze({ workspace_id: 1, event_id: 1 })
-  })
-]);
+const DB = "novapharm_intelligence_production";
+const INDEX = "g2_unique";
+const collections = Object.keys(atlasG2RequiredUniqueIndexKeys);
+const deny = (code) => Object.assign(new Error("Atlas G2 index migration denied: " + code), {
+  code, statusCode: 409,
+});
+const exactKeys = (actual, required) =>
+  actual && typeof actual === "object" &&
+  JSON.stringify(Object.entries(actual)) === JSON.stringify(Object.entries(required));
+const correctIndex = (index, required) =>
+  index?.name === INDEX &&
+  index.unique === true && index.sparse !== true &&
+  index.hidden !== true && index.partialFilterExpression == null &&
+  index.expireAfterSeconds == null &&
+  (index.collation == null || index.collation.locale === "simple") &&
+  exactKeys(index.key, required);
 
-function deny(code) {
-  throw Object.assign(new Error("Private Atlas G2 index migration denied: " + code), { code });
-}
-
-function exactUnique(index, requirement) {
-  return index && index.unique === true &&
-    index.sparse !== true && index.partialFilterExpression == null &&
-    (index.collation == null || index.collation.locale === "simple") &&
-    index.key && typeof index.key === "object" &&
-    JSON.stringify(Object.entries(index.key)) ===
-    JSON.stringify(Object.entries(requirement.key));
-}
-
-function requireDatabase(database) {
-  if (database?.databaseName !== DATABASE ||
-      typeof database.collection !== "function" ||
-      typeof database.listCollections !== "function") deny("wrong_or_untrusted_database");
-}
-
-async function inspect(database) {
-  requireDatabase(database);
-  const handle = database.listCollections({}, { nameOnly: true });
-  if (typeof handle?.toArray !== "function") deny("collection_inventory_unavailable");
-  const listed = await handle.toArray();
-  if (!Array.isArray(listed) || listed.length > 100 ||
-      listed.some(x => typeof x?.name !== "string")) {
-    deny("collection_inventory_invalid");
+function validateDatabase(database) {
+  if (!database || database.databaseName !== DB || typeof database.collection !== "function") {
+    throw deny("wrong_database_or_missing_private_driver");
   }
-  const names = new Set(listed.map(x => x.name));
-  const result = [];
-  for (const requirement of g2UniqueIndexRequirements) {
-    if (!names.has(requirement.collection)) deny("required_collection_missing");
-    const collection = database.collection(requirement.collection);
-    if (typeof collection?.listIndexes !== "function" ||
-        typeof collection?.countDocuments !== "function" ||
-        typeof collection?.createIndex !== "function") {
-      deny("collection_adapter_unavailable");
-    }
-    const cursor = collection.listIndexes();
-    if (typeof cursor?.toArray !== "function") deny("index_inventory_unavailable");
-    const [indexes, count] = await Promise.all([
-      cursor.toArray(), collection.countDocuments({})
-    ]);
-    if (!Array.isArray(indexes) || indexes.length > 64 ||
-      !Number.isSafeInteger(count) || count < 0) deny("inventory_unverifiable");
-    const exact = indexes.find(index => exactUnique(index, requirement));
-    const namedCollision = indexes.some(index =>
-      index.name === requirement.name && !exactUnique(index, requirement));
-    result.push(Object.freeze({
-      collection: requirement.collection, requiredIndex: requirement.name,
-      documentCount: count, exactUniqueIndexPresent: Boolean(exact),
-      namedCollision, existingIndexCount: indexes.length
-    }));
+}
+async function inspectCollection(database, name) {
+  const collection = database.collection(name);
+  if (!collection || typeof collection.listIndexes !== "function" ||
+      typeof collection.countDocuments !== "function") {
+    throw deny("collection_driver_unavailable");
+  }
+  const indexes = await collection.listIndexes().toArray();
+  if (!Array.isArray(indexes) || indexes.length > 32) throw deny("index_inventory_unavailable");
+  const required = atlasG2RequiredUniqueIndexKeys[name];
+  const candidates = indexes.filter(x => x?.name === INDEX || exactKeys(x?.key, required));
+  const correct = candidates.filter(x => correctIndex(x, required));
+  // Any incompatible G2 name or same exact field tuple with different
+  // uniqueness/collation needs independent reconciliation, not silent repair.
+  if (correct.length > 1 || candidates.some(x => !correct.includes(x))) {
+    throw deny("incompatible_existing_index");
+  }
+  // Existence-only bound: do not scan/copy/download medicine evidence.
+  // Collections with any records are not safe for first-time index creation.
+  const count = await collection.countDocuments({}, { limit: 1, maxTimeMS: 3000 });
+  if (!Number.isSafeInteger(count) || count < 0 || count > 1) {
+    throw deny("collection_count_unavailable");
+  }
+  const compliant = correct.length === 1;
+  if (!compliant && count !== 0) throw deny("nonempty_collection_requires_reconciliation");
+  return Object.freeze({ name, required, compliant, empty: count === 0 });
+}
+
+export async function inspectAtlasG2UniqueIndexes({ database } = {}) {
+  validateDatabase(database);
+  const checks = [];
+  // Observe all three before performing any mutation in the separate action.
+  for (const name of collections) {
+    checks.push(await inspectCollection(database, name));
   }
   return Object.freeze({
-    contract: "novapharm.intelligence.private-g2-unique-schema.v1",
-    database: DATABASE,
-    customerAccessEnabled: false, sourceRightsGranted: false,
-    collections: Object.freeze(result),
-    ready: result.every(x => x.exactUniqueIndexPresent),
-    safeToApply: result.every(x => x.documentCount === 0 && !x.namedCollision),
-    requiresOperatorReview: true
+    contract: "novapharm.intelligence.atlas-g2-index-preflight.v1",
+    database: DB,
+    ready: checks.every(x => x.compliant),
+    mutationRequired: checks.some(x => !x.compliant),
+    customerReleaseApproved: false,
+    productionIngestionApproved: false,
+    checks: Object.freeze(checks.map(x => Object.freeze({
+      collection: x.name,
+      indexName: INDEX,
+      requiredKeys: Object.freeze({ ...x.required }),
+      uniqueRequired: true,
+      verified: x.compliant,
+      empty: x.empty,
+    }))),
   });
 }
 
-/** Non-mutating read-only inventory. */
-export async function planAtlasG2UniqueIndexes({ database } = {}) {
-  return inspect(database);
-}
-
 /**
- * Deliberately not a migration executable or API route: a trusted database
- * operator must supply the already-connected database and independently
- * authorised change receipt. This cannot establish the human review itself.
+ * Executable only by a trusted, explicitly approved private deployment agent.
+ * No browser-supplied boolean, untrusted tenant assertion or release candidate
+ * is sufficient. The authority callback must independently authenticate the
+ * operator/change ticket and confirm that production writes are quiesced.
  *
- * Warning: MongoDB cannot atomically create indexes across four collections.
- * A partial failure requires inspection and idempotent retry, not a false
- * rollback claim. Data ingestion must remain OFF throughout this change.
+ * MongoDB index creation is not a multi-collection transaction. If a step fails
+ * the already-created unique indexes are kept (never silently dropped), and a
+ * subsequent approved invocation can resume after independent preflight.
  */
 export async function applyAtlasG2UniqueIndexes({
-  database, approval, productionAdmissionEnabled = false
+  database, verifyMigrationAuthority, afterVerifiedIndex,
 } = {}) {
-  if (productionAdmissionEnabled !== false ||
-      approval?.environment !== "private_schema_only" ||
-      approval?.customerAccessEnabled !== false ||
-      approval?.ingestionEnabled !== false ||
-      approval?.independentReviewerVerified !== true ||
-      approval?.operatorConfirmedBackup !== true ||
-      !/^[A-Z][A-Z0-9_-]{5,79}$/u.test(approval?.changeId ?? "")) {
-    deny("independent_schema_change_approval_required");
+  validateDatabase(database);
+  if (typeof verifyMigrationAuthority !== "function") throw deny("approval_callback_missing");
+  if (afterVerifiedIndex !== undefined && typeof afterVerifiedIndex !== "function") {
+    throw deny("invalid_audit_callback");
   }
-  const before = await inspect(database);
-  if (!before.safeToApply) deny("schema_change_preflight_failed");
-  const toApply = g2UniqueIndexRequirements.filter(r =>
-    !before.collections.find(x => x.collection === r.collection).exactUniqueIndexPresent);
-  for (const requirement of toApply) {
-    const collection = database.collection(requirement.collection);
-    const created = await collection.createIndex(requirement.key, {
-      name: requirement.name,
-      unique: true,
-      sparse: false,
-      collation: { locale: "simple" }
+  const preflight = await inspectAtlasG2UniqueIndexes({ database });
+  if (preflight.ready) return Object.freeze({
+    contract: "novapharm.intelligence.atlas-g2-index-migration.v1",
+    changed: Object.freeze([]), ready: true,
+    productionIngestionApproved: false, customerReleaseApproved: false,
+  });
+  const auth = await verifyMigrationAuthority(Object.freeze({
+    operation: "create_g2_unique_indexes", database: DB,
+    collections: Object.freeze([...collections]),
+  }));
+  if (!auth || auth.authorized !== true || auth.productionWritesQuiesced !== true ||
+      typeof auth.operatorId !== "string" || !/^[a-zA-Z0-9._:-]{4,128}$/u.test(auth.operatorId) ||
+      typeof auth.changeTicket !== "string" || !/^[a-zA-Z0-9._:-]{4,128}$/u.test(auth.changeTicket)) {
+    throw deny("independent_approval_required");
+  }
+  if (typeof afterVerifiedIndex !== "function") {
+    throw deny("durable_migration_audit_required");
+  }
+  const changed = [];
+  for (const spec of preflight.checks) {
+    // Re-inspect immediately before each create; abort if the system changed.
+    const current = await inspectCollection(database, spec.collection);
+    if (current.compliant) continue;
+    const collection = database.collection(spec.collection);
+    if (typeof collection.createIndex !== "function") throw deny("unique_index_driver_unavailable");
+    // `unique: true` is mandatory; no non-unique fallback.
+    const created = await collection.createIndex(current.required, {
+      name: INDEX, unique: true, sparse: false,
+      collation: { locale: "simple" }, writeConcern: { w: "majority" },
     });
-    if (created !== requirement.name) deny("index_creation_not_attested");
-    // Verify this single index before proceeding to the next collection.
-    const verified = await collection.listIndexes().toArray();
-    if (!Array.isArray(verified) ||
-        !verified.some(index => exactUnique(index, requirement))) {
-      deny("index_readback_not_attested");
-    }
+    if (created !== INDEX) throw deny("index_creation_unverified");
+    const verified = await inspectCollection(database, spec.collection);
+    if (!verified.compliant) throw deny("index_creation_unverified");
+    changed.push(spec.collection);
+    const audit = await afterVerifiedIndex(Object.freeze({
+      collection: spec.collection, indexName: INDEX,
+      operatorId: auth.operatorId, changeTicket: auth.changeTicket,
+    }));
+    if (!audit || audit.persisted !== true) throw deny("migration_audit_failed");
   }
-  const after = await inspect(database);
-  if (!after.ready || !after.safeToApply) deny("migration_postcheck_failed");
+  const finish = await inspectAtlasG2UniqueIndexes({ database });
+  if (!finish.ready) throw deny("migration_incomplete");
   return Object.freeze({
-    ...after, applied: true,
-    createdIndexNames: Object.freeze(toApply.map(x => x.name)),
-    sourceRightsGranted: false, customerAccessEnabled: false,
-    productionAdmissionEnabled: false
+    contract: "novapharm.intelligence.atlas-g2-index-migration.v1",
+    changed: Object.freeze([...changed]), ready: true,
+    // Indexes are necessary but not sufficient for any medicine release.
+    productionIngestionApproved: false, customerReleaseApproved: false,
   });
 }

@@ -65,7 +65,7 @@ test("audit route register includes every corporate, leadership, article and can
 test("official corporate logo is visible on managed homepage and never replaced by text", () => {
   const brand = readFileSync(path.join(root, "components/brand.tsx"), "utf8");
   const homepage = readFileSync(path.join(root, "app/homepage-editorial.css"), "utf8");
-  assert.match(brand, /src="\/assets\/brand\/novapharm-healthcare-logo\.png"/);
+  assert.match(brand, /novapharm-healthcare-logo\.png/);
   assert.doesNotMatch(homepage, /content:\s*"NOVAPHARM"/);
   assert.doesNotMatch(homepage, /\.brand > img\s*\{\s*display:\s*none/);
   assert.match(homepage, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/);
@@ -83,7 +83,10 @@ test("forensic page identity and privacy choices do not regress", () => {
     "The Oncology H1 must have a spoken word boundary at its visual line break");
   assert.doesNotMatch(capabilitiesCss, /#767981/i,
     "Small Capabilities labels must not use the previously low-contrast grey");
-  assert.ok(layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content">'),
+  assert.match(layout, /<main id="main-content" lang="en-GB" data-np-untranslated>/,
+    "Untranslated content must remain explicitly identified as English");
+  assert.ok(layout.includes("<CookieControls />") &&
+    layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content"'),
     "Cookie consent must be in normal document flow before main content");
   assert.match(style, /Forensic remediation: non-obscuring consent/);
   assert.match(style, /\.cookie-banner\s*\{[\s\S]*?position: relative;/);

@@ -8,6 +8,12 @@ process.env.DATABASE_PATH = databasePath;
 const database = await import("../src/data/database.mjs");
 
 try {
+  // An unpopulated source catalogue is not the same as a valid zero-result search.
+  const emptyService = await import("../src/core/medicines-intelligence-service.mjs");
+  const emptyCatalogueSearch = await emptyService.searchMedicines("Apixaban", { accessScopes: ["board"] }, 10);
+  assert.deepEqual(emptyCatalogueSearch.results, []);
+  assert.equal(emptyCatalogueSearch.catalogueState, "no_current_repository_identities");
+  assert.equal(emptyCatalogueSearch.sourcePeriod, null);
   const sourceId = "nhsbsa.bnf-current";
   const medicineId = "medicine-0123456789abcdef0123456789abcdef";
   const importedAt = "2026-08-24T04:27:00.000Z";
@@ -226,6 +232,7 @@ try {
 
   const search = await service.searchMedicines("Apixaban", context, 10);
   assert.equal(search.results.length, 1);
+  assert.equal(search.catalogueState, "current_repository_identities_present");
   assert.equal(search.results[0].medicineId, medicineId);
   assert.equal(search.results[0].chemicalSubstance, "Apixaban");
   assert.equal(search.demandFactsIncluded, false);
@@ -234,6 +241,8 @@ try {
   assert.equal(containsSearch.results[0].medicineId, medicineId);
   const endedSearch = await service.searchMedicines("Retired governed presentation", context, 10);
   assert.equal(endedSearch.results.length, 0);
+  assert.equal(endedSearch.catalogueState, "current_repository_identities_present",
+    "No-match against a loaded repository must not claim the whole catalogue is missing.");
 
   const detail = await service.medicineIdentityDetail(medicineId, context);
   assert.equal(detail.hierarchy.length, 2);
@@ -323,6 +332,34 @@ try {
     await database.run(`INSERT INTO medicine_aliases(id, medicine_id, alias_text, alias_type, normalised_alias, source_id, valid_from)
       VALUES(?, ?, ?, ?, ?, ?, ?)`, id, secondMedicineId, text, type, normalised, sourceId, "2026-07-01");
   }
+  // Search is paginated across all currently valid aliases and identities,
+  // with an exact/current code lookup never confused with historical aliases.
+  const firstPage = await service.searchMedicines("Apixaban", context, 1, 1);
+  const secondPage = await service.searchMedicines("Apixaban", context, 1, 2);
+  const beyondPage = await service.searchMedicines("Apixaban", context, 1, 3);
+  assert.deepEqual(firstPage.pagination, { page: 1, pageSize: 1, totalRows: 2, totalPages: 2 });
+  assert.deepEqual(secondPage.pagination, { page: 2, pageSize: 1, totalRows: 2, totalPages: 2 });
+  assert.equal(firstPage.results[0].medicineId, medicineId, "Exact/prefix matches are stable across pages.");
+  assert.equal(secondPage.results[0].medicineId, secondMedicineId);
+  assert.deepEqual(beyondPage.results, []);
+  assert.deepEqual(beyondPage.pagination, { page: 3, pageSize: 1, totalRows: 2, totalPages: 2 });
+  const exactPresentationCode = await service.searchMedicines("0208020Z0AAACAC", context, 30);
+  assert.deepEqual(exactPresentationCode.results.map((row) => row.medicineId), [medicineId]);
+  const partialName = await service.searchMedicines("2.5mg tablets", context, 30);
+  assert.deepEqual(partialName.results.map((row) => row.medicineId), [secondMedicineId]);
+  await database.run(`INSERT INTO medicine_aliases(
+      id, medicine_id, alias_text, alias_type, normalised_alias, source_id, valid_from, valid_to
+    ) VALUES(?, ?, ?, 'BNF_PRODUCT', ?, ?, ?, ?)`,
+    "expired-old-brand", medicineId, "Historical Apixaban Brand", "historical apixaban brand",
+    sourceId, "2025-01-01", "2026-01-01");
+  const retiredAlias = await service.searchMedicines("Historical Apixaban Brand", context, 10);
+  assert.equal(retiredAlias.results.length, 0, "Expired aliases must not resolve to a current medicine.");
+  await assert.rejects(() => service.searchMedicines("Apixaban", context, 1, 0), (error) => error.statusCode === 400);
+  await assert.rejects(() => service.searchMedicines("Apixaban", context, 1, 1001), (error) => error.statusCode === 400);
+  await assert.rejects(() => service.searchMedicines("Apixaban", context, 51, 1), (error) => error.statusCode === 400);
+  await assert.rejects(() => service.searchMedicines("Apixaban", { accessScopes: ["customer"] }, 1, 2),
+    (error) => error.statusCode === 403);
+
   await database.run("UPDATE ingestion_runs SET input_rows = 2, accepted_rows = 2 WHERE id = 'run-epd-full'");
   await database.run(`INSERT INTO fact_epd_prescribing(
     id, month_key, medicine_id, practice_id, items, quantity, nic, actual_cost, ingestion_run_id, source_row_digest

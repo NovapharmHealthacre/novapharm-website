@@ -38,7 +38,7 @@ function removeInheritedProductMedia(html) {
 
 let html=template.replace(main[0],content).replace(/<title>[\s\S]*?<\/title>/,'<title>Order Status | Nutraxin &amp; ESCO | NovaPharm</title>');
 html=html.replace(/<link rel="canonical" href="[^"]*"/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/track/"');
-html=html.replace(/<meta name="description" content="[^"]*"/,'<meta name="description" content="Check the latest order or order request status for NovaPharm Nutraxin and ESCO.">');
+html=html.replace(/<meta name="description" content="[^"]*">/,'<meta name="description" content="Check the latest order or order request status for NovaPharm Nutraxin and ESCO.">');
 html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-order-track.css"><script src="/assets/js/commerce-order-track.js" defer></script></head>');
 html=removeInheritedProductMedia(html);
 const target=join(root,'products/track/index.html');mkdirSync(dirname(target),{recursive:true});writeFileSync(target,html,'utf8');

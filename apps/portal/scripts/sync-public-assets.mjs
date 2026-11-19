@@ -38,4 +38,16 @@ for (const [source, output] of [
   await cp(path.join(repositoryRoot, source), path.join(founderTarget, output));
 }
 
-console.log("Portal brand, founder editorial photography and approved public hero assets synchronised.");
+// Preserve the original Nutraxin catalogue packshots in the authenticated
+// customer portal without relying on third-party image services.
+const nutraxinTarget = path.resolve("public/assets/media/products/nutraxin");
+await mkdir(nutraxinTarget, { recursive: true });
+for (const asset of [
+  "vitamin-d3-120-tablets-480.webp",
+  "magnesium-complex-60-tablets-480.webp",
+  "collagen-gold-30-tablets-480.webp",
+]) {
+  await cp(path.join(repositoryRoot, "assets/media/products/nutraxin", asset), path.join(nutraxinTarget, asset));
+}
+
+console.log("Portal brand, founder photographs and approved catalogue assets synchronised.");

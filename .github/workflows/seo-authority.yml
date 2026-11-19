@@ -115,4 +115,11 @@ jobs:
           node scripts/stage-pages-artifact.mjs /tmp/novapharm-public-b
 
       - name: Verify deployable public artifact is reproducible
-        run: diff -qr /tmp/novapharm-public-a /tmp/novapharm-public-b
+        run: |
+          if ! diff -qr /tmp/novapharm-public-a /tmp/novapharm-public-b; then
+            echo "::error::Public release is not byte-for-byte reproducible"
+            # Diagnostic only: keep the gate failed. Never publish or mask a
+            # divergent artifact. These are generated PUBLIC_ONLY HTML files.
+            diff -u /tmp/novapharm-public-a/products/nutraxin/account/index.html /tmp/novapharm-public-b/products/nutraxin/account/index.html || true
+            exit 1
+          fi

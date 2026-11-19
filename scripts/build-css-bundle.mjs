@@ -24,7 +24,16 @@ const sources = [
   ["corporate-product-discipline.css", null],
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
-  ["sitewide-layout-integrity.css", null]
+  ["novapharm-hig-colours.css", null],
+  ["symbol-system.css", null],
+  ["sitewide-layout-integrity.css", null],
+  ["apple-hig-layout.css", null],
+  ["novapharm-hig-accessibility.css", null],
+  ["novapharm-hig-materials.css", null],
+  ["novapharm-apple-27-web-adaptation.css", null],
+  ["novapharm-hig-motion.css", null],
+  ["rtl-localization.css", null],
+  ["apple-web-navigation.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {

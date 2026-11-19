@@ -1,11 +1,17 @@
 # Secure Portal security production evidence
 
-Review date: 22 August 2026
-Production status: not deployed or accepted
+Original review: 22 August 2026. AWS-first production recheck: 14 November 2026.
+Full **54-module Next.js Enterprise Portal** production status: **not deployed or accepted**. The existing separate **18-route transitional Customer Workspace** is deployed in the current Nutraxin staging BFF Lambda; that limited release is not proof of 54-module acceptance.
 
-## Public-host boundary
+## Public-host boundary — reverified November 2026
 
-The public website serves only `/portal/` as a `noindex,nofollow` safety page. It contains no username field, password field, access-type selector, API client, protected route link or simulated authentication. The build and validator reject materialised protected Portal modules in `PUBLIC_ONLY` mode.
+`portal.novapharmhealthcare.com` routes through AWS API Gateway HTTP API `wgy9p7ad0d` to the existing customer Lambda. Its root offers a unified customer sign-in; unauthenticated `/portal/dashboard/` redirects to sign-in, `/portal/executive-platform/` denies access, and the compatibility `/products/nutraxin/` remains reachable. The full Next.js runtime has **zero running ECS tasks** and no public ingress. The separate Intelligence customer-session stack is deployed with `CustomerAccessEnabled=false`.
+
+The older `PUBLIC_ONLY` static-site statement from August 2026 applied to the corporate website safety build; it must **not** be cited as the current production behavior of the separate customer subdomain. Equally, the 18-route transitional Lambda is not a production deployment of the 54-module backend and cannot grant staff, board or administrator privileges.
+
+## Historical security architecture controls (August 2026 target, not live acceptance)
+
+The following Entra/Azure SQL/Key Vault/Front Door references document earlier design targets. The current AWS-first rollout requires independent AWS Cognito/session, tenant isolation, durable transaction and document storage, private ingress, WAF, backup, audit, security and zero-incremental-cost evidence before the release owner may assert these controls are live.
 
 ## Repository controls
 

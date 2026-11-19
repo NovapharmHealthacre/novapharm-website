@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 878,
+    "trackedAssetCount": 881,
     "byClassification": {
-      "KEEP": 878
+      "KEEP": 881
     },
     "byProvenanceStatus": {
-      "registered": 668,
+      "registered": 671,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 82,
-      "referenceCount": 86,
+      "usageCount": 84,
+      "referenceCount": 96,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -79,6 +79,7 @@
         "creative-assets/asset-register.json",
         "cro/index.html",
         "docs/application-media-provenance.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
         "index.html",
@@ -134,6 +135,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -813,8 +815,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 73,
-      "referenceCount": 75,
+      "usageCount": 74,
+      "referenceCount": 77,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -883,6 +885,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -1090,8 +1093,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 75,
-      "referenceCount": 77,
+      "usageCount": 77,
+      "referenceCount": 81,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1107,6 +1110,7 @@
         "contact/index.html",
         "creative-assets/asset-register.json",
         "cro/index.html",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
         "index.html",
@@ -1162,6 +1166,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -1170,6 +1175,50 @@
         "trust-centre/index.html"
       ],
       "exactDuplicateGroup": "exact-006",
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-logo.svg",
+      "canonicalDeliveryPath": "assets/brand/novapharm-distribution-logo.svg",
+      "format": "svg",
+      "bytes": 9869,
+      "width": 2307,
+      "height": 408,
+      "aspectRatio": 5.654412,
+      "sha256": "99246e38e75a1ae378d0b47471c50be999b3ef24a59e613b6ea7ae5d12d4958b",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit (3), 01_Master_Vector/NovaPharm_Distribution_Graphite_Transparent.svg, 14 November 2026. Optimised SVG delivery derivative checked against approved artwork.",
+      "licence": "Owner-authorised NovaPharm Distribution brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "reviewStatus": "Owner-directed official Distribution tab integration, 14 November 2026",
+      "technicalStatus": "source-kit-derived-precise-vector; visual fidelity verified against source",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-product-wordmark",
+      "routes": [
+        "/distribution/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Distribution",
+      "registeredCaption": "Official NovaPharm Distribution graphite wordmark",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 6,
+      "referenceCount": 8,
+      "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
+        "apps/portal/components/distribution-brand.tsx",
+        "creative-assets/asset-register.json",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
+        "scripts/test-public-visual-versioning.mjs"
+      ],
+      "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
@@ -1290,8 +1339,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 86,
-      "referenceCount": 216,
+      "usageCount": 88,
+      "referenceCount": 218,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1367,8 +1416,10 @@
         "scripts/enhance-seo-authority.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-owner-corrections.mjs",
+        "scripts/test-public-visual-versioning.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/version-public-visual-assets.mjs",
         "seo/generated/entity-register.json",
         "seo/structured-data-register.md",
         "service-unavailable/index.html",
@@ -1434,7 +1485,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 97,
-      "referenceCount": 200,
+      "referenceCount": 201,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -2048,14 +2099,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-020",
@@ -2090,14 +2142,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-021",
@@ -2132,14 +2185,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-022",
@@ -2174,8 +2228,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 66,
-      "referenceCount": 66,
+      "usageCount": 67,
+      "referenceCount": 68,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -2238,6 +2292,7 @@
         "regulatory-services/index.html",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
@@ -2383,11 +2438,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/capabilities-editorial.tsx",
-        "scripts/apply-capabilities-editorial.mjs"
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2423,11 +2479,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/capabilities-editorial.tsx",
-        "scripts/apply-capabilities-editorial.mjs"
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15897,9 +15954,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 10,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -16397,9 +16455,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
@@ -18144,9 +18203,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
@@ -31923,9 +31983,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": "exact-042",
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -32413,9 +32475,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -32518,9 +32582,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -37564,6 +37630,88 @@
       "exactDuplicateGroup": "exact-019",
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "canonicalDeliveryPath": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "format": "svg",
+      "bytes": 406,
+      "width": 1024,
+      "height": 1024,
+      "aspectRatio": 1,
+      "sha256": "ce45992ca1a3c6843305bb7341a717a454d6d40991654161ccc00c401db2f6cc",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "reviewStatus": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-derived-native-icon-layer",
+      "routes": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Healthcare approved white N symbol",
+      "registeredCaption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
+        "scripts/test-apple-app-icons.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "canonicalDeliveryPath": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "format": "svg",
+      "bytes": 717,
+      "width": 1024,
+      "height": 1024,
+      "aspectRatio": 1,
+      "sha256": "7cd5c7e644c9f521f502055b4dccd1df9f0820e0ca3754c5c2296279cd224f60",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "reviewStatus": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-derived-native-icon-layer",
+      "routes": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Healthcare approved white continuum arc",
+      "registeredCaption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
+        "scripts/test-apple-app-icons.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
       "path": "creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png",

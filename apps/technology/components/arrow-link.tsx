@@ -26,7 +26,7 @@ export function ArrowLink({
   return (
     <Link className={classes} href={href as Route}>
       <span>{children}</span>
-      <ArrowRight />
+      <ArrowRight data-np-directional-arrow="true" />
     </Link>
   );
 }

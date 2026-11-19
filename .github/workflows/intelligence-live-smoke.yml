@@ -25,10 +25,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
+      - name: Checkout expected public source for exact stylesheet verification
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Confirm exact research page, assets and protected-business contact
         shell: bash
         run: |
           set -euo pipefail
+          workspace_css_sha256="$(sha256sum assets/css/intelligence-workspace-embedded.css)"
+          workspace_css_sha256="${workspace_css_sha256%% *}"
           origin="https://novapharmhealthcare.com"
           for attempt in $(seq 1 15); do
             key="intelligence-${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}-$(date +%s)"
@@ -54,9 +61,22 @@ jobs:
             curl --fail --silent --show-error --location --max-time 15 \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$origin/assets/media/technology/novapharm-intelligence-hero.avif?$key" -o /tmp/novapharm-intelligence-hero-live.avif || true
+            # Scope the retired-label check to the hero. Pricing and other
+            # sections may legitimately use the same brand kicker text.
+            sed -n '/<section class="npi-hero/,/<section id="intelligence-research"/p' \
+              /tmp/novapharm-technology-live.html > /tmp/novapharm-intelligence-hero-markup.html
             if grep -Fq 'class="npi-hero npi-hero--editorial"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'class="npi-hero-logo"><img src="/assets/brand/novapharm-intelligence-approved.svg"' /tmp/novapharm-technology-live.html \
-              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-technology-live.html \
+              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-intelligence-hero-markup.html \
+              && grep -Fq 'id="intelligence-pricing"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Intelligence. Made simple.' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="trial"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="starter"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="professional"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="enterprise"' /tmp/novapharm-technology-live.html \
+              && test "$(grep -o 'data-npi-plan="' /tmp/novapharm-technology-live.html | wc -l | tr -d '[:space:]')" -eq 4 \
+              && grep -Fq 'Create free account' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Subscribe' /tmp/novapharm-technology-live.html \
               && grep -Fq 'novapharm-intelligence-hero.avif' /tmp/novapharm-intelligence-live.css \
               && test -s /tmp/novapharm-intelligence-hero-live.avif \
               && grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
@@ -66,7 +86,8 @@ jobs:
               && grep -Fq 'id="intelligence-workspace-directory"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'id="npi-exp-shell"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/novapharm-technology-live.html \
-              && grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' /tmp/novapharm-technology-live.html \
+              && grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${workspace_css_sha256}\"" /tmp/novapharm-technology-live.html \
+              && cmp -s assets/css/intelligence-workspace-embedded.css /tmp/novapharm-workspace-native.css \
               && grep -Fq 'function renderSupplyMode(mode)' /tmp/novapharm-workspace-native.js \
               && grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' /tmp/novapharm-workspace-native.js \
               && grep -Fq 'npi-workspace-live-experience' /tmp/novapharm-workspace-native.css \
@@ -78,7 +99,7 @@ jobs:
               && grep -Fq '.npi-research-form' /tmp/novapharm-intelligence-live.css \
               && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-contact-live.html \
               && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-contact-live.html; then
-              echo "Live Technology research HTML, launcher, responsive stylesheet and AWS-backed Contact passed."
+              echo "Live Technology four-plan pricing, research, workspace and AWS-backed Contact passed."
               exit 0
             fi
             sleep 10
