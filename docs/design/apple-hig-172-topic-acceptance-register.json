@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 81,
+    "platformsAssessed": 156,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -1443,7 +1443,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/file-management",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/file-management.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1455,23 +1455,28 @@
       "sourceRequestedPlatforms": "Web, iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Provide authorized upload/document preview, progress and save-state UI in Portal with validation, retention/role controls and no counterfeit Finder or Quick Look API."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For true document workflows, use iOS document picker/Files/Quick Look and secure share destinations with verified entitlements and privacy."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android Storage Access Framework/intent pickers and previews with scoped storage; enforce tenant isolation and safe MIME handling."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/file-management.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/file-management.md . Key guidance reviewed: Provide familiar create/open/save, autosave confidence, context-appropriate file previews and platform-native Files/Quick Look integration when genuinely document-based.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -1517,7 +1522,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/launching",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/launching.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1529,23 +1534,28 @@
       "sourceRequestedPlatforms": "iOS, Android, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Validate real startup latency and restored navigation without leaking protected sessions; avoid forced splash pages or fake loading completion."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS launch screen matching first frame, system appearance/orientation and credential-safe state restoration; measure signed-app cold start."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android splash-screen conventions and real resumed-state restoration; do not transplant iOS storyboard launch requirements."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/launching.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/launching.md . Key guidance reviewed: Minimize delay, restore previous state, make platform launch screen resemble first view, and separate optional onboarding from launch.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -1675,7 +1685,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/managing-notifications",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/managing-notifications.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1687,23 +1697,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Offer user-controlled informational/marketing preferences and consistent urgency; web service workers cannot claim Apple Focus or Critical entitlement."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS notification interruption level only after case-specific policy and entitlements, never urgent marketing; test Focus/privacy conditions."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android importance/channels and explicit opt-ins under Android policy; Apple Focus/critical interruption entitlements do not apply."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/managing-notifications.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/managing-notifications.md . Key guidance reviewed: Permission before alerts, realistic priority, Time Sensitive only when truly urgent, Critical entitlement rare; marketing only by explicit separate opt-in.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -1712,7 +1727,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/modality",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/modality.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1724,23 +1739,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For confirmation/access dialogs use proper role, focus trap, restoration and cancellation; do not obscure background without accessibility semantics."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS confirmation dialogs/sheets appropriately with escape/cancel and VoiceOver, retaining current navigation context."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android bottom sheets/dialogs and Back behavior with TalkBack; avoid stacking modals or copying iOS sheet visuals."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/modality.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/modality.md . Key guidance reviewed: Use modal interruption only when valuable, keep task scope short, avoid nesting a full app inside a dialog and provide clear exits.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -1786,7 +1806,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/offering-help",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/offering-help.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1798,23 +1818,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Offer field-level help for invoices, medicine data rights and account tasks, with stable links and screen-reader hints rather than unsolicited overlays."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use optional iOS contextual tips or help, tested for VoiceOver and respecting feature-use history; avoid mandatory tours."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Provide Android contextual help with accessibility and not excessive tip frequency; Apple TipKit is not an Android framework."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/offering-help.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/offering-help.md . Key guidance reviewed: Provide concise task-specific accessible help and dismissible contextual tips, not promotional interruptions or explanations of standard controls.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -1823,7 +1848,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/onboarding",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/onboarding.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1835,23 +1860,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Provide context-sensitive Portal role onboarding without blocking legitimate access; link help and avoid showing confidential sample data."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use concise native iOS tips and optional walkthroughs; verify VoiceOver, skips and persistence across relaunch."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Material/Android-native tips with TalkBack and skip options; do not require an Apple TipKit dependency."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/onboarding.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/onboarding.md . Key guidance reviewed: Prefer fast optional learning after launch, short contextual interactive tips and tutorials users can revisit rather than mandatory explanation.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -2087,7 +2117,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/settings",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/settings.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2099,23 +2129,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Keep account, notifications and privacy options in clear Portal settings while respecting browser/OS reduced-motion and color settings."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Respect iOS system appearance, notifications, accessibility and locale; only offer app-specific configuration and test persistence."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Respect Android system appearance, accessibility and runtime-permission settings; use a predictable app-settings hierarchy instead of Apple Settings APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/settings.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/settings.md . Key guidance reviewed: Good defaults, minimal settings, task-local options near context, and adherence to OS accessibility, language and appearance preferences.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -2124,7 +2159,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/undo-and-redo",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/undo-and-redo.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2136,23 +2171,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Offer reversible edits where safe, descriptive undo feedback and state persistence; financial orders and audit events need governed compensating actions, not silent deletion."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Respect iOS undo/redo gestures and native editing controls; any supported action must show restored content and honor permission safeguards."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android-compatible Undo snackbars or editing controls with accessibility announcements and permissions; do not clone Apple's shake/three-finger gesture."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/undo-and-redo.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/undo-and-redo.md . Key guidance reviewed: Predictable reversals, explicit result feedback and multi-step undo history; preserve native shortcuts/gestures rather than overriding them.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Patterns",
@@ -2351,7 +2391,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/text-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/text-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2363,23 +2403,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use accessible textarea for lengthy support notes and medicine explanations, preserving useful copy/select while avoiding patient confidential entry where prohibited."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native multiline text controls with Dynamic Type, selection and content-appropriate keyboard; test long-form forms under VoiceOver."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android multiline text editors with font scaling, selection and TalkBack; avoid iOS UITextView APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/text-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/text-views.md . Key guidance reviewed: Editable multiline/styled text is distinct from short text fields; preserve readability, selection/copy and suitable keyboard behavior.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -2573,7 +2618,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2585,23 +2630,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use HTML details/summary or button aria-expanded with controlled region, keyboard support and clear advanced filter labels."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS DisclosureGroup-style controls and VoiceOver announcements with preserved expanded state."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android expansion panels/semantics and TalkBack state announcements rather than proprietary disclosure arrows."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/disclosure-controls.md . Key guidance reviewed: Reveal secondary details progressively; clearly label the target section and indicate expanded/collapsed state near associated content.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -2800,7 +2850,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/tab-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/tab-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2812,23 +2862,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply accessible tablist/tabpanel state where relevant for research panes, not top-level site navigation; preserve keyboard selection and panel focus."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple states this AppKit-style tab-view component is not supported on iOS/iPadOS; implement equivalent iOS content choice with segmented controls or native supported patterns instead."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply equivalent Android tabbed content layout with proper accessibility and controlled pane state, without claiming AppKit NSTabView on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tab-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/tab-views.md . Key guidance reviewed: Related mutually exclusive panes; each tab has meaningful content name, manageable tab count and pane-local controls. Apple distinguishes AppKit tab views from iOS substitutes.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -2953,7 +3008,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/context-menus",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/context-menus.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2965,23 +3020,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use right-click menus only as shortcuts for products/orders and duplicate all actions visibly elsewhere with keyboard access and role authorization."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS long-press context menus only for optional item actions; maintain equivalent visible commands and VoiceOver access."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android long-press/contextual menus with equivalents in primary UI and TalkBack, never hide required tasks in gesture-only menus."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/context-menus.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/context-menus.md . Key guidance reviewed: Context-specific shortcuts need discoverable equivalent primary-interface actions; use few relevant entries, at most shallow submenus.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3323,7 +3383,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/navigation-and-search",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/navigation-and-search.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3335,23 +3395,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply as a navigation/search inventory map for Portal, Intelligence and WMS; detailed acceptance remains on linked child topics and actual routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Treat this official collection page as iOS design taxonomy, referring to child Apple controls only where supported; no standalone iOS API certification."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use corresponding Android-native navigation/search components, not Apple child APIs; index review alone proves no Android behavior."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/navigation-and-search.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/navigation-and-search.md . Key guidance reviewed: This official collection groups path controls, search fields, sidebars, tab bars and token fields; it is an index, not a self-contained feature test.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3439,7 +3504,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/sidebars",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/sidebars.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3451,23 +3516,28 @@
       "sourceRequestedPlatforms": "Web, iPadOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Test responsive leading navigation for Portal and Intelligence, accessible expanded state, visible destinations, RTL direction and escape/focus restoration."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native adaptable sidebar/tab navigation on supported iPad/iPhone layouts; honor safe areas, VoiceOver and collapsed selection state."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android navigation rail/drawer or other Material patterns on supported widths; test TalkBack and back-navigation rather than Apple sidebar visual duplication."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sidebars.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/sidebars.md . Key guidance reviewed: Leading-edge navigation for wide layouts; use disclosure for complex hierarchy, keep important destinations clear, and adapt compact layouts to tabs or other navigation.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3592,7 +3662,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/action-sheets",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/action-sheets.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3604,23 +3674,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For irreversible Portal actions present accessible choice dialogs with meaningful alternatives, clear cancellation and no hidden loss of draft."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS confirmationDialog/action-sheet patterns, clear destructive/cancel roles and voice-tested button labels."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android appropriate modal bottom sheets/confirmation controls and Back/cancel semantics; do not claim UIAlertController usage."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/action-sheets.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/action-sheets.md . Key guidance reviewed: An action sheet gives intentional action choices rather than unprompted error alerts; avoid unnecessary interruptions, provide Cancel and destructive distinctions.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3745,7 +3820,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/popovers",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/popovers.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3757,23 +3832,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use accessible anchored popovers for lightweight filter/help details with keyboard dismissal, focus return and no autosave-loss behavior."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Reserve iOS popovers for spacious views; use full-screen/sheet patterns on compact iPhones and native accessible dismissal."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android popup menus or contextual surfaces with anchored placement, TalkBack and Back behavior; follow Android compact layout."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/popovers.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/popovers.md . Key guidance reviewed: Transient anchored view for a small related action set, one at a time; save edits on automatic dismissal and avoid warning alerts in a popover.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3782,7 +3862,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/scroll-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/scroll-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3794,23 +3874,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Validate keyboard scrolling, visible overflow in dense tables, skip-to-results behavior and focus restoration without unwanted scroll jumps."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native scroll containers, safe-area and keyboard insets, VoiceOver and programmatic focus/scroll only when meaningful."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android/Compose or React Native scroll semantics, touch and hardware keyboard navigation, TalkBack; avoid nested same-direction scroll conflicts."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/scroll-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/scroll-views.md . Key guidance reviewed: Retain normal scrolling gestures/shortcuts, communicate overflow, avoid nested same-axis scrolling and scroll only enough to preserve context.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3819,7 +3904,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/sheets",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/sheets.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3831,23 +3916,28 @@
       "sourceRequestedPlatforms": "iOS, iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use appropriately sized form modal/drawer surfaces for bounded Portal tasks with save/cancel and focus management; not claim SwiftUI sheet behavior."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS sheet detents or native presentation only where appropriate and test VoiceOver, cancellation, context preservation and form data."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android modal bottom sheet or full-screen task depending on complexity and Back handling, not Apple sheet modifiers."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sheets.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/sheets.md . Key guidance reviewed: A scoped contextual task surface; iOS may use modal or nonmodal sheets, with explicit Cancel/Done/Back roles; avoid nesting sheets.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -3856,7 +3946,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/windows",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/windows.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3868,23 +3958,28 @@
       "sourceRequestedPlatforms": "macOS, iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use responsive browser tabs and windows only by explicit user action; do not claim native macOS window controls or use intrusive popups."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "This HIG window component explicitly excludes iPhone iOS; future iPadOS/macOS candidate work must be reviewed separately, not counted as iPhone feature."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android large-screen multiwindow has separate Android APIs and usability guidance; use it only if product supports tablets/foldables, not Apple's desktop window chrome."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/windows.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/windows.md . Key guidance reviewed: Primary vs auxiliary windows; preserve multitasking/resizing and avoid unexpected extra windows. Apple states standalone window component is not available on iPhone iOS.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -4078,7 +4173,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/pickers",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/pickers.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4090,23 +4185,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use appropriate date/select widgets with labels, keyboard navigation and locale-aware shipping/country/time values, not a wheel for thousands of products."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native date/calendar/time picker styles suited to space and input; verify regional time/date conventions and VoiceOver."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Material/Android date-time selection conventions, keyboard and TalkBack; adapt region/locale formatting."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pickers.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/pickers.md . Key guidance reviewed: Use pickers for moderate structured lists, logical predictable ordering and locale-aware dates; use better search/list control for very large sets.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -4115,7 +4215,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/segmented-controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/segmented-controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4127,23 +4227,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Implement accessible button/radio tab groups for limited dashboard time ranges or filters, consistent chosen state and keyboard operation."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS segmented controls with readable labels and Dynamic Type; avoid mixing momentary buttons and persistent selections."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android segmented buttons or similar Material selection patterns, testing TalkBack state and responsive widths."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/segmented-controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/segmented-controls.md . Key guidance reviewed: Small related alternatives with consistent action-vs-selection semantics and visible selection; excessive segments impair usability.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -4226,7 +4331,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/text-fields",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/text-fields.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4238,23 +4343,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply accessible labelled fields with correct autocomplete/inputmode, safe password handling, field order, localization and clear inline errors in Portal/customer forms."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native secure/text fields, meaningful labels and content types, Dynamic Type, expected keyboard and validation feedback; test on actual iPhone."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android text-field/password/autofill/IME conventions, TalkBack labels and localization; do not copy SwiftUI input APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/text-fields.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/text-fields.md . Key guidance reviewed: Apple distinguishes short single-line text entry from multiline views; calls for persistent labels, secure inputs, ordered tab navigation, context-sensitive validation and locale-aware numeric formatting.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -4300,7 +4410,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4312,23 +4422,28 @@
       "sourceRequestedPlatforms": "iOS, iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use input type and inputmode plus autocomplete semantics on mobile browser fields, with layout/inset tests when the soft keyboard opens."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iOS native keyboardType/contentType and secure entry; validate rotation, VoiceOver, autofill and keyboard insets."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android IME inputType/autofill and window-resize/insets; do not introduce Apple keyboard extensions on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards.md . Key guidance reviewed: Prefer context-matched system keyboards for email/number/text and input content semantics; custom keyboards create extra complexity.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -4712,7 +4827,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/notifications",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/notifications.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4724,23 +4839,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use opt-in web/email notifications with role-safe titles, no patient/customer secrets in lock-screen previews and deduplication; no assumed browser push deployment."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If enabled, use authorized iOS notification permissions/categories, foreground presentation, secure payloads and physical-device verification."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If enabled, use Android notification runtime permissions/channels and privacy-safe payloads; test notification behavior on actual devices."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/notifications.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/notifications.md . Key guidance reviewed: Require permission, concise information, avoid duplicates, protect sensitive content on lock screens, and distinguish notification from an in-app error alert.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Components",
@@ -5156,7 +5276,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/focus-and-selection",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/focus-and-selection.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5168,23 +5288,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Enforce visible :focus-visible, DOM tab order, roving focus where appropriate and no auto-activation of pharmacy search results."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Retain iOS native focus and selection patterns with hardware keyboard and VoiceOver; never treat merely highlighting a sensitive action as confirmation."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android focus/selected states, TV/keyboard navigation where relevant and TalkBack semantics; no automatic destructive selection."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/focus-and-selection.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Current official primary article inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/focus-and-selection.md . Key guidance reviewed: Focus is not automatically activation; preserve predictable visible focus and avoid unsolicited focus movement; platform system cues differ.",
+        "Cross-platform NovaPharm interpretation is independently scoped for website, iPhone iOS and Android; these applicability decisions do not constitute tested implementations.",
+        "Release evidence is intentionally absent. Browser/assistive-technology/device/tenant/security acceptance, actual deployment SHA and signed mobile distributions require separate first-party records."
+      ]
     },
     {
       "section": "Inputs",
