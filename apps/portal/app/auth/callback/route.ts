@@ -1,4 +1,3 @@
-import { requestIntelligenceSubscriptionCheckout } from "../../../lib/intelligence-stripe-checkout-handoff";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import {
@@ -21,6 +20,7 @@ import {
   checkInternalPilotUnenrolled,
   createInternalPilotMfaCookie,
 } from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
+import { requestIntelligenceSubscriptionCheckout } from "../../../lib/intelligence-stripe-checkout-handoff";
 
 export const dynamic = "force-dynamic";
 

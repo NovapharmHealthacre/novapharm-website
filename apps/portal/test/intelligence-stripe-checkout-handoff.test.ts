@@ -20,11 +20,13 @@ test("only signed-choice plans are forwarded to the fixed private checkout endpo
   const fetchImpl = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     calls += 1;
     assert.equal(String(input), "https://intelligence.novapharmhealthcare.com/customer/subscription/checkout");
-    assert.equal(init?.method, "POST");
-    assert.equal((init?.headers as Record<string,string>)["Origin"], "https://intelligence.novapharmhealthcare.com");
-    assert.equal((init?.headers as Record<string,string>)["Authorization"], "Bearer " + jwt);
-    assert.deepEqual(JSON.parse(String(init?.body)), { plan: "starter", cycle: "monthly" });
-    assert.equal(init?.redirect, "error");
+    assert.ok(init, "The checkout request must have fetch init options");
+    assert.ok(init.headers, "The checkout request must include authorization headers");
+    assert.equal(init.method, "POST");
+    assert.equal((init.headers as Record<string,string>)["Origin"], "https://intelligence.novapharmhealthcare.com");
+    assert.equal((init.headers as Record<string,string>)["Authorization"], "Bearer " + jwt);
+    assert.deepEqual(JSON.parse(String(init.body)), { plan: "starter", cycle: "monthly" });
+    assert.equal(init.redirect, "error");
     return Response.json({ ok: true, code: "checkout_session_created_no_entitlement", checkoutUrl: approvedUrl }, { status: 200 });
   };
   const result = await requestIntelligenceSubscriptionCheckout({
