@@ -647,6 +647,22 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
     /complete live\/device observation and independent receipt required/);
 });
 
+test("a platform-exclusive N/A decision cannot be self-approved or counted as deployment", () => {
+  const tv = structuredClone(tracker.topics.find(t => t.title === "Digit entry views"));
+  tv.implementation = "not_applicable";
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv),
+    /independent reviewer-approved N\/A disposition required/);
+  tv.notApplicableApproval = {
+    reviewDecision: "approved",
+    independentReviewUrl: "https://example.com/self-approval",
+    approvedAt: "2026-11-19T00:00:00Z",
+    reason: "Apple tvOS-only digit entry is not native to web, iOS, or Android."
+  };
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv),
+    /independent reviewer-approved N\/A disposition required/);
+  validateOwnerSignoff();
+});
+
 test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
   assert.ok(tracker.topics.filter(x => x.guidelineReview === "reviewed").length >= 68);
   assert.ok(tracker.meta.platformsAssessed >= 204);
