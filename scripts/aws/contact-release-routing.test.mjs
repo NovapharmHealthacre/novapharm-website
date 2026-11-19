@@ -935,6 +935,74 @@ test("all 24 official publisher research references remain private-only and cann
   }
 });
 
+test("Science research-only files must not trigger AWS or public Pages publication", () => {
+  const sciencePaths = [
+    ".github/workflows/intelligence-science-research-contracts.yml",
+    "docs/intelligence/openai-science-integration-20261118.md",
+    "docs/intelligence/openai-science-methods-20261118.json",
+    "docs/intelligence/science-research-capabilities-20261118.json",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx",
+    "native/novapharm-intelligence-mobile/tsconfig.json",
+    "scripts/package-unified-estate.mjs",
+    "scripts/test-intelligence-22-workspace-readiness.mjs",
+    "scripts/test-intelligence-readiness.mjs",
+    "scripts/test-intelligence-science-evidence-dossier.mjs",
+    "scripts/test-intelligence-science-methodology.mjs",
+    "scripts/test-intelligence-science-research.mjs",
+    "scripts/test-unified-release-artifacts.mjs",
+    "src/core/intelligence-22-workspace-readiness.mjs",
+    "src/core/intelligence-release-readiness.mjs",
+    "src/core/intelligence-science-evidence-dossier.mjs",
+    "src/core/intelligence-science-methodology.mjs",
+    "src/core/intelligence-science-research-contract.mjs",
+    "src/core/intelligence-science-research-principles.mjs"
+];
+  for (const name of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(name);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, name + " missing changed-file classifier");
+    assert.ok(classifier.trim().endsWith(")"), name + " private Bash case must be closed");
+    const allowlist = new Set(classifier.trim().slice(0, -1).split("|"));
+    for (const path of sciencePaths) {
+      assert.ok(allowlist.has(path), name + " missing private Science file: " + path);
+    }
+    assert.ok(allowlist.has("apps/portal/*"), name + " must classify Science app modules");
+    assert.match(source, /found_ml=true/);
+    assert.match(source, /private_only=true/);
+  }
+});
+
+
+test("science and secondary-source Bash classifier arms are syntactically closed once", () => {
+  const privatePaths = [
+  ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+  "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+  "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+  "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-global-secondary-source-gateway.mjs",
+  "src/core/intelligence-singapore-hsa-bulk-candidate.mjs",
+  "src/core/intelligence-science-research-contract.mjs",
+  ".github/workflows/intelligence-sparse-circuit-assurance.yml"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const arm = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(arm && arm.endsWith(")"), file + " must terminate private Bash case arm");
+    assert.equal((arm.match(/\)/g) || []).length, 1, file + " cannot close the private case arm early");
+    const allowed = new Set(arm.slice(0, -1).split("|"));
+    for (const path of privatePaths) {
+      assert.ok(allowed.has(path), file + " must protect source-only path inside Bash case: " + path);
+    }
+    for (const publicFile of ["assets/js/contact-production.js", "scripts/build-site.mjs"]) {
+      assert.equal(allowed.has(publicFile), false);
+    }
+  }
+});
+
 test("source-only Model Microscope paths never trigger unrelated AWS contact or public Pages release", () => {
   const sourceOnly = [
     ".github/workflows/intelligence-model-microscope.yml",
@@ -953,7 +1021,7 @@ test("source-only Model Microscope paths never trigger unrelated AWS contact or 
     "src/core/ai/model-microscope.mjs"
 ];
   for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
-    const contents = get(workflow);
+    const contents = readFileSync(new URL("../../.github/workflows/" + workflow, import.meta.url), "utf8");
     const caseLine = contents.split("\n").find((line) =>
       line.trim().startsWith("apps/portal/*|"));
     assert.ok(caseLine, "Private release classifier missing from " + workflow);

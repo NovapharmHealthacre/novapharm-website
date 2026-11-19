@@ -95,7 +95,7 @@ test("research review renders in both appearances without forwarding sensitive r
 test("Maps research stays accessible after the light/dark appearance merge without becoming a live service", () => {
   assert.match(app, /import \{ MapsResearchScreen \} from "\.\/MapsResearchScreen"/);
   assert.match(app, /type Screen = .*"maps".*"account"/);
-  assert.match(app, /selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "countries" \|\| selected === "visual" \|\| selected === "account"/);
+  assert.match(app, /selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "visual" \|\| selected === "countries" \|\| selected === "science" \|\| selected === "account"/);
   assert.match(app, /\{ screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" \}/);
   assert.match(app, /\{ screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" \}/);
   assert.match(app, /screen === "maps" && <MapsResearchScreen darkMode=\{darkMode\} \/>/);
@@ -114,4 +114,15 @@ test("offline reference Maps follows system appearance without shipping an embed
   assert.match(maps, /accessibilityLiveRegion="polite"/);
   assert.match(maps, /https:\/\/maps\.apple\.com\/\?ll=/);
   assert.doesNotMatch(maps, /fetch\(|requestForegroundPermissions|navigator\.geolocation|client_secret|access_token/);
+});
+
+test("Science offline research honours iOS/Android system light and dark appearance", () => {
+  const science = read("native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx");
+  assert.match(app, /screen === "science" && <ScienceResearchMobile/);
+  assert.match(science, /useColorScheme\(\) === "dark" \? darkStyles : lightStyles/);
+  assert.match(science, /createStyles\(mobileLightPalette\)/);
+  assert.match(science, /createStyles\(mobileDarkPalette\)/);
+  assert.match(science, /color: color\.ink/);
+  assert.match(science, /color: color\.secondary/);
+  assert.doesNotMatch(science, /fetch\(|client_secret|access_token|AsyncStorage|SecureStore/);
 });
