@@ -261,6 +261,14 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
 
 test("HIG-only web and mobile merges never dispatch the unrelated AWS contact release", () => {
   const higPrivatePaths = [
+    "docs/design/apple-hig-attachment-evidence-20261118.json",
+    "docs/design/apple-hig-source-and-attachment-audit-20261118.md",
+    "scripts/test-apple-hig-attachment-audit.mjs",
+    "native/novapharm-intelligence-mobile/MapsResearchScreen.tsx",
+    "native/novapharm-intelligence-mobile/appearance.ts",
+    "native/novapharm-intelligence-mobile/app.json",
+    "native/novapharm-intelligence-mobile/package.json",
+    "native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs",
     "docs/design/apple-hig-172-topic-acceptance-register.json",
     "docs/design/apple-hig-172-topic-adoption-20261118.md",
     "docs/design/apple-hig-three-platform-adoption-20261118.md",
@@ -283,6 +291,20 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
     "native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs",
     "native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs",
     "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs"
+  ];
+  const appearanceChangeSet = [
+    "native/novapharm-intelligence-mobile/MapsResearchScreen.tsx",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx",
+    "native/novapharm-intelligence-mobile/appearance.ts",
+    "native/novapharm-intelligence-mobile/app.json",
+    "native/novapharm-intelligence-mobile/package.json",
+    "native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs",
+    "native/novapharm-intelligence-mobile/README.md",
+    "docs/design/apple-hig-three-platform-adoption-20261118.md",
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
   ];
   const policyRepairChanges = [
     ".github/workflows/dispatch-approved-aws-contact-release.yml",
@@ -311,6 +333,10 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
       line.includes("scripts/aws/contact-release-routing.test.mjs") && line.trim().endsWith(")"));
     assert.ok(neutralLine, file + " must retain the neutral publisher-guard clause");
     const neutralPatterns = neutralLine.trim().replace(/\)$/, "").split("|");
+    for (const p of appearanceChangeSet) {
+      assert.ok(covers(p) || neutralPatterns.includes(p),
+        file + " cannot trigger unrelated AWS contact for appearance change " + p);
+    }
     const policySource = "docs/design/apple-hig-172-topic-adoption-20261118.md";
     assert.ok(covers(policySource), file + " must classify the repair's private source evidence");
     for (const changed of policyRepairChanges.filter((value) => value !== policySource)) {
