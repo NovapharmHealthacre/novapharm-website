@@ -584,7 +584,7 @@ function validateApprovedOutOfScopeTopic(topic) {
     typeof a.approvedAt === "string" && !Number.isNaN(Date.parse(a.approvedAt)) &&
     typeof a.reason === "string" && a.reason.length >= 40,
     topic.title + ": independent reviewer-approved N/A disposition required");
-  assertRegisteredAcceptance(topic);
+  assert.deepEqual(topic.releaseEvidence, [], "N/A approval is not deployment proof");
 }
 function assertRegisteredAcceptance(topic) {
   if (topic.implementation === "verified") validateProductionVerifiedTopic(topic);
@@ -609,8 +609,6 @@ test("verified HIG claims cannot be manufactured from source-only checks, skippe
   assert.equal(audit.productionSignoffObserved, ownerProductionConstraints.productionSignoff);
   assert.equal(audit.readOnlyEvidenceOnly, true);
   assert.equal(audit.verifiedImplementationCount,
-    tracker.topics.filter(x => x.implementation === "verified").length);
-  assert.equal(audit.verifiedImplementationCount,
     tracker.topics.filter(t => t.implementation === "verified").length);
   assert.equal(rtl.guidelineReview, "reviewed");
   assert.ok(rtl.guidelineReviewEvidence[0].includes(rtl.markdown));
@@ -622,7 +620,6 @@ test("verified HIG claims cannot be manufactured from source-only checks, skippe
   assert.ok(isGitHubReceipt(scoped.runUrl));
   assert.deepEqual(["web", "ios", "android"].map(p => rtl.platformApplicability[p].state),
     ["applicable", "applicable", "applicable"]);
-  assertRegisteredAcceptance(rtl);
   assertRegisteredAcceptance(rtl);
   assert.ok(audit.excludedAsAcceptance.some(x => x.run === 44528135827 &&
     x.job === "live-browser" && x.jobConclusion === "skipped"),
