@@ -25,3 +25,21 @@ test("source index excludes sensitive pages and enforces public-only source rule
   }
   assert.match(publicPages, /data-ai-cache-clear/);
 });
+
+
+test("staged Pages release rejects stale AI source or mismatched model/index artifacts", () => {
+  const staged = readFileSync(new URL("../scripts/stage-pages-artifact.mjs", import.meta.url), "utf8");
+  for (const required of [
+    "assets/ai/runtime/search-controller.mjs",
+    "assets/ai/company-source-manifest.json",
+    "assets/ai/company-knowledge-index.json",
+    "assets/ai/company-embeddings.json",
+    "assets/ai/novapharm-evidence-vector-v1.json"
+  ]) assert.ok(staged.includes('"' + required + '"'), "Missing required artifact: " + required);
+  assert.match(staged, /readFileSync\(sourceFile\)\.equals\(readFileSync\(stagedFile\)\)/);
+  assert.match(staged, /aiManifest\.corpusHash !== aiKnowledge\.corpusHash/);
+  assert.match(staged, /aiManifest\.corpusHash !== aiEmbeddings\.corpusHash/);
+  assert.match(staged, /digest !== asset\.sha256 \|\| bytes\.length !== asset\.bytes/);
+  assert.match(staged, /AI source\/model manifest consistency gate failed/);
+  assert.match(staged, /Unapproved private or form-data source included in AI release/);
+});
