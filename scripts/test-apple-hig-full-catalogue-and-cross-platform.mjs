@@ -775,7 +775,7 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
       assert.ok(typeof proof.artifactUrl === "string" && proof.artifactUrl.includes("/artifacts/"), name);
       assert.ok(proof.checkedJourneys.length >= 2, name);
       assert.ok(proof.scopeLimits.length >= 2, name);
-      assert.equal(proof.observedLiveSourceSha, null,
+      if (proof.jobId !== 135618272024) assert.equal(proof.observedLiveSourceSha, null,
         "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
     }
   }
@@ -1004,12 +1004,38 @@ test("real 12/12 read-only live rendered observations remain scoped to partial A
     assert.equal(evidence[0].jobConclusion, "success", name);
     assert.ok(evidence[0].runUrl.endsWith(String(publicRun)), name);
     assert.ok(evidence[0].artifactUrl.endsWith("/14539093077"), name);
-    assert.equal(evidence[0].observedLiveSourceSha, null, name);
+    assert.equal(evidence[0].observedLiveSourceSha,
+      "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98", name);
+    assert.equal(evidence[0].readBackArtifact.totalRenderedObservations, 12, name);
+    assert.equal(evidence[0].readBackArtifact.narrowGapCount, 0, name);
     assert.equal(evidence[0].checkedRoutes.length, 3, name);
     assert.ok(evidence[0].checkedJourneys.some(x => x.includes("12 read-only")), name);
     assert.equal(topic.implementation, "not_verified", name);
     assert.deepEqual(topic.releaseEvidence, [], name);
   }
   assert.equal(audit.recordedPartialTopicPlatformObservations, 6);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
+
+test("downloaded successful live-rendered artifact confirms public provenance but cannot certify full HIG production", () => {
+  const proof = tracker.meta.productionEvidenceAudit.renderedPublicArtifactReadback;
+  assert.equal(proof.sourceRun, 44540795085);
+  assert.equal(proof.jobId, 135618272024);
+  assert.equal(proof.artifactId, 14539093077);
+  assert.equal(proof.publishedSourceSha, "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98");
+  assert.equal(proof.totalObservations, 12);
+  assert.equal(proof.failures, 0);
+  assert.equal(proof.mobileChromiumAxeAudits, 3);
+  assert.equal(proof.reportedSeriousOrCriticalAxeViolations, 0);
+  assert.equal(proof.reportedOtherAxeViolations, 0);
+  assert.equal(proof.maximumHorizontalOverflowPx, 0);
+  assert.equal(proof.firstTabVisibleFocusFailures, 0);
+  assert.equal(proof.observedRoutes.length, 3);
+  assert.deepEqual(proof.browsers, ["chromium","webkit"]);
+  assert.deepEqual(proof.viewportWidths, [390,1440]);
+  assert.notEqual(proof.publishedSourceSha,
+    "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
+    "CI PR code SHA is not the deployed public HTML SHA");
+  assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
