@@ -126,3 +126,41 @@ Eight further current official Apple HIG source articles were examined and their
 The corresponding JSON register now proposes **27/172 source-specific article reviews and 81/516 documented platform decisions**, including 24 new reasoned decisions. **145 articles and 435 platform applicability decisions remain unassessed**. The 172/172 owner coverage attestation has not changed, and all implementation states remain `not_verified`; `allGuidelinePagesFullyReviewed` and `allPlatformsProductionVerified` remain `false`.
 
 Apple-specific SF Symbols, Liquid Glass and Apple app-icon platform APIs are recorded as **not applicable** to generic web and Android implementations. The separate shared design objectives must still be tested with independently licensed assets and platform-appropriate implementation. The records contain no full copyrighted article reproduction, Apple asset binaries, passwords, customer data, AWS publication action, mobile signing or store release.
+
+## 19 November 2026 — 25 further current primary-source assessments and 75 applicability decisions
+
+This tranche extends the merged baseline of 27 detailed official article assessments to **52/172 (30.23%)** and independently reasoned *applicability classifications*, not source-code acceptance, to **156/516 (30.23%)**. The source-review register contains distinct guidance observations and separate web, iPhone iOS and Android applicability rationales for every additional article. Primary Apple Markdown references:
+
+| Official article | Register group | Platform interpretation |
+| --- | --- | --- |
+| [Text fields](https://developer.apple.com/design/human-interface-guidelines/text-fields.md) | Components | Web/iOS/Android: scoped |
+| [Sidebars](https://developer.apple.com/design/human-interface-guidelines/sidebars.md) | Components | Web/iOS/Android: scoped |
+| [Scroll views](https://developer.apple.com/design/human-interface-guidelines/scroll-views.md) | Components | Web/iOS/Android: scoped |
+| [Focus and selection](https://developer.apple.com/design/human-interface-guidelines/focus-and-selection.md) | Inputs | Web/iOS/Android: scoped |
+| [Undo and redo](https://developer.apple.com/design/human-interface-guidelines/undo-and-redo.md) | Patterns | Web/iOS/Android: scoped |
+| [Settings](https://developer.apple.com/design/human-interface-guidelines/settings.md) | Patterns | Web/iOS/Android: scoped |
+| [Onboarding](https://developer.apple.com/design/human-interface-guidelines/onboarding.md) | Patterns | Web/iOS/Android: scoped |
+| [Notifications](https://developer.apple.com/design/human-interface-guidelines/notifications.md) | Components | Web/iOS/Android: scoped |
+| [File management](https://developer.apple.com/design/human-interface-guidelines/file-management.md) | Patterns | Web/iOS/Android: scoped |
+| [Managing notifications](https://developer.apple.com/design/human-interface-guidelines/managing-notifications.md) | Patterns | Web/iOS/Android: scoped |
+| [Disclosure controls](https://developer.apple.com/design/human-interface-guidelines/disclosure-controls.md) | Components | Web/iOS/Android: scoped |
+| [Pickers](https://developer.apple.com/design/human-interface-guidelines/pickers.md) | Components | Web/iOS/Android: scoped |
+| [Tab views](https://developer.apple.com/design/human-interface-guidelines/tab-views.md) | Components | iPhone iOS: not applicable; web/Android: scoped |
+| [Launching](https://developer.apple.com/design/human-interface-guidelines/launching.md) | Patterns | Web/iOS/Android: scoped |
+| [Modality](https://developer.apple.com/design/human-interface-guidelines/modality.md) | Patterns | Web/iOS/Android: scoped |
+| [Offering help](https://developer.apple.com/design/human-interface-guidelines/offering-help.md) | Patterns | Web/iOS/Android: scoped |
+| [Action sheets](https://developer.apple.com/design/human-interface-guidelines/action-sheets.md) | Components | Web/iOS/Android: scoped |
+| [Segmented controls](https://developer.apple.com/design/human-interface-guidelines/segmented-controls.md) | Components | Web/iOS/Android: scoped |
+| [Navigation and search](https://developer.apple.com/design/human-interface-guidelines/navigation-and-search.md) | Components | Web/iOS/Android: scoped |
+| [Sheets](https://developer.apple.com/design/human-interface-guidelines/sheets.md) | Components | Web/iOS/Android: scoped |
+| [Windows](https://developer.apple.com/design/human-interface-guidelines/windows.md) | Components | iPhone iOS: not applicable; web/Android: scoped |
+| [Popovers](https://developer.apple.com/design/human-interface-guidelines/popovers.md) | Components | Web/iOS/Android: scoped |
+| [Context menus](https://developer.apple.com/design/human-interface-guidelines/context-menus.md) | Components | Web/iOS/Android: scoped |
+| [Text views](https://developer.apple.com/design/human-interface-guidelines/text-views.md) | Components | Web/iOS/Android: scoped |
+| [Virtual keyboards](https://developer.apple.com/design/human-interface-guidelines/virtual-keyboards.md) | Components | Web/iOS/Android: scoped |
+
+**Platform boundary:** Apple's AppKit-style `Tab views` and `Windows` articles do not directly apply to iPhone iOS. Equivalent iOS segmented controls/navigation and Android/web panes or multiwindow approaches require their own acceptance; an Apple component is not a cross-platform API. Apple notification interruption entitlements, Files/Quick Look, native launch screens, and notification permissions are not interchangeable with browser/Android features.
+
+**Production-evidence track remains 0/172:** A documented article review or a passing GitHub CI suite is not evidence of a deployed HIG implementation. Before marking `implementation = verified` in the register, obtain evidence of (1) exact production revision and authorized publication route, (2) screenshots/AX-tree or equivalent inspectable assistive-technology behavior of representative routes at mobile/desktop sizes including light/dark, zoom, RTL where applicable, (3) authenticated tenancy and security checks for protected pages, (4) physical-device VoiceOver/TalkBack and signed iOS/Android distribution receipts where platform-applicable, and (5) an independent reviewer/go-live acceptance with reproducible results. Explicitly document any excluded surfaces and why. No guessed SHA, store listing, Apple endorsement, patient-data license or production claim is permitted.
+
+Remaining after this proposed source-only PR: **120 detailed HIG articles** and **360 applicability decisions**. The unchanged 172/172 owner-attested index is not equivalent to independent article/implementation acceptance. The `allGuidelinePagesFullyReviewed` and `allPlatformsProductionVerified` flags remain `false`.
