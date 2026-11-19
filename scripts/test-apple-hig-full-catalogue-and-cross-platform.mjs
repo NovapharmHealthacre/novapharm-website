@@ -687,7 +687,10 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
       ["web","ios","android"].flatMap(p => (t[p+"Evidence"]||[]).filter(e =>
         e && typeof e === "object" && e.verificationLevel === "partial"))).length,
     productionSignoffObserved: ownerProductionConstraints.productionSignoff,
-    productionCanBeCertified: verified === tracker.topics.length &&
+    // Programme closure is a reviewed platform disposition for every topic,
+    // NOT a claim that 172 unsupported Apple APIs shipped into all platforms.
+    productionCanBeCertified: tracker.topics.every(t =>
+      t.implementation === "verified" || t.implementation === "not_applicable") &&
       ownerProductionConstraints.productionSignoff === "granted" &&
       tracker.meta.allPlatformsProductionVerified === true,
     topics
