@@ -11,6 +11,8 @@
  */
 import { capabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
 import { assessMultimodalWorkspacePolicy } from "./intelligence-multimodal-workspace-policy.mjs";
+import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json" with { type: "json" };
+import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
 export const workspaceCapabilityDependencies = Object.freeze({
   "medicine-search": Object.freeze(["medicine_knowledge_graph", "data_operations_governance", "enterprise_operations"]),
@@ -48,6 +50,17 @@ export const intelligenceSourceEvidenceKeys = Object.freeze([
   "ingestionRuns", "evidenceManifests", "auditEvents",
 ]);
 
+/** Parseable dates such as February 30 silently roll forward in V8. Require exact UTC round-trip. */
+function isCanonicalSnapshotUtc(value) {
+  if (typeof value !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/u.test(value)) return false;
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return false;
+  const normalized = value.replace(/(?:\.(\d{1,3}))?Z$/u,
+    (_, ms) => "." + (ms ?? "").padEnd(3, "0") + "Z");
+  return new Date(parsed).toISOString() === normalized;
+}
+
 const capabilityNames = new Set(Object.keys(capabilityRequirements));
 const pilotSet = new Set(firstMedicinePilotWorkspaces);
 const dependencies = Object.entries(workspaceCapabilityDependencies);
@@ -78,9 +91,7 @@ export function assessIntelligence22Workspaces({
       !Array.isArray(capabilityReport.capabilities) || capabilityReport.capabilities.length !== 6 ||
       capabilityReport.productionLive !== false ||
       capabilityReport.customerReleaseApproved !== false ||
-      typeof sourceSnapshotAt !== "string" ||
-      !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u.test(sourceSnapshotAt) ||
-      !Number.isFinite(Date.parse(sourceSnapshotAt)) ||
+      !isCanonicalSnapshotUtc(sourceSnapshotAt) ||
       !sourceCounts || typeof sourceCounts !== "object" || Array.isArray(sourceCounts)) {
     throw new Error("Invalid private Intelligence workspace implementation assessment.");
   }
@@ -132,6 +143,17 @@ export function assessIntelligence22Workspaces({
       catalogueState: workspace.state,
       priority: pilotSet.has(workspace.slug) ? "P0_first_accepted_medicine" : "P1_after_shared_pilot",
       capabilityDependencies: Object.freeze([...gates]),
+      scientificResearch: SCIENCE_READINESS_BOUNDARY,
+      // Dated external research examples, not ingested/accepted medicine evidence.
+      scientificMethodReferences: Object.freeze(scienceMethods.methods.filter(
+        item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id)),
+      scientificMethodReferencesIndependentlyValidated: false,
+      scientificMethodValidationTracks: Object.freeze([...new Set(
+        scienceMethods.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug))
+          .map(item => item.validationTrack))]),
+      scientificDossierRequiredStages: Object.freeze([...scienceMethods.claimIntegrityPolicy.requiredStages]),
+      scientificDossierIndependentEvidenceAccepted: false,
+
       missingChecks: Object.freeze(blockers),
       // These are IMPLEMENTATION states, not claims of released function.
       implementationState: blockers.length

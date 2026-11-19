@@ -30,7 +30,7 @@ test("mobile candidate uses readable default content typography and supports sys
   assert.match(app, /const largeText = fontScale >= 1\.4/);
 });
 
-test("More retains review, research, Model Microscope, maps, disabled Visual and account entry points", () => {
+test("More retains review, research, Model Microscope, maps, disabled Visual, Science and account entry points", () => {
   const more = app.match(/\{screen === "more" && \([\s\S]*?\{screen === "review"/)?.[0] ?? "";
   assert.match(more, /screen: "countries", label: "Countries"/);
   assert.match(more, /screen: "review", label: "Evidence review"/);
@@ -38,6 +38,7 @@ test("More retains review, research, Model Microscope, maps, disabled Visual and
   assert.match(more, /screen: "inspect", label: "Model Microscope"/);
   assert.match(more, /screen: "maps", label: "Maps and location"/);
   assert.match(more, /screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate/);
+  assert.match(more, /screen: "science", label: "Science research"/);
   assert.match(more, /screen: "account", label: "Enterprise access"/);
   assert.match(more, /accessibilityRole="button"/);
   assert.match(more, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
@@ -47,11 +48,18 @@ test("More retains review, research, Model Microscope, maps, disabled Visual and
   assert.match(app, /editable=\{false\}/);
   assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
   assert.match(app, /<CountryDirectoryScreen \/>/);
-  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "countries" \|\| selected === "visual" \|\| selected === "account"\)/);
+  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "visual" \|\| selected === "countries" \|\| selected === "science" \|\| selected === "account"\)/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {
   assert.match(app, /No live medicine data/);
   assert.match(app, /Authentication not enabled/);
   assert.doesNotMatch(app, /fetch\(|access_token|client_secret|Authorization:|require\([^)]*\.(dmg|otf|ttf)/);
+});
+
+test("Science remains discoverable under More without breaking four-tab Apple navigation", () => {
+  assert.match(app, /screen: "science", label: "Science research"/);
+  assert.match(app, /screen === "science" && <ScienceResearchMobile/);
+  assert.ok(!tabs.includes('label: "Science"'), "Science must not become a fifth persistent tab");
+  assert.match(app, /No live medicine data, customer session, payments, external API calls or AI inference is enabled/);
 });

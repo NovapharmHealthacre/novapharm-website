@@ -25,11 +25,12 @@ import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
+import { ScienceResearchMobile } from "./ScienceResearchMobile";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -109,7 +110,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "countries" || selected === "visual" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -287,6 +288,7 @@ export default function App() {
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
+                { screen: "science", label: "Science research", detail: "Offline evidence and scientific-method review; no live model or medicine data" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
               ] as const).map((item) => (
                 <Pressable
@@ -304,6 +306,10 @@ export default function App() {
           )}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
+          {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
+            const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
+            if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
+          }} />}
 
           {screen === "research" && (
             <>
