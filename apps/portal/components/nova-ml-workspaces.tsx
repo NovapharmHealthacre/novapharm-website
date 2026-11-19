@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { inspectSyntheticFeature } from "../../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
-import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { modelMicroscopeInspectionStages, type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import { ClipVisualSearch } from "./clip-visual-search";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
@@ -15,11 +16,15 @@ const gates = [
   { id: "signoff", title: "Human release authority", detail: "The accountable owner has approved deployment and its rollback plan." }
 ] as const;
 
+const syntheticPixelIds = Object.freeze(Array.from({ length: 16 }, (_, index) => `pixel-r${Math.floor(index / 4)}-c${index % 4}`));
+
 export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }>) {
   const module = novaMlWorkspaceCatalogue.find((entry) => entry.slug === kind);
   const [review, setReview] = useState<readonly string[]>([]);
+  const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   if (!module) return null;
   const complete = gates.every((gate) => review.includes(gate.id));
+  const isModelMicroscope = kind === "nova-model-microscope";
   const guidance = novaMlExperienceGuidance[kind];
   const designRows = [
     ["Role", guidance.role],
@@ -43,14 +48,36 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <p className={styles.eyebrow}>NOVAPHARM INTELLIGENCE / NOVA ML</p>
       <h1 id="nova-ml-workspace-heading">{module.title}</h1>
       <p className={styles.lead}>{module.summary}</p>
-      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. Native execution requires a separately approved Apple application and deployment.</p>
+      <p className={styles.boundary} role="note"><strong>Integration candidate, not an active AI service.</strong> This protected web view does not train models, invoke Core ML, access Apple Intelligence, upload files, or make predictions. {isModelMicroscope ? "Any feature inspection additionally requires an independently verified private model-artifact service and explicit inspection rights." : "Native execution requires a separately approved Apple application and deployment."}</p>
       <dl className={styles.facts}>
-        <div><dt>Apple integration</dt><dd>{module.appleTechnology}</dd></div>
+        <div><dt>{isModelMicroscope ? "Research methodology" : "Apple integration"}</dt><dd>{module.appleTechnology}</dd></div>
         <div><dt>Runtime</dt><dd>{module.platform}</dd></div>
         <div><dt>Decision authority</dt><dd>Human review only</dd></div>
       </dl>
     </header>
 
+    {isModelMicroscope ? <section className={styles.section} aria-labelledby="model-microscope-registry">
+      <h2 id="model-microscope-registry">Model inspection registry</h2>
+      <p className={styles.boundary} role="status"><strong>No approved inspection artifacts available.</strong> This interface does not load model weights, compute neuron activations, generate feature images, retrieve OpenAI model internals or call any outside service. A verified, protected backend and approved non-patient artifacts are required before an inspector can display observations.</p>
+      <p className={styles.helper}>Planned research selection: model and version, network layer, feature identifier, evaluation dataset reference, visualisation provenance and falsifiable feature hypothesis. Inspection results must remain non-publishable and cannot justify medical or commercial decisions.</p>
+      <ol className={styles.capabilities} aria-label="Model inspection research stages">{modelMicroscopeInspectionStages.map((stage, index) =>
+        <li key={stage.id}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p><strong>{stage.title}</strong></p><p>{stage.summary}</p><p className={styles.helper}>Required: {stage.requiredEvidence}</p><small>Not operational</small></li>
+      )}</ol>
+      <div className={styles.syntheticPanel}>
+        <h3>Interactive synthetic feature reference</h3>
+        <p>This optional demonstration runs a tiny first-party 4 × 4 neural network entirely in this browser. It is not a NovaPharm pharmaceutical model, a verified explanation, or an approved model artifact.</p>
+        <button className={styles.reset} type="button" onClick={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>Run synthetic reference</button>
+        {syntheticExample ? <figure className={styles.syntheticResult}>
+          <figcaption>First-party synthetic feature-maximization result</figcaption>
+          <div className={styles.syntheticGrid} role="img" aria-label="Synthetic grayscale four by four input feature grid">
+            {syntheticPixelIds.map((pixelId, index) => <span key={pixelId} className={styles.syntheticPixel} style={{ backgroundColor: `rgba(29, 29, 31, ${syntheticExample.optimizedGrid.flat()[index] ?? 0})` }} />)}
+          </div>
+          <p>Initial activation: {syntheticExample.initialActivation} · Maximized activation: {syntheticExample.finalActivation}</p>
+          <p><strong>Synthetic only.</strong> No patient data, medicine prediction, model download or external request.</p>
+        </figure> : null}
+      </div>
+      <p className={styles.reference}>Research basis: <a href="https://openai.com/index/microscope/">OpenAI Microscope</a>; <a href="https://distill.pub/2017/feature-visualization/">Feature Visualization</a>; <a href="https://distill.pub/2020/circuits/zoom-in/">Introduction to Circuits</a>.</p>
+    </section> : null}
     <section className={styles.section} aria-labelledby="nova-ml-capabilities">
       <h2 id="nova-ml-capabilities">Planned capabilities</h2>
       <p className={styles.helper}>These are product contracts, not currently available prediction or training operations.</p>
@@ -75,8 +102,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
     {kind === "nova-device-intelligence" ? <ClipVisualSearch /> : null}
 
     <section className={styles.section} aria-labelledby="nova-ml-experience">
-      <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
-      <p className={styles.helper}>Ten acceptance requirements for future native releases. These are testable design rules, not live model outputs or permission grants.</p>
+      <h2 id="nova-ml-experience">{isModelMicroscope ? "Model interpretability and privacy acceptance contract" : "Apple HIG machine-learning experience contract"}</h2>
+      <p className={styles.helper}>Ten acceptance requirements for future governed releases. These are testable design rules, not live model outputs or permission grants.</p>
       <dl className={styles.contractGrid}>{designRows.map(([label, description]) =>
         <div key={label} className={styles.contractItem}><dt>{label}</dt><dd>{description}</dd></div>
       )}</dl>
@@ -140,7 +167,7 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         </label>)}
       </fieldset>
       <div className={styles.reviewStatus} role="status" aria-live="polite">
-        <strong>{complete ? "Preparation checklist marked complete" : String(review.length) + " of " + String(gates.length) + " preparation items selected"}</strong>
+        <strong>{complete ? "Preparation checklist marked complete" : `${review.length} of ${gates.length} preparation items selected`}</strong>
         <p>{complete ? "This is a local planning state only. It does not verify evidence, confer approval, enable models or unlock a production feature." : "All proposed capabilities remain disabled until independently verified, owner-approved and deployed in a native companion."}</p>
       </div>
       <button type="button" className={styles.reset} onClick={() => setReview([])} disabled={review.length === 0}>Clear selections</button>

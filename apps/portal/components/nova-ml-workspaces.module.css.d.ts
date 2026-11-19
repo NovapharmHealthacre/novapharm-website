@@ -16,6 +16,10 @@ declare const styles: Readonly<{
   reference: string;
   contractGrid: string;
   contractItem: string;
+  syntheticPanel: string;
+  syntheticResult: string;
+  syntheticGrid: string;
+  syntheticPixel: string;
 }>;
 
 export default styles;

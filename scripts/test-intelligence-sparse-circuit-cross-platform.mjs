@@ -25,7 +25,18 @@ test("sparse-circuit assurance is exposed only through the existing protected No
   assert.match(protectedPage, /verifiedPortalSession/);
   assert.match(protectedPage, /sessionDecision\(view, session\)/);
   assert.equal([...original.matchAll(/slug: "/g)].length, 22);
-  assert.equal([...data.matchAll(/slug: "nova-/g)].length, 4);
+  // Exactly five reviewed protected research routes, including Model Microscope.
+  // This guards against accidental future routes rather than widening a count-only test.
+  const catalogue = data.slice(data.indexOf("export const novaMlWorkspaceCatalogue"), data.indexOf("export type NovaMlWorkspaceSlug"));
+  assert.deepEqual([...catalogue.matchAll(/slug: "(nova-[^"]+)"/g)].map((match) => match[1]), [
+    "nova-ml-studio",
+    "nova-core-runtime",
+    "nova-device-intelligence",
+    "nova-generative-assist",
+    "nova-model-microscope"
+  ]);
+  assert.match(router, /novaMlWorkspaceSlugs\.includes\(suffix as NovaMlWorkspaceSlug\)/);
+  assert.match(protectedPage, /sessionDecision\(view, session\)/);
 });
 
 test("iOS and Android screens do not claim verification or run network/model inference", () => {

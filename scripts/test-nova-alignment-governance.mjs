@@ -39,12 +39,13 @@ test("research code has no network, model execution, production writes or mislea
   assert.match(source("docs/ai-risk-register.md"), /simulation-to-reality transfer/iu);
 });
 
-test("existing four protected Nova ML workspaces and twenty-two research workspaces remain unchanged", () => {
+test("four original Nova ML workspaces plus one gated Model Microscope candidate preserve twenty-two research workspaces", () => {
   const catalogue = source("apps/portal/data/nova-ml-modules.ts");
   const original = source("apps/portal/data/intelligence-workspaces.ts");
   const slugs = [...catalogue.matchAll(/slug: "(nova-[a-z-]+)"/gu)].map(x => x[1]);
   assert.deepEqual(slugs, ["nova-ml-studio", "nova-core-runtime",
-    "nova-device-intelligence", "nova-generative-assist"]);
+    "nova-device-intelligence", "nova-generative-assist", "nova-model-microscope"]);
+  assert.match(catalogue, /modelMicroscopeInspectionStages/);
   assert.equal([...original.matchAll(/slug: "/gu)].length, 22);
   assert.match(catalogue, /novaMlAlignmentResearchMethods/);
   const ui = source("apps/portal/components/nova-ml-workspaces.tsx");
