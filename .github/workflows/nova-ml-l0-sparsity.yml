@@ -1,0 +1,93 @@
+name: Nova ML L0 hard-concrete research contracts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - "packages/medicines-intelligence/src/l0-sparsity.ts"
+      - "packages/medicines-intelligence/src/index.ts"
+      - "packages/medicines-intelligence/test/l0-sparsity.test.ts"
+      - "tooling/python/nova_l0_sparsity.py"
+      - "tooling/python/test_nova_l0_sparsity.py"
+      - "native/novapharm-intelligence-android/**"
+      - "native/novapharm-intelligence-apple/**"
+      - "docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md"
+      - "docs/ai-model-register.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-risk-register.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "scripts/test-nova-l0-governance.mjs"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - ".github/workflows/nova-ml-l0-sparsity.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/medicines-intelligence/src/l0-sparsity.ts"
+      - "packages/medicines-intelligence/src/index.ts"
+      - "packages/medicines-intelligence/test/l0-sparsity.test.ts"
+      - "tooling/python/nova_l0_sparsity.py"
+      - "tooling/python/test_nova_l0_sparsity.py"
+      - "native/novapharm-intelligence-android/**"
+      - "native/novapharm-intelligence-apple/**"
+      - "docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md"
+      - "docs/ai-model-register.json"
+      - "docs/ai-use-case-register.json"
+      - "docs/ai-risk-register.md"
+      - "docs/ai-system-card.md"
+      - "docs/ai-dependency-and-model-sbom.json"
+      - "scripts/test-nova-l0-governance.mjs"
+      - "apps/portal/data/nova-ml-modules.ts"
+      - ".github/workflows/nova-ml-l0-sparsity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  web-sparse-math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Shared sparse math and forecasting regressions
+        run: npm run test --workspace=@novapharm/medicines-intelligence
+      - name: Standing governance and platform contract tests
+        run: node --test scripts/test-nova-l0-governance.mjs scripts/test-nova-ml-apple-adaptation.mjs
+      - name: Python reference syntax (torch numerical tests are separate)
+        run: python3 -m py_compile tooling/python/nova_l0_sparsity.py tooling/python/test_nova_l0_sparsity.py
+      - name: TypeScript source contracts
+        run: npm run typecheck --workspace=@novapharm/medicines-intelligence
+      - name: Independently fail closed on production activation
+        run: |
+          ! grep -Eq 'productionApproved: true|customerVisible: true' packages/medicines-intelligence/src/l0-sparsity.ts
+          ! grep -Eq 'URLSession|URL\(|fetch\(|requests\.get|torch\.load' tooling/python/nova_l0_sparsity.py
+          echo "No live model, network path, customer prediction or training dataset was enabled."
+
+  android-kotlin-math:
+    name: Offline Kotlin mathematical parity (not Android instrumentation)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verify installed Kotlin compiler and JDK
+        run: |
+          command -v kotlinc
+          kotlinc -version
+          java -version
+      - name: Compile exactly the committed Kotlin sources and execute synthetic checks
+        run: |
+          kotlinc \
+            native/novapharm-intelligence-android/src/main/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMath.kt \
+            native/novapharm-intelligence-android/src/test/kotlin/com/novapharm/intelligence/ml/NovaL0ResearchMathTest.kt \
+            -include-runtime -d "$RUNNER_TEMP/nova-l0-kotlin-research.jar"
+          java -jar "$RUNNER_TEMP/nova-l0-kotlin-research.jar"
+      - name: Maintain strict native release boundary
+        run: echo "This compiles Kotlin reference math only, not an Android Gradle app, LiteRT model, signed APK or Play Store release."

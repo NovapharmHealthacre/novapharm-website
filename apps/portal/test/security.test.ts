@@ -118,3 +118,36 @@ test("the separate liveness route is noindex, never reveals readiness and cannot
   assert.match(proxy, /"\/healthz\/"/);
   assert.match(docker, /4303\/healthz\//);
 });
+
+test("unconfigured protected API origins fail closed with a controlled 503", () => {
+  const gateway = source("app/gateway/[...path]/route.ts");
+  const targetStart = gateway.indexOf("let target: URL;");
+  const queryCopy = gateway.indexOf("target.search = request.nextUrl.search");
+  assert.ok(targetStart > 0 && queryCopy > targetStart, "The service origin must be validated before proxying");
+  const resolution = gateway.slice(targetStart, queryCopy);
+  assert.match(resolution, /try\s*\{[\s\S]*?new URL\(`\/api\/\$\{path\}`, apiOrigin\(\)\)/);
+  assert.match(resolution, /catch\s*\{[\s\S]*?status: 503/);
+  assert.match(resolution, /"Retry-After": "30"/);
+  assert.match(resolution, /"Cache-Control": "no-store"/);
+  assert.doesNotMatch(resolution, /error: error\.|message: error\.|JSON\.stringify\(error\)/);
+});
+
+test("API Gateway public Cognito and health routes do not redirect into IAM-only fallback", () => {
+  const config = source("next.config.ts");
+  const proxy = source("proxy.ts");
+  const health = source("app/healthz/route.ts");
+  const start = source("app/auth/customer/start/route.ts");
+  const callback = source("app/auth/callback/route.ts");
+  assert.match(config, /trailingSlash:\s*true/);
+  assert.match(config, /skipTrailingSlashRedirect:\s*true/);
+  for (const route of ["/healthz/", "/auth/customer/start/", "/auth/callback/"]) {
+    assert.ok(proxy.includes(JSON.stringify(route)), `Missing public path contract: ${route}`);
+  }
+  assert.match(health, /status:\s*200/);
+  assert.match(start, /createCustomerLoginTransaction/);
+  assert.match(callback, /verifyIntelligenceCustomerIdToken/);
+  assert.match(callback, /grantsTenantAccess !== false/);
+  assert.match(proxy, /np_session/);
+  assert.match(proxy, /indexable:\s*false/);
+  assert.match(proxy, /Cache-Control", "no-store/);
+});

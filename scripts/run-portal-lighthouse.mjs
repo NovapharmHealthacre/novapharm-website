@@ -8,6 +8,7 @@ import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
 import { chromium } from "playwright";
 import { assertBrowserValidationRoot } from "./browser-validation-runtime.mjs";
+import { runLighthouseWithNavigationRetry } from "./lighthouse-transient-navigation.mjs";
 
 const repositoryRoot = resolve(process.cwd());
 const runtimeRoot = assertBrowserValidationRoot(join(tmpdir(), "novapharm-unified-portal-lighthouse-runtime"));
@@ -82,7 +83,7 @@ async function authenticatedCookies(credentials) {
     await page.getByLabel("Password", { exact: true }).fill(credentials.password);
     await Promise.all([
       page.waitForURL((url) => url.pathname === "/portal/dashboard/", { timeout: 20_000 }),
-      page.getByRole("button", { name: "Sign in securely" }).click(),
+      page.getByRole("button", { name: "Sign in", exact: true }).click(),
     ]);
     await page.locator(".data-context").waitFor();
     const cookies = await page.context().cookies(portalOrigin);
@@ -199,10 +200,11 @@ async function auditPageTrial(name, pathName, formFactor) {
     formFactor,
     disableStorageReset: true,
   };
-  const result = await lighthouse(`${portalOrigin}${pathName}`, flags, formFactor === "desktop" ? desktopConfig : undefined);
-  if (!result) throw new Error(`Lighthouse returned no result for ${name}.`);
+  const result = await runLighthouseWithNavigationRetry(
+    () => lighthouse(`${portalOrigin}${pathName}`, flags, formFactor === "desktop" ? desktopConfig : undefined),
+    name,
+  );
   const lhr = result.lhr;
-  if (lhr.runtimeError) throw new Error(`${name}: ${lhr.runtimeError.message}`);
   return {
     name,
     path: pathName,
@@ -249,6 +251,11 @@ async function auditPage(name, pathName, formFactor) {
     },
     trials,
   };
+  // Persist sanitized evidence even when performance misses the gate, so a
+  // failing build yields actionable LCP/TBT/CLS data without auth payloads.
+  const evidenceName = `${formFactor}-${pathName === "/" ? "sign-in" : "dashboard"}-sanitized.json`;
+  writeFileSync(join(artifactRoot, evidenceName), `${JSON.stringify(summary, null, 2)}\n`);
+  console.log(`${name} three-run median: performance ${summary.scores.performance}; LCP ${summary.metrics.largestContentfulPaint.displayValue}; TBT ${summary.metrics.totalBlockingTime.displayValue}; CLS ${summary.metrics.cumulativeLayoutShift.displayValue}.`);
   assert.ok(summary.scores.performance >= 95, `${name}: performance score ${summary.scores.performance} is below 95.`);
   assert.equal(summary.scores.accessibility, 100, `${name}: accessibility must remain 100; received ${summary.scores.accessibility}.`);
   assert.equal(summary.scores.bestPractices, 100, `${name}: best practices must remain 100; received ${summary.scores.bestPractices}.`);

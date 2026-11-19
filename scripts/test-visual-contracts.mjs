@@ -17,7 +17,8 @@ const bundleCss = text("assets/css/novapharm.bundle.css");
 const tokenCss = text("assets/css/tokens.css");
 assert.match(css, /--corporate-product-discipline-contract:\s*1/);
 assert.match(css, /--npd-container:\s*1200px/);
-assert.match(css, /--npd-header:\s*56px/);
+assert.match(css, /--npd-header:\s*68px/);
+assert.match(css, /@media \(max-width: 760px\)\s*\{\s*:root\s*\{\s*--npd-header:\s*60px/);
 assert.match(css, /--npd-system:\s*-apple-system, BlinkMacSystemFont/);
 assert.match(css, /letter-spacing:\s*0/);
 assert.match(css, /@media \(max-width:\s*360px\)/);
@@ -34,8 +35,8 @@ assert.doesNotMatch(publicAppleCss, /body\[data-page="home"\]\s+h[1-4]\b/,
   "homepage heading scale must stay inside main, not bleed into the footer");
 assert.match(publicAppleCss, /body\[data-page="home"\] main h2/,
   "homepage editorial section headings must still receive their approved scale");
-assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*13px/s,
-  "shared footer typography requires an explicitly scoped heading override");
+assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*var\(--np-type-caption-size,\s*0\.875rem\)/s,
+  "shared footer typography requires an explicitly scoped 14px caption role");
 
 function contrastOnWhite(hex) {
   assert.match(hex, /^#[0-9a-f]{6}$/i);
@@ -60,7 +61,7 @@ assert.match(homepageCss, /prefers-reduced-motion: reduce/, "editorial motion mu
 assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must ship inside the production CSS bundle");
 
 const home = text("index.html");
-assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
+assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home" lang="en-GB" data-np-untranslated>/, "Published homepage must retain the approved main landmark with an explicit English-language boundary");
 assert.match(home, /<h1(?:\s+[^>]*)?>Medicine\. Where it needs to be\.<\/h1>/, "homepage preserves the approved semantic hero headline");
 assert.match(home, /class="npd-apple-hero nph-earth-hero"/, "approved Earth-horizon hero layout");
 assert.match(home, /class="nph-earth-hero-landscape"/, "approved morning-Earth image placement");
@@ -76,6 +77,10 @@ assert.match(home, /Regulated wholesale supply has not commenced/);
 assert.match(home, /PLPI activity requires the relevant licence/);
 assert.match(home, /Let's build something meaningful\./);
 assert.doesNotMatch(home, /<svg|lucide|<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
+
+const approvedHeaderCss = text("assets/css/homepage-editorial.css");
+assert.doesNotMatch(approvedHeaderCss, /content:\s*"NOVAPHARM"/, "never replace the supplied logo with generated black typography");
+assert.match(approvedHeaderCss, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/, "the official image must render in the header");
 
 const expectedHomeNavigation = [
   ["Company", "/about/"],
@@ -258,7 +263,13 @@ if (login.includes("data-login-form")) {
 }
 
 assert.match(text("scripts/build-site.mjs"), /apply-corporate-product-discipline\.mjs/);
-assert.match(text("assets/js/novapharm.js"), /visibleLabel\.textContent = isOpen \? "Close" : "Menu"/);
+const mobileNavigationJs = text("assets/js/novapharm.js");
+assert.match(mobileNavigationJs, /const localizedMenuLabels = \{/, "mobile menu must localize without changing navigation semantics");
+assert.match(mobileNavigationJs, /ar:\s*\{\s*open:\s*"فتح القائمة", close:\s*"إغلاق القائمة"/, "Arabic menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /he:\s*\{\s*open:\s*"פתיחת תפריט", close:\s*"סגירת תפריט"/, "Hebrew menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /open:\s*"Open navigation", close:\s*"Close navigation", menu:\s*"Menu", closed:\s*"Close", nav:\s*"Primary navigation"/, "English fallback must remain available");
+assert.match(mobileNavigationJs, /visibleLabel\.textContent = isOpen \? menuLabels\.closed : menuLabels\.menu/, "visible menu label must follow the active locale and expanded state");
+assert.match(mobileNavigationJs, /navToggle\.setAttribute\("aria-label", isOpen \? menuLabels\.close : menuLabels\.open\)/, "screen-reader menu action must follow the active locale");
 assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
 
 console.log("Visual contracts passed for the corporate product-discipline system, seven-destination navigation, 19 canonical Nutraxin product routes, truthful fail-closed workflows, responsive media and asset budgets.");

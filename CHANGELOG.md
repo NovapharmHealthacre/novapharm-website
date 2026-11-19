@@ -6,6 +6,8 @@ Material changes to the NovaPharm digital estate are recorded here. A release he
 
 ### Added
 
+- Apple Layout and Organization design DNA: a source-reviewed 33-link policy across seven NovaPharm estates, reusable column/outline/lockup/label components, accessible 16-capability WMS navigation, and permanent future-PR verification gates. Source candidate only; protected runtimes and separately published sites still require deployment acceptance.
+
 - Six-application TypeScript workspace with shared content, claims, security, accessibility, SEO, design-system and portal contracts.
 - Azure Front Door Premium/WAF infrastructure contract, isolated application packaging, origin lockdown and deployment validation.
 - Twenty-four-family component workbench, three reviewed creative directions and cross-browser evidence.

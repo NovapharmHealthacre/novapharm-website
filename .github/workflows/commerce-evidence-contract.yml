@@ -1,0 +1,21 @@
+name: Commerce evidence export contract
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/commerce-evidence-scheduled-export-production.json'
+      - 'scripts/test-commerce-evidence-export.mjs'
+      - '.github/workflows/commerce-evidence-contract.yml'
+  workflow_dispatch:
+jobs:
+  evidence-contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 8
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Verify secure declaration export contract
+        run: node --test scripts/test-commerce-evidence-export.mjs

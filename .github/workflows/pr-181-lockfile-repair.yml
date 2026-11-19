@@ -1,0 +1,35 @@
+name: PR 181 SQL dependency lockfile repair (read-only)
+on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/mssql-12.7.14
+    paths:
+      - .github/workflows/pr-181-lockfile-repair.yml
+      - package.json
+      - package-lock.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+permissions:
+  contents: read
+jobs:
+  regenerate-lockfiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Rebuild npm lock without lifecycle scripts
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Validate npm immutable installation
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Rebuild pnpm lock without lifecycle scripts
+        run: |
+          npm install -g pnpm@11.9.0 --ignore-scripts --no-audit --no-fund
+          pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Validate pnpm lock against manifests
+        run: pnpm install --frozen-lockfile --ignore-scripts --no-optional
+      - name: Export reproducible reviewed lockfile bytes
+        run: |
+          node -e 'const fs=require("node:fs"); for(const [f,id] of [["package-lock.json","NPM"],["pnpm-lock.yaml","PNPM"]]) { const b=fs.readFileSync(f).toString("base64"); console.log("NOVA_PR181_"+id+"_BEGIN"); for(let i=0;i<b.length;i+=3000)console.log(b.slice(i,i+3000)); console.log("NOVA_PR181_"+id+"_END"); }'

@@ -50,7 +50,7 @@
 
 .fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 10px;
 }
 
@@ -95,6 +95,21 @@
   opacity: .63;
   cursor: wait;
 }
+.clear {
+  min-width: 64px;
+  min-height: 48px;
+  border: 1px solid #c7c9cd;
+  border-radius: 11px;
+  background: #fff;
+  color: #0059b8;
+  font: inherit;
+  font-size: .86rem;
+  cursor: pointer;
+}
+.clear:hover { background: #f5f5f7; }
+.clear:focus-visible { outline: 3px solid #70b4f4; outline-offset: 3px; }
+@media (forced-colors: active) { .clear { border-color: CanvasText; color: CanvasText; } }
+
 
 .status {
   min-height: 1.45em;

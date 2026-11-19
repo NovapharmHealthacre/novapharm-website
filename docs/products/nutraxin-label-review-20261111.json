@@ -1,0 +1,338 @@
+{
+  "schemaVersion": "1.0.0",
+  "auditedOn": "2026-11-11",
+  "source": {
+    "register": "apps/corporate/data/nutraxin-product-register.json",
+    "ownerCatalogueSha256": "a78ea34cab52a363513657e059c422f8c55245bc0946480533347df13446341e",
+    "officialGuidance": "https://www.gov.uk/government/publications/food-supplements-guidance-for-businesses/food-supplements"
+  },
+  "assertionBoundary": "Automated register consistency and known-discrepancy triage only. Not physical approved-label review or GB food-business compliance sign-off.",
+  "mandatoryLabelEvidence": [
+    "Complete ingredient and allergen list",
+    "Responsible food business operator name and address",
+    "Recommended daily portion",
+    "Vitamin/mineral quantities and NRVs",
+    "Do-not-exceed recommended daily dose warning",
+    "Food supplements not a substitute for varied diet statement",
+    "Keep out of reach of young children statement",
+    "Minimum durability and lot traceability on actual pack",
+    "Approved UK claims and English language checks"
+  ],
+  "counts": {
+    "total": 19,
+    "withCatalogueDiscrepancies": 12,
+    "criticalUnverified": 1,
+    "fullyLabelAccepted": 0
+  },
+  "products": [
+    {
+      "sku": "NUT-UK-VD3-T120",
+      "name": "Nutraxin Vitamin D3",
+      "slug": "vitamin-d3-120-tablets",
+      "pack": "120 tablets",
+      "sourceCataloguePage": 3,
+      "sourceImageSha256": "33bed6415c20d5216f2817bdefae2045a8b4f67948367b77fed8b290890762ff",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VD3-S30",
+      "name": "Nutraxin Vitamin D3 Spray",
+      "slug": "vitamin-d3-spray-30ml",
+      "pack": "30 ml",
+      "sourceCataloguePage": 3,
+      "sourceImageSha256": "17feae499cffc81e3a25f329825b075ede5fa419b1661cde7e831cabadae00c1",
+      "discrepancyNotes": [
+        "The pack image uses the wording 2 puff; serving terminology requires label confirmation."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VD3K2-T120",
+      "name": "Nutraxin Vitamin D3 + K2",
+      "slug": "vitamin-d3-k2-120-tablets",
+      "pack": "120 tablets",
+      "sourceCataloguePage": 3,
+      "sourceImageSha256": "d1de1c0a346e4445a730f1aba437c5a4fc332286025d3d304e7471e33a3e1193",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VD3K2-S30",
+      "name": "Nutraxin Vitamin D3 + K2 Spray",
+      "slug": "vitamin-d3-k2-spray-30ml",
+      "pack": "30 ml",
+      "sourceCataloguePage": 3,
+      "sourceImageSha256": "85ee1c502e60ba154257895fd37bb33f054839507c8a46f502556e3c86952366",
+      "discrepancyNotes": [
+        "Serving terminology differs from the D3-only spray and requires final label confirmation."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VC1000-T30",
+      "name": "Nutraxin Vitamin C 1000 mg",
+      "slug": "vitamin-c-1000mg-30-tablets",
+      "pack": "30 tablets",
+      "sourceCataloguePage": 4,
+      "sourceImageSha256": "bb0d93ae1a0dd0f47a153ef58ede34fc970a30cfbe0cfd4bf0c6df07537b6b6f",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VC500-C30",
+      "name": "Nutraxin Vitamin C 500 mg Chewable",
+      "slug": "vitamin-c-500mg-chewable-30-tablets",
+      "pack": "30 chewable tablets",
+      "sourceCataloguePage": 4,
+      "sourceImageSha256": "c12ac2e8726897e56b1cb36971c0f70eadfb2200c999fab269d7b46e77eb61fe",
+      "discrepancyNotes": [
+        "The extracted catalogue text repeats the 1000 mg formula from another product; the visible pack front states 500 mg. Full actives require confirmation from approved labelling."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VMAX-T60",
+      "name": "Nutraxin Vitamin MAX C + D + Zinc",
+      "slug": "vitamin-max-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 4,
+      "sourceImageSha256": "71730009d9d232b66798ba4d2cfe0dcaa89cf5c21deb0e78dff74f85dbad0a10",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-VMAX-E15",
+      "name": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
+      "slug": "vitamin-max-15-effervescent-tablets",
+      "pack": "15 effervescent tablets",
+      "sourceCataloguePage": 4,
+      "sourceImageSha256": "0aa9202abb2cfd1ebc93a8774753b69df8998b6b8c70ca681a7db8d5fae50023",
+      "discrepancyNotes": [
+        "Catalogue contains the spelling Oraneg; flavour wording is withheld pending approved-label confirmation."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-MGCX-T60",
+      "name": "Nutraxin Magnesium Complex + Vitamin B6",
+      "slug": "magnesium-complex-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 5,
+      "sourceImageSha256": "0d29786d88112d286f9d56731d5ce315695e794056a3e0b5a89b884bd7bbb113",
+      "discrepancyNotes": [
+        "The source marks the first two magnesium values with an asterisk but does not define it on the catalogue page."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-MGDL-T60",
+      "name": "Nutraxin Magnesium Daily",
+      "slug": "magnesium-daily-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 5,
+      "sourceImageSha256": "55c37155a37ababcc95699f0252f457ae6d84a72983ce30dd7eb313f6032b410",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-MVE-T60",
+      "name": "Nutraxin Multivitamin Mineral Energy",
+      "slug": "multivitamin-mineral-energy-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 6,
+      "sourceImageSha256": "1c6be163f18afb066bb0f455adf3abf3f47f904f2ad669fd089e3ac73f40be4f",
+      "discrepancyNotes": [
+        "Several grouped amounts are small or unusually precise and require confirmation against approved labelling."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-MVW-T60",
+      "name": "Nutraxin Women's Multivitamin Complex",
+      "slug": "womens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 6,
+      "sourceImageSha256": "6fcdbc23007d57cffb4fa3c9050d0f184467dc168c7f3027841c583a642d2e45",
+      "discrepancyNotes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-MVM-T60",
+      "name": "Nutraxin Men's Multivitamin Complex",
+      "slug": "mens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 6,
+      "sourceImageSha256": "d1f1913c410e341f094ed377573e30d48aaf391a1b23cae8e80050e5fe43ab57",
+      "discrepancyNotes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-CG-T30",
+      "name": "Nutraxin Gold Quality Collagen",
+      "slug": "collagen-gold-30-tablets",
+      "pack": "30 tablets",
+      "sourceCataloguePage": 7,
+      "sourceImageSha256": "ab92725a6ec98562e96d3ad0df8dafedb983328c6f298bd1435e5723df0878a5",
+      "discrepancyNotes": [
+        "Bromelain unit is transcribed as µg and requires approved-label confirmation."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-CG-S30",
+      "name": "Nutraxin Gold Quality Collagen Sachets",
+      "slug": "collagen-gold-30-sachets",
+      "pack": "30 sachets",
+      "sourceCataloguePage": 7,
+      "sourceImageSha256": "b7fbc349a585aaef706dbaab74b9cc6d1e2bc069b7ac88d475654d26e22af06b",
+      "discrepancyNotes": [
+        "The catalogue lists vitamin B6 at 140 mg; this value is flagged for urgent approved-label verification before any claim or sale use."
+      ],
+      "discrepancySeverity": "critical",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-CCX-T90",
+      "name": "Nutraxin Collagen Complex",
+      "slug": "collagen-complex-90-tablets",
+      "pack": "90 tablets",
+      "sourceCataloguePage": 7,
+      "sourceImageSha256": "4ba034e25ba553f03378a8761bae0ea4119fd48e965a2a3e263acba0eb7737aa",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-ART-T90",
+      "name": "Nutraxin Artoflex",
+      "slug": "artoflex-90-tablets",
+      "pack": "90 tablets",
+      "sourceCataloguePage": 8,
+      "sourceImageSha256": "fa66610ef6a6990433e424593fde49cb64a7d75160accb5ea5271a7e6f8b4837",
+      "discrepancyNotes": [
+        "Pack references clinical trials; no such statement is reproduced publicly without an evidence review."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-LCAR-T60",
+      "name": "Nutraxin L-Carnitine 700 mg",
+      "slug": "l-carnitine-60-tablets",
+      "pack": "60 tablets",
+      "sourceCataloguePage": 8,
+      "sourceImageSha256": "caad6b84ce9dec678ec2ade12a94f58455f85328758e971e0274fe45a37df22b",
+      "discrepancyNotes": [
+        "Catalogue heading misspells Carnitine; serving quantity should be confirmed against approved labelling."
+      ],
+      "discrepancySeverity": "review_required",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    },
+    {
+      "sku": "NUT-UK-B12-SL60",
+      "name": "Nutraxin Vitamin B12 Methylcobalamin",
+      "slug": "vitamin-b12-60-sublingual-tablets",
+      "pack": "60 sublingual tablets",
+      "sourceCataloguePage": 8,
+      "sourceImageSha256": "19c42e19c3bf2f2bd48c95cc3c0f315e16938a5484c964b8d3968618e17b72e2",
+      "discrepancyNotes": [],
+      "discrepancySeverity": "none_recorded",
+      "approvedFullUKLabelReceived": false,
+      "mandatoryPrePurchaseInformationVerified": false,
+      "healthClaimsCleared": false,
+      "retailComplianceRelease": "not_accepted",
+      "observedFactsOnly": true
+    }
+  ]
+}

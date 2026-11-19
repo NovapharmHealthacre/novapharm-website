@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -7,6 +8,8 @@ const read = (p) => readFileSync(resolve(root, p), "utf8");
 const master = read("src/content/nutraxin-showcase.html").trim();
 const page = read("products/nutraxin/index.html");
 const css = read("assets/css/nutraxin-lineup.css");
+const publicNutraxinCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/nutraxin-lineup.css"))).digest("hex");
+const expectedNutraxinCssHref = `href="/assets/css/nutraxin-lineup.css?v=20261111-forensic-design-v3&amp;sha256=${publicNutraxinCssSha256}"`;
 const script = read("scripts/apply-corporate-product-discipline.mjs");
 const register = JSON.parse(read("apps/corporate/data/nutraxin-product-register.json"));
 const corporateRenderer = read("apps/corporate/components/page-renderer.tsx");
@@ -20,6 +23,10 @@ assert.equal(ranges.length,6,"The approved catalogue must contain six ranges");
 assert.equal((master.match(/class="nx-product-card"/g)||[]).length,19,"All 19 product cards must appear exactly once");
 assert.equal((master.match(/class="nx-range-section nx-range-section-/g)||[]).length,6,"All six ranges must appear");
 assert.equal((master.match(/<h1\b/g)||[]).length,1,"One page title");
+assert.match(master, /collagen-gold-30-tablets\.png"[^>]*width="980" height="654"/,
+  "Original Collagen Gold 30 tablets pack must declare its real 980x654 raster ratio");
+assert.match(page, /collagen-gold-30-tablets\.png"[^>]*width="980" height="654"/,
+  "Published Collagen Gold 30 tablets pack must preserve real raster ratio");
 assert.ok(master.includes("Wellness, without the noise.") && page.includes("Wellness, without the noise."), "The Nutraxin product-led message must be published");
 const organicTitle = "Nutraxin UK Supplements | Explore 19 Products | NovaPharm";
 assert.ok(page.includes(`<title>${organicTitle}</title>`), "Nutraxin must have accurate consumer-facing organic search title");
@@ -42,8 +49,15 @@ for (let index = 0; index < originalCards.length; index++) {
 }
 assert.equal((page.match(/class="nx-product-card-shell"/g) || []).length, 19, "Exactly one publisher wrapper per approved catalogue card");
 assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Exactly one publisher evidence reference per product");
-assert.ok(page.includes(master.slice(0, master.indexOf('<a class="nx-product-card"'))), "Published introduction must preserve the approved master layout");
-assert.ok(page.includes('href="/assets/css/nutraxin-lineup.css"'),"Scoped CSS must load");
+// The approved Nutraxin master remains byte-identical apart from the
+// explicit English-language boundary needed by the Arabic/Hebrew layout preview.
+const masterIntro = master.slice(0, master.indexOf('<a class="nx-product-card"'));
+const publishedIntro = /<main\b[^>]*\blang="en-GB" data-np-untranslated>/.test(page)
+  ? masterIntro.replace(/<main\b[^>]*>/, (main) =>
+      main.slice(0, -1) + ' lang="en-GB" data-np-untranslated>')
+  : masterIntro;
+assert.ok(page.includes(publishedIntro), "Published introduction must preserve the approved master layout and English-language boundary");
+assert.ok(page.includes(expectedNutraxinCssHref), "Published Nutraxin stylesheet must match its exact CSS bytes and approved version");
 assert.ok(script.includes('const original = read("src/content/nutraxin-showcase.html")'),"Site build must preserve the master layout");
 assert.ok(script.includes('href="/assets/css/nutraxin-lineup.css"'),"Site build must preserve the scoped stylesheet");
 assert.ok(script.includes('<div class="nx-product-card-shell">${card}<div class="nx-product-publisher">'), "Site build must preserve official publisher evidence alongside every original card");
@@ -75,4 +89,17 @@ for (const range of ranges) {
   const id = range.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
   assert.ok(master.includes('id="nx-'+id+'"'),"Missing range anchor "+range);
 }
+const productBySku = new Map(products.map(product => [product.sku, product]));
+assert.equal(productBySku.get("NUT-UK-CG-S30").formulation.find(item => item.name === "Vitamin B6").amount, "1.40 mg");
+assert.equal(productBySku.get("NUT-UK-CG-T30").formulation.find(item => item.name === "Bromelain").amount, "50 mg");
+assert.equal(productBySku.get("NUT-UK-ART-T90").formulation.find(item => item.name === "Devil's claw").amount, "180 mg");
+assert.equal(productBySku.get("NUT-UK-ART-T90").formulation.find(item => item.name === "Bromelain").amount, "198 mg");
+assert.match(productBySku.get("NUT-UK-VMAX-E15").notes.join(" "), /15 effervescent tablets.*20 tablets/);
+assert.match(read("products/nutraxin/collagen-gold-30-sachets/index.html"), /<dt>Vitamin B6<\/dt><dd>1\.40 mg<\/dd>/);
+assert.match(read("products/nutraxin/collagen-gold-30-tablets/index.html"), /<dt>Bromelain<\/dt><dd>50 mg<\/dd>/);
+assert.match(read("products/nutraxin/artoflex-90-tablets/index.html"), /<dt>Devil's claw<\/dt><dd>180 mg<\/dd>/);
+assert.match(read("products/nutraxin/artoflex-90-tablets/index.html"), /<dt>Bromelain<\/dt><dd>198 mg<\/dd>/);
+const manufacturerAudit = JSON.parse(read("docs/products/nutraxin-manufacturer-observation-20261111.json"));
+assert.equal(manufacturerAudit.products.length,19);
+assert.ok(manufacturerAudit.products.every(product => product.physical_uk_pack_label_accepted === false), "Publisher website is not signed physical-label evidence");
 console.log("Nutraxin Apple-inspired lineup: 19 products, six ranges, canonical links, original media, responsible disclosures, source and responsive styles verified.");

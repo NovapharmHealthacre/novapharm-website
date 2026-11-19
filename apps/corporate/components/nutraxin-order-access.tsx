@@ -4,8 +4,8 @@ import Link from "next/link";
 export function NutraxinOrderAccess({ sku, name }: Readonly<{ sku: string; name: string }>) {
   // Do not send customers to the public static /portal/ placeholder. Only a
   // separately verified production portal may accept a continuation intent.
-  const portalReady = process.env["NOVAPHARM_CUSTOMER_PORTAL_ACTIVE"] === "true"
-    && process.env["PORTAL_ORIGIN"]?.replace(/\/$/, "") === "https://portal.novapharmhealthcare.com";
+  const portalReady = process.env.NOVAPHARM_CUSTOMER_PORTAL_ACTIVE === "true"
+    && process.env.PORTAL_ORIGIN?.replace(/\/$/, "") === "https://portal.novapharmhealthcare.com";
   const intent = `https://portal.novapharmhealthcare.com/?intent=nutraxin&sku=${encodeURIComponent(sku)}`;
   return (
     <section className="nutraxin-order-access" aria-label={`Business ordering access for ${name}`}>

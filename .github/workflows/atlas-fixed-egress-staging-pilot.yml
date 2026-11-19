@@ -1,0 +1,31 @@
+name: Atlas fixed-egress staging pilot contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/atlas-staging-fixed-egress-pilot.json'
+      - 'scripts/test-atlas-fixed-egress-pilot.mjs'
+      - '.github/workflows/atlas-fixed-egress-staging-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-staging-egress-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Fail-closed pilot contract checks
+        run: |
+          node --check scripts/test-atlas-fixed-egress-pilot.mjs
+          node --test scripts/test-atlas-fixed-egress-pilot.mjs
+      - name: Confirm no credentials are required or deployed
+        run: |
+          node -e "const t=require('./infra/aws/atlas-staging-fixed-egress-pilot.json');for(const [k,v] of Object.entries(t.Resources)){if(v.Condition!=='ProvisionPilot')throw Error(k)}"

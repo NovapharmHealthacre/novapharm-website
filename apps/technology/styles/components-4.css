@@ -16,7 +16,8 @@
   .article-disclaimer { background: var(--mist); border-left: 3px solid var(--red); padding: 1.5rem; color: var(--muted); font-size: .82rem; }
   .related-insights__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); }
   .related-insights__grid a { background: var(--paper-bright); padding: clamp(2rem, 4vw, 4rem); min-height: 340px; display: flex; flex-direction: column; }
-  .related-insights__grid a > span { color: var(--red); font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; }
+  /* Small editorial labels on grouped surfaces use the accessible deep brand red. */
+  .related-insights__grid a > span { color: var(--red-deep); font-size: .65rem; text-transform: uppercase; letter-spacing: .12em; }
   .related-insights__grid h3 { margin-top: auto; font-family: var(--serif); font-size: 3rem; }
   .related-insights__grid p { margin-top: 1rem; color: var(--muted); }
   .related-insights__grid strong { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.5rem; font-size: .75rem; }
