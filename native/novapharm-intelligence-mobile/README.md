@@ -66,3 +66,9 @@ Source-level WCAG contrast regression checks both palettes, primary/secondary te
 Official references: https://developer.apple.com/design/human-interface-guidelines/accessibility and https://developer.apple.com/design/human-interface-guidelines/color ; Expo SDK 58: https://docs.expo.dev/versions/v58.0.0/sdk/system-ui/ and https://docs.expo.dev/develop/user-interface/color-themes/ .
 
 **Safe-area correction:** The Expo candidate now uses `react-native-safe-area-context` `~5.11.1` and a root `SafeAreaProvider` with a native `SafeAreaView` on all four edges, rather than React Native's legacy safe-area component. This is necessary for Android edge-to-edge and iPhone status-bar/notch/home-indicator geometry. Browser/Expo bundle success is not physical-device acceptance. Source: https://docs.expo.dev/versions/v58.0.0/sdk/safe-area-context/ .
+
+## 24 official research leads (not connected)
+
+The same shared country catalogue now carries a separate `publisherResearchLead` **reference only** for each of the 24 additional geography-only national scopes. Both the protected web country view and the offline Expo Countries tab display the publisher name and why further verification is required. This is not a new source candidate, verified API, commercial reuse licence, medical dataset, national availability record or protected customer feed.
+
+The immutable research references are in `docs/intelligence/country-101-new-24-publisher-research-20261118.json`; their exact country-to-ISO mapping, zero live/rights flags and web/iOS/Android parity are enforced by `scripts/test-intelligence-24-publisher-research.mjs`. No regulator HTTP requests, cookies or authentication are initiated by the Expo app; linking through external source pages in the web UI is ordinary user-directed browsing only. Each country's production ingestion still requires separate legal and technical approval.

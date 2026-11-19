@@ -27,6 +27,7 @@
 .details ul{list-style:none;margin:12px 0 0;padding:0}
 .details li+li{border-top:1px solid #f0f0f2;margin-top:12px;padding-top:12px}
 .details li a{display:block;font-size:.82rem;color:#0066cc;font-weight:620;overflow-wrap:anywhere}
+.details>a{display:block;font-size:.82rem;color:#0066cc;font-weight:620;line-height:1.5;overflow-wrap:anywhere;margin:6px 0 0}
 .details li span,.details li small{display:block;font-size:.72rem;color:#606066;margin-top:4px;line-height:1.5}
 .country .next{font-size:.76rem}
 .more{display:block;margin:22px auto 0;border:1px solid #c5c5ca;border-radius:10px;background:#fff;min-height:44px;padding:10px 22px;color:#1d1d1f;font-weight:630;cursor:pointer}
