@@ -99,7 +99,8 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   assert.equal(worklist.contract, "novapharm.intelligence.publisher-terms-prescreen.v1");
   assert.equal(worklist.totalSourceCandidates, 101);
-  assert.equal(worklist.publicPublisherNoticesLocated, 6);
+  assert.equal(worklist.publicPublisherNoticesLocated, 7);
+  assert.equal(worklist.publiclyRestrictedBetaBusinessSources, 1);
   assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
   assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
   assert.equal(worklist.customerLiveSourceCandidates, 0);
@@ -120,7 +121,7 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   }
 });
 
-test("six official publisher notices must never become production licence approvals", () => {
+test("seven official publisher notices must never become production licence approvals", () => {
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   const notices = new Map(worklist.sourceEntries
     .filter(entry => entry.publisherTermsUrl !== null)
@@ -132,6 +133,7 @@ test("six official publisher notices must never become production licence approv
   const expected = new Map([
     ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
     ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
+    ["europe-european-union-eea-ema-pms-public-api", "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf"],
     ["asia-pacific-singapore-hsa-data-gov-sg", "https://developers.data.gov.sg/open-data-licence"],
     ["north-america-canada-health-canada-drug-product-database", "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe"],
     ["europe-united-kingdom-nhsbsa-english-prescribing-dataset", "https://opendata.nhsbsa.net/pages/terms-and-conditions"],
@@ -151,7 +153,7 @@ test("six official publisher notices must never become production licence approv
     assert.equal(new URL(row.publisherTermsUrl).protocol, "https:");
   }
   assert.equal(worklist.sourceEntries.filter(row =>
-    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 95);
+    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 94);
 });
 
 test("public licence notices cannot override tampered registry or proof-of-rights gates", () => {
@@ -215,4 +217,43 @@ test("Singapore HSA data licence and API conditions are separate and do not gran
   assert.deepEqual(hsa.legallyAcceptedUses, []);
   assert.equal(hsa.customerLive, false);
   assert.equal(hsa.productionDatasetAdmitted, false);
+});
+
+test("EMA PMS beta explicitly forbids business use; no EU commercial source admission", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const ema = worklist.sourceEntries.find(row =>
+    row.candidateKey === "europe-european-union-eea-ema-pms-public-api");
+  assert.ok(ema);
+  assert.equal(ema.jurisdictionLabel, "European Union / EEA");
+  assert.equal(ema.publisherExplicitlyForbidsBusinessUse, true);
+  assert.equal(ema.publisherRegistrationRequired, true);
+  assert.equal(ema.termsPosture, "EMA_PMS_BETA_BUSINESS_USE_NOT_PERMITTED");
+  assert.equal(ema.publisherTermsUrl,
+    "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf");
+  assert.equal(ema.sourceOnlyHttpProbeCiCheckpoint, null);
+  assert.equal(ema.productionRightsGranted, false);
+  assert.equal(ema.productionDatasetAdmitted, false);
+  assert.equal(ema.customerLive, false);
+  assert.deepEqual(ema.legallyAcceptedUses, []);
+  assert.ok(ema.outstandingRightsRequirements.some(s =>
+    s.includes("Do not use") && s.includes("business")));
+  assert.ok(ema.outstandingRightsRequirements.some(s =>
+    s.includes("prior EMA authorisation")));
+  assert.equal(worklist.publiclyRestrictedBetaBusinessSources, 1);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+});
+
+test("other publisher pre-screens never inherit EMA restricted beta policy", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const restricted = worklist.sourceEntries.filter(row =>
+    row.publisherExplicitlyForbidsBusinessUse);
+  assert.deepEqual(restricted.map(row => row.candidateKey),
+    ["europe-european-union-eea-ema-pms-public-api"]);
+  for (const entry of worklist.sourceEntries) {
+    assert.equal(typeof entry.publisherExplicitlyForbidsBusinessUse, "boolean");
+    assert.equal(typeof entry.publisherRegistrationRequired, "boolean");
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+  }
 });
