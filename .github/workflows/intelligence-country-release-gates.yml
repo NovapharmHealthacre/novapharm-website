@@ -1,0 +1,81 @@
+name: Intelligence all countries release evidence and source gates
+
+on:
+  pull_request:
+    paths:
+      - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - 'docs/intelligence/77-country-101-source-complete-register-20261118.md'
+      - 'src/core/intelligence-country-release-ledger.mjs'
+      - 'src/core/intelligence-country-iso-identifiers.mjs'
+      - 'src/core/intelligence-country-source-baseline.mjs'
+      - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'src/core/intelligence-global-secondary-source-gateway.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-quarantine.mjs'
+      - 'src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs'
+      - 'scripts/test-intelligence-country-release-ledger.mjs'
+      - 'scripts/render-intelligence-country-release-ledger.mjs'
+      - 'src/core/intelligence-country-markdown-cell.mjs'
+      - '.github/workflows/intelligence-country-release-gates.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  all-countries-gated:
+    name: 77 countries, 101 sources, and deny-first production gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Syntax-check national ledger and the report renderer
+        run: |
+          node --check src/core/intelligence-global-secondary-source-gateway.mjs
+          node --check src/core/intelligence-au-pbs-schedule-quarantine.mjs
+          node --check src/core/intelligence-au-pbs-schedule-csv-quarantine.mjs
+          node --check src/core/intelligence-country-release-ledger.mjs
+          node --check src/core/intelligence-country-iso-identifiers.mjs
+          node --check src/core/intelligence-country-source-baseline.mjs
+          node --check scripts/test-intelligence-country-release-ledger.mjs
+          node --check scripts/render-intelligence-country-release-ledger.mjs
+          node --check src/core/intelligence-country-markdown-cell.mjs
+      - name: Verify all 77 national, EU/EEA, Global and 101 source requirements
+        run: node --test scripts/test-intelligence-country-release-ledger.mjs
+      - name: Generate country evidence report without network or customer publication
+        run: |
+          mkdir -p artifacts/country-release-ledger
+          node scripts/render-intelligence-country-release-ledger.mjs --json > artifacts/country-release-ledger/readiness.json
+          node scripts/render-intelligence-country-release-ledger.mjs --markdown > artifacts/country-release-ledger/readiness.md
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const d = JSON.parse(fs.readFileSync("artifacts/country-release-ledger/readiness.json","utf8"));
+          if (d.nationalCountries !== 77 || d.totalSources !== 101 ||
+              d.nationalSourceCandidates !== 89 ||
+              d.euEeaGroupSourceCandidates !== 3 || d.globalGroupSourceCandidates !== 9 ||
+              d.sourceAdvertisedModeCounts.apiRelated !== 35 ||
+              d.sourceAdvertisedModeCounts.downloadRelatedWithoutApi !== 26 ||
+              d.sourceAdvertisedModeCounts.portalDiscoveryOrOther !== 40 ||
+              d.verifiedLicensedSources !== 0 || d.verifiedProductionCountries !== 0 ||
+              d.countries.length !== 79 || d.countries.some(x => !x.countryCode ||
+                x.engineeringMilestonePercent > 40 || x.verifiedProductionCompletionPercent !== 0) ||
+              d.engineeringMilestonePercent > 40 ||
+              d.sourceRows.some(x => x.canPublish !== false || x.verifiedCompletionPercent !== 0)) {
+            throw new Error("Unsafe or incomplete country release evidence");
+          }
+          NODE
+      - name: Archive inspectable evidence; never a customer release
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: intelligence-country-release-ledger
+          path: artifacts/country-release-ledger/
+          if-no-files-found: error
+          retention-days: 7

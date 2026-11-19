@@ -681,3 +681,30 @@ test("private enterprise readiness artifacts cannot dispatch the unrelated publi
   // Publisher policy-only changes remain neutral, not an automatic private exemption.
   assert.match(publisher, /A publisher policy-only update must not be silently skipped/);
 });
+
+test("country release-ledger is private-only and cannot dispatch the corporate AWS publisher", () => {
+  const countryPaths = [
+  ".github/workflows/intelligence-country-release-gates.yml",
+  "docs/intelligence/77-country-101-source-complete-register-20261118.md",
+  "docs/intelligence/country-101-release-gates-20261118.md",
+  "scripts/render-intelligence-country-release-ledger.mjs",
+  "scripts/test-intelligence-country-release-ledger.mjs",
+  "src/core/intelligence-country-iso-identifiers.mjs",
+  "src/core/intelligence-country-markdown-cell.mjs",
+  "src/core/intelligence-country-release-ledger.mjs",
+  "src/core/intelligence-country-source-baseline.mjs"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, file + " missing the changed-file classifier");
+    assert.ok(classifier.trim().endsWith(")"), file + " must close its exact private Bash case arm");
+    const protectedPaths = new Set(classifier.trim().slice(0, -1).split("|"));
+    for(const path of countryPaths) {
+      assert.ok(protectedPaths.has(path), file + " would publish country research-only file: " + path);
+    }
+    assert.ok(protectedPaths.has(".github/workflows/browser-acceptance.yml"));
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
