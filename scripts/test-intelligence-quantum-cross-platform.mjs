@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { intelligenceWorkspaceCatalogue } from "../apps/portal/data/intelligence-workspaces.ts";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, root), "utf8");
 const program = JSON.parse(read("docs/intelligence/quantum-research-program-v1.json"));
@@ -28,7 +27,8 @@ test("native adapters reject production authority and 22 medicine routes remain 
       assert.ok(body.includes(field), path+" "+field);
     }
   }
-  assert.equal(intelligenceWorkspaceCatalogue.length,22);
+  const canonical = read("apps/portal/data/intelligence-workspaces.ts");
+  assert.equal([...canonical.matchAll(/\{ slug: "/g)].length, 22);
   const constraints=JSON.parse(read("config/intelligence/owner-production-constraints.json"));
   assert.equal(constraints.productionSignoff,"not_granted");
   assert.equal(constraints.initialInfrastructureBudget.monthlyCapGbp,0);
