@@ -138,6 +138,10 @@ param enablePrivateNetworking bool = true
 @description('Temporarily trusted IPv4 address or CIDR used only while an owner seeds Key Vault.')
 param keyVaultBootstrapIpCidr string = ''
 
+@secure()
+@description('Optional origin-restricted public MapKit JS token, matched to the immutable portal browser build. Never supply an Apple private signing key.')
+param mapKitJsToken string = ''
+
 @description('Enable Microsoft Entra App Service Authentication for the secure portal after registration approval.')
 param enableEntraAuthentication bool = false
 
@@ -447,10 +451,6 @@ module founderApp './modules/web-app.bicep' = {
     restrictOriginToFrontDoor: true
   }
 }
-
-@secure()
-@description('Optional origin-restricted public MapKit JS token, matched to the immutable portal browser build. Never supply an Apple private signing key.')
-param mapKitJsToken string = ''
 
 var portalSettings = union(nextBaseSettings, {
   PUBLIC_ORIGIN: resolvedPortalOrigin
