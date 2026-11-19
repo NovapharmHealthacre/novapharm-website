@@ -17,6 +17,8 @@ test("overlapping searches cannot replace newer answers or retain unsettled work
   assert.match(controller, /const isCurrent = \(\) => version === queryVersion && dialog\.open/);
   assert.match(controller, /if \(!isCurrent\(\)\) return;[\s\S]*?renderAnswer/);
   assert.match(controller, /if \(semanticRequest\) semanticRequest\.resolve\(\[\]\)/);
+  assert.match(controller, /Mode changes invalidate prior in-flight answers/);
+  assert.match(controller, /results\.removeAttribute\("aria-busy"\)/);
   assert.match(controller, /if \(isCurrent\(\)\) results\.removeAttribute\("aria-busy"\)/);
 });
 
