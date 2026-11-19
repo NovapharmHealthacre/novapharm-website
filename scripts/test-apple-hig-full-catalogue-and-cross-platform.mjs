@@ -720,10 +720,10 @@ test("optional read-only public website HTML sample (not HIG compliance)",
       if (size > 1600000) throw new Error("HTML exceeds read-only sample size budget");
       const html = (await response.text()).slice(0, 1600001);
       if (html.length > 1600000) throw new Error("HTML exceeds read-only sample size budget");
-      row.lang = html.match(/<html\\b[^>]*\\blang=["']([^"']+)["']/i)?.[1] || null;
-      row.h1Count = [...html.matchAll(/<h1(?:\\s[^>]*)?>/gi)].length;
-      const meta = html.match(/<meta\\b[^>]*name=["']novapharm-source-sha["'][^>]*>/i)?.[0] || "";
-      row.sourceSha = meta.match(/\\bcontent=["']([a-f0-9]{40})["']/i)?.[1] || null;
+      row.lang = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1] || null;
+      row.h1Count = [...html.matchAll(/<h1(?:\s[^>]*)?>/gi)].length;
+      const meta = html.match(/<meta\b[^>]*name=["']novapharm-source-sha["'][^>]*>/i)?.[0] || "";
+      row.sourceSha = meta.match(/\bcontent=["']([a-f0-9]{40})["']/i)?.[1] || null;
       if (!row.lang || !/^en(?:-|$)/i.test(row.lang)) row.errors.push("Missing English HTML language");
       if (row.h1Count !== 1) row.errors.push("Missing or duplicate H1");
       if (!row.sourceSha) row.errors.push("No published provenance SHA");
@@ -749,7 +749,7 @@ test("optional read-only public website HTML sample (not HIG compliance)",
     results
   };
   writeFileSync(directory + "/public-origin-sample.json",
-    JSON.stringify(report,null,2)+"\\n");
+    JSON.stringify(report,null,2)+"\n");
   console.log("Public HIG HTML evidence " + report.passedRoutes +
     "/" + routes.length + " sampled routes passed narrow HTTP/landmark checks; " +
     "NOT production HIG acceptance.");
