@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "npi.quantum-program.v1",
+  "reviewedAt": "2026-11-19",
+  "status": "source-only-research",
+  "publicClaimsApproved": false,
+  "physicalHardwareEnabled": false,
+  "paidComputeEnabled": false,
+  "productionModelConnected": false,
+  "protectedDataIngestionEnabled": false,
+  "clinicalUsePermitted": false,
+  "principles": [
+    {
+      "title": "Separate problem from execution",
+      "detail": "Record scientific question, source, Hamiltonian or circuit, solver and evidence as separate versioned elements."
+    },
+    {
+      "title": "Independent classical baselines",
+      "detail": "Compare numerical results against exact diagonalization or a suitable classical chemistry/optimization reference."
+    },
+    {
+      "title": "Measure uncertainty and noise",
+      "detail": "Separate finite-shot uncertainty, hardware or simulated noise, and model approximation error."
+    },
+    {
+      "title": "Repeatable and falsifiable experiments",
+      "detail": "Pin source, input hash, engine version, seed, circuit, geometry, basis and test tolerances."
+    },
+    {
+      "title": "Fail closed on data rights and safety",
+      "detail": "No patient data, licensed pharmaceutical datasets, third-party model egress or regulated decisions in unapproved research."
+    },
+    {
+      "title": "Human-gated promotion",
+      "detail": "A validated schema or passing CI cannot grant clinical, customer, source-rights or production authority."
+    }
+  ],
+  "modules": [
+    {
+      "id": "circuits",
+      "title": "Quantum Experiment Workspace",
+      "description": "Bounded two-qubit Bell-state reference using an optional local Cirq installation; simulations are not hardware measurements.",
+      "status": "offline-prototype"
+    },
+    {
+      "id": "molecular",
+      "title": "Molecular Simulation Lab",
+      "description": "OpenFermion chemistry Hamiltonians and independent classical reference are planned; no H2 calculation or drug outcome is certified.",
+      "status": "planned"
+    },
+    {
+      "id": "verification",
+      "title": "Verification Register",
+      "description": "Typed, bounded receipt validation and negative tests; no independent research replication is claimed.",
+      "status": "source-prototype"
+    },
+    {
+      "id": "resources",
+      "title": "Resource Estimator",
+      "description": "Qualtran logical resource analysis and physical overhead assumptions require a separate reviewed experiment.",
+      "status": "planned"
+    },
+    {
+      "id": "noise",
+      "title": "Noise and Calibration Lab",
+      "description": "Simulated noise tests must be distinguished from real processor calibration snapshots.",
+      "status": "planned"
+    },
+    {
+      "id": "hybrid",
+      "title": "Hybrid Optimization Lab",
+      "description": "Classical MIP/CP-SAT and heuristics must remain the baseline before QAOA-style experiments.",
+      "status": "planned"
+    },
+    {
+      "id": "hardware",
+      "title": "Hardware Execution Gateway",
+      "description": "External hardware credentials, spending, outbound access and execution are disabled.",
+      "status": "blocked"
+    }
+  ],
+  "links": [
+    {
+      "label": "Google Quantum AI software",
+      "href": "https://quantumai.google/software"
+    },
+    {
+      "label": "Cirq",
+      "href": "https://quantumai.google/cirq"
+    },
+    {
+      "label": "OpenFermion",
+      "href": "https://quantumai.google/openfermion"
+    },
+    {
+      "label": "Qualtran",
+      "href": "https://quantumai.google/qualtran"
+    },
+    {
+      "label": "qsim",
+      "href": "https://quantumai.google/qsim"
+    }
+  ]
+}
