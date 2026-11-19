@@ -129,8 +129,8 @@ The 79 labels include Global and European Union/EEA; do not present them as 79 f
 ## First-wave publisher terms pre-screen — 19 November 2026
 
 This is a **source-rights due-diligence worklist, not a legal grant**. The deterministic
-\`buildPublisherRightsPrescreenWorklist\` in
-\`src/core/intelligence-global-source-onboarding.mjs\` covers all **101 source
+`buildPublisherRightsPrescreenWorklist` in
+`src/core/intelligence-global-source-onboarding.mjs` covers all **101 source
 candidates**. These must not be confused with the separate proposed
 **101 national geography labels**: the original registry has 77 national
 countries and 12 global/EU source candidates, and the country-expansion
@@ -152,7 +152,7 @@ grant, a working API, a configured production pipeline or tenant approval.
 | Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
 
 For the other 96 source candidates, the worklist explicitly states
-\`PUBLIC_TERMS_NOT_YET_SCREENED\`; none may inherit terms from a different
+`PUBLIC_TERMS_NOT_YET_SCREENED`; none may inherit terms from a different
 publisher or country. These five screens are selected because relevant
 bounded source-adapter/bridge code already exists. They are **not**
 five activated country integrations.
@@ -177,5 +177,5 @@ five activated country integrations.
 6. Separately approve and sign iOS/Android builds. A metadata catalogue or
    API preview is not a live native medicine-data integration.
 
-This prescreen never modifies the source registry's \`not-reviewed\` /
-\`candidate-only\` fields or the owner production constraints.
+This prescreen never modifies the source registry's `not-reviewed` /
+`candidate-only` fields or the owner production constraints.
