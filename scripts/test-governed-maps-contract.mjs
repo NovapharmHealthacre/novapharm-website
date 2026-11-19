@@ -28,12 +28,19 @@ test("portal and Intelligence Docker builds accept only an optional public Maps 
     assert.ok(content.includes('ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""'), file);
     assert.ok(content.includes('ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}'), file);
     assert.ok(content.indexOf('ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}') < content.indexOf("RUN npm run build --workspace=@novapharm/portal"), file);
+    assert.ok(content.slice(content.indexOf(' AS runtime')).includes('ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}'), file);
     assert.doesNotMatch(content, /NEXT_PUBLIC_APPLE_MAPS_(?:PRIVATE_KEY|P8|KEY_ID)/);
   }
   const map = read("apps/portal/components/governed-healthcare-map.tsx");
   const proxy = read("apps/portal/proxy.ts");
   const azure = read(".github/workflows/azure-deploy.yml");
   assert.ok(azure.includes('NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}'));
+  assert.ok(azure.includes('NOVAPHARM_MAPKIT_JS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}'));
+  assert.ok(azure.includes('mapKitJsToken="$NOVAPHARM_MAPKIT_JS_TOKEN"'));
+  const infra = read('infra/unified-estate.bicep');
+  assert.ok(infra.includes("param mapKitJsToken string = ''"));
+  assert.ok(infra.includes('NEXT_PUBLIC_APPLE_MAPS_TOKEN: mapKitJsToken'));
+  assert.ok(infra.includes("'NEXT_PUBLIC_APPLE_MAPS_TOKEN'"));
   assert.ok(azure.indexOf("NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}") < azure.indexOf("RELEASE_VERSION=\"$EXPECTED_SHA\" npm run azure:package"));
   assert.ok(map.includes("process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN"));
   assert.ok(proxy.includes("Boolean(process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN)"));
