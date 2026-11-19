@@ -284,9 +284,17 @@ export async function initialiseSearchDialog(dialog) {
   };
 
   modeButtons.forEach((button) => button.addEventListener("click", () => {
-    // Mode changes invalidate prior in-flight answers, too.
+    // Mode changes invalidate prior in-flight answers and their visible output.
     ++queryVersion;
+    if (semanticRequest) {
+      semanticRequest.resolve([]);
+      semanticRequest = null;
+    }
+    results.replaceChildren();
+    currentAnswer = "";
+    copyButton.hidden = true;
     results.removeAttribute("aria-busy");
+    announce("");
     mode = button.dataset.aiMode;
     modeButtons.forEach((candidate) => candidate.setAttribute("aria-pressed", String(candidate === button)));
     dialog.querySelector("[data-ai-mode-help]").textContent = mode === "search"
