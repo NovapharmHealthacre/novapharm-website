@@ -789,3 +789,139 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
   assert.equal(audit.verifiedImplementationCount, 0);
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
 });
+
+test("optional read-only rendered public HIG evidence sampling",
+  { skip: process.env.HIG_RENDER_PUBLIC_ORIGIN !== "1", timeout: 720000 }, async () => {
+  const { chromium, webkit } = await import("playwright");
+  const { default: AxeBuilder } = await import("@axe-core/playwright");
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const path = await import("node:path");
+  const origin = "https://novapharmhealthcare.com";
+  const routes = ["/", "/contact/", "/legal/accessibility/"];
+  const widths = [{name:"mobile",width:390,height:844},{name:"desktop",width:1440,height:900}];
+  const folder = "artifacts/apple-hig-production-audit/rendered-public";
+  mkdirSync(folder, {recursive:true});
+  const rows = [];
+  for (const [engine, launch] of [["chromium",chromium],["webkit",webkit]]) {
+    const browser = await launch.launch({headless:true});
+    try {
+      for (const viewport of widths) {
+        const context = await browser.newContext({
+          viewport:{width:viewport.width,height:viewport.height},
+          reducedMotion:"reduce",serviceWorkers:"block",permissions:[]
+        });
+        let blockedRequests = 0;
+        // Never send POST/PUT/PATCH/DELETE, analytics, off-domain tracking,
+        // identity requests or paid/clinical API traffic during this audit.
+        await context.route("**/*", async route => {
+          const request = route.request();
+          const remote = new URL(request.url());
+          if (!["GET","HEAD"].includes(request.method()) || remote.origin !== origin) {
+            blockedRequests += 1;
+            await route.abort();
+          } else {
+            await route.continue();
+          }
+        });
+        try {
+          for (const pathname of routes) {
+            const row = {
+              engine, viewport:viewport.name, pathname, httpStatus:null,
+              publishedSourceSha:null, hasH1:false, language:null,
+              horizontalOverflowPx:null, firstKeyboardFocusVisible:false,
+              seriousAxeViolations:[], otherAxeViolations:[],
+              blockedExternalOrUnsafeRequests:0, errors:[]
+            };
+            const beforeBlocked = blockedRequests;
+            const page = await context.newPage();
+            try {
+              const response = await page.goto(origin + pathname, {
+                waitUntil:"domcontentloaded",timeout:35000
+              });
+              row.httpStatus = response?.status() || null;
+              if (row.httpStatus !== 200) row.errors.push("Page did not return HTTP 200");
+              await page.waitForLoadState("load", {timeout:7000}).catch(()=>{});
+              const doc = await page.evaluate(() => {
+                const meta = document.querySelector('meta[name="novapharm-source-sha"]');
+                return {
+                  lang:document.documentElement.lang,
+                  h1Count:document.querySelectorAll("main h1").length,
+                  overflow:Math.max(0,document.documentElement.scrollWidth -
+                    document.documentElement.clientWidth),
+                  sha:meta?.getAttribute("content") || null
+                };
+              });
+              row.language = doc.lang;
+              row.hasH1 = doc.h1Count === 1;
+              row.horizontalOverflowPx = doc.overflow;
+              row.publishedSourceSha = /^[a-f0-9]{40}$/.test(doc.sha||"") ? doc.sha : null;
+              if (!row.hasH1) row.errors.push("Missing or duplicate main H1");
+              if (!row.language?.startsWith("en")) row.errors.push("Missing expected language declaration");
+              if (doc.overflow > 2) row.errors.push("Horizontal overflow: " + doc.overflow + "px");
+              await page.keyboard.press("Tab");
+              row.firstKeyboardFocusVisible = await page.evaluate(() => {
+                const el = document.activeElement;
+                if (!el || el === document.body) return false;
+                const rect = el.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0 &&
+                  getComputedStyle(el).visibility !== "hidden";
+              });
+              if (!row.firstKeyboardFocusVisible)
+                row.errors.push("First Tab did not reach a visible focus target");
+              if (engine === "chromium" && viewport.name === "mobile") {
+                const audit = await new AxeBuilder({page})
+                  .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
+                row.seriousAxeViolations = audit.violations
+                  .filter(v => ["serious","critical"].includes(v.impact))
+                  .map(v => ({rule:v.id,impact:v.impact,nodes:v.nodes.length}));
+                row.otherAxeViolations = audit.violations
+                  .filter(v => !["serious","critical"].includes(v.impact))
+                  .map(v => ({rule:v.id,impact:v.impact,nodes:v.nodes.length}));
+                if (row.seriousAxeViolations.length)
+                  row.errors.push("Serious/critical axe rule violations: " +
+                    row.seriousAxeViolations.map(v=>v.rule).join(","));
+              }
+              if (engine === "chromium") {
+                const filename = pathname === "/" ? "home" :
+                  pathname.split("/").filter(Boolean).pop();
+                await page.screenshot({
+                  path:path.join(folder,filename + "-" + viewport.name + ".png"),
+                  fullPage:true,animations:"disabled",timeout:20000
+                });
+              }
+            } catch (error) {
+              row.errors.push(String(error?.message || error).slice(0,350));
+            } finally {
+              row.blockedExternalOrUnsafeRequests = blockedRequests - beforeBlocked;
+              rows.push(row);
+              await page.close();
+            }
+          }
+        } finally {
+          await context.close();
+        }
+      }
+    } finally {
+      await browser.close();
+    }
+  }
+  const result = {
+    schema:"novapharm.hig-read-only-public-rendered-evidence.v1",
+    generatedAt:new Date().toISOString(),
+    origin,sourceCommit:process.env.GITHUB_SHA || null,
+    methodology:"Read-only published public Chromium/WebKit, keyboard tab and axe on mobile Chromium only",
+    scope:"Three public routes, two screen widths and two engines; screenshots private to CI",
+    cautions:["No authenticated roles, account submissions, billing or patient data",
+      "Only first keyboard focus probed; not a complete WCAG audit",
+      "No independent manual VoiceOver, TalkBack, NVDA, zoom, RTL or signed native app proof",
+      "Source PR SHA is not assumed identical to published origin SHA",
+      "Blocked off-domain resources may affect rendering",
+      "Passed observations do not automatically promote any HIG topic to verified"],
+    total:rows.length,failed:rows.filter(r=>r.errors.length).length,rows
+  };
+  writeFileSync(path.join(folder,"results.json"),JSON.stringify(result,null,2)+"\n");
+  console.log("Read-only rendered public HIG sampling: " + result.total +
+    " observations, " + result.failed + " gaps. This is NOT a production conformance certificate.");
+  assert.equal(result.total,12);
+  assert.equal(result.failed,0,"Observed public browser/accessibility gaps: see screenshot and JSON artifact");
+});
