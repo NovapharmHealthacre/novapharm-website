@@ -485,14 +485,21 @@ test("private enterprise readiness artifacts cannot dispatch the unrelated publi
   ];
   const dispatcher = get("dispatch-approved-aws-contact-release.yml");
   const publisher = get("publish-aws-contact-production.yml");
+  const protectedPaths = (source, name) => {
+    const line = source.match(/case "\\$changed" in\\s*\\n\\s*([^\\n]+)/)?.[1];
+    assert.ok(line?.trim().endsWith(")"), name + " must retain the private changed-file case arm");
+    return new Set(line.trim().slice(0, -1).split("|"));
+  };
+  const dispatcherPaths = protectedPaths(dispatcher, "dispatcher");
+  const publisherPaths = protectedPaths(publisher, "publisher");
   for (const path of files) {
-    assert.ok(dispatcher.includes("|" + path + "|"), "contact dispatcher must treat source-only audit as private: " + path);
-    assert.ok(publisher.includes("|" + path + "|"), "public publisher must treat source-only audit as private: " + path);
+    assert.ok(dispatcherPaths.has(path), "contact dispatcher must treat source-only audit as private: " + path);
+    assert.ok(publisherPaths.has(path), "public publisher must treat source-only audit as private: " + path);
   }
   // A risk-register entry is a meaningful protected ML source change, so the
   // existing found_ml=true & private_only=true condition can safely deny publication.
-  assert.ok(dispatcher.includes("|docs/ai-risk-register.md|"));
-  assert.ok(publisher.includes("|docs/ai-risk-register.md|"));
+  assert.ok(dispatcherPaths.has("docs/ai-risk-register.md"));
+  assert.ok(publisherPaths.has("docs/ai-risk-register.md"));
   assert.match(dispatcher, /found_ml=true/);
   assert.match(publisher, /release_needed=false/);
   // Publisher policy-only changes remain neutral, not an automatic private exemption.
