@@ -8,6 +8,7 @@ on:
       - package.json
       - package-lock.json
       - pnpm-lock.yaml
+      - pnpm-workspace.yaml
 
 permissions:
   contents: read
@@ -25,6 +26,10 @@ jobs:
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Verify immutable npm installation
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Export refreshed lockfile for review
+      - name: Regenerate pnpm lockfile under declared pnpm version
         run: |
-          node -e 'const fs=require("node:fs"); const b=fs.readFileSync("package-lock.json").toString("base64"); console.log("NOVA_PR179_LOCK_BEGIN"); for(let i=0;i<b.length;i+=3000)console.log(b.slice(i,i+3000)); console.log("NOVA_PR179_LOCK_END")'
+          npm install -g pnpm@11.9.0 --ignore-scripts --no-audit --no-fund
+          pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Export refreshed npm and pnpm lockfiles for review
+        run: |
+          node -e 'const fs=require("node:fs"); for (const [file,key] of [["package-lock.json","NPM"],["pnpm-lock.yaml","PNPM"]]) { const b=fs.readFileSync(file).toString("base64"); console.log("NOVA_PR179_"+key+"_BEGIN"); for(let i=0;i<b.length;i+=3000) console.log(b.slice(i,i+3000)); console.log("NOVA_PR179_"+key+"_END"); }'
