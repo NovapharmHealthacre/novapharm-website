@@ -48,6 +48,10 @@ test("staged Pages release rejects stale AI source or mismatched model/index art
   assert.match(staged, /readFileSync\(sourceFile\)\.equals\(readFileSync\(stagedFile\)\)/);
   assert.match(staged, /aiManifest\.corpusHash !== aiKnowledge\.corpusHash/);
   assert.match(staged, /aiManifest\.corpusHash !== aiEmbeddings\.corpusHash/);
+  assert.match(staged, /aiModel\.id !== aiEmbeddings\.modelId/);
+  assert.match(staged, /aiModel\.revision !== aiEmbeddings\.modelRevision/);
+  assert.match(staged, /aiKnowledge\.privacy\?\.externalInference !== false/);
+  assert.match(staged, /aiKnowledge\.privacy\?\.portalDataIncluded !== false/);
   assert.match(staged, /digest !== asset\.sha256 \|\| bytes\.length !== asset\.bytes/);
   assert.match(staged, /AI source\/model manifest consistency gate failed/);
   assert.match(staged, /Public AI entrypoint differs from reviewed source/);
