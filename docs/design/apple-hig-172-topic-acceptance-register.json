@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 171,
+    "platformsAssessed": 204,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -103,6 +103,24 @@
           "scope": "Public Oncology hero portrait uncropped in 8 live viewport/browser combinations; artifact 14534534397",
           "liveSourceSha": null,
           "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        },
+        {
+          "topic": "Accessibility",
+          "sourceRun": 44540795085,
+          "jobId": 135618272024,
+          "jobConclusion": "success",
+          "scope": "Three public routes, two widths, Chromium/WebKit; first Tab focus and 3 mobile Chromium automated axe checks; screenshots artifact 14539093077",
+          "liveSourceSha": null,
+          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4"
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44540795085,
+          "jobId": 135618272024,
+          "jobConclusion": "success",
+          "scope": "Three public routes, two widths, Chromium/WebKit; H1, no >2px horizontal overflow, screenshots artifact 14539093077",
+          "liveSourceSha": null,
+          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4"
         }
       ],
       "excludedAsAcceptance": [
@@ -133,10 +151,11 @@
       "distinctObservedPublicLiveRuns": [
         44528135812,
         44532249980,
-        44532250088
+        44532250088,
+        44540795085
       ],
-      "recordedPartialTopicPlatformObservations": 4,
-      "note": "Partial topic records may share one underlying workflow run. Three distinct successful read-only public live runs, four topic/platform partial observations; no full independently signed acceptance."
+      "recordedPartialTopicPlatformObservations": 6,
+      "note": "Four distinct successful first-party read-only public live workflow runs underpin six topic/platform partial observations. Same run may support different bounded checks; none is full implementation or signed native release proof."
     }
   },
   "topics": [
@@ -527,7 +546,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/foundations",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/foundations.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -539,23 +558,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Treat the collection as a cross-site web requirements index only; each applicable child needs its own page inventory, screenshots, semantic/contrast tests, lawful assets and deployment acceptance, rather than marking the collection implemented from the imported design stylesheet."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map the foundation topics to iOS system capabilities and real phone/tablet behavior; keep native privacy, Dynamic Type, accessibility, adaptive appearance and SF Symbols rights checks separate. The index itself proves no signed release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map shared goals to Android-native typography, Material components, TalkBack, insets, runtime privacy and app signing. Apple-specific SF Symbols and visionOS spatial APIs are not interchangeable Android features."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/foundations.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Foundations Markdown (collectionGroup index) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/foundations.md. Apple's Foundations collection lists accessibility, app icons, branding, color, Dark Mode, icons, images, immersive experiences, inclusion, layout, materials, motion, privacy, right-to-left, SF Symbols, spatial layout, typography and writing; this is a collectionGroup index, not one standalone implementable UI component.",
+        "Web applicability: Treat the collection as a cross-site web requirements index only; each applicable child needs its own page inventory, screenshots, semantic/contrast tests, lawful assets and deployment acceptance, rather than marking the collection implemented from the imported design stylesheet.",
+        "Native scope: iOS — Map the foundation topics to iOS system capabilities and real phone/tablet behavior; keep native privacy, Dynamic Type, accessibility, adaptive appearance and SF Symbols rights checks separate. The index itself proves no signed release.; Android — Map shared goals to Android-native typography, Material components, TalkBack, insets, runtime privacy and app signing. Apple-specific SF Symbols and visionOS spatial APIs are not interchangeable Android features.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Foundations",
@@ -566,7 +590,39 @@
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/accessibility.md",
       "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19T14:22:41Z",
+          "workflow": "Apple HIG 172-topic traceability and cross-platform detail — rendered public HTML sampling",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085",
+          "jobId": 135618272024,
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085/artifacts/14539093077",
+          "observedLiveSourceSha": null,
+          "sourceCommit": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
+          "checkedRoutes": [
+            "https://novapharmhealthcare.com/",
+            "https://novapharmhealthcare.com/contact/",
+            "https://novapharmhealthcare.com/legal/accessibility/"
+          ],
+          "checkedJourneys": [
+            "12 read-only public observations: 3 routes × Chromium/WebKit × 390/1440 viewports",
+            "HTTP, document language, single main H1, horizontal overflow <=2px, first keyboard Tab reached visible focus target",
+            "Axe WCAG2/2.1/2.2 automatic serious/critical scan in three mobile Chromium routes, with results and screenshots archived"
+          ],
+          "scopeLimits": [
+            "This is not a sitewide or authenticated Portal/Intelligence audit",
+            "One keyboard Tab is not full keyboard traversal or physical VoiceOver/NVDA/Switch Control testing",
+            "No 200–400% zoom, theme, RTL, contrast manual audit or signed iOS/Android release",
+            "No independent production quality/security approval; browser job does not establish full deployed SHA parity"
+          ],
+          "provenanceNote": "GitHub PR head and artifact job SHA are not an independent observation of the full publicly deployed HTML release SHA; HIG source receipts and built page evidence remain distinct.",
+          "checkedTopic": "Accessibility"
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -732,7 +788,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/dark-mode",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/dark-mode.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -744,23 +800,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit media queries and browser/system dark preference changes, computed contrast, current custom-brand colors, all overlay/input states and image backgrounds on the public site and authenticated workspaces. Avoid merely inverting colors or claiming that a light-only marketing page passes both modes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Implement iOS semantic dynamic colors/base and elevated surfaces and adapt images and text; verify device-level light/dark/automatic transitions, increased contrast and transparency, Dynamic Type and VoiceOver. A native asset-color set is not proof of shipping."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android night-mode/dynamic semantic colors with system preference, readable contrast and appropriate Android-native surfaces, verifying TalkBack, font scaling and appearance changes instead of copying UIKit/SwiftUI APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/dark-mode.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Dark Mode Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/dark-mode.md. The official article recommends respecting the systemwide appearance choice, avoiding unnecessary app-only mode toggles, using adaptive semantic colors and appropriate contrast in both states including Increase Contrast and Reduce Transparency; distinct dark assets or icons may be necessary and base/elevated system surfaces matter on iOS.",
+        "Web applicability: Audit media queries and browser/system dark preference changes, computed contrast, current custom-brand colors, all overlay/input states and image backgrounds on the public site and authenticated workspaces. Avoid merely inverting colors or claiming that a light-only marketing page passes both modes.",
+        "Native scope: iOS — Implement iOS semantic dynamic colors/base and elevated surfaces and adapt images and text; verify device-level light/dark/automatic transitions, increased contrast and transparency, Dynamic Type and VoiceOver. A native asset-color set is not proof of shipping.; Android — Use Android night-mode/dynamic semantic colors with system preference, readable contrast and appropriate Android-native surfaces, verifying TalkBack, font scaling and appearance changes instead of copying UIKit/SwiftUI APIs.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Foundations",
@@ -1007,6 +1068,37 @@
             "No independent HIG review or native iOS/Android receipt"
           ],
           "provenanceNote": "Exact live oncology CSS bytes checked against GitHub job source commit bb96952db2e4dcaa19526a8ab321b8081b6aeca7; full live HTML source-SHA meta not independently established by this job."
+        },
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19T14:22:41Z",
+          "workflow": "Apple HIG 172-topic traceability and cross-platform detail — rendered public HTML sampling",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085",
+          "jobId": 135618272024,
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085/artifacts/14539093077",
+          "observedLiveSourceSha": null,
+          "sourceCommit": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
+          "checkedRoutes": [
+            "https://novapharmhealthcare.com/",
+            "https://novapharmhealthcare.com/contact/",
+            "https://novapharmhealthcare.com/legal/accessibility/"
+          ],
+          "checkedJourneys": [
+            "12 read-only public observations: 3 routes × Chromium/WebKit × 390/1440 viewports",
+            "HTTP, document language, single main H1, horizontal overflow <=2px, first keyboard Tab reached visible focus target",
+            "Axe WCAG2/2.1/2.2 automatic serious/critical scan in three mobile Chromium routes, with results and screenshots archived"
+          ],
+          "scopeLimits": [
+            "This is not a sitewide or authenticated Portal/Intelligence audit",
+            "One keyboard Tab is not full keyboard traversal or physical VoiceOver/NVDA/Switch Control testing",
+            "No 200–400% zoom, theme, RTL, contrast manual audit or signed iOS/Android release",
+            "No independent production quality/security approval; browser job does not establish full deployed SHA parity"
+          ],
+          "provenanceNote": "GitHub PR head and artifact job SHA are not an independent observation of the full publicly deployed HTML release SHA; HIG source receipts and built page evidence remain distinct.",
+          "checkedTopic": "Layout"
         }
       ],
       "iosEvidence": [],
@@ -1431,7 +1523,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/charting-data",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/charting-data.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1443,23 +1535,28 @@
       "sourceRequestedPlatforms": "Intelligence, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply to Intelligence and Portal KPI, medicine and delivery charts: show data provenance/time ranges, descriptive takeaway, tabular values, filter/sort alternatives, keyboard detail access and non-color-only significance. No chart receives a live certificate without accepted data rights and authenticated journeys."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, use charts only if useful, supply VoiceOver-accessible elements/values and descriptive summaries, adequate native target sizes and platform-appropriate interactions. Swift Charts developer links are not evidence of an accepted native model or production app."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android, offer TalkBack labels/series/value access, clear range/units, responsive visualizations and accessible table substitutes, using Android APIs and lawful accepted data instead of assuming iOS Charts widgets."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/charting-data.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Charting data Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/charting-data.md. The article says charts should illuminate trend, comparison or changes, avoid overload, reveal detail progressively and use familiar graph types; every chart needs descriptive context, accessible values and interactive alternatives, with cross-chart consistency and continuity for the same dataset.",
+        "Web applicability: Apply to Intelligence and Portal KPI, medicine and delivery charts: show data provenance/time ranges, descriptive takeaway, tabular values, filter/sort alternatives, keyboard detail access and non-color-only significance. No chart receives a live certificate without accepted data rights and authenticated journeys.",
+        "Native scope: iOS — On iOS, use charts only if useful, supply VoiceOver-accessible elements/values and descriptive summaries, adequate native target sizes and platform-appropriate interactions. Swift Charts developer links are not evidence of an accepted native model or production app.; Android — On Android, offer TalkBack labels/series/value access, clear range/units, responsive visualizations and accessible table substitutes, using Android APIs and lawful accepted data instead of assuming iOS Charts widgets.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Patterns",
@@ -1584,7 +1681,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/feedback",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/feedback.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1596,23 +1693,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit status and errors on enquiry/contact, order, account, search and regulated workflows: inline pending/success/failure language, announced state, retry/recovery, destructive warnings and no false payment or stock success. Verify with real keyboard and screen-reader paths, not just static copy."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, combine native state text and VoiceOver announcements with purposeful haptics and alerts, prioritizing critical irreversible actions and avoiding alert fatigue. Confirm actual actions on devices and that feedback never asserts unapproved clinical results."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android, use accessible status messages/live announcements, material-native feedback, controlled notification or haptic alternatives where appropriate, TalkBack testing and non-disruptive progress; do not port Apple Haptic APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/feedback.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Feedback Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/feedback.md. Apple distinguishes passive status feedback, disruptive actionable alerts for critical events, warnings before unexpectedly irreversible loss, confirmations for significant completed actions and clear explanations when actions fail. It recommends conveying status in accessible multimodal ways; ordinary interactions should not produce excessive interruptions.",
+        "Web applicability: Audit status and errors on enquiry/contact, order, account, search and regulated workflows: inline pending/success/failure language, announced state, retry/recovery, destructive warnings and no false payment or stock success. Verify with real keyboard and screen-reader paths, not just static copy.",
+        "Native scope: iOS — On iOS, combine native state text and VoiceOver announcements with purposeful haptics and alerts, prioritizing critical irreversible actions and avoiding alert fatigue. Confirm actual actions on devices and that feedback never asserts unapproved clinical results.; Android — On Android, use accessible status messages/live announcements, material-native feedback, controlled notification or haptic alternatives where appropriate, TalkBack testing and non-disruptive progress; do not port Apple Haptic APIs.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Patterns",
@@ -2416,7 +2518,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/components",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/components.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2428,23 +2530,28 @@
       "sourceRequestedPlatforms": "iOS, macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Create a web component-to-route inventory and use browser-appropriate semantic HTML controls and tested accessible behavior; child HIG topics must each be separately reviewed, scoped and accepted. Importing a CSS library does not satisfy the Components collection."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, evaluate each component family for actual SwiftUI/UIKit support, iPhone/iPad layout and VoiceOver. Avoid asserting that macOS or visionOS controls named by the collection exist in NovaPharm's mobile app."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android, map intent to Android/Material semantic controls, touch and keyboard use, TalkBack and native back navigation. Do not copy Apple-native framework APIs or certify collection categories as product features."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/components.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Components Markdown (collectionGroup index) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/components.md. The official Components collectionGroup indexes Content, Layout and organization, Menus and actions, Navigation and search, Presentation, Selection and input, Status and System experiences. It is a directory, not proof that system-defined components have been implemented or are relevant on every platform.",
+        "Web applicability: Create a web component-to-route inventory and use browser-appropriate semantic HTML controls and tested accessible behavior; child HIG topics must each be separately reviewed, scoped and accepted. Importing a CSS library does not satisfy the Components collection.",
+        "Native scope: iOS — On iOS, evaluate each component family for actual SwiftUI/UIKit support, iPhone/iPad layout and VoiceOver. Avoid asserting that macOS or visionOS controls named by the collection exist in NovaPharm's mobile app.; Android — On Android, map intent to Android/Material semantic controls, touch and keyboard use, TalkBack and native back navigation. Do not copy Apple-native framework APIs or certify collection categories as product features.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -2648,7 +2755,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/layout-and-organization",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/layout-and-organization.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2660,23 +2767,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map existing public/Portal/Intelligence panes, tables and disclosures to actual HTML/CSS component instances, responsive breaks, reading order, focus and touch controls; audit each child as an independently scoped feature rather than counting this index as a completed component."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply the child layout concepts to iOS only where a genuine device view exists, including regular versus compact panes, dynamic text and VoiceOver navigation. SwiftUI/AppKit-only organization components are not automatically iPhone features."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Implement Android-applicable pane/list/disclosure hierarchy with adaptive widths, foldable support, TalkBack ordering, system Back and window insets, not a literal Apple split-view implementation requirement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/layout-and-organization.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Layout and organization Markdown (collectionGroup index) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/layout-and-organization.md. This Apple collectionGroup indexes Boxes, Collections, Column views, Disclosure controls, Labels, Lists and tables, Lockups, Outline views, Split views and Tab views. Its child-link inventory describes related UI families; it makes no stand-alone production conformance guarantee.",
+        "Web applicability: Map existing public/Portal/Intelligence panes, tables and disclosures to actual HTML/CSS component instances, responsive breaks, reading order, focus and touch controls; audit each child as an independently scoped feature rather than counting this index as a completed component.",
+        "Native scope: iOS — Apply the child layout concepts to iOS only where a genuine device view exists, including regular versus compact panes, dynamic text and VoiceOver navigation. SwiftUI/AppKit-only organization components are not automatically iPhone features.; Android — Implement Android-applicable pane/list/disclosure hierarchy with adaptive widths, foldable support, TalkBack ordering, system Back and window insets, not a literal Apple split-view implementation requirement.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -2880,7 +2992,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2892,23 +3004,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit medicine datasets, stock, orders, invoices and logistics tables for headers, sortable semantics, visible selection, keyboard operations, overflow/reflow, alternate detail views and complete record provenance. Never equate a CSS table with accessible acceptance of protected regulated rows."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply native grouped lists, meaningful selection/row actions, edit mode and disclosure controls as appropriate; on iPhone use compact presentations and VoiceOver row labels. Physical-device and authorized data testing required."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply Android list/table patterns with TalkBack announcements, stable item IDs, descriptive sort state, accessible selection and adaptive compact layouts. Do not require Apple's iOS edit-mode or macOS-specific table API on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Lists and tables Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/lists-and-tables.md. Apple recommends concise scannable row text, descriptive column headings, preserving truncated identity, selection feedback and hierarchy clarity, editable lists when useful, and platform-appropriate disclosure versus information controls. macOS may allow sortable headings and column resizing.",
+        "Web applicability: Audit medicine datasets, stock, orders, invoices and logistics tables for headers, sortable semantics, visible selection, keyboard operations, overflow/reflow, alternate detail views and complete record provenance. Never equate a CSS table with accessible acceptance of protected regulated rows.",
+        "Native scope: iOS — Apply native grouped lists, meaningful selection/row actions, edit mode and disclosure controls as appropriate; on iPhone use compact presentations and VoiceOver row labels. Physical-device and authorized data testing required.; Android — Apply Android list/table patterns with TalkBack announcements, stable item IDs, descriptive sort state, accessible selection and adaptive compact layouts. Do not require Apple's iOS edit-mode or macOS-specific table API on Android.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -2991,7 +3108,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/split-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/split-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3003,23 +3120,28 @@
       "sourceRequestedPlatforms": "Web, iPadOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply a responsive master/detail or sidebar/inspector pattern only where it helps authenticated Portal/Intelligence tasks; collapse to single-view navigation on narrow screens, preserve selected state and keyboard focus, offer an explicit restore control. Not a requirement to display several panes everywhere."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use iPad/regular-width NavigationSplitView/UISplitViewController or supported native equivalents and a compact navigation stack on iPhone portrait; test iPad resizing, VoiceOver pane order and restoration. macOS drag-divider APIs are separate."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Adapt to Android tablet/foldable/window-size panes and use one-pane navigation on small handsets; verify selection and TalkBack/Back restoration. Do not imply SwiftUI NavigationSplitView support on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/split-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Split views Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/split-views.md. Apple describes adjacent primary, secondary and optional tertiary panes showing hierarchy, persistent highlighted selection and optional drag/drop, with split views preferred in regular rather than compact iPhone environments; iPad windows need responsive intermediate widths and pane restoration when hidden.",
+        "Web applicability: Apply a responsive master/detail or sidebar/inspector pattern only where it helps authenticated Portal/Intelligence tasks; collapse to single-view navigation on narrow screens, preserve selected state and keyboard focus, offer an explicit restore control. Not a requirement to display several panes everywhere.",
+        "Native scope: iOS — Use iPad/regular-width NavigationSplitView/UISplitViewController or supported native equivalents and a compact navigation stack on iPhone portrait; test iPad resizing, VoiceOver pane order and restoration. macOS drag-divider APIs are separate.; Android — Adapt to Android tablet/foldable/window-size panes and use one-pane navigation on small handsets; verify selection and TalkBack/Back restoration. Do not imply SwiftUI NavigationSplitView support on Android.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -3344,7 +3466,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/menus",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/menus.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3356,23 +3478,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit primary navigation, account menu, row action menus and context commands for keyboard/Escape/focus return, descriptive labels, disabled reasoning and actual action authority; avoid hiding essential routes or introducing symbol-only commands in public commerce/clinical flows."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native iOS menus with familiar item groups, labels or recognized symbols, accessible toggled state and VoiceOver, prioritizing compact discoverability. Do not infer macOS menu bar behavior from iPhone layouts."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android/Material native overflow/context menus, TalkBack state and Back dismissal, disabled action explanation and usable submenus, without copying Apple's iOS UIMenu layout sizes or SF Symbol source assets."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/menus.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Menus Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/menus.md. The official article calls for concise verb-based labels, understandable disabled states, purposeful sparse icons, frequently used commands first, logical grouping, short/single-level submenus and explicit current toggle state. iOS/iPadOS define small/medium/large menu layouts; macOS menu bar is a distinct surface.",
+        "Web applicability: Audit primary navigation, account menu, row action menus and context commands for keyboard/Escape/focus return, descriptive labels, disabled reasoning and actual action authority; avoid hiding essential routes or introducing symbol-only commands in public commerce/clinical flows.",
+        "Native scope: iOS — Use native iOS menus with familiar item groups, labels or recognized symbols, accessible toggled state and VoiceOver, prioritizing compact discoverability. Do not infer macOS menu bar behavior from iPhone layouts.; Android — Use Android/Material native overflow/context menus, TalkBack state and Back dismissal, disabled action explanation and usable submenus, without copying Apple's iOS UIMenu layout sizes or SF Symbol source assets.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -3529,7 +3656,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/toolbars",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/toolbars.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3541,23 +3668,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit public/Portal/Intelligence primary command bars at responsive widths: no clipped important actions, keyboard focus and labeled controls, clear main action versus secondary commands and accessible overflow. A web sticky header is not inherently a native toolbar."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use standard iOS navigation/toolbar placements, prominent single primary action, leading navigation and trailing task actions, limited icon clutter and adaptive compact/large-title patterns. Verify VoiceOver and native keyboard where available."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Translate the interaction goals to Android-native app/tool bars and overflow/Back behavior, adaptive widths and TalkBack labels; do not claim Apple's iPad/macOS toolbar customization or SwiftUI .prominent exists on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/toolbars.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Toolbars Markdown (article) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/toolbars.md. Apple frames toolbars as frequent commands, search and navigation rather than tab-bar destinations; use deliberate action prioritization, More overflow when necessary, meaningful short titles, familiar Back/Close actions and functional grouping, keeping controls discoverable at narrow widths. iPad and macOS can support customization.",
+        "Web applicability: Audit public/Portal/Intelligence primary command bars at responsive widths: no clipped important actions, keyboard focus and labeled controls, clear main action versus secondary commands and accessible overflow. A web sticky header is not inherently a native toolbar.",
+        "Native scope: iOS — Use standard iOS navigation/toolbar placements, prominent single primary action, leading navigation and trailing task actions, limited icon clutter and adaptive compact/large-title patterns. Verify VoiceOver and native keyboard where available.; Android — Translate the interaction goals to Android-native app/tool bars and overflow/Back behavior, adaptive widths and TalkBack labels; do not claim Apple's iPad/macOS toolbar customization or SwiftUI .prominent exists on Android.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
@@ -4171,7 +4303,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/selection-and-input",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/selection-and-input.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4183,23 +4315,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map each actual Portal/Intelligence/customer form control to an accessible HTML equivalent: label, input purpose, keyboard mode, target size, validation, error announcements and authorization. Source index coverage alone is insufficient for protected data capture or live form success."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, independently verify actual native fields/pickers/segmented and toggles, secure digit entry, keyboard adaptation, form focus recovery, VoiceOver and signed builds, rather than assuming every collection link is an iPhone feature."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android, map to Android text input, switches, sliders, selectors, IME modes and TalkBack with safe keyboard/focus behavior, not Apple's native image/color well or iOS virtual keyboard APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/selection-and-input.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Individually inspected Apple's current official Selection and input Markdown (collectionGroup index) on 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/selection-and-input.md. The official collectionGroup enumerates Color wells, Combo boxes, Digit entry views, Image wells, Pickers, Segmented controls, Sliders, Steppers, Text fields, Toggles and Virtual keyboards. It indexes distinct controls, not one component or permission to mark all children implemented.",
+        "Web applicability: Map each actual Portal/Intelligence/customer form control to an accessible HTML equivalent: label, input purpose, keyboard mode, target size, validation, error announcements and authorization. Source index coverage alone is insufficient for protected data capture or live form success.",
+        "Native scope: iOS — On iOS, independently verify actual native fields/pickers/segmented and toggles, secure digit entry, keyboard adaptation, form focus recovery, VoiceOver and signed builds, rather than assuming every collection link is an iPhone feature.; Android — On Android, map to Android text input, switches, sliders, selectors, IME modes and TalkBack with safe keyboard/focus behavior, not Apple's native image/color well or iOS virtual keyboard APIs.. These are source-specific decisions only: no protected workflow, full screen-reader/manual accessibility, lawful medicine dataset, signed native store or production release receipt is proven."
+      ]
     },
     {
       "section": "Components",
