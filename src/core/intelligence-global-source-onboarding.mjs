@@ -184,6 +184,19 @@ export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
       "Verify API identity, rate limits, native licence-number mapping and separately accepted source/use grant"
     ])
   }),
+  "europe-european-union-eea-ema-pms-public-api": Object.freeze({
+    termsUrl: "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf",
+    apiTermsUrl: "https://api.pms.ema.europa.eu/public/v1/swagger",
+    scope: "EMA Product Management Service public API beta; EU/EEA, not one national source",
+    publishedTermsPosture: "EMA_PMS_BETA_BUSINESS_USE_NOT_PERMITTED",
+    commercialAccessBlockedByPublishedTerms: true,
+    requiresPublisherRegistration: true,
+    outstanding: Object.freeze([
+      "Do not use the EMA PMS beta API for NovaPharm commercial/business medicine services",
+      "Wait for official full public release and obtain prior EMA authorisation before selling, sublicensing, incorporating or redistributing content",
+      "Verify registered account terms, source-element provenance, national-authority precedence and independently reviewed rights for exact permitted uses"
+    ])
+  }),
   "europe-spain-aemps-cima": Object.freeze({
     termsUrl: "https://sede.aemps.gob.es/datos-abiertos/",
     scope: "AEMPS CIMA REST catalogue, not non-CIMA licensed dossiers",
@@ -286,6 +299,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
         customerLive: false
       }),
       termsPosture: evidence?.publishedTermsPosture ?? "UNASSESSED",
+      publisherExplicitlyForbidsBusinessUse: evidence?.commercialAccessBlockedByPublishedTerms === true,
+      publisherRegistrationRequired: evidence?.requiresPublisherRegistration === true,
       termsScreeningStatus: evidence
         ? "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING"
         : "PUBLIC_TERMS_NOT_YET_SCREENED",
@@ -309,6 +324,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
     reviewedOn: "2026-11-19",
     totalSourceCandidates: sourceEntries.length,
     publicPublisherNoticesLocated: sourceEntries.filter(row => row.publisherTermsUrl !== null).length,
+    publiclyRestrictedBetaBusinessSources: sourceEntries.filter(row =>
+      row.publisherExplicitlyForbidsBusinessUse).length,
     sourceOnlyHttpProbeCiCheckpointCount: sourceEntries.filter(row =>
       row.sourceOnlyHttpProbeCiCheckpoint !== null).length,
     independentlyLicensedSourceCandidates: 0,
