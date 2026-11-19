@@ -44,6 +44,7 @@ jobs:
     environment: ${{ inputs.target == 'staging' && 'azure-staging' || 'azure-production' }}
     env:
       EXPECTED_SHA: ${{ inputs.expected_sha }}
+      NOVAPHARM_MAPKIT_JS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ inputs.target == 'staging' && vars.AZURE_STAGING_RESOURCE_GROUP || vars.AZURE_PRODUCTION_RESOURCE_GROUP }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -160,7 +161,7 @@ jobs:
             az deployment group what-if \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "novapharm-unified-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}" \
-              --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
+              --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA" mapKitJsToken="$NOVAPHARM_MAPKIT_JS_TOKEN"
           else
             echo "The isolated resource group does not exist. The subscription-level definition and compiled template passed validation; no resource was created in what-if mode."
           fi
@@ -173,7 +174,7 @@ jobs:
           az deployment group create \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$deployment" \
-            --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
+            --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA" mapKitJsToken="$NOVAPHARM_MAPKIT_JS_TOKEN"
           applications=$(az deployment group show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$deployment" \
