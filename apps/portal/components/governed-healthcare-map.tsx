@@ -28,7 +28,7 @@ declare global {
 
 const mapkitScriptId = "nova-mapkitjs-v6";
 const mapkitUrl = "https://cdn.apple-mapkit.com/mk/6/mapkit.core.js";
-const token = process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN;
+const token = process.env["NEXT_PUBLIC_APPLE_MAPS_TOKEN"];
 
 function coordinate(value: unknown, minimum: number, maximum: number): number | null {
   if (typeof value !== "number" && (typeof value !== "string" || !value.trim())) return null;
@@ -102,9 +102,9 @@ export function GovernedHealthcareMap({ origin, pharmacies, practices, radiusKm 
         script.crossOrigin = "anonymous";
         // MapKit JS supports nonce-based CSP; read only the non-secret page nonce.
         script.nonce = document.querySelector<HTMLScriptElement>("script[nonce]")?.nonce ?? "";
-        script.dataset.callback = "__novaGovernedMapsReady";
-        script.dataset.libraries = "map,annotations";
-        script.dataset.token = token;
+        script.dataset["callback"] = "__novaGovernedMapsReady";
+        script.dataset["libraries"] = "map,annotations";
+        script.dataset["token"] = token;
         script.onerror = () => { if (!cancelled) setStatus("Apple Maps could not load. Use the evidence tables instead."); };
         document.head.appendChild(script);
       } else {
