@@ -10,7 +10,10 @@ import { extractVisibleBlocks } from "./lib/html-text.mjs";
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
 const releaseDate = process.env.AI_INDEX_DATE || "2026-07-22";
-const excludedRoutes = new Set(["contact", "investor-information", "careers", "legal/privacy", "legal/cookies", "legal/terms"]);
+// AI retrieval excludes forms, private-intent journeys, and legal policy pages.
+// Legal notices must be read directly, not represented as machine-vetted advice.
+const excludedRoutes = new Set(["contact", "account-application", "investor-information", "careers"]);
+const excludedPublicRoute = (slug) => excludedRoutes.has(slug) || slug === "legal" || slug.startsWith("legal/");
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -31,7 +34,7 @@ function fileForSlug(slug) {
 }
 
 const pageSources = Object.entries(pageMeta)
-  .filter(([slug]) => !excludedRoutes.has(slug))
+  .filter(([slug]) => !excludedPublicRoute(slug))
   .map(([slug, meta]) => ({
     id: `page-${slug || "home"}`.replace(/[^a-z0-9-]+/g, "-"),
     file: fileForSlug(slug),
