@@ -27,7 +27,7 @@ export function proxy(request: NextRequest): NextResponse {
   // for the owner-approved direct password + TOTP card on the Intelligence host.
   const intelligenceHost = request.headers.get("host")?.split(":")[0]?.toLowerCase() === "intelligence.novapharmhealthcare.com";
   const pathname = request.nextUrl.pathname.endsWith("/") ? request.nextUrl.pathname : `${request.nextUrl.pathname}/`;
-  const mapKitJs = Boolean(process.env["NEXT_PUBLIC_APPLE_MAPS_TOKEN"]) &&
+  const mapKitJs = Boolean(process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN) &&
     pathname === "/portal/executive-platform/medicines-intelligence/geography/";
   const policy = buildPublicSecurityPolicy({
     nonce, secureTransport: secureRequest, indexable: false,
