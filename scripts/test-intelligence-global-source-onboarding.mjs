@@ -127,10 +127,15 @@ test("nine official publisher licences/terms are notices, not grants", () => {
   const notices = new Map(worklist.sourceEntries
     .filter(entry => entry.publisherTermsUrl !== null)
     .map(entry => [entry.candidateKey, entry]));
-  assert.deepEqual(
-    new Set(notices.keys()),
-    new Set(Object.keys(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119))
-  );
+  // Access-application entries (Norway DMP) have no publisherTermsUrl:
+  // count them as protected publisher-access requirements, not licences.
+  const publisherNoticeKeys = Object.entries(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119)
+    .filter(([, entry]) => typeof entry.termsUrl === "string")
+    .map(([key]) => key);
+  assert.equal(publisherNoticeKeys.length, 9);
+  assert.equal(notices.size, 9);
+  assert.deepEqual(new Set(notices.keys()), new Set(publisherNoticeKeys));
+  assert.equal(notices.has("europe-norway-dmp-medicine-fhir-service"), false);
   const expected = new Map([
     ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
     ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
