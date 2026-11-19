@@ -15,7 +15,9 @@ RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
 FROM node:24-alpine AS runtime
-ENV NODE_ENV=production \
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN} \
+    NODE_ENV=production \
     PORT=4303 \
     HOSTNAME=0.0.0.0
 WORKDIR /app
