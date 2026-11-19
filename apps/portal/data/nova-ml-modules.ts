@@ -25,11 +25,11 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
   {
     slug: "nova-device-intelligence",
     title: "Nova Device Intelligence",
-    summary: "Plan opt-in document, language and media analysis using native device frameworks.",
-    appleTechnology: "Vision, Natural Language and Speech",
-    platform: "Native app and device permissions required",
-    capabilities: ["Document text recognition after user selection", "Language-aware document assistance", "User-requested speech-to-text", "Opt-out and correction controls"],
-    requirements: ["Minimal purpose-specific user permission", "No patient-identifiable or sensitive media by default", "On-device processing and retention review", "Human-verified outputs before records change"]
+    summary: "Plan opt-in device document, language and media workflows, plus a separately gated OpenAI CLIP public-image retrieval research candidate.",
+    appleTechnology: "Vision, Natural Language and Speech; CLIP research is separate from Apple frameworks",
+    platform: "Native app and device permissions required; private CLIP server approval required",
+    capabilities: ["Document text recognition after user selection", "Language-aware document assistance", "User-requested speech-to-text", "English text-to-approved-public-image CLIP research", "Opt-out and correction controls"],
+    requirements: ["Minimal purpose-specific user permission", "No patient-identifiable or sensitive media by default", "On-device processing and retention review", "Independent CLIP model rights and domain-shift evaluation", "Human-verified outputs before records change"]
   },
   {
     slug: "nova-generative-assist",
