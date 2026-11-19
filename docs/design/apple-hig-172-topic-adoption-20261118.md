@@ -300,3 +300,17 @@ This is a **source-only dependent HIG review candidate**, stacked on PR #881, wh
 **Cumulative proposed source-readiness after PRs #880 → #881 → this candidate:** **90/172 (52.3%)** documented primary source reviews and **270/516 (52.3%)** platform decisions. Remaining: **82 official topic reviews**, **246 three-platform decisions**. The evidence audit retains **6 partial public topic-platform observations from 4 independent first-party live runs**, and **0/172 full production-verified implementations**. Browser screenshots and GitHub status are not native/tenant/complete HIG release receipts. Production signoff remains `not_granted`.
 
 **Safe workflow:** Merge #880 only after its current-head CI and independent reviewer approval; then reconcile #881 against merged `main` and independently approve; then reconcile this stacked source-only candidate against the new `main` with its own exact-head CI and Quality/Security review. No AWS, public deployment, paid infrastructure, customer activation or clinical content rights changed in this batch.
+
+### Programme completion metric — confirmed implementation versus approved not-applicable
+
+It is inaccurate to require **172 deployed platform-native implementations** when several of Apple's 172 indexed topics describe watchOS/tvOS/visionOS/macOS-only features that cannot exist as native web, iOS or Android APIs. It is also inaccurate to count a proposed `not_applicable` rationale as independent release approval.
+
+The durable gap report now separates:
+1. **Production-verified implementations:** topic-level `implementation: verified` only after real scoped releases, live/physical-device evidence and independent approvals for every applicable platform.
+2. **Independently accepted out-of-scope topics:** `implementation: not_applicable` only when all three platform decisions are justified as not applicable and an authorized independent reviewer accepts that scope disposition (not yet recorded for any topic).
+3. **Candidate out-of-scope topics:** all platforms assessed `not_applicable` but implementation still `not_verified`. These are **pending** reviewer disposition, not delivered/verified features.
+4. **Unresolved topics:** missing source reviews, unresolved platform decisions, platform implementation proofs or acceptance receipts.
+
+The Apple tvOS-only [Digit entry views](https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md) example is a candidate out-of-scope topic for NovaPharm web/iOS/Android, **not** a verified Apple TV component; native iPhone OTP/MFA is a distinct feature with separate security and accessible input acceptance. Once the user explicitly authorizes the relevant scope and a genuinely independent reviewer records acceptance, it can receive a `not_applicable` topic disposition without ever increasing the `production-verified implementations` count. The programme-wide final signoff must require every topic to be independently dispositioned, all in-scope implementations live-verified, appropriate platform-level evidence and `productionSignoff: granted` from the owner. None of these conditions is met simply by merging source-review PRs.
+
+At this source-only checkpoint: **0/172 production-verified**, **0/172 independently accepted out-of-scope dispositions**, and programme certification **false**. No native code or production authorization was changed.
