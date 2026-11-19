@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 6,
+    "platformsAssessed": 81,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -110,7 +110,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/design-principles.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -122,23 +122,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to NovaPharm corporate/Intelligence/Portal web flows: recognizable hierarchy, explicit actions, honest claims, protected user data, mistake recovery and keyboard-friendly cross-device use. This is a design review, not evidence those flows pass."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to native iOS screens: preserve expected iPhone interactions, VoiceOver/touch/keyboard accessibility, clear feedback, recovery and platform-native patterns while serving pharmacy users. No physical device conformance established."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as shared design principles with Android-native patterns rather than copying iOS controls; preserve navigation consistency, meaningful features, recovery, privacy and accessibility. No TalkBack or signed build evidence yet."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/design-principles.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete current Apple Design principles Markdown article (Purpose, Agency, Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight, Resources and 8 June 2026 change log): https://developer.apple.com/design/human-interface-guidelines/design-principles.md.",
+        "Interpretation for NovaPharm: put product usefulness, honest medicine-data boundaries, privacy, correction/undo, understandable navigation and inclusive interaction before purely decorative Apple-like polish. Consistency must survive responsive and native platform transitions.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Getting started",
@@ -147,7 +152,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ios",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ios.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -159,23 +164,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's iOS-specific platform API and iPhone device-interaction prescriptions are not directly applicable to browser implementation. Shared responsive concepts are assessed under Layout, Accessibility and Design principles instead."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: test Expo and native iOS on iPhone sizes, landscape/portrait, one-handed reach, safe areas, Dynamic Type, system appearance and iOS-only opt-in permissions. Passing source checks alone is not device release approval."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple-specific iOS widgets, shortcuts, ergonomics and API behavior are not Android platform requirements. Equivalent Android interaction guidance must come from platform-appropriate rules, though shared accessibility objectives remain relevant."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-ios.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Designing for iOS Markdown article (device characteristics, ergonomics, inputs, multitasking, system features, best practices and related developer resources): https://developer.apple.com/design/human-interface-guidelines/designing-for-ios.md.",
+        "Interpretation: prioritize one-handed reach, primary actions, orientation adaptations, Dynamic Type, Dark Mode and explicit permission before location or biometrics. Spotlight/widgets/Shortcuts and iPhone system integrations require individual applicability tests.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Getting started",
@@ -522,7 +532,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/app-icons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/app-icons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -534,23 +544,28 @@
       "sourceRequestedPlatforms": "iOS, Android, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "This Apple article governs system app icons, not web favicons or browser PWA icon standards. NovaPharm favicon/web manifest work needs its own web specs and logo-rights checks."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Create original NovaPharm iOS app icon assets using current supported formats, variants and contrast/legibility checks; test actual SpringBoard presentation and signed app packaging before release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple app icon layer/shape requirements are not Android adaptive/monochrome launcher-icon requirements. Produce and test Android-specific branded icons under Android guidance instead."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-icons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/app-icons.md. Read Apple HIG App icons: recognizable product identity, layered icon variants, platform shapes, dark/tinted appearance, restrained text and current format guidance (October 2026 change log).",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -559,7 +574,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/branding",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/branding.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -571,23 +586,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as adaptable brand strategy: official NovaPharm identity and restrained accent color without displacing content or hiding functional labels. Apple's App Store trademark restrictions remain distinct from web trademark law; visual acceptance still open."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to native iOS: familiar system components, accessible brand accent, system legibility and original NovaPharm marks rather than replicating Apple trademarks. App Store creative rights and tested appearance remain separate requirements."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform identity principle using Material/Android-native navigation rather than copying Apple widgets, with restrained red accent and accessible text; does not authorize Apple proprietary fonts or symbol redistribution."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/branding.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete current Apple Branding Markdown article (Discussion, Best practices, Platform considerations, resources and September 9, 2026 accent-color revision): https://developer.apple.com/design/human-interface-guidelines/branding.md.",
+        "Interpretation: maintain distinct NovaPharm tone and restrained official brand red while prioritizing useful content, system-familiar components, clear text and permitted branding rights; avoid redundant logos and brand-only launch screens.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Foundations",
@@ -675,7 +695,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/icons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/icons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -687,23 +707,28 @@
       "sourceRequestedPlatforms": "iOS, macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Maintain a restrained, original NovaPharm web icon set with consistent strokes, visible labels or accessible names and 44px-class hit areas; web icon licensing must be assessed independently of SF Symbols."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use recognizable glyphs with native iOS sizing/weight and correct accessibility names; any SF Symbols use must comply with Apple terms and target OS availability."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use consistent Android-native icons and accessibility content descriptions; Apple glyph samples are design references, not permission to redistribute SF Symbols on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/icons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/icons.md. Read Apple HIG Icons: single-purpose recognizable interface glyphs, consistent optical size/weight/perspective, common action metaphors, and separate macOS document icon conventions.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -712,7 +737,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/images",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/images.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -724,23 +749,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Serve responsive density-appropriate images with srcset/sizes or equivalent, content-specific alt text, color-profile/contrast checks and real narrow-screen QA; native asset-catalog file naming is not mandatory on browsers."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Provide appropriate @2x/@3x variants and asset-catalog scale/color assets where native packaging applies, preserve legibility and test screenshots on iPhone/iPad hardware; no Apple asset licence is implied."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android drawable density or vector resources and efficient responsive loading, with descriptive accessibility text; do not treat iOS @2x/@3x filenames as Android launcher/resource requirements."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/images.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/images.md. Read Apple HIG Images: screen scale/point-to-pixel relationships, high-resolution asset variants, color profiles, actual-device rendering, and platform-specific layered/spatial imaging.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -786,7 +816,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/inclusion",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/inclusion.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -798,23 +828,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Audit language, imagery, gender-neutral account forms, international spelling and localization for pharmacy/professional users; accessibility and clear medical language require human/content testing across locales."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Review translated interface copy, VoiceOver labels, Dynamic Type, representative imagery and unbiased account workflows with actual iOS users and locales; inclusion is not certified by a static document."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use inclusive translated copy and imagery with TalkBack, font scaling and Android locale-aware conventions; do not impose iOS language/layout mechanics onto Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/inclusion.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/inclusion.md. Read Apple HIG Inclusion: inclusive-by-design research, welcoming/plain language, representative imagery without stereotypes, respectful identity choices, localization and cultural context.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -823,7 +858,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/layout",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/layout.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -835,23 +870,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Check corporate, Portal and Intelligence hierarchy, responsive grids, reading order, RTL mirroring, viewport safe areas, focus order and expandable dense data; semantic CSS is required rather than trying to reproduce iOS system layout."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply adaptive layout and safe-area constraints to iPhone/iPad, including Dynamic Type, rotation and native navigation; require real iOS device and VoiceOver acceptance rather than inferring success from Expo source."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply shared hierarchy and adaptability through Android WindowInsets, font scaling, foldable/responsive window sizes and RTL-aware layout; use native Android conventions rather than Apple-specific size-class APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/layout.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/layout.md. Read Apple HIG Layout: visual hierarchy, reading-order and RTL considerations, grouping/progressive disclosure, platform-adaptive size classes, safe areas and content/control separation.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -860,7 +900,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/materials",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/materials.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -872,23 +912,28 @@
       "sourceRequestedPlatforms": "iOS, macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's Liquid Glass framework materials are not browser APIs and cannot be claimed implemented by CSS blur. Shared hierarchy/contrast objectives can inform NovaPharm's original web styling under separate review."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Apple-native materials only where OS/framework controls support them, retain content/control separation and test legibility under transparency, light/dark and increased contrast on physical devices."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Liquid Glass and Apple's native vibrant material APIs are not Android APIs. Use Material/Android-native surfaces and verify contrast without recreating Apple's protected system visuals."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/materials.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/materials.md. Read Apple HIG Materials: Liquid Glass reserved for functional controls/navigation, standard materials for content separation, vibrancy, legibility and platform-specific translucency/contrast guidance.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -934,7 +979,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/privacy",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/privacy.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -946,23 +991,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Implement least-privilege session and role boundaries, purposeful browser permission prompts and transparent personal/medicine-data handling; prove protected routes, consent, authorization and retention in real web flows."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use purpose strings, scoped system permissions, consent and App Store privacy disclosures; store secrets in appropriate protected storage and test biometric/passkey flows only if actually implemented."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Follow Android runtime permission and data-safety/secure-storage practices for comparable privacy goals; Apple Keychain, App Tracking Transparency and App Store labels are not Android APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/privacy.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/privacy.md. Read Apple HIG Privacy: just-in-time purpose-limited permissions, transparency and control, pre-alert framing, protection of sensitive content, local processing and secure authentication/keychain guidance.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -1008,7 +1058,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1020,23 +1070,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple SF Symbols rendering/framework and Apple-specific licensing are not a generic web icon API or permission to ship symbols in NovaPharm browser bundles. Use original or separately licensed web iconography."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where permitted, use SF Symbols through appropriate iOS system APIs, provide accessibility labels, test per-OS availability and rendering modes; do not bundle copyrighted symbol files without verified rights."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "SF Symbols and their Apple system-font integration are Apple-platform resources, not Android design system APIs; Android requires its own licensed native symbols and accessibility review."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sf-symbols.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official primary source inspected 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/sf-symbols.md. Read Apple HIG SF Symbols: native San Francisco-aligned glyphs, rendering modes and symbol availability by OS; terms restrict logo/trademark uses and Apple-platform licensing must be checked.",
+        "NovaPharm adaptation recorded distinctly for web, native iOS and Android. Not-applicable decisions exclude Apple-only APIs/resources; shared design objectives remain assessed under relevant cross-platform rules.",
+        "Evidence boundary: no corresponding website/page screenshot, assistive-technology or real-device test, asset redistribution right, signed app or protected production deployment was independently accepted in this article assessment."
+      ]
     },
     {
       "section": "Foundations",
@@ -1119,7 +1174,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/writing",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/writing.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1131,23 +1186,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to all public and authenticated web pages: clear and accessible field labels, concise pharmacy terminology, contextual errors, empty states and descriptive links. Individual page-copy audit is not yet accepted."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to native iOS: context-specific 'tap' language, concise labels, real VoiceOver descriptions, consistent permission and medical-risk text, recovery guidance and localization. No on-device copy acceptance provided."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android-native screen copy with correct touch and system-action wording, TalkBack labels, accessible text expansion and clear error correction. No localized device-release evidence yet."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/writing.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Writing Markdown article (voice/tone, clarity, inclusive content, labels, form hints, error recovery, device context, resources and December 16, 2025 change log): https://developer.apple.com/design/human-interface-guidelines/writing.md.",
+        "Interpretation: maintain concise professional clinical/commercial copy with action-oriented buttons, meaningful errors beside fields, plain-language empty states, consistent task terminology and user-appropriate safety disclosures.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Patterns",
@@ -1304,7 +1364,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/entering-data",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/entering-data.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1316,23 +1376,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to B2B, login, payment and account forms: semantic labels, secure password types, input constraints, inline error explanations and clear required fields. No live end-to-end account test implied."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to native iOS research/account flows: proper keyboards, secure text entry, system autofill where allowed, validation and permission-gated data collection. No device testing or credentialed login receipt yet."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android input methods, accessible hints, early validation and Android credential safeguards. SwiftUI SecureField/TVUIKit APIs are not Android requirements."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/entering-data.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Entering data Markdown article (Best practices, secure fields, required input, dynamic validation, macOS expansion tooltip, resources and change log): https://developer.apple.com/design/human-interface-guidelines/entering-data.md.",
+        "Interpretation: minimize manual pharmacy/customer input, validate quantities and addresses early, show labels and format hints, use secure password inputs, require informed consent and never pre-fill passwords.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Patterns",
@@ -1526,7 +1591,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/loading",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/loading.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1538,23 +1603,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web catalogue, search, Intelligence research and protected requests: accessible loading states, cancellation/retry, async progress and preserving user actions without showing fake completion. No live latency validation yet."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to iOS app candidate: system-appropriate progress, background-safe operations, responsive content placeholders and VoiceOver status announcements. BackgroundAssets details require native feasibility review."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android app candidate using Android progress patterns, accessible async feedback and nonblocking task management, not Apple's BackgroundAssets framework. Device/network recovery acceptance remains open."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/loading.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Loading Markdown article (Best practices, Showing progress, watchOS-specific platform note, resources and 2025 change log): https://developer.apple.com/design/human-interface-guidelines/loading.md.",
+        "Interpretation: render useful skeletons or placeholders quickly; allow non-blocking work; show determinate progress only when progress is measurable and indeterminate when it is not; never invent time-to-completion for medicine research results.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Patterns",
@@ -1563,7 +1633,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/managing-accounts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/managing-accounts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1575,23 +1645,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to protected portal/customer access, invitation/MFA and account deletion: purpose-specific sign-in, clear recovery, data retention notices and consistent deletion experience. No authenticated tenancy or production SSO acceptance established."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to iOS account UX: avoid unexpected sign-in walls, support appropriate passkey/MFA patterns, biometric labeling and in-app deletion path or direct link. Actual Cognito/Apple entitlement and signed release still require proof."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as account-access design intent using Android Credential Manager/biometric conventions rather than Face ID labels, plus secure MFA and deletion transparency. No Android protected-role acceptance established."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/managing-accounts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Managing accounts Markdown article (sign-in best practices, passkeys/2FA, biometric nomenclature, account deletion, subscription implications, tvOS/watchOS notes and developer resources): https://developer.apple.com/design/human-interface-guidelines/managing-accounts.md.",
+        "Interpretation: justify required wholesale-only sign-in; permit public product browsing where safe; retain secure MFA; accurately describe biometric methods; provide compliant account deletion/request paths with medical-record retention caveats.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Patterns",
@@ -1970,7 +2045,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/searching",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/searching.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1982,23 +2057,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web medicine, catalogue and customer search: unified or clearly scoped discovery, visible filters, accessible result states and privacy-protecting query histories. Does not prove source-rights coverage of results."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to iOS app search: native search fields, scoped suggestions and optional authenticated Spotlight indexing only for approved non-sensitive content. Do not expose confidential medicines or customer queries to device-wide indexes."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android search navigation, scoped search, suggestions and history controls, but Apple's Spotlight/Core Spotlight APIs are iOS/macOS-specific and must not be presented as Android implementation proof."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/searching.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete Apple Searching Markdown article (app search scope, suggestions/history privacy, systemwide Spotlight, platform considerations, resources and June 8, 2026 change log): https://developer.apple.com/design/human-interface-guidelines/searching.md.",
+        "Interpretation: foreground medicine/product search as a core action, visibly distinguish user-scoped versus global queries, offer helpful suggestions without exposing confidential recent searches, and separate iOS Spotlight from web/Android search.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Patterns",
@@ -2192,7 +2272,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/charts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/charts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2204,23 +2284,28 @@
       "sourceRequestedPlatforms": "Intelligence, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Intelligence data graphs: accurate axis units, source and time windows, semantic descriptions, keyboard-accessible mark exploration and downloadable accessible tables. Swift Charts audio-graph APIs are not browser capabilities."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to iOS Swift Charts or compatible graphs: VoiceOver mark summaries, optional Audio Graphs where supported, meaning-preserving axes and reachability of data points on device."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android charts using TalkBack descriptions, axes, accessible underlying data tables and touch/keyboard navigation; Apple-specific Audio Graphs/Swift Charts APIs do not apply."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/charts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Charts official Markdown article (marks/axes and scale, descriptive titles, chart accessibility, keyboard navigation, color and audio graphs, platform notes and resources). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/charts.md. Reviewed 2026-11-19.",
+        "Show exact values, units, time grain and source provenance; use appropriate axis scales, provide meaningful captions and accessible tabular alternatives, never convey safety conclusions solely through color.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -2525,7 +2610,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/labels",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/labels.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2537,23 +2622,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web forms, product tables and dashboards: semantic visible labels, suitable contrast, responsive text, accessible form relationships and selectable error/record identifiers. Apple semantic UIColor APIs are not available in CSS."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: semantic label colors, Dynamic Type, legible secondary labels, correct accessibility labels and selectable important data. Physical appearance and VoiceOver acceptance still unverified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as shared label-quality objective with Android text roles, font scaling, TalkBack names and selectable identifiers, but Apple UIFont/UIColor/SwiftUI Label behavior is not native Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/labels.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Labels official Markdown article (static labels, UI role, legibility, system semantic text colors, selectable useful text, macOS/watchOS notes and resources). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/labels.md. Reviewed 2026-11-19.",
+        "Prefer readable labels that clearly express context/actions and semantic priority. Preserve copyability for meaningful identifiers or error messages, and use accessible secondary text rather than low-contrast decoration.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -2821,7 +2911,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/buttons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/buttons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2833,23 +2923,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as accessible button design: semantic button elements, keyboard and pointer operation, 44 CSS-pixel audit where agreed, visible focus/pressed/busy state and proper destructive confirmation. Native 44pt unit and SF Symbols rights do not translate into a CSS measurement standard."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Direct native iOS guidance: consistent touch target size, clear label and role, iOS activity progress feedback, VoiceOver names and safe destructive action semantics; physical screen-reader and tap testing remains required."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform UX goal with Android-native touch target and role conventions, pressed/loading states, TalkBack names and destructive-action clarity; UIKit/SwiftUI button APIs do not apply."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/buttons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Buttons official Markdown article (control style/content/role, 44x44pt target guidance, press feedback, primary-versus-destructive roles, iOS busy button, macOS help controls, visionOS/watchOS notes, change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/buttons.md. Reviewed 2026-11-19.",
+        "Provide recognizable action targets and visible press/busy feedback. Use prominent styling sparingly; never assign destructive action the primary role. Apple guidance quotes points for native hit regions, which is not evidence about web CSS pixel sizing.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3302,7 +3397,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/search-fields",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/search-fields.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3314,23 +3409,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to medicine and product catalogue search: descriptive placeholder plus accessible label, clear button, known result scope, keyboard filters, no unapproved indexed patient data and cancellable queries."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: iOS searchable fields in top/bottom toolbars or dedicated tab, appropriate focus/keyboard behavior, scoped token filters and VoiceOver; no actual native device interaction verified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform search principle with Android SearchBar, native filters, dynamic scoped results and TalkBack; Apple SwiftUI searchable/tab positioning APIs are not Android APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/search-fields.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed current Apple Search fields official Markdown article (scope/suggestions/tokens, inline and tab search, toolbar positioning, iPad/Mac/tvOS/watchOS variants and 2026 updates). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/search-fields.md. Reviewed 2026-11-19.",
+        "Expose editable, clearly scoped search fields; support dynamic relevant results, clear/Cancel affordances and accessible filter tokens, without leaking protected search histories. Pick placement by task and platform.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3376,7 +3476,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/tab-bars",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/tab-bars.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3388,23 +3488,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as responsive app-navigation pattern only: semantic top-level tabs when appropriate, labels, keyboard traversal and predictable state preservation. UIKit bottom Liquid Glass tab bar is not a web requirement."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: iPhone tab navigation, persistent top-level destinations, safe areas, labeled controls, native per-tab state and accessible overflow; actual Expo/native UIKit parity requires device proof."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as navigation objective with Android-native bottom navigation, navigation rail and TalkBack semantics. Do not transplant iOS SF Symbols, Liquid Glass or iPad tab-bar positioning to Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tab-bars.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed current Apple Tab bars official Markdown article (top-level navigation, labels, visibility and state, no action buttons, iOS bottom tabs, iPadOS adaptable sidebar, tvOS/visionOS notes and June 2026 change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/tab-bars.md. Reviewed 2026-11-19.",
+        "Top-level tabs are stable navigation destinations, not actions. Use concise text labels, limited primary tabs and avoid hidden/unreachable More overflow. Preserve per-tab navigation state and platform-appropriate layouts.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3524,7 +3629,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/alerts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/alerts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3536,23 +3641,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web confirmations and emergency errors: use correct dialog semantics, focus trapping/return, concise message, explicit user choice and safe cancellation. Apple native alert views are not web components."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to native iOS alerts versus action sheets for intentional choices; verify VoiceOver announcements, destructive action cancellation, no alert storms and dismissal on actual devices."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable through Android dialogs, snackbars and bottom-sheet conventions, not Apple's native UIAlertController; preserve minimal interruption, cancellation, TalkBack labels and critical decision clarity."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/alerts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Alerts official Markdown article (nontrivial interruptive warnings, alert content/buttons, Cancel and destructive action safeguards, iOS action-sheet distinction, platform notes and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/alerts.md. Reviewed 2026-11-19.",
+        "Reserve interruption for necessary decision points, avoid alerting on non-actionable information or reversible routine operations, present concise situation and actionable verbs, and preserve Cancel on destructive confirmations.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -4338,7 +4448,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4350,23 +4460,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to long-running protected research/import and checkout operations: ARIA progress semantics, unknown-time spinner when needed, truthful completion percentages, cancellation and timeout recovery; actual browser acceptance is separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: SwiftUI/UIkit-appropriate ProgressView and refresh patterns, VoiceOver status, network interruption handling and safe cancellation. No signed-device test acceptance implied."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable using Android-native progress patterns and accessibility progress descriptions, real work metrics and cancellation. Apple's UIProgressView and UIRefreshControl are not Android components."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Progress indicators official Markdown article (determinate/indeterminate variants, accurate progress reporting, cancel/pause, iOS refresh, macOS and watchOS platform notes, resources and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md. Reviewed 2026-11-19.",
+        "Do not show misleading percentages for unknown-time work. Move from indeterminate to determinate only with real measured progress, show stall/retry recovery and allow safe cancellation where feasible.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -5707,7 +5822,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/generative-ai",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/generative-ai.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5719,23 +5834,28 @@
       "sourceRequestedPlatforms": "Intelligence, All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to protected NovaPharm Intelligence research: conspicuous AI disclosure, content rights, provenance, hallucination boundaries, safe refusal/fallback and explicit consent before durable external actions. No clinical AI release proof established."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to AI-powered iOS research preview: on-device versus server data clarity, user control, feedback, privacy controls and model-availability fallback. No Foundation Models entitlement/physical device validation implied."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as responsible cross-platform AI design intent using Android-native privacy/storage norms, no hallucinated medicine labels, explicit data rights and safe offline fallback. Apple's Foundation Models API is not an Android feature."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/generative-ai.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed complete current Apple Generative AI Markdown article (responsible/inclusive design, control, disclosure, privacy, dataset rights, input/output hallucination risks, feedback, continuous improvement and June 8, 2026 update): https://developer.apple.com/design/human-interface-guidelines/generative-ai.md.",
+        "Interpretation: no unsupervised medical identity or treatment claims; label model-generated material and its uncertainty; preserve human decision authority, undo/refine, licensed datasets, privacy, evidence grounding and safe non-AI fallback.",
+        "Review date 2026-11-19. Source-specific article review and web/iOS/Android interpretation only: no NovaPharm UI/device tests, licensed data acceptance or production release receipts were verified by this review."
+      ]
     },
     {
       "section": "Technologies",
@@ -6373,7 +6493,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/voiceover",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/voiceover.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6385,23 +6505,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Safari/macOS/iOS browser VoiceOver testing: correct semantic HTML headings, announced updates, accessible diagrams/charts and meaningful focus sequence. A source-only aria-label inventory is insufficient to verify real behavior."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to native iOS VoiceOver: programmatically named controls, logical grouping, custom rotor navigation, predictable focus and dynamic content announcements verified on hardware."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's VoiceOver-specific APIs and rotor are not Android OS features; Android equivalent must be independently reviewed and tested under TalkBack, accessibility services and Android UI semantics."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/voiceover.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple VoiceOver official Markdown article (meaningful element labels, image/chart descriptions, headings/navigation, grouping, change announcements, rotor, visionOS specific notes, resources and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/voiceover.md. Reviewed 2026-11-19.",
+        "Provide accurate role/name/state descriptions and logical headings, avoid narrating decoration, announce dynamic changes and support chart data navigation. Confirm actual screen reader interaction, not merely source attribute presence.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Technologies",

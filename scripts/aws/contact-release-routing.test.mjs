@@ -37,8 +37,8 @@ test("approved public main pushes retain immutable AWS contact release while pri
   for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
     assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
   }
-  assert.match(dispatcher, /if: steps\.private_release\.outputs\.skip != 'true'/);
-  const guardedAwsSteps = dispatcher.match(/if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
+  assert.match(dispatcher, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true'/);
+  const guardedAwsSteps = dispatcher.match(/if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
   assert.equal(guardedAwsSteps.length, 2, "both the AWS health check and contact dispatch must skip for private-only merges");
   assert.match(dispatcher, /gh workflow run publish-aws-contact-production\.yml/);
   assert.match(dispatcher, /expected_sha="\$EXPECTED_SHA"/);
@@ -620,6 +620,37 @@ test("IMDF venue-rights source-only merges cannot dispatch the unrelated AWS con
   }
 });
 
+test("explicit owner production hold blocks AWS contact dispatch and publisher even if source classifier is public", () => {
+  const owner = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json", "utf8"));
+  const approval = payload => payload?.productionSignoff === "granted" &&
+    payload?.productionPermissions?.activatePublicCustomerAccess === true;
+  assert.equal(approval(owner), false, "current owner policy must not silently permit AWS");
+  assert.equal(approval({ productionSignoff: "granted", productionPermissions: { activatePublicCustomerAccess: false } }), false);
+  assert.equal(approval({ productionSignoff: "not_granted", productionPermissions: { activatePublicCustomerAccess: true } }), false);
+  assert.equal(approval({ productionSignoff: "granted", productionPermissions: { activatePublicCustomerAccess: true } }), true);
+  const query = '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true';
+  const dispatch = get("dispatch-approved-aws-contact-release.yml");
+  const publish = get("publish-aws-contact-production.yml");
+  for (const [name, source] of [["dispatcher", dispatch], ["publisher", publish]]) {
+    assert.ok(source.includes(query), name + " must test both owner production permissions");
+    assert.ok(source.includes("id: owner_hold"), name + " must hold before AWS calls");
+    assert.ok(source.includes('echo "hold=true" >> "$GITHUB_OUTPUT"'), name + " must fail closed");
+    assert.ok(source.includes('echo "hold=false" >> "$GITHUB_OUTPUT"'), name + " must record explicit grant");
+    assert.ok(source.includes("config/intelligence/owner-production-constraints.json"), name + " must load the recorded policy");
+  }
+  const guarded = "steps.owner_hold.outputs.hold == 'false'";
+  assert.ok(dispatch.includes(guarded), "dispatch must be held without explicit approval");
+  const gatedAWS = dispatch.match(/- name: Verify AWS contact candidate is already activated\s*\n\s*if: ([^\n]+)/)?.[1] ?? "";
+  const gatedDispatch = dispatch.match(/- name: Dispatch independently verified exact-SHA contact release\s*\n\s*if: ([^\n]+)/)?.[1] ?? "";
+  assert.ok(gatedAWS.includes(guarded) && gatedDispatch.includes(guarded),
+    "both AWS health and workflow dispatch must explicitly test the owner hold");
+  assert.match(publish, /if \[ "\$\{\{ steps\.owner_hold\.outputs\.hold \}\}" != "false" \]; then\s*\n\s*echo "release_needed=false"/,
+    "publisher must force a release-scope denial before build and deployment");
+  assert.match(publish, /if: github\.ref == 'refs\/heads\/main' && needs\.release_scope\.outputs\.release_needed == 'true'/,
+    "publisher still requires a positive release-scope decision");
+});
+
+
 test("private enterprise readiness artifacts cannot dispatch the unrelated public contact publisher", () => {
   const files = [
     "src/core/intelligence-enterprise-readiness.mjs",
@@ -649,6 +680,33 @@ test("private enterprise readiness artifacts cannot dispatch the unrelated publi
   assert.match(publisher, /release_needed=false/);
   // Publisher policy-only changes remain neutral, not an automatic private exemption.
   assert.match(publisher, /A publisher policy-only update must not be silently skipped/);
+});
+
+test("country release-ledger is private-only and cannot dispatch the corporate AWS publisher", () => {
+  const countryPaths = [
+  ".github/workflows/intelligence-country-release-gates.yml",
+  "docs/intelligence/77-country-101-source-complete-register-20261118.md",
+  "docs/intelligence/country-101-release-gates-20261118.md",
+  "scripts/render-intelligence-country-release-ledger.mjs",
+  "scripts/test-intelligence-country-release-ledger.mjs",
+  "src/core/intelligence-country-iso-identifiers.mjs",
+  "src/core/intelligence-country-markdown-cell.mjs",
+  "src/core/intelligence-country-release-ledger.mjs",
+  "src/core/intelligence-country-source-baseline.mjs"
+];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(file);
+    const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classifier, file + " missing the changed-file classifier");
+    assert.ok(classifier.trim().endsWith(")"), file + " must close its exact private Bash case arm");
+    const protectedPaths = new Set(classifier.trim().slice(0, -1).split("|"));
+    for(const path of countryPaths) {
+      assert.ok(protectedPaths.has(path), file + " would publish country research-only file: " + path);
+    }
+    assert.ok(protectedPaths.has(".github/workflows/browser-acceptance.yml"));
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
 });
 
 test("source-only Model Microscope paths never trigger unrelated AWS contact or public Pages release", () => {
