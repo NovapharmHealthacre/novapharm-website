@@ -180,6 +180,7 @@ export async function initialiseSearchDialog(dialog) {
 
   const runSearch = async (query) => {
     const version = ++queryVersion;
+    results.removeAttribute("aria-busy");
     const isCurrent = () => version === queryVersion && dialog.open;
     if (!query) return renderMessage("Enter a question or search term.");
     // Check sensitive AI requests before loading or ranking any source material.
@@ -283,6 +284,9 @@ export async function initialiseSearchDialog(dialog) {
   };
 
   modeButtons.forEach((button) => button.addEventListener("click", () => {
+    // Mode changes invalidate prior in-flight answers, too.
+    ++queryVersion;
+    results.removeAttribute("aria-busy");
     mode = button.dataset.aiMode;
     modeButtons.forEach((candidate) => candidate.setAttribute("aria-pressed", String(candidate === button)));
     dialog.querySelector("[data-ai-mode-help]").textContent = mode === "search"
