@@ -605,10 +605,10 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 });
 
 test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
-  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 68);
-  assert.equal(tracker.meta.platformsAssessed, 204);
+  assert.ok(tracker.topics.filter(x => x.guidelineReview === "reviewed").length >= 68);
+  assert.ok(tracker.meta.platformsAssessed >= 204);
   assert.equal(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
-    .filter(x => x.state !== "unassessed").length, 204);
+    .filter(x => x.state !== "unassessed").length >= 204);
   assert.equal(tracker.topics.filter(x => x.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
@@ -679,8 +679,8 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 68);
-  assert.equal(report.assessedPlatformDecisions, 204);
+  assert.equal(report.independentlyDocumentedArticleReviews, 80);
+  assert.equal(report.assessedPlatformDecisions, 240);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 6);
   assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
@@ -952,8 +952,8 @@ test("four further Apple official HIG critical topics are source-specific, not p
     .guidelineReviewEvidence[0].includes("collection group"));
   assert.ok(tracker.topics.find(t=>t.title==="Machine learning")
     .guidelineReviewEvidence[0].includes("limitations"));
-  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,68);
-  assert.equal(tracker.meta.platformsAssessed,204);
+  assert.ok(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length>=68);
+  assert.ok(tracker.meta.platformsAssessed>=204);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
 });
 
@@ -985,8 +985,8 @@ test("11 remaining Critical Apple primary articles and collection indices have d
   }
   assert.equal(tracker.topics.filter(t => t.priority === "Critical" &&
     t.guidelineReview !== "reviewed").length, 0);
-  assert.equal(tracker.topics.filter(t => t.guidelineReview === "reviewed").length, 68);
-  assert.equal(tracker.meta.platformsAssessed, 204);
+  assert.ok(tracker.topics.filter(t => t.guidelineReview === "reviewed").length >= 68);
+  assert.ok(tracker.meta.platformsAssessed >= 204);
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
 });
 
@@ -1038,4 +1038,59 @@ test("downloaded successful live-rendered artifact confirms public provenance bu
     "CI PR code SHA is not the deployed public HTML SHA");
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
+
+test("12 additional current Apple HIG articles establish reasoned non-applicability, not fake native support", () => {
+  const names = [
+    "Motion", "Collaboration and sharing", "Boxes", "Collections",
+    "Outline views", "Edit menus", "Token fields", "Combo boxes",
+    "Digit entry views", "Steppers", "Toggles", "Pointing devices"
+  ];
+  assert.equal(new Set(names).size, 12);
+  const macOnly = ["Outline views","Token fields","Combo boxes"];
+  for (const name of names) {
+    const topic = tracker.topics.find(x=>x.title===name);
+    assert.ok(topic,"Missing indexed official HIG topic "+name);
+    assert.equal(topic.guidelineReview,"reviewed",name);
+    assert.equal(topic.guidelineReviewEvidence.length,3,name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes(topic.markdown),name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes("2026-11-19"),name);
+    assert.equal(topic.implementation,"not_verified",name);
+    assert.deepEqual(topic.releaseEvidence,[],name);
+    for (const platform of ["web","ios","android"]) {
+      const decision = topic.platformApplicability[platform];
+      assert.ok(["applicable","not_applicable"].includes(decision.state),
+        name+"/"+platform);
+      assert.ok(decision.rationale.length>=100,name+"/"+platform);
+      assert.deepEqual(topic[platform+"Evidence"],[],name+"/"+platform);
+    }
+  }
+  for (const name of macOnly) {
+    const topic = tracker.topics.find(t=>t.title===name);
+    assert.equal(topic.platformApplicability.ios.state,"not_applicable",name);
+    assert.equal(topic.platformApplicability.android.state,"not_applicable",name);
+    assert.equal(topic.platformApplicability.web.state,"applicable",
+      "Web implementation is analogous only, not an Apple native API: "+name);
+  }
+  const digit = tracker.topics.find(t=>t.title==="Digit entry views");
+  for (const p of ["web","ios","android"]) {
+    assert.equal(digit.platformApplicability[p].state,"not_applicable",
+      "Apple tvOS-only PIN component is not a NovaPharm web/iPhone/Android feature");
+  }
+  assert.ok(tracker.topics.find(t=>t.title==="Motion")
+    .guidelineReviewEvidence[0].includes("cancellable"));
+  assert.ok(tracker.topics.find(t=>t.title==="Collaboration and sharing")
+    .guidelineReviewEvidence[0].includes("permission"));
+  assert.ok(tracker.topics.find(t=>t.title==="Steppers")
+    .guidelineReviewEvidence[0].includes("visible value"));
+  assert.ok(tracker.topics.find(t=>t.title==="Toggles")
+    .guidelineReviewEvidence[0].includes("more than color"));
+  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,80);
+  const actual = tracker.topics.flatMap(t=>Object.values(t.platformApplicability))
+    .filter(v=>v.state!=="unassessed").length;
+  assert.equal(actual,240);
+  assert.equal(tracker.meta.platformsAssessed,actual);
+  assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed,false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
