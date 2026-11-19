@@ -77,3 +77,12 @@ test("invalid coordinates, open polygons and malformed nesting cannot be accepte
   assert.ok(result.errors.some((error) => error.includes("longitude/latitude")));
   assert.ok(result.errors.some((error) => error.includes("polygon ring")));
 });
+
+test("adversarial malformed MultiPolygon hierarchy reports errors instead of throwing", (t) => {
+  const fixture = makeFixture(t);
+  fixture.files.venue.geometry = { type: "MultiPolygon", coordinates: [[rectangle], null] };
+  fixture.write("venue.geojson", { type: "FeatureCollection", features: [fixture.files.venue] });
+  const result = preflightImdfVenue(fixture.dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((error) => error.includes("malformed polygon coordinate hierarchy")));
+});
