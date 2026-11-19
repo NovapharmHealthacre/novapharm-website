@@ -1,9 +1,24 @@
 name: Intelligence mobile and global source candidate contracts
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:
       - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/NovaMapKitView.swift'
+      - 'native/novapharm-intelligence-apple/Package.swift'
+      - 'native/novapharm-intelligence-android/**'
+      - 'apps/portal/components/governed-healthcare-map.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/proxy.ts'
+      - 'packages/security/src/index.ts'
+      - 'scripts/test-governed-maps-contract.mjs'
+      - 'docs/maps/**'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'docs/ai-use-case-register.json'
       - 'src/core/intelligence-global-source-gateway.mjs'
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'src/core/intelligence-global-canonical-candidates.mjs'
@@ -15,10 +30,11 @@ on:
       - 'docs/intelligence/global-source-enterprise-controls-20261117.md'
       - 'scripts/test-intelligence-global-source-gateway.mjs'
       - 'docs/intelligence/global-pharma-sources-20261117.json'
-      - '.github/workflows/intelligence-global-mobile-contracts.yml'
-      - 'scripts/aws/contact-release-routing.test.mjs'
       - '.github/workflows/dispatch-approved-aws-contact-release.yml'
       - '.github/workflows/publish-aws-contact-production.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - 'scripts/check-syntax.mjs'
+      - '.github/workflows/intelligence-global-mobile-contracts.yml'
   workflow_dispatch:
 
 permissions:
@@ -34,6 +50,8 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
+      - name: Verify CLIP source-only publication isolation
+        run: node --test scripts/aws/contact-release-routing.test.mjs
       - name: Check governed backend candidate syntax
         run: |
           node --check src/core/intelligence-global-source-gateway.mjs
@@ -49,9 +67,8 @@ jobs:
           node --test scripts/test-intelligence-global-canonical-candidates.mjs
           node --test scripts/test-intelligence-global-source-registry.mjs
           node --test scripts/test-intelligence-global-source-aliases.mjs
-          node --test native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs
-      - name: Verify research-only mobile changes cannot trigger public contact publishing
-        run: node --test scripts/aws/contact-release-routing.test.mjs
+          node --test native/novapharm-intelligence-mobile/tests/*.test.mjs
+          node --test scripts/test-governed-maps-contract.mjs
 
   mobile-bundle-preflight:
     name: iOS/Android candidate typecheck and offline bundle preflight

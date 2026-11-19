@@ -10,8 +10,8 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     summary: "Design and review dataset, training and evaluation plans before any model is approved.",
     appleTechnology: "Create ML",
     platform: "macOS training companion required",
-    capabilities: ["Dataset rights and consent review", "Training, validation and holdout split", "Model metadata and versioning", "Error analysis and accountable sign-off"],
-    requirements: ["Licensed or otherwise authorised non-patient training data", "Leakage-safe, representative evaluation", "Independent Quality and Security approval", "Signed native model-training release"]
+    capabilities: ["Dataset rights and consent review", "Training, validation and holdout split", "Model metadata and versioning", "Error analysis and accountable sign-off", "Research-only L0 hard-concrete feature gates with dense-baseline comparison"],
+    requirements: ["Licensed or otherwise authorised non-patient training data", "Leakage-safe, representative evaluation", "Independent Quality and Security approval", "Signed native model-training release", "Measured active-feature sparsity, held-out error, model lineage and hardware latency"]
   },
   {
     slug: "nova-core-runtime",
@@ -19,17 +19,17 @@ export const novaMlWorkspaceCatalogue = Object.freeze([
     summary: "Prepare a registry-controlled on-device prediction path without fabricating live model results.",
     appleTechnology: "Core ML",
     platform: "Signed iOS, iPadOS or macOS app required",
-    capabilities: ["Approved model package and input schema", "Device-local prediction", "Latency, drift and error assessment", "Immediate fallback to source records"],
+    capabilities: ["Approved model package and input schema", "Device-local prediction", "Latency, drift and error assessment", "Sparse-model artifact integrity and dense-versus-pruned benchmark", "Immediate fallback to source records"],
     requirements: ["Signed and approved model artifact", "Explicit per-use-case model rights", "Device and OS compatibility tests", "Human review for any consequential result"]
   },
   {
     slug: "nova-device-intelligence",
     title: "Nova Device Intelligence",
-    summary: "Plan opt-in document, language and media analysis using native device frameworks.",
-    appleTechnology: "Vision, Natural Language and Speech",
-    platform: "Native app and device permissions required",
-    capabilities: ["Document text recognition after user selection", "Language-aware document assistance", "User-requested speech-to-text", "Opt-out and correction controls"],
-    requirements: ["Minimal purpose-specific user permission", "No patient-identifiable or sensitive media by default", "On-device processing and retention review", "Human-verified outputs before records change"]
+    summary: "Plan opt-in device document, language and media workflows, plus a separately gated OpenAI CLIP public-image retrieval research candidate.",
+    appleTechnology: "Vision, Natural Language and Speech; CLIP research is separate from Apple frameworks",
+    platform: "Native app and device permissions required; private CLIP server approval required",
+    capabilities: ["Document text recognition after user selection", "Language-aware document assistance", "User-requested speech-to-text", "English text-to-approved-public-image CLIP research", "Opt-out and correction controls"],
+    requirements: ["Minimal purpose-specific user permission", "No patient-identifiable or sensitive media by default", "On-device processing and retention review", "Independent CLIP model rights and domain-shift evaluation", "Human-verified outputs before records change"]
   },
   {
     slug: "nova-generative-assist",
@@ -135,3 +135,50 @@ export const novaMlSparseCircuitAssurance = Object.freeze({
     { label: "Research implementation", href: "https://github.com/openai/circuit_sparsity" }
   ] as const
 });
+
+/**
+ * Research directions only. These are not separate live workspaces and do not
+ * run models in the web browser. Keep the existing four protected routes.
+ */
+export const novaMlAlignmentResearchMethods = Object.freeze([
+  {
+    id: "reward_proxy_sweep",
+    title: "Reward proxy overoptimisation",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Compare proxy scores against separate, independently adjudicated outcomes to detect Goodhart-style deterioration.",
+    approval: "No trained reward model, verified independent gold outcome or optimisation permission."
+  },
+  {
+    id: "critique_assistance",
+    title: "Human-assisted critique review",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Assess whether proposed flaws improve human review of medicine evidence, supplier documents and research summaries.",
+    approval: "No automatic validation of factual correctness, medical safety or source rights."
+  },
+  {
+    id: "instruction_conformance",
+    title: "Instruction adherence",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Audit specified requirements, missing citations and prohibited actions without trusting instructions embedded in source material.",
+    approval: "No SFT, PPO, RLHF training or permission to override identity and scope."
+  },
+  {
+    id: "offline_multiagent_scenario_scoreboard",
+    title: "Long-horizon simulation",
+    researchStatus: "Offline evaluation candidate",
+    summary: "Compare synthetic supply-chain planning trajectories and flag unsafe action attempts, without controlling operations.",
+    approval: "No trained agent, approved simulator, autonomous WMS or inventory release."
+  }
+] as const);
+
+/**
+ * Shared web/Expo research metadata only. Never interpreted as a live
+ * candidate model manifest or permission to run inference on a device.
+ */
+export const novaMlSparseResearchMethod = Object.freeze({
+  id: "l0_sparse_feature_gates",
+  title: "L₀ sparse feature gates",
+  researchStatus: "Offline mathematical research",
+  summary: "Evaluate hard-concrete sparsification and exact-zero model candidates under separately governed, nonclinical research tests.",
+  approval: "No licensed training dataset, independently validated model, signed mobile inference package, production API or customer release."
+} as const);

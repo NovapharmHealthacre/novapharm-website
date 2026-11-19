@@ -7,6 +7,8 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
+import { CountrySourceCoverage } from "./country-source-coverage";
+import { GovernedHealthcareMap } from "./governed-healthcare-map";
 import styles from "./medicines-intelligence.module.css";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
@@ -552,6 +554,7 @@ function NearbyOrganisations() {
     </div><button type="submit" disabled={busy}>{busy ? "Locating" : "Find organisations"}</button></form>
     <p className={`${styles.liveStatus} medicine-search-status`} role="status" aria-live="polite">{status}</p>
     {response?.truncated ? <p className={styles.advisory}>The response reached its governed result limit. Narrow the radius before drawing conclusions.</p> : null}
+    {response ? <GovernedHealthcareMap origin={response.origin} pharmacies={response.pharmacies} practices={response.practices} radiusKm={response.query.radiusKm} /> : null}
     {pharmacySection ? <EvidenceTable data={pharmacySection} /> : null}
     {practiceSection ? <EvidenceTable data={practiceSection} /> : null}
     {response ? <section className={styles.interpretation}><h3>Interpretation boundary</h3><ul>{response.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul></section> : null}
@@ -1018,7 +1021,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   if (current === "overview" || current === "medicine-search" || current === "medicine-overview" || current === "identity") central = <PlatformOverview analytics={analytics} detail={detail} snapshot={snapshot} />;
   else if (current === "geography") central = <><NearbyOrganisations /><EvidenceTable data={section(snapshot, "Practice population context")} /><EvidenceTable data={section(snapshot, "Pharmacy geography")} /></>;
   else if (current === "pharmacies") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Governed master</p><h1>All pharmacies</h1><p>Identity, geography and contact-evidence facts remain separate from medicine dispensing and marketing eligibility.</p></header><EvidenceTable data={section(snapshot, "Pharmacy geography")} /><EvidenceTable data={section(snapshot, "Pharmacy contact evidence")} /></section>;
-  else if (current === "data-sources") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source truth</p><h1>Source registry</h1><p>Discovered, schema-validated, sample-validated, ingested and production-operational remain distinct states.</p></header><EvidenceTable data={section(snapshot, "Data sources and quality")} /></section>;
+  else if (current === "data-sources") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source truth</p><h1>Source registry</h1><p>Discovered, schema-validated, sample-validated, ingested and production-operational remain distinct states.</p></header><CountrySourceCoverage /><EvidenceTable data={section(snapshot, "Data sources and quality")} /></section>;
   else if (current === "prescribers") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source-separated analysis</p><h1>Prescriber intelligence</h1><p>Select a governed medicine identity through the global search, then query accepted EPD facts. An empty result remains empty.</p></header><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "observed-market") central = <section className={styles.routeWorkspace}><ProfessionalWorkspace kind="observed-market" detail={detail} analytics={analytics} /><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "forecasts") central = <UnavailableEvidence title="Forecasts" statement="No forecast is displayed because an identity catalogue is not a demand history and cannot support a truthful forecast by itself." requirements={["Leakage-safe historical fact series", "Recorded training and feature cutoffs", "Backtests against accepted baselines", "Uncertainty intervals and owner acceptance"]} />;

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { novaComputeInfrastructureRows } from "../data/nova-ml-infrastructure";
-import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlAlignmentResearchMethods, novaMlExperienceGuidance, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { ClipVisualSearch } from "./clip-visual-search";
 import { MultimodalReviewPanel } from "./multimodal-review-panel";
 import styles from "./nova-ml-workspaces.module.css";
 import { NovaSignalsResearch } from "./nova-signals-research";
@@ -60,6 +61,19 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
 
     {(kind === "nova-device-intelligence" || kind === "nova-core-runtime") && <MultimodalReviewPanel />}
 
+    {(kind === "nova-ml-studio" || kind === "nova-generative-assist") && <section className={styles.section} aria-labelledby="nova-ml-alignment-research">
+      <h2 id="nova-ml-alignment-research">AI alignment research programme</h2>
+      <p className={styles.helper}>Source-only research directions. No model, rewards, critiques, training, operational actions or customer predictions run on this page.</p>
+      <dl className={styles.contractGrid}>{novaMlAlignmentResearchMethods.map((method) =>
+        <div className={styles.contractItem} key={method.id}>
+          <dt>{method.title}</dt>
+          <dd>{method.summary} {method.approval}</dd>
+        </div>
+      )}</dl>
+    </section>}
+
+    {kind === "nova-device-intelligence" ? <ClipVisualSearch /> : null}
+
     <section className={styles.section} aria-labelledby="nova-ml-experience">
       <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
       <p className={styles.helper}>Ten acceptance requirements for future native releases. These are testable design rules, not live model outputs or permission grants.</p>
@@ -76,6 +90,8 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       )}</dl>
       <p className={styles.reference}>Architecture reference: <a href="https://openai.com/index/infrastructure-for-deep-learning/">OpenAI — Infrastructure for deep learning (2016)</a>. Any compute activation requires independent security, rights, cost and infrastructure approval.</p>
     </section>
+
+    <NovaSignalsResearch />
 
     <section className={styles.section} aria-labelledby="nova-ml-sparse-circuits">
       <h2 id="nova-ml-sparse-circuits">{novaMlSparseCircuitAssurance.title}</h2>
@@ -107,8 +123,6 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
         <span key={reference.href}>{index > 0 ? " · " : ""}<a href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label}</a></span>
       )}</p>
     </section>
-
-    <NovaSignalsResearch />
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">
       <h2 id="nova-ml-acceptance">Requirements before activation</h2>
