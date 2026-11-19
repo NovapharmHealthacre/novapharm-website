@@ -149,5 +149,7 @@ const browserRuntimeFiles = [
 ];
 mkdirSync(join(root, "assets", "ai", "runtime"), { recursive: true });
 for (const file of browserRuntimeFiles) copyFileSync(join(root, "src", "ai", file), join(root, "assets", "ai", "runtime", file));
+// The public page shell references this lightweight, user-initiated entrypoint.
+copyFileSync(join(root, "src", "ai", "search-bootstrap.mjs"), join(root, "assets", "js", "ai-search.js"));
 
 console.log(`Built AI knowledge index from ${sources.length} approved sources into ${chunks.length} deterministic chunks.`);
