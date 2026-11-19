@@ -161,3 +161,18 @@ test("17 small Apple DMG containers have bounded SHA evidence, not licensing or 
   assert.match(report, /17 smaller UDIF disk images/);
   assert.match(report, /macOS installer\/licence verification is still not complete/i);
 });
+
+test("Apple official markdown source drift is disclosed rather than silently overwritten", () => {
+  assert.equal(ledger.officialIndex.indexDriftDetected, true);
+  assert.equal(ledger.officialSourceSpotChecks.length, 3);
+  const principles = ledger.officialSourceSpotChecks.find((x) => x.url.endsWith("/design-principles.md"));
+  assert.ok(principles);
+  assert.deepEqual(principles.observedHeadings, [
+    "Purpose","Agency","Responsibility","Familiarity","Flexibility","Simplicity","Craft","Delight"
+  ]);
+  for (const item of ledger.officialSourceSpotChecks) {
+    assert.equal(item.releaseImplementationEvidence, false);
+    assert.match(item.sourceType, /official_apple_markdown/);
+  }
+  assert.match(report, /Craft and Delight/);
+});
