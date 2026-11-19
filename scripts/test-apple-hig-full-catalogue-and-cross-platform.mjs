@@ -613,3 +613,83 @@ test("independent primary source review and bounded live RTL evidence cannot mas
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
+
+test("write an inspectable 172-topic production acceptance gap ledger", async () => {
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  const reviewed = tracker.topics.filter(t => t.guidelineReview === "reviewed").length;
+  const decisions = tracker.topics.flatMap(t => Object.values(t.platformApplicability))
+    .filter(d => d.state !== "unassessed").length;
+  const verified = tracker.topics.filter(t => t.implementation === "verified").length;
+  const priorities = {Critical:0,High:1,Medium:2,Later:3};
+  const topics = tracker.topics.map((t, index) => {
+    const unassessedPlatforms = ["web","ios","android"].filter(p =>
+      t.platformApplicability[p]?.state === "unassessed");
+    const applicablePlatforms = ["web","ios","android"].filter(p =>
+      t.platformApplicability[p]?.state === "applicable");
+    const platformEvidence = Object.fromEntries(["web","ios","android"].map(p => {
+      const list = t[p + "Evidence"];
+      return [p, {
+        applicability: t.platformApplicability[p]?.state,
+        recordedEvidenceCount: Array.isArray(list) ? list.length : 0,
+        fullReleaseAccepted: t.implementation === "verified" &&
+          Array.isArray(t.releaseEvidence) &&
+          t.releaseEvidence.some(e => e && e.platform === p && e.reviewDecision === "approved")
+      }];
+    }));
+    const blockers = [];
+    if (t.guidelineReview !== "reviewed") blockers.push("official_source_review");
+    if (unassessedPlatforms.length) blockers.push("platform_decisions:" + unassessedPlatforms.join(","));
+    for (const p of applicablePlatforms) {
+      if (platformEvidence[p].recordedEvidenceCount === 0)
+        blockers.push("observed_" + p + "_implementation");
+      if (!platformEvidence[p].fullReleaseAccepted)
+        blockers.push("accepted_" + p + "_release_receipt");
+    }
+    if (applicablePlatforms.length === 0) blockers.push("justified_scope_disposition");
+    if (t.implementation !== "verified" && t.implementation !== "not_applicable")
+      blockers.push("final_independent_implementation_approval");
+    return {
+      sourceRowIndex: t.sourceRowIndex ?? index,
+      title: t.title, section: t.section, priority: t.priority,
+      officialMarkdown: t.markdown, articleReview: t.guidelineReview,
+      implementation: t.implementation,
+      unassessedPlatforms, applicablePlatforms, platformEvidence, blockers
+    };
+  }).sort((a,b) => (priorities[a.priority] ?? 99) - (priorities[b.priority] ?? 99)
+    || a.sourceRowIndex - b.sourceRowIndex);
+  const report = {
+    schema: "novapharm.hig-production-acceptance-gap.v1",
+    generatedAt: new Date().toISOString(),
+    sourceCommit: process.env.GITHUB_SHA || null,
+    provenance: "Source register, not independent production conformance",
+    totalTopics: tracker.topics.length,
+    ownerAttestedCoverage: tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage,
+    independentlyDocumentedArticleReviews: reviewed,
+    totalPlatformDecisions: tracker.topics.length * 3,
+    assessedPlatformDecisions: decisions,
+    registeredProductionVerifiedTopics: verified,
+    registeredNotApplicableTopics: tracker.topics.filter(t => t.implementation === "not_applicable").length,
+    recordedPartialLiveObservations: tracker.topics.flatMap(t =>
+      ["web","ios","android"].flatMap(p => (t[p+"Evidence"]||[]).filter(e =>
+        e && typeof e === "object" && e.verificationLevel === "partial"))).length,
+    productionSignoffObserved: ownerProductionConstraints.productionSignoff,
+    productionCanBeCertified: verified === tracker.topics.length &&
+      ownerProductionConstraints.productionSignoff === "granted" &&
+      tracker.meta.allPlatformsProductionVerified === true,
+    topics
+  };
+  assert.equal(report.totalTopics, 172);
+  assert.equal(report.independentlyDocumentedArticleReviews, 53);
+  assert.equal(report.assessedPlatformDecisions, 159);
+  assert.equal(report.registeredProductionVerifiedTopics, 0);
+  assert.equal(report.recordedPartialLiveObservations, 1);
+  assert.equal(report.productionCanBeCertified, false);
+  assert.equal(topics.length, 172);
+  assert.equal(new Set(topics.map(t => t.sourceRowIndex)).size, 172);
+  const dir = "artifacts/apple-hig-production-audit";
+  mkdirSync(dir, { recursive:true });
+  writeFileSync(dir + "/172-topic-gap-ledger.json", JSON.stringify(report, null, 2) + "\n");
+  console.log("HIG production acceptance: " + verified + "/172 verified, " +
+    reviewed + "/172 primary reviews, " + decisions + "/516 platform decisions. " +
+    "Detailed gap ledger: " + dir + "/172-topic-gap-ledger.json");
+});
