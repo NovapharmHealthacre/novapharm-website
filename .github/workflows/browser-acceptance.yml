@@ -18,7 +18,7 @@ jobs:
     # The official image matches the exact package-lock Playwright version.
     # It includes Chromium/WebKit and OS libraries, avoiding slow Ubuntu APT mirrors.
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
       options: --shm-size=1gb
     timeout-minutes: 60
     strategy:
@@ -72,7 +72,7 @@ jobs:
     # The official image matches the exact package-lock Playwright version.
     # It includes Chromium/WebKit and OS libraries, avoiding slow Ubuntu APT mirrors.
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
       options: --shm-size=1gb
     timeout-minutes: 60
     steps:
@@ -124,7 +124,7 @@ jobs:
     # The official image matches the exact package-lock Playwright version.
     # It includes Chromium/WebKit and OS libraries, avoiding slow Ubuntu APT mirrors.
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
       options: --shm-size=1gb
     timeout-minutes: 30
     steps:
