@@ -9,7 +9,7 @@ overrides:
   fast-xml-parser: 5.10.1
   js-yaml: 3.15.1
   nanoid: 3.3.18
-  postcss: 8.5.25
+  postcss: 8.5.32
   sharp: 0.35.3
 
 importers:
@@ -54,8 +54,8 @@ importers:
         specifier: 1.65.0
         version: 1.65.0
       postcss:
-        specifier: 8.5.25
-        version: 8.5.25
+        specifier: 8.5.32
+        version: 8.5.32
       sharp:
         specifier: 0.35.3
         version: 0.35.3(@types/node@24.13.3)
@@ -2494,8 +2494,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  postcss@8.5.25:
-    resolution: {integrity: sha512-DTPx3RWSSnWyzLxQnlH0rJP+EW5ekl16ZU4/psbIhA0e53kJfdgaN5vKM+xP7yJtXVu+nfdVFmlgFDEKAe4Pyw==}
+  postcss@8.5.32:
+    resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
     engines: {node: ^10 || ^12 || >=14}
 
   postgres-array@2.0.0:
@@ -5012,7 +5012,7 @@ snapshots:
       '@swc/helpers': 0.5.23
       baseline-browser-mapping: 2.11.37
       caniuse-lite: 1.0.30001826
-      postcss: 8.5.25
+      postcss: 8.5.32
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       styled-jsx: 5.1.6(react@19.2.8)
@@ -5113,7 +5113,7 @@ snapshots:
     dependencies:
       playwright-core: 1.65.0
 
-  postcss@8.5.25:
+  postcss@8.5.32:
     dependencies:
       nanoid: 3.3.18
       picocolors: 1.1.1
