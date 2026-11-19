@@ -411,7 +411,8 @@ test("country release-ledger is private-only and cannot dispatch the corporate A
     const source = get(file);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, file + " missing the changed-file classifier");
-    const protectedPaths = new Set(classifier.split("|"));
+    assert.ok(classifier.trim().endsWith(")"), file + " must close its exact private Bash case arm");
+    const protectedPaths = new Set(classifier.trim().slice(0, -1).split("|"));
     for(const path of countryPaths) {
       assert.ok(protectedPaths.has(path), file + " would publish country research-only file: " + path);
     }
