@@ -104,6 +104,7 @@ export async function initialiseSearchDialog(dialog) {
   let previousFocus = null;
   let persistentCacheAvailable = true;
   let queryVersion = 0;
+  let semanticGeneration = 0;
 
   const announce = (message) => {
     status.textContent = message;
@@ -206,13 +207,19 @@ export async function initialiseSearchDialog(dialog) {
   };
 
   const startSemantic = async () => {
+    const generation = ++semanticGeneration;
     semanticEnable.disabled = true;
     semanticCancel.hidden = false;
     progress.hidden = false;
     announce("Preparing private on-device semantic retrieval...");
-    const knowledge = await knowledgeIndex();
-    worker = new Worker("/assets/ai/runtime/semantic-worker.mjs", { type: "module", name: "novapharm-private-semantic-search" });
-    worker.addEventListener("message", (event) => {
+    try {
+      const knowledge = await knowledgeIndex();
+      // Closing/cancelling during index loading must never start a new worker.
+      if (generation !== semanticGeneration || !dialog.open) return;
+      const activeWorker = new Worker("/assets/ai/runtime/semantic-worker.mjs", { type: "module", name: "novapharm-private-semantic-search" });
+      worker = activeWorker;
+      activeWorker.addEventListener("message", (event) => {
+        if (generation !== semanticGeneration || worker !== activeWorker || !dialog.open) return;
       if (event.data.type === "progress") {
         progress.max = event.data.total || 1;
         progress.value = event.data.total ? event.data.loaded : 0;
@@ -260,10 +267,16 @@ export async function initialiseSearchDialog(dialog) {
         }
       }
     });
-    worker.postMessage({ type: "init", knowledge, useCache: true });
+      activeWorker.postMessage({ type: "init", knowledge, useCache: true });
+    } catch {
+      if (generation !== semanticGeneration || !dialog.open) return;
+      stopSemantic();
+      announce("Semantic retrieval could not be enabled. Conventional search remains available.");
+    }
   };
 
   const stopSemantic = (reason = "disabled") => {
+    ++semanticGeneration;
     if (semanticRequest) {
       semanticRequest.resolve([]);
       semanticRequest = null;
@@ -314,10 +327,7 @@ export async function initialiseSearchDialog(dialog) {
       announce("Semantic retrieval disabled. Conventional search remains available.");
       return;
     }
-    startSemantic().catch(() => {
-      stopSemantic();
-      announce("Semantic retrieval could not be enabled. Conventional search remains available.");
-    });
+    void startSemantic();
   });
   semanticCancel.addEventListener("click", () => {
     stopSemantic("cancelled");
