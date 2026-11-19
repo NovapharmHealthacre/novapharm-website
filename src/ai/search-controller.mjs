@@ -102,7 +102,8 @@ export async function initialiseSearchDialog(dialog) {
   let currentAnswer = "";
   let semanticRequest = null;
   let previousFocus = null;
-  let persistentCacheAvailable = true;
+  let persistentCacheAvailable = typeof indexedDB !== "undefined";
+  cacheClear.hidden = !persistentCacheAvailable;
   let queryVersion = 0;
   let semanticGeneration = 0;
 
@@ -287,14 +288,22 @@ export async function initialiseSearchDialog(dialog) {
     semanticEnable.disabled = false;
     semanticEnable.textContent = "Enable private semantic retrieval";
     semanticCancel.hidden = true;
-    cacheClear.hidden = true;
+    cacheClear.hidden = !persistentCacheAvailable;
     progress.hidden = true;
     if (reason !== "closed") {
       progressLabel.textContent = reason === "cancelled"
         ? "Download cancelled. Conventional search still works."
-        : "Semantic retrieval disabled. Previously downloaded optional assets may remain in browser storage; re-enable retrieval to clear the cache.";
+        : "Semantic retrieval disabled. Optional downloaded assets may remain in this browser; use Clear cached assets to delete them.";
     }
   };
+
+  // Removing browser assets is separate from inference: users can clear data while AI is off.
+  const clearStoredSemanticAssets = () => new Promise((resolve) => {
+    if (typeof indexedDB === "undefined") return resolve(false);
+    const request = indexedDB.deleteDatabase("novapharm-public-ai");
+    request.onsuccess = () => resolve(true);
+    request.onerror = request.onblocked = () => resolve(false);
+  });
 
   modeButtons.forEach((button) => button.addEventListener("click", () => {
     // Mode changes invalidate prior in-flight answers and their visible output.
@@ -333,7 +342,19 @@ export async function initialiseSearchDialog(dialog) {
     stopSemantic("cancelled");
     announce("Semantic model download cancelled.");
   });
-  cacheClear.addEventListener("click", () => worker?.postMessage({ type: "clear-cache" }));
+  cacheClear.addEventListener("click", async () => {
+    // Terminate live retrieval before deleting its optional persistent cache.
+    stopSemantic();
+    announce("Clearing optional browser retrieval assets...");
+    const cleared = await clearStoredSemanticAssets();
+    if (cleared) {
+      progressLabel.textContent = "Optional browser retrieval assets cleared. Conventional search is available.";
+      announce("Optional browser retrieval assets cleared.");
+    } else {
+      progressLabel.textContent = "Could not clear optional assets. Check browser storage settings and try again.";
+      announce("Optional assets could not be cleared.");
+    }
+  });
   copyButton.addEventListener("click", async () => {
     if (!currentAnswer) return;
     try {
