@@ -261,6 +261,7 @@ test("L0 and alignment research-only source merges cannot accidentally publish A
 
 test("HIG-only web and mobile merges never dispatch the unrelated AWS contact release", () => {
   const higPrivatePaths = [
+    "native/novapharm-intelligence-mobile/MapsResearchScreen.tsx",
     "native/novapharm-intelligence-mobile/appearance.ts",
     "native/novapharm-intelligence-mobile/app.json",
     "native/novapharm-intelligence-mobile/package.json",
@@ -289,6 +290,7 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
     "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs"
   ];
   const appearanceChangeSet = [
+    "native/novapharm-intelligence-mobile/MapsResearchScreen.tsx",
     "native/novapharm-intelligence-mobile/App.tsx",
     "native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx",
     "native/novapharm-intelligence-mobile/appearance.ts",
