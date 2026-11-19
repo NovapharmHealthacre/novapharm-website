@@ -23,6 +23,14 @@ test("audit stores digest, headings and links, never full copied article or fake
   assert.match(code, /createHash\("sha256"\)/);
   assert.match(code, /insideHigLinks:/);
   assert.match(code, /linkedTopicsNotInOwnerParentIndex:/);
+  assert.match(code, /allIndexedLinks: 207/);
+  assert.match(code, /supplementaryAnchorChecks: anchorChecks.length/);
+  assert.match(code, /supplementaryResourceChecks: supportingResourceChecks.length/);
+  assert.match(code, /method: "HEAD"/);
+  assert.match(code, /unresolvedAnchors:/);
+  assert.match(code, /unresolvedSupportingResources:/);
+  assert.match(code, /implementationVerified: false/);
+
   assert.match(code, /unresolved:/);
   assert.match(code, /if \(report.unresolved.length\) process.exitCode = 1/);
   assert.doesNotMatch(code, /Authorization:|process\.env\.AWS_|client_secret|writeFileSync\(.*text\)/);
