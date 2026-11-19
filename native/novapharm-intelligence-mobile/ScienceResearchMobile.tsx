@@ -5,6 +5,7 @@
 import React from "react";
 import { Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import { assessQuantumResourcePlan } from "../../src/core/intelligence-quantum-resource-estimate.mjs";
 import quantumProgram from "../../docs/intelligence/quantum-research-program-v1.json";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
@@ -14,6 +15,19 @@ type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
   const styles = useColorScheme() === "dark" ? darkStyles : lightStyles;
+  const [selectedQubits, setSelectedQubits] = React.useState(20);
+  const resourceReview = assessQuantumResourcePlan({
+    schemaVersion: "npi.quantum-simulator-preflight.v1",
+    backend: "classical-state-vector-only",
+    qubits: selectedQubits,
+    shots: 512,
+    circuitGates: 500,
+    memoryBudgetMiB: 64,
+    hardwareExecutionRequested: false,
+    paidComputeRequested: false,
+    protectedDataRequested: false,
+    productionApproved: false
+  });
   return <View accessibilityLabel="Scientific research, offline planning preview" style={styles.container}>
     <Text style={styles.breadcrumb}>NOVAPHARM INTELLIGENCE / SCIENCE</Text>
     <Text style={styles.title} accessibilityRole="header">Science, grounded in evidence.</Text>
@@ -31,6 +45,17 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         <Text style={styles.description}>{module.description}</Text>
       </View>
     )}
+    <View style={styles.card} accessibilityLabel="Classical state vector capacity preflight; no quantum execution">
+      <Text style={styles.cardTitle} accessibilityRole="header">State-vector RAM preflight</Text>
+      <Text style={styles.description}>Illustrative complex128 vector only; 64 MiB declared limit. This tool does not execute models, reserve memory, contact servers or approve research.</Text>
+      {([10, 20, 25, 30] as const).map((count) =>
+        <Pressable key={count} accessibilityRole="button" accessibilityLabel={count + " qubits, preview theoretical memory only"} accessibilityState={{ selected: count === selectedQubits }} style={styles.relatedButton} onPress={() => setSelectedQubits(count)}>
+          <Text style={styles.relatedText}>{count} qubits{count === selectedQubits ? " · selected" : ""}</Text>
+        </Pressable>
+      )}
+      <Text style={styles.state} accessibilityLiveRegion="polite">{selectedQubits} qubits · {resourceReview.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB theoretical storage · {resourceReview.conservativeResearchCandidate ? "Review-only candidate" : "Exceeds conservative advisory"}</Text>
+      <Text style={styles.description}>This is not a RAM availability, runtime, price, fault tolerance or production approval. No compute job is started.</Text>
+    </View>
     <Text style={styles.smallHeading} accessibilityRole="header">Verification DNA</Text>
     {quantumProgram.principles.map((item) =>
       <View style={styles.reviewStage} key={item.title}>

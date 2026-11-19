@@ -20,6 +20,19 @@ test("corporate, board web and Expo iOS/Android import one review catalogue", ()
   assert.ok(read("native/novapharm-intelligence-mobile/App.tsx").includes("ScienceResearchMobile"));
   assert.ok(read("apps/portal/app/[[...slug]]/page.tsx").includes("verifiedPortalSession"));
 });
+test("all three web/native-shared clients display the same nonexecuting capacity preflight", () => {
+  for (const path of [
+    "apps/corporate/app/quantum-research/page.tsx",
+    "apps/portal/components/science-research-workspace.tsx",
+    "native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx"
+  ]) {
+    assert.ok(read(path).includes("assessQuantumResourcePlan"), path);
+  }
+  const resource = read("src/core/intelligence-quantum-resource-estimate.mjs");
+  assert.ok(resource.includes("executionEnabled: false"));
+  assert.ok(resource.includes("hardwareEnabled: false"));
+  assert.ok(resource.includes("productionEligible: false"));
+});
 test("native adapters reject production authority and 22 medicine routes remain stable", () => {
   for(const path of ["native/novapharm-intelligence-apple/NovaQuantumResearchReceipt.swift", "native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaQuantumResearchReader.kt"]) {
     const body = read(path);

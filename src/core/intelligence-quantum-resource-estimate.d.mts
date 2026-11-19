@@ -1,0 +1,36 @@
+export const RESOURCE_PLAN_CONTRACT: "npi.quantum-simulator-preflight.v1";
+export type QuantumResourcePlan = Readonly<{
+  schemaVersion: "npi.quantum-simulator-preflight.v1";
+  backend: "classical-state-vector-only";
+  qubits: number;
+  shots: number;
+  circuitGates: number;
+  memoryBudgetMiB: number;
+  hardwareExecutionRequested: false;
+  paidComputeRequested: false;
+  protectedDataRequested: false;
+  productionApproved: false;
+}>;
+export type QuantumResourcePreflight = Readonly<{
+  schemaVersion: "npi.quantum-simulator-preflight.v1";
+  backend: "classical-state-vector-only";
+  qubits: number;
+  shots: number;
+  circuitGates: number;
+  stateVectorMemoryMiB: number;
+  vectorBudgetMiB: number;
+  vectorWithinBudget: boolean;
+  conservativeResearchCandidate: boolean;
+  assessment: "source-review-only" | "exceeds-bounded-research-advisory";
+  actualMemoryRequiredMiB: null;
+  wallClockSeconds: null;
+  quotedCostGbp: null;
+  logicalQubitsRequired: null;
+  physicalQubitsRequired: null;
+  faultToleranceValidated: false;
+  hardwareEnabled: false;
+  executionEnabled: false;
+  productionEligible: false;
+  independentlyVerified: false;
+}>;
+export function assessQuantumResourcePlan(plan: QuantumResourcePlan): QuantumResourcePreflight;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { assessQuantumResourcePlan } from "../../../../src/core/intelligence-quantum-resource-estimate.mjs";
 import quantumProgram from "../../../../docs/intelligence/quantum-research-program-v1.json";
 import styles from "./quantum-research.module.css";
 
@@ -7,6 +8,13 @@ export const metadata: Metadata = {
   description: "Research roadmap for reproducible quantum algorithms, molecular simulation and independent verification.",
   robots: { index: false, follow: false }
 };
+const memoryExamples = [20, 30].map((qubits) => assessQuantumResourcePlan({
+  schemaVersion: "npi.quantum-simulator-preflight.v1", backend: "classical-state-vector-only",
+  qubits, shots: 512, circuitGates: 500, memoryBudgetMiB: 64,
+  hardwareExecutionRequested: false, paidComputeRequested: false,
+  protectedDataRequested: false, productionApproved: false
+}));
+
 export default function QuantumResearchPage() {
   return <section className={styles.page} id="quantum-research">
     <div className={styles.shell}>
@@ -21,6 +29,15 @@ export default function QuantumResearchPage() {
           <h3>{module.title}</h3>
           <p>{module.description}</p>
         </article>)}
+      </div>
+      <h2>Why simulation size matters</h2>
+      <p className={styles.lead}>A complex128 state vector needs 16 × 2ⁿ bytes before runtime overhead. These are mathematical examples, not hardware requirements or execution promises.</p>
+      <div className={styles.grid}>
+        {memoryExamples.map((plan) => <div key={plan.qubits} className={styles.card}>
+          <h3>{plan.qubits} qubits</h3>
+          <p>{plan.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB of state-vector storage only</p>
+          <p>{plan.assessment.replaceAll("-", " ")} · no execution enabled</p>
+        </div>)}
       </div>
       <h2>Scientific verification principles</h2>
       <div className={styles.grid}>

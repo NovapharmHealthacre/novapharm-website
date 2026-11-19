@@ -59,6 +59,9 @@ Run `python3 scripts/research/test-quantum-noise-reference.py -v` (five offline 
 
 Tests: `node --test scripts/test-intelligence-quantum-resource-estimate.mjs`. Fake/extra flags, hardware, paid compute, personal records and production approval are denied. **Qualtran logical operation counts and real fault-tolerant physical resource estimates remain unimplemented**; those require separate algorithm-specific assumptions, decomposition and validation.
 
+## Cross-platform source UI: review-only capacity preflight
+The protected Science Research web workspace and shared Expo iOS/Android candidate show an explicitly nonexecuting four-choice qubit preview (10/20/25/30) backed by the same first-party core estimator. The corporate research-only/noindex page presents two static examples (20 and 30 qubits). These computations run locally as ordinary JavaScript, with **no** quantum gate simulation, server calls, CPU or RAM reservation. Accessibility uses native semantic buttons, selected state and polite status updates. Production acceptance requires actual Chromium/WebKit, VoiceOver, TalkBack, Dynamic Type and device checks.
+
 ## Required production/research acceptance
 - Independent review of developer licences, dependencies, data rights, commercial/AI reuse, source revocation and citations.
 - Signed rights-cleared non-patient dataset/experiment provenance and independent scientific replication with negative controls.
