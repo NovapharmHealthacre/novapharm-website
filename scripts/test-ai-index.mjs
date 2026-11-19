@@ -8,7 +8,10 @@ const knowledgeRaw = read("assets/ai/company-knowledge-index.json");
 const manifest = JSON.parse(read("assets/ai/company-source-manifest.json"));
 const knowledge = JSON.parse(knowledgeRaw);
 
-assert.equal(manifest.approvedSourceCount, 30);
+// The approved corpus grows with published articles and page migrations.
+// Validate provenance and a meaningful minimum instead of a stale fixed 2026 count.
+assert.equal(manifest.approvedSourceCount, manifest.sources.length);
+assert.ok(manifest.approvedSourceCount >= 20, "Expected meaningful public evidence coverage");
 assert.equal(manifest.chunkCount, knowledge.chunks.length);
 assert.equal(manifest.corpusHash, knowledge.corpusHash);
 assert.ok(knowledge.chunks.length >= 300);
@@ -20,7 +23,8 @@ for (const source of manifest.sources) {
   assert.match(source.url, /^https:\/\/novapharmhealthcare\.com\//);
   assert.ok(source.sourceHash);
   assert.ok(source.blockCount > 0);
-  assert.doesNotMatch(source.url, /\/(?:portal|employee|admin|board|docs|api)\//);
+  assert.doesNotMatch(source.url, /\\/(?:portal|employee|admin|board|docs|api|contact|account-application|legal)(?:\\/|$)/);
+  assert.doesNotMatch(source.file, /(?:^|\\/)(?:portal|employee|admin|contact|account-application|legal)(?:\\/|$)/);
 }
 for (const chunk of knowledge.chunks) {
   assert.ok(chunk.contentHash && chunk.sourceUrl && chunk.sourceTitle && chunk.heading && chunk.text);
