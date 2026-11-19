@@ -13,6 +13,13 @@ test("public site build materializes approved AI index and source-controlled bro
   assert.match(builder, /copyFileSync\(join\(root, "src", "ai", file\), join\(root, "assets", "ai", "runtime", file\)\)/);
   assert.match(builder, /"search-controller.mjs"/);
   assert.match(builder, /"semantic-worker.mjs"/);
+  assert.match(builder, /"search-bootstrap.mjs"/);
+  assert.match(builder, /"assets", "js", "ai-search.js"/);
+  const bootstrap = readFileSync(new URL("../src/ai/search-bootstrap.mjs", import.meta.url), "utf8");
+  assert.ok(Buffer.byteLength(bootstrap) < 2500);
+  assert.match(bootstrap, /import\("\/assets\/ai\/runtime\/search-controller\.mjs"\)/);
+  assert.match(bootstrap, /window\.location\.assign\("\/search\/"\)/);
+  assert.doesNotMatch(bootstrap, /fetch\(|sendBeacon|gtag\(|localStorage|sessionStorage|WebSocket/);
 });
 
 test("source index excludes sensitive pages and enforces public-only source rules", () => {
@@ -43,5 +50,7 @@ test("staged Pages release rejects stale AI source or mismatched model/index art
   assert.match(staged, /aiManifest\.corpusHash !== aiEmbeddings\.corpusHash/);
   assert.match(staged, /digest !== asset\.sha256 \|\| bytes\.length !== asset\.bytes/);
   assert.match(staged, /AI source\/model manifest consistency gate failed/);
+  assert.match(staged, /Public AI entrypoint differs from reviewed source/);
+  assert.match(staged, /"assets\/js\/ai-search.js"/);
   assert.match(staged, /Unapproved private or form-data source included in AI release/);
 });
