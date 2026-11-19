@@ -1,5 +1,8 @@
 # Staging-only AWS portal build. No secrets, credentials, or customer data in image.
+# MapKit JS token is public in the browser, never an Apple Maps private signing key.
 FROM node:24-alpine AS builder
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}
 # Explicit build-time opt-in; all ordinary portal images keep private WMS UAT disabled.
 ARG NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=false
 ENV NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=${NEXT_PUBLIC_WMS_PILOT_UI_ENABLED}
