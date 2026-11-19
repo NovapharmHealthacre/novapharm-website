@@ -5,7 +5,9 @@ import {
   buildGlobalSourceOnboardingCoverage,
   CANDIDATE_API_BINDINGS,
   assertAllCountriesLive,
-  EXPECTED_SOURCE_CANDIDATES
+  EXPECTED_SOURCE_CANDIDATES,
+  PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119,
+  buildPublisherRightsPrescreenWorklist
 } from "../src/core/intelligence-global-source-onboarding.mjs";
 import {sourcePlans} from "../src/core/intelligence-global-source-gateway.mjs";
 const registry=JSON.parse(readFileSync(new URL("../docs/intelligence/global-pharma-sources-20261117.json",import.meta.url),"utf8")).sources;
@@ -89,4 +91,78 @@ test("unreviewed source registry rejects private and malformed HTTPS hosts", () 
       /untrusted source reference (host|URL)/, url);
   }
   assert.equal(buildGlobalSourceOnboardingCoverage(registry).totalSourceCandidates, 101);
+});
+
+
+test("all 101 candidates have a complete, closed publisher-rights worklist", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.contract, "novapharm.intelligence.publisher-terms-prescreen.v1");
+  assert.equal(worklist.totalSourceCandidates, 101);
+  assert.equal(worklist.publicPublisherNoticesLocated, 5);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
+  assert.deepEqual(
+    new Set(worklist.sourceEntries.map(x => x.candidateKey)),
+    new Set(registry.map(x => x.candidateKey))
+  );
+  for (const entry of worklist.sourceEntries) {
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(entry.productionDatasetAdmitted, false);
+    assert.equal(entry.liveIngestedRecordCount, 0);
+    assert.equal(entry.termsSha256IndependentlyVerified, null);
+    assert.equal(entry.signedGrantReceiptSha256, null);
+    assert.deepEqual(entry.legallyAcceptedUses, []);
+    assert.ok(entry.outstandingRightsRequirements.length >= 2);
+    assert.equal(Object.isFrozen(entry), true);
+  }
+});
+
+test("five official publisher notices must never become production licence approvals", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const notices = new Map(worklist.sourceEntries
+    .filter(entry => entry.publisherTermsUrl !== null)
+    .map(entry => [entry.candidateKey, entry]));
+  assert.deepEqual(
+    new Set(notices.keys()),
+    new Set(Object.keys(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119))
+  );
+  const expected = new Map([
+    ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
+    ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
+    ["north-america-canada-health-canada-drug-product-database", "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe"],
+    ["europe-united-kingdom-nhsbsa-english-prescribing-dataset", "https://opendata.nhsbsa.net/pages/terms-and-conditions"],
+    ["global-global-us-clinicaltrials-gov", "https://clinicaltrials.gov/terms-conditions"]
+  ]);
+  for (const [key, url] of expected) {
+    const row = notices.get(key);
+    assert.ok(row, key);
+    assert.equal(row.publisherTermsUrl, url);
+    assert.equal(row.termsScreeningStatus, "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING");
+    assert.equal(row.productionRightsGranted, false);
+    assert.equal(row.customerLive, false);
+    assert.equal(row.exactDatasetVersion, null);
+    assert.deepEqual(row.legallyAcceptedUses, []);
+    assert.ok(row.outstandingRightsRequirements.every(value => typeof value === "string"));
+    assert.equal(Object.isFrozen(row.outstandingRightsRequirements), true);
+    assert.equal(new URL(row.publisherTermsUrl).protocol, "https:");
+  }
+  assert.equal(worklist.sourceEntries.filter(row =>
+    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 96);
+});
+
+test("public licence notices cannot override tampered registry or proof-of-rights gates", () => {
+  const tampered = registry.map((row, i) =>
+    i === 0 ? {...row, rightsStatus: "approved", allowedUses: ["commercial", "external-ai"]} : row
+  );
+  assert.throws(
+    () => buildPublisherRightsPrescreenWorklist(tampered),
+    /candidate state invalid/
+  );
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  assert.equal(worklist.sourceEntries.some(row => row.productionRightsGranted), false);
+  assert.equal(worklist.sourceEntries.some(row => row.customerLive), false);
+  assert.equal(worklist.sourceEntries.some(row => row.productionDatasetAdmitted), false);
+  assert.equal(worklist.sourceEntries.some(row => row.legallyAcceptedUses.length > 0), false);
+  assert.throws(() => assertAllCountriesLive(worklist), /cannot be asserted/);
 });
