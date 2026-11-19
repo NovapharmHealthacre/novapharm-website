@@ -28,7 +28,7 @@ declare global {
 
 const mapkitScriptId = "nova-mapkitjs-v6";
 const mapkitUrl = "https://cdn.apple-mapkit.com/mk/6/mapkit.core.js";
-const token = process.env["NEXT_PUBLIC_APPLE_MAPS_TOKEN"];
+const token = process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN;
 
 function coordinate(value: unknown, minimum: number, maximum: number): number | null {
   if (typeof value !== "number" && (typeof value !== "string" || !value.trim())) return null;
