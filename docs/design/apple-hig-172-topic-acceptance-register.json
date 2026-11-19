@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 33,
+    "platformsAssessed": 57,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -2232,7 +2232,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/charts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/charts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2244,23 +2244,28 @@
       "sourceRequestedPlatforms": "Intelligence, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Intelligence data graphs: accurate axis units, source and time windows, semantic descriptions, keyboard-accessible mark exploration and downloadable accessible tables. Swift Charts audio-graph APIs are not browser capabilities."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to iOS Swift Charts or compatible graphs: VoiceOver mark summaries, optional Audio Graphs where supported, meaning-preserving axes and reachability of data points on device."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Android charts using TalkBack descriptions, axes, accessible underlying data tables and touch/keyboard navigation; Apple-specific Audio Graphs/Swift Charts APIs do not apply."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/charts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Charts official Markdown article (marks/axes and scale, descriptive titles, chart accessibility, keyboard navigation, color and audio graphs, platform notes and resources). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/charts.md. Reviewed 2026-11-19.",
+        "Show exact values, units, time grain and source provenance; use appropriate axis scales, provide meaningful captions and accessible tabular alternatives, never convey safety conclusions solely through color.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -2565,7 +2570,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/labels",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/labels.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2577,23 +2582,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web forms, product tables and dashboards: semantic visible labels, suitable contrast, responsive text, accessible form relationships and selectable error/record identifiers. Apple semantic UIColor APIs are not available in CSS."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: semantic label colors, Dynamic Type, legible secondary labels, correct accessibility labels and selectable important data. Physical appearance and VoiceOver acceptance still unverified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as shared label-quality objective with Android text roles, font scaling, TalkBack names and selectable identifiers, but Apple UIFont/UIColor/SwiftUI Label behavior is not native Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/labels.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Labels official Markdown article (static labels, UI role, legibility, system semantic text colors, selectable useful text, macOS/watchOS notes and resources). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/labels.md. Reviewed 2026-11-19.",
+        "Prefer readable labels that clearly express context/actions and semantic priority. Preserve copyability for meaningful identifiers or error messages, and use accessible secondary text rather than low-contrast decoration.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -2861,7 +2871,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/buttons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/buttons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2873,23 +2883,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as accessible button design: semantic button elements, keyboard and pointer operation, 44 CSS-pixel audit where agreed, visible focus/pressed/busy state and proper destructive confirmation. Native 44pt unit and SF Symbols rights do not translate into a CSS measurement standard."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Direct native iOS guidance: consistent touch target size, clear label and role, iOS activity progress feedback, VoiceOver names and safe destructive action semantics; physical screen-reader and tap testing remains required."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform UX goal with Android-native touch target and role conventions, pressed/loading states, TalkBack names and destructive-action clarity; UIKit/SwiftUI button APIs do not apply."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/buttons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Buttons official Markdown article (control style/content/role, 44x44pt target guidance, press feedback, primary-versus-destructive roles, iOS busy button, macOS help controls, visionOS/watchOS notes, change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/buttons.md. Reviewed 2026-11-19.",
+        "Provide recognizable action targets and visible press/busy feedback. Use prominent styling sparingly; never assign destructive action the primary role. Apple guidance quotes points for native hit regions, which is not evidence about web CSS pixel sizing.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3342,7 +3357,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/search-fields",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/search-fields.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3354,23 +3369,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to medicine and product catalogue search: descriptive placeholder plus accessible label, clear button, known result scope, keyboard filters, no unapproved indexed patient data and cancellable queries."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: iOS searchable fields in top/bottom toolbars or dedicated tab, appropriate focus/keyboard behavior, scoped token filters and VoiceOver; no actual native device interaction verified."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform search principle with Android SearchBar, native filters, dynamic scoped results and TalkBack; Apple SwiftUI searchable/tab positioning APIs are not Android APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/search-fields.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed current Apple Search fields official Markdown article (scope/suggestions/tokens, inline and tab search, toolbar positioning, iPad/Mac/tvOS/watchOS variants and 2026 updates). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/search-fields.md. Reviewed 2026-11-19.",
+        "Expose editable, clearly scoped search fields; support dynamic relevant results, clear/Cancel affordances and accessible filter tokens, without leaking protected search histories. Pick placement by task and platform.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3416,7 +3436,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/tab-bars",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/tab-bars.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3428,23 +3448,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as responsive app-navigation pattern only: semantic top-level tabs when appropriate, labels, keyboard traversal and predictable state preservation. UIKit bottom Liquid Glass tab bar is not a web requirement."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: iPhone tab navigation, persistent top-level destinations, safe areas, labeled controls, native per-tab state and accessible overflow; actual Expo/native UIKit parity requires device proof."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as navigation objective with Android-native bottom navigation, navigation rail and TalkBack semantics. Do not transplant iOS SF Symbols, Liquid Glass or iPad tab-bar positioning to Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tab-bars.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed current Apple Tab bars official Markdown article (top-level navigation, labels, visibility and state, no action buttons, iOS bottom tabs, iPadOS adaptable sidebar, tvOS/visionOS notes and June 2026 change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/tab-bars.md. Reviewed 2026-11-19.",
+        "Top-level tabs are stable navigation destinations, not actions. Use concise text labels, limited primary tabs and avoid hidden/unreachable More overflow. Preserve per-tab navigation state and platform-appropriate layouts.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -3564,7 +3589,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/alerts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/alerts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3576,23 +3601,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to web confirmations and emergency errors: use correct dialog semantics, focus trapping/return, concise message, explicit user choice and safe cancellation. Apple native alert views are not web components."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to native iOS alerts versus action sheets for intentional choices; verify VoiceOver announcements, destructive action cancellation, no alert storms and dismissal on actual devices."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable through Android dialogs, snackbars and bottom-sheet conventions, not Apple's native UIAlertController; preserve minimal interruption, cancellation, TalkBack labels and critical decision clarity."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/alerts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Alerts official Markdown article (nontrivial interruptive warnings, alert content/buttons, Cancel and destructive action safeguards, iOS action-sheet distinction, platform notes and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/alerts.md. Reviewed 2026-11-19.",
+        "Reserve interruption for necessary decision points, avoid alerting on non-actionable information or reversible routine operations, present concise situation and actionable verbs, and preserve Cancel on destructive confirmations.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -4378,7 +4408,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4390,23 +4420,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to long-running protected research/import and checkout operations: ARIA progress semantics, unknown-time spinner when needed, truthful completion percentages, cancellation and timeout recovery; actual browser acceptance is separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable: SwiftUI/UIkit-appropriate ProgressView and refresh patterns, VoiceOver status, network interruption handling and safe cancellation. No signed-device test acceptance implied."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable using Android-native progress patterns and accessibility progress descriptions, real work metrics and cancellation. Apple's UIProgressView and UIRefreshControl are not Android components."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple Progress indicators official Markdown article (determinate/indeterminate variants, accurate progress reporting, cancel/pause, iOS refresh, macOS and watchOS platform notes, resources and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/progress-indicators.md. Reviewed 2026-11-19.",
+        "Do not show misleading percentages for unknown-time work. Move from indeterminate to determinate only with real measured progress, show stall/retry recovery and allow safe cancellation where feasible.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Components",
@@ -6418,7 +6453,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/voiceover",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/voiceover.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6430,23 +6465,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to Safari/macOS/iOS browser VoiceOver testing: correct semantic HTML headings, announced updates, accessible diagrams/charts and meaningful focus sequence. A source-only aria-label inventory is insufficient to verify real behavior."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Directly applicable to native iOS VoiceOver: programmatically named controls, logical grouping, custom rotor navigation, predictable focus and dynamic content announcements verified on hardware."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's VoiceOver-specific APIs and rotor are not Android OS features; Android equivalent must be independently reviewed and tested under TalkBack, accessibility services and Android UI semantics."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/voiceover.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed Apple VoiceOver official Markdown article (meaningful element labels, image/chart descriptions, headings/navigation, grouping, change announcements, rotor, visionOS specific notes, resources and change log). Official primary URL: https://developer.apple.com/design/human-interface-guidelines/voiceover.md. Reviewed 2026-11-19.",
+        "Provide accurate role/name/state descriptions and logical headings, avoid narrating decoration, announce dynamic changes and support chart data navigation. Confirm actual screen reader interaction, not merely source attribute presence.",
+        "Source article review and scoped platform assessment only; there is no independent rendered application, device, clinical data right or production release acceptance from this review."
+      ]
     },
     {
       "section": "Technologies",
