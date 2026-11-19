@@ -26,7 +26,10 @@ test("overlapping searches cannot replace newer answers or retain unsettled work
 test("on-device retrieval has an opt-out and manual search remains available", () => {
   assert.match(controller, /semanticEnable\.textContent = "Disable private semantic retrieval"/);
   assert.match(controller, /if \(semanticReady\) \{\s*stopSemantic\(\)/);
-  assert.match(controller, /Previously downloaded optional assets may remain in browser storage/);
+  assert.match(controller, /Optional downloaded assets may remain in this browser; use Clear cached assets to delete them/);
+  assert.match(controller, /const clearStoredSemanticAssets = \(\) => new Promise/);
+  assert.match(controller, /indexedDB\.deleteDatabase\("novapharm-public-ai"\)/);
+  assert.match(controller, /cacheClear\.addEventListener\("click", async \(\) => \{/);
   assert.match(controller, /mode === "search"/);
   assert.doesNotMatch(controller, /localStorage\.setItem|sendBeacon|gtag\(/);
   assert.match(publicSearch, /externalInference: false/);
