@@ -20,10 +20,11 @@ import {
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
 import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "countries" | "more" | "review" | "research" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "countries" | "more" | "review" | "research" | "maps" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -108,7 +109,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "account" || selected === "countries"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "maps" || selected === "account" || selected === "countries"));
         return (
           <Pressable
             key={tab.screen}
@@ -277,6 +278,7 @@ export default function App() {
                 { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
+                { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
               ] as const).map((item) => (
                 <Pressable
@@ -293,6 +295,7 @@ export default function App() {
             </>
           )}
           {screen === "review" && <MultimodalReviewScreen />}
+          {screen === "maps" && <MapsResearchScreen />}
 
           {screen === "research" && (
             <>
