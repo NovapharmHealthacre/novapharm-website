@@ -231,6 +231,28 @@ export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
       "Do not connect or cache DMP FHIR data without assigned access, signed rights and production approval"
     ])
   }),
+  "oceania-australia-tga-artg": Object.freeze({
+    termsUrl: "https://www.tga.gov.au/about-us/using-our-website/copyright",
+    datasetUrl: "https://www.tga.gov.au/resources/datasets",
+    scope: "Australian Register of Therapeutic Goods public search and downloads, subject to individual dataset notices",
+    publishedTermsPosture: "TGA_WEBSITE_COMMERCIAL_REUSE_REQUIRES_PRIOR_WRITTEN_PERMISSION_UNLESS_OTHER_NOTICE",
+    commercialUseRequiresWrittenPublisherPermission: true,
+    outstanding: Object.freeze([
+      "Block commercial replication, retransmission and redistribution of TGA website content without prior written permission or a separately proven dataset-specific licence",
+      "Contact the TGA Copyright Officer for scope of ARTG records, exports and medicine descriptions where public notices do not grant reuse",
+      "Preserve source copyright disclaimers, third-party rights, attribution and non-endorsement requirements"
+    ])
+  }),
+  "oceania-australia-pbs": Object.freeze({
+    apiDocumentationUrl: "https://data.pbs.gov.au/document/91327.html",
+    scope: "Australian PBS public Schedule API: public monthly PBS pricing/reimbursement reference, not current pharmacy stock",
+    publishedTermsPosture: "PBS_PUBLIC_API_DOCUMENTED_REUSE_LICENCE_NOT_REVIEWED",
+    outstanding: Object.freeze([
+      "Locate publisher legal and data-specific licence for commercial use, derived reports, redistribution and AI processing; public API access is not a commercial licence",
+      "Use public published schedule only; embargo API is vendor-restricted and requires its own application",
+      "Protect shared PBS public API limit of one request per 20 seconds and version data by published monthly schedule code"
+    ])
+  }),
   "europe-spain-aemps-cima": Object.freeze({
     termsUrl: "https://sede.aemps.gob.es/datos-abiertos/",
     scope: "AEMPS CIMA REST catalogue, not non-CIMA licensed dossiers",
@@ -321,6 +343,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
       officialReferenceUrl: entry.officialReferenceUrl,
       publisherTermsUrl: evidence?.termsUrl ?? null,
       publisherApiTermsUrl: evidence?.apiTermsUrl ?? null,
+      officialApiDocumentationUrl: evidence?.apiDocumentationUrl ?? null,
+      writtenCommercialPermissionRequired: evidence?.commercialUseRequiresWrittenPublisherPermission === true,
       publisherAccessRequirementsUrl: evidence?.accessUrl ?? null,
       sourceAccessApprovalRequired: evidence?.accessRequiresPublisherApproval === true,
       officialDatasetUrl: evidence?.datasetUrl ?? null,
@@ -341,7 +365,9 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
         ? "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING"
         : evidence?.accessUrl
           ? "PUBLISHER_ACCESS_APPLICATION_REQUIRED"
-          : "PUBLIC_TERMS_NOT_YET_SCREENED",
+          : evidence?.apiDocumentationUrl
+            ? "OFFICIAL_API_DOCUMENTATION_RIGHTS_REVIEW_REQUIRED"
+            : "PUBLIC_TERMS_NOT_YET_SCREENED",
       datasetScope: evidence?.scope ?? null,
       outstandingRightsRequirements: evidence?.outstanding ?? Object.freeze([
         "Locate current official publisher terms for exact dataset and intended use",
@@ -366,6 +392,10 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
       row.publisherExplicitlyForbidsBusinessUse).length,
     publisherAccessApplicationRequired: sourceEntries.filter(row =>
       row.sourceAccessApprovalRequired).length,
+    publishedWebsiteCommercialPermissionRequired: sourceEntries.filter(row =>
+      row.writtenCommercialPermissionRequired).length,
+    officialApiDocumentationWithoutRightsNotice: sourceEntries.filter(row =>
+      row.termsScreeningStatus === "OFFICIAL_API_DOCUMENTATION_RIGHTS_REVIEW_REQUIRED").length,
     sourceOnlyHttpProbeCiCheckpointCount: sourceEntries.filter(row =>
       row.sourceOnlyHttpProbeCiCheckpoint !== null).length,
     independentlyLicensedSourceCandidates: 0,
