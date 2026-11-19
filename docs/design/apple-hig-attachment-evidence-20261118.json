@@ -20,7 +20,9 @@
     "articleSectionAnchors": 30,
     "appleSupportingResourceLinks": 5,
     "totalIndexedLinkRecords": 207,
-    "allSupplementalArticleTextReviewed": false
+    "allSupplementalArticleTextReviewed": false,
+    "indexDriftDetected": true,
+    "indexDriftDetails": "Owner CSV has a useful but non-exhaustive summary of Design principles; current Apple Markdown additionally includes Craft and Delight. Owner index preserved verbatim in indexed metadata."
   },
   "attachments": [
     {
@@ -791,5 +793,47 @@
     "uniqueSha256": 9,
     "byteIdenticalDuplicatePairs": 8,
     "meaning": "UDIF footer + SHA256 only; no mount, signed installer, licence or permitted asset redistribution proof"
-  }
+  },
+  "officialSourceSpotChecks": [
+    {
+      "url": "https://developer.apple.com/design/human-interface-guidelines/design-principles.md",
+      "sourceType": "official_apple_markdown",
+      "result": "Apple official Design principles Markdown now names eight top-level principles, including Craft and Delight; owner-provided one-line description names only six.",
+      "observedHeadings": [
+        "Purpose",
+        "Agency",
+        "Responsibility",
+        "Familiarity",
+        "Flexibility",
+        "Simplicity",
+        "Craft",
+        "Delight"
+      ],
+      "releaseImplementationEvidence": false,
+      "reviewScope": "document_heading_spot_check_not_full_article_acceptance"
+    },
+    {
+      "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility.md",
+      "sourceType": "official_apple_markdown",
+      "result": "Official accessibility article calls for approximately 200 percent enlarged text on iOS, multiple interaction modes, contrast, and Accessibility Inspector; Expo bundle checks are not device proof.",
+      "observedHeadings": [
+        "Accessibility",
+        "Vision"
+      ],
+      "releaseImplementationEvidence": false,
+      "reviewScope": "source_spot_check_not_full_device_acceptance"
+    },
+    {
+      "url": "https://developer.apple.com/design/human-interface-guidelines/maps.md",
+      "sourceType": "official_apple_markdown",
+      "result": "Official Maps source covers interaction, annotations, search/filtering, clustering and map legal attribution; uploaded IMDF archive provides no private georeferenced premises or permission to show live routes.",
+      "observedHeadings": [
+        "Maps",
+        "Best practices",
+        "Custom information"
+      ],
+      "releaseImplementationEvidence": false,
+      "reviewScope": "source_spot_check_not_live_mapping"
+    }
+  ]
 }
