@@ -190,3 +190,16 @@ The official [Right to left](https://developer.apple.com/design/human-interface-
 7. Preserve exclusions, gaps and waived/non-applicable matters transparently; the denominator should not be gamed by claiming Apple-only platform APIs are implemented in a generic browser or Android app.
 
 **Static regression hardening:** `scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs` now rejects superficially populated or skipped `verified` declarations, checks the real partial RTL receipt and explicitly preserves the programme's 0/172 status until authentic acceptance is available. A static CI contract cannot independently authenticate a live receipt; reviewer evidence and production acceptance still must be performed outside this code-only change.
+
+### 19 November — actual live Chromium/WebKit visual evidence from two public routes
+
+Two existing *read-only* GitHub Actions browser workflows were inspected at the job/log level. Both completed real Chromium and WebKit visits to public NovaPharm pages and saved screenshots:
+
+| Public route | Job / artifact | Actually passed | Limits |
+| --- | --- | --- | --- |
+| [Capabilities](https://novapharmhealthcare.com/capabilities/) | [Run 44532249980](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980), job 135588345804; [screenshots](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980/artifacts/14534074840) | **6/6** rendered observations: Chromium and WebKit at 390, 768 and 1440 px, including the approved editorial photo/CSS. | No sitewide image/accessibility audit, authenticated session, or independent HIG approval. Do not infer full live HTML source SHA from the workflow commit. |
+| [Oncology](https://novapharmhealthcare.com/oncology/) | [Run 44532250088](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088), job 135588343721; [screenshots](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088/artifacts/14534534397) | **8/8** rendered observations: Chromium and WebKit at 390, 768, 1440 and 1728 px, uninterrupted hero/portrait, three aligned cards and no horizontal overflow; public Oncology CSS bytes matched the source checkout SHA `bb96952db2e4dcaa19526a8ab321b8081b6aeca7`. | Only Oncology page hero, not all web routes, nonvisual image alternatives, full HIG Layout or Images acceptance, protected estate or signed mobile. |
+
+These create **three distinct public live runs** overall when combined with the earlier RTL probe and **four partial topic/platform evidence records** in the register (RTL one; Layout two; Images one). **No whole topic or platform is independently production-verified.** A repeated Oncology workflow is deliberately recorded under separate Layout and Images aspects but not misrepresented as two independent runs. Public code in `main` and PR head are not evidence of live release-SHA parity unless the actual live origin proves it. The source checkpoint still has `productionSignoff: not_granted`; production-verified remains **0/172**.
+
+The partial records must not be upgraded to `full` until they also cover relevant page families, keyboard navigation and focus, assistive technology, zoom/reflow, action states, security and independent acceptance. Physical iOS/Android packages and permissions require their own controlled evidence.
