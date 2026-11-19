@@ -340,3 +340,63 @@ test("manual publisher dispatch checks the requested exact commit before allowin
   assert.match(publisher, /release_needed=false/);
   assert.match(publisher, /release_needed=true/);
 });
+
+test("global secondary-source-only merges are excluded from AWS contact dispatch and public publisher", () => {
+  // These exact files appeared in the source-only main merge f1546b7.
+  // Both the ordinary dispatcher and the separately triggered publisher
+  // must classify them as private BEFORE any live contact verification.
+  const sourceOnlyPaths = [
+    ".github/workflows/intelligence-global-secondary-source-contracts.yml",
+    "docs/intelligence/global-secondary-source-api-contracts-20261118.md",
+    "scripts/test-intelligence-global-secondary-source-gateway.mjs",
+    "scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs",
+    "src/core/intelligence-global-secondary-source-gateway.mjs",
+    "src/core/intelligence-singapore-hsa-bulk-candidate.mjs"
+  ];
+  const neutralReleaseGuards = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const actualPublicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css"
+  ];
+  for (const workflow of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(workflow);
+    const caseLine = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(caseLine, workflow + ": release scope case must exist");
+    const privatePatterns = caseLine.trim().replace(/\)$/, "").split("|");
+    const protectedSource = path => privatePatterns.some(pattern =>
+      pattern === path || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    const privateRelease = paths => {
+      const changed = paths.length > 0;
+      const sawPrivate = paths.some(protectedSource);
+      const onlyPrivateOrNeutral = paths.every(path =>
+        protectedSource(path) || neutralReleaseGuards.includes(path)
+      );
+      return changed && sawPrivate && onlyPrivateOrNeutral;
+    };
+    for (const path of sourceOnlyPaths) {
+      assert.equal(protectedSource(path), true, workflow + " must protect " + path);
+    }
+    assert.equal(privateRelease(sourceOnlyPaths), true, workflow + " must deny source-only AWS publish");
+    assert.equal(privateRelease([...neutralReleaseGuards, sourceOnlyPaths[1], sourceOnlyPaths[0]]), true,
+      workflow + " must deny AWS publish on this guard-repair merge");
+    assert.equal(privateRelease(neutralReleaseGuards), false,
+      workflow + " guard-only changes must not silently redefine real public release policy");
+    for (const path of actualPublicChanges) {
+      assert.equal(protectedSource(path), false, workflow + " must not quarantine a real public file " + path);
+      assert.equal(privateRelease([sourceOnlyPaths[0], path]), false,
+        workflow + " must not suppress mixed public and protected source releases");
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
+  }
+});
