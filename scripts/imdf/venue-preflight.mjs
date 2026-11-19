@@ -69,6 +69,10 @@ function validGeometry(geometry, allowedTypes, label, errors) {
   if (geometry.type === "Polygon" || geometry.type === "MultiPolygon") {
     const polygons = geometry.type === "Polygon" ? [coordinates] : coordinates;
     for (const polygon of polygons) {
+      if (!Array.isArray(polygon)) {
+        errors.push(label + ": malformed polygon coordinate hierarchy");
+        continue;
+      }
       for (const ring of polygon) {
         if (!Array.isArray(ring) || ring.length < 4 ||
             !Array.isArray(ring[0]) || !Array.isArray(ring[ring.length - 1]) ||
