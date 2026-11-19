@@ -142,8 +142,10 @@ test("Nova ML-only GitHub pushes skip unrelated AWS contact publication", () => 
   assert.match(workflow, /scripts\/aws\/contact-release-routing\.test\.mjs/);
   assert.match(workflow, /git diff --name-only/);
   assert.match(workflow, /changed_any/);
-  assert.match(workflow, /if: steps\.private_release\.outputs\.skip != 'true'/);
-  assert.match(workflow, /if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
+  assert.match(workflow, /id: owner_hold/);
+  assert.match(workflow, /\.productionSignoff == "granted" and \.productionPermissions\.activatePublicCustomerAccess == true/);
+  assert.match(workflow, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true'/);
+  assert.match(workflow, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
 });
 
 test("Apple guidance map and live release gates are documented", () => {
