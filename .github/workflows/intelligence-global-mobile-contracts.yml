@@ -1,0 +1,92 @@
+name: Intelligence mobile and global source candidate contracts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/NovaMapKitView.swift'
+      - 'native/novapharm-intelligence-apple/Package.swift'
+      - 'native/novapharm-intelligence-android/**'
+      - 'apps/portal/components/governed-healthcare-map.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/proxy.ts'
+      - 'packages/security/src/index.ts'
+      - 'scripts/test-governed-maps-contract.mjs'
+      - 'docs/maps/**'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'docs/ai-use-case-register.json'
+      - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
+      - 'src/core/intelligence-global-canonical-candidates.mjs'
+      - 'src/core/intelligence-global-source-aliases.mjs'
+      - 'scripts/test-intelligence-global-source-aliases.mjs'
+      - 'scripts/test-intelligence-global-canonical-candidates.mjs'
+      - 'scripts/test-intelligence-global-source-registry.mjs'
+      - 'docs/intelligence/global-source-candidate-v2.schema.json'
+      - 'docs/intelligence/global-source-enterprise-controls-20261117.md'
+      - 'scripts/test-intelligence-global-source-gateway.mjs'
+      - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - 'scripts/check-syntax.mjs'
+      - '.github/workflows/intelligence-global-mobile-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-source-contracts:
+    name: Global data rights + mobile preview source contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify CLIP source-only publication isolation
+        run: node --test scripts/aws/contact-release-routing.test.mjs
+      - name: Check governed backend candidate syntax
+        run: |
+          node --check src/core/intelligence-global-source-gateway.mjs
+          node --check src/core/intelligence-global-evidence-contract.mjs
+          node --check src/core/intelligence-global-canonical-candidates.mjs
+          node --check src/core/intelligence-global-source-aliases.mjs
+          node --check scripts/test-intelligence-global-canonical-candidates.mjs
+          node --check scripts/test-intelligence-global-source-registry.mjs
+          node --check scripts/test-intelligence-global-source-gateway.mjs
+      - name: Test upstream read-denial, source schema and 22-workspace catalogue
+        run: |
+          node --test scripts/test-intelligence-global-source-gateway.mjs
+          node --test scripts/test-intelligence-global-canonical-candidates.mjs
+          node --test scripts/test-intelligence-global-source-registry.mjs
+          node --test scripts/test-intelligence-global-source-aliases.mjs
+          node --test native/novapharm-intelligence-mobile/tests/*.test.mjs
+          node --test scripts/test-governed-maps-contract.mjs
+
+  mobile-bundle-preflight:
+    name: iOS/Android candidate typecheck and offline bundle preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: native/novapharm-intelligence-mobile
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Install candidate-native dependencies in the isolated app
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify TypeScript and exact React Native imports
+        run: npm run typecheck
+      - name: Compile offline JavaScript bundles for both platforms
+        run: |
+          npx expo export --platform ios --output-dir /tmp/novapharm-ios-candidate
+          npx expo export --platform android --output-dir /tmp/novapharm-android-candidate

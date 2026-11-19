@@ -82,6 +82,74 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
           await page.locator("#np-interface-locale").focus();
           assert.equal(await page.evaluate(() => document.activeElement?.id), "np-interface-locale",
             label + ": keyboard focus is unavailable");
+          const footerDirectory = page.locator("footer.npd-footer .npd-footer-top");
+          assert.equal(await footerDirectory.getAttribute("data-np-apple-footer"), "enhanced",
+            label + ": shared web footer was not progressively enhanced");
+          const sections = footerDirectory.locator("details.np-apple-footer-disclosure");
+          assert.equal(await sections.count(), 4, label + ": four corporate footer link groups required");
+          const sectionStates = await sections.evaluateAll((nodes) => nodes.map((node) => node.open));
+          if (viewport.width <= 833) {
+            assert.deepEqual(sectionStates, [false, false, false, false],
+              label + ": mobile directory must start collapsed, Apple-style");
+            const first = sections.first();
+            await first.locator("summary").click();
+            assert.equal(await first.evaluate((node) => node.open), true,
+              label + ": mobile disclosure does not expand");
+            assert.equal(await first.locator("a").first().isVisible(), true,
+              label + ": mobile navigation link is not visible when expanded");
+            await first.locator("summary").click();
+            assert.equal(await first.evaluate((node) => node.open), false,
+              label + ": mobile disclosure does not close");
+          } else {
+            assert.deepEqual(sectionStates, [true, true, true, true],
+              label + ": desktop footer directory must display all link groups");
+          }
+          const footerSurface = await page.locator("footer.npd-footer").evaluate((node) => {
+            const inner = node.querySelector(":scope > .container");
+            const notes = node.querySelector(".npd-footer-notices");
+            const directory = node.querySelector(".npd-footer-top");
+            const noticesBox = notes?.getBoundingClientRect();
+            const directoryBox = directory?.getBoundingClientRect();
+            return {
+              color: getComputedStyle(node).backgroundColor,
+              innerWidth: inner?.getBoundingClientRect().width ?? 0,
+              notesBeforeDirectory: Boolean(noticesBox && directoryBox && noticesBox.top < directoryBox.top),
+            };
+          });
+          assert.match(footerSurface.color, /rgb\(245,\s*245,\s*247\)/,
+            label + ": corporate footer must use Apple web's light neutral background");
+          assert.ok(footerSurface.innerWidth <= Math.min(viewport.width, 980) + 1,
+            label + ": footer content must retain Apple's constrained reading width");
+          assert.equal(footerSurface.notesBeforeDirectory, true,
+            label + ": regulatory notes must precede footer directory");
+          // Check the rendered brand, not merely the presence of an image tag.
+          // Without this scroll/load check, full-page WebKit screenshots can
+          // silently omit the actual wordmark at the bottom of a long page.
+          const footerWordmark = page.locator(".npd-footer .npd-footer-identity .brand-logo img");
+          assert.equal(await footerWordmark.count(), 1, label + ": expected one approved footer wordmark");
+          await footerWordmark.scrollIntoViewIfNeeded();
+          await page.waitForFunction(() => {
+            const image = document.querySelector(".npd-footer .npd-footer-identity .brand-logo img");
+            return Boolean(image && image.complete && image.naturalWidth > 0);
+          }, null, { timeout: 10000 });
+          const wordmarkAppearance = await footerWordmark.evaluate((image) => {
+            const container = image.closest("a");
+            const style = container ? getComputedStyle(container) : null;
+            return {
+              width: image.getBoundingClientRect().width,
+              loading: image.loading,
+              background: style?.backgroundColor,
+              padding: style ? [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft] : [],
+              shadow: style?.boxShadow,
+            };
+          });
+          assert.ok(wordmarkAppearance.width >= 120, label + ": footer wordmark is not visibly sized");
+          assert.equal(wordmarkAppearance.loading, "eager", label + ": footer logo fetch remains deferred");
+          assert.match(wordmarkAppearance.background ?? "", /rgba?\(0,\s*0,\s*0,\s*0\)/,
+            label + ": legacy white card still surrounds footer brand");
+          assert.ok(wordmarkAppearance.padding.every((value) => value === "0px"),
+            label + ": footer brand retains boxed padding");
+          assert.equal(wordmarkAppearance.shadow, "none", label + ": footer brand retains a card shadow");
           console.log("Footer language acceptance passed:", label);
         } finally {
           await context.close();

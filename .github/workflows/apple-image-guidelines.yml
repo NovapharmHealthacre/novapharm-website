@@ -51,7 +51,7 @@ jobs:
         run: node scripts/validate-apple-image-estate.mjs
       - name: Preserve estate-wide audit evidence even on failure
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-image-estate-${{ github.sha }}
           path: artifacts/apple-images/estate-audit.json

@@ -87,6 +87,18 @@ if (megaHeader) {
   triggers.forEach((trigger) => {
     trigger.addEventListener("pointerenter", () => openMega(trigger));
     trigger.addEventListener("focus", () => openMega(trigger));
+    // A top-level category click opens its choices like a menu. Each panel
+    // contains the category overview link; without JS, the anchor still works.
+    // Never intercept browser/system modified-click shortcuts.
+    trigger.addEventListener("click", (event) => {
+      if (!desktop.matches || event.button !== 0 ||
+          event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const panel = panels.find((candidate) => candidate.dataset.megaPanel === trigger.dataset.megaTrigger);
+      if (!panel) return;
+      event.preventDefault();
+      openMega(trigger);
+      panel.querySelector("a")?.focus({ preventScroll: true });
+    });
     trigger.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowDown" || !desktop.matches) return;
       event.preventDefault();
@@ -365,4 +377,54 @@ if (window.location.pathname.startsWith("/products/nutraxin/") &&
   void import("/assets/js/nutraxin-retail-store.js").catch(() => {
     // Static catalogue remains available if shopping enhancement cannot load.
   });
+}
+
+
+/* Keep the approved public wordmark visible in full-page WebKit captures
+   and on quick navigation to the footer. It is a small, shared brand asset. */
+for (const image of document.querySelectorAll(".npd-footer .npd-footer-identity .brand-logo img")) {
+  image.loading = "eager";
+}
+
+/* Apple-style mobile web footer disclosure. The source links remain visible
+   without JS; only enhance the ordinary public corporate footer groups. */
+for (const directory of document.querySelectorAll(
+  "footer.site-footer .npd-footer-top, footer.site-footer .footer-grid"
+)) {
+  if (directory.dataset.npAppleFooter === "enhanced") continue;
+  const columns = [...directory.children].filter((child) =>
+    child.tagName === "DIV" &&
+    !child.classList.contains("npd-footer-identity") &&
+    !child.classList.contains("footer-intro")
+  );
+  if (!columns.length) continue;
+  const compact = window.matchMedia("(max-width: 833px)");
+  const disclosures = [];
+  for (const column of columns) {
+    const heading = column.querySelector(":scope > h2, :scope > h3");
+    if (!heading) continue;
+    const details = document.createElement("details");
+    details.className = "np-apple-footer-disclosure";
+    const summary = document.createElement("summary");
+    summary.append(heading);
+    const links = document.createElement("div");
+    links.className = "np-apple-footer-disclosure-links";
+    while (column.firstChild) links.append(column.firstChild);
+    details.append(summary, links);
+    column.append(details);
+    disclosures.push({ details, summary });
+  }
+  if (disclosures.length) {
+    const syncDisclosureMode = () => {
+      for (const { details, summary } of disclosures) {
+        // On desktop the directory is always visible, not interactive.
+        // On mobile use native details/summary so VoiceOver and keyboard work.
+        details.open = !compact.matches;
+        summary.tabIndex = compact.matches ? 0 : -1;
+      }
+    };
+    syncDisclosureMode();
+    compact.addEventListener("change", syncDisclosureMode);
+    directory.dataset.npAppleFooter = "enhanced";
+  }
 }

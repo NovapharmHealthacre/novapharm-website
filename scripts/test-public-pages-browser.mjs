@@ -17,7 +17,7 @@ const routes = [
   { path: "/distribution/", name: "distribution", required: "Global distribution" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
-  { path: "/technology/", name: "technology", required: "Technology" },
+  { path: "/technology/", name: "technology", required: "Medicine is complex." },
   { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
   { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },
@@ -792,6 +792,17 @@ for (const [engineName, browserType] of engines) {
               [],
               `${engineName} ${viewport.name} ${route.path}: serious/critical accessibility violations`
             );
+
+            // Route interactions (notably privacy consent) can scroll to a
+            // control. Snapshot the same page origin in Chromium and WebKit,
+            // rather than comparing unrelated scroll positions.
+            await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+            const snapshotOrigin = await page.evaluate(() => ({
+              x: Math.round(window.scrollX),
+              y: Math.round(window.scrollY)
+            }));
+            assert.deepEqual(snapshotOrigin, { x: 0, y: 0 },
+              `${engineName} ${viewport.name} ${route.path}: screenshot must start at document origin`);
 
             const directory = path.join(artifactRoot, engineName, viewport.name);
             await mkdir(directory, { recursive: true });
