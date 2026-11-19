@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/build-site.mjs"
       - "scripts/build-ai-knowledge-index.mjs"
+      - "src/ai/search-bootstrap.mjs"
+      - "scripts/test-ai-index.mjs"
       - "scripts/stage-pages-artifact.mjs"
       - "scripts/test-ai-build-artifact-linkage.mjs"
       - ".github/workflows/apple-ai-public-artifact.yml"
@@ -26,3 +28,23 @@ jobs:
           node --check scripts/build-site.mjs
           node --check scripts/stage-pages-artifact.mjs
           node --test scripts/test-ai-build-artifact-linkage.mjs
+
+  staged-artifact:
+    needs: source-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies without install scripts
+        run: npm ci --ignore-scripts
+      - name: Build and verify source-approved public evidence assets
+        run: |
+          npm run build:public-only
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/test-ai-index.mjs
+          node scripts/test-ai-privacy.mjs
+          node scripts/test-ai-no-js-fallback.mjs
