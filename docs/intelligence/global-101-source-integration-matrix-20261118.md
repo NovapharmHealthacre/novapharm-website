@@ -124,3 +124,58 @@ Every entry remains unverified for production, has no approved source reuse term
 ## Important coverage boundaries
 
 The 79 labels include Global and European Union/EEA; do not present them as 79 fully covered independent countries. Public regulator listings cannot establish wholesale stock, national sales, audited market share or clinical equivalence. Source documentation URL is not the authenticated data endpoint. No source is authorised or activated by this report.
+
+
+## First-wave publisher terms pre-screen — 19 November 2026
+
+This is a **source-rights due-diligence worklist, not a legal grant**. The deterministic
+\`buildPublisherRightsPrescreenWorklist\` in
+\`src/core/intelligence-global-source-onboarding.mjs\` covers all **101 source
+candidates**. These must not be confused with the separate proposed
+**101 national geography labels**: the original registry has 77 national
+countries and 12 global/EU source candidates, and the country-expansion
+proposal contributes 24 additional research-only countries.
+
+**Verified source-code state:** 101/101 source candidates have worklist
+entries, 5 official publisher terms pages are linked, **0/101 source grants
+are independently accepted**, 0 ingested datasets are accepted, and 0
+source candidates are certified customer-live. A link to permissive
+publisher terms is not evidence of field-specific rights, a valid signed
+grant, a working API, a configured production pipeline or tenant approval.
+
+| Candidate jurisdiction/source | Official terms or dataset notice | Public notice finding (not legal sign-off) | Required decision before admission |
+|---|---|---|---|
+| United States — FDA openFDA/Drugs@FDA | https://open.fda.gov/terms/ | Most openFDA materials described as CC0/public domain; some copyrightable third-party submissions and warned fields are excluded | Exact endpoint, response-field copyright screen, accepted uses, publisher credit and rate limits |
+| Spain — AEMPS CIMA REST | https://sede.aemps.gob.es/datos-abiertos/ | Official open-data listing permits use and reuse, subject to conditions such as attribution; lists CIMA REST | Pin CIMA endpoint/data subset and relevant AEMPS legal notice; confirm commercial AI/derivative, cache and redistribution terms |
+| Canada — Health Canada DPD | https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe | Official DPD dataset is listed under the Open Government Licence — Canada; this does not prove every API response/third-party field is in scope | Match API response to licensed dataset version and exact fields; attribution, limitations and independent source approval |
+| United Kingdom — NHSBSA EPD with SNOMED | https://opendata.nhsbsa.net/pages/terms-and-conditions and https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code | Dataset-level licence applies (generally OGL), mandatory NHSBSA attribution and fair-use API access; BNF/SNOMED/dm+d may involve separate rights | Verify exact resource and version, third-party terminology reuse, checksum, immutable ingestion evidence and independent acceptance |
+| Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
+
+For the other 96 source candidates, the worklist explicitly states
+\`PUBLIC_TERMS_NOT_YET_SCREENED\`; none may inherit terms from a different
+publisher or country. These five screens are selected because relevant
+bounded source-adapter/bridge code already exists. They are **not**
+five activated country integrations.
+
+### Per-source activation acceptance, never inferred from an open notice
+
+1. Identify the exact publisher, dataset/resource version, original URL,
+   allowed fields and applicable terms; preserve dated source evidence and
+   independently computed terms/resource digests.
+2. Obtain a separately reviewed and signed source- and use-specific
+   rights decision covering internal analysis, commercial use, AI/model
+   processing, derivative reports, caching, export and redistribution,
+   including excluded third-party works.
+3. Configure the protected fixed-host connector and verify live upstream
+   schema, rate limits, paging, provenance, network failure, retries and
+   source revocation; no API key, protected payload or patient data in apps.
+4. Persist immutable raw snapshots and quarantines; reconcile all row counts,
+   identity conflicts and clinical terminology/pack identity before admission.
+5. Independently verify rights and tenant entitlement at commit and read time;
+   pass audit, security, two-tenant negative cases, rollback and production
+   sign-off before releasing any customer dataset.
+6. Separately approve and sign iOS/Android builds. A metadata catalogue or
+   API preview is not a live native medicine-data integration.
+
+This prescreen never modifies the source registry's \`not-reviewed\` /
+\`candidate-only\` fields or the owner production constraints.
