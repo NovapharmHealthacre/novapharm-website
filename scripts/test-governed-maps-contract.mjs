@@ -13,6 +13,9 @@ test("only the verified protected geography route opts into the MapKit JS CSP ex
   assert.match(policy, /readonly mapKitJs\?: boolean/);
   assert.match(policy, /input\.mapKitJs \?/);
   assert.match(policy, /wasm-unsafe-eval/);
+  assert.ok(policy.includes("worker-src 'self' blob:"));
+  assert.ok(policy.includes("frame-src https://*.apple-mapkit.com"));
+  assert.ok(policy.includes('"https://*.apple-mapkit.com", "blob:"'));
   assert.match(proxy, /\/portal\/executive-platform\/medicines-intelligence\/geography\//);
   assert.ok(proxy.includes('Boolean(process.env["NEXT_PUBLIC_APPLE_MAPS_TOKEN"])'));
   assert.match(proxy, /mapKitJs,/);
@@ -26,6 +29,8 @@ test("authorised geography consumes accepted postcode centroid and renders no fa
   assert.match(map, /NEXT_PUBLIC_APPLE_MAPS_TOKEN/);
   assert.ok(map.includes("https://cdn.apple-mapkit.com/mk/6/mapkit.core.js"));
   assert.match(map, /showsUserLocation: false/);
+  assert.match(map, /showsUserLocationControl: false/);
+  assert.ok(map.includes('script.dataset["libraries"] = "full-map"'));
   assert.match(map, /recorded coordinates/);
   assert.match(map, /clusteringIdentifier: `novapharm-\$\{point\.kind\}`/);
   assert.doesNotMatch(map, /navigator\.geolocation|getCurrentPosition|watchPosition/);
