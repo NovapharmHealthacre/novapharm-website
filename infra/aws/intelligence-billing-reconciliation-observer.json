@@ -1,0 +1,239 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Private read-only live Stripe re-fetch for NovaPharm Intelligence. No customer grants, subscriptions, charges or emails. Deploy only after source SHA acceptance.",
+  "Parameters": {
+    "CodeBucket": {
+      "Type": "String",
+      "AllowedPattern": "^[a-z0-9][a-z0-9.-]{3,62}$"
+    },
+    "CodeKey": {
+      "Type": "String",
+      "MinLength": 15,
+      "MaxLength": 1024
+    },
+    "SourceSha256": {
+      "Type": "String",
+      "AllowedPattern": "^[0-9a-f]{64}$"
+    },
+    "StripeSecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:eu-north-1:[0-9]{12}:secret:novapharm/production/stripe/secret-key-[A-Za-z0-9]{6}$"
+    },
+    "EnableSchedule": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "true",
+        "false"
+      ]
+    }
+  },
+  "Resources": {
+    "Logs": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-intelligence-billing-reconciliation-private",
+        "RetentionInDays": 30
+      }
+    },
+    "Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "novapharm-intelligence-billing-observer-private",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "read-only-billing-observer",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ReadExactStripeSecretOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": {
+                    "Ref": "StripeSecretArn"
+                  }
+                },
+                {
+                  "Sid": "ScanBillingEventQuarantineOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Scan"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/novapharm-intelligence-billing-webhook-events"
+                  }
+                },
+                {
+                  "Sid": "GetCustomerOwnerBindingOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/novapharm-intelligence-customer-access"
+                  }
+                },
+                {
+                  "Sid": "WritePrivateObserverLogsOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-intelligence-billing-reconciliation-private:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Function": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "Logs"
+      ],
+      "Properties": {
+        "FunctionName": "novapharm-intelligence-billing-reconciliation-private",
+        "Description": "Private live Stripe event investigation, identity-only and zero entitlement grants",
+        "Runtime": "python3.13",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "Role",
+            "Arn"
+          ]
+        },
+        "MemorySize": 256,
+        "Timeout": 45,
+        "Code": {
+          "S3Bucket": {
+            "Ref": "CodeBucket"
+          },
+          "S3Key": {
+            "Ref": "CodeKey"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "NPI_BILLING_RECONCILIATION_MODE": "observe_only",
+            "NPI_CUSTOMER_ACCESS_ENABLED": "false",
+            "BILLING_EVENT_TABLE": "novapharm-intelligence-billing-webhook-events",
+            "CUSTOMER_ACCESS_TABLE": "novapharm-intelligence-customer-access",
+            "STRIPE_KEY_SECRET_ID": "novapharm/production/stripe/secret-key"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "customer-activation",
+            "Value": "disabled"
+          },
+          {
+            "Key": "source-sha256",
+            "Value": {
+              "Ref": "SourceSha256"
+            }
+          }
+        ]
+      }
+    },
+    "Schedule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "novapharm-intelligence-billing-observer-read-only",
+        "Description": "Private read-only Stripe event and owner-binding audit, never entitlement or charges",
+        "ScheduleExpression": "rate(15 minutes)",
+        "State": {
+          "Fn::If": [
+            "ScheduleIsEnabled",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "Targets": [
+          {
+            "Id": "PrivateObserver",
+            "Arn": {
+              "Fn::GetAtt": [
+                "Function",
+                "Arn"
+              ]
+            },
+            "Input": "{\"mode\":\"scan\"}"
+          }
+        ]
+      }
+    },
+    "AllowScheduledInvoke": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Function"
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "Schedule",
+            "Arn"
+          ]
+        }
+      }
+    }
+  },
+  "Conditions": {
+    "ScheduleIsEnabled": {
+      "Fn::Equals": [
+        {
+          "Ref": "EnableSchedule"
+        },
+        "true"
+      ]
+    }
+  },
+  "Outputs": {
+    "PrivateObserverArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Function",
+          "Arn"
+        ]
+      }
+    },
+    "SourceSha256": {
+      "Value": {
+        "Ref": "SourceSha256"
+      }
+    },
+    "ScheduleEnabled": {
+      "Value": {
+        "Ref": "EnableSchedule"
+      }
+    },
+    "AccessGrantCapability": {
+      "Value": "NONE: no IAM privilege to write customer ledger, billing events, or create payments"
+    }
+  }
+}

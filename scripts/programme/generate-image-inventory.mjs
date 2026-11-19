@@ -532,6 +532,32 @@ if (process.argv.includes("--check")) {
       process.exit(1);
     }
     if (crossPlatformComparable(currentReport) !== crossPlatformComparable(report)) {
+      // Make a failed immutable-media review actionable without weakening the
+      // comparison. Native dHash candidate differences remain advisory.
+      const currentByPath = new Map((currentReport.assets ?? []).map((asset) => [asset.path, asset]));
+      const skip = new Set(["perceptualHash", "perceptualDuplicateCandidateGroup"]);
+      let diagnostics = 0;
+      for (const expected of report.assets) {
+        const existing = currentByPath.get(expected.path);
+        if (!existing) {
+          console.error("Media inventory missing asset:", expected.path);
+          diagnostics += 1;
+          continue;
+        }
+        for (const key of Object.keys(expected)) {
+          if (skip.has(key)) continue;
+          if (JSON.stringify(existing[key]) === JSON.stringify(expected[key])) continue;
+          const preview = (value) => JSON.stringify(value)?.slice(0, 180);
+          console.error("Media inventory mismatch:", expected.path, key,
+            "stored=", preview(existing[key]), "expected=", preview(expected[key]));
+          diagnostics += 1;
+          if (diagnostics >= 24) break;
+        }
+        if (diagnostics >= 24) break;
+      }
+      if (!diagnostics) {
+        console.error("Media inventory report summary, structure, or asset ordering differs from regenerated source");
+      }
       console.error("Image inventory authoritative fields are stale. Run npm run images:inventory and review the resulting provenance gaps.");
       process.exit(1);
     }

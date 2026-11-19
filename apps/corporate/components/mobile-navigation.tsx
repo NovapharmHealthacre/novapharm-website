@@ -2,13 +2,15 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 interface MobileNavigationProps {
   readonly items: readonly (readonly [string, string])[];
   readonly portalOrigin: string;
+  readonly locale: InterfaceLocale;
 }
 
-export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps) {
+export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigationProps) {
   const pathname = usePathname();
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const pathnameRef = useRef(pathname);
@@ -33,6 +35,18 @@ export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps)
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, []);
 
+  // A temporary navigation menu closes on outside interaction without
+  // intercepting browser edit commands or ordinary link navigation.
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      if (!detailsRef.current?.open || detailsRef.current.contains(event.target as Node)) return;
+      detailsRef.current.open = false;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, []);
+
   function close() {
     if (!detailsRef.current) return;
     detailsRef.current.open = false;
@@ -41,11 +55,11 @@ export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps)
 
   return (
     <details className="mobile-menu" ref={detailsRef} onToggle={(event) => setOpen(event.currentTarget.open)}>
-      <summary aria-label={open ? "Close navigation" : "Open navigation"}>
-        {open ? "Close" : "Menu"}
+      <summary aria-label={interfaceLabel(locale, open ? "Close navigation" : "Open navigation")}>
+        {interfaceLabel(locale, open ? "Close" : "Menu")}
       </summary>
-      <nav aria-label="Mobile navigation">
-        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{label}</a> : <a key={href} href={href} onClick={close}>{label}</a>)}
+      <nav aria-label={interfaceLabel(locale, "Mobile navigation")}>
+        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{interfaceLabel(locale, label)}</a> : <a key={href} href={href} onClick={close}>{interfaceLabel(locale, label)}</a>)}
       </nav>
     </details>
   );

@@ -1,6 +1,9 @@
-import { notFound } from "next/navigation";
+import { cookies, headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
+import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
+import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
 
 export const dynamic = "force-dynamic";
 
@@ -8,5 +11,18 @@ export default async function PortalPage({ params }: Readonly<{ params: Promise<
   const { slug = [] } = await params;
   const view = resolvePortalView(slug.length ? `/${slug.join("/")}/` : "/");
   if (!view) notFound();
-  return <PortalClient view={view} />;
+
+  // A user-supplied np_session cookie must not unlock a protected SSR shell.
+  // Server session verification is independent of client-side API checks.
+  if (view.kind === "module") {
+    const sessionCookie = (await cookies()).get("np_session")?.value ?? "";
+    const session = await verifiedPortalSession({ cookieValue: sessionCookie });
+    const decision = sessionDecision(view, session);
+    if (decision === "change-password") redirect("/portal/change-password/");
+    if (decision !== "allow") redirect("/");
+  }
+
+  const incomingHost = (await headers()).get("host")?.split(":")[0]?.toLowerCase() ?? "";
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
+  return <PortalClient view={view} locale={locale} intelligencePortal={incomingHost === "intelligence.novapharmhealthcare.com"} />;
 }

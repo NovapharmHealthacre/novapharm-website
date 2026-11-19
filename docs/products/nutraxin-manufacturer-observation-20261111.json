@@ -1,0 +1,249 @@
+{
+  "schema_version": "1.0.0",
+  "audited_at": "2026-11-11",
+  "scope": "Public Nutraxin UK publisher website compared with owner catalogue. Published manufacturer facts are not a signed approved physical UK label or a legal claims approval.",
+  "source_register": "docs/nutraxin-product-register.json",
+  "original_owner_catalogue_sha256": "a78ea34cab52a363513657e059c422f8c55245bc0946480533347df13446341e",
+  "counts": {
+    "skus": 19,
+    "publisher_pages_directly_opened": 15,
+    "material_formulation_corrections": 3,
+    "pack_identity_mismatch": 1,
+    "physical_pack_labels_accepted": 0
+  },
+  "products": [
+    {
+      "sku": "NUT-UK-VD3-T120",
+      "product_name": "Nutraxin Vitamin D3",
+      "retail_pack": "120 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-d3-k2-tablet/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-VD3-S30",
+      "product_name": "Nutraxin Vitamin D3 Spray",
+      "retail_pack": "30 ml",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-d3-k2-sprayy/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "The pack image uses the wording 2 puff; serving terminology requires label confirmation."
+      ]
+    },
+    {
+      "sku": "NUT-UK-VD3K2-T120",
+      "product_name": "Nutraxin Vitamin D3 + K2",
+      "retail_pack": "120 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-d3-k2-tablet-2/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-VD3K2-S30",
+      "product_name": "Nutraxin Vitamin D3 + K2 Spray",
+      "retail_pack": "30 ml",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-d3-k2-spray/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "Serving terminology differs from the D3-only spray and requires final label confirmation."
+      ]
+    },
+    {
+      "sku": "NUT-UK-VC1000-T30",
+      "product_name": "Nutraxin Vitamin C 1000 mg",
+      "retail_pack": "30 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-c-1000-mg-tablet/",
+      "publisher_page_directly_opened": false,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-VC500-C30",
+      "product_name": "Nutraxin Vitamin C 500 mg Chewable",
+      "retail_pack": "30 chewable tablets",
+      "publisher_url": null,
+      "publisher_page_directly_opened": false,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "The extracted catalogue text repeats the 1000 mg formula from another product; the visible pack front states 500 mg. Full actives require confirmation from approved labelling."
+      ]
+    },
+    {
+      "sku": "NUT-UK-VMAX-T60",
+      "product_name": "Nutraxin Vitamin MAX C + D + Zinc",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-max-c-d-zinc/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-VMAX-E15",
+      "product_name": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
+      "retail_pack": "15 effervescent tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/effervescent-vitamin-c-d-zinc/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": "Manufacturer currently describes 20 effervescent tablets but owner catalogue identifies a 15-tablet SKU. Physical pack identity unresolved.",
+      "other_original_catalogue_notes": [
+        "Original catalogue contains spelling Oraneg; flavour wording is withheld until label confirmation. Pack mismatch: owner catalogue states 15 effervescent tablets, while the currently linked Nutraxin UK publisher page states 20 tablets. Verify the exact sellable 15-tablet SKU/pack before treating the external page as product-specific label authority."
+      ]
+    },
+    {
+      "sku": "NUT-UK-MGCX-T60",
+      "product_name": "Nutraxin Magnesium Complex + Vitamin B6",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/magnesium-complex/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "The source marks the first two magnesium values with an asterisk but does not define it on the catalogue page."
+      ]
+    },
+    {
+      "sku": "NUT-UK-MGDL-T60",
+      "product_name": "Nutraxin Magnesium Daily",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/magnesium-citrate/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-MVE-T60",
+      "product_name": "Nutraxin Multivitamin Mineral Energy",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/multivitamin-mineral-energy-2/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "Several grouped amounts are small or unusually precise and require confirmation against approved labelling."
+      ]
+    },
+    {
+      "sku": "NUT-UK-MVW-T60",
+      "product_name": "Nutraxin Women's Multivitamin Complex",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/nx-multi-women/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ]
+    },
+    {
+      "sku": "NUT-UK-MVM-T60",
+      "product_name": "Nutraxin Men's Multivitamin Complex",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/multi-vitamin-complex-mens/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ]
+    },
+    {
+      "sku": "NUT-UK-CG-T30",
+      "product_name": "Nutraxin Gold Quality Collagen",
+      "retail_pack": "30 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/collagen-gold-quality-tablet/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": "Manufacturer lists 50 mg bromelain per tablet; owner catalogue transcribed 50 micrograms. Publisher correction applied, physical label pending.",
+      "other_original_catalogue_notes": [
+        "Original owner catalogue transcribed bromelain as 50 µg. Nutraxin UK's Gold Quality Collagen Tablets publisher page specifies 50 mg per tablet. Public publisher-observed unit corrected on 11 November 2026; exact marketed pack label remains unverified."
+      ]
+    },
+    {
+      "sku": "NUT-UK-CG-S30",
+      "product_name": "Nutraxin Gold Quality Collagen Sachets",
+      "retail_pack": "30 sachets",
+      "publisher_url": "https://nutraxin.uk.com/product/collagen-gold-quality-sachet/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": "Manufacturer lists 1.40 mg Vitamin B6 per sachet; owner catalogue transcribed 140 mg. Publisher correction applied, physical UK pack label still pending.",
+      "other_original_catalogue_notes": [
+        "Original owner-supplied catalogue transcribed vitamin B6 as 140 mg. The Nutraxin UK publisher's current Gold Quality Collagen Sachet page specifies 1,40 mg per sachet. Public composition corrected to publisher-observed 1.40 mg on 11 November 2026; verify the physical UK pack back label and lot before final sale acceptance."
+      ]
+    },
+    {
+      "sku": "NUT-UK-CCX-T90",
+      "product_name": "Nutraxin Collagen Complex",
+      "retail_pack": "90 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/nx-collagen-complex/",
+      "publisher_page_directly_opened": false,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    },
+    {
+      "sku": "NUT-UK-ART-T90",
+      "product_name": "Nutraxin Artoflex",
+      "retail_pack": "90 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/artroflex/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": "Manufacturer publisher says bromelain 198 mg and devil's claw 180 mg per three-tablet serving, reversing owner catalogue amounts. Publisher correction applied, physical label pending.",
+      "other_original_catalogue_notes": [
+        "Pack references clinical trials; no such statement is reproduced publicly without an evidence review. Original owner catalogue reverses the listed Devil's claw and bromelain amounts relative to the current Nutraxin UK Artroflex publisher page. Publisher reports Devil's claw 180 mg and bromelain 198 mg per 3-tablet serving. Corrected published comparison on 11 November 2026; marketed pack label remains unverified."
+      ]
+    },
+    {
+      "sku": "NUT-UK-LCAR-T60",
+      "product_name": "Nutraxin L-Carnitine 700 mg",
+      "retail_pack": "60 tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/l-carnitine/",
+      "publisher_page_directly_opened": true,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": [
+        "Catalogue heading misspells Carnitine; serving quantity should be confirmed against approved labelling."
+      ]
+    },
+    {
+      "sku": "NUT-UK-B12-SL60",
+      "product_name": "Nutraxin Vitamin B12 Methylcobalamin",
+      "retail_pack": "60 sublingual tablets",
+      "publisher_url": "https://nutraxin.uk.com/product/vitamin-b12/",
+      "publisher_page_directly_opened": false,
+      "physical_uk_pack_label_accepted": false,
+      "marketing_claims_approved": false,
+      "material_discrepancy": null,
+      "other_original_catalogue_notes": []
+    }
+  ]
+}

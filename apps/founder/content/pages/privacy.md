@@ -23,6 +23,16 @@ The website host may process technical information required to deliver and secur
 
 This website links to services including LinkedIn, Companies House, GOV.UK, Yakuji Nippo and NovaPharm Healthcare. Their privacy practices apply when those services are opened.
 
+## Privacy by design and your choices
+
+This public portfolio is informational, so it does not ask for location, camera, microphone, photo-library or contact permissions and does not require marketing consent to read. If a future interactive feature needs a browser-protected capability, it must explain why when you choose the feature, use the browser's own permission control and respect refusal. Native Apple App Tracking Transparency and Core Location prompts do not apply to this website.
+
+The site does not intentionally use advertising pixels, visitor profiling or third-party analytics. Browser privacy controls can also block external trackers. A linked external service follows its own disclosed data practices.
+
+## Your rights and data requests
+
+Depending on the applicable law, you may ask for access, correction, deletion or restriction of personal information in your email correspondence or object to processing in certain circumstances. Send a short enquiry to the address below. Please do not attach an identity document until a secure verification process is agreed.
+
 ## Privacy enquiries
 
 For a privacy question relating to this website, email [{{EMAIL}}](mailto:{{EMAIL}}).

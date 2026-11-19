@@ -1,0 +1,63 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Intelligence private ECS preparation only: S3 gateway restricted to read-only ECR image layers. No public ingress, NAT, task, identity, customer or payment changes.",
+  "Parameters": {
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "Existing dedicated NovaPharm Intelligence production-candidate VPC"
+    },
+    "PrivateRouteTableId": {
+      "Type": "String",
+      "AllowedPattern": "^rtb-[a-f0-9]{8,17}$",
+      "Description": "Existing private-only route table attached to both Intelligence Fargate subnets"
+    }
+  },
+  "Resources": {
+    "IntelligenceEcrS3LayerEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "VpcEndpointType": "Gateway",
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.s3"
+        },
+        "RouteTableIds": [
+          {
+            "Ref": "PrivateRouteTableId"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "OnlyReadEcrImageLayers",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Action": [
+                "s3:GetObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::prod-${AWS::Region}-starport-layer-bucket/*"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "EndpointId": {
+      "Description": "S3 gateway id; does not prove ECR private connectivity or customer readiness",
+      "Value": {
+        "Ref": "IntelligenceEcrS3LayerEndpoint"
+      }
+    },
+    "Scope": {
+      "Value": "PRIVATE ECR LAYERS ONLY. ECR api/dkr, logs, secrets, external model/data egress, production ECS runtime and customer billing remain independently gated."
+    }
+  }
+}

@@ -115,7 +115,9 @@
                     "aliases",
                     "codeHistory",
                     "analyticalAvailability",
-                    "limitations"
+                    "limitations",
+                    "identityRelationships",
+                    "investigationPassport"
                   ],
                   "properties": {
                     "medicine": {
@@ -140,6 +142,113 @@
                       "type": "array",
                       "items": {
                         "type": "string"
+                      }
+                    },
+                    "identityRelationships": {
+                      "type": "object",
+                      "description": "Source-backed BNF/alias relationships from protected authorised medicine identity only. Does not establish clinical equivalence, marketing authorisation or demand.",
+                      "required": [
+                        "contract",
+                        "dataState",
+                        "sourceId",
+                        "nodes",
+                        "relationships",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.identity-relationships.v1"
+                        },
+                        "dataState": {
+                          "const": "derived_from_authorised_identity_records"
+                        },
+                        "sourceId": {
+                          "type": "string"
+                        },
+                        "nodes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "to",
+                              "relation"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              },
+                              "relation": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "investigationPassport": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only, explicit evidence gaps and next verification steps. Does not grant source rights or imply commercial readiness.",
+                      "required": [
+                        "contract",
+                        "status",
+                        "medicineId",
+                        "decisionReady",
+                        "lenses",
+                        "requiredBeforeDecision"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.investigation-passport.v1"
+                        },
+                        "status": {
+                          "const": "investigation_only"
+                        },
+                        "medicineId": {
+                          "type": "string"
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "lenses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "state",
+                              "sourceRights",
+                              "decisionUsable"
+                            ],
+                            "additionalProperties": true
+                          }
+                        },
+                        "requiredBeforeDecision": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
@@ -226,6 +335,88 @@
                       "type": "array",
                       "items": {
                         "type": "string"
+                      }
+                    },
+                    "observedChange": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only derived observation from three consecutive accepted months for a single canonical medicine. Not a forecast, source licence, or decision.",
+                      "required": [
+                        "contract",
+                        "state",
+                        "decisionReady",
+                        "methodology",
+                        "observation",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.observed-medicine-change.v1"
+                        },
+                        "state": {
+                          "enum": [
+                            "observed_change_candidate_requires_review",
+                            "insufficient_comparable_evidence"
+                          ]
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "methodology": {
+                          "type": "string"
+                        },
+                        "observation": {
+                          "oneOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "required": [
+                                "sourceId",
+                                "dataset",
+                                "metric",
+                                "fromMonth",
+                                "throughMonth",
+                                "absoluteChange",
+                                "percentageChange"
+                              ],
+                              "properties": {
+                                "sourceId": {
+                                  "type": "string"
+                                },
+                                "dataset": {
+                                  "type": "string"
+                                },
+                                "metric": {
+                                  "type": "string"
+                                },
+                                "fromMonth": {
+                                  "type": "string"
+                                },
+                                "throughMonth": {
+                                  "type": "string"
+                                },
+                                "absoluteChange": {
+                                  "type": "number"
+                                },
+                                "percentageChange": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   },

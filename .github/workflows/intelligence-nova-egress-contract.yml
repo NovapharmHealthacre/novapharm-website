@@ -6,6 +6,9 @@ on:
       - 'src/core/ai/provider-openai-zdr.mjs'
       - 'src/core/ai/redaction-service.mjs'
       - 'scripts/test-nova-openai-zdr.mjs'
+      - 'src/core/ai/nova-governed-medicine-answer.mjs'
+      - 'scripts/test-nova-governed-medicine-answer.mjs'
+      - 'package.json'
       - '.github/workflows/intelligence-nova-egress-contract.yml'
 
 permissions:

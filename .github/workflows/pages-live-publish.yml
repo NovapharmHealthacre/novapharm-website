@@ -1,24 +1,23 @@
 name: Build, deploy and verify GitHub Pages
 
 on:
-  # Publication is limited to committed source changes on main. Deployment
-  # still runs the public security, build, link and live-site verification gates.
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/pages-live-publish.yml
-      - scripts/build-site.mjs
-      - scripts/apply-global-distribution-foundation.mjs
-      - scripts/enhance-seo-authority.mjs
-      - scripts/test-global-distribution-foundation.mjs
-      - src/content/site-content.mjs
-      - assets/css/global-distribution-editorial.css
-      - docs/strategy/global-distribution-execution.md
-      - package.json
+  # The AWS-verified customer publisher alone handles main-branch pushes.
+  # Keep this workflow available for scoped PR validation and manual recovery.
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
+      - legal/privacy/index.html
+      - legal/cookies/index.html
+      - assets/js/cookie-consent.js
+      - assets/js/consent-analytics.js
+      - assets/js/marketing-attribution.js
+      - scripts/test-apple-privacy-contract.mjs
+      - src/content/technology-intelligence.html
+      - technology/index.html
+      - assets/css/technology-intelligence.css
+      - scripts/test-intelligence-technology-page.mjs
       - assets/css/apple-pharma-public.css
+      - assets/css/novapharm-hig-motion.css
       - assets/css/homepage-editorial.css
       - assets/media/home/earth-reference-1400.jpg
       - apps/corporate/components/concise-home.tsx
@@ -50,7 +49,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-production' }}
+  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-verified-customer-publication-v2' }}
   cancel-in-progress: false
 
 env:
@@ -81,6 +80,7 @@ jobs:
       - name: Build and validate the public artifact
         run: |
           npm run build:public-only
+          npm run test:technology-page
           npm run test:owner-corrections:public-only
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
@@ -88,7 +88,9 @@ jobs:
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
           grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
-          grep -Fq '>Intelligence</a>' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
+          grep -Fq 'class="npi-local-login" href="https://intelligence.novapharmhealthcare.com/"' _site/technology/index.html
+          grep -Fq 'Sign in to Intelligence</a>' _site/index.html
           test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
@@ -98,7 +100,7 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'A Hope of' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
           grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
@@ -166,7 +168,9 @@ jobs:
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
           grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
-          grep -Fq '>Intelligence</a>' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
+          grep -Fq 'class="npi-local-login" href="https://intelligence.novapharmhealthcare.com/"' _site/technology/index.html
+          grep -Fq 'Sign in to Intelligence</a>' _site/index.html
           test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
@@ -176,7 +180,7 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'A Hope of' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
           grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
@@ -284,6 +288,7 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/live-bundle.css || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/regulatory-services/?${cache_key}-${attempt}" > /tmp/live-regulatory.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/cro/?${cache_key}-${attempt}" > /tmp/live-cro.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/technology/?${cache_key}-${attempt}" > /tmp/live-technology.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/oncology/?${cache_key}-${attempt}" > /tmp/live-oncology.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
@@ -298,7 +303,8 @@ jobs:
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
-              && grep -Fq 'A Hope of' /tmp/live-oncology.html \
+              && grep -Fq 'class="npi-local-login" href="https://intelligence.novapharmhealthcare.com/"' /tmp/live-technology.html \
+              && grep -Fq 'A Hope for' /tmp/live-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-oncology.html \
               && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
               && grep -Fq 'class="np-contact-reference-hero"' /tmp/live-contact.html \

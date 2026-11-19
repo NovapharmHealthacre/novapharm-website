@@ -1,4 +1,7 @@
 import { all, one } from "../data/database.mjs";
+import { reviewRecordedWarehouseLedger } from "./wms-control-tower.mjs";
+import { reviewWmsFiveLayerObservations } from "./wms-five-layer-readiness.mjs";
+import { reviewWmsOperationalExceptionWorklist } from "./wms-operational-exception-worklist.mjs";
 
 function section(title, columns, rows, emptyState, { source = "Canonical application database", description = "" } = {}) {
   return { title, description, columns, rows, emptyState, source, rowCount: rows.length };
@@ -262,6 +265,117 @@ export async function ceoDashboardView(snapshot) {
   };
 }
 
+/**
+ * One employee-authorised WMS decision surface over existing canonical
+ * application read models. These are previews of independent systems, not
+ * reconciled physical warehouse facts, sale authority, verified ATP or OTIF.
+ *
+ * Crucially, this function does not query separate intelligence/payments
+ * databases or trust browser-selected organisation or warehouse identifiers.
+ * The enterprise module dispatcher applies employee RBAC before this call.
+ */
+export async function enrichWarehouseControlSnapshot(snapshot) {
+  if (snapshot?.module?.code !== "employee.warehouse") {
+    throw Object.assign(new Error("Employee warehouse context required."), { statusCode: 403 });
+  }
+  const [orders, receipts, quality, returns, shipments, integrations] = await Promise.all([
+    all(`SELECT o.order_number, org.legal_name AS customer, o.status,
+      o.customer_po_reference, o.requested_delivery_date, o.created_at
+      FROM orders o JOIN customers c ON c.id = o.customer_id
+      JOIN organizations org ON org.id = c.organization_id
+      ORDER BY o.created_at DESC LIMIT 30`),
+    all(`SELECT po.po_number, gr.receipt_number, gr.status AS receipt_status,
+      gr.received_at, SUM(grl.quantity_received) AS received_quantity,
+      SUM(grl.quantity_rejected) AS rejected_quantity
+      FROM goods_receipts gr JOIN purchase_orders po ON po.id = gr.purchase_order_id
+      LEFT JOIN goods_receipt_lines grl ON grl.goods_receipt_id = gr.id
+      GROUP BY gr.id, po.po_number, gr.receipt_number, gr.status, gr.received_at
+      ORDER BY gr.received_at DESC LIMIT 30`),
+    all(`SELECT qc.complaint_number, p.sku, b.batch_number, qc.severity, qc.status,
+      qc.pv_escalation_status, qc.due_at
+      FROM quality_complaints qc LEFT JOIN products p ON p.id = qc.product_id
+      LEFT JOIN batches b ON b.id = qc.batch_id
+      WHERE qc.status <> 'closed' ORDER BY qc.created_at DESC LIMIT 30`),
+    all(`SELECT return_number, status, reason_code, quality_hold, created_at
+      FROM returns ORDER BY created_at DESC LIMIT 30`),
+    all(`SELECT o.order_number, s.shipment_number, s.status AS shipment_status,
+      s.carrier_name, s.tracking_reference, s.dispatched_at, s.delivered_at,
+      (SELECT MAX(de.occurred_at) FROM delivery_events de WHERE de.shipment_id = s.id)
+        AS latest_carrier_event
+      FROM shipments s JOIN orders o ON o.id = s.order_id
+      ORDER BY s.created_at DESC LIMIT 30`),
+    all(`SELECT destination_system, event_type, status, created_at
+      FROM integration_events WHERE status IN ('pending','retrying','blocked')
+      ORDER BY created_at DESC LIMIT 30`),
+  ]);
+  const newSections = [
+    section("Commercial fulfilment queue",
+      [["order_number","Order"],["customer","Customer"],["status","Order state","status"],
+        ["customer_po_reference","PO reference"],["requested_delivery_date","Requested"]],
+      orders, "No commercial order records are present in this application.",
+      { source: "Enterprise order ledger (recent 30 records)",
+        description: "Commercial order observation is not customer eligibility, payment, stock reservation or 3PL acceptance." }),
+    section("Receiving and purchasing evidence",
+      [["po_number","Purchase order"],["receipt_number","3PL receipt reference"],
+        ["receipt_status","Recorded status","status"],["received_quantity","Recorded received","number"],
+        ["rejected_quantity","Recorded rejected","number"],["received_at","Received"]],
+      receipts, "No recorded goods receipts are present.",
+      { source: "Enterprise goods-receipt ledger (recent 30 records)",
+        description: "Recorded receipt is not confirmed warehouse inventory or completed quality release." }),
+    section("Quality and recall observations",
+      [["complaint_number","Quality case"],["sku","SKU"],["batch_number","Batch"],
+        ["severity","Severity","status"],["status","Case status","status"],
+        ["pv_escalation_status","Safety escalation","status"],["due_at","Due"]],
+      quality, "No open complaint records are present in this sample.",
+      { source: "Enterprise quality-complaint ledger (recent 30 open records)",
+        description: "This is not an authoritative QMS, complete recall register or batch release." }),
+    section("Return isolation review",
+      [["return_number","Return"],["status","Recorded state","status"],
+        ["reason_code","Reason","status"],["quality_hold","Quality hold"],["created_at","Raised"]],
+      returns, "No return records are present in this sample.",
+      { source: "Enterprise returns ledger (recent 30 records)",
+        description: "A return or credit never automatically restores saleable inventory." }),
+    section("Shipment and carrier observations",
+      [["order_number","Order"],["shipment_number","Shipment"],["shipment_status","Recorded state","status"],
+        ["carrier_name","Carrier"],["tracking_reference","Tracking"],
+        ["latest_carrier_event","Latest event"],["delivered_at","Delivery"]],
+      shipments, "No shipment events are present in this application sample.",
+      { source: "Enterprise shipment and delivery event ledgers (recent 30 records)",
+        description: "An observed shipment status does not establish reconciled proof of delivery." }),
+    section("Integration delivery exceptions",
+      [["destination_system","Destination"],["event_type","Event"],
+        ["status","State","status"],["created_at","Raised"]],
+      integrations, "No pending integration events are present in the recorded sample.",
+      { source: "Enterprise integration-event ledger (recent 30 problem records)",
+        description: "An empty sample does not certify a live or healthy external Polar Speed/UPS feed." }),
+  ];
+  const observed = { ...snapshot,
+    readOnly: true,
+    actions: [],
+    sections: [...snapshot.sections, ...newSections],
+  };
+  const readiness = reviewWmsFiveLayerObservations(observed);
+  return {
+    ...observed,
+    sections: [
+      ...observed.sections,
+      section("Five-layer control and release evidence",
+        [["layer","Control layer"],["observedSampleRows","Observed sample","adaptive"],
+          ["dataOrigin","Data provenance","status"],
+          ["reconciliation","Independent reconciliation","status"],
+          ["decision","Current authority","status"],["requiredEvidence","Required for activation"]],
+        readiness.rows, "The WMS control-plane evidence is unavailable.",
+        { source: "Derived from existing employee-authorised application views",
+          description: "Commercial, inventory, quality, orchestration and intelligence remain separate authorities. None of these observed samples establishes readiness for release." }),
+    ],
+    notices: [
+      ...observed.notices,
+      "WMS five-layer view: sample counts are bounded at 30 records per domain and are not network-wide totals.",
+      "Order, warehouse, quality, carrier and integration sources remain independently unverified. OTIF, gross contribution and physical available-to-promise are not measured by this view.",
+    ],
+  };
+}
+
 export function rollingWarehouseView(snapshot) {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
@@ -270,6 +384,12 @@ export function rollingWarehouseView(snapshot) {
   const todayKey = today.toISOString().slice(0, 10);
   const horizonKey = horizon.toISOString().slice(0, 10);
   const ledger = snapshot.sections.find((item) => item.title === "Inventory ledger")?.rows || [];
+  const wms = reviewRecordedWarehouseLedger(ledger, { asOf: today.toISOString() });
+  const triage = reviewWmsOperationalExceptionWorklist({
+    ...snapshot,
+    sections: [...snapshot.sections,
+      { title: "Warehouse exception review", rows: wms.findings.slice(0, 120) }],
+  });
   const expired = ledger.filter((row) => row.expiry_date && row.expiry_date < todayKey).length;
   const expiring = ledger.filter((row) => row.expiry_date && row.expiry_date >= todayKey && row.expiry_date <= horizonKey).length;
   const metrics = snapshot.metrics.filter((item) => !["expiring", "expired"].includes(item.key));
@@ -278,11 +398,35 @@ export function rollingWarehouseView(snapshot) {
     metrics: [
       ...metrics,
       metric("expiring", "Expiring in 90 days", expiring),
-      metric("expired", "Expired batches", expired)
+      metric("expired", "Expired batches", expired),
+      metric("wms-review-flags", "Observed WMS exception flags", wms.findings.length)
+    ],
+    sections: [
+      ...snapshot.sections,
+      section(
+        "Warehouse exception review",
+        [["reason", "Review trigger", "status"], ["sku", "SKU"], ["batchNumber", "Batch"],
+          ["locationCode", "Location"], ["expiryDate", "Expiry"], ["evidenceState", "Evidence state", "status"]],
+        wms.findings.slice(0, 120),
+        "No exception is visible in the recorded ledger. This is not confirmation of reconciled stock.",
+        { source: "Derived from the unverified legacy inventory ledger",
+          description: "Read-only exception screening; not live 3PL confirmation or a pick, pack, ATP or dispatch instruction." }
+      ),
+      section("NovaPharm Distribution exception worklist",
+        [["priority", "Review priority", "status"], ["domain", "Control area"],
+          ["reference", "Recorded reference"], ["signal", "Observed issue"],
+          ["reviewOwner", "Suggested review team"], ["evidenceState", "Evidence quality", "status"]],
+        triage.rows, "No exceptions appear in the bounded application samples. This does not establish a healthy warehouse network.",
+        { source: "Derived from employee-authorised application evidence only",
+          description: "Priorities are screening suggestions, not formal case severity or instructions to release, reserve, dispatch, invoice or notify anyone." }
+      )
     ],
     notices: [
       ...snapshot.notices,
-      `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`
+      `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`,
+      "WMS control tower: legacy ledger rows have not been reconciled to a trusted Polar Speed/UPS warehouse snapshot. Zero displayed exceptions does not verify stock.",
+      "FEFO, temperature, recall, quarantine and batch checks are review controls only. Reservation, order release and warehouse dispatch remain disabled.",
+      "NovaPharm Distribution worklist: limited recent records across seven application sections; missing feeds and zero flags are unknown, never verified healthy or available-to-promise."
     ]
   };
 }

@@ -11,6 +11,7 @@ on:
       - 'scripts/test-esco-catalogue.mjs'
       - 'scripts/test-esco-order-requests.mjs'
       - '.github/workflows/esco-checkout-contract.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -16,6 +16,23 @@
   },
   "assets": [
     {
+      "path": "assets/media/portal/npi-human-portrait-approved.webp",
+      "type": "owner-approved-original-editorial-portal-photograph",
+      "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
+      "licence": "Original owner-directed NovaPharm visual creative for its public Intelligence sign-in page. No third-party stock or competitor assets.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1050x499 WebP",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "intelligence.novapharmhealthcare.com/ secure portal"
+      ],
+      "altText": "",
+      "caption": "Decorative illustrative mother-and-daughter photograph. Not clinical or medicines-market evidence.",
+      "technicalStatus": "checksum-verified original full-size design crop; SHA-256 7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950; un-cropped image fit",
+      "ownerApproval": "Approved visual reference supplied 12 November 2026; preserve exact composition"
+    },
+    {
       "path": "assets/media/technology/england-geography-concept.svg",
       "type": "original-schematic-product-preview",
       "source": "Original vector illustration authored for NovaPharm Intelligence Medicines Terminal preview, 7 November 2026. Schematic drawing, not official ONS or NHS boundary geometry.",
@@ -48,6 +65,40 @@
       "caption": "Owner-approved Intelligence product wordmark; product demonstration only",
       "technicalStatus": "source-kit-derived-web-vector",
       "ownerApproval": "owner-directed website integration"
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-logo.svg",
+      "type": "owner-approved-product-wordmark",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit (3), 01_Master_Vector/NovaPharm_Distribution_Graphite_Transparent.svg, 14 November 2026. Optimised SVG delivery derivative checked against approved artwork.",
+      "licence": "Owner-authorised NovaPharm Distribution brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 2307 408",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/distribution/"
+      ],
+      "altText": "NovaPharm Distribution",
+      "caption": "Official NovaPharm Distribution graphite wordmark",
+      "technicalStatus": "source-kit-derived-precise-vector; visual fidelity verified against source",
+      "ownerApproval": "Owner-directed official Distribution tab integration, 14 November 2026"
+    },
+    {
+      "path": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "type": "original-corporate-editorial-hero",
+      "source": "Owner-directed AI-generated Novapharm Intelligence concept, sharpened from generated approved hero composition, photographic crop without browser UI or text, 11 November 2026. Fictional illustrative scientist, not an identified person or clinical evidence.",
+      "licence": "Original NovaPharm project artwork for owner-authorised corporate website use; no third-party photography or competitor visual assets claimed.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1456x1466",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/technology/"
+      ],
+      "altText": "",
+      "caption": "Conceptual NovaPharm Intelligence hero artwork. Not clinical, regulatory or observed medicines-market evidence.",
+      "technicalStatus": "sharpened-original-editorial-avif-delivery",
+      "ownerApproval": "Owner-directed Technology hero placement, 11 November 2026"
     },
     {
       "path": "assets/brand/novapharm-healthcare-logo.svg",
@@ -429,7 +480,7 @@
       "path": "assets/media/about/novapharm-warehouse-original.jpg",
       "type": "owner-supplied-corporate-warehouse-editorial-photograph",
       "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
-      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
+      "licence": "Owner directly supplied photograph and approved its NovaPharm corporate use, including Distribution hero; photographed facility ownership and operating authorisation are not asserted.",
       "generated": false,
       "modified": false,
       "dimensions": "1600x580",
@@ -437,12 +488,13 @@
         "assets/media/about/novapharm-warehouse.avif"
       ],
       "pageUsage": [
-        "/about/"
+        "/about/",
+        "/distribution/"
       ],
       "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
       "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
       "technicalStatus": "owner-supplied-original-preserved-1600x580",
-      "ownerApproval": "approved for About page visual 10 November 2026"
+      "ownerApproval": "Owner-approved original warehouse photograph for the live Distribution hero, 11 November 2026, and existing About page."
     },
     {
       "path": "assets/media/about/novapharm-warehouse.avif",
@@ -482,7 +534,7 @@
     },
     {
       "path": "assets/media/home/earth-reference-1400.jpg",
-      "type": "homepage-approved-earth-horizon-reference",
+      "type": "owner-approved-earth-horizon-brand-reference",
       "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
       "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
       "generated": false,
@@ -490,12 +542,80 @@
       "dimensions": "1400x305",
       "optimisedVariants": [],
       "pageUsage": [
-        "/ homepage Earth horizon hero only"
+        "/ homepage approved Earth-horizon hero"
       ],
       "altText": "",
       "caption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
-      "ownerApproval": "Explicit owner approval of the reference design; homepage visual match requested 10 November 2026"
+      "ownerApproval": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026."
+    },
+    {
+      "path": "assets/media/portal/npi-human-portal.webp",
+      "type": "owner-approved-illustrative-portal-human-hero",
+      "source": "Cropped decorative mother-and-child artwork from the owner-supplied approved NovaPharm Secure Portal Sign-In visual (12 November 2026). Illustrative AI-generated design, not a photograph of an actual NovaPharm patient, family or clinician.",
+      "licence": "Owner-authorised NovaPharm Intelligence secure portal website use of original AI-generated NovaPharm project artwork.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "260x228 WebP",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "altText": "",
+      "caption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
+      "technicalStatus": "owner-approved screenshot crop, performance-compressed WebP; decorative CSS only",
+      "ownerApproval": "Owner selected the exact human secure-portal reference, 12 November 2026."
+    },
+    {
+      "path": "assets/media/portal/npi-human-portrait-hd.avif",
+      "type": "owner-approved-illustrative-portal-human-hero",
+      "source": "High-definition decorative crop of the owner-approved NovaPharm Intelligence secure portal human design, 12 November 2026, x=0-770,y=448-956 of the 1536x1024 selected concept. Illustrative design, not a patient or marketing-evidence photograph.",
+      "licence": "Owner-authorised original NovaPharm project artwork for the NovaPharm Intelligence secure portal under applicable OpenAI generated-content terms.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "770x508 AVIF",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "altText": "",
+      "caption": "Representative illustration only; no medicinal, clinical or patient outcome claims.",
+      "technicalStatus": "AVIF owner-approved cropped HD 770x508; 8650 bytes; no baked interface text",
+      "ownerApproval": "Owner selected the crisp final portal composition and requested its production implementation, 12 November 2026."
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "type": "owner-approved-derived-native-icon-layer",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 1024 1024",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "altText": "NovaPharm Healthcare approved white N symbol",
+      "caption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "ownerApproval": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "type": "owner-approved-derived-native-icon-layer",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 1024 1024",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "altText": "NovaPharm Healthcare approved white continuum arc",
+      "caption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "ownerApproval": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated"
     }
   ],
   "missingApprovedAssets": [

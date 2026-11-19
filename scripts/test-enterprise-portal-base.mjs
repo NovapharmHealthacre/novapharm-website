@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { pbkdf2Sync, randomBytes, randomUUID } from "node:crypto";
+import { pbkdf2Sync, randomBytes, randomInt, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -9,8 +9,22 @@ import { Readable, Writable } from "node:stream";
 const root = resolve(process.cwd());
 const temporaryRoot = mkdtempSync(join(tmpdir(), "novapharm-enterprise-portal-"));
 const databasePath = join(temporaryRoot, "enterprise.sqlite");
-const bootstrapPassword = `T8!${randomBytes(30).toString("base64url")}aZ`;
-const replacementPassword = `R7!${randomBytes(30).toString("base64url")}bY`;
+// Each block alternates character classes so random validation credentials cannot
+// accidentally contain four repeated characters, sequential digits, common
+// password fragments or identity words. This applies to test-only credentials.
+const validationAlphabets = [
+  "ABCDEFGHJKLMNPQRSTUVWXYZ",
+  "abcdefghjkmnpstuvwxyz",
+  "23456789",
+  "!@#%^&*"
+];
+function policyCompatibleTestPassword(prefix) {
+  return prefix + Array.from({ length: 12 }, () =>
+    validationAlphabets.map((alphabet) => alphabet[randomInt(alphabet.length)]).join("")
+  ).join("");
+}
+const bootstrapPassword = policyCompatibleTestPassword("T8!");
+const replacementPassword = policyCompatibleTestPassword("R7!");
 
 function provisionedUser(username, displayName, role, password, accessScopes, customerId = null) {
   const passwordSalt = randomBytes(16).toString("hex");
@@ -127,6 +141,12 @@ try {
   delete process.env.BOOTSTRAP_ADMIN_PASSWORD;
   const { handleRequest } = await import("../server.mjs");
   const { all, closeDatabase, one, run } = await import("../src/data/database.mjs");
+  const { validateNewPassword } = await import("../src/core/auth-service.mjs");
+  for (const testCredential of [bootstrapPassword, replacementPassword]) {
+    await validateNewPassword(testCredential,
+      { username: "vishal@novapharmhealthcare.com", displayName: "Vishal Chakravarty" },
+      { fetchImplementation: null, required: false });
+  }
 
   async function request(options = {}) {
     const response = new TestResponse();
@@ -174,7 +194,8 @@ try {
     body: JSON.stringify({ currentPassword: bootstrapPassword, newPassword: replacementPassword, confirmation: replacementPassword }),
     address: "127.20.0.2"
   });
-  assert.equal(passwordChange.statusCode, 200);
+  assert.equal(passwordChange.statusCode, 200,
+    `Synthetic password rotation failed with HTTP ${passwordChange.statusCode}; no credentials are logged.`);
   const ownerCustomerSession = cookieValue(passwordChange.headers["Set-Cookie"], "np_session");
   assert.ok(ownerCustomerSession);
   assert.equal((await login("vishal@novapharmhealthcare.com", bootstrapPassword, "customer", "127.20.0.3")).statusCode, 401);
@@ -255,6 +276,66 @@ try {
     const moduleCode = { employee: "employee.dashboard", board: "executive.command-centre", admin: "admin.dashboard" }[accessType];
     assert.equal((await request({ url: `/api/enterprise/modules/${moduleCode}`, headers: jsonHeaders(loginResult.session) })).statusCode, 200);
   }
+
+  // Exercise every governed R1 read model through the actual in-process HTTP
+  // router, not only the catalogue metadata or frontend route mapper. All data
+  // below is synthetic/local-validation and must never be claimed as production.
+  const { portalModules } = await import("../src/core/portal-module-catalog.mjs");
+  assert.equal(portalModules.length, 54);
+  const adminValidationLogin = await login("vishal@novapharmhealthcare.com", replacementPassword, "admin", "127.20.0.19");
+  assert.equal(adminValidationLogin.statusCode, 200);
+  const authorisedModuleSessions = {
+    customer: customerLogin.session,
+    employee: employeeLogin.session,
+    executive: boardLogin.session,
+    admin: adminValidationLogin.session
+  };
+  const wrongRoleSessions = {
+    customer: employeeLogin.session,
+    employee: customerLogin.session,
+    executive: customerLogin.session,
+    admin: customerLogin.session
+  };
+  let readModelsAccepted = 0;
+  let hiddenModulesDenied = 0;
+  let wrongRolesDenied = 0;
+  for (const module of portalModules) {
+    const endpoint = `/api/enterprise/modules/${module.code}`;
+    const expectedStatus = module.visibleInNavigation ? 200 : 404;
+    const accepted = await request({
+      url: endpoint,
+      headers: jsonHeaders(authorisedModuleSessions[module.area])
+    });
+    assert.equal(accepted.statusCode, expectedStatus,
+      `${module.code}: authorised read model must be available only if released: ${JSON.stringify(accepted.payload).slice(0, 350)}`);
+    if (expectedStatus === 200) {
+      assert.equal(accepted.payload.module.code, module.code, `${module.code}: no cross-module dispatch`);
+      assert.equal(accepted.payload.module.releaseClassification, "informational_only",
+        `${module.code}: must remain informational-only`);
+      assert.equal(accepted.payload.readOnly, true, `${module.code}: unapproved writes must remain disabled`);
+      assert.deepEqual(accepted.payload.actions, [], `${module.code}: no unreleased mutation actions`);
+      assert.ok(Array.isArray(accepted.payload.notices), `${module.code}: missing data/release notice`);
+      if (module.area === "customer") {
+        assert.equal(JSON.stringify(accepted.payload).includes("TEST-OTHER-CUSTOMER-ORDER"), false,
+          `${module.code}: synthetic second-customer record leaked into first-customer read model`);
+      }
+      readModelsAccepted++;
+    } else {
+      hiddenModulesDenied++;
+    }
+
+    const wrongRole = await request({
+      url: endpoint,
+      headers: jsonHeaders(wrongRoleSessions[module.area])
+    });
+    assert.equal(wrongRole.statusCode, module.visibleInNavigation ? 403 : 404,
+      `${module.code}: cross-role access must fail closed`);
+    wrongRolesDenied++;
+  }
+  assert.equal(readModelsAccepted, 48);
+  assert.equal(hiddenModulesDenied, 6);
+  assert.equal(wrongRolesDenied, 54);
+  console.log(`54-module synthetic R1 API sweep passed: ${readModelsAccepted} read-only visible routes, ${hiddenModulesDenied} hidden, ${wrongRolesDenied} wrong-role denials; no real production connections inferred.`);
 
   const ownerEmployeeLogin = await login("vishal@novapharmhealthcare.com", replacementPassword, "employee", "127.20.0.20");
   const nutraxinProduct = await one("SELECT id FROM products WHERE source_system = 'owner_supplied_nutraxin_catalogue' ORDER BY sku LIMIT 1");

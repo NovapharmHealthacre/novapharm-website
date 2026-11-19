@@ -1526,9 +1526,10 @@
       "caption": "Representative release control; NovaPharm regulated wholesale supply has not commenced",
       "allowedRoutes": [
         "/news-insights/",
-        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+        "/distribution/"
       ],
-      "maxReuse": 2,
+      "maxReuse": 3,
       "focalPoint": {
         "desktop": "54% 50%",
         "mobile": "58% 50%"

@@ -36,11 +36,11 @@ export function ContactEmailDraft() {
     const body = [
       "NovaPharm business enquiry",
       "",
-      "Full name: " + String(entries.get("name") ?? "").trim(),
-      "Work email: " + String(entries.get("email") ?? "").trim(),
-      "Company: " + String(entries.get("company") ?? "").trim(),
-      "Country / region: " + String(entries.get("country") ?? "").trim(),
-      "Enquiry type: " + topic,
+      `Full name: ${String(entries.get("name") ?? "").trim()}`,
+      `Work email: ${String(entries.get("email") ?? "").trim()}`,
+      `Company: ${String(entries.get("company") ?? "").trim()}`,
+      `Country / region: ${String(entries.get("country") ?? "").trim()}`,
+      `Enquiry type: ${topic}`,
       "",
       "Message:",
       String(entries.get("message") ?? "").trim(),
@@ -48,7 +48,7 @@ export function ContactEmailDraft() {
 
     setNotice("An email draft has been prepared. You must send it from your email application. The website has not received or stored your enquiry.");
     const url = "mailto:" + corporateEmail +
-      "?subject=" + encodeURIComponent("NovaPharm | " + topic) +
+      "?subject=" + encodeURIComponent(`NovaPharm | ${topic}`) +
       "&body=" + encodeURIComponent(body);
     window.location.assign(url);
   }
@@ -56,7 +56,7 @@ export function ContactEmailDraft() {
   return (
     <div className="np-contact-draft">
       <form className="np-contact-reference-form" data-email-enquiry-form
-        action={"mailto:" + corporateEmail} method="post" encType="text/plain"
+        action={`mailto:${corporateEmail}`} method="post" encType="text/plain"
         onSubmit={prepareEmail}>
         <div className="np-contact-reference-grid">
           <label className="np-contact-reference-field"><span>Full name</span><input name="name" autoComplete="name" placeholder="Your name" maxLength={120} required /></label>

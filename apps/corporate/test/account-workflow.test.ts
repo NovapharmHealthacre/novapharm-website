@@ -16,7 +16,8 @@ test("account application route is explicit and remains truth-bounded", () => {
   assert.match(route, /AccountInterestWorkflow/);
   assert.match(route, /No automatic account creation/);
   assert.match(route, /No private evidence here/);
-  assert.match(route, /controlled application should be invited/i);
+  assert.match(route, /Eligible businesses may receive a private application invitation/i);
+  assert.match(route, /Registering interest does not create an account or grant portal access/i);
   assert.doesNotMatch(route, /href="\/contact\/\?enquiry=/);
 });
 
@@ -34,7 +35,8 @@ test("public account interest uses the existing controlled lead authority", () =
   assert.match(workflow, /platformEndpoint\("\/contact"\)/);
   assert.match(workflow, /"X-CSRF-Token"/);
   assert.match(workflow, /enquiryType: "Pharmacy or wholesaler account"/);
-  assert.match(workflow, /No customer account, approval or portal identity is created automatically/i);
+  assert.match(workflow, /No account or portal access has been created/i);
+  assert.match(workflow, /does not approve an application, create an account or grant portal access/i);
   assert.match(workflow, /Do not upload or paste licences, bank details, patient information/i);
   assert.match(workflow, /privacyAcknowledgement/);
   assert.match(workflow, /safetyConfirmation/);
@@ -47,4 +49,27 @@ test("specialist contact topics are translated to server-authorised categories",
   assert.match(workflow, /selected === "Clinical development & CRO support"\) return "Regulatory services"/);
   assert.match(workflow, /selected === "Oncology & specialist medicines"\) return "Product opportunity"/);
   assert.match(workflow, /Topic: \$\{selectedType\}/);
+});
+test("public business account explains account purpose in optional, accessible steps", () => {
+  const route = read("app/account-application/page.tsx");
+  assert.match(route, /<details className="account-path-help">/);
+  assert.match(route, /<summary>What happens after I register interest\?/);
+  assert.match(route, /There is no password or portal account at this stage/);
+  assert.match(route, /Browsing the public catalogue never requires account registration/);
+  assert.match(route, /\/legal\/privacy\/#business-enquiries/);
+  const styles = read("app/globals.css");
+  assert.match(styles, /\.account-path-help summary:focus-visible/);
+});
+
+test("account-interest success requires verified server receipt and guards concurrent requests", () => {
+  const workflow = read("components/account-interest-workflow.tsx");
+  assert.match(workflow, /if \(inFlightRef\.current\) return;/);
+  assert.match(workflow, /inFlightRef\.current = true;/);
+  assert.match(workflow, /inFlightRef\.current = false;/);
+  assert.match(workflow, /const receipt = await response\.json\(\)\.catch/);
+  assert.match(workflow, /receipt\.ok !== true \|\| !receipt\.lead\?\.id/);
+  assert.match(workflow, /status: 202/);
+  assert.match(workflow, /aria-busy=\{state === "sending"\}/);
+  assert.ok(workflow.indexOf("const data = new FormData(form);") < workflow.indexOf('fetch(platformEndpoint("/security/csrf")'));
+  assert.ok(workflow.indexOf("form.reset()") > workflow.indexOf("receipt.ok !== true"));
 });

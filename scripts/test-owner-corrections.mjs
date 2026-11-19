@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
@@ -171,34 +172,49 @@ for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xm
 }
 
 const home = text("index.html");
+const canonicalRecords = JSON.parse(text("seo/generated/page-metadata-register.json"));
+const canonicalBuildSha = home.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/)?.[1];
+if (!canonicalBuildSha) fail("Homepage is missing verifiable exact-source release metadata");
+for (const record of canonicalRecords) {
+  const output = text(record.file);
+  const tags = [...output.matchAll(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g)];
+  if (tags.length !== 1 || tags[0][1] !== canonicalBuildSha) {
+    fail(`${record.file} has missing, duplicate or inconsistent exact-source release metadata`);
+  }
+}
+
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
 // The actual visible header, not merely the footer, must show the secure
 // customer portal and the supplied red NovaPharm Healthcare master logo.
+const officialHeaderLogoHash = createHash("sha256").update(readFileSync(join(root, "assets/brand/novapharm-healthcare-logo.png"))).digest("hex");
+const officialHeaderLogoSrc = `/assets/brand/novapharm-healthcare-logo.png?v=20261119-official-red-v1&amp;sha256=${officialHeaderLogoHash}`;
 const homeHeaderStart = home.indexOf('<header class="site-header npd-header"');
 const homeHeader = homeHeaderStart < 0 ? "" : home.slice(homeHeaderStart, home.indexOf("</header>", homeHeaderStart) + 9);
 const homePrimaryNavStart = homeHeader.indexOf('<nav class="site-nav npd-global-nav"');
 const homePrimaryNav = homePrimaryNavStart < 0 ? "" : homeHeader.slice(homePrimaryNavStart, homeHeader.indexOf("</nav>", homePrimaryNavStart) + 6);
 if (!homePrimaryNav.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage primary header hides Secure Portal");
-if (!homeHeader.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail("Homepage header is not using the supplied official PNG logo");
+if (!homeHeader.includes(`<picture class="brand-logo"><img src="${officialHeaderLogoSrc}"`)) fail("Homepage header is not using the supplied official PNG logo");
 if (homeHeader.includes('<source srcset="/assets/brand/novapharm-healthcare-logo.svg"')) fail("Homepage header still prioritises the replaced vector wordmark");
 for (const route of ["capabilities", "oncology", "products"]) {
   const html = text(route + "/index.html");
   const headerStart = html.indexOf('<header class="site-header npd-header"');
   const header = headerStart < 0 ? "" : html.slice(headerStart, html.indexOf("</header>", headerStart) + 9);
   if (!header.includes('href="https://portal.novapharmhealthcare.com/"')) fail(route + " primary header must link to live secure portal");
-  if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail(route + " primary header must use official NovaPharm logo");
+  if (!header.includes(`<picture class="brand-logo"><img src="${officialHeaderLogoSrc}"`)) fail(route + " primary header must use official NovaPharm logo");
 }
-// Every approved public visual page must force current CSS and red logo pixels.
-for (const [route, style] of [
-  ["index.html", null],
-  ["capabilities/index.html", "capabilities-editorial.css"],
-  ["oncology/index.html", "oncology-hope-v2.css"],
-  ["products/index.html", "products-editorial.css"]
-]) {
-  const html = text(route);
-  if (!html.includes('href="/assets/css/novapharm.bundle.css?v=approved-20261110-red02"')) fail(route + " still uses the stale unversioned visual stylesheet");
-  if (!html.includes('src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail(route + " still uses an unversioned header logo");
-  if (style && !html.includes('href="/assets/css/' + style + '?v=approved-20261110-red02"')) fail(route + " still uses the old editorial stylesheet");
+// Catch the legacy black NOVAPHARM pseudo-logo and stale CSS in rendered pages.
+const homepageCss = text("assets/css/homepage-editorial.css");
+// A positive logo visibility rule and an empty pseudo-element are approved.
+// Reject only actual hiding or text substitution, rather than any selector mention.
+if (/content:\s*["']NOVAPHARM["']/i.test(homepageCss)) fail("Approved public header is still replaced by the old text wordmark");
+if (!/\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/.test(homepageCss)) fail("Official public header image visibility rule is missing");
+if (!/\.site-header \.brand::after\s*\{\s*content:\s*none/.test(homepageCss)) fail("Legacy text-wordmark pseudo-element must remain disabled");
+const publicCssSha256 = createHash("sha256").update(readFileSync(join(root, "assets/css/novapharm.bundle.css"))).digest("hex");
+const expectedPublicCssHref = `href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${publicCssSha256}"`;
+for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
+  const page = text(route);
+  if (!page.includes(expectedPublicCssHref)) fail(route + " must link to the approved design CSS semantic version and exact CSS SHA-256");
+  if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");
 if (!approvedProductsCss.includes("clip-path:inset(2% 2% 2% 2%)")) fail("Products ESCO source-photo border must be removed in Safari");
