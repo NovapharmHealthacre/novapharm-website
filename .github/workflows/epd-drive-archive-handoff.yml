@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
@@ -37,7 +37,7 @@ jobs:
           PRIVATE_DIR: ${{ runner.temp }}/npi-epd-archive
         run: python3 tooling/python/split_verified_epd_archive.py "$PRIVATE_DIR/EPD_SNOMED_202608_official_source.zip" "$PRIVATE_DIR/archive-verified-receipt.json" "$PRIVATE_DIR/parts"
       - name: Transfer temporary verified source part 00
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-00
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_00.bin
@@ -45,7 +45,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 01
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-01
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_01.bin
@@ -53,7 +53,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 02
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-02
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_02.bin
@@ -61,7 +61,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 03
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-03
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_03.bin
@@ -69,7 +69,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 04
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-04
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_04.bin
@@ -77,7 +77,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 05
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-05
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_05.bin
@@ -85,7 +85,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 06
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-06
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_06.bin
@@ -93,7 +93,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer temporary verified source part 07
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-part-07
           path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_07.bin
@@ -101,7 +101,7 @@ jobs:
           retention-days: 1
           compression-level: 0
       - name: Transfer SHA-256 reassembly manifest
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: epd-202608-verified-reassembly-manifest
           path: ${{ runner.temp }}/npi-epd-archive/parts/source-reassembly-manifest.json
