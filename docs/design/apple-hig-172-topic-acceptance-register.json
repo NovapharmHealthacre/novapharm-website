@@ -110,8 +110,9 @@
           "jobId": 135618272024,
           "jobConclusion": "success",
           "scope": "Three public routes, two widths, Chromium/WebKit; first Tab focus and 3 mobile Chromium automated axe checks; screenshots artifact 14539093077",
-          "liveSourceSha": null,
-          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4"
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
+          "provenance": "Independently read GitHub Actions artifact 14539093077 results.json: 12/12 actual live Chromium/WebKit observations saw the same public HTML novapharm-source-sha meta value; zero narrow gaps and 0 automated axe violations across three mobile Chromium routes."
         },
         {
           "topic": "Layout",
@@ -119,8 +120,9 @@
           "jobId": 135618272024,
           "jobConclusion": "success",
           "scope": "Three public routes, two widths, Chromium/WebKit; H1, no >2px horizontal overflow, screenshots artifact 14539093077",
-          "liveSourceSha": null,
-          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4"
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
+          "provenance": "Independently read GitHub Actions artifact 14539093077 results.json: 12/12 actual live Chromium/WebKit observations saw the same public HTML novapharm-source-sha meta value; zero narrow gaps and 0 automated axe violations across three mobile Chromium routes."
         }
       ],
       "excludedAsAcceptance": [
@@ -155,7 +157,36 @@
         44540795085
       ],
       "recordedPartialTopicPlatformObservations": 6,
-      "note": "Four distinct successful first-party read-only public live workflow runs underpin six topic/platform partial observations. Same run may support different bounded checks; none is full implementation or signed native release proof."
+      "note": "Four distinct successful first-party read-only public live workflow runs underpin six topic/platform partial observations. Same run may support different bounded checks; none is full implementation or signed native release proof.",
+      "renderedPublicArtifactReadback": {
+        "sourceRun": 44540795085,
+        "jobId": 135618272024,
+        "artifactId": 14539093077,
+        "evidenceFile": "results.json",
+        "inspectedOn": "2026-11-19",
+        "publishedSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+        "observedRoutes": [
+          "/",
+          "/contact/",
+          "/legal/accessibility/"
+        ],
+        "browsers": [
+          "chromium",
+          "webkit"
+        ],
+        "viewportWidths": [
+          390,
+          1440
+        ],
+        "totalObservations": 12,
+        "failures": 0,
+        "mobileChromiumAxeAudits": 3,
+        "reportedSeriousOrCriticalAxeViolations": 0,
+        "reportedOtherAxeViolations": 0,
+        "maximumHorizontalOverflowPx": 0,
+        "firstTabVisibleFocusFailures": 0,
+        "interpretation": "Verifies a scoped, real published public HTML SHA and limited user-interface observations only; exact source artifact evidence does not grant full HIG, WCAG, protected tenant or native production acceptance."
+      }
     }
   },
   "topics": [
@@ -601,7 +632,7 @@
           "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085",
           "jobId": 135618272024,
           "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085/artifacts/14539093077",
-          "observedLiveSourceSha": null,
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
           "sourceCommit": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
           "checkedRoutes": [
             "https://novapharmhealthcare.com/",
@@ -619,8 +650,21 @@
             "No 200–400% zoom, theme, RTL, contrast manual audit or signed iOS/Android release",
             "No independent production quality/security approval; browser job does not establish full deployed SHA parity"
           ],
-          "provenanceNote": "GitHub PR head and artifact job SHA are not an independent observation of the full publicly deployed HTML release SHA; HIG source receipts and built page evidence remain distinct.",
-          "checkedTopic": "Accessibility"
+          "provenanceNote": "Independent inspection of first-party GitHub run 44540795085 artifact 14539093077 / results.json: all 12 live public browser observations recorded HTML meta source SHA d00b2eee866d4a2dd2ff7d87ded583be0d7cab98; source checkout/PR commit is separate and not claimed to be live. These 12 narrow checks do not cover full HIG/physical device production acceptance.",
+          "checkedTopic": "Accessibility",
+          "readBackArtifact": {
+            "artifactId": 14539093077,
+            "jsonPath": "results.json",
+            "checkedAt": "2026-11-19",
+            "totalRenderedObservations": 12,
+            "narrowGapCount": 0,
+            "uniqueObservedLiveShaCount": 1,
+            "axeAuditedMobileChromiumRoutes": 3,
+            "axeRuleViolationCount": 0,
+            "horizontalOverflowMaximumPx": 0,
+            "firstTabFocusFailures": 0,
+            "offOriginRequestsBlocked": 0
+          }
         }
       ],
       "iosEvidence": [],
@@ -1079,7 +1123,7 @@
           "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085",
           "jobId": 135618272024,
           "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085/artifacts/14539093077",
-          "observedLiveSourceSha": null,
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
           "sourceCommit": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
           "checkedRoutes": [
             "https://novapharmhealthcare.com/",
@@ -1097,8 +1141,21 @@
             "No 200–400% zoom, theme, RTL, contrast manual audit or signed iOS/Android release",
             "No independent production quality/security approval; browser job does not establish full deployed SHA parity"
           ],
-          "provenanceNote": "GitHub PR head and artifact job SHA are not an independent observation of the full publicly deployed HTML release SHA; HIG source receipts and built page evidence remain distinct.",
-          "checkedTopic": "Layout"
+          "provenanceNote": "Independent inspection of first-party GitHub run 44540795085 artifact 14539093077 / results.json: all 12 live public browser observations recorded HTML meta source SHA d00b2eee866d4a2dd2ff7d87ded583be0d7cab98; source checkout/PR commit is separate and not claimed to be live. These 12 narrow checks do not cover full HIG/physical device production acceptance.",
+          "checkedTopic": "Layout",
+          "readBackArtifact": {
+            "artifactId": 14539093077,
+            "jsonPath": "results.json",
+            "checkedAt": "2026-11-19",
+            "totalRenderedObservations": 12,
+            "narrowGapCount": 0,
+            "uniqueObservedLiveShaCount": 1,
+            "axeAuditedMobileChromiumRoutes": 3,
+            "axeRuleViolationCount": 0,
+            "horizontalOverflowMaximumPx": 0,
+            "firstTabFocusFailures": 0,
+            "offOriginRequestsBlocked": 0
+          }
         }
       ],
       "iosEvidence": [],
