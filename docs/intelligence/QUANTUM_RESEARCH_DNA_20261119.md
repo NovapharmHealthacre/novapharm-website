@@ -54,6 +54,11 @@ The first-party standard-library `scripts/research/quantum-noise-reference.py` m
 
 Run `python3 scripts/research/test-quantum-noise-reference.py -v` (five offline safety and analytical tests locally passed) or `python3 scripts/research/quantum-noise-reference.py --shots 1000 --seed 42 --readout-error 0.1`. The latter local smoke produced 00=398, 01=92, 10=97, 11=413, observed disagreement 18.9%, analytic expectation 18%. That is a single seeded synthetic sample, not a scientific effect size or experimental processor characterization.
 
+## Simulator resource estimation — nonexecuting advisory
+`src/core/intelligence-quantum-resource-estimate.mjs` provides an exact-key offline estimator for `classical-state-vector-only` proposals. It reports complex128 state-vector storage `16 × 2^n` bytes; it does **not** allocate memory, claim available RAM, run quantum gates, estimate wall time, price physical computing or infer logical/physical fault-tolerant qubit counts. Values of 20/25/30/40 qubits correspond to 16 MiB / 512 MiB / 16 GiB / 16 TiB of **state-vector storage only**. Proposed per-job budget is at most 256 MiB and the conservative source-review status requires at most 20 qubits, 1,000 shots, 5,000 gate operations and that the vector formula fits the declared budget. Even a positive review candidate **never** enables execution.
+
+Tests: `node --test scripts/test-intelligence-quantum-resource-estimate.mjs`. Fake/extra flags, hardware, paid compute, personal records and production approval are denied. **Qualtran logical operation counts and real fault-tolerant physical resource estimates remain unimplemented**; those require separate algorithm-specific assumptions, decomposition and validation.
+
 ## Required production/research acceptance
 - Independent review of developer licences, dependencies, data rights, commercial/AI reuse, source revocation and citations.
 - Signed rights-cleared non-patient dataset/experiment provenance and independent scientific replication with negative controls.

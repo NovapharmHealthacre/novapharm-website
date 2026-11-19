@@ -56,8 +56,8 @@
     {
       "id": "resources",
       "title": "Resource Estimator",
-      "description": "Qualtran logical resource analysis and physical overhead assumptions require a separate reviewed experiment.",
-      "status": "planned"
+      "description": "Nonexecuting classical state-vector RAM formula with bounded, fail-closed review gates. Qualtran and physical fault-tolerant resource estimates remain planned.",
+      "status": "offline-prototype"
     },
     {
       "id": "noise",
