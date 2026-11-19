@@ -32,6 +32,7 @@ test("mobile candidate uses readable default content typography and supports sys
 
 test("More retains review, research, Model Microscope, maps, disabled Visual and account entry points", () => {
   const more = app.match(/\{screen === "more" && \([\s\S]*?\{screen === "review"/)?.[0] ?? "";
+  assert.match(more, /screen: "countries", label: "Countries"/);
   assert.match(more, /screen: "review", label: "Evidence review"/);
   assert.match(more, /screen: "research", label: "Nova ML research"/);
   assert.match(more, /screen: "inspect", label: "Model Microscope"/);
@@ -45,7 +46,8 @@ test("More retains review, research, Model Microscope, maps, disabled Visual and
   assert.match(app, /\{screen === "visual" && \(/);
   assert.match(app, /editable=\{false\}/);
   assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
-  assert.match(app, /tab.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "visual" \|\| selected === "account"\)/);
+  assert.match(app, /<CountryDirectoryScreen \/>/);
+  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "countries" \|\| selected === "visual" \|\| selected === "account"\)/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {
