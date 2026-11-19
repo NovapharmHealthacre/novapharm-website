@@ -1,0 +1,50 @@
+name: Cancel stale unapproved contact publisher run 44502929197
+
+on:
+  push:
+    branches:
+      - safety/cancel-stale-contact-publisher-44502929197
+    paths:
+      - .github/workflows/cancel-stale-contact-publisher-44502929197.yml
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  cancel-exact-unapproved-release:
+    if: github.ref == 'refs/heads/safety/cancel-stale-contact-publisher-44502929197'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Cancel only the exact queued unapproved publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: '44502929197'
+          EXPECTED_SHA: 06dcdabbedf4a8c6f64feba2e199ac70e0a0c258
+        run: |
+          set -euo pipefail
+          api="repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID"
+          details=$(gh api "$api")
+          name=$(jq -r '.name' <<< "$details")
+          sha=$(jq -r '.head_sha' <<< "$details")
+          event=$(jq -r '.event' <<< "$details")
+          status=$(jq -r '.status' <<< "$details")
+          if [ "$name" != 'Publish verified AWS-backed contact form' ] || [ "$sha" != "$EXPECTED_SHA" ] || [ "$event" != 'workflow_dispatch' ]; then
+            echo 'Refusing cancellation: run identity or exact SHA mismatch.'
+            exit 1
+          fi
+          case "$status" in
+            queued|in_progress|waiting|pending|requested)
+              gh api --method POST "$api/cancel" > /dev/null
+              echo "Exact identified unapproved GitHub publisher cancellation requested. No AWS call made."
+              ;;
+            completed)
+              echo 'Stale publisher already completed; no action taken. Verify its deploy-job outcomes separately.'
+              ;;
+            *)
+              echo "Unexpected workflow state; no cancellation action. State: $status"
+              exit 1
+              ;;
+          esac
+          gh api "$api" --jq '{status:.status, conclusion:.conclusion, id:.id, head_sha:.head_sha}'
