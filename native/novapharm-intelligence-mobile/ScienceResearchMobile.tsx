@@ -3,14 +3,16 @@
  * No model, upstream API, credentials, patient records or protected data.
  */
 import React from "react";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 
-const color = { ink: "#1D1D1F", secondary: "#424245", border: "#D2D2D7", grouped: "#F5F5F7", accent: "#E3120B" };
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
+  const styles = useColorScheme() === "dark" ? darkStyles : lightStyles;
   return <View accessibilityLabel="Scientific research, offline planning preview" style={styles.container}>
     <Text style={styles.breadcrumb}>NOVAPHARM INTELLIGENCE / SCIENCE</Text>
     <Text style={styles.title} accessibilityRole="header">Science, grounded in evidence.</Text>
@@ -71,7 +73,9 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
   </View>;
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: MobilePalette) {
+  const color = { ink: palette.primary, secondary: palette.secondary, border: palette.border, grouped: palette.grouped, accent: palette.accent };
+  return StyleSheet.create({
   container: { paddingTop: 22, paddingBottom: 30 },
   breadcrumb: { fontSize: 11, fontWeight: "700", letterSpacing: 1.1, color: color.accent },
   title: { fontSize: 29, lineHeight: 35, letterSpacing: -0.7, fontWeight: "700", color: color.ink, marginTop: 12 },
@@ -95,3 +99,6 @@ const styles = StyleSheet.create({
   sourceDisclaimer: { fontSize: 11, lineHeight: 16, marginTop: 4, color: color.secondary },
   footer: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 18 }
 });
+}
+const lightStyles = createStyles(mobileLightPalette);
+const darkStyles = createStyles(mobileDarkPalette);
