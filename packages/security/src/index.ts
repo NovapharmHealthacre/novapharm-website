@@ -22,7 +22,7 @@ function safeSource(value: string): string {
 export function buildPublicSecurityPolicy(input: PublicSecurityPolicyInput): PublicSecurityPolicy {
   if (!/^[A-Za-z0-9+/=]{20,}$/.test(input.nonce)) throw new Error("CSP nonce must be cryptographically strong base64");
   const connectSources = ["'self'", ...(input.connectSources ?? []).map(safeSource),
-    ...(input.mapKitJs ? ["https://*.apple-mapkit.com"] : [])];
+    ...(input.mapKitJs ? ["https://*.apple-mapkit.com", "blob:"] : [])];
   const directives = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -35,7 +35,8 @@ export function buildPublicSecurityPolicy(input: PublicSecurityPolicyInput): Pub
     `font-src 'self'${input.mapKitJs ? " https://*.apple-mapkit.com" : ""}`,
     `connect-src ${connectSources.join(" ")}`,
     "media-src 'self'",
-    "worker-src 'self' blob:",
+    `worker-src 'self' blob:${input.mapKitJs ? " https://*.apple-mapkit.com" : ""}`,
+    ...(input.mapKitJs ? ["frame-src https://*.apple-mapkit.com"] : []),
     "manifest-src 'self'",
   ];
   if (input.secureTransport) directives.push("upgrade-insecure-requests");
