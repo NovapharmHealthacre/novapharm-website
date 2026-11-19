@@ -3,6 +3,9 @@
 # This image never activates customers, billing, inference, DNS or private data.
 # Do not deploy before accepted ECR digest, dedicated API runtime and identity.
 FROM node:24-alpine3.23 AS builder
+# Public, origin-restricted Maps JS token; do not put a .p8 signing key here.
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}
 RUN apk upgrade --no-cache
 WORKDIR /workspace
 COPY . .
