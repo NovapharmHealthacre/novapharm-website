@@ -8,6 +8,15 @@ on:
   pull_request:
     paths:
       - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/NovaMapKitView.swift'
+      - 'native/novapharm-intelligence-apple/Package.swift'
+      - 'native/novapharm-intelligence-android/**'
+      - 'apps/portal/components/governed-healthcare-map.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/proxy.ts'
+      - 'packages/security/src/index.ts'
+      - 'scripts/test-governed-maps-contract.mjs'
+      - 'docs/maps/**'
       - 'apps/portal/data/nova-ml-modules.ts'
       - 'docs/ai-use-case-register.json'
       - 'src/core/intelligence-global-source-gateway.mjs'
@@ -53,6 +62,7 @@ jobs:
           node --test scripts/test-intelligence-global-source-registry.mjs
           node --test scripts/test-intelligence-global-source-aliases.mjs
           node --test native/novapharm-intelligence-mobile/tests/*.test.mjs
+          node --test scripts/test-governed-maps-contract.mjs
 
   mobile-bundle-preflight:
     name: iOS/Android candidate typecheck and offline bundle preflight
