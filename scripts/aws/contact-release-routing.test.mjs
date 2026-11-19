@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const get = path => readFileSync(".github/workflows/" + path, "utf8");
 test("public-only Pages release jobs must never auto-overwrite live AWS contact", () => {
@@ -548,6 +549,75 @@ test("CLIP default-OFF source-only merge keeps AWS contact publisher isolated by
     assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs"], false), false);
     assert.equal(isSafeSourceOnly(["server.mjs", "package.json"], true), false);
     for (const p of publicChanges) assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs", p], true), false);
+  }
+});
+
+test("CLIP source-only merge permits only the exact reviewed shared syntax migration", () => {
+  const syntaxPath = "scripts/check-syntax.mjs";
+  const reviewedBaseBlob = "51c1abd00a10856395c3283a992f5c53e6de7cea";
+  const reviewedCandidateBlob = "e186036b0f29d8c67d6e942311aa2585d41e37c0";
+  const content = readFileSync(syntaxPath);
+  // Git object hash, not a guessed filesystem checksum.
+  const actualBlob = createHash("sha1").update("blob " + content.length + "\0").update(content).digest("hex");
+  assert.equal(actualBlob, reviewedCandidateBlob, "reviewed Node24 syntax migration changed: re-approve before merge");
+
+  const privateChanges = [
+    "native/novapharm-intelligence-mobile/clip-research.ts",
+    "native/novapharm-intelligence-mobile/package.json",
+    "native/novapharm-intelligence-mobile/tests/clip-contract.test.mjs",
+    "native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/README.md",
+    ".github/workflows/intelligence-global-mobile-contracts.yml"
+  ];
+  const neutral = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const publicPaths = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css"
+  ];
+  for (const workflow of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const source = get(workflow);
+    const first = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(first, workflow + " must preserve private-only classifier");
+    const privatePatterns = first.trim().replace(/\)$/, "").split("|");
+    const isPrivate = path => privatePatterns.some(pattern =>
+      path === pattern || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    for (const path of privateChanges) {
+      assert.equal(isPrivate(path), true, workflow + " missing source-only protection: " + path);
+    }
+    assert.equal(isPrivate(syntaxPath), false, "shared tooling must not be universally private");
+    assert.ok(source.includes('scripts/check-syntax.mjs)'), workflow + " must inspect the exact shared-tool change");
+    assert.ok(source.includes('git rev-parse "$GITHUB_SHA^1:$changed"'), workflow + " must verify previous blob");
+    assert.ok(source.includes('git hash-object "$changed"'), workflow + " must verify candidate blob");
+    assert.ok(source.includes(reviewedBaseBlob), workflow + " must pin the reviewed source");
+    assert.ok(source.includes(reviewedCandidateBlob), workflow + " must pin the reviewed result");
+
+    const isSafePrivateOnly = (changed, verifiedSyntaxMigration) => changed.some(isPrivate) &&
+      changed.every(path => isPrivate(path) || neutral.includes(path) ||
+        (path === syntaxPath && verifiedSyntaxMigration));
+    assert.equal(isSafePrivateOnly([...privateChanges, ...neutral, syntaxPath], true), true,
+      "this exact approved private CLIP + Node24 migration should skip AWS");
+    assert.equal(isSafePrivateOnly([...privateChanges, syntaxPath], false), false,
+      "changed or unreviewed syntax tooling must follow normal public release gates");
+    assert.equal(isSafePrivateOnly([...neutral, syntaxPath], true), false,
+      "shared tooling alone may never masquerade as a private ML release");
+    for (const path of publicPaths) {
+      assert.equal(isPrivate(path), false);
+      assert.equal(isSafePrivateOnly([...privateChanges, syntaxPath, path], true), false,
+        "real mixed public releases must never be suppressed");
+    }
+    assert.match(source, /private_only=true/);
+    assert.match(source, /found_ml=true/);
   }
 });
 
