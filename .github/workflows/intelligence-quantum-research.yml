@@ -7,6 +7,8 @@ on:
       - 'scripts/test-intelligence-quantum-cross-platform.mjs'
       - 'scripts/research/quantum-bell-pilot.py'
       - 'scripts/research/quantum-h2-benchmark.py'
+      - 'scripts/research/quantum-bell-reference.py'
+      - 'scripts/research/test-quantum-bell-reference.py'
       - 'scripts/research/test-quantum-h2-benchmark.py'
       - 'docs/intelligence/quantum-research-program-v1.json'
       - '.github/workflows/intelligence-quantum-research.yml'
@@ -32,3 +34,6 @@ jobs:
       - run: python -m py_compile scripts/research/quantum-h2-benchmark.py scripts/research/test-quantum-h2-benchmark.py
       - run: python scripts/research/test-quantum-h2-benchmark.py -v
       - run: python scripts/research/quantum-h2-benchmark.py
+      - run: python -m py_compile scripts/research/quantum-bell-reference.py scripts/research/test-quantum-bell-reference.py
+      - run: python scripts/research/test-quantum-bell-reference.py -v
+      - run: python scripts/research/quantum-bell-reference.py --shots 512 --seed 42
