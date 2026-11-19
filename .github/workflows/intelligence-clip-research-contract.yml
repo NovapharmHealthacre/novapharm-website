@@ -15,6 +15,10 @@ on:
       - "apps/portal/components/nova-ml-workspaces.tsx"
       - "native/novapharm-intelligence-apple/**"
       - "native/novapharm-intelligence-android/**"
+      - ".github/workflows/dispatch-approved-aws-contact-release.yml"
+      - ".github/workflows/publish-aws-contact-production.yml"
+      - "scripts/aws/contact-release-routing.test.mjs"
+      - "package.json"
       - ".github/workflows/intelligence-clip-research-contract.yml"
   workflow_dispatch:
 permissions:
@@ -28,6 +32,8 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
+      - name: Validate CLIP source-only AWS publication isolation
+        run: node --test scripts/aws/contact-release-routing.test.mjs
       - name: Prove default-off, origin-denial, schema and role contracts
         run: node --test scripts/test-intelligence-visual-search.mjs
       - name: Inspect Node syntax without runtime activation
