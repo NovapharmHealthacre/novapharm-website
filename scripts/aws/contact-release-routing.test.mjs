@@ -501,6 +501,56 @@ test("Official pharmaceutical publisher probe source-only changes do not dispatc
   }
 });
 
+test("CLIP default-OFF source-only merge keeps AWS contact publisher isolated by exact Git blobs", () => {
+  const privateChanged = [
+    ".github/workflows/intelligence-clip-research-contract.yml",
+    "apps/portal/app/gateway/[...path]/route.ts",
+    "apps/portal/components/clip-visual-search.tsx",
+    "docs/ai-model-register.json",
+    "docs/ai-risk-register.md",
+    "docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md",
+    "docs/intelligence/visual-search-cross-platform-contract.json",
+    "native/novapharm-intelligence-apple/NovaClipVisualSearch.swift",
+    "native/novapharm-intelligence-android/clipResearch/build.gradle.kts",
+    "scripts/test-intelligence-visual-search.mjs",
+    "services/clip/serve.py",
+    "src/core/intelligence-visual-search.mjs"
+  ];
+  const reviewed = {"serverOld":"4e8c233d1dbf085545763de4bd4de093ea95ec11","serverNew":"12dd72527ae561d6506d9573d418959d6f337189","packageOld":"733efc6571364754e46bfcadb8141d5d6c3481ba","packageNew":"c2ad27febc151c09e9629ed602ad989a01e90213"};
+  const neutral = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const publicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "scripts/imdf/unreviewed-tool.mjs"
+  ];
+  for (const filename of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const src = get(filename);
+    const first = src.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(first, filename + " must have source-only classifier");
+    const patterns = first.trim().replace(/\)$/, "").split("|");
+    const isPrivate = p => patterns.some(rule => p === rule ||
+      (rule.endsWith("/*") && p.startsWith(rule.slice(0, -1))));
+    for (const p of privateChanged) assert.ok(isPrivate(p), filename + " misses protected CLIP research source: " + p);
+    for (const p of publicChanges) assert.equal(isPrivate(p), false, filename + " must not hide public changes: " + p);
+    for (const hash of Object.values(reviewed)) assert.ok(src.includes(hash), filename + " must pin exact reviewed blob: " + hash);
+    assert.ok(src.includes("git hash-object"), filename + " must inspect proposed exact blob");
+    assert.ok(src.includes("git rev-parse"), filename + " must inspect original first-parent blob");
+    assert.ok(src.includes("private_only=false"), filename + " must reject unreviewed changes");
+    const isSafeSourceOnly = (changed, exactShared) => changed.some(isPrivate) &&
+      changed.every(p => isPrivate(p) || neutral.includes(p) ||
+        (exactShared && (p === "server.mjs" || p === "package.json")));
+    assert.equal(isSafeSourceOnly([...privateChanged, ...neutral, "server.mjs", "package.json"], true), true);
+    assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs"], false), false);
+    assert.equal(isSafeSourceOnly(["server.mjs", "package.json"], true), false);
+    for (const p of publicChanges) assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs", p], true), false);
+  }
+});
+
 test("reviewed #856 breadcrumb CSS never silently exempts future public CSS or contact changes", () => {
   const oldBlob = "35a79b8b0051ac353d98e6f70ae9446d44955b5c";
   const newBlob = "85ca93d1f501de09e99f4114852daacb4d1b77f1";
@@ -521,6 +571,52 @@ test("reviewed #856 breadcrumb CSS never silently exempts future public CSS or c
     assert.ok(auditCase.includes("found_ml=true"));
     assert.equal(paths.has("assets/js/contact-production.js"), false);
     assert.equal(paths.has("scripts/build-site.mjs"), false);
+  }
+});
+
+test("IMDF venue-rights source-only merges cannot dispatch the unrelated AWS contact publisher", () => {
+  const protectedPaths = [
+    ".github/workflows/imdf-venue-evidence-preflight.yml",
+    "docs/maps/imdf-venue-preflight-20261119.md",
+    "scripts/imdf/venue-preflight.mjs",
+    "scripts/imdf/venue-preflight.test.mjs"
+  ];
+  const guardedPaths = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const publicPaths = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "server.mjs",
+    "package.json"
+  ];
+  for (const filename of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(filename);
+    const first = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(first, filename + " must retain source-only release classification");
+    const patterns = first.trim().replace(/\)$/, "").split("|");
+    const isPrivate = value => patterns.some(pattern =>
+      value === pattern || (pattern.endsWith("/*") && value.startsWith(pattern.slice(0, -1)))
+    );
+    for (const value of protectedPaths) {
+      assert.ok(isPrivate(value), filename + " cannot publish the IMDF-only source: " + value);
+    }
+    for (const value of publicPaths) {
+      assert.equal(isPrivate(value), false, filename + " cannot suppress real public changes: " + value);
+    }
+    assert.equal(isPrivate("scripts/imdf/another-unreviewed-tool.mjs"), false, "Do not broadly quarantine IMDF directory");
+    const isPrivateOnly = changed => changed.some(isPrivate) &&
+      changed.every(value => isPrivate(value) || guardedPaths.includes(value));
+    assert.equal(isPrivateOnly([...protectedPaths, ...guardedPaths]), true);
+    assert.equal(isPrivateOnly(guardedPaths), false, "Policy edits alone cannot bypass release gates");
+    for (const publicPath of publicPaths) {
+      assert.equal(isPrivateOnly([...protectedPaths, publicPath]), false, "Mixed public releases must pass deployment gates");
+    }
+    assert.match(source, /found_ml=true/);
+    assert.match(source, /private_only=false/);
   }
 });
 
