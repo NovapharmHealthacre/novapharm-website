@@ -1339,8 +1339,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 88,
-      "referenceCount": 218,
+      "usageCount": 89,
+      "referenceCount": 221,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1419,6 +1419,7 @@
         "scripts/test-public-visual-versioning.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/version-public-header-logo.mjs",
         "scripts/version-public-visual-assets.mjs",
         "seo/generated/entity-register.json",
         "seo/structured-data-register.md",
