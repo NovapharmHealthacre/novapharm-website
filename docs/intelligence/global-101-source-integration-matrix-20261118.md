@@ -137,7 +137,7 @@ countries and 12 global/EU source candidates, and the country-expansion
 proposal contributes 24 additional research-only countries.
 
 **Verified source-code state:** 101/101 source candidates have worklist
-entries, 9 official publisher terms pages are linked and 1 additional publisher access-application requirement is recorded, **0/101 source grants
+entries, 10 official publisher terms pages are linked, 1 separate publisher access-application requirement and 1 API-documentation-only candidate are recorded, **0/101 source grants
 are independently accepted**, 0 ingested datasets are accepted, and 0
 source candidates are certified customer-live. A link to permissive
 publisher terms is not evidence of field-specific rights, a valid signed
@@ -150,14 +150,16 @@ grant, a working API, a configured production pipeline or tenant approval.
 | European Union / EEA — EMA PMS Public API **beta** | https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf ; https://api.pms.ema.europa.eu/public/v1/swagger | EMA's published terms dated **12 June 2026** restrict beta use to familiarisation, testing and analytical exploration — **not business purposes**. EMA registration is required, and its terms require **prior authorisation** to sell, sublicense, incorporate or redistribute content after full release; source data is reference-only and national authorities prevail | **Do not connect to NovaPharm commercial or customer services.** Verify official transition out of beta, obtain written EMA permission where required, complete scope/field review and signed grant before considering ingestion |
 | France — ANSM/HAS BDPM official downloadable medicine tables | https://base-donnees-publique.medicaments.gouv.fr/telechargement ; https://www.data.gouv.fr/datasets/base-de-donnees-publique-des-medicaments-base-officielle | Official French download conditions permit reproduction, redistribution and exploitation of the files, require accurate meaning, attribution, update dates and **no suggestion of state endorsement**; linked notices and product documents may need different rights | Scope and checksum each official table/resource release, preserve French national CIS/CIP identities, publication dates, updates and permitted derivative/AI/redistribution use before independent approval |
 | Ireland — HPRA Human Medicines Authorised Products | https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products ; https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products/resource/6987c2af-0c40-48da-8207-76b5da141266 | The official data.gov.ie listing expressly identifies the XML dataset as **Creative Commons Attribution 4.0**; reusable commercially with attribution, but third-party works and personal data are excluded | Verify current XML resource version and controlled download, source attribution, Irish-native authorisation IDs and rights of any linked SPC or patient leaflet before independent admission |
+| Australia — TGA Australian Register of Therapeutic Goods | https://www.tga.gov.au/about-us/using-our-website/copyright ; https://www.tga.gov.au/resources/datasets | The TGA copyright notice (updated 10 September 2025) restricts website reproduction to personal/internal use and prohibits commercial use, retransmission and redistribution without **prior written approval**, except where a distinct licence states otherwise | **Do not commercially republish ARTG website content** without written TGA permission or a verified ARTG-specific licence. Screen third-party rights and retain attribution, disclaimers and non-endorsement conditions |
+| Australia — PBS public Schedule API | https://data.pbs.gov.au/document/91327.html | PBS public Schedule API documentation describes monthly JSON/CSV downloads, but **does not by itself grant a commercial or AI redistribution licence**. Public API shared limit is one request per 20 seconds; embargo API requires separate vendor access | Verify per-table data licensing and terminology rights, use published schedule version keys, batch by published monthly edition, respect rate limits and separately review embargo access before any integration |
 | Spain — AEMPS CIMA REST | https://sede.aemps.gob.es/datos-abiertos/ | Official open-data listing permits use and reuse, subject to conditions such as attribution; lists CIMA REST | Pin CIMA endpoint/data subset and relevant AEMPS legal notice; confirm commercial AI/derivative, cache and redistribution terms |
 | Canada — Health Canada DPD | https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe | Official DPD dataset is listed under the Open Government Licence — Canada; this does not prove every API response/third-party field is in scope | Match API response to licensed dataset version and exact fields; attribution, limitations and independent source approval |
 | United Kingdom — NHSBSA EPD with SNOMED | https://opendata.nhsbsa.net/pages/terms-and-conditions and https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code | Dataset-level licence applies (generally OGL), mandatory NHSBSA attribution and fair-use API access; BNF/SNOMED/dm+d may involve separate rights | Verify exact resource and version, third-party terminology reuse, checksum, immutable ingestion evidence and independent acceptance |
 | Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
 
-For the other 91 source candidates, the worklist explicitly states
+For the other 89 source candidates, the worklist explicitly states
 `PUBLIC_TERMS_NOT_YET_SCREENED`; none may inherit terms from a different
-publisher or country. The nine licence/terms notices plus Norway's separate access-application notice do **not** constitute
+publisher or country. The ten publisher terms notices, Norway's separate access-application record and PBS's separate public API documentation do **not** constitute
 any activated country integrations.
 
 ### Norway DMP FHIR — publisher access application required
@@ -174,6 +176,26 @@ or database ingestion was made, and no commercial use is authorised.
 
 Norway's service lists product codes sourced from Farmalogg, which
 requires separate rights review before commercial re-publication. <https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service>
+
+### Australia — separate TGA copyright and PBS public API conditions
+
+The TGA [copyright notice](https://www.tga.gov.au/about-us/using-our-website/copyright)
+allows unaltered content for internal/personal use unless otherwise specified;
+**commercial reuse, retransmission and redistribution require prior written
+approval**, unless a separate dataset-specific notice grants the required
+rights. The TGA's searchable ARTG interface is **not** proof of such a grant.
+The worklist uses `writtenCommercialPermissionRequired:true` for the TGA
+website notice. Its exception must be checked **per exact ARTG resource**.
+
+The PBS [official API guide](https://data.pbs.gov.au/document/91327.html)
+(updated 12 November 2026) describes the publicly available monthly PBS
+Schedule and local JSON/CSV downloads, **not a general commercial
+redistribution licence**. The shared public endpoint limit is **one request
+per 20 seconds**; the separate embargo API requires a software-vendor
+application. The worklist therefore stores only `officialApiDocumentationUrl`,
+sets `publisherTermsUrl:null` and
+`OFFICIAL_API_DOCUMENTATION_RIGHTS_REVIEW_REQUIRED`; no rights approval or
+customer source is inferred. Do not treat TGA and PBS as one legal publisher.
 
 ### Per-source activation acceptance, never inferred from an open notice
 
