@@ -99,7 +99,8 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   assert.equal(worklist.contract, "novapharm.intelligence.publisher-terms-prescreen.v1");
   assert.equal(worklist.totalSourceCandidates, 101);
-  assert.equal(worklist.publicPublisherNoticesLocated, 7);
+  assert.equal(worklist.publicPublisherNoticesLocated, 9);
+  assert.equal(worklist.publisherAccessApplicationRequired, 1);
   assert.equal(worklist.publiclyRestrictedBetaBusinessSources, 1);
   assert.equal(worklist.sourceOnlyHttpProbeCiCheckpointCount, 4);
   assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
@@ -121,7 +122,7 @@ test("all 101 candidates have a complete, closed publisher-rights worklist", () 
   }
 });
 
-test("seven official publisher notices must never become production licence approvals", () => {
+test("nine official publisher licences/terms are notices, not grants", () => {
   const worklist = buildPublisherRightsPrescreenWorklist(registry);
   const notices = new Map(worklist.sourceEntries
     .filter(entry => entry.publisherTermsUrl !== null)
@@ -133,6 +134,8 @@ test("seven official publisher notices must never become production licence appr
   const expected = new Map([
     ["north-america-united-states-fda-openfda", "https://open.fda.gov/terms/"],
     ["europe-spain-aemps-cima", "https://sede.aemps.gob.es/datos-abiertos/"],
+    ["europe-france-ansm-bdpm", "https://base-donnees-publique.medicaments.gouv.fr/telechargement"],
+    ["europe-ireland-hpra-authorised-medicines", "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products"],
     ["europe-european-union-eea-ema-pms-public-api", "https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf"],
     ["asia-pacific-singapore-hsa-data-gov-sg", "https://developers.data.gov.sg/open-data-licence"],
     ["north-america-canada-health-canada-drug-product-database", "https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe"],
@@ -153,7 +156,7 @@ test("seven official publisher notices must never become production licence appr
     assert.equal(new URL(row.publisherTermsUrl).protocol, "https:");
   }
   assert.equal(worklist.sourceEntries.filter(row =>
-    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 94);
+    row.termsScreeningStatus === "PUBLIC_TERMS_NOT_YET_SCREENED").length, 91);
 });
 
 test("public licence notices cannot override tampered registry or proof-of-rights gates", () => {
@@ -256,4 +259,54 @@ test("other publisher pre-screens never inherit EMA restricted beta policy", () 
     assert.equal(entry.productionRightsGranted, false);
     assert.equal(entry.customerLive, false);
   }
+});
+
+test("France and Ireland official open-data licences require per-resource attribution and independent approval", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const france = worklist.sourceEntries.find(x => x.candidateKey === "europe-france-ansm-bdpm");
+  const ireland = worklist.sourceEntries.find(x => x.candidateKey === "europe-ireland-hpra-authorised-medicines");
+  assert.ok(france && ireland);
+  assert.equal(france.publisherTermsUrl,
+    "https://base-donnees-publique.medicaments.gouv.fr/telechargement");
+  assert.equal(france.termsPosture,
+    "FRANCE_BDPM_OPEN_LICENCE_WITH_ATTRIBUTION_AND_UPDATE_DUTIES");
+  assert.match(france.officialDatasetUrl, /^https:\/\/www\.data\.gouv\.fr\//);
+  assert.ok(france.outstandingRightsRequirements.some(x => x.includes("non-endorsement")));
+  assert.equal(ireland.publisherTermsUrl,
+    "https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products");
+  assert.equal(ireland.termsPosture,
+    "IRELAND_HPRA_CC_BY_4_ATTRIBUTION_WITH_THIRD_PARTY_EXCLUSIONS");
+  assert.ok(ireland.officialDatasetUrl.endsWith("6987c2af-0c40-48da-8207-76b5da141266"));
+  for (const entry of [france, ireland]) {
+    assert.equal(entry.productionRightsGranted, false);
+    assert.equal(entry.productionDatasetAdmitted, false);
+    assert.equal(entry.customerLive, false);
+    assert.equal(entry.sourceOnlyHttpProbeCiCheckpoint, null);
+    assert.equal(entry.termsSha256IndependentlyVerified, null);
+    assert.equal(entry.signedGrantReceiptSha256, null);
+    assert.deepEqual(entry.legallyAcceptedUses, []);
+    assert.equal(entry.sourceAccessApprovalRequired, false);
+  }
+});
+
+test("Norway DMP FHIR must apply for access; publisher access notice is not data licence", () => {
+  const worklist = buildPublisherRightsPrescreenWorklist(registry);
+  const norway = worklist.sourceEntries.find(x =>
+    x.candidateKey === "europe-norway-dmp-medicine-fhir-service");
+  assert.ok(norway);
+  assert.equal(norway.publisherAccessRequirementsUrl,
+    "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/how-to-access-the-fhir-service");
+  assert.equal(norway.termsScreeningStatus, "PUBLISHER_ACCESS_APPLICATION_REQUIRED");
+  assert.equal(norway.publisherTermsUrl, null);
+  assert.equal(norway.publisherRegistrationRequired, true);
+  assert.equal(norway.sourceAccessApprovalRequired, true);
+  assert.equal(norway.publisherExplicitlyForbidsBusinessUse, false);
+  assert.equal(norway.productionRightsGranted, false);
+  assert.equal(norway.productionDatasetAdmitted, false);
+  assert.equal(norway.customerLive, false);
+  assert.equal(norway.sourceOnlyHttpProbeCiCheckpoint, null);
+  assert.equal(worklist.publicPublisherNoticesLocated, 9);
+  assert.equal(worklist.publisherAccessApplicationRequired, 1);
+  assert.equal(worklist.independentlyLicensedSourceCandidates, 0);
+  assert.equal(worklist.customerLiveSourceCandidates, 0);
 });
