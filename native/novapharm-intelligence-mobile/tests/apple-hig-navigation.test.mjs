@@ -30,15 +30,16 @@ test("mobile candidate uses readable default content typography and supports sys
   assert.match(app, /const largeText = fontScale >= 1\.4/);
 });
 
-test("More retains accessible review, research and account entry points", () => {
+test("More retains accessible review, research, maps and account entry points", () => {
   const more = app.match(/\{screen === "more" && \([\s\S]*?\{screen === "review"/)?.[0] ?? "";
   assert.match(more, /screen: "review", label: "Evidence review"/);
   assert.match(more, /screen: "research", label: "Nova ML research"/);
+  assert.match(more, /screen: "maps", label: "Maps and location"/);
   assert.match(more, /screen: "account", label: "Enterprise access"/);
   assert.match(more, /accessibilityRole="button"/);
   assert.match(more, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(app, /moreAction: \{ minHeight: 56/);
-  assert.match(app, /tab.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "account"\)/);
+  assert.match(app, /tab.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "maps" \|\| selected === "account"\)/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {
