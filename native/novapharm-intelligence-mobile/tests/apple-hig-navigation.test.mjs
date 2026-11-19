@@ -40,7 +40,7 @@ test("More retains review, research, maps, disabled Visual and account entry poi
   assert.match(more, /accessibilityRole="button"/);
   assert.match(more, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(app, /moreAction: \{ minHeight: 56/);
-  assert.match(app, /\{screen === "maps" && <MapsResearchScreen \/>\}/);
+  assert.match(app, /\{screen === "maps" && <MapsResearchScreen darkMode=\{darkMode\} \/>\}/);
   assert.match(app, /\{screen === "visual" && \(/);
   assert.match(app, /editable=\{false\}/);
   assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
