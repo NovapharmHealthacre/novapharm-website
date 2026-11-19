@@ -17,7 +17,9 @@ test("the private-only merge guard includes the Nova ML probe and its contract w
     "scripts/test-nova-ml-private-ingress.mjs",
     ".github/workflows/nova-ml-private-ingress-acceptance.yml",
   ]) assert.ok(guard.includes(path), path);
-  assert.match(guard, /if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
+  assert.match(guard, /id: owner_hold/);
+  assert.match(guard, /\.productionSignoff == "granted" and \.productionPermissions\.activatePublicCustomerAccess == true/);
+  assert.match(guard, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
 });
 
 test("four released Nova ML ingress routes remain monitored; the fifth research route is gated but not live", () => {
