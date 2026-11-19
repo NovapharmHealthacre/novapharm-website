@@ -1,0 +1,33 @@
+name: IMDF venue evidence preflight
+
+on:
+  pull_request:
+    paths:
+      - "scripts/imdf/**"
+      - "docs/maps/imdf-venue-preflight-20261119.md"
+      - ".github/workflows/imdf-venue-evidence-preflight.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/imdf/**"
+      - "docs/maps/imdf-venue-preflight-20261119.md"
+      - ".github/workflows/imdf-venue-evidence-preflight.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  imdf-source-gate:
+    name: IMDF synthetic preflight denial tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run offline fail-closed venue tests
+        run: node --test scripts/imdf/venue-preflight.test.mjs
