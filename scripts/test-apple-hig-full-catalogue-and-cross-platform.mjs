@@ -607,7 +607,7 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
   assert.ok(tracker.topics.filter(x => x.guidelineReview === "reviewed").length >= 68);
   assert.ok(tracker.meta.platformsAssessed >= 204);
-  assert.equal(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
+  assert.ok(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
     .filter(x => x.state !== "unassessed").length >= 204);
   assert.equal(tracker.topics.filter(x => x.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
