@@ -1,4 +1,9 @@
 # NovaPharm Apple HIG — source, attachment and platform acceptance audit
+
+> **Reproducibility limitation (19 November 2026):** Exact upload filenames, sizes and HIG indexed URL metadata are source-backed. The 5 ZIP/CSV SHA values and 17 UDIF SHA values below are historical audit records; in the current verification attempt the original files were materialized, but local command execution failed, so fresh byte-for-byte verification, installer-signature checks, licence grants and Apple binary distribution have **not** been independently established. These claims are not compliance certification.
+>
+> **Authoritative HIG source index:** PR #861 owns the full 210 URLs (207 workbook references plus 3 separately requested MapKit/IMDF references) and the 516 web/iOS/Android applicability gates. This PR adds attachment provenance only and must not replace that index, its Siri anchor-drift finding or its source tests.
+
 **Evidence checkpoint:** 18 November 2026. **Status:** partial source/attachment inspection; NOT 100% conformity, Mac executable testing, native app shipment, licensed-asset approval or public deployment.
 
 ## Source coverage is NOT implementation coverage

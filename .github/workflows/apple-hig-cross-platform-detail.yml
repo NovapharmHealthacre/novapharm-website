@@ -3,16 +3,13 @@ on:
   pull_request:
     paths:
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
-      - 'docs/design/apple-hig-attachment-evidence-20261118.json'
-      - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
-      - 'scripts/test-apple-hig-attachment-audit.mjs'
-      - 'scripts/audit-apple-hig-official-sources.mjs'
-      - 'scripts/test-apple-hig-official-source-audit.mjs'
-      - '.github/workflows/apple-hig-official-source-inventory.yml'
       - 'docs/design/apple-hig-172-topic-adoption-20261118.md'
       - 'apps/portal/app/globals.css'
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - 'docs/design/apple-hig-attachment-evidence-20261118.json'
+      - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
+      - 'scripts/test-apple-hig-attachment-audit.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
   workflow_dispatch:
 permissions:
@@ -34,5 +31,3 @@ jobs:
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs
       - run: node --test scripts/test-apple-hig-attachment-audit.mjs
-      - run: node --check scripts/audit-apple-hig-official-sources.mjs
-      - run: node --test scripts/test-apple-hig-official-source-audit.mjs

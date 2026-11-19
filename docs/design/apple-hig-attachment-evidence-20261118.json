@@ -1055,5 +1055,12 @@
     }
   ],
   "knownOwnerUploadsCount": 50,
-  "historicalEvidenceSource": "Library file metadata and 97-line 2026-11-15 NovaPharm estate audit; these 18 items supplement the 32 items from 2026-11-18. Historical disk-image/archive contents were not re-inspected."
+  "historicalEvidenceSource": "Library file metadata and 97-line 2026-11-15 NovaPharm estate audit; these 18 items supplement the 32 items from 2026-11-18. Historical disk-image/archive contents were not re-inspected.",
+  "verificationBoundary": {
+    "checkpoint": "2026-11-19",
+    "fullArchiveReverificationThisSession": false,
+    "reason": "The owner-uploaded raw archives were materialized for independent verification but local byte-processing failed; the SHA-256, ZIP CRC, UDIF footer and duplicate-pair findings are earlier audit records, not reproducible fresh proof in this checkpoint.",
+    "ownerSourceIndexReviewIndependentOfZipHashes": true,
+    "appleAssetRedistributionAuthorised": false
+  }
 }

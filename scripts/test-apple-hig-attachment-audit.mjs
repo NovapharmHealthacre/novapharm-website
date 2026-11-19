@@ -8,6 +8,8 @@ const report = readFileSync("docs/design/apple-hig-source-and-attachment-audit-2
 
 test("owner-supplied 32 Apple/HIG files have one-to-one audit entries without a false integration claim", () => {
   assert.equal(ledger.schemaVersion, 1);
+  assert.equal(ledger.verificationBoundary.fullArchiveReverificationThisSession, false);
+  assert.equal(ledger.verificationBoundary.appleAssetRedistributionAuthorised, false);
   assert.equal(ledger.attachments.length, 32);
   const names = ledger.attachments.map((entry) => entry.name);
   assert.equal(new Set(names).size, names.length);
@@ -80,14 +82,15 @@ test("HIG index parity remains separate from 172-topic implementation status", (
   for (const [section, count] of Object.entries(ledger.officialIndex.sections)) {
     assert.equal(count, register.topics.filter((topic) => topic.section === section).length);
   }
-  assert.match(register.meta.indexFieldProvenance, /User-supplied 2026-11-18/);
-  assert.equal(register.topics.filter((topic) => topic.indexType === "Guideline").length, 158);
-  assert.equal(register.topics.filter((topic) => topic.indexType === "Category").length, 14);
+  // PR #861 is the canonical owner-index metadata contract. This attachment
+  // audit deliberately works against both the earlier mainline 172-link
+  // register and the future extended register without replacing it.
   for (const topic of register.topics) {
-    assert.ok(topic.indexDescription && topic.indexSuggestedPlatforms && topic.indexType);
-    // Source descriptions and suggested platform scope are not implementation evidence.
-    assert.notEqual(topic.indexSuggestedPlatforms, "production_verified");
+    assert.ok(topic.section && topic.subsection && topic.title && topic.url && topic.markdown);
     assert.ok(topic.implementation !== "verified" || topic.releaseEvidence.length > 0);
+    if (topic.sourceType !== undefined) {
+      assert.ok(topic.sourceType && topic.sourceDescription && topic.sourceRequestedPlatforms);
+    }
   }
   assert.equal(ledger.officialIndex.allFullTextReviewed, false);
   assert.equal(ledger.officialIndex.allImplemented, false);
