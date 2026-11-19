@@ -574,6 +574,52 @@ test("reviewed #856 breadcrumb CSS never silently exempts future public CSS or c
   }
 });
 
+test("IMDF venue-rights source-only merges cannot dispatch the unrelated AWS contact publisher", () => {
+  const protectedPaths = [
+    ".github/workflows/imdf-venue-evidence-preflight.yml",
+    "docs/maps/imdf-venue-preflight-20261119.md",
+    "scripts/imdf/venue-preflight.mjs",
+    "scripts/imdf/venue-preflight.test.mjs"
+  ];
+  const guardedPaths = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const publicPaths = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "server.mjs",
+    "package.json"
+  ];
+  for (const filename of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const source = get(filename);
+    const first = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(first, filename + " must retain source-only release classification");
+    const patterns = first.trim().replace(/\)$/, "").split("|");
+    const isPrivate = value => patterns.some(pattern =>
+      value === pattern || (pattern.endsWith("/*") && value.startsWith(pattern.slice(0, -1)))
+    );
+    for (const value of protectedPaths) {
+      assert.ok(isPrivate(value), filename + " cannot publish the IMDF-only source: " + value);
+    }
+    for (const value of publicPaths) {
+      assert.equal(isPrivate(value), false, filename + " cannot suppress real public changes: " + value);
+    }
+    assert.equal(isPrivate("scripts/imdf/another-unreviewed-tool.mjs"), false, "Do not broadly quarantine IMDF directory");
+    const isPrivateOnly = changed => changed.some(isPrivate) &&
+      changed.every(value => isPrivate(value) || guardedPaths.includes(value));
+    assert.equal(isPrivateOnly([...protectedPaths, ...guardedPaths]), true);
+    assert.equal(isPrivateOnly(guardedPaths), false, "Policy edits alone cannot bypass release gates");
+    for (const publicPath of publicPaths) {
+      assert.equal(isPrivateOnly([...protectedPaths, publicPath]), false, "Mixed public releases must pass deployment gates");
+    }
+    assert.match(source, /found_ml=true/);
+    assert.match(source, /private_only=false/);
+  }
+});
+
 test("private enterprise readiness artifacts cannot dispatch the unrelated public contact publisher", () => {
   const files = [
     "src/core/intelligence-enterprise-readiness.mjs",
