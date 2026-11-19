@@ -7,6 +7,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
+import { GovernedHealthcareMap } from "./governed-healthcare-map";
 import styles from "./medicines-intelligence.module.css";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
@@ -552,6 +553,7 @@ function NearbyOrganisations() {
     </div><button type="submit" disabled={busy}>{busy ? "Locating" : "Find organisations"}</button></form>
     <p className={`${styles.liveStatus} medicine-search-status`} role="status" aria-live="polite">{status}</p>
     {response?.truncated ? <p className={styles.advisory}>The response reached its governed result limit. Narrow the radius before drawing conclusions.</p> : null}
+    {response ? <GovernedHealthcareMap origin={response.origin} pharmacies={response.pharmacies} practices={response.practices} radiusKm={response.query.radiusKm} /> : null}
     {pharmacySection ? <EvidenceTable data={pharmacySection} /> : null}
     {practiceSection ? <EvidenceTable data={practiceSection} /> : null}
     {response ? <section className={styles.interpretation}><h3>Interpretation boundary</h3><ul>{response.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}</ul></section> : null}
