@@ -19,12 +19,13 @@ assert.ok(Object.keys(knowledge.keywordIndex.postings).length > 500);
 for (const required of ["page-home", "page-cro", "page-oncology", "page-technology-ai-governance", "leader-vishal-chakravarty"]) {
   assert.ok(manifest.sources.some((source) => source.id === required), required);
 }
+const blockedSegments = new Set(["portal", "employee", "admin", "board", "docs", "api", "contact", "account-application", "legal"]);
 for (const source of manifest.sources) {
   assert.match(source.url, /^https:\/\/novapharmhealthcare\.com\//);
   assert.ok(source.sourceHash);
   assert.ok(source.blockCount > 0);
-  assert.doesNotMatch(source.url, /\\/(?:portal|employee|admin|board|docs|api|contact|account-application|legal)(?:\\/|$)/);
-  assert.doesNotMatch(source.file, /(?:^|\\/)(?:portal|employee|admin|contact|account-application|legal)(?:\\/|$)/);
+  assert.ok(new URL(source.url).pathname.split("/").every((part) => !blockedSegments.has(part)), source.url);
+  assert.ok(source.file.split("/").every((part) => !blockedSegments.has(part)), source.file);
 }
 for (const chunk of knowledge.chunks) {
   assert.ok(chunk.contentHash && chunk.sourceUrl && chunk.sourceTitle && chunk.heading && chunk.text);
