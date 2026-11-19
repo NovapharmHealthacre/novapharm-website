@@ -67,6 +67,14 @@ Official references: https://developer.apple.com/design/human-interface-guidelin
 
 **Safe-area correction:** The Expo candidate now uses `react-native-safe-area-context` `~5.11.1` and a root `SafeAreaProvider` with a native `SafeAreaView` on all four edges, rather than React Native's legacy safe-area component. This is necessary for Android edge-to-edge and iPhone status-bar/notch/home-indicator geometry. Browser/Expo bundle success is not physical-device acceptance. Source: https://docs.expo.dev/versions/v58.0.0/sdk/safe-area-context/ .
 
+## CLIP visual-research workspace (source-only)
+
+The current Expo iOS/Android preview includes a **Visual** research screen and shared `clip-research.ts` contract. It is purposefully visible but disabled: `CLIP_MOBILE_RELEASE.enabled === false`. The prompt cannot be entered or submitted; no session or image data is collected, no native image picker/weights are bundled, and the app makes **no CLIP or external API requests**. The parser independently validates future board-only visual-search responses, discards model-confidence or identity claims and rejects local/private/credentialed source URLs.
+
+The server-side / web and Swift/Kotlin proof-of-concept remains in [CLIP PR #822](https://github.com/NovapharmHealthacre/novapharm-website/pull/822). The Expo app does not automatically embed the Swift Package or Kotlin JVM adapter. Connecting the protected backend requires a reviewed system-browser OIDC authorization code + PKCE/MFA flow, device-bound and revocable session handling, CSRF support, private-runtime readiness and separate legal/quality/security approvals. See [CLIP production acceptance #827](https://github.com/NovapharmHealthacre/novapharm-website/issues/827). Do not mark an Expo bundle as a signed iOS/Android release or as operational CLIP inference.
+
+The preview can be checked without signing or model weights by running `npm run test:contracts`; use Node.js 24 for the zero-dependency TypeScript contract test and follow with `npm run typecheck` and actual-device accessibility acceptance. The isolated package remains unbuilt and unsigned until its application identities, data rights, auth design and release controls are independently accepted.
+
 ## 24 official research leads (not connected)
 
 The same shared country catalogue now carries a separate `publisherResearchLead` **reference only** for each of the 24 additional geography-only national scopes. Both the protected web country view and the offline Expo Countries tab display the publisher name and why further verification is required. This is not a new source candidate, verified API, commercial reuse licence, medical dataset, national availability record or protected customer feed.

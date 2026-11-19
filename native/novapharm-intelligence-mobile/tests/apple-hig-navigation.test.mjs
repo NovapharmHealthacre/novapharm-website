@@ -30,18 +30,23 @@ test("mobile candidate uses readable default content typography and supports sys
   assert.match(app, /const largeText = fontScale >= 1\.4/);
 });
 
-test("More retains accessible review, research, maps and account entry points", () => {
+test("More retains review, research, maps, disabled Visual and account entry points", () => {
   const more = app.match(/\{screen === "more" && \([\s\S]*?\{screen === "review"/)?.[0] ?? "";
   assert.match(more, /screen: "countries", label: "Countries"/);
   assert.match(more, /screen: "review", label: "Evidence review"/);
   assert.match(more, /screen: "research", label: "Nova ML research"/);
   assert.match(more, /screen: "maps", label: "Maps and location"/);
+  assert.match(more, /screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate/);
   assert.match(more, /screen: "account", label: "Enterprise access"/);
   assert.match(more, /accessibilityRole="button"/);
   assert.match(more, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(app, /moreAction: \{ minHeight: 56/);
+  assert.match(app, /\{screen === "maps" && <MapsResearchScreen darkMode=\{darkMode\} \/>\}/);
+  assert.match(app, /\{screen === "visual" && \(/);
+  assert.match(app, /editable=\{false\}/);
+  assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
   assert.match(app, /<CountryDirectoryScreen \/>/);
-  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "maps" \|\| selected === "account" \|\| selected === "countries"\)/);
+  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "maps" \|\| selected === "visual" \|\| selected === "countries" \|\| selected === "account"\)/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {
