@@ -605,10 +605,10 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 });
 
 test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
-  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 57);
-  assert.equal(tracker.meta.platformsAssessed, 171);
+  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 68);
+  assert.equal(tracker.meta.platformsAssessed, 204);
   assert.equal(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
-    .filter(x => x.state !== "unassessed").length, 171);
+    .filter(x => x.state !== "unassessed").length, 204);
   assert.equal(tracker.topics.filter(x => x.implementation === "verified").length, 0);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
@@ -679,12 +679,12 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 57);
-  assert.equal(report.assessedPlatformDecisions, 171);
+  assert.equal(report.independentlyDocumentedArticleReviews, 68);
+  assert.equal(report.assessedPlatformDecisions, 204);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
-  assert.equal(report.recordedPartialLiveObservations, 4);
+  assert.equal(report.recordedPartialLiveObservations, 6);
   assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
-    .map(x => x.sourceRun)).size, 3, "3 genuinely distinct live-origin run receipts");
+    .map(x => x.sourceRun)).size, 4, "4 genuinely distinct live-origin run receipts");
   assert.equal(report.productionCanBeCertified, false);
   assert.equal(topics.length, 172);
   assert.equal(new Set(topics.map(t => t.sourceRowIndex)).size, 172);
@@ -761,7 +761,7 @@ test("optional read-only public website HTML sample (not HIG compliance)",
 
 test("actual production Capabilities/Oncology rendered screenshots are partial evidence, never a 172-topic release certificate", () => {
   const audit = tracker.meta.productionEvidenceAudit;
-  for (const [name, expectedCounts] of [["Layout", 2], ["Images", 1]]) {
+  for (const [name, expectedCounts] of [["Layout", 3], ["Images", 1]]) {
     const topic = tracker.topics.find(t => t.title === name);
     assert.equal(topic.implementation, "not_verified", name);
     assert.equal(topic.webEvidence.length, expectedCounts, name);
@@ -785,7 +785,7 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
   assert.ok(audit.distinctObservedPublicLiveRuns.includes(44528135812));
   assert.ok(audit.distinctObservedPublicLiveRuns.includes(44532249980));
   assert.ok(audit.distinctObservedPublicLiveRuns.includes(44532250088));
-  assert.equal(audit.recordedPartialTopicPlatformObservations, 4);
+  assert.equal(audit.recordedPartialTopicPlatformObservations, 6);
   assert.equal(audit.verifiedImplementationCount, 0);
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
 });
@@ -952,7 +952,64 @@ test("four further Apple official HIG critical topics are source-specific, not p
     .guidelineReviewEvidence[0].includes("collection group"));
   assert.ok(tracker.topics.find(t=>t.title==="Machine learning")
     .guidelineReviewEvidence[0].includes("limitations"));
-  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,57);
-  assert.equal(tracker.meta.platformsAssessed,171);
+  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,68);
+  assert.equal(tracker.meta.platformsAssessed,204);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
+});
+
+test("11 remaining Critical Apple primary articles and collection indices have distinct tri-platform review decisions", () => {
+  const names = [
+    "Foundations", "Dark Mode", "Charting data", "Feedback", "Components",
+    "Layout and organization", "Lists and tables", "Split views",
+    "Menus", "Toolbars", "Selection and input"
+  ];
+  const indexPages = new Set(["Foundations","Components","Layout and organization","Selection and input"]);
+  assert.equal(new Set(names).size, 11);
+  for (const name of names) {
+    const item = tracker.topics.find(t => t.title === name);
+    assert.ok(item, name);
+    assert.equal(item.priority, "Critical", name);
+    assert.equal(item.guidelineReview, "reviewed", name);
+    assert.equal(item.guidelineReviewEvidence.length, 3, name);
+    assert.ok(item.guidelineReviewEvidence[0].includes(item.markdown), name);
+    assert.ok(item.guidelineReviewEvidence[0].includes("2026-11-19"), name);
+    assert.equal(item.guidelineReviewEvidence[0].includes("collectionGroup index"),
+      indexPages.has(name), "Do not classify a category index as a standalone implemented component: " + name);
+    for (const p of ["web", "ios", "android"]) {
+      assert.equal(item.platformApplicability[p].state, "applicable", name + "/" + p);
+      assert.ok(item.platformApplicability[p].rationale.length > 120, name + "/" + p);
+      assert.deepEqual(item[p + "Evidence"], [], name + "/" + p);
+    }
+    assert.equal(item.implementation, "not_verified", name);
+    assert.deepEqual(item.releaseEvidence, [], name);
+  }
+  assert.equal(tracker.topics.filter(t => t.priority === "Critical" &&
+    t.guidelineReview !== "reviewed").length, 0);
+  assert.equal(tracker.topics.filter(t => t.guidelineReview === "reviewed").length, 68);
+  assert.equal(tracker.meta.platformsAssessed, 204);
+  assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
+});
+
+test("real 12/12 read-only live rendered observations remain scoped to partial Accessibility and Layout evidence", () => {
+  const publicRun = 44540795085;
+  const audit = tracker.meta.productionEvidenceAudit;
+  assert.equal(audit.distinctObservedPublicLiveRuns.length, 4);
+  assert.equal(new Set(audit.distinctObservedPublicLiveRuns).size, 4);
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(publicRun));
+  for (const name of ["Accessibility", "Layout"]) {
+    const topic = tracker.topics.find(t => t.title === name);
+    const evidence = topic.webEvidence.filter(e => e.jobId === 135618272024);
+    assert.equal(evidence.length, 1, name);
+    assert.equal(evidence[0].verificationLevel, "partial", name);
+    assert.equal(evidence[0].jobConclusion, "success", name);
+    assert.ok(evidence[0].runUrl.endsWith(String(publicRun)), name);
+    assert.ok(evidence[0].artifactUrl.endsWith("/14539093077"), name);
+    assert.equal(evidence[0].observedLiveSourceSha, null, name);
+    assert.equal(evidence[0].checkedRoutes.length, 3, name);
+    assert.ok(evidence[0].checkedJourneys.some(x => x.includes("12 read-only")), name);
+    assert.equal(topic.implementation, "not_verified", name);
+    assert.deepEqual(topic.releaseEvidence, [], name);
+  }
+  assert.equal(audit.recordedPartialTopicPlatformObservations, 6);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
