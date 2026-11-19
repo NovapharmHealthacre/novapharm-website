@@ -10,6 +10,7 @@ const config = JSON.parse(read("native/novapharm-intelligence-mobile/app.json"))
 const pkg = JSON.parse(read("native/novapharm-intelligence-mobile/package.json"));
 const app = read("native/novapharm-intelligence-mobile/App.tsx");
 const form = read("native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx");
+const maps = read("native/novapharm-intelligence-mobile/MapsResearchScreen.tsx");
 const tokens = read("native/novapharm-intelligence-mobile/appearance.ts");
 
 function paletteOf(name) {
@@ -96,7 +97,20 @@ test("Maps research stays accessible after the light/dark appearance merge witho
   assert.match(app, /type Screen = .*"maps".*"account"/);
   assert.match(app, /selected === "research" \|\| selected === "maps" \|\| selected === "account"/);
   assert.match(app, /\{ screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" \}/);
-  assert.match(app, /screen === "maps" && <MapsResearchScreen \/>/);
+  assert.match(app, /screen === "maps" && <MapsResearchScreen darkMode=\{darkMode\} \/>/);
   assert.match(app, /useColorScheme\(\) === "dark"/);
   assert.doesNotMatch(app, /navigator\.geolocation|requestForegroundPermissions|expo-location/);
+});
+
+test("offline reference Maps follows system appearance without shipping an embedded map or patient location", () => {
+  assert.match(maps, /darkMode = false/);
+  assert.match(maps, /const palette = darkMode \? mobileDarkPalette : mobileLightPalette/);
+  assert.match(maps, /useMemo\(\(\) => createStyles\(palette\), \[darkMode\]\)/);
+  assert.match(maps, /backgroundColor: palette.primary/);
+  assert.match(maps, /color: palette.secondary/);
+  assert.match(maps, /borderColor: palette.border/);
+  assert.equal((maps.match(/placeholderTextColor=\{palette.tertiary\}/g) ?? []).length, 3);
+  assert.match(maps, /accessibilityLiveRegion="polite"/);
+  assert.match(maps, /https:\/\/maps\.apple\.com\/\?ll=/);
+  assert.doesNotMatch(maps, /fetch\(|requestForegroundPermissions|navigator\.geolocation|client_secret|access_token/);
 });
