@@ -32,6 +32,9 @@ test("portal and Intelligence Docker builds accept only an optional public Maps 
   }
   const map = read("apps/portal/components/governed-healthcare-map.tsx");
   const proxy = read("apps/portal/proxy.ts");
+  const azure = read(".github/workflows/azure-deploy.yml");
+  assert.ok(azure.includes('NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}'));
+  assert.ok(azure.indexOf("NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}") < azure.indexOf("RELEASE_VERSION=\"$EXPECTED_SHA\" npm run azure:package"));
   assert.ok(map.includes("process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN"));
   assert.ok(proxy.includes("Boolean(process.env.NEXT_PUBLIC_APPLE_MAPS_TOKEN)"));
   assert.doesNotMatch(proxy, /process\.env\["NEXT_PUBLIC_APPLE_MAPS_TOKEN"\]/);
