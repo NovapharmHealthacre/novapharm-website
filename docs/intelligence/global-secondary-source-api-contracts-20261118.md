@@ -66,3 +66,20 @@ audit/rollback and publish acceptance succeed. Never use a CI pass as proof of p
 - NHSBSA licensing and fair-use obligations: https://opendata.nhsbsa.net/pages/terms-and-conditions
 - EMA PMS **beta** remains a separate onboarding/terms gate, not enabled here:
   https://plm-portal.ema.europa.eu/Guidance/article/KA-02917/en-us
+
+## GitHub-only production publication isolation
+
+This secondary national-source contract is **private research source**, not a contact,
+marketing, billing or customer publication. A main-branch merge of these files must
+not dispatch an AWS contact release or overwrite public GitHub Pages. Both the
+contact dispatcher and the public publisher independently classify all six source
+and contract paths as private; the three publication-guard files are neutral only.
+A guard repair must include a protected source-document or contract change, so its
+own first-parent diff is recognised as private; guard-only workflow changes do not
+silently suppress genuine public publication.
+
+Run `node --test scripts/aws/contact-release-routing.test.mjs` alongside this
+module's source-contract tests. The test requires exact file-path coverage and
+rejects accidental suppression of real public contact, Nutraxin and website
+publication paths. Owner approval and separate rights/staging validation remain
+required for any real pharmaceutical-data ingestion.
