@@ -213,16 +213,25 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
           ? body.split("\n").filter(line => /^#{1,6}\s+/.test(line))
           : [];
         const hasHeading = !markdownPage || headings.some(line => /^#\s+\S/.test(line));
-        const sectionFound = !anchor || headings.some(line =>
-          normalizeHeading(line.replace(/^#{1,6}\s+/, "")) === normalizeHeading(anchor));
+        const hasSectionHeading = (fragment) => headings.some(line =>
+          normalizeHeading(line.replace(/^#{1,6}\s+/, "")) === normalizeHeading(fragment));
+        const sectionFound = !anchor || hasSectionHeading(anchor);
+        const recordedDrift = tracker.inPageAnchors.find(entry => entry.url === url)?.auditFinding;
+        const replacement = recordedDrift?.replacementReference
+          ? validatedAppleAuditTarget(recordedDrift.replacementReference) : null;
+        const replacementFound = !sectionFound && replacement &&
+          replacement.fetchedUrl === fetchedUrl && hasSectionHeading(replacement.anchor);
         const state = !approvedHost || (response.status >= 300 && response.status < 400) ? "redirect_unverified"
           : response.status === 404 || response.status === 410 ? "broken"
           : !response.ok ? "unverified_http"
           : !hasHeading ? "unexpected_content"
+          : !sectionFound && replacementFound ? "source_anchor_drift"
           : !sectionFound ? "anchor_unverified" : "reachable";
         // Preserve only status, hashes and headings, not full copyrighted pages.
         return { url, fetchedUrl, finalUrl: response.url, anchor: anchor || null,
-          sectionFound, state, status: response.status,
+          sectionFound, replacementFound: Boolean(replacementFound),
+          replacementReference: replacementFound ? recordedDrift.replacementReference : null,
+          state, status: response.status,
           contentSha256: body ? createHash("sha256").update(body).digest("hex") : null,
           bodyBytes: Buffer.byteLength(body),
           headings: headings.slice(0, 40).map(line => line.slice(0, 180)) };
@@ -241,12 +250,22 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
     scope: "210 Apple URL and section-anchor reachability checks; not full article review or application conformance",
     expected: 210,
     reachable: results.filter(x => x.state === "reachable").length,
+    originalAnchorDrift: results.filter(x => x.state === "source_anchor_drift").length,
     results
   };
   writeFileSync(dir + "/report.json", JSON.stringify(report, null, 2) + "\n");
   assert.equal(results.length, 210);
-  assert.deepEqual(results.filter(x => x.state !== "reachable"), [],
-    "Some original Apple URLs or article section anchors require human review");
+  const knownDrift = results.filter(x => x.state === "source_anchor_drift");
+  const recorded = tracker.inPageAnchors.filter(x => x.auditFinding?.state === "original_anchor_missing");
+  assert.equal(recorded.length, 1, "Only the observed owner-workbook Siri anchor may drift");
+  assert.deepEqual(knownDrift.map(x => x.url).sort(),
+    recorded.filter(x => knownDrift.some(y => y.url === x.url)).map(x => x.url).sort(),
+    "Never allow source-drift exceptions without exact registered evidence");
+  assert.deepEqual(results.filter(x => !["reachable", "source_anchor_drift"].includes(x.state)), [],
+    "Unexpected Apple URLs or article anchors still require human review");
+  assert.equal(results.filter(x => x.state === "reachable").length + knownDrift.length, 210,
+    "All 210 originals must be reachable or transparently identified as changed");
+  assert.ok(recorded[0].auditFinding.replacementReference, "Known source drift requires an official replacement");
 });
 
 
