@@ -137,7 +137,7 @@ countries and 12 global/EU source candidates, and the country-expansion
 proposal contributes 24 additional research-only countries.
 
 **Verified source-code state:** 101/101 source candidates have worklist
-entries, 6 official publisher terms pages are linked, **0/101 source grants
+entries, 7 official publisher terms pages are linked, **0/101 source grants
 are independently accepted**, 0 ingested datasets are accepted, and 0
 source candidates are certified customer-live. A link to permissive
 publisher terms is not evidence of field-specific rights, a valid signed
@@ -147,16 +147,16 @@ grant, a working API, a configured production pipeline or tenant approval.
 |---|---|---|---|
 | United States — FDA openFDA/Drugs@FDA | https://open.fda.gov/terms/ | Most openFDA materials described as CC0/public domain; some copyrightable third-party submissions and warned fields are excluded | Exact endpoint, response-field copyright screen, accepted uses, publisher credit and rate limits |
 | Singapore — HSA registered therapeutic products | https://developers.data.gov.sg/open-data-licence , https://data.gov.sg/privacy-and-terms , https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view | Singapore Open Data Licence v1.0 permits commercial and non-commercial reuse with mandatory attribution; excludes personal data, third-party rights, patents, trademarks and design rights. API access also has separate terms and limits | Bind dataset ID and observed version, exact permitted fields and required attribution; inspect excluded content, current API restrictions and independently signed production rights decision |
+| European Union / EEA — EMA PMS Public API **beta** | https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf ; https://api.pms.ema.europa.eu/public/v1/swagger | EMA's published terms dated **12 June 2026** restrict beta use to familiarisation, testing and analytical exploration — **not business purposes**. EMA registration is required, and its terms require **prior authorisation** to sell, sublicense, incorporate or redistribute content after full release; source data is reference-only and national authorities prevail | **Do not connect to NovaPharm commercial or customer services.** Verify official transition out of beta, obtain written EMA permission where required, complete scope/field review and signed grant before considering ingestion |
 | Spain — AEMPS CIMA REST | https://sede.aemps.gob.es/datos-abiertos/ | Official open-data listing permits use and reuse, subject to conditions such as attribution; lists CIMA REST | Pin CIMA endpoint/data subset and relevant AEMPS legal notice; confirm commercial AI/derivative, cache and redistribution terms |
 | Canada — Health Canada DPD | https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe | Official DPD dataset is listed under the Open Government Licence — Canada; this does not prove every API response/third-party field is in scope | Match API response to licensed dataset version and exact fields; attribution, limitations and independent source approval |
 | United Kingdom — NHSBSA EPD with SNOMED | https://opendata.nhsbsa.net/pages/terms-and-conditions and https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code | Dataset-level licence applies (generally OGL), mandatory NHSBSA attribution and fair-use API access; BNF/SNOMED/dm+d may involve separate rights | Verify exact resource and version, third-party terminology reuse, checksum, immutable ingestion evidence and independent acceptance |
 | Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
 
-For the other 95 source candidates, the worklist explicitly states
+For the other 94 source candidates, the worklist explicitly states
 `PUBLIC_TERMS_NOT_YET_SCREENED`; none may inherit terms from a different
-publisher or country. These six screens are selected because relevant
-bounded source-adapter/bridge code already exists. They are **not**
-six activated country integrations.
+publisher or country. These seven screens include sources with bounded preview code and the EMA PMS beta with no approved commercial connector. They are **not**
+seven activated country integrations.
 
 ### Per-source activation acceptance, never inferred from an open notice
 
@@ -180,6 +180,28 @@ six activated country integrations.
 
 This prescreen never modifies the source registry's `not-reviewed` /
 `candidate-only` fields or the owner production constraints.
+
+### EMA PMS beta — explicit commercial-use blocker
+
+The EMA `PMS Public API – Terms and Conditions`, published 12 June 2026,
+state that beta API usage is for familiarisation, testing and analytical
+exploration **and must not be used for business purposes**. Later production
+use to sell, sublicense, incorporate or redistribute content requires
+**EMA prior authorisation**. The API's medicine data is not formally
+validated by individual national authorities and the national record prevails
+if entries differ. The terms also require registration and acceptance of
+the EMA API general terms.
+
+Until independent evidence of a permitted use and transition from beta,
+**commercial customer ingestion is blocked**, regardless of whether
+the public Swagger schema or an HTTP call is reachable. This is the
+European Union / EEA aggregate publisher, **not another distinct country**.
+
+Official published terms (12 June 2026):
+https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf
+
+Official beta announcement:
+https://plm-portal.ema.europa.eu/Guidance/article/KA-02917/en-us
 
 ### Historical official upstream connectivity evidence (source-only CI)
 
