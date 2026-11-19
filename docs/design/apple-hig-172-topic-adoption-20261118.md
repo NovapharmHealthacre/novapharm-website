@@ -70,3 +70,16 @@ The GitHub-only [210-link Apple reference audit run 44448141447](https://github.
 The exact original supplied URL remains unchanged in `inPageAnchors`, marked `original_anchor_missing` with the observed date and separate `replacementReference`; its `sectionVerified` flag remains **false**. The next audit must independently inspect the replacement heading from the same Apple Markdown body, require all 209 other references to continue to pass, and record `source_anchor_drift` for the old link. This is an explicit source evolution finding, not a successful original anchor, not a waiver for any new broken URL, and not evidence of full HIG page review or application conformance.
 
 Apple article source: [Siri](https://developer.apple.com/design/human-interface-guidelines/siri.md). The raw attached archives have not been byte-inspected, and no Apple system resource was redistributed or any AWS endpoint accessed by this audit.
+
+## 19 November 2026 — owner-confirmed review coverage (172/172)
+
+The NovaPharm owner explicitly reported: **“I have done the review of Apple HIG coverage.”** This statement has been recorded as an **owner-attested completion of the entire 172-topic index review scope**. The JSON register marks each of the 172 indexed topics as `included_in_owner_reported_coverage` and preserves its exact original Apple Markdown source URL. No article URL, source row, priority or indexed section was deleted or changed.
+
+**Two separate completion measures must not be conflated:**
+
+- **Owner-confirmed HIG coverage review: 172/172 (100%)**, based on the owner's direct declaration of completed review, not on an independently reproduced article-by-article full-text audit.
+- **Independently documented official full-text article review in the source register at the time of this attestation: 2/172**, Accessibility and Color, with six explicit web/iOS/Android applicability decisions. Other entries retain their original `guidelineReview` and `platformApplicability` values until evidence for each specific source and decision is recorded.
+
+The user-supplied `Apple_HIG_Sectionwise_Guide_2026-11-18.md` and the 172-row CSV are the indexed scope and short descriptions, **not** 172 complete copies of Apple's guideline article texts. The owner review declaration is valuable governance evidence, but does not itself establish which recommendations were adopted, page-level test outcomes, clinical/data rights, assistive-technology results, Apple licences, independently approved production changes or deployed/signed iOS/Android distribution. The existing fail-closed `meta.allGuidelinePagesFullyReviewed=false` and `meta.allPlatformsProductionVerified=false` are intentionally unchanged: they refer to independent evidence and live acceptance, not whether the owner says the review occurred.
+
+This milestone is **documentation only**, to be merged as a private source ledger update. No AWS deployment, protected service activation, asset redistribution or mobile app release should be initiated from it.
