@@ -30,7 +30,8 @@ let package = Package(
                 "NovaComputePlan.swift",
                 "NovaSparseCircuitReader.swift",
                 "NovaSparseCircuitResearchView.swift",
-                "NovaSignalsResearch.swift"
+                "NovaSignalsResearch.swift",
+                "NovaMapKitView.swift"
             ]
         ),
         .testTarget(
