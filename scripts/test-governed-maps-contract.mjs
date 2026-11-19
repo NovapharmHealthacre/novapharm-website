@@ -14,7 +14,7 @@ test("only the verified protected geography route opts into the MapKit JS CSP ex
   assert.match(policy, /input\.mapKitJs \?/);
   assert.match(policy, /wasm-unsafe-eval/);
   assert.match(proxy, /\/portal\/executive-platform\/medicines-intelligence\/geography\//);
-  assert.match(proxy, /Boolean\(process\.env\.NEXT_PUBLIC_APPLE_MAPS_TOKEN\)/);
+  assert.ok(proxy.includes('Boolean(process.env["NEXT_PUBLIC_APPLE_MAPS_TOKEN"])'));
   assert.match(proxy, /mapKitJs,/);
   assert.match(policy, /geolocation=\(\)/);
 });
