@@ -127,6 +127,54 @@ test("NovaPharm design DNA includes every original Apple archive and all three s
 });
 
 
+/** Never fetch a URL directly from repository JSON. Resolve a strictly
+ * allowlisted official Apple route; do not follow redirects to any host. */
+function validatedAppleAuditTarget(raw) {
+  assert.equal(typeof raw, "string");
+  const input = new URL(raw);
+  assert.equal(input.protocol, "https:", "Apple audit only allows HTTPS");
+  assert.equal(input.username, "");
+  assert.equal(input.password, "");
+  assert.equal(input.port, "");
+  assert.equal(input.search, "", "No arbitrary query string accepted");
+  const main = input.hostname === "developer.apple.com";
+  const imdf = input.hostname === "register.apple.com" && input.pathname === "/resources/imdf/";
+  const article = main && /^\/design\/human-interface-guidelines\/[a-z0-9-]+(?:\.md)?$/.test(input.pathname);
+  const service = main && /^\/documentation\/(?:mapkit|mapkitjs)$/.test(input.pathname);
+  const resources = main && new Set([
+    "/design/resources/", "/fonts/", "/sf-symbols/", "/icon-composer/",
+    "/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels"
+  ]).has(input.pathname);
+  assert.ok(article || service || resources || imdf, "Unapproved Apple audit path");
+  assert.ok(!input.hash || article, "Only guideline articles may have anchors");
+  const anchor = input.hash ? decodeURIComponent(input.hash.slice(1)) : "";
+  assert.ok(!anchor || /^[A-Za-z0-9-]{1,120}$/.test(anchor), "Invalid section anchor");
+  const pathname = anchor && !input.pathname.endsWith(".md") ? input.pathname + ".md" : input.pathname;
+  const fetchedUrl = input.origin + pathname;
+  return { fetchedUrl, anchor };
+}
+
+test("remote audit has a strict outbound host/path allowlist and blocks redirects", () => {
+  const ok = [
+    "https://developer.apple.com/design/human-interface-guidelines/accessibility.md",
+    "https://developer.apple.com/design/human-interface-guidelines/typography#Using-system-fonts",
+    "https://developer.apple.com/documentation/mapkit",
+    "https://developer.apple.com/design/resources/",
+    "https://register.apple.com/resources/imdf/"
+  ];
+  for (const url of ok) assert.ok(validatedAppleAuditTarget(url).fetchedUrl.startsWith("https://"));
+  for (const url of [
+    "https://evil.example/malicious",
+    "http://developer.apple.com/design/human-interface-guidelines/accessibility.md",
+    "https://developer.apple.com.evil.example/design/human-interface-guidelines/accessibility.md",
+    "https://developer.apple.com@evil.example/design/human-interface-guidelines/accessibility.md",
+    "https://developer.apple.com:1234/design/human-interface-guidelines/accessibility.md",
+    "https://developer.apple.com/design/human-interface-guidelines/../../api/",
+    "https://developer.apple.com/design/human-interface-guidelines/accessibility.md?redirect=https://evil.example",
+    "https://register.apple.com/resources/private/"
+  ]) assert.throws(() => validatedAppleAuditTarget(url), "Untrusted outbound URL must fail closed");
+});
+
 test("manual remote Apple link reachability audit (not article review)", { skip: process.env.HIG_VERIFY_LIVE_LINKS !== "1", timeout: 780000 }, async () => {
   // Explicit workflow_dispatch only. A 200 response or page hash is never
   // evidence of full Apple guideline interpretation or platform readiness.
@@ -146,17 +194,17 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
   for (let offset = 0; offset < paths.length; offset += 4) {
     const batch = paths.slice(offset, offset + 4);
     const responses = await Promise.all(batch.map(async url => {
-      const requested = new URL(url);
-      const anchor = requested.hash ? decodeURIComponent(requested.hash.slice(1)) : "";
-      const fetchedUrl = anchor ? new URL(requested.pathname + ".md", requested.origin).toString() : url;
+      let fetchedUrl;
+      let anchor;
       try {
+        ({ fetchedUrl, anchor } = validatedAppleAuditTarget(url));
         const response = await fetch(fetchedUrl, {
-          redirect: "follow",
+          redirect: "manual",
           headers: { Accept: "text/markdown, text/plain;q=0.9, */*;q=0.8" },
           signal: AbortSignal.timeout(12000)
         });
         const finalUrl = new URL(response.url);
-        const approvedHost = ["developer.apple.com", "register.apple.com"].includes(finalUrl.hostname);
+        const approvedHost = finalUrl.origin === new URL(fetchedUrl).origin;
         const markdownPage = fetchedUrl.endsWith(".md");
         const body = response.ok ? await response.text() : "";
         if (!response.ok) await response.body?.cancel();
@@ -167,7 +215,7 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
         const hasHeading = !markdownPage || headings.some(line => /^#\s+\S/.test(line));
         const sectionFound = !anchor || headings.some(line =>
           normalizeHeading(line.replace(/^#{1,6}\s+/, "")) === normalizeHeading(anchor));
-        const state = !approvedHost ? "unexpected_redirect"
+        const state = !approvedHost || (response.status >= 300 && response.status < 400) ? "redirect_unverified"
           : response.status === 404 || response.status === 410 ? "broken"
           : !response.ok ? "unverified_http"
           : !hasHeading ? "unexpected_content"
