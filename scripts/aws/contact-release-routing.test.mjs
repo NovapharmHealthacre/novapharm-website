@@ -1040,6 +1040,7 @@ test("source-only Model Microscope paths never trigger unrelated AWS contact or 
 test("offline country appearance validation and release classifiers cannot dispatch public AWS contact", () => {
   const privateOnly = [
     "native/novapharm-intelligence-mobile/tests/mobile-country-appearance.test.mjs",
+    "native/novapharm-intelligence-mobile/tests/mobile-ci-reproducibility.test.mjs",
     "native/novapharm-intelligence-mobile/package-lock.json",
     ".github/workflows/dispatch-approved-aws-contact-release.yml",
     ".github/workflows/publish-aws-contact-production.yml"
