@@ -723,7 +723,8 @@ test("all 101-country scope proposal paths remain private-only in both AWS/publi
     const source = get(file);
     const classifier = source.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
     assert.ok(classifier, file + " must have a real changed-file Bash case");
-    const privatePaths = new Set(classifier.split("|"));
+    assert.ok(classifier.trim().endsWith(")"), file + " must close the exact private Bash case arm");
+    const privatePaths = new Set(classifier.trim().replace(/\)$/u, "").split("|"));
     for (const path of scopePaths) {
       assert.ok(privatePaths.has(path), file + " would publish scope-only research: " + path);
     }
