@@ -34,6 +34,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -58,6 +59,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -72,6 +74,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Scientific Centre of Drug and Medical Technology Expertise",
+        "referenceUrl": "https://pharm.am/index.php/en/register-of-medicines",
+        "leadType": "national-medicinal-products-register",
+        "caveat": "Register notes packaging, labels and leaflets require separate verification",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -105,6 +115,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -129,6 +140,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -153,6 +165,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -177,6 +190,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -201,6 +215,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -215,6 +230,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "AGEMED",
+        "referenceUrl": "https://apiwww.agemed.gob.bo/api/listautcom",
+        "leadType": "official-registration-list",
+        "caveat": "The AGEMED URL currently presents an HTML daily download listing dated 18 November 2026, not a validated JSON medicine API. Verify downloadable medicine files, schema, access terms, commercial rights and update cadence.",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -229,6 +252,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Botswana Medicines Regulatory Authority",
+        "referenceUrl": "https://www.bomra.co.bw/wpfd_file/human-medicines-registered-medicines-and-b-listed-products/",
+        "leadType": "official-human-medicines-publication",
+        "caveat": "Confirm current edition, download format, completeness, rights and update cadence",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -253,6 +284,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -277,6 +309,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -291,6 +324,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Cambodia Ministry of Health Department of Drugs and Food",
+        "referenceUrl": "https://ddf.moh.gov.kh/public/",
+        "leadType": "official-registration-portal",
+        "caveat": "CamPORS is an online application service, not a verified public product feed",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -305,6 +346,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Cameroon MINSANTE/DPML",
+        "referenceUrl": "https://dpml.cm/repertoireDesAmm/index.php",
+        "leadType": "official-medicine-register-search",
+        "caveat": "Public approved-drugs search; automation/reuse rights not validated",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -338,6 +387,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -362,6 +412,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -386,6 +437,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -410,6 +462,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -424,6 +477,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Costa Rica Ministry of Health",
+        "referenceUrl": "https://www.ministeriodesalud.go.cr/index.php?id=98",
+        "leadType": "official-regulatory-guidance",
+        "caveat": "Regístrelo is a registration process; public approved-products dataset not verified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -438,6 +499,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Autorité Ivoirienne de Régulation Pharmaceutique",
+        "referenceUrl": "https://airp.ci/datapharma/liste-des-medicaments-enregistres",
+        "leadType": "official-medicine-register",
+        "caveat": "Registered medicine list; current licensing and dataset completeness unverified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -462,6 +531,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -476,6 +546,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Cyprus Pharmaceutical Services",
+        "referenceUrl": "https://www.gov.cy/en/service/search-for-medicinal-products-for-human-use/",
+        "leadType": "official-product-search",
+        "caveat": "Registration/access requirements and export terms still need confirmation",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -500,6 +578,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -524,6 +603,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -538,6 +618,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "DIGEMAPS via Dominican Republic Government Open Data",
+        "referenceUrl": "https://www.datos.gov.do/dataset/registro-sanitario-de-productos-farmaceuticos",
+        "leadType": "official-dataset-directory",
+        "caveat": "2018–2026 pharmaceutical registration entries; verify current coverage and licence",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -562,6 +650,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -586,6 +675,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -610,6 +700,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -634,6 +725,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -658,6 +750,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -691,6 +784,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -705,6 +799,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Georgia Ministry of Health pharmaceutical products register",
+        "referenceUrl": "https://pharmacy.moh.gov.ge/Pages/Products.aspx",
+        "leadType": "official-product-search-unverified-transport",
+        "caveat": "Public WebForms/Excel discovery reported; no documented API or reuse rights verified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -729,6 +831,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -753,6 +856,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -777,6 +881,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -791,6 +896,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Guatemala Ministry of Public Health",
+        "referenceUrl": "https://medicamentos.mspas.gob.gt/index.php/servicios/autorizacion-de-productos-farmaceuticos-y-afines/registros-sanitarios",
+        "leadType": "official-registration-guidance",
+        "caveat": "Registration service only; public downloadable medicine catalogue unverified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -815,6 +928,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -829,6 +943,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Icelandic Medicines Agency",
+        "referenceUrl": "https://www.ima.is/published_material/lists/",
+        "leadType": "official-bulk-publication",
+        "caveat": "Verify current portal migration, latest medicinal-product XLSX and reuse terms",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -880,6 +1002,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -904,6 +1027,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -928,6 +1052,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -952,6 +1077,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -976,6 +1102,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1000,6 +1127,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1024,6 +1152,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1048,6 +1177,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1072,6 +1202,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1096,6 +1227,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1110,6 +1242,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Liechtenstein National Administration",
+        "referenceUrl": "https://www.llv.li/de/unternehmen/branchen-berufe-verbaende/gesundheitsberufe-und-heilmittel/arzneimittel/zugelassene-arzneimittel",
+        "leadType": "official-regulatory-guidance",
+        "caveat": "Swissmedic and centrally authorised EU medicine routes have national conditions; no local API established",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1134,6 +1274,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1148,6 +1289,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Caisse nationale de santé",
+        "referenceUrl": "https://cns.public.lu/en/assure/publications/legislations/textes-coordonnes/liste-med-comm.html",
+        "leadType": "official-reimbursement-list",
+        "caveat": "Reimbursed or marketed product scope is not a complete national registration dataset",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1172,6 +1321,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1186,6 +1336,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Malta Medicines Authority via Malta Data Portal",
+        "referenceUrl": "https://portal.data.gov.mt/dataset/medicines-list-authorised-medicines-in-malta",
+        "leadType": "official-dataset-directory",
+        "caveat": "The Malta Data Portal lists a medicinal-products XLS under CC BY 4.0 metadata, but states its catalogue is a work in progress and not an official record without confirmation. Verify Medicines Authority confirmation, licence scope, freshness and downstream reuse.",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1210,6 +1368,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1224,6 +1383,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Mongolia public medicine and medical device registration system",
+        "referenceUrl": "https://pmd.hdc.gov.mn/",
+        "leadType": "official-registry-landing",
+        "caveat": "Landing page advertises registered medicines; verify the exact public route and terms",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1248,6 +1415,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1262,6 +1430,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Myanmar Food and Drug Administration",
+        "referenceUrl": "https://www.fda.gov.mm/?cat=16",
+        "leadType": "official-registration-publications",
+        "caveat": "Official FDA publication pages and some approvals PDFs, not a complete validated product corpus",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1276,6 +1452,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Namibia Medicines Regulatory Council",
+        "referenceUrl": "https://www.nmrc.gov.na/registration",
+        "leadType": "official-regulatory-guidance",
+        "caveat": "Authority confirms Medicines Register but no public downloadable product corpus was verified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1300,6 +1484,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1333,6 +1518,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1357,6 +1543,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1381,6 +1568,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1405,6 +1593,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1429,6 +1618,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1453,6 +1643,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1467,6 +1658,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Panama DNFD",
+        "referenceUrl": "https://faddi.minsa.gob.pa/consultar_tramites/control_principal/",
+        "leadType": "official-registration-search",
+        "caveat": "Confirm approved-public-search terms and whether lawful bulk or API access exists",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1481,6 +1680,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "DINAVISA via Paraguay Government Open Data",
+        "referenceUrl": "https://www.datos.gov.py/dataset/consulta-de-registros-sanitarios",
+        "leadType": "official-dataset-directory",
+        "caveat": "Dataset catalogue is not evidence of a verified medicine-level API or commercial rights",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1505,6 +1712,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1529,6 +1737,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1562,6 +1771,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1586,6 +1796,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1610,6 +1821,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1634,6 +1846,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1658,6 +1871,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1682,6 +1896,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1706,6 +1921,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1720,6 +1936,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Agence sénégalaise de Réglementation Pharmaceutique",
+        "referenceUrl": "https://arp.sn/bases-de-donnees/medicaments-autorises",
+        "leadType": "official-marketing-authorisation-register",
+        "caveat": "Searchable medicine-level authorisations; verify licensing, bulk access and freshness",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1744,6 +1968,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1768,6 +1993,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1792,6 +2018,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1816,6 +2043,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1849,6 +2077,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1882,6 +2111,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1906,6 +2136,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1930,6 +2161,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1954,6 +2186,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -1978,6 +2211,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2002,6 +2236,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2026,6 +2261,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2050,6 +2286,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2064,6 +2301,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Direction de la Pharmacie et du Médicament",
+        "referenceUrl": "https://dpm.tn/medicament/humain/liste-des-medicaments",
+        "leadType": "official-marketing-authorisation-list",
+        "caveat": "Published human-medicines authorisation list; schema and reuse terms unreviewed",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2088,6 +2333,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2112,6 +2358,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2136,6 +2383,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2160,6 +2408,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2193,6 +2442,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2226,6 +2476,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2250,6 +2501,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2274,6 +2526,7 @@
           "integrationStatus": "candidate-only"
         }
       ],
+      "publisherResearchLead": null,
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2288,6 +2541,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Zambia Medicines Regulatory Authority",
+        "referenceUrl": "https://www.zamra.co.zm/services/marketing-authorization/",
+        "leadType": "official-register-directory",
+        "caveat": "Authority links registered-products database; machine URL and reuse rights unverified",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
@@ -2302,6 +2563,14 @@
       "scopeOrigin": "PROPOSED_RESEARCH_COUNTRY",
       "candidateSourceCount": 0,
       "candidateSources": [],
+      "publisherResearchLead": {
+        "publisherName": "Medicines Control Authority of Zimbabwe",
+        "referenceUrl": "https://onlineservices.mcaz.co.zw/onlineregister/Medicines?category=1",
+        "leadType": "official-approved-human-medicines-register",
+        "caveat": "Searchable register; verify extraction permissions, versioning and product scope",
+        "status": "publisher-reference-only-not-integrated",
+        "rightsStatus": "not-reviewed"
+      },
       "datasetAdmission": "not-admitted",
       "commercialAndAiReuseApproved": false,
       "customerLive": false,
