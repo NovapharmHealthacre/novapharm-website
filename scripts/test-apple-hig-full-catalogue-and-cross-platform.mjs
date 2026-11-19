@@ -682,7 +682,9 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.equal(report.independentlyDocumentedArticleReviews, 53);
   assert.equal(report.assessedPlatformDecisions, 159);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
-  assert.equal(report.recordedPartialLiveObservations, 1);
+  assert.equal(report.recordedPartialLiveObservations, 4);
+  assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
+    .map(x => x.sourceRun)).size, 3, "3 genuinely distinct live-origin run receipts");
   assert.equal(report.productionCanBeCertified, false);
   assert.equal(topics.length, 172);
   assert.equal(new Set(topics.map(t => t.sourceRowIndex)).size, 172);
@@ -755,4 +757,35 @@ test("optional read-only public website HTML sample (not HIG compliance)",
     "NOT production HIG acceptance.");
   assert.equal(report.passedRoutes, routes.length,
     "Read-only live HTML sample gaps: see public-origin-sample.json");
+});
+
+test("actual production Capabilities/Oncology rendered screenshots are partial evidence, never a 172-topic release certificate", () => {
+  const audit = tracker.meta.productionEvidenceAudit;
+  for (const [name, expectedCounts] of [["Layout", 2], ["Images", 1]]) {
+    const topic = tracker.topics.find(t => t.title === name);
+    assert.equal(topic.implementation, "not_verified", name);
+    assert.equal(topic.webEvidence.length, expectedCounts, name);
+    assert.deepEqual(topic.iosEvidence, [], name);
+    assert.deepEqual(topic.androidEvidence, [], name);
+    assert.deepEqual(topic.releaseEvidence, [], name);
+    for (const proof of topic.webEvidence) {
+      assert.equal(proof.verificationLevel, "partial", name);
+      assert.equal(proof.jobConclusion, "success", name);
+      assert.ok(isGitHubReceipt(proof.runUrl), name);
+      assert.ok(typeof proof.artifactUrl === "string" && proof.artifactUrl.includes("/artifacts/"), name);
+      assert.ok(proof.checkedJourneys.length >= 2, name);
+      assert.ok(proof.scopeLimits.length >= 2, name);
+      assert.equal(proof.observedLiveSourceSha, null,
+        "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
+    }
+  }
+  const layout = tracker.topics.find(t => t.title === "Layout");
+  assert.ok(layout.webEvidence.some(e => e.runUrl.endsWith("44532249980")));
+  assert.ok(layout.webEvidence.some(e => e.runUrl.endsWith("44532250088")));
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(44528135812));
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(44532249980));
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(44532250088));
+  assert.equal(audit.recordedPartialTopicPlatformObservations, 4);
+  assert.equal(audit.verifiedImplementationCount, 0);
+  assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
 });
