@@ -1225,3 +1225,39 @@ test("nine original Apple HIG native system/media article reviews preserve platf
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
+
+test("native iOS and Android prototypes do not count as shipped HIG production receipts", () => {
+  const applePkg = read("native/novapharm-intelligence-apple/Package.swift");
+  const appleReadme = read("native/novapharm-intelligence-apple/README.md");
+  const androidGradle = read("native/novapharm-intelligence-android/app/build.gradle.kts");
+  const androidManifest = read("native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml");
+  const androidReadme = read("native/novapharm-intelligence-android/README.md");
+  const expoConfig = JSON.parse(read("native/novapharm-intelligence-mobile/app.json"));
+  const expoPackage = JSON.parse(read("native/novapharm-intelligence-mobile/package.json"));
+  const expoReadme = read("native/novapharm-intelligence-mobile/README.md");
+
+  // Real source audit: these are reviewable package/app candidates, not
+  // evidence of signed distribution, tested physical devices or customer login.
+  assert.match(applePkg, /\\.library\\(name:\\s*"NovaMLApple"/);
+  assert.match(applePkg, /\\.iOS\\(\\.v17\\)/);
+  assert.match(appleReadme, /not\\*\\* a signed|not a signed/i);
+  assert.match(androidGradle, /applicationId\\s*=\\s*"com\\.novapharm\\.intelligence\\.research"/);
+  assert.match(androidGradle, /versionName\\s*=\\s*"0\\.1\\.0-research"/);
+  assert.doesNotMatch(androidManifest, /<uses-permission\\b[^>]*android:name="android\\.permission\\.INTERNET"/i);
+  assert.match(androidManifest, /android:allowBackup="false"/);
+  assert.match(androidManifest, /android:usesCleartextTraffic="false"/);
+  assert.match(androidReadme, /not a signed Play Store release/i);
+  assert.equal(expoPackage.private, true);
+  assert.equal(expoConfig.expo?.ios?.supportsTablet, true);
+  assert.equal(expoConfig.expo?.android?.edgeToEdgeEnabled, true);
+  assert.equal(Boolean(expoConfig.expo?.ios?.bundleIdentifier), false,
+    "A production iOS bundle identity requires a separate signed-app release review");
+  assert.equal(Boolean(expoConfig.expo?.android?.package), false,
+    "An Android app ID/signing rollout needs an independent release gate");
+  assert.match(expoReadme, /Not a signed IPA\\/APK\\/AAB/i);
+
+  assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0,
+    "Native library/prototype source cannot certify shipped iOS/Android HIG features");
+  assert.equal(ownerProductionConstraints.productionSignoff, "not_granted");
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
