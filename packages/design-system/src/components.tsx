@@ -5,7 +5,7 @@ import type {
   ReactNode,
 } from "react";
 import React from "react";
-import { cloneElement, isValidElement } from "react";
+import { cloneElement, isValidElement, useId } from "react";
 
 type LinkItem = Readonly<{ href: string; label: string; current?: boolean }>;
 type StatusTone = "neutral" | "positive" | "warning" | "critical";
@@ -15,6 +15,10 @@ function classNames(...values: Array<string | false | null | undefined>): string
 }
 
 export const componentRegistry = Object.freeze([
+  "group-box",
+  "collection-view",
+  "split-view",
+  "disclosure",
   "navigation",
   "mega-menu",
   "breadcrumbs",
@@ -40,6 +44,58 @@ export const componentRegistry = Object.freeze([
   "audit-history",
   "document-viewer",
 ] as const);
+
+
+/** A compact, logically related region. Avoid nested bordered boxes; use whitespace within. */
+export function GroupBox({ title, description, headingLevel = 3, variant = "outlined", wide = false, id, children }: Readonly<{
+  title?: string;
+  description?: string;
+  headingLevel?: 2 | 3 | 4;
+  variant?: "outlined" | "subtle" | "plain";
+  wide?: boolean;
+  id?: string;
+  children: ReactNode;
+}>) {
+  const generatedId = useId();
+  const headingId = id ? `${id}-heading` : generatedId;
+  const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
+  const className = classNames("np-hig-box", `np-hig-box--${variant}`, wide && "np-hig-box--wide");
+  const content = <>
+    {title ? <Heading className="np-hig-box__heading" id={headingId}>{title}</Heading> : null}
+    {description ? <p className="np-hig-box__description">{description}</p> : null}
+    <div className="np-hig-box__content">{children}</div>
+  </>;
+  return title ? <section id={id} className={className} aria-labelledby={headingId}>{content}</section>
+    : <div id={id} className={className}>{content}</div>;
+}
+
+/** An ordered, responsive visual collection; source order remains keyboard and screen-reader order. */
+export function CollectionView({ title, items }: Readonly<{
+  title: string;
+  items: readonly Readonly<{ id: string; content: ReactNode }>[];
+}>) {
+  const id = useId();
+  return <section aria-labelledby={id}>
+    <h2 id={id}>{title}</h2>
+    <ul className="np-hig-collection">{items.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
+  </section>;
+}
+
+/** Pane order remains stable when narrow viewports collapse to one column. */
+export function SplitView({ label, leading, children }: Readonly<{ label: string; leading: ReactNode; children: ReactNode }>) {
+  return <section className="np-hig-split-view" aria-label={label}>
+    <div className="np-hig-split-view__leading">{leading}</div>
+    <div className="np-hig-split-view__primary">{children}</div>
+  </section>;
+}
+
+/** Native details retains progressive disclosure even when JavaScript is unavailable. */
+export function Disclosure({ summary, children, open = false }: Readonly<{ summary: string; children: ReactNode; open?: boolean }>) {
+  return <details className="np-hig-disclosure" open={open}>
+    <summary>{summary}</summary>
+    <div className="np-hig-disclosure__content">{children}</div>
+  </details>;
+}
 
 export function SkipLink({ href = "#main-content", children = "Skip to main content" }: Readonly<{ href?: string; children?: ReactNode }>) {
   return <a className="np-skip-link" href={href}>{children}</a>;
@@ -119,16 +175,33 @@ export function ProductExplorer({ label, query, onQueryChange, filters, results,
   return <section className="np-product-explorer" aria-label={label}><SearchField label={`Search ${label}`} value={query} onChange={onQueryChange} />{filters ? <div className="np-filter-row">{filters}</div> : null}<p className="np-result-count" role="status" aria-live="polite">{resultCount} results</p><div className="np-product-results">{results}</div></section>;
 }
 
-export function DataTable({ caption, columns, rows }: Readonly<{
+export function DataTable({ caption, columns, rows, emptyMessage = "No records to display." }: Readonly<{
   caption: string;
   columns: readonly Readonly<{ key: string; label: string; numeric?: boolean }>[];
   rows: readonly Readonly<Record<string, ReactNode>>[];
+  emptyMessage?: string;
 }>) {
-  return <div className="np-table-scroll" tabIndex={0} role="region" aria-label={`${caption}, scrollable table`}><table className="np-data-table"><caption>{caption}</caption><thead><tr>{columns.map((column) => <th key={column.key} scope="col" className={column.numeric ? "np-numeric" : undefined}>{column.label}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column, columnIndex) => columnIndex === 0 ? <th key={column.key} scope="row">{row[column.key]}</th> : <td key={column.key} className={column.numeric ? "np-numeric" : undefined}>{row[column.key]}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="np-table-scroll" tabIndex={0} role="region" aria-label={`${caption}, scrollable table`}>
+    <table className="np-data-table">
+      <caption>{caption}</caption>
+      <thead><tr>{columns.map((column) => <th key={column.key} scope="col" className={column.numeric ? "np-numeric" : undefined}>{column.label}</th>)}</tr></thead>
+      <tbody>{rows.length ? rows.map((row, index) => <tr key={index}>
+        {columns.map((column, columnIndex) => columnIndex === 0
+          ? <th key={column.key} scope="row">{row[column.key]}</th>
+          : <td key={column.key} className={column.numeric ? "np-numeric" : undefined}>{row[column.key]}</td>)}
+      </tr>) : <tr><td colSpan={Math.max(1, columns.length)}>{emptyMessage}</td></tr>}</tbody>
+    </table>
+  </div>;
 }
 
-export function AccessibleChart({ id, title, description, children, table }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode }>) {
-  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}><figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p></figcaption><div aria-hidden="true">{children}</div><details><summary>View data table</summary>{table}</details></figure>;
+export function AccessibleChart({ id, title, description, children, table, source, asOf }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode; source?: string; asOf?: string }>) {
+  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
+    <figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p>
+      {source ? <p className="np-chart__provenance">Source: {source}{asOf ? ` · As at: ${asOf}` : ""}</p> : null}
+    </figcaption>
+    <div aria-hidden="true">{children}</div>
+    <details><summary>View exact values in a table</summary>{table}</details>
+  </figure>;
 }
 
 export function Timeline({ label, items }: Readonly<{ label: string; items: readonly Readonly<{ title: string; description: string; status?: string }>[] }>) {
@@ -136,11 +209,27 @@ export function Timeline({ label, items }: Readonly<{ label: string; items: read
 }
 
 export function FormField({ id, label, hint, error, required, children }: Readonly<{ id: string; label: string; hint?: string; error?: string; required?: boolean; children: ReactNode }>) {
-  const describedBy = [hint ? `${id}-hint` : "", error ? `${id}-error` : ""].filter(Boolean).join(" ") || undefined;
+  // A field wrapper must add its instructions without silently deleting existing
+  // screen-reader references, native required state or other control semantics.
+  const existingProps: Record<string, unknown> = isValidElement<Record<string, unknown>>(children) ? children.props : {};
+  const originalDescription = typeof existingProps["aria-describedby"] === "string"
+    ? existingProps["aria-describedby"].split(/\s+/).filter(Boolean) : [];
+  const describedBy = [...new Set([...originalDescription, ...(hint ? [`${id}-hint`] : []), ...(error ? [`${id}-error`] : [])])].join(" ") || undefined;
+  const isRequired = required ?? (existingProps["required"] === true);
   const control = isValidElement<Record<string, unknown>>(children)
-    ? cloneElement(children, { id, "aria-describedby": describedBy, "aria-invalid": Boolean(error), required })
+    ? cloneElement(children, {
+      id,
+      "aria-describedby": describedBy,
+      "aria-invalid": error ? true : existingProps["aria-invalid"],
+      required: isRequired,
+    })
     : children;
-  return <div className={classNames("np-field", error && "np-field--error")}><label htmlFor={id}>{label}{required ? <span aria-hidden="true"> *</span> : null}</label>{hint ? <p id={`${id}-hint`} className="np-field__hint">{hint}</p> : null}<div data-field-control>{control}</div>{error ? <p id={`${id}-error`} className="np-field__error" role="alert">{error}</p> : null}</div>;
+  return <div className={classNames("np-field", error && "np-field--error")}>
+    <label htmlFor={id}>{label}{isRequired ? <span aria-hidden="true"> *</span> : null}</label>
+    {hint ? <p id={`${id}-hint`} className="np-field__hint">{hint}</p> : null}
+    <div data-field-control>{control}</div>
+    {error ? <p id={`${id}-error`} className="np-field__error" role="alert">{error}</p> : null}
+  </div>;
 }
 
 export function Dialog({ id, title, description, open, children, actions }: Readonly<{ id: string; title: string; description?: string; open: boolean; children: ReactNode; actions?: ReactNode }>) {
@@ -153,11 +242,53 @@ export function Drawer({ title, open, onClose, children }: Readonly<{ title: str
 
 export function Tabs({ label, tabs, activeId, onSelect }: Readonly<{ label: string; tabs: readonly Readonly<{ id: string; label: string; panel: ReactNode }>[]; activeId: string; onSelect?: (id: string) => void }>) {
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
-  return <div className="np-tabs"><div role="tablist" aria-label={label}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={`${tab.id}-panel`} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`}>{active.panel}</div> : null}</div>;
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const current = buttons.findIndex((button) => button === document.activeElement);
+    if (current < 0 || !buttons.length) return;
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    const direction = event.key === "ArrowRight" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + direction + buttons.length) % buttons.length;
+    event.preventDefault();
+    const selected = tabs[next];
+    if (!selected) return;
+    buttons[next]?.focus();
+    onSelect?.(selected.id);
+  };
+  return <div className="np-tabs"><div role="tablist" aria-label={label} onKeyDown={handleKeyDown}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={tab.id === active?.id ? `${tab.id}-panel` : undefined} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`} tabIndex={0}>{active.panel}</div> : null}</div>;
 }
 
-export function SearchField(props: Readonly<{ label: string; value: string; onChange: ChangeEventHandler<HTMLInputElement>; placeholder?: string }>) {
-  return <label className="np-search"><span>{props.label}</span><input type="search" value={props.value} onChange={props.onChange} placeholder={props.placeholder} /></label>;
+/** A scoped, accessible web search control. Suggestions and history remain opt-in to protect private data. */
+export function SearchField(props: Readonly<{
+  label: string;
+  value: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  placeholder?: string;
+  scope?: string;
+  onClear?: () => void;
+  resultsId?: string;
+  resultCount?: number;
+  busy?: boolean;
+}>) {
+  const id = useId();
+  const scopeId = `${id}-scope`;
+  const showClear = Boolean(props.onClear && props.value);
+  return <div className="np-search">
+    <label htmlFor={id}>{props.label}</label>
+    <div className={classNames("np-search__control", showClear && "np-search__control--clear")}>
+      <svg className="np-search__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></svg>
+      <input id={id} type="search" value={props.value} onChange={props.onChange}
+        placeholder={props.placeholder ?? `Search ${props.label.toLowerCase()}`}
+        aria-describedby={props.scope ? scopeId : undefined}
+        aria-controls={props.resultsId}
+        aria-busy={props.busy || undefined}
+        enterKeyHint="search" />
+      {showClear ? <button className="np-search__clear" type="button" onClick={props.onClear} aria-label={`Clear ${props.label.toLowerCase()}`}>Clear</button> : null}
+    </div>
+    {props.scope ? <p className="np-search__scope" id={scopeId}>Search scope: {props.scope}</p> : null}
+    {typeof props.resultCount === "number" ? <p className="np-search__count" role="status" aria-live="polite">{props.resultCount.toLocaleString("en-GB")} {props.resultCount === 1 ? "result" : "results"}</p> : null}
+  </div>;
 }
 
 export function FilterGroup({ legend, children }: Readonly<{ legend: string; children: ReactNode }>) {
@@ -196,3 +327,71 @@ export type ButtonProps = ComponentPropsWithoutRef<"button"> & Readonly<{ tone?:
 export function Button({ tone = "primary", className, ...props }: ButtonProps) {
   return <button {...props} className={classNames("np-button", `np-button--${tone}`, className)} />;
 }
+
+
+/**
+ * Presentational payment-request summary for web checkout.
+ *
+ * This is not Apple's Tap to Pay UI, an NFC reader, or a payment processor.
+ * Consumers pass a server-verified status and their approved PSP action.
+ * Never collect card data or claim payment success inside this component.
+ */
+export type PaymentRequestState = "requested" | "processing" | "paid" | "failed" | "cancelled";
+export type PaymentRequestSummaryProps = Readonly<{
+  merchantName: string;
+  amountMinor: number;
+  currency?: string;
+  state?: PaymentRequestState;
+  reference?: string;
+  actions?: ReactNode;
+}>;
+
+const paymentStates: Readonly<Record<PaymentRequestState, string>> = Object.freeze({
+  requested: "Awaiting payment",
+  processing: "Authorisation in progress",
+  paid: "Payment confirmed",
+  failed: "Payment unsuccessful",
+  cancelled: "Payment cancelled",
+});
+
+export function PaymentRequestSummary({
+  merchantName,
+  amountMinor,
+  currency = "GBP",
+  state = "requested",
+  reference,
+  actions,
+}: PaymentRequestSummaryProps) {
+  const titleId = React.useId();
+  const statusId = React.useId();
+  let amount = "Amount unavailable";
+  if (Number.isSafeInteger(amountMinor) && amountMinor >= 0) {
+    try {
+      const formatter = new Intl.NumberFormat("en-GB", { style: "currency", currency });
+      const minorDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+      amount = formatter.format(amountMinor / 10 ** minorDigits);
+    } catch {
+      // Incorrect currency configuration must never display a fabricated amount.
+    }
+  }
+  return <section className="np-payment-request" aria-labelledby={titleId} data-payment-ui="summary-only">
+    <header className="np-payment-request__header">
+      <p className="np-payment-request__eyebrow">Order payment</p>
+      <h2 id={titleId}>Payment request</h2>
+    </header>
+    <div className="np-payment-request__card">
+      <p className="np-payment-request__merchant">{merchantName}</p>
+      <p className="np-payment-request__amount" aria-label={`Amount requested: ${amount}`}>{amount}</p>
+      {reference ? <p className="np-payment-request__reference">Reference: {reference}</p> : null}
+      <p id={statusId} className="np-payment-request__status" role="status" aria-live="polite">{paymentStates[state]}</p>
+    </div>
+    <p className="np-payment-request__note">
+      Contactless card reading is not supported on this website. Use only the authorised
+      payment route supplied for your order.
+    </p>
+    {actions ? <div className="np-payment-request__actions" aria-describedby={statusId}>{actions}</div> : null}
+  </section>;
+}
+
+// Export action primitives through the existing shared component barrel.
+export * from "./menu-actions";

@@ -33,3 +33,15 @@ test("live Next.js homepage is truthful and uses authentic product references", 
   assert.match(source, /product\.altText/);
   assert.doesNotMatch(source, /lucide|<svg|<video|data-contact-form|data-login-form|Buy now|In stock/);
 });
+
+test("live homepage adopts responsive, accessible image views without rewriting approved artwork", () => {
+  assert.match(source, /import \{ ContentImage \} from "@novapharm\/design-system"/);
+  assert.equal((source.match(/<ContentImage\b/g) ?? []).length, 2, "retain one oncology image and one mapped Nutraxin view family");
+  assert.match(source, /oncology-vial-handling-960\.avif 960w/);
+  assert.match(source, /oncology-vial-handling\.webp 1600w/);
+  assert.match(source, /Representative controlled pharmaceutical laboratory handling/);
+  assert.match(source, /product\.altText/);
+  assert.match(source, /fit="contain"/);
+  assert.match(source, /fit="cover"/);
+  assert.match(source, /In development\. The adjacent graphic is an artistic concept/);
+});

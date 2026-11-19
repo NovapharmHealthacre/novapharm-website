@@ -289,7 +289,6 @@
   .page * { scroll-behavior:auto; transition:none !important; }
 }
 
-
 /* Account-only presentation: never render until a verified session provides trial metadata. */
 .trialOverview {
   margin:18px 0 22px;

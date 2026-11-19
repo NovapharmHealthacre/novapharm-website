@@ -17,7 +17,20 @@
   --nph-deep: #0a101a;
   --nph-radius: 22px;
   --nph-max: 1200px;
-  --nph-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* Native platform typography, with purposeful compact and editorial roles. */
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  --np-type-body-size: 1rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
+  --nph-system: var(--np-type-ui);
   --ink: var(--nph-ink);
   --text: var(--nph-body);
   --muted: var(--nph-muted);
@@ -48,7 +61,7 @@ body, button, input, select, textarea {
 body {
   color: var(--nph-body);
   background: var(--nph-canvas);
-  font-size: 16px;
+  font-size: var(--np-type-body-size, 1rem);
   line-height: 1.62;
   letter-spacing: 0;
 }
@@ -581,4 +594,72 @@ main [id] { scroll-margin-top: calc(var(--header) + 24px); }
   border: 0;
   outline: none;
   box-shadow: none;
+}
+
+/* Shared NovaPharm typography contract. No downloaded Apple font files are embedded. */
+:where(code, kbd, samp, pre, .np-code, [data-typography="mono"]) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+:where(.dense-table, .operational-table, [data-typography="compact"]) {
+  font-family: var(--np-type-compact);
+  font-variant-numeric: tabular-nums;
+}
+:where(table, .metric-value, .data-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+:where(blockquote, .editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--np-type-editorial);
+  font-optical-sizing: auto;
+  font-weight: 400;
+}
+:where(button, input, select, textarea) {
+  font-family: var(--nph-system);
+  font-synthesis: none;
+}
+@media (pointer: coarse) {
+  :where(.button, .btn, [role="button"]) { min-height: 44px; }
+}
+/* Apple HIG typography translated into browser-safe, scalable reading styles. */
+:where(body, main, article, section) { font-optical-sizing: auto; }
+:where(h1, h2, h3, h4, h5, h6) { font-optical-sizing: auto; overflow-wrap: break-word; }
+:where(.prose, .article-body, .policy-body, [data-typography="reading"]) :where(p, li, dd) {
+  max-width: var(--np-type-measure);
+  line-height: var(--np-type-reading-leading);
+}
+:where(.page-hero-copy > p, .section-heading > p, [data-typography="lead"]) {
+  line-height: 1.52;
+}
+:where(figcaption, .source-note, [data-typography="caption"]) {
+  font-size: var(--np-type-caption-size);
+  line-height: var(--np-type-interface-leading);
+}
+:where(table) :where(th, td) { font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+@media (max-width: 640px) {
+  :where(main, article, .prose, .article-body, .policy-body) { min-width: 0; max-width: 100%; }
+  :where(h1, h2, h3, h4, p, li, dd) { overflow-wrap: break-word; }
+  :where(.action-row) { flex-wrap: wrap; }
+}
+@media (prefers-contrast: more) {
+  :where(figcaption, .source-note, .article-meta) { color: var(--nph-ink); }
+}
+
+/* Apple App Store marketing badges: immutable official art, 40px height,
+   10px clear space on all sides, accessible keyboard focus. */
+.np-app-store-badges{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.np-app-store-badges__link{display:inline-flex;flex:none;align-items:center;justify-content:center;margin:10px;line-height:0}
+.np-app-store-badges__link:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-app-store-badges__artwork{display:block;height:40px;width:auto;max-width:none}
+
+/* Attribution is shown only when a verified native App Store listing is advertised. */
+.np-app-store-availability{display:grid;gap:.4rem;margin-block:1rem}
+.np-app-store-availability__legal{display:block;font-size:.75rem;line-height:1.5;color:var(--nph-muted);max-width:58ch}
+
+/* np-hig-breadcrumb-target-v1: keep every linked crumb at least 44px tall.
+   The previous 19px link failed axe target-size at 390px on Insights.
+   Preserve native link semantics, text zoom and keyboard focus. */
+.breadcrumbs span > a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
 }

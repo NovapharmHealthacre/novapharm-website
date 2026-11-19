@@ -138,6 +138,68 @@ jobs:
           fi
           echo "Canonical health and customer identity public route smoke passed; medicine/customer application acceptance remains separate."
 
+      - name: Deny anonymous access to every one of the 22 private workspaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin="https://intelligence.novapharmhealthcare.com"
+          # Source catalogue is the 22-workspace contract. This complete list
+          # is statically cross-checked by the matching source test.
+          workspace_slugs=(
+            'medicine-search'
+            'medicine-overview'
+            'identity'
+            'evidence'
+            'observed-market'
+            'geography'
+            'market-structure'
+            'forecasts'
+            'signals'
+            'medicine-tape'
+            'supply-intelligence'
+            'regulatory-intelligence'
+            'pricing-reimbursement'
+            'tender-intelligence'
+            'portfolio'
+            'biotech-intelligence'
+            'capital-intelligence'
+            'decision-workspace'
+            'watchlists'
+            'alerts'
+            'reports'
+            'private-commercial'
+          )
+          for slug in "${workspace_slugs[@]}"; do
+            route="/portal/executive-platform/medicines-intelligence/$slug/"
+            status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+              -D /tmp/npi-module-denial-headers -o /tmp/npi-module-denial-body \
+              -w '%{http_code}' "$origin$route" || true)
+            if ! [[ "$status" =~ ^(301|302|303|307|308|401|403)$ ]]; then
+              echo "::error::Anonymous $route returned unexpected HTTP $status. No private workspace may serve a public 200."
+              exit 1
+            fi
+            if [[ "$status" =~ ^(301|302|303|307|308)$ ]]; then
+              location=$(tr -d '\r' </tmp/npi-module-denial-headers | grep -i '^location:' | head -1 | sed -E 's/^[Ll]ocation:[[:space:]]*//')
+              if ! [[ "$location" == "/" || "$location" == "/portal/" || "$location" == "/auth/customer/start" ]]; then
+                echo "::error::Anonymous $route redirected to an unexpected destination. Protect against open or module-preserving redirects."
+                exit 1
+              fi
+              if ! tr -d '\r' </tmp/npi-module-denial-headers | grep -qi '^cache-control:.*no-store'; then
+                echo "::error::Private redirect $route must disable caching."
+                exit 1
+              fi
+            elif ! tr -d '\r' </tmp/npi-module-denial-headers | grep -qi '^cache-control:.*no-store'; then
+              if [ "$status" != "403" ] \
+                || ! tr -d '\r' </tmp/npi-module-denial-headers | grep -qi '^content-type:.*application/json' \
+                || ! grep -qx '{"message":"Forbidden"}' /tmp/npi-module-denial-body \
+                || [ "$(wc -c </tmp/npi-module-denial-body)" -gt 64 ]; then
+                echo "::error::Private $route must deny with no-store or a bounded native AWS IAM 403."
+                exit 1
+              fi
+            fi
+          done
+          echo "All 22 protected workspace paths rejected anonymous access at HTTPS ingress."
+
       - name: Record scope of proof
         run: |
           echo "HTTPS + unauthenticated boundaries verified only."

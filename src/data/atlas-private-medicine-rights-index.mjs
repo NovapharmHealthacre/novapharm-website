@@ -3,6 +3,8 @@
  * medicine observations, patient records or customer entitlements.
  * Run only from separately authenticated server-side maintenance tooling.
  */
+import { atlasG2RequiredUniqueIndexKeys } from "./atlas-medicine-g2-atomic-store.mjs";
+
 const DATABASE = "novapharm_intelligence_production";
 const COLLECTION = "npi_source_rights";
 const INDEX_NAME = "rights_unique_exact_resource_revision";
@@ -18,8 +20,9 @@ function exactKeys(index) {
     JSON.stringify(Object.entries(index.key)) === JSON.stringify(Object.entries(KEYS));
 }
 function exactUnique(index) {
-  return exactKeys(index) && index.unique === true &&
-    index.sparse !== true && index.partialFilterExpression == null &&
+  return index?.name === INDEX_NAME && exactKeys(index) &&
+    index.unique === true && index.sparse !== true &&
+    index.hidden !== true && index.partialFilterExpression == null &&
     index.expireAfterSeconds == null &&
     (index.collation == null || index.collation.locale === "simple");
 }
@@ -46,10 +49,11 @@ export async function ensurePrivateMedicineRightsUniqueIndex({
   if (typeof apply !== "boolean") throw new Error("Invalid migration mode");
   const collection = database.collection(COLLECTION);
   const before = await readIndexes(collection);
-  if (before.some(exactUnique)) {
+  const related = before.filter(i => i?.name === INDEX_NAME || exactKeys(i));
+  if (related.length === 1 && exactUnique(related[0])) {
     return Object.freeze({status: "verified", indexName: INDEX_NAME, changed: false});
   }
-  if (before.some(i => i?.name === INDEX_NAME || exactKeys(i))) {
+  if (related.length > 0) {
     throw new Error("Conflicting rights index requires independent review");
   }
   if (typeof collection.countDocuments !== "function") {
@@ -84,7 +88,8 @@ export async function ensurePrivateMedicineRightsUniqueIndex({
   });
   if (created !== INDEX_NAME) throw new Error("Index creation not attested");
   const after = await readIndexes(collection);
-  if (!after.some(i => i?.name === INDEX_NAME && exactUnique(i))) {
+  const createdMatches = after.filter(i => i?.name === INDEX_NAME || exactKeys(i));
+  if (createdMatches.length !== 1 || !exactUnique(createdMatches[0])) {
     throw new Error("Unique index not verified after creation");
   }
   return Object.freeze({status: "created_and_verified", indexName: INDEX_NAME,
@@ -99,30 +104,24 @@ export const medicineRightsUniqueIndexSpec = Object.freeze({
 
 // G2's three additional private collections also require real compound
 // uniqueness. _id-only and nonunique query indexes are not substitutes.
-const G2 = Object.freeze({
-  npi_medicine_evidence: Object.freeze({
-    name: "g2_evidence_unique_source_row",
-    keys: Object.freeze({ workspace_id: 1, source_id: 1,
-      source_version: 1, resource_id: 1, row_id: 1 })
-  }),
-  npi_evidence_manifests: Object.freeze({
-    name: "g2_manifest_unique_digest",
-    keys: Object.freeze({ workspace_id: 1, manifest_sha256: 1 })
-  }),
-  npi_audit_events: Object.freeze({
-    name: "g2_audit_unique_event",
-    keys: Object.freeze({ workspace_id: 1, event_id: 1 })
-  })
-});
+// Share the same exact field-order specification and index name used by the
+// atomic store and the separately reviewed migration implementation. Two
+// independent definitions previously disagreed on index names; never silently
+// approve one implementation's schema while another rejects it.
+const G2 = Object.freeze(Object.fromEntries(
+  Object.entries(atlasG2RequiredUniqueIndexKeys).map(([collection, keys]) =>
+    [collection, Object.freeze({ name: "g2_unique", keys })])
+));
 function matchesG2(index, keys) {
   return index?.key && typeof index.key === "object" &&
     !Array.isArray(index.key) &&
     JSON.stringify(Object.entries(index.key)) === JSON.stringify(Object.entries(keys));
 }
-function safeG2(index, keys) {
-  return matchesG2(index, keys) && index.unique === true &&
-    index.sparse !== true && index.partialFilterExpression == null &&
-    index.expireAfterSeconds == null &&
+function safeG2(index, spec) {
+  return index?.name === spec.name &&
+    matchesG2(index, spec.keys) && index.unique === true &&
+    index.sparse !== true && index.hidden !== true &&
+    index.partialFilterExpression == null && index.expireAfterSeconds == null &&
     (index.collation == null || index.collation.locale === "simple");
 }
 
@@ -145,12 +144,13 @@ export async function ensureG2PrivateMedicineUniqueIndexes({
   for (const [collectionName, spec] of Object.entries(G2)) {
     const collection = database.collection(collectionName);
     const indexes = await readIndexes(collection);
-    if (indexes.some(index => safeG2(index, spec.keys))) {
+    const relatedG2 = indexes.filter(index => index?.name === spec.name ||
+      matchesG2(index, spec.keys));
+    if (relatedG2.length === 1 && safeG2(relatedG2[0], spec)) {
       existing.push(collectionName);
       continue;
     }
-    if (indexes.some(index => index?.name === spec.name ||
-        matchesG2(index, spec.keys))) {
+    if (relatedG2.length > 0) {
       throw new Error("Conflicting G2 unique index requires independent review");
     }
     if (typeof collection?.countDocuments !== "function" ||
@@ -193,7 +193,9 @@ export async function ensureG2PrivateMedicineUniqueIndexes({
     });
     if (receipt !== spec.name) throw new Error("G2 unique index creation not attested");
     const after = await readIndexes(collection);
-    if (!after.some(index => index?.name === spec.name && safeG2(index, spec.keys))) {
+    const verifiedIndexes = after.filter(index => index?.name === spec.name ||
+      matchesG2(index, spec.keys));
+    if (verifiedIndexes.length !== 1 || !safeG2(verifiedIndexes[0], spec)) {
       throw new Error("G2 unique index not independently verified");
     }
     applied.push(collectionName);

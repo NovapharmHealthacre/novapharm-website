@@ -12,6 +12,7 @@ const html = source("oncology/index.html");
 const visible = visibleTextFromHtml(html);
 const css = source("assets/css/oncology-editorial.css");
 const approvedLayout = source("assets/css/oncology-hope-v2.css");
+const approvedLayoutSha256 = createHash("sha256").update(readFileSync(join(root, "assets/css/oncology-hope-v2.css"))).digest("hex");
 const nextLayout = source("apps/corporate/app/oncology-editorial.css");
 
 assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology","/oncology/"]);
@@ -45,7 +46,7 @@ assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
 assert.match(html, /href="\/assets\/css\/oncology-editorial\.css(?:\?v=[^"]+)?"/);
-assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css\?v=20261113-hope-responsive-v7"/, "Responsive framing correction must use a fresh cache version");
+assert.ok(html.includes(`href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${approvedLayoutSha256}"`), "Responsive framing correction must use the approved semantic version and exact CSS SHA-256");
 assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");

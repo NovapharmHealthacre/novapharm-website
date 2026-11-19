@@ -83,7 +83,7 @@ async function authenticatedCookies(credentials) {
     await page.getByLabel("Password", { exact: true }).fill(credentials.password);
     await Promise.all([
       page.waitForURL((url) => url.pathname === "/portal/dashboard/", { timeout: 20_000 }),
-      page.getByRole("button", { name: "Sign in securely" }).click(),
+      page.getByRole("button", { name: "Sign in", exact: true }).click(),
     ]);
     await page.locator(".data-context").waitFor();
     const cookies = await page.context().cookies(portalOrigin);

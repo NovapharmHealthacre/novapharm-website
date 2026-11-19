@@ -16,6 +16,10 @@ import {
   checkFounderUnenrolled,
   createFounderMfaCookie,
 } from "../../../../../src/core/intelligence-founder-totp-enrolment.mjs";
+import {
+  checkInternalPilotUnenrolled,
+  createInternalPilotMfaCookie,
+} from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +58,8 @@ const safeIdentityErrorCodes = new Set([
   "provider_identity_session_not_fresh",
   "founder_provider_policy_not_attested", "founder_provider_identity_unattested",
   "founder_provider_session_not_fresh", "mfa_existing_factor_not_attested",
+  "pilot_mfa_identity_not_allowed", "pilot_mfa_claims_incompatible",
+  "pilot_mfa_auth_stale", "pilot_mfa_denied",
 ]);
 
 function safeIdentityErrorCode(error: unknown): string {
@@ -127,6 +133,10 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
 export async function GET(request: NextRequest): Promise<Response> {
   let response: NextResponse = resultPage(false);
   let phase = "transaction";
+  // During an MFA-only redirect, send only the encrypted enrollment cookie.
+  // The signed OIDC transaction cookie expires independently within 15 minutes.
+  // A second Set-Cookie on the same 303 can be mishandled by intermediary adapters.
+  let pilotEnrollmentRedirectIssued = false;
   try {
     const code = request.nextUrl.searchParams.get("code") ?? "";
     const state = request.nextUrl.searchParams.get("state") ?? "";
@@ -139,6 +149,64 @@ export async function GET(request: NextRequest): Promise<Response> {
     const { idToken, accessToken } = await exchangeCustomerAuthTokens({
       code, verifier: transaction.verifier,
     });
+    // Check the exact operator-approved internal pilot before normal identity
+    // acceptance. Some Cognito pools emit ACR/AMR values that satisfy the
+    // general identity verifier even when GetUser still reports NO registered
+    // authenticator. That token must never skip the pilot's real TOTP setup.
+    //
+    // A new signed JWT, correct nonce, verified email, fresh password sign-in,
+    // pinned account subject and an unenrolled Cognito GetUser are all required.
+    // This is enrollment-only: no founder/customer/medicine permission is issued.
+    if (process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"] === "true" &&
+        typeof process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"] === "string") {
+      try {
+        phase = "internal_pilot_mfa_preidentity_check";
+        const allowedEmail = process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"];
+        const pilot = await verifyIntelligenceCustomerIdToken({
+          idToken, expectedNonce: transaction.nonce,
+          purpose: "internal_pilot_mfa_enrolment",
+          pilotMfaEmail: allowedEmail,
+        });
+        if (!pilot.pilotMfaEnrolmentOnly || pilot.identityVerified ||
+            pilot.grantsTenantAccess || pilot.grantsFounderAccess) {
+          throw new Error("Restricted internal identity check failed.");
+        }
+        await checkInternalPilotUnenrolled({
+          accessToken, subject: pilot.verifiedCognitoSubject,
+          expectedEmail: allowedEmail,
+        });
+        const sealed = createInternalPilotMfaCookie({
+          accessToken, subject: pilot.verifiedCognitoSubject,
+          expectedEmail: allowedEmail,
+          signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+        });
+        response = NextResponse.redirect(
+          new URL("/auth/internal/mfa/setup", FOUNDER_PUBLIC_ORIGIN),
+          { status: 303 },
+        );
+        response.cookies.set({
+          name: "__Host-npi_internal_mfa", value: sealed.cookieValue,
+          path: "/", secure: true, httpOnly: true, sameSite: "lax",
+          maxAge: sealed.maxAgeSeconds,
+        });
+        // Keep the OIDC transaction until its short natural expiry rather
+        // than sending a second Set-Cookie alongside the enrollment cookie.
+        // Authorisation codes are single-use, and this is not a login session.
+        response.headers.set("Cache-Control", "no-store");
+        console.info(JSON.stringify({
+          event: "npi_internal_pilot_mfa_preidentity_enrolment_offered",
+        }));
+        return response;
+      } catch (pilotError: unknown) {
+        // Non-pilot users and already enrolled accounts continue through
+        // the unchanged signed identity/founder checks. Never log JWTs,
+        // emails, OIDC codes, cookies, authenticator secrets or OTPs.
+        console.info(JSON.stringify({
+          event: "npi_internal_pilot_mfa_preidentity_denied",
+          reason: safeIdentityErrorCode(pilotError),
+        }));
+      }
+    }
     phase = "id_token_verification";
     let identity: { grantsTenantAccess: boolean; identityVerified: boolean; verifiedCognitoSubject?: string } | undefined;
     try {
@@ -154,6 +222,53 @@ export async function GET(request: NextRequest): Promise<Response> {
       // been validated by Cognito and the server. Do not reject a legitimate
       // MFA bootstrap because Lambda's internal URL differs from the public
       // deployment origin.
+      // A signed, email-verified internal pilot may bootstrap ONLY its own
+      // Cognito authenticator. No founder or customer identity is issued.
+      // All other users follow the unchanged founder path below.
+      let pilotMfaOffered = false;
+      if (process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"] === "true" &&
+          typeof process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"] === "string") {
+        try {
+          const allowedEmail = process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"];
+          const pilot = await verifyIntelligenceCustomerIdToken({
+            idToken, expectedNonce: transaction.nonce,
+            purpose: "internal_pilot_mfa_enrolment",
+            pilotMfaEmail: allowedEmail,
+          });
+          if (!pilot.pilotMfaEnrolmentOnly || pilot.identityVerified ||
+              pilot.grantsTenantAccess || pilot.grantsFounderAccess) {
+            throw new Error("Restricted pilot identity denied.");
+          }
+          await checkInternalPilotUnenrolled({
+            accessToken, subject: pilot.verifiedCognitoSubject,
+            expectedEmail: allowedEmail,
+          });
+          const sealed = createInternalPilotMfaCookie({
+            accessToken, subject: pilot.verifiedCognitoSubject,
+            expectedEmail: allowedEmail,
+            signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+          });
+          response = NextResponse.redirect(
+            new URL("/auth/internal/mfa/setup", FOUNDER_PUBLIC_ORIGIN),
+            { status: 303 },
+          );
+          response.cookies.set({
+            name: "__Host-npi_internal_mfa", value: sealed.cookieValue,
+            path: "/", secure: true, httpOnly: true, sameSite: "lax",
+            maxAge: sealed.maxAgeSeconds,
+          });
+          response.headers.set("Cache-Control", "no-store");
+          pilotMfaOffered = true;
+          pilotEnrollmentRedirectIssued = true;
+          console.info(JSON.stringify({ event:"npi_internal_pilot_mfa_enrolment_offered" }));
+        } catch (pilotError: unknown) {
+          console.info(JSON.stringify({
+            event:"npi_internal_pilot_mfa_enrolment_denied",
+            reason: safeIdentityErrorCode(pilotError),
+          }));
+        }
+      }
+      if (!pilotMfaOffered) {
       phase = "provider_managed_mfa_identity";
       let providerFounderOnly = false;
       try {
@@ -255,6 +370,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         console.info(JSON.stringify({ event: "npi_founder_totp_enrolment_offered" }));
       }
       }
+      } // All other sign-ins retain the existing founder-only flow.
     }
     if (identity) {
       if (identity.grantsTenantAccess !== false || identity.identityVerified !== true)
@@ -324,14 +440,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     }));
     response = resultPage(false);
   }
-  response.cookies.set({
-    name: "__Host-npi_oidc_tx",
-    value: "",
-    path: "/",
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: 0,
-  });
+  if (!pilotEnrollmentRedirectIssued) {
+    response.cookies.set({
+      name: "__Host-npi_oidc_tx",
+      value: "",
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 0,
+    });
+  }
   return response;
 }

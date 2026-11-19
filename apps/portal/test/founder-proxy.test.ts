@@ -37,6 +37,23 @@ test("founder-only cookie does not grant the legacy board or medicines route", (
   }
 });
 
+test("anonymous private workspace redirects retain no-store and non-indexing headers", () => {
+  for (const path of [
+    "/portal/executive-platform/medicines-intelligence/medicine-search/",
+    "/portal/executive-platform/medicines-intelligence/biotech-intelligence/",
+    "/portal/executive-platform/medicines-intelligence/signals/",
+    "/portal/executive-platform/medicines-intelligence/private-commercial/",
+  ]) {
+    const response = proxy(new NextRequest(base + path));
+    assert.equal(response.status, 307);
+    assert.equal(new URL(response.headers.get("location") ?? "").pathname, "/");
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.match(response.headers.get("x-robots-tag") ?? "", /noindex/);
+    assert.ok(response.headers.get("content-security-policy"), "Private denial must retain CSP");
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  }
+});
+
 test("founder route continues to require a revocable remote session, never cookie presence alone", async () => {
   const fs = await import("node:fs/promises");
   const page = await fs.readFile("app/founder/page.tsx", "utf8");

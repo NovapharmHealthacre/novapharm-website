@@ -1,0 +1,289 @@
+/*
+ * NovaPharm Apple HIG right-to-left baseline.
+ * Direction is logical layout, NEVER transform:scaleX(-1) on an entire page.
+ * Brand logos, medicine packaging, photos, chart axes and universal icons
+ * preserve their true orientation.
+ */
+:root { --np-rtl-contract: 1; --np-locale-footer-contract: 1; }
+
+/* Apple-inspired footer language utility: no floating or bordered card.
+   Keep a 44px hit target without drawing an oversized control. */
+.np-locale-control {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  column-gap: 9px;
+  row-gap: 0;
+  inline-size: auto;
+  max-inline-size: 100%;
+  min-block-size: 44px;
+  margin: 0;
+  padding: 0;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: start;
+  direction: ltr;
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+.np-locale-control label {
+  font: inherit;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.np-locale-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+}
+.np-locale-select-wrap::after {
+  content: "";
+  position: absolute;
+  inline-size: 5px;
+  block-size: 5px;
+  inset-inline-end: 2px;
+  inset-block-start: calc(50% - 4px);
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.np-locale-control select {
+  appearance: none;
+  -webkit-appearance: none;
+  inline-size: auto;
+  max-inline-size: 100%;
+  min-block-size: 44px;
+  padding-inline: 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.np-locale-control select option { background: Canvas; color: CanvasText; }
+.np-locale-control select:hover { text-decoration-thickness: 2px; }
+.np-locale-note {
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.45;
+  max-inline-size: min(28ch, 100%);
+}
+.np-locale-control[data-np-control-locale="en-GB"] .np-locale-note {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.np-locale-control :focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.npd-footer-bottom > .np-locale-control,
+.footer-secondary > .np-locale-control,
+.site-footer__bottom > .np-locale-control,
+.footer-base > .np-locale-control,
+.status-footer > .np-locale-control { margin-inline-start: auto; }
+body > .np-locale-control {
+  display: flex;
+  inline-size: fit-content;
+  margin-inline-start: auto;
+  margin-inline-end: clamp(16px, 4vw, 64px);
+}
+.np-locale-control[data-np-control-locale="ar"],
+.np-locale-control[data-np-control-locale="he"] {
+  direction: rtl;
+  text-align: start;
+  padding-inline-end: env(safe-area-inset-left, 0px);
+}
+
+html[dir="rtl"] {
+  direction: rtl;
+  font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+}
+html[dir="rtl"] body { direction: rtl; }
+html[dir="rtl"] :is(.site-header, .site-footer, .site-nav, .desktop-nav,
+ .site-header__nav, .site-navigation, .mobile-menu, .breadcrumb,
+ .portal-shell, .portal-sidebar, .workspace-shell, .workspace-sidebar,
+ .workspace-content, .status-header, .status-footer) {
+  direction: rtl;
+}
+html[dir="rtl"] :is(.site-header, .site-footer, .status-header, .status-footer)
+ :is(h1, h2, h3, h4, nav, ul, li, label) {
+  text-align: start;
+}
+html[dir="rtl"] :is(.site-nav, .desktop-nav, .site-header__nav, .site-navigation, .breadcrumb) {
+  unicode-bidi: isolate;
+}
+/* Treat untranslated English editorial headings as English even when
+   surrounding page chrome is previewed in a right-to-left direction. */
+html[dir="rtl"] [data-np-untranslated] :is(h1, h2, h3, h4, h5, h6, legend) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+/* An English paragraph must not be right-aligned merely because surrounding
+   navigation is Arabic or Hebrew. Published editorial copy is not translated yet. */
+html[dir="rtl"] :is(main[lang="en-GB"], article[lang="en-GB"])
+ :is(p, blockquote) { direction: ltr; text-align: left; }
+/* Replace physical-side affordances that otherwise stay on the LTR edge. */
+html[dir="rtl"] .skip-link { left: auto; right: 12px; }
+html[dir="rtl"] .workspace-sidebar { border-right: 0; border-left: 1px solid #0a1927; }
+html[dir="rtl"] .workspace-sidebar a:not(.portal-brand) {
+  border-left: 0;
+  border-right: 3px solid transparent;
+}
+html[dir="rtl"] .workspace-sidebar a.active { border-right-color: var(--red); }
+html[dir="rtl"] .sidebar-brand > button { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .workspace-sidebar a small { text-align: start; }
+html[dir="rtl"] .portal-search-scope { margin-left: 0; margin-right: 30px; }
+html[dir="rtl"] .search-close { float: left; right: auto; left: 8px; }
+html[dir="rtl"] .metric-grid { border-right: 1px solid var(--line); border-left: 0; }
+html[dir="rtl"] .metric { border-right: 0; border-left: 1px solid var(--line); }
+html[dir="rtl"] :is(.module-notice, .action-warning, .intelligence-advisory,
+ .article-aside, .article-disclaimer, .footer-status) {
+  border-left: 0;
+  border-right: 3px solid var(--red, #E3120B);
+  padding-left: 0;
+  padding-right: 16px;
+}
+html[dir="rtl"] :is(.article-aside ol, .article-sources ul,
+ .formulation-grid ul, .intelligence-unavailable ul) {
+  padding-left: 0;
+  padding-right: 1.2rem;
+}
+html[dir="rtl"] :is(input[type="range"], progress, meter, [role="progressbar"]) {
+  direction: rtl;
+}
+/* The current protected workspaces are English even when the application
+   direction is exercised in an Arabic or Hebrew layout preview. */
+html[dir="rtl"] [data-np-untranslated] :is(p, blockquote) {
+  direction: ltr;
+  text-align: left;
+}
+/* Physical-side rules inherited from the original English-only site
+   need explicit RTL counterparts until each owner stylesheet is migrated to
+   logical border/padding/inset properties. English behavior is unchanged. */
+html[dir="rtl"] .desktop-nav a::after {
+  left: 100%;
+  right: 0;
+  transition: left 180ms ease;
+}
+html[dir="rtl"] .desktop-nav a:hover::after,
+html[dir="rtl"] .desktop-nav a:focus-visible::after { left: 0; }
+html[dir="rtl"] .convergence-route { left: auto; right: 28px; }
+html[dir="rtl"] :is(.sourcing-grid article, .maturity-grid article, .trust-strip span,
+ .roadmap-track li, .policy-meta dl div) {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+html[dir="rtl"] .trust-strip span:first-child { border-right: 1px solid var(--line); }
+html[dir="rtl"] .roadmap-track li {
+  padding-left: 18px;
+  padding-right: 0;
+}
+html[dir="rtl"] .roadmap-track li::before { left: auto; right: 0; }
+html[dir="rtl"] .profile-detail aside {
+  border-left: 0;
+  border-right: 1px solid var(--line);
+  padding-left: 0;
+  padding-right: 35px;
+}
+html[dir="rtl"] .status-notice {
+  border-left: 1px solid #aeb3b8;
+  border-right: 4px solid #4a5259;
+}
+html[dir="rtl"] .status-notice-regulatory { border-right-color: var(--red); }
+html[dir="rtl"] .status-notice-warning { border-right-color: #9b5c00; }
+html[dir="rtl"] .status-notice-success { border-right-color: #167348; }
+html[dir="rtl"] .status-notice-error { border-right-color: #b4232a; }
+html[dir="rtl"] .preference-close { right: auto; left: 16px; }
+html[dir="rtl"] .article-disclaimer {
+  border-right: 4px solid var(--gold, #a47721);
+  padding: 24px;
+}
+html[dir="rtl"] .article-aside { border-right-width: 2px; padding-right: 20px; }
+html[dir="rtl"] .footer-status { border-right-width: 2px; padding-right: 14px; }
+html[dir="rtl"] :is(th, td, .table-region .empty-cell,
+ .medicine-search-results li button) { text-align: start; }
+html[dir="rtl"] .search-results a { padding-right: 14px; padding-left: 44px; }
+html[dir="rtl"] .status-hero .maintenance-notice {
+  border-left: 0;
+  border-right: 3px solid #e0ad58;
+}
+html[dir="rtl"] .refresh-command { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .service-row > a,
+html[dir="rtl"] .private-boundary { float: left; }
+html[dir="rtl"] .site-nav-list a:not(.nav-contact)::after {
+  left: auto;
+  right: 0;
+  transform-origin: left;
+}
+html[dir="rtl"] .site-nav-list a:hover::after,
+html[dir="rtl"] .site-nav-list a[aria-current="page"]::after { transform-origin: right; }
+html[dir="rtl"] .breadcrumbs li:not(:last-child)::after {
+  margin-left: 0;
+  margin-right: 0.45rem;
+}
+html[dir="rtl"] .hero h1 span:last-child { margin-left: 0; margin-right: clamp(1.5rem, 6vw, 8rem); }
+html[dir="rtl"] .hero-visual .portrait-frame { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .status-header .brand img,
+html[dir="rtl"] .brand img { transform: none; }
+
+@media (max-width: 800px) {
+  html[dir="rtl"] .refresh-command { margin-right: 0; }
+  html[dir="rtl"] :is(.sourcing-grid article, .maturity-grid article) {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  html[dir="rtl"] .profile-detail aside {
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 30px 0 0;
+  }
+}
+/* Data identifiers must retain the exact digit and character sequence. */
+html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[type="url"],
+ input[type="number"], input[type="date"], input[type="datetime-local"],
+ [data-np-ltr], [data-np-number], [data-np-medicine-code]) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] :is(.table-region, .np-hig-table-region, .portal-table-scroll) {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+/* Only controls explicitly identified as reading-direction arrows mirror.
+   Do NOT mirror geography, medical images, charts, actual compass directions,
+   universal glyphs, company marks or third-party artwork. */
+html[dir="rtl"] [data-np-directional-arrow="true"] { transform: scaleX(-1); }
+@media (max-width: 420px) {
+  .np-locale-control { column-gap: 7px; row-gap: 0; }
+  .np-locale-note { font-size: 11px; }
+  .npd-footer-bottom > .np-locale-control { margin-inline-start: 0; }
+}
+@media (forced-colors: active) {
+  .np-locale-control { border: 0; box-shadow: none; }
+  .np-locale-control select { border: 0; text-decoration: underline; }
+  .np-locale-control select:focus-visible { outline: 2px solid Highlight; }
+}

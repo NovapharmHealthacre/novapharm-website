@@ -9,6 +9,7 @@ import {
   type TotpChallenge,
 } from "../lib/cognito-card-auth";
 import { parseVerifiedTrialView, type VerifiedTrialView } from "../lib/intelligence-trial-view";
+import { AccountAccessHelp } from "./account-access-help";
 import styles from "./intelligence-sign-in.module.css";
 import { IntelligenceTrialOverview } from "./intelligence-trial-overview";
 
@@ -77,7 +78,7 @@ export function IntelligenceSignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [code, setCode] = useState("");
   const [challenge, setChallenge] = useState<TotpChallenge | null>(null);
-  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "managed" | "founder-unavailable">("password");
+  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "identity-only" | "managed" | "founder-unavailable">("password");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -96,8 +97,12 @@ export function IntelligenceSignIn() {
       return;
     }
     if (result.kind === "provider-required") {
+      // The in-card Cognito protocol cannot complete first-time authenticator
+      // registration or password rotation. Continue immediately through the
+      // signed, server-side PKCE/OIDC flow instead of trapping the user here.
       setChallenge(null);
       setPhase("managed");
+      window.location.assign("/auth/customer/start");
       return;
     }
 
@@ -163,7 +168,7 @@ export function IntelligenceSignIn() {
       return;
     }
     setChallenge(null);
-    setPhase("confirmed");
+    setPhase("identity-only");
   }
 
   async function submitCredentials(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -257,6 +262,7 @@ export function IntelligenceSignIn() {
           <section className={styles["signInCard"]} aria-labelledby="intelligence-signin-card-title">
             <IntelligenceLogo small />
             <h2 id="intelligence-signin-card-title">{customer ? "Your secure workspace." : "Sign in to your secure workspace."}</h2>
+            {!customer && phase === "password" ? <p className={styles["providerNote"]}>Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.</p> : null}
             {customer ? (
               <>
                 <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
@@ -266,10 +272,18 @@ export function IntelligenceSignIn() {
                   {signingOut ? "Signing out…" : "Sign out securely"}
                 </button>
               </>
+            ) : phase === "identity-only" ? (
+              <div role="status" className={styles["identityStatus"]}>
+                <p className={styles["successTitle"]}>Additional secure verification needed.</p>
+                <p>A Cognito sign-in response was received, but no approved NovaPharm Intelligence workspace session was established. This does not confirm that an authenticator is enrolled or that MFA has been verified by the workspace.</p>
+                <p>To register or verify your authenticator, continue through the secure Cognito sign-in. Medicines Terminal access is separately authorised.</p>
+                <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito</a>
+                <button className={styles["recoveryButton"]} type="button" onClick={reset}>Return to sign-in</button>
+              </div>
             ) : phase === "confirmed" ? (
               <div role="status" className={styles["identityStatus"]}>
-                <p className={styles["successTitle"]}>Cognito sign-in completed.</p>
-                <p>Your credentials and authenticator have been accepted. Medicines Terminal access still requires an approved organisation, customer seat and subscription.</p>
+                <p className={styles["successTitle"]}>Approved customer session established.</p>
+                <p>The customer session endpoint has verified a permitted workspace session. Medicines datasets still require separately accepted source rights.</p>
                 <button className={styles["createAction"]} type="button" onClick={reset}>Return to sign-in</button>
               </div>
             ) : phase === "founder-unavailable" ? (
@@ -281,7 +295,7 @@ export function IntelligenceSignIn() {
               </div>
             ) : phase === "managed" ? (
               <div className={styles["identityStatus"]}>
-                <p>Additional account setup or a password change is required. Complete it directly with the secure identity provider.</p>
+                <p>Cognito requires further account setup, authenticator enrollment or verification. Complete it directly with the secure identity provider. No Medicines Terminal session has been granted.</p>
                 <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito</a>
                 <button className={styles["recoveryButton"]} type="button" onClick={reset}>Back to sign-in</button>
               </div>
@@ -347,11 +361,12 @@ export function IntelligenceSignIn() {
                   <>
                     <a className={styles["recoveryAction"]} href="/auth/customer/start?mode=reset">Forgot your password?</a>
                     <div className={styles["divider"]}><span>or</span></div>
-                    <a className={styles["createAction"]} href="/auth/customer/register">Create a business account</a>
+                    <a className={styles["createAction"]} href="/auth/customer/register">Register a sign-in</a>
                   </>
                 )}
               </>
             )}
+            {customer || phase === "password" ? <AccountAccessHelp audience="intelligence" authenticated={Boolean(customer)} /> : null}
           </section>
         </div>
 

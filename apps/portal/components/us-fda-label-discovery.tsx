@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { gatewayJson, professionalError } from "../lib/gateway";
 import styles from "./us-fda-label-discovery.module.css";
 
@@ -42,8 +42,20 @@ export function UsFdaLabelDiscovery() {
   const [response, setResponse] = useState<FdaLabelResponse | null>(null);
   const [status, setStatus] = useState("Enter a generic medicine name to query official US FDA drug-label records.");
   const [loading, setLoading] = useState(false);
+  const searchGeneration = useRef(0);
+  const searchScopeId = useId();
+  useEffect(() => () => { searchGeneration.current += 1; }, []);
+
+  function clearSearch() {
+    searchGeneration.current += 1;
+    setMedicine("");
+    setResponse(null);
+    setLoading(false);
+    setStatus("Enter a generic medicine name to query official US FDA drug-label records.");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
+    const generation = ++searchGeneration.current;
     event.preventDefault();
     const drug = medicine.normalize("NFKC").trim().replace(/\s+/gu, " ");
     if (!/^[a-zA-Z][a-zA-Z0-9 -]{1,79}$/u.test(drug)) {
@@ -58,15 +70,17 @@ export function UsFdaLabelDiscovery() {
       const source = await gatewayJson<FdaLabelResponse>(
         "v1/intelligence/regulatory/us/fda-labels?drug=" + encodeURIComponent(drug),
       );
+      if (generation !== searchGeneration.current) return;
       setResponse(source);
       setStatus(source.dataState === "no_source_matches"
         ? "No source label record matched this generic-name search."
         : String(source.records.length) + " FDA label record(s) returned. Review each record and its source limitations.");
     } catch (error) {
+      if (generation !== searchGeneration.current) return;
       setResponse(null);
       setStatus(professionalError(error));
     } finally {
-      setLoading(false);
+      if (generation === searchGeneration.current) setLoading(false);
     }
   }
 
@@ -94,11 +108,13 @@ export function UsFdaLabelDiscovery() {
           spellCheck={false}
           placeholder="e.g. apixaban"
           value={medicine}
-          onChange={(event) => setMedicine(event.currentTarget.value)}
+          onChange={(event) => { searchGeneration.current += 1; setMedicine(event.currentTarget.value); setResponse(null); setLoading(false); }} aria-describedby={searchScopeId} enterKeyHint="search"
           required
         />
+        {medicine ? <button className={styles.clear} type="button" onClick={clearSearch} aria-label="Clear FDA label search">Clear</button> : null}
         <button className={styles.submit} type="submit" disabled={loading}>{loading ? "Checking source…" : "Search FDA labels"}</button>
       </div>
+      <p className={styles.sourceNote} id={searchScopeId}>Search scope: public US FDA drug-label source records by generic medicine name. No search history is stored.</p>
       <p className={styles.sourceNote}>Professional research only. Do not enter patient information or confidential records.</p>
     </form>
 

@@ -89,7 +89,7 @@ test("owner-authorized chargeable price displays only under approved retail poli
 test("when approved, the Bag subtotal is correctly calculated in integer pence",()=>{
  const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null,retail_net_pence:i===0?1028:i===1?1916:null}));
  const approved={...catalogue,price_authority:"approved_consumer_retail",products};
- assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4766);
+ assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4767);
  assert.equal(basketSubtotal([{sku:products[2].sku,quantity:1}],approved),null);
  assert.equal(basketSubtotal([{sku:"NOT_REAL",quantity:1}],approved),null);
 });
@@ -151,11 +151,18 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
 test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  const source=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
  const page=readFileSync("products/nutraxin/bag/index.html","utf8");
- const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const rtlPublished=/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag lang="en-GB" data-np-untranslated>/.test(page);
+ const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const generated=generator?.split("  return `")[1]?.split("`;")[0];
  assert.ok(expected,"Canonical Bag main exists");
- assert.equal(generated,expected,"Site generator must preserve the approved Bag HTML exactly");
+ // The final publisher adds only the English-language boundary to the
+ // approved Bag main, without altering forms, payment copy or order steps.
+ const approved=rtlPublished
+   ? generated?.replace('data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>')
+   : generated;
+ assert.equal(expected,approved,
+   "Checked-in and finalized Bag HTML must exactly match their approved generator states");
  assert.match(generated,/Simple from start to finish\./);
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);

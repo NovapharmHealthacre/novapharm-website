@@ -311,3 +311,18 @@ test("ESCO discovery page keeps only the compact navigation Bag, not an oversize
   assert.ok(builder.includes("/products/esco/bag/"));
   assert.match(css,/\.esco-page \.esco-shop-mini-bag\[hidden\]\s*\{\s*display: none !important;/);
 });
+
+test("Apple HIG ESCO search is inline, scoped, keyboard-ready and free of private history",()=>{
+  const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  const js=readFileSync("assets/js/esco-catalogue.js","utf8");
+  assert.match(generator,/id="esco-search"[^\n]*type="search"/);
+  assert.match(generator,/aria-controls="esco-catalogue-results"/);
+  assert.match(generator,/aria-describedby="esco-search-scope"/);
+  assert.match(generator,/esco-search-icon/);
+  assert.match(generator,/data-esco-reset-filters/);
+  assert.match(generator,/id="esco-search-scope"/);
+  assert.match(css,/\.esco-search-scope/);
+  assert.match(js,/input\?\.addEventListener\("input", apply\)/);
+  assert.doesNotMatch(js,/searchHistory|recentSearch|searchTermsStorage/);
+});
