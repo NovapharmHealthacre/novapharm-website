@@ -6,6 +6,7 @@ import {
   createCustomerLoginTransaction,
   verifyCustomerLoginTransaction,
   exchangeCustomerAuthCode,
+  exchangeCustomerAuthTokens,
   verifyIntelligenceCustomerIdToken,
 } from "../src/core/intelligence-customer-oidc.mjs";
 
@@ -47,9 +48,10 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("code_challenge_method"), "S256");
   assert.equal(url.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
-  assert.equal(url.searchParams.get("scope"), "openid email profile");
-  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
-  assert.equal(url.searchParams.get("max_age"), "900");
+  assert.equal(url.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
+  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4 urn:cognito:loa:1");
+  assert.equal(url.searchParams.get("max_age"), "0");
+  assert.equal(url.searchParams.get("prompt"), "login");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
     state: url.searchParams.get("state"), nowMs: second * 1000 + 30_000,
@@ -59,6 +61,56 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(transaction.grantsTenantAccess, false);
   assert.equal(started.grantsTenantAccess, false);
   assert.equal(intelligenceCustomerOidc.permitsPublicSignup, false);
+});
+
+test("GBP plan and billing period survive Cognito registration only as a signed, non-entitling selection", () => {
+  const nowMs = second * 1000;
+  for (const requestedPlan of ["starter", "professional"]) {
+    for (const requestedCycle of ["monthly", "annual"]) {
+      const txn = createCustomerLoginTransaction({
+        signingKey, nowMs, requestedPlan, requestedCycle,
+      });
+      assert.equal(txn.requestedPlanBoundToSignedCookie, true);
+      const url = new URL(txn.authorizeUrl);
+      assert.equal(url.searchParams.has("requestedPlan"), false);
+      assert.equal(url.searchParams.has("requestedCycle"), false);
+      assert.equal(url.searchParams.has("price"), false);
+      const verified = verifyCustomerLoginTransaction({
+        signingKey, cookieValue: txn.transactionCookieValue,
+        state: url.searchParams.get("state"), nowMs: nowMs + 30_000,
+      });
+      assert.equal(verified.requestedPlan, requestedPlan);
+      assert.equal(verified.requestedCycle, requestedCycle);
+      assert.equal(verified.grantsTenantAccess, false);
+      assert.equal("stripeCustomerId" in verified, false);
+      // Altering the signed cookie must never switch a plan or issue access.
+      const modifiedCookie = txn.transactionCookieValue.replace(/^[^.]+/u, "a".repeat(64));
+      assert.throws(() => verifyCustomerLoginTransaction({
+        signingKey, cookieValue: modifiedCookie,
+        state: url.searchParams.get("state"), nowMs: nowMs + 30_000,
+      }));
+    }
+  }
+  const defaultTxn = createCustomerLoginTransaction({ signingKey, nowMs });
+  const verifiedDefault = verifyCustomerLoginTransaction({
+    signingKey, cookieValue: defaultTxn.transactionCookieValue,
+    state: new URL(defaultTxn.authorizeUrl).searchParams.get("state"), nowMs: nowMs + 30_000,
+  });
+  assert.equal(verifiedDefault.requestedPlan, null);
+  assert.equal(verifiedDefault.requestedCycle, null);
+  assert.equal(defaultTxn.requestedPlanBoundToSignedCookie, false);
+  for (const selection of [
+    { requestedPlan: "enterprise", requestedCycle: "monthly" },
+    { requestedPlan: "starter", requestedCycle: "weekly" },
+    { requestedPlan: "starter" },
+    { requestedCycle: "annual" },
+    { requestedPlan: "__proto__", requestedCycle: "annual" },
+    { requestedPlan: null, requestedCycle: "monthly" },
+  ]) {
+    assert.throws(() => createCustomerLoginTransaction({
+      signingKey, nowMs, ...selection,
+    }), e => e.code === "customer_plan_selection_invalid");
+  }
 });
 
 test("tampering, forged state, expired transaction and wrong key reject", () => {
@@ -103,11 +155,172 @@ test("server code exchange includes public client PKCE, no arbitrary token origi
       assert.equal(body.get("grant_type"), "authorization_code");
       assert.equal(body.get("client_id"), intelligenceCustomerOidc.clientId);
       assert.equal(body.get("code_verifier"), "a".repeat(64));
-      return { ok: true, text: async () => JSON.stringify({ token_type: "Bearer", id_token: id, access_token: "must_not_be_returned" }) };
+      return { ok: true, text: async () => JSON.stringify({ token_type: "Bearer", id_token: id, access_token: "a".repeat(210) }) };
     },
   });
   assert.equal(result, id);
   await assert.rejects(exchangeCustomerAuthCode({ code: "bad", verifier: "a".repeat(64), fetchImpl: async () => ({}) }));
+});
+
+test("OAuth exchange keeps the access token server-only for first-time MFA", async () => {
+  const token = "a".repeat(220);
+  const res = await exchangeCustomerAuthTokens({
+    code: "auth_code_abcdefghij", verifier: "b".repeat(64),
+    fetchImpl: async () => ({
+      ok: true, text: async () => JSON.stringify({
+        token_type: "Bearer", id_token: "c".repeat(200), access_token: token,
+        refresh_token: "not_to_be_returned",
+      })
+    }),
+  });
+  assert.equal(res.accessToken, token);
+  assert.equal(res.idToken.length, 200);
+  assert.equal("refreshToken" in res, false);
+  await assert.rejects(exchangeCustomerAuthTokens({
+    code: "auth_code_abcdefghij", verifier: "b".repeat(64),
+    fetchImpl: async () => ({
+      ok: true, text: async () => JSON.stringify({
+        token_type: "Bearer", id_token: "c".repeat(200),
+      })
+    }),
+  }), e => e.code === "identity_response_invalid");
+});
+
+test("signed fresh founder Cognito session allows TOTP registration with or without AMR but never customer access", async () => {
+  const firstLogin = { ...validClaims,
+    email: "vishal@novapharmhealthcare.com",
+    acr: "urn:cognito:loa:1",
+    amr: ["pwd"],
+  };
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second,
+  }), e => e.code === "identity_mfa_level_insufficient");
+  const p = await verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  });
+  assert.equal(p.mfaEnrolmentOnly, true);
+  assert.equal(p.verifiedCognitoSubject, validClaims.sub);
+  assert.equal(p.identityVerified, false);
+  assert.equal(p.mfaVerified, false);
+  assert.equal(p.grantsTenantAccess, false);
+  // Cognito may classify a PASSWORD sign-in with an additional factor at LOA3.
+  // This is safe for first-time MFA enrolment only, NOT a customer login.
+  const strongerPassword = { ...firstLogin,
+    acr: "urn:cognito:loa:3", amr: ["pwd", "email_otp", "mfa"],
+  };
+  const strongerResult = await verifyIntelligenceCustomerIdToken({
+    idToken: token(strongerPassword), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  });
+  assert.equal(strongerResult.mfaEnrolmentOnly, true);
+  assert.equal(strongerResult.identityVerified, false);
+  assert.equal(strongerResult.grantsTenantAccess, false);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(strongerPassword), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second,
+  }), e => e.code === "identity_mfa_level_insufficient");
+  // ACR/AMR rollout is partial. Neither claim is required for the
+  // founder's limited self-service *registration*, but verified Cognito
+  // identity and fresh authentication are always mandatory.
+  const featureNotRolledOut = { ...firstLogin };
+  delete featureNotRolledOut.amr;
+  delete featureNotRolledOut.acr;
+  for (const firstTime of [
+    featureNotRolledOut,
+    { ...firstLogin, amr: [] },
+    { ...firstLogin, acr: "urn:cognito:loa:2", amr: ["email_otp"] },
+  ]) {
+    const limited = await verifyIntelligenceCustomerIdToken({
+      idToken: token(firstTime), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    });
+    assert.equal(limited.mfaEnrolmentOnly, true);
+    assert.equal(limited.identityVerified, false);
+    assert.equal(limited.mfaVerified, false);
+    assert.equal(limited.grantsTenantAccess, false);
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(firstTime), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second,
+    }), e => e.code === "identity_mfa_level_insufficient");
+  }
+  for (const claims of [
+    { ...firstLogin, email: "other@example.com" },
+    { ...firstLogin, amr: ["fed"] },
+    { ...firstLogin, amr: "pwd" },
+    { ...firstLogin, acr: "urn:untrusted:loa:3" },
+    { ...firstLogin, auth_time: second - 301 },
+    { ...firstLogin, email_verified: false },
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(claims), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    }));
+  }
+  for (const [claims, code] of [
+    [{ ...firstLogin, email: "unknown@example.com" }, "mfa_enrolment_founder_email_mismatch"],
+    [{ ...firstLogin, amr: ["fed"] }, "mfa_enrolment_method_unrecognised"],
+    [{ ...firstLogin, acr: "urn:untrusted:loa:3" }, "mfa_enrolment_acr_incompatible"],
+    [{ ...firstLogin, auth_time: second - 301 }, "mfa_enrolment_auth_stale"],
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(claims), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    }), e => e.code === code);
+  }
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin, true), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  }));
+});
+
+test("signed fresh founder without Cognito ACR/AMR permits only restricted provider identity proof", async () => {
+  const withoutClaims = { ...validClaims,
+    email:"vishal@novapharmhealthcare.com",
+    auth_time:second - 25, iat:second - 15,
+  };
+  delete withoutClaims.acr;
+  delete withoutClaims.amr;
+  const r = await verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second, purpose:"founder_provider_identity",
+  });
+  assert.equal(r.founderProviderIdentityOnly,true);
+  assert.equal(r.identityVerified,false);
+  assert.equal(r.mfaVerifiedInSignedClaims,false);
+  assert.equal(r.grantsTenantAccess,false);
+  assert.equal(r.signedAuthTimeSeconds,second-25);
+  assert.equal(r.signedIssuedAtSeconds,second-15);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second,
+  }), e => e.code==="identity_mfa_level_insufficient");
+  for (const [name,claims] of [
+    ["signed lower acr",{...withoutClaims,acr:"urn:cognito:loa:1"}],
+    ["signed password-only amr",{...withoutClaims,amr:["pwd"]}],
+    ["wrong founder",{...withoutClaims,email:"other@example.com"}],
+    ["stale session",{...withoutClaims,auth_time:second-170}],
+    ["future issue",{...withoutClaims,iat:second+65}],
+    ["issue before auth",{...withoutClaims,iat:second-50}],
+    ["unverified email",{...withoutClaims,email_verified:false}],
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken:token(claims), expectedNonce:nonce,
+      fetchImpl:mockJwks, nowSeconds:second,
+      purpose:"founder_provider_identity",
+    }),name);
+  }
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims,true), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second,
+    purpose:"founder_provider_identity",
+  }),e=>e.code==="identity_signature_invalid");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:"y".repeat(44),
+    fetchImpl:mockJwks, nowSeconds:second,
+    purpose:"founder_provider_identity",
+  }));
 });
 
 test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never grants access", async () => {

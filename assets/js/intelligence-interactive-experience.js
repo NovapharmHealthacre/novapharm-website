@@ -93,6 +93,10 @@
   }
   function drawChart(){
     const svg=$('trendChart');svg.replaceChildren();
+    // Preserve SVG accessibility labels on every chart redraw.
+    const chartTitle=make('title',{id:'chartTitle'});chartTitle.textContent='Synthetic geography trends';
+    const chartDescription=make('desc',{id:'chartDescription'});
+    svg.append(chartTitle,chartDescription);
     const W=960,H=380,L=58,R=18,T=18,B=56;const x=i=>L+(W-L-R)*(i/11), y=v=>H-B-(H-T-B)*v/100;
     for(const val of [0,25,50,75,100]){const yy=y(val);svg.append(make('line',{x1:L,y1:yy,x2:W-R,y2:yy,stroke:'#e4e8ed','stroke-width':1}));const text=make('text',{x:L-14,y:yy+5,'text-anchor':'end',fill:'#92929a','font-size':14});text.textContent=val;svg.append(text);}
     [0,3,6,9,11].forEach(i=>{const text=make('text',{x:x(i),y:H-22,'text-anchor':i===0?'start':i===11?'end':'middle',fill:'#92929a','font-size':14});text.textContent=labels[i].replace(' 20',' ’');svg.append(text);});

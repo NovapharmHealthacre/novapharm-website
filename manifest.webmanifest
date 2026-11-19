@@ -26,5 +26,19 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Products",
+      "short_name": "Products",
+      "description": "Explore NovaPharm public product ranges",
+      "url": "/products/"
+    },
+    {
+      "name": "Contact NovaPharm",
+      "short_name": "Contact",
+      "description": "Send a public business enquiry",
+      "url": "/contact/"
+    }
   ]
 }

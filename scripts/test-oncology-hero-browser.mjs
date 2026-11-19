@@ -49,6 +49,12 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             }
           });
         }
+        // Image decoding above scrolls through the horizontal mobile card track.
+        // Restore its intended starting position before measuring or capturing evidence.
+        await page.locator(".npoc-hope-focus .npoc-focus-cards").evaluate((track) => {
+          track.scrollLeft = 0;
+        });
+        await page.waitForTimeout(50);
         const layout=await page.evaluate(() => {
           const hero=document.querySelector(".npoc-hope-hero");
           const imageLayer=hero?.querySelector(".npoc-hero-visual");
@@ -57,6 +63,10 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           const cards=Array.from(document.querySelectorAll(".npoc-focus-cards .npoc-focus-card"));
           const rect=node=>node?.getBoundingClientRect();
           const mask=imageLayer?getComputedStyle(imageLayer):null;
+          const imageStyle=image?getComputedStyle(image):null;
+          const imageRect=rect(image);
+          const copyRect=rect(hero?.querySelector(".npoc-hero-copy"));
+          const cardTrack=document.querySelector(".npoc-focus-cards");
           return {
             heading:heading?.textContent?.trim(),
             hasAnnotation:!!document.querySelector(".npoc-image-note"),
@@ -69,7 +79,13 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             portraitWidth:rect(image)?.width||0,
             portraitHeight:rect(image)?.height||0,
             layerWidth:rect(imageLayer)?.width||0,
+            imageAspect:imageRect?.width && imageRect?.height ? imageRect.width/imageRect.height : 0,
+            mobileCopyGap:copyRect && imageRect ? copyRect.top-imageRect.bottom : 0,
             fade:[mask?.maskImage,mask?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
+            imageMask:[imageStyle?.maskImage,imageStyle?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
+            imageMaskCss:[imageStyle?.maskImage,imageStyle?.webkitMaskImage].filter(Boolean).join(" "),
+            cardTrackScrollLeft:cardTrack?.scrollLeft||0,
+            firstCardLabel:cards[0]?.querySelector("span")?.textContent?.trim()||"",
             focusHeadingLines: (() => { const h=document.querySelector(".npoc-focus-copy h2"); return h ? Math.round(rect(h).height/parseFloat(getComputedStyle(h).lineHeight)) : 0; })(),
             cards:cards.map(card=>({
               x:rect(card)?.x||0,y:rect(card)?.y||0,
@@ -83,7 +99,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,"cover",`${label}: photograph must fill its media canvas at every viewport without inset rectangular edges`);
+        assert.equal(layout.imageFit,viewport.width>1100?"cover":"contain",`${label}: desktop must cover while tablet/mobile preserve the complete portrait`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);
@@ -96,7 +112,14 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           assert.ok(layout.layerWidth/layout.heroWidth>=(viewport.width>=1101?.55:.7),`${label}: image not integrated into hero`);
           assert.equal(layout.fade,true,`${label}: photo has a hard boundary, no gradient mask`);
         }else{
-          assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked`);
+          assert.equal(layout.fade,false,`${label}: mobile outer photo layer should remain unmasked`);
+          assert.equal(layout.imageMask,true,`${label}: mobile image edge must fade out embedded source lettering`);
+          assert.ok(layout.imageMaskCss.includes("8%") && layout.imageMaskCss.includes("14%"),`${label}: source-edge letters must be fully suppressed before portrait detail begins`);
+          assert.ok(Math.abs(layout.imageAspect-(890/550))<0.04,`${label}: mobile portrait must retain its native 890:550 frame without letterboxing`);
+          assert.ok(layout.mobileCopyGap>=0 && layout.mobileCopyGap<=36,`${label}: mobile copy must follow the portrait without an artificial white gap`);
+          assert.equal(layout.cardTrackScrollLeft,0,`${label}: mobile portfolio carousel must start at the first card`);
+          assert.equal(layout.firstCardLabel,"Solid tumours",`${label}: first mobile portfolio card must be visible`);
+          assert.ok(layout.cards[0].x>=0 && layout.cards[0].x+layout.cards[0].width<=layout.viewportWidth+1,`${label}: first mobile card is clipped at initial scroll position`);
         }
         // Screenshot SS2, 12 November: desktop hero text starts near the left
         // margin and three balanced cards fill the remaining portfolio row.

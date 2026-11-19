@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { allocateNumber, audit, enqueue, insertIgnore, nowIso, one, run, stableHash, transaction, all } from "../data/database.mjs";
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
+import { assertEnterpriseOrderSubmissionAllowed } from "./enterprise-order-release-gate.mjs";
 
 function required(value, name) {
   const clean = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
@@ -491,6 +492,9 @@ export async function activateCustomer(applicationId, actor) {
 }
 
 export async function createOrder(input, actor, scopedCustomerId = null) {
+  // In production/staging, no order, number, reservation or outbox write may
+  // occur until an independently accepted release authority is integrated.
+  assertEnterpriseOrderSubmissionAllowed();
   const customerId = scopedCustomerId || required(input.customerId, "Customer");
   const customer = await one("SELECT * FROM customers WHERE id = ?", customerId);
   if (!customer || customer.lifecycle_status !== "active") throw Object.assign(new Error("Customer account is not active."), { statusCode: 409 });

@@ -106,3 +106,29 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* Privacy controls: visible, keyboard-operable actions without a modal prerequisite. */
+.privacy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-block: 1.25rem 0;
+}
+.privacy-actions > a,
+.privacy-actions > button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  text-wrap: pretty;
+}
+.privacy-actions > a:focus-visible,
+.privacy-actions > button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+@media (max-width: 540px) {
+  .privacy-actions { align-items: stretch; flex-direction: column; }
+  .privacy-actions > a, .privacy-actions > button { justify-content: center; }
+}

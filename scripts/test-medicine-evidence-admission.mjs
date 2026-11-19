@@ -64,6 +64,9 @@ test("synthetic fixture is a private candidate, NEVER an accepted observation", 
   assert.equal(result.acceptedObservations, 0);
   assert.equal(result.customerPublishApproved, false);
   assert.equal(result.records[0].status, "candidate_not_accepted");
+  assert.equal(result.records[0].code_system, "BNF_PRESENTATION_CODE");
+  assert.equal(result.records[0].source_code, "0302000N0BBAYBA");
+  assert.equal(typeof result.records[0].source_code, "string");
   assert.equal(result.requiresCurrentRightsRecheck, true);
   assert.equal(result.requiresIndependentAtomicCommit, true);
   assert.equal(result.requiresAuditReceipt, true);
@@ -131,4 +134,20 @@ test("customer publish, other sources, fabricated licence terms and client-origi
   refused(x, "source_rights_not_accepted");
   x = make(); x.release.verifiedServerSide = false;
   refused(x, "release_not_private");
+});
+
+test("G1 preserves the exact source code needed for G2, never a name-based guess", () => {
+  const input = make();
+  input.rows[0].source_code = "001234567890";
+  input.rows[0].identity_proof.sourceCode = "001234567890";
+  const result = prepareOfficialMedicineEvidenceCandidate(input);
+  assert.equal(result.records[0].source_code, "001234567890");
+  assert.equal(result.records[0].code_system, "BNF_PRESENTATION_CODE");
+  assert.equal(result.records[0].source_code.startsWith("00"), true);
+  const other = make();
+  other.rows[0].code_system = "SNOMED_CODE";
+  other.rows[0].identity_proof.codeSystem = "SNOMED_CODE";
+  const candidate = prepareOfficialMedicineEvidenceCandidate(other);
+  assert.equal(candidate.records[0].code_system, "SNOMED_CODE");
+  assert.equal(candidate.records[0].source_code, "0302000N0BBAYBA");
 });

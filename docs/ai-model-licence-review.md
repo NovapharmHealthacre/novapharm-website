@@ -25,3 +25,9 @@ The implementation is commercially usable by NovaPharm because its source and ge
 Record the model name, immutable revision, source, model card, software licence, model licence, commercial-use permission, attribution, redistribution and modification rights, restrictions, quantisation, download size, checksums, supported languages, Safari and Chromium behaviour, CPU and memory measurements, security review, evaluation results and update policy. Non-commercial, unclear, unpinned or anonymously mirrored models are prohibited.
 
 This is a technical licence assessment, not a legal opinion. A future third-party model with material contractual restrictions should receive legal review.
+
+## Nova Model Microscope research — 18 November 2026
+
+OpenAI Microscope is a 2020 research visualization project and **not a pharmaceutical data API**. Its methodology may inform NovaPharm's own model-inspection workflow, but this register **does not authorize access to OpenAI model internals**. The related `tensorflow/lucid` library was archived in April 2024, targets TensorFlow 1.x-era research, and is **not introduced as a production dependency**.
+
+No currently registered NovaPharm model exposes approved neuron-level introspection. The in-house Evidence Vector is a deterministic lexical retrieval algorithm **without neural weights**; the local Ollama adapter contains no approved model and external inference providers do not grant inspection rights. Before a genuine neuron/feature inspector operates, register the specific model, artifact source, licence, immutable hash, introspection rights, evaluation dataset and reproduction technique; complete quality/privacy/security approval. The separate `model-microscope-inspection-v1.schema.json` is a data-projection contract, not a licence to create or publish imagery.

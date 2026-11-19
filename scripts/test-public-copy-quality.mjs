@@ -54,9 +54,9 @@ for (const file of files) {
   const count = tag => elements.filter(node => node.tagName === tag).length;
   const htmlNode = elements.find(node => node.tagName === "html");
   if (getAttribute(htmlNode ?? {}, "lang") !== "en-GB") failures.push(route + ": missing British English language declaration");
-  // SVG <title> labels charts accessibly; only the document <head> title is metadata.
-  const head = elements.find(node => node.tagName === "head");
-  const documentTitles = (head?.childNodes ?? []).filter(node => node.tagName === "title");
+  // Chart SVG <title> nodes are accessible labels, not document titles.
+  const documentHead = elements.find(node => node.tagName === "head");
+  const documentTitles = (documentHead?.childNodes ?? []).filter(node => node.tagName === "title");
   if (documentTitles.length !== 1) failures.push(route + ": expected exactly one document title");
 
   const redirect = elements.some(node => node.tagName === "meta" &&

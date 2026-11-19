@@ -673,3 +673,68 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
     mask-image:none;
   }
 }
+
+
+/* Owner constraint | keep the complete portrait at tablet and mobile sizes.
+   Desktop alone uses cover to remove the JPEG's internal left-edge lettering.
+   The responsive image mask hides those source-edge pixels without cropping
+   the face or sunset. */
+@media (min-width:761px) and (max-width:1100px) {
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:right center;
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+}
+@media (max-width:760px) {
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:center center;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 4%,#000 10%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 4%,#000 10%);
+  }
+}
+
+/* Owner-approved mobile composition | v7: contained portrait, feathered source edge, copy in normal flow. */
+@media (max-width:760px) {
+  body[data-page="oncology"] main.npoc-page section.npoc-hero.npoc-hope-hero {
+    display:block;
+    align-items:stretch;
+    min-height:0;
+    height:auto;
+    background:#fff;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual {
+    position:relative;
+    inset:auto;
+    width:100%;
+    height:auto;
+    aspect-ratio:890/550;
+    overflow:hidden;
+    margin:0;
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    position:static;
+    inset:auto;
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center top;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 8%,rgba(0,0,0,.5) 10%,#000 14%);
+    mask-image:linear-gradient(90deg,transparent 0%,transparent 8%,rgba(0,0,0,.5) 10%,#000 14%);
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-shade {
+    display:none;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-content {
+    position:relative;
+    z-index:2;
+    width:min(calc(100% - 40px),1400px);
+    padding:22px 0 54px;
+    margin:0 auto;
+  }
+}

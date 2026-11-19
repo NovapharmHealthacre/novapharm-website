@@ -4,12 +4,17 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   ApprovalStatus,
+  CollectionView,
+  Disclosure,
+  GroupBox,
+  SplitView,
   Breadcrumbs,
   DataTable,
   Dialog,
   FormField,
   Navigation,
   StatePanel,
+  SearchField,
   Tabs,
   Timeline,
 } from "../src/index.ts";
@@ -48,4 +53,44 @@ test("timeline and dialog keep visible content and explicit relationships", () =
   assert.match(html, /aria-label="Approval pathway"/);
   assert.match(html, /aria-labelledby="evidence-dialog-title"/);
   assert.match(html, /aria-describedby="evidence-dialog-description"/);
+});
+
+test("search field exposes scope, assistive result status and a non-submitting clear action", () => {
+  const html = renderToStaticMarkup(<SearchField label="Products" value="insulin"
+    onChange={() => {}} onClear={() => {}} scope="Authorised product catalogue"
+    resultsId="products-list" resultCount={1} placeholder="Search name or code" />);
+  assert.match(html, /type="search"/);
+  assert.match(html, /aria-describedby="[^"]+-scope"/);
+  assert.match(html, /aria-controls="products-list"/);
+  assert.match(html, /Search scope: Authorised product catalogue/);
+  assert.match(html, /role="status" aria-live="polite">1 result/);
+  assert.match(html, /type="button"[^>]*aria-label="Clear products"/);
+  assert.match(html, /aria-hidden="true"/);
+  const empty = renderToStaticMarkup(<SearchField label="Products" value="" onChange={() => {}} />);
+  assert.doesNotMatch(empty, /Clear products/);
+});
+
+test("group box labels related content, without nesting unnecessary containers", () => {
+  const html = renderToStaticMarkup(<>
+    <GroupBox title="Delivery details" description="Only authorised addresses appear here." headingLevel={2}>
+      <label htmlFor="delivery-reference">Reference</label><input id="delivery-reference" />
+    </GroupBox>
+    <GroupBox variant="plain"><span>Ungrouped title-free note</span></GroupBox>
+  </>);
+  assert.match(html, /<section[^>]*class="np-hig-box np-hig-box--outlined"[^>]*aria-labelledby=/);
+  assert.match(html, /<h2 class="np-hig-box__heading"/);
+  assert.match(html, /Only authorised addresses appear here/);
+  assert.match(html, /<div class="np-hig-box np-hig-box--plain"/);
+  assert.doesNotMatch(html, /aria-label="undefined"/);
+});
+
+test("collection source order, split panes and disclosure remain accessible without JS", () => {
+  const html = renderToStaticMarkup(<>
+    <CollectionView title="Service groups" items={[{ id: "a", content: "First" }, { id: "b", content: "Second" }]} />
+    <SplitView label="Evidence and details" leading={<nav>Sources</nav>}><p>Selected evidence</p></SplitView>
+    <Disclosure summary="More information">Verified notes</Disclosure>
+  </>);
+  assert.match(html, /<ul class="np-hig-collection"><li>First<\/li><li>Second<\/li><\/ul>/);
+  assert.match(html, /class="np-hig-split-view" aria-label="Evidence and details"/);
+  assert.match(html, /<details class="np-hig-disclosure"><summary>More information<\/summary>/);
 });
