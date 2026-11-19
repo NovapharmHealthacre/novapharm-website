@@ -46,7 +46,7 @@ jobs:
 
   remote-apple-link-audit:
     name: Manual Apple HIG 210-URL and section-anchor audit (not guideline review)
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.remote_check }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.remote_check) || (github.event_name == 'pull_request' && github.event.pull_request.number == 861) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 18
     permissions:
