@@ -22,6 +22,7 @@ REGION = os.environ.get("AWS_REGION", "eu-north-1")
 LEDGER = os.environ["PAYMENT_LEDGER_TABLE"]
 KEY_ID = os.environ["STRIPE_API_KEY_SECRET_ID"]
 SUCCESS_ORIGIN = "https://novapharmhealthcare.com"
+PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com"
 MAX_PENCE = 99_999_999
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,99}$")
 SESSION = re.compile(r"^cs_live_[A-Za-z0-9]+$")
@@ -133,8 +134,12 @@ def details(order, order_id, subject):
         gross += amount
     if (shipping > 0) != has_delivery or gross != total:
         raise NotReady("Final approved tax, shipping and line items do not reconcile")
+    channel = order.get("checkoutChannel")
+    if channel is not None and channel != s("PORTAL_RETAIL"):
+        raise NotReady("Unknown checkout return channel")
     return {"orderId": order_id, "customerSub": subject, "customerId": subject,
-            "quoteVersion": quote, "totalGrossMinor": total, "lines": lines}
+            "quoteVersion": quote, "totalGrossMinor": total, "lines": lines,
+            "checkoutChannel": "PORTAL_RETAIL" if channel else "PUBLIC_STORE"}
 
 
 def stripe_session(order, attempt):
@@ -146,15 +151,26 @@ def stripe_session(order, attempt):
     if (not isinstance(secret, str) or len(secret) < 20 or
         not re.fullmatch(r"(?:rk|sk)_live_[A-Za-z0-9_]+", secret)):
         raise NotReady("Stripe live restricted credentials are unavailable")
+    # Stripe API 2026-09-30.endive removed payment_method_types from Checkout Sessions.
+    # Stripe now selects supported methods; the verified account has active card payments.
+    # The return domain comes from the approved order record, never a browser
+    # or API-supplied URL. Public storefront checkout remains unchanged.
+    if order.get("checkoutChannel") == "PORTAL_RETAIL":
+        redirect_base = PORTAL_ORIGIN + "/portal/products/"
+        success_url = redirect_base + "?checkout=return&order_id=" + urllib.parse.quote(order["orderId"])
+        cancel_url = redirect_base + "?checkout=cancelled&order_id=" + urllib.parse.quote(order["orderId"])
+    else:
+        success_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"])
+        cancel_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled"
     form = {
-        "mode": "payment", "payment_method_types[0]": "card",
+        "mode": "payment",
         "client_reference_id": order["orderId"],
         "billing_address_collection": "required",
         "shipping_address_collection[allowed_countries][0]": "GB",
         "phone_number_collection[enabled]": "true",
         "metadata[delivery_charge_minor]": "0",
-        "success_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"]),
-        "cancel_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled",
+        "success_url": success_url,
+        "cancel_url": cancel_url,
         "automatic_tax[enabled]": "false",
         "metadata[order_id]": order["orderId"],
         "metadata[customer_id]": order["customerId"],
@@ -176,7 +192,25 @@ def stripe_session(order, attempt):
     try:
         with urllib.request.urlopen(req, timeout=12) as resp:
             session = json.loads(resp.read(131072))
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError):
+    except urllib.error.HTTPError as exc:
+        # Never log keys, provider free text, buyer information or request bodies.
+        code, param = "unknown", "none"
+        try:
+            error = json.loads(exc.read(8192)).get("error", {})
+            value, field = error.get("code", ""), error.get("param", "")
+            if isinstance(value, str) and re.fullmatch(r"[a-z_]{1,70}", value):
+                code = value
+            if isinstance(field, str) and re.fullmatch(r"[a-zA-Z0-9_\[\]]{1,90}", field):
+                param = field
+        except (ValueError, TypeError, AttributeError):
+            pass
+        print("STRIPE_CHECKOUT_REJECTED status=" + str(exc.code) + " code=" + code + " param=" + param)
+        raise NotReady("Stripe could not create an approved Checkout session")
+    except (urllib.error.URLError, TimeoutError):
+        print("STRIPE_CHECKOUT_NETWORK_FAILURE")
+        raise NotReady("Stripe could not create an approved Checkout session")
+    except ValueError:
+        print("STRIPE_CHECKOUT_INVALID_RESPONSE")
         raise NotReady("Stripe could not create an approved Checkout session")
     url = session.get("url")
     if (not SESSION.fullmatch(str(session.get("id", ""))) or

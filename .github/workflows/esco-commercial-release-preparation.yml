@@ -6,6 +6,8 @@ on:
       - 'apps/esco-checkout/**'
       - 'infra/aws/esco-products-checkout-production.json'
       - 'scripts/esco-merchant-release-matrix.mjs'
+      - 'scripts/esco-371-clearance-audit.mjs'
+      - 'scripts/test-esco-371-clearance-audit.mjs'
       - 'scripts/esco-merchandising.mjs'
       - 'assets/data/esco-catalogue.json'
       - 'docs/commerce/esco-373-payment-activation.md'
@@ -29,7 +31,7 @@ jobs:
         with:
           node-version: 24
       - name: Configure Python 3.12
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
       - name: Install dependencies for isolated commercial and checkout unit tests
@@ -38,6 +40,10 @@ jobs:
         run: |
           node scripts/esco-merchant-release-matrix.mjs
           python apps/esco-checkout/merchant_release.py --bootstrap
+      - name: Reconcile all 371 remaining SKU exceptions against source certificate model annexes
+        run: |
+          node scripts/esco-371-clearance-audit.mjs
+          node --test scripts/test-esco-371-clearance-audit.mjs
       - name: Verify no unapproved SKU can be charged
         run: |
           python apps/esco-checkout/merchant_release.py --check
@@ -49,5 +55,7 @@ jobs:
           path: |
             docs/commerce/esco-2026-merchant-release-matrix.csv
             docs/commerce/esco-2026-release-evidence-draft.json
+            docs/commerce/esco-371-clearance-audit.json
+            docs/commerce/esco-371-clearance-audit.csv
           retention-days: 14
           if-no-files-found: error

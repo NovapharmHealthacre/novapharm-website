@@ -35,6 +35,8 @@ body[data-page="technology"] .np-intelligence {
   letter-spacing: .08em;
   line-height: 1.35;
 }
+/* WCAG AA: section kicker on the soft directory panel needs at least 4.5:1. */
+.np-intelligence .npi-directory-intro .npi-kicker { color: var(--npi-red-deep); }
 .np-intelligence .npi-section-heading { max-width: 780px; margin-bottom: clamp(36px, 5vw, 70px); }
 .np-intelligence .npi-section-heading h2,
 .np-intelligence .npi-centered-heading h2 {
@@ -979,3 +981,807 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-billing-switch button { padding-inline: 13px; }
 }
 @media (prefers-reduced-motion: reduce) { .np-intelligence .npi-plan-cta { transition: none; } }
+
+/* Dedicated Intelligence sign-in, visible without misrepresenting workspace activation. */
+.np-intelligence .np-intelligence-local-nav .npi-local-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #1d1d1f;
+  color: #fff;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.np-intelligence .np-intelligence-local-nav .npi-local-login:hover {
+  background: #3a3a3c;
+  color: #fff;
+}
+.np-intelligence .npi-research-access {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 360px;
+}
+.np-intelligence .npi-research-access .npi-button {
+  min-height: 44px;
+}
+.np-intelligence .npi-research-access .npi-research-access-status {
+  max-width: 340px;
+}
+
+
+/* Public NOVA workspace directory: discoverability without entitlements or source claims. */
+.np-intelligence .npi-workspace-directory {
+  margin-top: clamp(42px,6vw,84px);
+  padding: clamp(22px,4vw,48px);
+  border: 1px solid #dedee2;
+  border-radius: 28px;
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+.np-intelligence .npi-directory-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.np-intelligence .npi-directory-intro > div:first-child { max-width: 680px; }
+/* AA contrast on the directory's #f5f5f7 surface, including 390px mobile. */
+.np-intelligence .npi-directory-intro .npi-kicker { color: #bd100b; }
+.np-intelligence .npi-directory-intro h3 {
+  font-size: clamp(2rem,3.4vw,3.4rem);
+  font-weight: 680;
+  line-height: 1.09;
+  letter-spacing: 0;
+  margin: 9px 0 15px;
+}
+.np-intelligence .npi-directory-intro p:not(.npi-kicker) {
+  color: #505057;
+  font-size: clamp(.95rem,1.45vw,1.08rem);
+  line-height: 1.6;
+}
+.np-intelligence .npi-directory-actions,
+.np-intelligence .npi-directory-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+.np-intelligence .npi-directory-actions { padding-bottom: 5px; }
+.np-intelligence .npi-directory-actions .npi-button { min-height: 44px; }
+.np-intelligence .npi-directory-groups { display: grid; gap: 11px; }
+.np-intelligence .npi-directory-group {
+  border: 1px solid #dddddf;
+  border-radius: 17px;
+  background: #fff;
+  overflow: hidden;
+}
+.np-intelligence .npi-directory-group > summary {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  padding: 21px 24px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 660;
+  color: #1d1d1f;
+}
+.np-intelligence .npi-directory-group > summary::-webkit-details-marker { display: none; }
+.np-intelligence .npi-directory-group > summary::after {
+  content: '+';
+  font-size: 1.35rem;
+  line-height: 1;
+  font-weight: 450;
+  color: #505057;
+}
+.np-intelligence .npi-directory-group[open] > summary::after { content: '−'; }
+.np-intelligence .npi-directory-group > summary > span:nth-child(2) {
+  margin-left: auto;
+  font-size: .81rem;
+  font-weight: 500;
+  color: #66666c;
+}
+.np-intelligence .npi-directory-list {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1px;
+  background: #e8e8ea;
+  border-top: 1px solid #e3e3e6;
+}
+.np-intelligence .npi-directory-item {
+  min-width: 0;
+  padding: clamp(19px,2.4vw,28px);
+  background: #fff;
+  scroll-margin-top: 120px;
+}
+.np-intelligence .npi-directory-item-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+.np-intelligence .npi-directory-item h4 {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  font-weight: 670;
+  margin: 0;
+  color: #1d1d1f;
+}
+.np-intelligence .npi-directory-state {
+  color: #505057;
+  font-size: .72rem;
+  border: 1px solid #e1e1e5;
+  background: #f5f5f7;
+  border-radius: 999px;
+  padding: 5px 9px;
+  line-height: 1.3;
+  max-width: 230px;
+}
+.np-intelligence .npi-directory-item > p {
+  color: #4f4f56;
+  font-size: .87rem;
+  line-height: 1.58;
+  margin: 0 0 12px;
+}
+.np-intelligence .npi-directory-item .npi-directory-requirements {
+  color: #64646b;
+  font-size: .8rem;
+}
+.np-intelligence .npi-directory-requirements strong { color: #38383e; }
+.np-intelligence .npi-directory-links { margin-top: 20px; }
+.np-intelligence .npi-directory-links a {
+  color: #0058ad;
+  font-size: .82rem;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.np-intelligence .npi-directory-links a:hover { color: #003f81; }
+.np-intelligence .npi-workspace-directory > .npi-workspace-disclosure {
+  color: #595961;
+  max-width: 100%;
+  font-size: .8rem;
+  text-align: left;
+  line-height: 1.6;
+  margin-top: 23px;
+}
+.np-intelligence .npi-workspace-directory :is(a,summary):focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .np-intelligence .npi-workspace-directory { border-radius: 20px; padding: 20px; }
+  .np-intelligence .npi-directory-list { grid-template-columns: minmax(0,1fr); }
+  .np-intelligence .npi-directory-intro { align-items: flex-start; }
+}
+@media (max-width: 540px) {
+  .np-intelligence .npi-directory-actions { flex-direction: column; align-items: stretch; width: 100%; }
+  .np-intelligence .npi-directory-actions a { width: 100%; text-align: center; }
+  .np-intelligence .npi-directory-group > summary { padding: 18px; }
+  .np-intelligence .npi-directory-group > summary > span:nth-child(2) { font-size: .72rem; }
+}
+
+/* Editorial Intelligence hero, 11 Nov 2026. Real, accessible copy sits above a decorative photo.
+   Logo is the approved vector supplied for NovaPharm Intelligence; no text is baked into imagery. */
+.np-intelligence .npi-hero--editorial {
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: clamp(620px, 57vw, 800px);
+  padding-block: clamp(64px, 7vw, 110px);
+  overflow: hidden;
+  background: #f7f8fa;
+  text-align: left;
+}
+.np-intelligence .npi-hero--editorial .npi-hero-photo {
+  position: absolute;
+  z-index: -2;
+  inset: 0 0 0 auto;
+  width: min(55%, 1000px);
+  background: #f1f3f6 url("/assets/media/technology/novapharm-intelligence-hero.avif?v=20261111-crisp-v2") center top / cover no-repeat;
+}
+.np-intelligence .npi-hero--editorial::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(250,251,253,.98) 0%, rgba(250,251,253,.94) 28%, rgba(250,251,253,.73) 45%, rgba(250,251,253,.22) 63%, rgba(250,251,253,0) 82%);
+}
+.np-intelligence .npi-hero--editorial .npi-hero-content {
+  position: relative;
+  z-index: 1;
+  align-items: flex-start;
+  margin-inline: auto;
+}
+.np-intelligence .npi-hero--editorial .npi-hero-logo {
+  width: clamp(225px, 22vw, 320px);
+  max-width: 72vw;
+  margin: 0 0 clamp(24px, 3vw, 42px);
+}
+.np-intelligence .npi-hero--editorial .npi-hero-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.np-intelligence .npi-hero--editorial h1 {
+  max-width: 1040px;
+  font-size: clamp(3.15rem, 5vw, 5.1rem);
+  font-weight: 700;
+  line-height: 1.055;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+.np-intelligence .npi-hero--editorial h1 span { color: #75757b; }
+.np-intelligence .npi-hero--editorial .npi-hero-intro {
+  max-width: 605px;
+  margin-top: 28px;
+  color: #45454b;
+  font-size: clamp(1.05rem, 1.45vw, 1.24rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.np-intelligence .npi-hero--editorial .npi-actions { margin-top: 30px; }
+.np-intelligence .npi-hero--editorial .npi-status-line {
+  max-width: 610px;
+  margin-top: 21px;
+  color: #55565b;
+}
+@media (min-width: 1600px) {
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: center top; }
+}
+@media (max-width: 1020px) {
+  .np-intelligence .npi-hero--editorial {
+    min-height: 635px;
+    padding-block: 70px;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { width: 82%; background-position: 60% top; }
+  .np-intelligence .npi-hero--editorial::before {
+    background: linear-gradient(90deg, rgba(250,251,253,.99) 0%, rgba(250,251,253,.94) 52%, rgba(250,251,253,.53) 78%, rgba(250,251,253,.27) 100%);
+  }
+  .np-intelligence .npi-hero--editorial h1 { max-width: 675px; font-size: clamp(3.1rem, 7.5vw, 5.1rem); }
+}
+@media (max-width: 600px) {
+  .np-intelligence .npi-hero--editorial {
+    min-height: 660px;
+    padding-block: 46px 52px;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { width: 100%; opacity: .40; background-position: 56% top; }
+  .np-intelligence .npi-hero--editorial::before {
+    background: linear-gradient(90deg, rgba(250,251,253,.97) 0%, rgba(250,251,253,.94) 46%, rgba(250,251,253,.79) 100%);
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-logo { width: clamp(220px, 65vw, 290px); margin-bottom: 22px; }
+  .np-intelligence .npi-hero--editorial h1 {
+    max-width: 100%;
+    font-size: clamp(2.55rem, 10.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-intro {
+    margin-top: 24px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .np-intelligence .npi-hero--editorial .npi-actions {
+    width: 100%;
+    margin-top: 26px;
+  }
+}
+@media (prefers-reduced-data: reduce) {
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-image: none; }
+}
+
+/* Native, CSP-compatible interactive intelligence workspace directory. */
+.np-intelligence .npi-workspace-directory {
+  width: min(1460px, calc(100vw - 48px));
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+.np-intelligence .npi-workspace-directory .npi-directory-groups { display:none !important; }
+.np-intelligence .npi-workspace-directory .npi-workspace-live-experience {
+  display:block; margin-top:18px; background:#fff; border-radius:0; overflow:visible; width:100%;
+}
+@media (max-width:900px) {
+  .np-intelligence .npi-workspace-directory {width:min(100%,calc(100vw - 28px));}
+  .np-intelligence .npi-workspace-directory .npi-workspace-live-experience {margin-top:9px;}
+}
+
+/* Hide the unselected, static plan link even when button display rules apply. */
+#intelligence-pricing .npi-plan-cta[hidden] { display: none !important; }
+
+/* Owner-approved 2026 workspace journey: immersive editorial photograph, no card UI. */
+.np-intelligence .npi-journey {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  width: 100vw;
+  max-width: 100vw;
+  min-height: 795px;
+  margin-left: calc(50% - 50vw);
+  color: #1d1d1f;
+  background: #f8f9fb;
+  overflow: hidden;
+}
+.np-intelligence .npi-journey-scene {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, #fafafa 0%, rgba(250,250,251,.95) 23%, rgba(250,250,251,.70) 49%, rgba(250,250,251,.18) 100%),
+    linear-gradient(0deg, #f8f9fb 5%, rgba(248,249,251,.91) 29%, rgba(248,249,251,.32) 66%, rgba(248,249,251,.06) 100%),
+    url("/assets/media/modules/technology-traceability.jpg");
+  background-size: cover, cover, cover;
+  background-position: center, center, center 40%;
+  filter: saturate(.75);
+}
+.np-intelligence .npi-journey-inner {
+  position: relative;
+  width: min(1460px, calc(100% - clamp(40px, 9vw, 152px)));
+  margin-inline: auto;
+  padding: clamp(76px, 7vw, 110px) 0 56px;
+}
+.np-intelligence .npi-journey-heading {
+  max-width: 810px;
+}
+.np-intelligence .npi-journey-eyebrow {
+  margin: 0 0 20px;
+  font-size: .83rem;
+  line-height: 1.4;
+  font-weight: 650;
+  letter-spacing: .09em;
+  color: #63646c;
+}
+.np-intelligence .npi-journey-heading h2 {
+  margin: 0;
+  color: #161617;
+  font-weight: 680;
+  letter-spacing: normal;
+  line-height: 1.06;
+  font-size: clamp(3rem, 5.55vw, 5.5rem);
+}
+.np-intelligence .npi-journey-heading > p:last-child {
+  margin: 22px 0 0;
+  max-width: 655px;
+  color: #5e6069;
+  font-size: clamp(1.04rem, 1.45vw, 1.32rem);
+  font-weight: 400;
+  line-height: 1.48;
+  letter-spacing: normal;
+}
+.np-intelligence .npi-journey-stages {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(9px, 1.2vw, 23px);
+  min-height: 310px;
+  align-items: end;
+  padding: 0 0 14px;
+  margin-top: 38px;
+}
+.np-intelligence .npi-journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  min-height: 140px;
+  padding: 10px 5px 7px;
+  margin: 0;
+  color: #232428;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  box-shadow: none;
+  text-align: left;
+  cursor: pointer;
+  transform: translateY(calc(var(--step) * -16px));
+  transition: opacity .22s ease, color .22s ease, transform .22s ease;
+}
+.np-intelligence .npi-journey-number {
+  display: block;
+  color: #676972;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+  transition: color .22s ease;
+}
+.np-intelligence .npi-journey-name {
+  display: block;
+  margin-top: 9px;
+  max-width: 190px;
+  font-size: clamp(1rem, 1.22vw, 1.27rem);
+  font-weight: 680;
+  line-height: 1.2;
+  letter-spacing: normal;
+}
+.np-intelligence .npi-journey-teaser {
+  display: block;
+  max-width: 205px;
+  margin-top: 12px;
+  color: #64666f;
+  font-size: clamp(.78rem, .87vw, .92rem);
+  line-height: 1.42;
+  font-weight: 400;
+}
+.np-intelligence .npi-journey-step:hover,
+.np-intelligence .npi-journey-step:focus-visible {
+  color: #005ac2;
+}
+.np-intelligence .npi-journey-step.is-active .npi-journey-number,
+.np-intelligence .npi-journey-step.is-active .npi-journey-name {
+  color: #0066cc;
+}
+.np-intelligence .npi-journey-step:focus-visible,
+.np-intelligence .npi-journey-controls button:focus-visible,
+.np-intelligence .npi-journey-see:focus-visible,
+.np-intelligence .npi-journey-explore:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 3px;
+}
+.np-intelligence .npi-journey-line {
+  position: relative;
+  height: clamp(55px, 8vw, 112px);
+  margin-top: -12px;
+  pointer-events: none;
+}
+.np-intelligence .npi-journey-rail {
+  position: absolute;
+  left: 4%;
+  bottom: 12%;
+  width: 92%;
+  height: 1.3px;
+  background: rgba(95,103,118,.5);
+  transform-origin: left center;
+  transform: rotate(-2.65deg);
+}
+.np-intelligence .npi-journey-marker {
+  position: absolute;
+  left: calc(4% + var(--marker-index) * 13.142857%);
+  bottom: calc(12% + var(--marker-index) * 8%);
+  width: 11px;
+  height: 11px;
+  border: 2px solid #b4b9c3;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, 50%);
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.np-intelligence .npi-journey-marker.is-active {
+  width: 14px;
+  height: 14px;
+  background: #0066cc;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(0,102,204,.2), 0 0 16px rgba(0,102,204,.28);
+}
+.np-intelligence .npi-journey-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 38px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(140,145,154,.22);
+}
+.np-intelligence .npi-journey-detail {
+  width: min(660px, 100%);
+  min-height: 100px;
+}
+.np-intelligence .npi-journey-status {
+  margin: 0 0 9px;
+  color: #5e6069;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+.np-intelligence .npi-journey-status span { margin-left: 11px; color: #0066cc; }
+.np-intelligence .npi-journey-detail h3 {
+  margin: 0 0 7px;
+  color: #1d1d1f;
+  font-size: clamp(1.38rem, 2vw, 1.9rem);
+  font-weight: 680;
+  line-height: 1.14;
+  letter-spacing: normal;
+}
+.np-intelligence .npi-journey-detail > p:last-child {
+  margin: 0;
+  max-width: 620px;
+  color: #65676e;
+  font-size: .97rem;
+  line-height: 1.52;
+}
+.np-intelligence .npi-journey-controls {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  flex: 0 0 auto;
+  padding-bottom: 5px;
+}
+.np-intelligence .npi-journey-navigation {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.np-intelligence .npi-journey-navigation button {
+  border: 1px solid #d0d3d9;
+  background: rgba(255,255,255,.55);
+  border-radius: 999px;
+  padding: 9px 15px;
+  min-height: 42px;
+  color: #202124;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.np-intelligence .npi-journey-navigation button:disabled {
+  cursor: not-allowed;
+  opacity: .37;
+}
+.np-intelligence .npi-journey-see {
+  color: #0066cc;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: .95rem;
+  font-weight: 600;
+}
+.np-intelligence .npi-journey-see:hover { text-decoration: underline; }
+.np-intelligence .npi-journey-explore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 34px;
+  min-height: 45px;
+  padding: 10px 21px;
+  color: #fff;
+  background: #1d1d1f;
+  border: none;
+  border-radius: 999px;
+  font-size: .95rem;
+  line-height: 1.3;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.np-intelligence .npi-journey-explore:hover { background: #353538; transform: translateY(-1px); }
+.np-intelligence .npi-workspace-disclosure {
+  margin-top: 22px;
+}
+@media (max-width: 1100px) {
+  .np-intelligence .npi-journey-inner { width: calc(100% - 72px); }
+  .np-intelligence .npi-journey-stages { gap: 10px; }
+  .np-intelligence .npi-journey-step { transform: translateY(calc(var(--step) * -12px)); }
+  .np-intelligence .npi-journey-name { font-size: .99rem; }
+  .np-intelligence .npi-journey-teaser { font-size: .79rem; }
+}
+@media (max-width: 900px) {
+  .np-intelligence .npi-journey { min-height: unset; }
+  .np-intelligence .npi-journey-inner { width: calc(100% - 44px); padding: 60px 0 48px; }
+  .np-intelligence .npi-journey-scene {
+    background-image:
+      linear-gradient(90deg, rgba(250,250,251,.90), rgba(250,250,251,.68)),
+      linear-gradient(0deg, #f8f9fb 14%, rgba(248,249,251,.72) 72%, rgba(248,249,251,.5)),
+      url("/assets/media/modules/technology-traceability.jpg");
+  }
+  .np-intelligence .npi-journey-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 13px;
+    min-height: 0;
+    margin-top: 40px;
+    padding: 4px 0 15px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .np-intelligence .npi-journey-step {
+    flex: 0 0 172px;
+    min-height: 164px;
+    padding: 12px;
+    transform: none;
+    background: rgba(255,255,255,.56);
+    border: 1px solid rgba(192,197,207,.52);
+    border-radius: 11px;
+    scroll-snap-align: center;
+  }
+  .np-intelligence .npi-journey-step.is-active {
+    border-color: #0066cc;
+    background: rgba(255,255,255,.90);
+  }
+  .np-intelligence .npi-journey-name { font-size: 1.07rem; }
+  .np-intelligence .npi-journey-teaser { font-size: .84rem; }
+  .np-intelligence .npi-journey-line { display: none; }
+  .np-intelligence .npi-journey-bottom { padding-top: 20px; flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+  .np-intelligence .npi-journey-inner { width: calc(100% - 36px); padding-top: 53px; padding-bottom: 42px; }
+  .np-intelligence .npi-journey-heading h2 { font-size: clamp(2.5rem, 11vw, 3.9rem); }
+  .np-intelligence .npi-journey-heading > p:last-child { font-size: 1.02rem; }
+  .np-intelligence .npi-journey-stages { margin-top: 32px; }
+  .np-intelligence .npi-journey-bottom { gap: 25px; }
+  .np-intelligence .npi-journey-controls { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; }
+  .np-intelligence .npi-journey-detail { min-height: 133px; }
+  .np-intelligence .npi-journey-explore { margin-top: 27px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-intelligence .npi-journey-step,
+  .np-intelligence .npi-journey-explore,
+  .np-intelligence .npi-journey-marker { transition: none; }
+  .np-intelligence .npi-journey-explore:hover { transform: none; }
+}
+
+
+/* Owner-approved 30-day trial. Informational until governed customer enrolment is live. */
+.np-intelligence .npi-trial-offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: clamp(24px, 4vw, 60px);
+  align-items: center;
+  margin: 0 0 30px;
+  padding: clamp(27px, 4vw, 52px);
+  background: #fff;
+  border: 1px solid #e3d7d6;
+  border-left: 4px solid #e3120b;
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(30, 28, 30, .045);
+}
+.np-intelligence .npi-trial-offer .npi-kicker { color: #a31915; margin-bottom: 14px; }
+.np-intelligence .npi-trial-offer h3 {
+  color: #1d1d1f;
+  font-size: clamp(2rem, 3.3vw, 3.35rem);
+  font-weight: 650;
+  line-height: 1.13;
+  letter-spacing: 0;
+  margin: 0 0 19px;
+}
+.np-intelligence .npi-trial-offer-lead > p:not(.npi-kicker) {
+  max-width: 420px;
+  color: #55555c;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.np-intelligence .npi-trial-offer-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.np-intelligence .npi-trial-offer-price strong {
+  color: #191919;
+  font-size: clamp(3.5rem, 5vw, 5rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+.np-intelligence .npi-trial-offer-price span { color: #626269; font-size: 1rem; }
+.np-intelligence .npi-trial-offer-detail ul {
+  margin: 0;
+  padding-left: 19px;
+  color: #404046;
+  font-size: .91rem;
+  line-height: 1.75;
+}
+.np-intelligence .npi-trial-offer-status {
+  margin: 20px 0 0;
+  color: #a31915;
+  font-size: .84rem;
+  font-weight: 700;
+}
+.np-intelligence .npi-plan-cta-pending,
+.np-intelligence .npi-plan-featured .npi-plan-cta-pending {
+  background: #ececef;
+  border-color: #d6d6dc;
+  color: #56565f;
+  cursor: not-allowed;
+  user-select: none;
+}
+.np-intelligence .npi-plan-cta-pending:hover,
+.np-intelligence .npi-plan-featured .npi-plan-cta-pending:hover {
+  background: #ececef;
+  color: #56565f;
+}
+@media (max-width: 860px) {
+  .np-intelligence .npi-trial-offer { grid-template-columns: 1fr; }
+}
+@media (max-width: 540px) {
+  .np-intelligence .npi-trial-offer { border-radius: 17px; gap: 18px; }
+}
+
+/* Four-plan Intelligence pricing — Apple-inspired neutral layout, NovaPharm corporate identity.
+   Reuses the site's system font and approved #E3120B branding. No promotional card gradients. */
+.np-intelligence #intelligence-pricing { background: #ffffff; color: #1d1d1f; }
+.np-intelligence #intelligence-pricing > .npi-wrap { width: min(1420px, calc(100% - 64px)); max-width: none; }
+.np-intelligence #intelligence-pricing .npi-pricing-intro { max-width: 950px; text-align: center; margin: 0 auto clamp(48px, 6vw, 82px); }
+.np-intelligence #intelligence-pricing .npi-pricing-intro .npi-kicker { color: #E3120B; letter-spacing: .09em; font-weight: 650; }
+.np-intelligence #intelligence-pricing .npi-pricing-intro h2 {
+  font-family: var(--font, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif);
+  font-size: clamp(2.7rem, 5.5vw, 5rem); line-height: 1.08; font-weight: 700;
+  letter-spacing: 0; color: #1d1d1f;
+}
+.np-intelligence #intelligence-pricing .npi-pricing-intro > p:not(.npi-kicker) {
+  color: #6e6e73; font-size: clamp(1.06rem, 1.75vw, 1.35rem); line-height: 1.45; margin: 20px auto 0;
+}
+.np-intelligence #intelligence-pricing .npi-pricing-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;
+  align-items: stretch; max-width: none;
+}
+.np-intelligence #intelligence-pricing .npi-plan {
+  min-width: 0; display: flex; flex-direction: column; padding: clamp(22px,2.2vw,34px);
+  min-height: 515px; border: 1px solid transparent; border-radius: 22px;
+  background: #f5f5f7; box-shadow: none; color: #1d1d1f;
+}
+.np-intelligence #intelligence-pricing .npi-plan-featured { background: #f5f5f7; border: 1px solid #d2d2d7; box-shadow: none; }
+.np-intelligence #intelligence-pricing .npi-plan-heading { min-height: 44px; }
+.np-intelligence #intelligence-pricing .npi-plan-heading h3 {
+  font-family: inherit; margin: 0; font-size: clamp(1.3rem,1.85vw,1.8rem);
+  letter-spacing: 0; font-weight: 700; color: #1d1d1f;
+}
+.np-intelligence #intelligence-pricing .npi-plan-price { margin: 12px 0 0; min-height: 76px; flex-direction: column; gap: 0; }
+.np-intelligence #intelligence-pricing .npi-plan-price strong {
+  font-family: inherit; font-size: clamp(2.1rem,3.2vw,3.2rem);
+  font-weight: 730; line-height: 1.12; letter-spacing: 0; color: #1d1d1f;
+}
+.np-intelligence #intelligence-pricing .npi-plan-price span { color: #6e6e73; font-size: .95rem; line-height: 1.5; }
+.np-intelligence #intelligence-pricing .npi-plan-description {
+  min-height: 76px; margin: 13px 0 0; color: #6e6e73; font-size: .96rem; line-height: 1.5;
+}
+.np-intelligence #intelligence-pricing .npi-plan-cta,
+.np-intelligence #intelligence-pricing .npi-plan-featured .npi-plan-cta,
+.np-intelligence #intelligence-pricing .npi-plan-enterprise .npi-plan-cta {
+  display: inline-flex; justify-content: center; align-items: center; flex: 0 0 auto;
+  margin: 12px 0 24px; min-height: 46px; padding: 10px 16px; border: 0;
+  border-radius: 999px; background: #0071e3; color: #fff; font-size: .91rem;
+  font-weight: 600; text-align: center; line-height: 1.25; text-decoration: none;
+  transition: background-color .16s ease;
+}
+.np-intelligence #intelligence-pricing .npi-plan-cta:hover,
+.np-intelligence #intelligence-pricing .npi-plan-featured .npi-plan-cta:hover,
+.np-intelligence #intelligence-pricing .npi-plan-enterprise .npi-plan-cta:hover {
+  background: #005bb5; color: #fff; text-decoration: none;
+}
+.np-intelligence #intelligence-pricing .npi-plan-cta:focus-visible {
+  outline: 3px solid #005bb5; outline-offset: 3px;
+}
+.np-intelligence #intelligence-pricing .npi-plan-features {
+  display: grid; gap: 0; margin: 0; padding: 0; border-top: 1px solid #d2d2d7; list-style: none;
+}
+.np-intelligence #intelligence-pricing .npi-plan-features li {
+  position: static; padding: 12px 0; border-bottom: 1px solid #d2d2d7;
+  font-size: .88rem; line-height: 1.42; color: #1d1d1f; overflow-wrap: anywhere;
+}
+.np-intelligence #intelligence-pricing .npi-plan-features li::before { content: none; }
+.np-intelligence #intelligence-pricing .npi-pricing-more {
+  margin: 36px auto 0; max-width: none; text-align: center;
+}
+.np-intelligence #intelligence-pricing .npi-pricing-more a {
+  color: #0071e3; text-decoration: none; font-weight: 600; font-size: 1.04rem;
+}
+.np-intelligence #intelligence-pricing .npi-pricing-more a:hover { text-decoration: underline; }
+.np-intelligence #intelligence-pricing .npi-pricing-footnote {
+  max-width: 980px; margin: 20px auto 0; color: #6e6e73;
+  font-size: .78rem; line-height: 1.65; text-align: center;
+}
+.np-intelligence #intelligence-pricing .npi-pricing-availability { margin-top: 9px; }
+@media (max-width: 1120px) {
+  .np-intelligence #intelligence-pricing .npi-pricing-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .np-intelligence #intelligence-pricing .npi-plan { min-height: 440px; }
+}
+@media (max-width: 640px) {
+  .np-intelligence #intelligence-pricing > .npi-wrap { width: min(100% - 32px, 1420px); }
+  .np-intelligence #intelligence-pricing .npi-pricing-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .np-intelligence #intelligence-pricing .npi-plan { min-height: 0; padding: 25px; }
+  .np-intelligence #intelligence-pricing .npi-plan-description { min-height: 0; margin-bottom: 14px; }
+  .np-intelligence #intelligence-pricing .npi-plan-price { min-height: 0; }
+  .np-intelligence #intelligence-pricing .npi-plan-cta { margin-top: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-intelligence #intelligence-pricing .npi-plan-cta { transition: none; }
+}

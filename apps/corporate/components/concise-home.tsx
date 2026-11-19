@@ -1,3 +1,4 @@
+import { ContentImage } from "@novapharm/design-system";
 import Image from "next/image";
 import nutraxinRegister from "@/data/nutraxin-product-register.json";
 
@@ -12,28 +13,19 @@ const featured = nutraxinRegister.products.filter((product) => [1, 5, 14].includ
 export function ConciseHomePage() {
   return (
     <div className="nph-editorial-home npd-apple-home">
-      <section className="npd-apple-hero" aria-labelledby="nph-home-title">
-        <div className="shell container npd-apple-hero-inner">
-          <div className="npd-apple-hero-copy">
-            <p className="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
-            <h1 id="nph-home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br /><span>Where it needs to be.</span></h1>
-            <p className="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
-            <div className="npd-apple-actions">
-              <a className="npd-apple-button" href="/about/">Explore NovaPharm</a>
-              <a className="npd-apple-link" href="/partner-with-us/">Partner with us</a>
-            </div>
-            <p className="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
-          </div>
-          <figure className="npd-apple-hero-art">
-            <picture>
-              <source srcSet="/assets/media/home/supply-network-hero.avif" type="image/avif" />
-              <Image src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width={1672} height={941} priority fetchPriority="high" unoptimized />
-            </picture>
-            <figcaption>Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.</figcaption>
-          </figure>
-        </div>
-      </section>
 
+      <section className="npd-apple-hero nph-earth-hero" aria-labelledby="nph-home-title">
+        <div className="shell container nph-earth-hero-content">
+          <p className="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
+          <h1 id="nph-home-title">Medicine. Where it needs to be.</h1>
+          <p className="npd-apple-lead">A better way to understand, access and move medicine.</p>
+          <div className="npd-apple-actions">
+            <a className="nph-earth-primary" href="/about/">Explore NovaPharm <span aria-hidden="true">›</span></a>
+            <a className="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
+          </div>
+        </div>
+        <Image className="nph-earth-hero-landscape" src="/assets/media/home/earth-reference-1400.jpg" alt="" width={1400} height={305} priority fetchPriority="high" unoptimized />
+      </section>
       <section className="npd-apple-manifesto" aria-labelledby="nph-purpose-title">
         <div className="shell container npd-apple-center">
           <p className="npd-apple-eyebrow">WHY NOVAPHARM</p>
@@ -51,11 +43,16 @@ export function ConciseHomePage() {
             <a className="npd-apple-text-link" href="/oncology/">Explore oncology</a>
           </div>
           <figure className="npd-apple-oncology-art">
-            <picture>
-              <source srcSet="/assets/media/products/oncology-vial-handling-960.avif 960w, /assets/media/products/oncology-vial-handling.avif 1600w" sizes="(max-width: 800px) 100vw, 50vw" type="image/avif" />
-              <source srcSet="/assets/media/products/oncology-vial-handling-960.webp 960w, /assets/media/products/oncology-vial-handling.webp 1600w" sizes="(max-width: 800px) 100vw, 50vw" type="image/webp" />
-              <Image src="/assets/media/products/oncology-vial-handling.jpg" width={1600} height={900} alt="Representative controlled pharmaceutical laboratory handling" unoptimized />
-            </picture>
+            <ContentImage
+              src="/assets/media/products/oncology-vial-handling.jpg"
+              alt="Representative controlled pharmaceutical laboratory handling"
+              width={1600} height={900} fit="cover"
+              sizes="(max-width: 800px) 100vw, 50vw"
+              sources={[
+                { srcSet: "/assets/media/products/oncology-vial-handling-960.avif 960w, /assets/media/products/oncology-vial-handling.avif 1600w", type: "image/avif" },
+                { srcSet: "/assets/media/products/oncology-vial-handling-960.webp 960w, /assets/media/products/oncology-vial-handling.webp 1600w", type: "image/webp" },
+              ]}
+            />
             <figcaption>Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.</figcaption>
           </figure>
         </div>
@@ -70,12 +67,19 @@ export function ConciseHomePage() {
           </div>
           <div className="npd-apple-product-grid">
             {featured.map((product) => (
-              <a className="npd-apple-product" href={"/products/nutraxin/" + product.slug + "/"} key={product.slug}>
-                <picture>
-                  <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.avif 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.avif 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/avif" />
-                  <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.webp 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.webp 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/webp" />
-                  <Image src={"/assets/media/products/nutraxin/" + product.imageBase + ".png"} alt={product.altText} width={700} height={700} unoptimized />
-                </picture>
+              <a className="npd-apple-product" href={`/products/nutraxin/${product.slug}/`} key={product.slug}>
+                <ContentImage
+                  src={`/assets/media/products/nutraxin/${product.imageBase}.png`}
+                  alt={product.altText}
+                  width={product.imageBase === "collagen-gold-30-tablets" ? 980 : 700}
+                  height={product.imageBase === "collagen-gold-30-tablets" ? 654 : 700}
+                  fit="contain"
+                  sizes="(max-width: 600px) 70vw, 25vw"
+                  sources={[
+                    { srcSet: `/assets/media/products/nutraxin/${product.imageBase}-480.avif 480w, /assets/media/products/nutraxin/${product.imageBase}-800.avif 800w`, type: "image/avif" },
+                    { srcSet: `/assets/media/products/nutraxin/${product.imageBase}-480.webp 480w, /assets/media/products/nutraxin/${product.imageBase}-800.webp 800w`, type: "image/webp" },
+                  ]}
+                />
                 <strong>{product.name}</strong>
                 <span>{product.packSize}</span>
               </a>

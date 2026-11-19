@@ -1,0 +1,28 @@
+name: Intelligence dedicated ECS execution foundation contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-production-execution-foundation.json'
+      - 'scripts/test-intelligence-production-execution-foundation.mjs'
+      - '.github/workflows/intelligence-production-execution-foundation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/aws/intelligence-production-execution-foundation.json'
+      - 'scripts/test-intelligence-production-execution-foundation.mjs'
+      - '.github/workflows/intelligence-production-execution-foundation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  least-privilege-execution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-intelligence-production-execution-foundation.mjs

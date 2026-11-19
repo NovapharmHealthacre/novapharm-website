@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -89,7 +89,7 @@ test("owner-authorized chargeable price displays only under approved retail poli
 test("when approved, the Bag subtotal is correctly calculated in integer pence",()=>{
  const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null,retail_net_pence:i===0?1028:i===1?1916:null}));
  const approved={...catalogue,price_authority:"approved_consumer_retail",products};
- assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4766);
+ assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4767);
  assert.equal(basketSubtotal([{sku:products[2].sku,quantity:1}],approved),null);
  assert.equal(basketSubtotal([{sku:"NOT_REAL",quantity:1}],approved),null);
 });
@@ -98,6 +98,11 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
+ assert.match(html,/href="\/legal\/terms\/#nutraxin-consumer-sales"/);
+ const legal=readFileSync("legal/terms/index.html","utf8");
+ assert.match(legal,/id="nutraxin-consumer-sales"/);
+ assert.match(legal,/14 days of receiving goods/);
+ assert.doesNotMatch(legal,/The website is for corporate and qualified B2B information\./);
  assert.match(html,/class="nx-purchase-progress"/);
  assert.match(html,/aria-current="step"/);
  assert.match(html,/Your Bag/);
@@ -146,12 +151,39 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
 test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  const source=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
  const page=readFileSync("products/nutraxin/bag/index.html","utf8");
- const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const rtlPublished=/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag lang="en-GB" data-np-untranslated>/.test(page);
+ const expected=page.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const generated=generator?.split("  return `")[1]?.split("`;")[0];
  assert.ok(expected,"Canonical Bag main exists");
- assert.equal(generated,expected,"Site generator must preserve the approved Bag HTML exactly");
+ // The final publisher adds only the English-language boundary to the
+ // approved Bag main, without altering forms, payment copy or order steps.
+ const approved=rtlPublished
+   ? generated?.replace('data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>')
+   : generated;
+ assert.equal(expected,approved,
+   "Checked-in and finalized Bag HTML must exactly match their approved generator states");
  assert.match(generated,/Simple from start to finish\./);
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);
+});
+
+test("Stripe return does not confuse expiry with payment failure or erase Bag",()=>{
+ assert.equal(checkoutReturnOutcome({status:"PAID",paid:true}),"paid");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_EXPIRED",paid:false}),"expired");
+ assert.equal(checkoutReturnOutcome({status:"PAYMENT_FAILED",paid:false}),"failed");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_OPEN",paid:false}),"pending");
+ assert.equal(checkoutReturnOutcome({status:"PAID",paid:false}),"pending");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_EXPIRED",paid:true}),"pending");
+ assert.equal(checkoutReturnOutcome(null),"pending");
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ const returned=js.split('const returnedOrder = query.get("order_id");')[1]?.split("// Products-site readiness")[0];
+ assert.match(returned,/checkoutReturnOutcome\(result\)/);
+ assert.match(returned,/outcome === "expired" \|\| outcome === "failed"/);
+ assert.match(returned,/closedOrder = returnedOrder/);
+ assert.match(returned,/if \(outcome === "paid"\)/);
+ assert.match(returned,/bag=\[\];saveBag\(bag\)/);
+ assert.equal(returned.split("bag=[];saveBag(bag)").length-1,1,"Only verified paid status may empty the bag");
+ assert.match(js,/Your Bag is saved and you may start a new checkout/);
+ assert.match(js,/No successful payment has been recorded/);
 });

@@ -1,0 +1,63 @@
+name: Oncology seamless hero Chromium and WebKit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/css/oncology-hope-v2.css'
+      - 'oncology/**'
+      - 'scripts/test-oncology-hero-browser.mjs'
+      - '.github/workflows/oncology-hero-acceptance.yml'
+  pull_request:
+    paths:
+      - 'assets/css/oncology-hope-v2.css'
+      - 'oncology/**'
+      - 'scripts/test-oncology-hero-browser.mjs'
+      - '.github/workflows/oncology-hero-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-oncology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Install Chromium and Safari WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Generate public website
+        run: npm run build:public-only
+      - name: Serve public website locally
+        run: |
+          python3 -m http.server 4310 --bind 127.0.0.1 > /tmp/novapharm-oncology-server.log 2>&1 &
+          echo $! > /tmp/novapharm-oncology-server.pid
+      - name: Verify seamless hero in Chromium and WebKit
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+        run: node scripts/test-oncology-hero-browser.mjs
+      - name: Upload Oncology desktop and mobile evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: oncology-hero-${{ github.sha }}
+          path: |
+            artifacts/oncology-hero
+            /tmp/novapharm-oncology-server.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop local website
+        if: always()
+        run: |
+          if [ -f /tmp/novapharm-oncology-server.pid ]; then
+            kill "$(cat /tmp/novapharm-oncology-server.pid)" || true
+          fi

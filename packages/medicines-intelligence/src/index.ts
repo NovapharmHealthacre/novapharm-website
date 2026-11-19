@@ -5,6 +5,7 @@ export * from "./csv.ts";
 export * from "./epd.ts";
 export * from "./forecasting.ts";
 export * from "./geography.ts";
+export * from "./l0-sparsity.ts";
 export * from "./medicine-filters.ts";
 export * from "./nhs-api-clients.ts";
 export * from "./operational-records.ts";

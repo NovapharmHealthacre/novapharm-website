@@ -29,15 +29,15 @@
   },
   "assets": [
     {
-      "id": "home-supply-network",
-      "base": "/assets/media/home/supply-network-hero",
+      "id": "home-earth-horizon",
+      "base": "/assets/media/home/earth-reference-1400",
       "sourceType": "approved-existing",
-      "subject": "Governed pharmaceutical supply network with global route context",
+      "subject": "Owner-approved atmospheric Earth horizon over the UK and Europe at morning sunrise",
       "alt": "",
-      "caption": "Governed pharmaceutical supply network visual",
+      "caption": "Illustrative atmospheric Earth horizon at sunrise, cropped from the approved NovaPharm homepage composition",
       "focalPoint": {
-        "desktop": "70% 50%",
-        "mobile": "68% 50%"
+        "desktop": "50% 100%",
+        "mobile": "50% 100%"
       },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
@@ -63,7 +63,7 @@
         "/about/"
       ],
       "publicationStatus": "retired",
-      "retirementReason": "Replaced by owner-supplied About warehouse image; original generated source kept for historical audit"
+      "retirementReason": "Superseded on the approved About page by the owner-supplied NovaPharm warehouse photograph; retained only for provenance and immutable audit history."
     },
     {
       "id": "company-corporate-structure",
@@ -561,11 +561,12 @@
         "desktop": "54% 50%",
         "mobile": "58% 50%"
       },
-      "maxReuse": 2,
+      "maxReuse": 3,
       "structuredDataRelationship": "articleImage",
       "allowedRoutes": [
         "/news-insights/",
-        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+        "/distribution/"
       ]
     },
     {
@@ -652,7 +653,7 @@
       "route": "/",
       "purpose": "Corporate positioning and governed supply-network overview",
       "label": "Corporate network",
-      "heroAsset": "home-supply-network",
+      "heroAsset": "home-earth-horizon",
       "signals": [
         "Regulatory sequence",
         "Qualified sourcing",
@@ -666,6 +667,7 @@
       "route": "/about/",
       "purpose": "Operating model and company positioning",
       "label": "Operating model",
+      "heroAsset": null,
       "signals": [
         "Evidence",
         "Optionality",

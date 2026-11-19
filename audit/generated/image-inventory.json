@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 870,
+    "trackedAssetCount": 881,
     "byClassification": {
-      "KEEP": 870
+      "KEEP": 881
     },
     "byProvenanceStatus": {
-      "registered": 660,
+      "registered": 671,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 82,
-      "referenceCount": 86,
+      "usageCount": 84,
+      "referenceCount": 96,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -79,6 +79,7 @@
         "creative-assets/asset-register.json",
         "cro/index.html",
         "docs/application-media-provenance.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
         "index.html",
@@ -134,6 +135,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -813,8 +815,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 73,
-      "referenceCount": 75,
+      "usageCount": 74,
+      "referenceCount": 77,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -883,6 +885,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -1090,8 +1093,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 75,
-      "referenceCount": 77,
+      "usageCount": 77,
+      "referenceCount": 81,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1107,6 +1110,7 @@
         "contact/index.html",
         "creative-assets/asset-register.json",
         "cro/index.html",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
         "index.html",
@@ -1162,6 +1166,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
@@ -1170,6 +1175,50 @@
         "trust-centre/index.html"
       ],
       "exactDuplicateGroup": "exact-006",
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-logo.svg",
+      "canonicalDeliveryPath": "assets/brand/novapharm-distribution-logo.svg",
+      "format": "svg",
+      "bytes": 9869,
+      "width": 2307,
+      "height": 408,
+      "aspectRatio": 5.654412,
+      "sha256": "99246e38e75a1ae378d0b47471c50be999b3ef24a59e613b6ea7ae5d12d4958b",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit (3), 01_Master_Vector/NovaPharm_Distribution_Graphite_Transparent.svg, 14 November 2026. Optimised SVG delivery derivative checked against approved artwork.",
+      "licence": "Owner-authorised NovaPharm Distribution brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "reviewStatus": "Owner-directed official Distribution tab integration, 14 November 2026",
+      "technicalStatus": "source-kit-derived-precise-vector; visual fidelity verified against source",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-product-wordmark",
+      "routes": [
+        "/distribution/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Distribution",
+      "registeredCaption": "Official NovaPharm Distribution graphite wordmark",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 6,
+      "referenceCount": 8,
+      "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
+        "apps/portal/components/distribution-brand.tsx",
+        "creative-assets/asset-register.json",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
+        "scripts/test-public-visual-versioning.mjs"
+      ],
+      "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
@@ -1290,15 +1339,17 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 83,
-      "referenceCount": 210,
+      "usageCount": 88,
+      "referenceCount": 218,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
         "500.html",
         "about/company/index.html",
         "about/governance/index.html",
         "about/index.html",
         "account-application/index.html",
+        "apps/corporate/components/brand.tsx",
         "apps/corporate/lib/seo.ts",
         "assets/js/admin-app.js",
         "capabilities/index.html",
@@ -1364,8 +1415,11 @@
         "scripts/build-public-pages.mjs",
         "scripts/enhance-seo-authority.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-owner-corrections.mjs",
+        "scripts/test-public-visual-versioning.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/version-public-visual-assets.mjs",
         "seo/generated/entity-register.json",
         "seo/structured-data-register.md",
         "service-unavailable/index.html",
@@ -1430,8 +1484,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 94,
-      "referenceCount": 202,
+      "usageCount": 97,
+      "referenceCount": 201,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1440,7 +1494,6 @@
         "about/index.html",
         "account-application/index.html",
         "apps/api/test/server-boundary.test.ts",
-        "apps/corporate/components/brand.tsx",
         "apps/corporate/package.json",
         "apps/corporate/scripts/validate-content.ts",
         "apps/portal/package.json",
@@ -1466,6 +1519,7 @@
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
         "index.html",
+        "infra/aws/nutraxin-customer-staging-stack.json",
         "investor-information/index.html",
         "leadership/girish-achliya/index.html",
         "leadership/helly-panchal/index.html",
@@ -1520,8 +1574,11 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-owner-corrections.mjs",
+        "scripts/test-verify-intelligence-public-entry.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-intelligence-public-entry.mjs",
         "service-unavailable/index.html",
         "services/index.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
@@ -1564,9 +1621,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
+        ".github/workflows/intelligence-live-smoke.yml",
+        "apps/portal/components/intelligence-sign-in.tsx",
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs",
         "src/content/technology-intelligence.html",
@@ -2040,14 +2099,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-020",
@@ -2082,14 +2142,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-021",
@@ -2124,14 +2185,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": "exact-022",
@@ -2166,8 +2228,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 66,
-      "referenceCount": 66,
+      "usageCount": 67,
+      "referenceCount": 68,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -2230,6 +2292,7 @@
         "regulatory-services/index.html",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
@@ -2253,13 +2316,14 @@
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
-      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
-      "reviewStatus": "approved for About page visual 10 November 2026",
+      "licence": "Owner directly supplied photograph and approved its NovaPharm corporate use, including Distribution hero; photographed facility ownership and operating authorisation are not asserted.",
+      "reviewStatus": "Owner-approved original warehouse photograph for the live Distribution hero, 11 November 2026, and existing About page.",
       "technicalStatus": "owner-supplied-original-preserved-1600x580",
       "provenanceRecord": null,
       "semanticPurpose": "owner-supplied-corporate-warehouse-editorial-photograph",
       "routes": [
-        "/about/"
+        "/about/",
+        "/distribution/"
       ],
       "focalPoint": null,
       "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
@@ -2278,13 +2342,17 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 17,
+      "usageCount": 8,
+      "referenceCount": 23,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs"
+        "scripts/apply-about-editorial.mjs",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
+        "scripts/validate-module-media-sanity.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
@@ -2338,6 +2406,88 @@
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/capabilities/approved-earth-horizon-crest.webp",
+      "canonicalDeliveryPath": "assets/media/capabilities/approved-earth-horizon-crest.webp",
+      "format": "webp",
+      "bytes": 1170,
+      "width": 800,
+      "height": 53,
+      "aspectRatio": 15.09434,
+      "sha256": "19080638da0aed6d65198642e27cbfc211ee710e4db179d8b3fdea659df48cb8",
+      "perceptualHash": "00000010327171f1",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved \"NovaPharm Capabilities: Evidence to Access.png\" (1199 × 1312) generated by ChatGPT gpt-image at 2026-11-10T08:43:28Z. The original PNG embeds C2PA created/ChatGPT software-agent metadata and trainedAlgorithmicMedia source type; derivative relationship corroborated by visual comparison with the approved screenshot and PR #397.",
+      "licence": "Original ChatGPT-generated website design imagery approved for NovaPharm Healthcare website use by company owner, under applicable OpenAI output terms; no NASA, Pexels or third-party photographer attribution asserted. C2PA manifest existence is observed; no cryptographic signature verification claimed.",
+      "reviewStatus": "Owner-approved corporate Capabilities design, generated-source provenance identified, derivative visually corroborated; image does not depict a real NovaPharm facility, medicine approval or active service.",
+      "technicalStatus": null,
+      "provenanceRecord": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397",
+      "semanticPurpose": null,
+      "routes": [
+        "/capabilities/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "apps/corporate/components/capabilities-editorial.tsx",
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/capabilities/approved-vial-photo-800.webp",
+      "canonicalDeliveryPath": "assets/media/capabilities/approved-vial-photo-800.webp",
+      "format": "webp",
+      "bytes": 2748,
+      "width": 800,
+      "height": 224,
+      "aspectRatio": 3.571429,
+      "sha256": "683609ae91e0dc41707b9c1c2f0edd5d5af4dbbe356b52b07702c3b79fb82b98",
+      "perceptualHash": "13333333b3b333b4",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved \"NovaPharm Capabilities: Evidence to Access.png\" (1199 × 1312) generated by ChatGPT gpt-image at 2026-11-10T08:43:28Z. The original PNG embeds C2PA created/ChatGPT software-agent metadata and trainedAlgorithmicMedia source type; derivative relationship corroborated by visual comparison with the approved screenshot and PR #397.",
+      "licence": "Original ChatGPT-generated website design imagery approved for NovaPharm Healthcare website use by company owner, under applicable OpenAI output terms; no NASA, Pexels or third-party photographer attribution asserted. C2PA manifest existence is observed; no cryptographic signature verification claimed.",
+      "reviewStatus": "Owner-approved corporate Capabilities design, generated-source provenance identified, derivative visually corroborated; image does not depict a real NovaPharm facility, medicine approval or active service.",
+      "technicalStatus": null,
+      "provenanceRecord": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397",
+      "semanticPurpose": null,
+      "routes": [
+        "/capabilities/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "apps/corporate/components/capabilities-editorial.tsx",
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -3359,10 +3509,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
-        "assets/data/esco-model-photo-map.json"
+        "assets/data/esco-model-photo-map.json",
+        "products/index.html",
+        "scripts/apply-products-editorial.mjs",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -4256,10 +4409,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
-        "assets/data/esco-model-photo-map.json"
+        "assets/data/esco-model-photo-map.json",
+        "products/index.html",
+        "scripts/apply-products-editorial.mjs",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -5709,6 +5865,91 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
+      "path": "assets/media/home/earth-morning-approved.avif",
+      "canonicalDeliveryPath": "assets/media/home/earth-morning-approved.avif",
+      "format": "heif",
+      "bytes": 4849,
+      "width": 1100,
+      "height": 229,
+      "aspectRatio": 4.803493,
+      "sha256": "d591b7361e7d71c27761cdebc6d38aca66a11f51c2c7fbb24e60473860f287a7",
+      "perceptualHash": "0707f3e042e2e4b5",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generated NovaPharm Healthcare Earth-from-space sunrise hero concept, selected 10 November 2026 in ChatGPT; this is designed illustrative art, not documentary satellite imagery",
+      "licence": "NovaPharm owner-authorised use of original generated imagery under applicable OpenAI generated-content terms; no third-party logo or real-world facility depicted",
+      "reviewStatus": "approved by company owner on 10 November 2026 for white-morning Apple-inspired homepage hero",
+      "technicalStatus": "source-approved optimised AVIF, 1100x229, 4.8 KB, non-decorative content represented in live copy not image alt",
+      "provenanceRecord": null,
+      "semanticPurpose": "approved-editorial-earth-horizon",
+      "routes": [
+        "/ homepage hero on desktop and mobile"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Illustrative view of Earth at sunrise. Geography, lighting and clouds are artistic representation.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "infra/aws/nutraxin-customer-staging-stack.json"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/home/earth-reference-1400.jpg",
+      "canonicalDeliveryPath": "assets/media/home/earth-reference-1400.jpg",
+      "format": "jpeg",
+      "bytes": 66170,
+      "width": 1400,
+      "height": 305,
+      "aspectRatio": 4.590164,
+      "sha256": "a77c4d138ef2293f9a77df82a14d63c21ff42a744e033b7472798f08c85e5d92",
+      "perceptualHash": "078773e062e2e0f5",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
+      "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
+      "reviewStatus": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026.",
+      "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-earth-horizon-brand-reference",
+      "routes": [
+        "/ homepage approved Earth-horizon hero"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 7,
+      "referenceCount": 19,
+      "usageFiles": [
+        ".github/workflows/pages-live-publish.yml",
+        ".github/workflows/pages-public-release-recovery.yml",
+        ".github/workflows/publish-aws-contact-production.yml",
+        "apps/corporate/components/concise-home.tsx",
+        "creative-assets/asset-register.json",
+        "scripts/apply-corporate-product-discipline.mjs",
+        "scripts/programme/validate-post-pr53-candidate.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
       "path": "assets/media/home/supply-network-hero-1200.jpg",
       "canonicalDeliveryPath": "assets/media/home/supply-network-hero-1200.jpg",
       "format": "jpeg",
@@ -5738,14 +5979,16 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 12,
+      "usageCount": 9,
+      "referenceCount": 14,
       "usageFiles": [
         "creative-assets/asset-register.json",
         "creative-assets/visual-provenance.md",
+        "scripts/apply-global-distribution-foundation.mjs",
         "scripts/apply-visual-refinement.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/optimise-images.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
         "scripts/test-visual-contracts.mjs",
         "scripts/validate-site.mjs"
       ],
@@ -5780,24 +6023,20 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [
-        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 11,
+      "usageCount": 6,
+      "referenceCount": 9,
       "usageFiles": [
-        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/scripts/validate-content.ts",
         "creative-assets/asset-register.json",
         "index.html",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/apply-pages-presentation-parity.mjs",
         "scripts/build-public-pages.mjs"
       ],
@@ -5832,9 +6071,7 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [
-        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/home/supply-network-hero-1200.jpg",
         "assets/media/home/supply-network-hero.avif"
@@ -5844,10 +6081,9 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 21,
-      "referenceCount": 32,
+      "usageCount": 19,
+      "referenceCount": 30,
       "usageFiles": [
-        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/lib/seo.ts",
         "creative-assets/8k-master-register.json",
         "creative-assets/asset-register.json",
@@ -5857,7 +6093,6 @@
         "packages/design-system/workbench/build.tsx",
         "packages/design-system/workbench/index.html",
         "packages/design-system/workbench/workbench.css",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/apply-module-media-sanity.mjs",
         "scripts/apply-pages-presentation-parity.mjs",
         "scripts/apply-visual-refinement.mjs",
@@ -6264,6 +6499,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6319,6 +6555,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6345,11 +6582,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "creative-assets/module-media-asset-register.json",
-        "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
+        "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-023",
@@ -6374,6 +6614,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6429,6 +6670,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6484,6 +6726,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6581,6 +6824,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -10240,9 +10484,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "careers/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
@@ -11830,9 +12075,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json",
         "investor-information/index.html"
       ],
@@ -12717,9 +12963,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12729,16 +12973,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12771,9 +13012,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12783,16 +13022,14 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 2,
       "referenceCount": 2,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12825,9 +13062,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12837,16 +13072,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-059",
@@ -12879,9 +13111,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12891,16 +13121,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12933,9 +13160,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12945,21 +13170,21 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 15,
+      "usageCount": 9,
+      "referenceCount": 18,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "creative-assets/module-media-asset-register.json",
         "products/index.html",
+        "scripts/apply-products-editorial.mjs",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12992,9 +13217,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -13004,16 +13227,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-059",
@@ -13350,12 +13570,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13364,15 +13580,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13407,12 +13620,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13421,15 +13630,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13464,12 +13670,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13478,15 +13680,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13521,12 +13720,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13535,15 +13730,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13578,12 +13770,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13592,18 +13780,15 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 14,
+      "usageCount": 7,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json",
         "seo/generated/social-image-register.json",
         "services/index.html",
@@ -13641,12 +13826,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13655,15 +13836,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13761,9 +13939,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13911,11 +14090,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 10,
+      "usageCount": 6,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
+        "assets/css/technology-intelligence.css",
         "creative-assets/module-media-asset-register.json",
         "seo/generated/social-image-register.json",
         "technology/index.html"
@@ -14006,9 +14186,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14047,9 +14228,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 5,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
+        "apps/corporate/test/editorial-oncology.test.ts",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14211,9 +14394,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14252,12 +14436,135 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/portal/npi-human-portal.webp",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portal.webp",
+      "format": "webp",
+      "bytes": 2486,
+      "width": 260,
+      "height": 228,
+      "aspectRatio": 1.140351,
+      "sha256": "acfc2a493e7f9035ae92c93dc09238f758e36c636fe3e7988ee3b7db56f8e596",
+      "perceptualHash": "c0808c181050b0d7",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Cropped decorative mother-and-child artwork from the owner-supplied approved NovaPharm Secure Portal Sign-In visual (12 November 2026). Illustrative AI-generated design, not a photograph of an actual NovaPharm patient, family or clinician.",
+      "licence": "Owner-authorised NovaPharm Intelligence secure portal website use of original AI-generated NovaPharm project artwork.",
+      "reviewStatus": "Owner selected the exact human secure-portal reference, 12 November 2026.",
+      "technicalStatus": "owner-approved screenshot crop, performance-compressed WebP; decorative CSS only",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-illustrative-portal-human-hero",
+      "routes": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "creative-assets/asset-register.json"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/portal/npi-human-portrait-approved.webp",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-approved.webp",
+      "format": "webp",
+      "bytes": 86844,
+      "width": 1050,
+      "height": 499,
+      "aspectRatio": 2.104208,
+      "sha256": "7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950",
+      "perceptualHash": "4dcfd3d3f3e34f46",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
+      "licence": "Original owner-directed NovaPharm visual creative for its public Intelligence sign-in page. No third-party stock or competitor assets.",
+      "reviewStatus": "Approved visual reference supplied 12 November 2026; preserve exact composition",
+      "technicalStatus": "checksum-verified original full-size design crop; SHA-256 7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950; un-cropped image fit",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-original-editorial-portal-photograph",
+      "routes": [
+        "intelligence.novapharmhealthcare.com/ secure portal"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Decorative illustrative mother-and-daughter photograph. Not clinical or medicines-market evidence.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 4,
+      "referenceCount": 5,
+      "usageFiles": [
+        "apps/portal/components/intelligence-sign-in.module.css",
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "apps/portal/test/intelligence-human-entry.test.ts",
+        "creative-assets/asset-register.json"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/portal/npi-human-portrait-hd.avif",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-hd.avif",
+      "format": "heif",
+      "bytes": 8650,
+      "width": 770,
+      "height": 508,
+      "aspectRatio": 1.515748,
+      "sha256": "bde8212cfe018eb86b8a8582a5a9cdd0cc7af9b59965339504d5afc79ce96abc",
+      "perceptualHash": "cbc7899990f0f0ee",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "High-definition decorative crop of the owner-approved NovaPharm Intelligence secure portal human design, 12 November 2026, x=0-770,y=448-956 of the 1536x1024 selected concept. Illustrative design, not a patient or marketing-evidence photograph.",
+      "licence": "Owner-authorised original NovaPharm project artwork for the NovaPharm Intelligence secure portal under applicable OpenAI generated-content terms.",
+      "reviewStatus": "Owner selected the crisp final portal composition and requested its production implementation, 12 November 2026.",
+      "technicalStatus": "AVIF owner-approved cropped HD 770x508; 8650 bytes; no baked interface text",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-illustrative-portal-human-hero",
+      "routes": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Representative illustration only; no medicinal, clinical or patient outcome claims.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "creative-assets/asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15647,9 +15954,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 10,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -16147,9 +16455,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
@@ -17843,13 +18152,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17898,9 +18206,9 @@
       "usageCount": 6,
       "referenceCount": 8,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17946,12 +18254,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17997,14 +18304,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -18050,8 +18356,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 10,
-      "referenceCount": 32,
+      "usageCount": 12,
+      "referenceCount": 36,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -18059,10 +18365,12 @@
         "products/nutraxin/bag/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "scripts/apply-products-editorial.mjs",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-091",
@@ -19599,11 +19907,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html"
       ],
@@ -19696,11 +20003,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html"
       ],
@@ -19750,11 +20056,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 7,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
@@ -19808,12 +20113,11 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 16,
-      "referenceCount": 25,
+      "usageCount": 15,
+      "referenceCount": 24,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/concise-specialist-pages.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "assets/js/visual-refinement.js",
@@ -19874,11 +20178,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html"
@@ -22477,6 +22780,49 @@
         "creative-assets/asset-register.json",
         "src/content/technology-intelligence.html",
         "technology/index.html"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "canonicalDeliveryPath": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "format": "heif",
+      "bytes": 228045,
+      "width": 1456,
+      "height": 1466,
+      "aspectRatio": 0.993179,
+      "sha256": "91a4be535ce6e3bb229cefd240dadebef19be89f63a53a642acbb748437d3418",
+      "perceptualHash": "d9fcfebea4ed4cd6",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-directed AI-generated Novapharm Intelligence concept, sharpened from generated approved hero composition, photographic crop without browser UI or text, 11 November 2026. Fictional illustrative scientist, not an identified person or clinical evidence.",
+      "licence": "Original NovaPharm project artwork for owner-authorised corporate website use; no third-party photography or competitor visual assets claimed.",
+      "reviewStatus": "Owner-directed Technology hero placement, 11 November 2026",
+      "technicalStatus": "sharpened-original-editorial-avif-delivery",
+      "provenanceRecord": null,
+      "semanticPurpose": "original-corporate-editorial-hero",
+      "routes": [
+        "/technology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Conceptual NovaPharm Intelligence hero artwork. Not clinical, regulatory or observed medicines-market evidence.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 5,
+      "referenceCount": 5,
+      "usageFiles": [
+        ".github/workflows/intelligence-live-smoke.yml",
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "assets/css/technology-intelligence.css",
+        "creative-assets/asset-register.json",
+        "scripts/test-intelligence-technology-page.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -31637,9 +31983,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": "exact-042",
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -32127,9 +32475,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -32232,9 +32582,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "scripts/test-apple-app-icons.mjs"
+      ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
@@ -37278,6 +37630,88 @@
       "exactDuplicateGroup": "exact-019",
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "canonicalDeliveryPath": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "format": "svg",
+      "bytes": 406,
+      "width": 1024,
+      "height": 1024,
+      "aspectRatio": 1,
+      "sha256": "ce45992ca1a3c6843305bb7341a717a454d6d40991654161ccc00c401db2f6cc",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "reviewStatus": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-derived-native-icon-layer",
+      "routes": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Healthcare approved white N symbol",
+      "registeredCaption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
+        "scripts/test-apple-app-icons.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "canonicalDeliveryPath": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "format": "svg",
+      "bytes": 717,
+      "width": 1024,
+      "height": 1024,
+      "aspectRatio": 1,
+      "sha256": "7cd5c7e644c9f521f502055b4dccd1df9f0820e0ca3754c5c2296279cd224f60",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "reviewStatus": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-derived-native-icon-layer",
+      "routes": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Healthcare approved white continuum arc",
+      "registeredCaption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "docs/design/apple-icon-composer-app-icons-20261116.md",
+        "scripts/test-apple-app-icons.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
       "path": "creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png",

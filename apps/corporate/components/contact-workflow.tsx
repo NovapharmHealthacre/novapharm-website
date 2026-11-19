@@ -47,6 +47,8 @@ export function ContactWorkflow() {
   const [message, setMessage] = useState("");
   const [defaultType, setDefaultType] = useState("");
   const statusRef = useRef<HTMLDivElement>(null);
+  // Synchronous request guard prevents rapid repeat submits before React redraws.
+  const inFlightRef = useRef(false);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("enquiry") ?? "";
@@ -55,8 +57,12 @@ export function ContactWorkflow() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inFlightRef.current) return;
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
+    // Capture the confirmed form values before the asynchronous CSRF handshake.
+    const data = new FormData(form);
+    inFlightRef.current = true;
     setState("sending");
     setMessage("Submitting your enquiry securely.");
     let submissionAttempted = false;
@@ -64,7 +70,6 @@ export function ContactWorkflow() {
       const csrfResponse = await fetch(platformEndpoint("/security/csrf"), { credentials: "include", headers: { Accept: "application/json" } });
       const csrfPayload = await csrfResponse.json().catch(() => ({})) as { csrfToken?: string };
       if (!csrfResponse.ok || !csrfPayload.csrfToken) throw Object.assign(new Error("csrf_unavailable"), { status: csrfResponse.status });
-      const data = new FormData(form);
       const params = new URLSearchParams(window.location.search);
       const payload = Object.fromEntries(data.entries());
       const selectedType = String(payload.enquiryType ?? "");
@@ -99,13 +104,14 @@ export function ContactWorkflow() {
       setState("error");
       setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine, submissionAttempted));
     } finally {
+      inFlightRef.current = false;
       window.setTimeout(() => statusRef.current?.focus(), 0);
     }
   }
 
   return (
     <div className="contact-workflow np-contact-managed">
-      <form className="contact-form np-contact-reference-form" onSubmit={submit}>
+      <form className="contact-form np-contact-reference-form" onSubmit={submit} aria-busy={state === "sending"}>
         <div className="honeypot" aria-hidden="true"><label htmlFor="website">Website</label><input id="website" name="website" tabIndex={-1} autoComplete="off" /></div>
         <div className="np-contact-reference-grid">
           <label className="np-contact-reference-field"><span>Full name</span><input name="name" autoComplete="name" placeholder="Your name" maxLength={120} required /></label>
@@ -138,7 +144,7 @@ export function ContactWorkflow() {
           <button className="np-contact-reference-submit" type="submit" disabled={state === "sending"}>{state === "sending" ? "Submitting..." : "Send enquiry"}</button>
         </div>
       </form>
-      <div className={"np-contact-reference-status form-status form-status-" + state} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
+      <div className={`np-contact-reference-status form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
         <p>{message || "Your enquiry is transmitted only to NovaPharm's verified secure API when you select Send enquiry."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Use the verified corporate email route</a> : null}

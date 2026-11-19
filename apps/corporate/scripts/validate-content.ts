@@ -13,7 +13,7 @@ const repositoryRoot = path.resolve(applicationRoot, "../..");
 const routeSet = new Set<string>();
 
 assertPageMetaCoverage();
-assert.equal(corporatePages.length, 29, "Corporate application must retain 29 canonical page records");
+assert.equal(corporatePages.length, 32, "Corporate application must retain 32 canonical page records");
 assert.equal(leadership.length, 5, "Five approved leadership profiles are required");
 assert.equal(articles.length, 6, "Six substantial Insights articles are required");
 const canonicalMeta = corporatePages.map((item) => pageMeta[item.slug as keyof typeof pageMeta]);
@@ -65,7 +65,7 @@ for (const product of nutraxinRegister.products) {
   assert.ok(existsSync(path.join(applicationRoot, "public", "assets", "media", "products", "nutraxin", `${product.imageBase}-800.webp`)), `Missing Nutraxin delivery image: ${product.imageBase}`);
 }
 
-assert.equal(routeSet.size, 59, "Corporate canonical route count changed unexpectedly");
+assert.equal(routeSet.size, 62, "Corporate canonical route count changed unexpectedly");
 assert.equal(company.companyNumber, "16716501");
 assert.match(company.regulatoryNotice, /active in corporate, product, partnership and commercial-development work/i);
 assert.match(company.regulatoryNotice, /Regulated wholesale supply has not commenced/i);

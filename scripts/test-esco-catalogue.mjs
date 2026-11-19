@@ -30,6 +30,10 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
   assert.match(builder,/data-esco-order-request-form/);
+  assert.match(builder,/buildEscoProductMaster\(data\)/);
+  assert.match(builder,/skuFor\(p\.id\)/);
+  assert.match(interaction,/NP-ESCO-/);
+  assert.match(readFileSync("assets/js/esco-bag.js","utf8"),/NovaPharm SKU NP-ESCO-/);
   assert.match(builder,/products\/esco\/bag\/index.html/);
   assert.match(builder,/data-esco-bag-items/);
   assert.match(interaction,/const MAX_ITEMS = 12/);
@@ -260,8 +264,9 @@ test("ESCO hero and product details stay in separate responsive grid tracks",()=
 test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
- assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\) && item\.quantity <= MAX_CARD_QTY\)/);
- assert.match(bag,/quoteOnly = paymentServiceReady/);
+ assert.match(bag,/function paymentPartition\(lines\)/);
+ assert.match(bag,/approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)/);
+ assert.match(bag,/quoteOnly:lines\.filter\(item => !payableIds\.has\(item\.id\)\)/);
  assert.match(bag,/product and delivery confirmation before payment/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
  assert.match(shop,/get\("availability"\) === "ready"/);
@@ -288,9 +293,36 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
  assert.match(bag,/checkoutButton\.hidden = !eligible/);
- assert.match(bag,/orderRequestForm\.hidden = eligible \|\| !lines\.length/);
+ assert.match(bag,/orderRequestForm\.hidden = quoteOnly\.length === 0/);
  assert.match(bag,/Contact product support/);
  assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
  assert.match(css,/\.esco-shop-bag \.esco-bag-pay\[hidden\]\{display:none!important;\}/);
+});
+
+
+test("ESCO discovery page keeps only the compact navigation Bag, not an oversized inline Bag",()=>{
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
+  assert.ok(builder.includes('data-esco-quote-tray hidden aria-hidden="true"'));
+  assert.ok(builder.includes("data-esco-top-bag-count"));
+  assert.ok(interaction.includes("topBagCount.textContent"));
+  assert.ok(builder.includes("/products/esco/bag/"));
+  assert.match(css,/\.esco-page \.esco-shop-mini-bag\[hidden\]\s*\{\s*display: none !important;/);
+});
+
+test("Apple HIG ESCO search is inline, scoped, keyboard-ready and free of private history",()=>{
+  const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  const js=readFileSync("assets/js/esco-catalogue.js","utf8");
+  assert.match(generator,/id="esco-search"[^\n]*type="search"/);
+  assert.match(generator,/aria-controls="esco-catalogue-results"/);
+  assert.match(generator,/aria-describedby="esco-search-scope"/);
+  assert.match(generator,/esco-search-icon/);
+  assert.match(generator,/data-esco-reset-filters/);
+  assert.match(generator,/id="esco-search-scope"/);
+  assert.match(css,/\.esco-search-scope/);
+  assert.match(js,/input\?\.addEventListener\("input", apply\)/);
+  assert.doesNotMatch(js,/searchHistory|recentSearch|searchTermsStorage/);
 });

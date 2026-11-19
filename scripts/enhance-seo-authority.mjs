@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
   INDEXNOW_KEY_URL,
@@ -16,6 +17,7 @@ import {
 
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
+const materialPageReleaseDate = (route) => ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
@@ -232,7 +234,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
-          dateModified: releaseDate
+          dateModified: materialPageReleaseDate(route)
         };
       }
       schema = JSON.parse(JSON.stringify(schema).replaceAll("#organisation", "#organization"));
@@ -362,15 +364,16 @@ for (const file of [...new Set(publicFiles)]) {
   html = addAttributionSignals(html);
   const measurementId = process.env.PUBLIC_GA4_MEASUREMENT_ID || "G-897L1VS8BX";
   const analyticsApproved = process.env.PUBLIC_ANALYTICS_PRIVACY_APPROVED === "true";
-  if (analyticsApproved && measurementId && !/^G-[A-Z0-9]{6,18}$/.test(measurementId)) {
+  if (analyticsApproved && measurementId && !validGa4Id(measurementId)) {
     throw new Error("Approved GA4 measurement identifier is invalid.");
   }
-  // Provider activation requires an owner-controlled GA4 property, updated
-  // privacy notice and explicit privacy-approval flag in the build environment.
-  // A plain measurement ID never activates analytics by itself.
-  if (analyticsApproved && /^G-[A-Z0-9]{6,18}$/.test(measurementId)
-      && !/^\/(?:contact|account-application|portal|legal)\//.test(route)
-      && !/^\/products\/nutraxin\/(?:order-request|checkout|account|confirmation)\//.test(route)) {
+  // Every rebuild must remove stale GA4 tags from routes that are no longer
+  // explicitly approved. Previously enhanced HTML is not evidence of consent.
+  html = html.replace(/<meta name="novapharm-ga4-id" content="[^"]*">\s*\n?/g, "");
+  html = html.replace(/<script type="module" src="\/assets\/js\/consent-analytics\.js"><\/script>\s*\n?/g, "");
+  // The HTML publisher and the browser share exactly the same fail-closed
+  // allowlist. Owner activation alone never enables a protected route.
+  if (analyticsApproved && validGa4Id(measurementId) && publicAnalyticsRoute(route)) {
     html = html.replace("</head>", `  <meta name="novapharm-ga4-id" content="${measurementId}">\n</head>`);
     if (!html.includes('/assets/js/consent-analytics.js')) {
       html = html.replace("</body>", '<script type="module" src="/assets/js/consent-analytics.js"></script>\n</body>');
@@ -401,7 +404,7 @@ for (const file of [...new Set(publicFiles)]) {
 
 const sitemapEntries = pageRecords.filter((page) => page.indexable).map((page) => {
   const article = page.route.startsWith("/news-insights/") ? articleBySlug.get(page.route.split("/")[2]) : null;
-  const lastmod = article ? (article.updated || article.published) : releaseDate;
+  const lastmod = article ? (article.updated || article.published) : materialPageReleaseDate(page.route);
   return `<url><loc>${escXml(page.canonical)}</loc><lastmod>${lastmod}</lastmod></url>`;
 });
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapEntries.join("")}</urlset>\n`);

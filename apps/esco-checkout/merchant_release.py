@@ -54,6 +54,9 @@ def prepare_evidence(rows):
         records.append({
             "catalogue_id": row["catalogue_id"],
             "internal_novapharm_sku": "NP-ESCO-" + row["catalogue_id"][-4:],
+            "manufacturer": "Eastern Surgical Company (ESCO)",
+            "owner_declared_stock_units": 10000,
+            "stock_declaration_basis": "OWNER_DECLARED_NOT_ALLOCATED",
             "category": row["category"],
             "name": row["product"],
             "catalogue_model": row["supplier_model"],
@@ -108,6 +111,10 @@ def release_record(record, eligible):
     catalogue_id = record.get("catalogue_id")
     if not isinstance(catalogue_id, str) or not CAT.fullmatch(catalogue_id):
         raise ValueError("invalid catalogue ID")
+    if record.get("manufacturer") != "Eastern Surgical Company (ESCO)":
+        raise ValueError("manufacturer must match the ESCO product master")
+    if record.get("internal_novapharm_sku") != "NP-ESCO-" + catalogue_id[-4:]:
+        raise ValueError("internal product SKU does not match its catalogue reference")
     if record.get("release_authorised") is not True:
         raise ValueError("merchant release not approved")
     model = record.get("catalogue_model")
@@ -139,6 +146,11 @@ def release_record(record, eligible):
     amount = record.get("final_uk_delivered_selling_price_pence")
     if type(amount) is not int or not 1 <= amount <= 99999999:
         raise ValueError("firm UK delivered ex-VAT price required")
+    base_price = record.get("merchant_base_price_pence")
+    if type(base_price) is not int or base_price < 1:
+        raise ValueError("merchant-approved website base price missing")
+    if amount < base_price:
+        raise ValueError("delivered selling price falls below approved website base price")
     if record.get("pricing_basis") not in ("VERIFIED_SUPPLIER_COST", "MERCHANT_ACCEPTED_COST_RISK"):
         raise ValueError("unverified suggested price is not a final price")
     out = {
@@ -208,14 +220,20 @@ def evaluate(document, eligible):
     rows = document.get("records")
     if not isinstance(rows, list) or len(rows) != 373:
         raise ValueError("all 373 catalogue references must be present")
-    expected = {x["catalogue_id"] for x in read_matrix()}
+    expected = {x["catalogue_id"]: x for x in read_matrix()}
     actual = [x.get("catalogue_id") for x in rows]
-    if len(set(actual)) != 373 or set(actual) != expected:
+    if len(set(actual)) != 373 or set(actual) != set(expected):
         raise ValueError("catalogue reconciliation failed")
     released, blocked = {}, {}
     for record in rows:
         key = record["catalogue_id"]
         try:
+            # Never promote a product whose base price has drifted from the
+            # merchant-approved website source, regardless of variant approval.
+            authorised_base = pence(
+                expected[key]["owner_approved_catalogue_unit_price_ex_vat_gbp"])
+            if record.get("merchant_base_price_pence") != authorised_base:
+                raise ValueError("website-approved base price mismatch")
             released[key] = release_record(record, eligible)
         except (ValueError, KeyError, TypeError) as exc:
             blocked[key] = str(exc)

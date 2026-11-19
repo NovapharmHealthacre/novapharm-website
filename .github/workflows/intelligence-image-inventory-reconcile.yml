@@ -1,0 +1,89 @@
+name: Reconcile Intelligence branch image evidence (no production release)
+
+on:
+  push:
+    branches:
+      - feat/intelligence-customer-session-api-20261111
+    # Run after branch is refreshed from main; bot commits never re-trigger.
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-inventory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Regenerate governed inventory from checked-in source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          mkdir -p candidate
+          cp audit/generated/image-inventory.json candidate/image-inventory.json
+          printf '%s\n' "$GITHUB_SHA" > candidate/source-sha.txt
+          sha256sum candidate/image-inventory.json > candidate/sha256.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: intelligence-governed-image-inventory
+          path: candidate/
+          retention-days: 7
+
+  apply:
+    needs: generate
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/feat/intelligence-customer-session-api-20261111'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Verify exact original branch head has not moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/feat/intelligence-customer-session-api-20261111 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: intelligence-governed-image-inventory
+          path: ${{ runner.temp }}/novapharm-intelligence-inventory
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Accept only exact-source regenerated inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < "$RUNNER_TEMP/novapharm-intelligence-inventory/source-sha.txt")" = "$GITHUB_SHA"
+          test -s "$RUNNER_TEMP/novapharm-intelligence-inventory/image-inventory.json"
+          cp "$RUNNER_TEMP/novapharm-intelligence-inventory/image-inventory.json" audit/generated/image-inventory.json
+          npm ci --ignore-scripts
+          npm run images:inventory:validate
+          git diff --check
+          git add audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Inventory already current; no commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(evidence): reconcile source-derived Intelligence image inventory"
+          git push origin HEAD:refs/heads/feat/intelligence-customer-session-api-20261111

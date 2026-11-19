@@ -19,8 +19,8 @@ const trustedIntent = {
   verifiedServerSide: true, customerAcceptedTerms: true, trustedLedgerReservation: true,
   id: "intent_20261110_test1", stripeCustomerId: "cus_0123456789",
   tenantId: "tenant_owner", subject: "sub_owner",
-  stripePriceId: "price_1Ua7M92U9Y3sX5I2tVhCoFaq",
-  plan: "starter", cycle: "monthly", currency: "inr",
+  stripePriceId: "price_1Uati52U9Y3sX5I2RJuYixR9",
+  plan: "starter", cycle: "monthly", currency: "gbp",
   expiresAtMs: Date.now() + 600_000,
 };
 const valid = {
@@ -81,12 +81,12 @@ test("transport is strictly guarded; mock-only session cannot grant access", asy
       assert.equal(request.redirect, "error");
       assert.equal(request.headers["Idempotency-Key"], "npi-live-subscription-" + trustedIntent.id);
       const form = new URLSearchParams(request.body);
-      assert.match(form.get("integration_identifier"), /^novapharm_intelligence_[a-z]{8}$/u);
+      assert.equal(form.has("integration_identifier"), false);
       assert.equal(form.get("mode"), "subscription");
       assert.equal(form.get("line_items[0][price]"), trustedIntent.stripePriceId);
       return { ok: true, json: async () => ({
         id: "cs_live_0123456789", livemode: true, mode: "subscription", customer: trustedIntent.stripeCustomerId,
-        currency: "inr", url: "https://checkout.stripe.com/c/pay/test123",
+        currency: "gbp", url: "https://checkout.stripe.com/c/pay/test123",
       }) };
     },
   });
@@ -107,8 +107,30 @@ test("rejects forged mode, Stripe domain and customer return", async () => {
       ...valid, stripeSecretKey: "rk_live_0123456789abcdefghijkl",
       fetchImpl: async () => ({ ok: true, json: async () => ({
         id: "cs_live_0123456789", livemode: true, mode: "subscription", customer: trustedIntent.stripeCustomerId,
-        currency: "inr", url: "https://checkout.stripe.com/c/pay/test123", ...changed,
+        currency: "gbp", url: "https://checkout.stripe.com/c/pay/test123", ...changed,
       }) }),
     }));
   }
+});
+
+test("repeat Checkout request uses the same body and idempotency key", async () => {
+  const requests = [];
+  const mock = async (url, request) => {
+    requests.push({ url, body: request.body, key: request.headers["Idempotency-Key"] });
+    return { ok: true, json: async () => ({
+      id: "cs_live_0123456789", livemode: true, mode: "subscription",
+      customer: trustedIntent.stripeCustomerId, currency: "gbp",
+      url: "https://checkout.stripe.com/c/pay/test123",
+    }) };
+  };
+  await createIntelligenceSubscriptionCheckout({
+    ...valid, stripeSecretKey: "rk_live_0123456789abcdefghijkl", fetchImpl: mock,
+  });
+  await createIntelligenceSubscriptionCheckout({
+    ...valid, stripeSecretKey: "rk_live_0123456789abcdefghijkl", fetchImpl: mock,
+  });
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].key, requests[1].key);
+  assert.equal(requests[0].body, requests[1].body);
+  assert.equal(new URLSearchParams(requests[0].body).has("integration_identifier"), false);
 });

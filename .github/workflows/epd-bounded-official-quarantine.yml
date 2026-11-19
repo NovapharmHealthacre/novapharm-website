@@ -1,0 +1,39 @@
+name: NHSBSA EPD bounded source quarantine evidence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/data/nhsbsa-epd-bounded-quarantine.mjs'
+      - 'scripts/data/capture-epd-bounded-quarantine.mjs'
+      - 'scripts/test-nhsbsa-epd-bounded-quarantine.mjs'
+      - '.github/workflows/epd-bounded-official-quarantine.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: epd-bounded-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout without retaining repository credentials
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Run source quarantine validation tests
+        run: node --test scripts/test-nhsbsa-epd-bounded-quarantine.mjs
+      - name: Demonstrate network-disabled default
+        run: node scripts/data/capture-epd-bounded-quarantine.mjs --limit 2
+      - name: Verify official NHSBSA source and capture two rows
+        env:
+          QUARANTINE_OUT: ${{ runner.temp }}/npi-epd-private-review
+        run: node scripts/data/capture-epd-bounded-quarantine.mjs --execute --out "$QUARANTINE_OUT" --limit 2
+      - name: Upload private 1-day quarantine evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nhsbsa-epd-202608-bounded-evidence
+          path: ${{ runner.temp }}/npi-epd-private-review/epd-quarantine.json
+          if-no-files-found: error
+          retention-days: 1

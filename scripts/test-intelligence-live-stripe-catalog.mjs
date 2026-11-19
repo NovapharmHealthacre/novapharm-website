@@ -19,7 +19,7 @@ const release = {
 };
 const principal = { verifiedServerSide: true, mfaVerified: true, tenantId: "t_acme", subject: "u_owner" };
 
-test("live catalog has distinct plan products and exact previously published INR prices", () => {
+test("GBP catalog has distinct plan products and exact owner-approved GBP prices created inactive in live Stripe", () => {
   assert.equal(new Set(Object.values(catalog).map((p) => p.productId)).size, 3);
   assert.deepEqual([
     catalog.starter.prices.monthly.amountMinor,
@@ -27,7 +27,7 @@ test("live catalog has distinct plan products and exact previously published INR
     catalog.professional.prices.monthly.amountMinor,
     catalog.professional.prices.annual.amountMinor,
     catalog.enterprise.prices.monthly.amountMinor,
-  ], [2499900, 25499000, 8999900, 91799000, 35000000]);
+  ], [19900, 203000, 69900, 713000, 279900]);
   assert.equal(catalog.enterprise.prices.annual, undefined);
   assert.equal(catalog.enterprise.monthlySearchLimit, null);
   assert.equal(new Set(Object.values(catalog).flatMap((p) => Object.values(p.prices).map((v) => v.id))).size, 5);
@@ -45,8 +45,8 @@ test("catalog is blocked by default, including claimed browser identity and unsi
 test("a separately verified server release may select but never charge or grant access", () => {
   const result = choose({ plan: "starter", cycle: "annual", release, principal });
   assert.equal(result.allowed, true);
-  assert.equal(result.amountMinor, 25499000);
-  assert.equal(result.currency, "inr");
+  assert.equal(result.amountMinor, 203000);
+  assert.equal(result.currency, "gbp");
   assert.equal(result.taxBehavior, "exclusive");
   assert.equal(result.interval, "year");
   assert.equal(result.grantsAccess, false);

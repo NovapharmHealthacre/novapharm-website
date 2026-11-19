@@ -22,6 +22,8 @@ import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platfo
 const root = resolve(process.cwd());
 const platformMode = resolvePlatformMode();
 const platformCapabilities = getPlatformCapabilities(platformMode);
+// Public-only pages cannot promise account creation or a working application.
+const accountCtaLabel = platformCapabilities.accountApplication ? "Apply for a business account" : "Discuss account eligibility";
 const nutraxinCatalogue = validateNutraxinRegister({ repositoryRoot: root }).register;
 const articlesDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articlesDirectory)
@@ -81,7 +83,9 @@ function productCategoryMedia(category) {
 
 function nutraxinProductMedia(product, eager = false, sizes = "(max-width: 640px) 86vw, (max-width: 1040px) 44vw, 28vw") {
   const base = `/assets/media/products/nutraxin/${product.imageBase}`;
-  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const width = product.imageBase === "collagen-gold-30-tablets" ? 980 : 700;
+  const height = product.imageBase === "collagen-gold-30-tablets" ? 654 : 700;
+  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="${width}" height="${height}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function nutraxinProductCard(product, eager = false) {
@@ -140,10 +144,10 @@ function header(slug = "") {
         <span class="nav-toggle-lines" aria-hidden="true"><i></i><i></i></span><span class="sr-only">Open navigation</span>
       </button>
       <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${navigation.map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
+        ${navigation.filter(([label]) => label !== "Secure Portal").map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
         <a class="nav-search" href="/search/" data-ai-search-open>Search <kbd>Ctrl K</kbd></a>
         <a class="nav-portal" href="https://portal.novapharmhealthcare.com/">Secure portal</a>
-        <a class="btn btn-primary nav-cta" href="/account-application/">Open an account</a>
+        <a class="btn btn-primary nav-cta" href="/account-application/">${esc(accountCtaLabel)}</a>
       </nav>
     </div>
   </header>`;
@@ -160,7 +164,7 @@ function footer() {
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/oncology/">Oncology continuity</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
-        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
+        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/trust-centre/">Trust centre</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
       <div class="footer-notices">
@@ -321,7 +325,7 @@ function head(meta, slug = "", options = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#E3120B">
+  <meta name="theme-color" content="#FFFFFF">
   <title>${esc(meta.title)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="robots" content="${options.robots || "index, follow, max-snippet:-1, max-image-preview:large"}">
@@ -333,6 +337,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
   <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
   <link rel="manifest" href="/manifest.webmanifest">
+  <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
   <meta property="og:site_name" content="NovaPharm Healthcare">
@@ -356,7 +361,7 @@ function documentShell({ meta, slug = "", body, options = {} }) {
   return `${head(meta, slug, options)}
 <body data-page="${slug || "home"}">
 ${header(slug)}
-<main id="main">${body}</main>
+<main id="main" lang="en-GB" data-np-untranslated>${body}</main>
 ${footer()}
 ${aiSearchDialog()}
 ${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}
@@ -394,7 +399,7 @@ function regulatoryNotice() {
 }
 
 function finalCta(title = "Build the next pharmaceutical partnership with NovaPharm.") {
-  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">Open an account</a></div></div></section>`;
+  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">${esc(accountCtaLabel)}</a></div></div></section>`;
 }
 
 function leaderVisual(profile, eager = false, sizes = eager ? "(max-width: 760px) 100vw, 50vw" : "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px") {
@@ -807,7 +812,7 @@ function partnersPage() {
   ${mediaStory({ src: "/assets/media/editorial/partnership-pathway.svg", alt: "Five controlled stages in a pharmaceutical partnership pathway", kicker: "Qualified collaboration", title: "The route from introduction to launch should be visible.", text: "Strategic fit, evidence, due diligence, agreement, implementation and review are treated as explicit stages. No organisation is presented as a partner until permission and scope are confirmed.", reverse: true })}
   <section class="section"><div class="container">${sectionHeading("Partner ecosystem", "Who NovaPharm is designed to work with.")}<div class="partner-type-grid partner-type-grid-large">${partnerTypes.map((type) => `<span>${esc(type)}</span>`).join("")}</div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Partner journey", "Ten controlled stages from first conversation to ongoing review.")}<ol class="partner-journey">${partnerJourney.map((step, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(step)}</strong></li>`).join("")}</ol></div></section>
-  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>Open a business account</strong></a></div></section>
+  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>${esc(accountCtaLabel)}</strong></a></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
 }
@@ -924,8 +929,10 @@ function contactPage() {
 function accountApplicationPage() {
   const slug = "account-application";
   const meta = {
-    title: "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-    description: "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    title: platformCapabilities.accountApplication ? "Apply for a Pharmaceutical Customer Account | NovaPharm Healthcare" : "Business Account Eligibility | NovaPharm Healthcare",
+    description: platformCapabilities.accountApplication
+      ? "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow."
+      : "Learn how NovaPharm assesses business account eligibility. The public-only website cannot accept formal applications or private documents.",
     eyebrow: "Customer onboarding"
   };
   if (!platformCapabilities.accountApplication) {
@@ -990,7 +997,12 @@ function policyMeta(details = policyDetails) {
 
 function policyPage(slug, title, intro, content) {
   const meta = pageMeta[slug];
-  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout"><aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside><article class="legal-content">${content}</article></div></section>`;
+  const aside = `<aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside>`;
+  const article = `<article class="legal-content">${content}</article>`;
+  // Privacy choices and the short overview must come first in keyboard and
+  // screen-reader reading order, not only in a CSS visual reordering.
+  const policyBody = slug === "legal/privacy" ? article + aside : aside + article;
+  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout">${policyBody}</div></section>`;
   return documentShell({ meta, slug, body, options: { pageType: "WebPage" } });
 }
 
@@ -1027,22 +1039,22 @@ function privacyPage() {
 
 function cookiesPage() {
   return policyPage("legal/cookies", "Cookie and storage notice", "NovaPharm uses only the technologies listed below. Non-essential categories remain off unless the visitor makes an affirmative choice.", `
-    <section><h2>1. Current register</h2><div class="table-wrap" role="region" aria-label="Cookie and browser storage register" tabindex="0"><table><thead><tr><th>Name</th><th>Type and provider</th><th>Purpose</th><th>Duration</th><th>Consent or activation</th></tr></thead><tbody><tr><td><code>np_csrf</code></td><td>First-party cookie; NovaPharm</td><td>Prevents forged form and portal requests</td><td>1 hour</td><td>Strictly necessary</td></tr><tr><td><code>np_session</code></td><td>First-party cookie; NovaPharm</td><td>Maintains an authenticated, role-scoped secure session</td><td>30 minutes of inactivity or 8 hours absolute, with earlier logout/revocation</td><td>Strictly necessary for the requested portal</td></tr><tr><td><code>np_cookie_consent</code></td><td>First-party local storage; NovaPharm</td><td>Remembers consent version, selected categories, timestamp and a random preference-record identifier</td><td>180 days</td><td>Necessary to remember the visitor's choice</td></tr><tr><td><code>novapharm-public-ai</code></td><td>First-party IndexedDB; NovaPharm</td><td>Optionally caches the approved local semantic retrieval asset and public-content embeddings so a visitor can reuse private on-device search</td><td>Until the visitor uses Clear optional cache, the browser removes it or site data are cleared</td><td>Created only after the visitor explicitly enables private semantic retrieval; no query or answer is stored</td></tr></tbody></table></div></section>
-    <section><h2>2. Categories</h2><p>Strictly necessary technologies support security, forms and an authenticated portal. Preference storage remembers the choices a visitor asks the site to retain. Analytics and marketing are separate optional categories. The current production candidate contains no enabled analytics, advertising, social pixel or marketing tag, and no such tool may be added without updating this register, completing a transfer and privacy review, and honouring the saved category choice.</p></section>
-    <section><h2>3. Your choices</h2><p>The first layer offers equally accessible controls to accept all, reject non-essential technologies or manage categories. Optional boxes are off by default. Use <button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button> at any time to change or withdraw a choice. Rejecting optional categories does not block ordinary public content.</p></section>
-    <section><h2>4. Evidence and transfers</h2><p>The preference record stays in the browser and is not used for unrelated tracking. It contains no name, email or portal data. Current first-party cookies do not themselves initiate an international transfer. Any future third-party analytics or marketing provider requires a documented recipient, purpose, duration and transfer assessment before activation.</p></section>
-    <section><h2>5. Audit method</h2><p>The release audit checks application source and generated response headers, and automated tests assert that optional categories default to off and remain off after rejection. Browser inspection of cookies, local storage and network requests remains a required preview and production acceptance step. The approach follows the ICO's final April 2026 <a href="https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/">guidance on storage and access technologies</a>. NovaPharm does not rely on a statistical-purpose exception in this release; optional analytics remains absent and off.</p></section>`);
+    <section><h2>1. Current register</h2><div class="table-wrap" role="region" aria-label="Cookie and browser storage register" tabindex="0"><table><thead><tr><th>Name</th><th>Type and provider</th><th>Purpose</th><th>Duration</th><th>Consent or activation</th></tr></thead><tbody><tr><td><code>np_csrf</code></td><td>First-party cookie; NovaPharm</td><td>Prevents forged form and portal requests</td><td>1 hour</td><td>Strictly necessary</td></tr><tr><td><code>np_session</code></td><td>First-party cookie; NovaPharm</td><td>Maintains an authenticated, role-scoped secure session</td><td>30 minutes of inactivity or 8 hours absolute, with earlier logout/revocation</td><td>Strictly necessary for the requested portal</td></tr><tr><td><code>np_cookie_consent</code></td><td>First-party local storage; NovaPharm</td><td>Remembers consent version, selected categories, timestamp and a random preference-record identifier</td><td>180 days</td><td>Necessary to remember the visitor's choice</td></tr><tr><td><code>np_locale</code></td><td>First-party cookie; NovaPharm</td><td>Remembers an explicitly selected interface language and Arabic/Hebrew right-to-left layout preview. Does not track activity or grant access.</td><td>Up to 365 days after selection</td><td>Functional preference set only when the visitor chooses an interface language; not an optional analytics or marketing cookie</td></tr><tr><td><code>novapharm-public-ai</code></td><td>First-party IndexedDB; NovaPharm</td><td>Optionally caches the approved local semantic retrieval asset and public-content embeddings so a visitor can reuse private on-device search</td><td>Until the visitor uses Clear optional cache, the browser removes it or site data are cleared</td><td>Created only after the visitor explicitly enables private semantic retrieval; no query or answer is stored</td></tr><tr><td><code>_ga</code>, <code>_ga_*</code></td><td>First-party analytics cookies; Google Analytics 4 (Google)</td><td>Measure public-page visits and coarse, consented interactions. No customer identifiers, order details, medical information or ad personalisation are sent by NovaPharm custom events.</td><td>Configured up to 90 days, subject to shorter browser limits</td><td>Only if the analytics provider is explicitly activated and you affirmatively select Analytics; withdraw via Cookie settings</td></tr></tbody></table></div></section>
+    <section><h2>2. Categories</h2><p>Strictly necessary technologies support security, forms and an authenticated portal. Preference storage remembers the choices a visitor asks the site to retain. The <code>np_locale</code> cookie is set only when the visitor selects an interface language; Arabic and Hebrew currently provide an RTL layout preview, not fully translated clinical, legal or commercial content. Changing language does not change account permissions. Analytics is an optional category; marketing tracking is currently unavailable and requires a new choice before any future activation. Google Analytics 4 is available as an optional public-site measurement service. Its tag does not load unless a visitor affirmatively selects Analytics. Rejecting or withdrawing that choice blocks site-initiated measurement. Advertising pixels and marketing tags remain disabled. Google processing and transfer safeguards remain subject to governance review; choosing Analytics is optional.</p></section>
+    <section><h2>3. Your choices</h2><p>The first layer offers controls to accept optional analytics, reject non-essential technologies or manage categories. Optional boxes are off by default. Use <button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button> at any time to change or withdraw a choice. Rejecting optional categories does not block ordinary public content.</p></section>
+    <section><h2>4. Evidence and transfers</h2><p>The preference record stays in the browser and is not used for unrelated tracking. It contains no name, email or portal data. First-party security and consent records do not themselves initiate a Google transfer. If Google Analytics 4 is enabled after the required review and you consent, public-site measurement data may be processed by Google and transferred internationally under the applicable Google data-protection terms. Check Google's current terms, transfer safeguards and configured event-data retention before enabling the release.</p></section>
+    <section><h2>5. Audit method</h2><p>The release audit checks application source and generated response headers, and automated tests assert that optional categories default to off and remain off after rejection. Browser inspection of cookies, local storage and network requests remains a required preview and production acceptance step. The approach follows the ICO's final April 2026 <a href="https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/">guidance on storage and access technologies</a>. NovaPharm does not rely on a statistical-purpose exception: optional Google Analytics 4 remains off unless the owner approves the release and the visitor gives consent.</p></section>`);
 }
 
 function termsPage() {
   return policyPage("legal/terms", "Website terms of use", "These terms govern the public corporate website and, together with applicable account terms, the secure NovaPharm portal.", `
     <section><h2>1. Operator and acceptance</h2><p>This website is operated by ${company.legalName}, company number ${company.companyNumber}, registered in England and Wales with registered office at ${company.registeredAddress}. By using it, you agree to use it lawfully and consistently with these terms. Separate signed terms govern any supply, service, employment, investment or partnership relationship.</p></section>
-    <section><h2>2. B2B and regulatory boundary</h2><p>The website is for corporate and qualified B2B information. It is not a patient-ordering service and provides no medical, prescribing or dispensing advice. Nothing on the website is an offer to supply an unauthorised product. Product availability, WDA(H), PLPI, NHS supply, partnership, logistics, AI and traceability statements are subject to the status labels and regulatory caveats shown on the relevant page.</p></section>
+    <section><h2>2. Website scope, Nutraxin retail and regulated medicines</h2><p>Most NovaPharm pharmaceutical, sourcing and distribution content is intended for qualified businesses. The separate <a href="/products/nutraxin/">Nutraxin UK food-supplement collection</a> may offer consumer shopping when the product and checkout are enabled. Food supplements are not prescription medicines. NovaPharm does not provide medical, prescribing or dispensing advice or offer prescription medicines directly to patients. Nothing on the website is an offer to supply an unauthorised medicine. Product availability, WDA(H), PLPI, NHS supply, partnership, logistics, AI and traceability statements remain subject to the status labels and regulatory caveats on the relevant page.</p></section>
     <section><h2>3. Permitted use and intellectual property</h2><p>You may view and use public content for legitimate business evaluation. Unless law or a signed agreement permits otherwise, you must not reproduce substantial content, remove notices, misrepresent NovaPharm material, scrape secure areas, introduce malicious code, test security without written authorisation or use the website to infringe another person's rights. NovaPharm and its licensors retain applicable intellectual-property rights.</p></section>
     <section><h2>4. Portal accounts and confidential documents</h2><p>Users must protect credentials, complete required password changes, use only authorised access scopes and notify NovaPharm of suspected compromise. Portal documents, board materials, prices, customer records and operational data may be confidential and may be used only for the authorised purpose. Attempts to bypass access controls, enumerate users or retrieve another customer's data are prohibited.</p></section>
     <section><h2>5. Accuracy, availability and links</h2><p>NovaPharm aims to keep corporate information accurate and labels developing capabilities conservatively, but information may change and should be independently checked before a regulated or commercial decision. Availability is not guaranteed. External links are provided for context; NovaPharm does not control their content or privacy practices.</p></section>
     <section><h2>6. Liability and law</h2><p>Nothing in these terms excludes liability that cannot lawfully be excluded, including liability for death or personal injury caused by negligence, fraud or fraudulent misrepresentation. Any remaining limitation must be interpreted in the context of the user's status and any signed agreement. These terms are intended to be governed by the law of England and Wales with the courts of England and Wales having jurisdiction, subject to mandatory rights and final legal review.</p><div class="regulatory-notice"><strong>Legal review</strong><p>The liability, jurisdiction and portal-contract wording requires final review by a UK solicitor before production approval.</p></div></section>
-    <section><h2>7. Contact and changes</h2><p>Questions or reports of misuse can be submitted through the <a href="/contact/?enquiry=General%20enquiry">corporate contact route</a>. Material changes will update the version and review date.</p></section>`);
+    <section><h2>7. Contact and changes</h2><p>Questions or reports of misuse can be submitted through the <a href="/contact/?enquiry=General%20enquiry">corporate contact route</a>. Material changes will update the version and review date.</p></section><section id="nutraxin-consumer-sales"><h2>8. Nutraxin consumer shopping and statutory rights</h2><p>The Nutraxin UK Bag is a separate food-supplement retail journey, not the wholesale medicines portal. Before proceeding to Stripe, the Bag displays the selected items, total in GBP and UK delivery terms. NovaPharm recalculates the final amount on its server. Standard UK delivery is included at no additional charge; manufacturer-arranged fulfilment may take up to 30 days where this is expressly acknowledged before checkout. NovaPharm remains the seller responsible for the consumer transaction and statutory rights, even where the manufacturer handles fulfilment.</p><p>UK distance-selling consumers normally have a right to cancel within 14 days of receiving goods and a further 14 days to return them, subject to applicable statutory exceptions. A hygiene/health-protection exception may apply to certain sealed goods once unsealed. Rights concerning faulty, unsafe or misdescribed goods are not restricted by this exception. Refunds and cancellation are handled in accordance with applicable UK consumer law.</p><p>For an order, cancellation, return or complaint, <a href="/contact/?enquiry=Nutraxin%20order">contact NovaPharm</a> with your order reference, without sending payment-card details. Request the applicable return instructions and destination before dispatching any items. Return postage arrangements and operational procedures require confirmation in the final customer policy; do not infer any waiver of statutory rights from this website summary.</p></section>`);
 }
 
 function accessibilityPage() {
@@ -1072,7 +1084,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {
@@ -1127,7 +1139,7 @@ export function buildPublicPages() {
   write("legal/modern-slavery/index.html", modernSlaveryPage());
   write("legal/environment-carbon/index.html", environmentPage());
   write("404.html", errorPage("404", "Page not found", "The page may have moved, or the address may be incorrect."));
-  write("500.html", errorPage("500", "Service unavailable", "NovaPharm's secure service is temporarily unavailable. Please try again later."));
+  write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable. Try again later or go to the home page."));
   write("service-unavailable/index.html", errorPage("503", "Service temporarily unavailable", "The secure NovaPharm service is not ready to accept this request."));
   write("contact.html", redirectPage("Contact", "/contact/"));
   write("company-profile/index.html", redirectPage("Company", "/about/company/"));

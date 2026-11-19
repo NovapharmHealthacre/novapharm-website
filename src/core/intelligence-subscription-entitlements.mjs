@@ -6,6 +6,8 @@
  * and release switch MUST be loaded from independently verified server state.
  * Never populate these objects from request JSON, pricing DOM or query strings.
  */
+import { decideIntelligenceFreeTrialEntitlement } from "./intelligence-free-trial.mjs";
+
 const PLAN_DEFINITIONS = Object.freeze({
   starter: Object.freeze({
     monthlySearchLimit: 25,
@@ -35,7 +37,12 @@ function monthKey(value) {
 function validDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/u.test(value)) return null;
   const n = Date.parse(value);
-  return Number.isFinite(n) ? n : null;
+  if (!Number.isFinite(n)) return null;
+  // Date.parse can normalise impossible UTC dates (e.g. November 31) into
+  // the following month. Billing grants must match the claimed instant exactly.
+  const canonical = value.replace(/(\.\d{1,3})?Z$/u, (_, fraction) =>
+    `${fraction ? fraction.padEnd(4, "0") : ".000"}Z`);
+  return new Date(n).toISOString() === canonical ? n : null;
 }
 
 /**
@@ -47,6 +54,11 @@ export function decideIntelligenceEntitlement({ principal, grant, feature, usage
   if (!principal?.verifiedServerSide || principal.mfaVerified !== true || !principal.tenantId || !principal.subject) return deny("identity_not_verified");
   if (!["cognito-oidc", "entra-oidc"].includes(principal.identityProvider)) return deny("identity_provider_not_approved");
   if (typeof principal.tenantId !== "string" || typeof principal.subject !== "string") return deny("invalid_identity");
+  // A no-card offer is a separately verified, never-auto-billed grant.
+  // Missing release flags fail closed; paid Stripe subscriptions retain the original path.
+  if (grant?.source === "verified-free-trial-ledger") {
+    return decideIntelligenceFreeTrialEntitlement({ principal, grant, feature, usage, release, now });
+  }
   if (!grant || grant.source !== "verified-stripe-webhook-ledger" || grant.webhookSignatureVerified !== true || grant.contractAccepted !== true) return deny("subscription_not_verified");
   if (grant.tenantId !== principal.tenantId || grant.subject !== principal.subject) return deny("tenant_or_subject_mismatch");
   if (typeof grant.stripeCustomerId !== "string" || !/^cus_[a-zA-Z0-9]{6,}$/u.test(grant.stripeCustomerId)) return deny("billing_account_not_verified");
