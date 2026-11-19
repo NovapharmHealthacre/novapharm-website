@@ -1,0 +1,20 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Expire only explicitly tagged ephemeral-build images after 30 days; published Lambda images are retained by default",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": [
+          "ephemeral-build-"
+        ],
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 30
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { parseConsent, saveConsent, CONSENT_VERSION, CONSENT_MAX_AGE_MS } from "../assets/js/cookie-consent.js";
+import { publicAnalyticsRoute } from "../assets/js/consent-analytics.js";
+
+const source = (path) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
+
+test("static and Next consent records share version and field contract", () => {
+  const next = source("apps/corporate/components/cookie-controls.tsx");
+  assert.match(next, new RegExp('consentVersion = "' + CONSENT_VERSION + '"'));
+  assert.match(next, /readonly id: string/);
+  assert.match(next, /readonly timestamp: string/);
+  assert.match(next, /necessary: true/);
+  assert.match(next, /age > maxAgeMs/);
+  assert.match(next, /window\.dispatchEvent\(new CustomEvent\("novapharm:consent"/);
+  assert.match(next, /readConsent\(\) === null/);
+  assert.match(next, /window\.localStorage\.setItem/);
+  assert.match(next, /Non-essential services remain off/);
+  const when = new Date("2026-11-15T12:00:00.000Z");
+  const cache = new Map();
+  const storage = { setItem: (key, value) => cache.set(key, value), getItem: (key) => cache.get(key) ?? null };
+  const choice = saveConsent(storage, { necessary: true, preferences: true, analytics: true, marketing: false }, { now: when, id: "11111111-2222-4333-8444-555555555555" });
+  assert.equal(parseConsent(storage.getItem("np_cookie_consent"), when.getTime())?.categories.analytics, true);
+  assert.equal(parseConsent(storage.getItem("np_cookie_consent"), when.getTime() + CONSENT_MAX_AGE_MS + 1), null);
+  assert.equal(parseConsent(JSON.stringify({ ...choice, version: "obsolete" }), when.getTime()), null);
+});
+
+test("the UI never pre-authorises inactive advertising or marketing providers", () => {
+  const staticUi = source("assets/js/cookie-consent.js");
+  const nextUi = source("apps/corporate/components/cookie-controls.tsx");
+  assert.match(staticUi, /name="marketing" disabled/);
+  assert.match(staticUi, /marketing: false/);
+  const forged = saveConsent({ setItem() {} }, { marketing: true }, { now: new Date(), id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" });
+  assert.equal(forged.categories.marketing, false);
+  assert.match(staticUi, /if \(action === "accept"\) choose\(\{ preferences: false, analytics: true, marketing: false \}\)/);
+  assert.match(nextUi, /Marketing tracking unavailable/);
+  assert.doesNotMatch(nextUi, /marketing: true/);
+  assert.match(nextUi, /preferences: false, analytics: true, marketing: false/);
+  assert.match(nextUi, /button button-primary.*Reject non-essential/);
+  assert.match(source("assets/js/consent-analytics.js"), /ad_personalization: "denied"/);
+});
+
+test("privacy notices provide actionable user choice, data rights and permission boundaries", () => {
+  const staticPrivacy = source("legal/privacy/index.html");
+  const staticCookies = source("legal/cookies/index.html");
+  const corporatePages = source("apps/corporate/data/pages.ts");
+  const renderer = source("apps/corporate/components/page-renderer.tsx");
+  for (const id of ["privacy-by-design", "privacy-controls", "protected-device-resources", "optional-website-analytics"]) {
+    assert.match(staticPrivacy, new RegExp('id="' + id + '"'));
+  }
+  assert.match(staticPrivacy, /data-cookie-settings/);
+  assert.match(staticPrivacy, /Privacy Lead/);
+  assert.match(staticPrivacy, /browser.*permission interface/);
+  assert.match(staticCookies, /data-cookie-settings/);
+  assert.match(corporatePages, /title: "Privacy by design"/);
+  assert.match(corporatePages, /title: "Protected resources and location"/);
+  assert.match(renderer, /CookieSettingsButton className=/);
+  assert.match(renderer, /legal\/privacy/);
+  assert.doesNotMatch(staticPrivacy, /<meta name="novapharm-ga4-id"/);
+});
+
+test("GA4 route exclusions retain legal, contact and account privacy boundaries", () => {
+  for (const path of ["/legal/privacy/", "/legal/cookies/", "/contact/", "/account-application/", "/portal/", "/admin/", "/products/nutraxin/checkout/"]) {
+    assert.equal(publicAnalyticsRoute(path), false, path);
+  }
+  assert.equal(publicAnalyticsRoute("/"), true);
+  assert.equal(publicAnalyticsRoute("/technology/"), true);
+  const register = source("compliance/cookie-register.md");
+  assert.match(register, /2026-11-15-v1.3/);
+  assert.match(register, /Google Analytics 4/);
+});
+
+test("optional session attribution is absent on legal and protected routes", () => {
+  const attribution = source("assets/js/marketing-attribution.js");
+  assert.match(attribution, /import \{ publicAnalyticsRoute \} from "\.\/consent-analytics\.js"/);
+  assert.match(attribution, /function analyticsAllowed\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return false;/);
+  assert.match(attribution, /function collectAttribution\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return null;/);
+  assert.match(attribution, /sessionStorage\.removeItem\(ATTRIBUTION_KEY\)/, "Withdrawal must clear optional attribution");
+  for (const path of [
+    "/legal/privacy/", "/legal/cookies/", "/contact/", "/account-application/",
+    "/portal/", "/admin/", "/products/nutraxin/bag/",
+    "/products/nutraxin/account/", "/products/nutraxin/checkout/",
+    "/products/track/", "/products/orders/"
+  ]) {
+    assert.equal(publicAnalyticsRoute(path), false, "Protected page must never capture session attribution: " + path);
+  }
+});
+
+test("consented Nutraxin analytics is restricted to the reviewed informational product catalogue", () => {
+  const approved = JSON.parse(source("assets/data/nutraxin-retail-catalogue.json")).products;
+  assert.equal(approved.length, 19, "Product allowlist requires explicit review when catalogue changes");
+  for (const product of approved) {
+    assert.equal(publicAnalyticsRoute(`/products/nutraxin/${product.slug}/`), true, "Approved product should remain eligible");
+  }
+  for (const path of [
+    "/products/nutraxin/bag/", "/products/nutraxin/account/",
+    "/products/nutraxin/orders/", "/products/nutraxin/checkout/",
+    "/products/nutraxin/order-request/", "/products/nutraxin/confirmation/",
+    "/products/nutraxin/private-future-page/",
+    "/products/nutraxin/vitamin-d3-120-tablets/account/",
+    "/products/track/", "/products/orders/", "/products/checkout/",
+    "/products/esco/checkout/", "/products/marketplace/bag/",
+    "/products/unreviewed-future-page/"
+  ]) {
+    assert.equal(publicAnalyticsRoute(path), false, "Unexpected analytics on private or unreviewed Nutraxin page: " + path);
+  }
+  assert.equal(publicAnalyticsRoute("/products/marketplace/"), true);
+  assert.equal(publicAnalyticsRoute("/products/esco/"), true);
+  assert.match(source("assets/js/consent-analytics.js"), /APPROVED_NUTRAXIN_PRODUCT_PATHS\.has\(location\.pathname\)/);
+});
+
+test("native-only APIs are not misrepresented as website implementations", () => {
+  const guide = source("docs/design/apple-privacy-web-adaptation.md");
+  for (const part of ["UIKit", "Core Location", "App Tracking Transparency", "WebAuthn", "legal review"]) {
+    assert.ok(guide.includes(part), part);
+  }
+  assert.doesNotMatch(source("legal/privacy/index.html"), /navigator\.geolocation|getUserMedia\(/);
+});
+
+
+test("AWS-backed production publication checks live privacy notice and consent parity", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  assert.match(publisher, /node --test scripts\/test-apple-privacy-contract\.mjs/);
+  for (const evidence of [
+    'Verify Apple privacy notice and consent version on the live domain',
+    'id="privacy-by-design"',
+    'id="privacy-controls"',
+    '2026-11-15-v1.3',
+    '/legal/privacy/',
+    '/legal/cookies/',
+    '/assets/js/cookie-consent.js'
+  ]) {
+    assert.ok(publisher.includes(evidence), `Public privacy acceptance gate is missing: ${evidence}`);
+  }
+});
+
+test("privacy access and browser-permission boundaries span the public estate and secure login", () => {
+  const technology = source("apps/technology/app/privacy/page.tsx");
+  const founder = source("apps/founder/content/pages/privacy.md");
+  const status = source("apps/status/app/page.tsx");
+  const portal = source("apps/portal/components/login-panel.tsx");
+  const securePolicy = source("packages/security/src/index.ts");
+  const portalProxy = source("apps/portal/proxy.ts");
+
+  assert.match(technology, /Privacy choices and device permissions/);
+  assert.match(technology, /browser permission interface/);
+  assert.match(technology, /privacy question or make a request/);
+  assert.match(founder, /Privacy by design and your choices/);
+  assert.match(founder, /does not ask for location, camera, microphone/);
+  assert.match(founder, /does not intentionally use advertising pixels/);
+  assert.ok(status.includes('href="https://novapharmhealthcare.com/legal/privacy/"'), "status privacy link must use exact corporate origin");
+  assert.match(status, /does not expose customer records/);
+  assert.match(portal, /portal-privacy-note/);
+  assert.match(portal, /No marketing consent is required to sign in/);
+  assert.ok(portal.includes('href="https://novapharmhealthcare.com/legal/privacy/"'), "portal privacy link must use exact corporate origin");
+  assert.doesNotMatch(portal, /localStorage|sessionStorage/);
+  assert.match(securePolicy, /camera=\(\), microphone=\(\), geolocation=\(\)/);
+  assert.match(portalProxy, /Cache-Control", "no-store"/);
+});
+
+test("privacy-attribution changes are included in guarded public publication", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  const preview = source(".github/workflows/pages-live-publish.yml");
+  const dispatch = source(".github/workflows/dispatch-approved-aws-contact-release.yml");
+  for (const [name, workflow] of [
+    ["guarded publisher", publisher],
+    ["Pages PR preflight", preview],
+    ["duplicate-release dispatcher", dispatch]
+  ]) {
+    assert.ok(workflow.includes("assets/js/marketing-attribution.js"),
+      name + " must include consent-scoped attribution changes");
+  }
+  assert.ok(publisher.includes("node --test scripts/test-apple-privacy-contract.mjs"),
+    "directly published marketing changes require the privacy contract");
+  assert.ok(publisher.includes("test -s _site/assets/js/marketing-attribution.js"),
+    "the guarded publisher must stage the actual attribution module");
+  assert.ok(publisher.includes("/tmp/novapharm-live-marketing-attribution.js"),
+    "the guarded publisher must fetch the live module before claiming release success");
+  assert.ok(publisher.includes("if (!publicAnalyticsRoute(location.pathname)) return null;"),
+    "the published module must retain the denied-route read guard");
+});

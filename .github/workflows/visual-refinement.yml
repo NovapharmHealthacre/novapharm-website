@@ -54,11 +54,23 @@ jobs:
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
 
+      - name: Verify responsive repairs and content-bound CSS publication
+        run: |
+          node --test scripts/test-apple-hig-census.mjs
+          node --test scripts/test-contact-focus-contrast.mjs
+          node --test scripts/test-public-motion-preferences.mjs
+          node --test scripts/test-corporate-responsive-repairs.mjs
+          node --test scripts/test-public-visual-versioning.mjs
+
       - name: Build the deterministic public-only visual release
         run: npm run build:public-only
 
+      - name: Census every generated static HTML page for HIG source hygiene
+        run: node scripts/audit-website-hig-source.mjs
+
       - name: Validate the public implementation
         run: |
+          node --test scripts/test-insights-shared-navigation.mjs
           npm run visual:validate
           npm run visual:modules
           npm run test:owner-corrections:public-only

@@ -33,7 +33,11 @@
             "Key": "application",
             "Value": "novapharm-intelligence"
           }
-        ]
+        ],
+        "DeletionProtectionEnabled": true,
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        }
       }
     },
     "SigningSecret": {
@@ -217,6 +221,12 @@
         "DefaultRouteSettings": {
           "ThrottlingBurstLimit": 5,
           "ThrottlingRateLimit": 2
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/novapharm-intelligence-stripe-billing-webhook"
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"route\":\"$context.routeKey\",\"method\":\"$context.httpMethod\",\"status\":\"$context.status\",\"latencyMs\":\"$context.responseLatency\",\"integrationStatus\":\"$context.integrationStatus\"}"
         }
       }
     },

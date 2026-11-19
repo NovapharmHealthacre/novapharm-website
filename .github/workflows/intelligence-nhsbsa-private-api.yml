@@ -1,0 +1,37 @@
+name: NHSBSA official EPD private API contract
+
+on:
+  pull_request:
+    paths:
+      - "src/core/intelligence-nhsbsa-epd-private-api.mjs"
+      - "scripts/test-intelligence-nhsbsa-epd-private-api.mjs"
+      - "server.mjs"
+      - "docs/intelligence/NHSBSA_EPD_OFFICIAL_API_PRIVATE_PROBE_20261114.md"
+      - ".github/workflows/intelligence-nhsbsa-private-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nhsbsa-private-api:
+    name: Official API / authorization / source-rights fail-closed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Validate native module and server route
+        run: |
+          node --check src/core/intelligence-nhsbsa-epd-private-api.mjs
+          node --check server.mjs
+          node --check scripts/test-intelligence-nhsbsa-epd-private-api.mjs
+      - name: Test bounded official-source API with synthetic network fixtures
+        run: node --test scripts/test-intelligence-nhsbsa-epd-private-api.mjs
+      - name: Confirm no customer release or source licence is implied
+        run: |
+          grep -F 'commercialPublicationApproved: false' src/core/intelligence-nhsbsa-epd-private-api.mjs
+          grep -F 'thirdPartyTerminologyRightsVerified: false' src/core/intelligence-nhsbsa-epd-private-api.mjs
+          grep -F 'NPI_NHSBSA_PRIVATE_API_PROBE_ENABLED !== "true"' server.mjs

@@ -1,15 +1,28 @@
 # Staging-only AWS portal build. No secrets, credentials, or customer data in image.
-FROM node:24-bookworm-slim AS builder
+# MapKit JS token is public in the browser, never an Apple Maps private signing key.
+FROM node:24-alpine AS builder
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN}
+# Explicit build-time opt-in; all ordinary portal images keep private WMS UAT disabled.
+ARG NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=false
+ENV NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=${NEXT_PUBLIC_WMS_PILOT_UI_ENABLED}
+RUN case "${NEXT_PUBLIC_WMS_PILOT_UI_ENABLED}" in true|false) ;; *) echo "invalid WMS pilot UI build flag" >&2; exit 1;; esac
 WORKDIR /workspace
+# Apply Alpine security fixes before compiling the exact release source.
+RUN apk upgrade --no-cache
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-bookworm-slim AS runtime
-ENV NODE_ENV=production \
+FROM node:24-alpine AS runtime
+ARG NEXT_PUBLIC_APPLE_MAPS_TOKEN=""
+ENV NEXT_PUBLIC_APPLE_MAPS_TOKEN=${NEXT_PUBLIC_APPLE_MAPS_TOKEN} \
+    NODE_ENV=production \
     PORT=4303 \
     HOSTNAME=0.0.0.0
 WORKDIR /app
+# Minimise runtime OS packages; upgrade packages to currently patched builds.
+RUN apk upgrade --no-cache
 COPY --from=builder --chown=node:node /workspace/apps/portal/.next/standalone/ /app/
 # Next.js standalone omits hashed JS and CSS; ship these immutable assets with the matching build.
 COPY --from=builder --chown=node:node /workspace/apps/portal/.next/static/ /app/apps/portal/.next/static/

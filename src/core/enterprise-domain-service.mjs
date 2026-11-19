@@ -6,6 +6,7 @@ import {
   ceoDashboardView,
   commandCentreView,
   rollingWarehouseView,
+  enrichWarehouseControlSnapshot,
 } from "./enterprise-module-overlays.mjs";
 import { portalModuleByCode } from "./portal-module-catalog.mjs";
 
@@ -76,6 +77,6 @@ export async function enterpriseModuleSnapshot(code, context) {
   }
 
   const snapshot = await base.enterpriseModuleSnapshot(code, context);
-  if (snapshot.module.area === "employee" && snapshot.module.slug === "warehouse") return rollingWarehouseView(snapshot);
+  if (snapshot.module.area === "employee" && snapshot.module.slug === "warehouse") return rollingWarehouseView(await enrichWarehouseControlSnapshot(snapshot));
   return snapshot;
 }

@@ -1,0 +1,672 @@
+/*
+ * NovaPharm corporate web navigation — Apple Developer web-navigation adaptation.
+ * Reference: https://developer.apple.com/design/human-interface-guidelines/menus
+ * Deliberately NOT a reproduction of the macOS menu bar or Apple trademarks.
+ * Scopes: static public corporate pages and the Next.js corporate site only.
+ */
+:root { --npd-header: 52px; }
+html[data-np-estate="corporate"] { --header: 52px; }
+
+.npd-header.site-header,
+body[data-page="home"] .npd-header.site-header,
+html[data-np-estate="corporate"] .site-header {
+  height: 52px;
+  min-height: 52px;
+  background: #171719;
+  background-color: #171719;
+  color: #f5f5f7;
+  border: 0;
+  border-bottom: 1px solid #303033;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.npd-header.site-header[data-scrolled="true"] {
+  border-bottom-color: #404044;
+  box-shadow: none;
+}
+/* Editorial routes load their own CSS after the shared bundle. Those route
+   styles historically forced About/Oncology/Contact back to a white header.
+   This specificity preserves one consistent, legible dark global navigation. */
+body[data-page] header.site-header.npd-header {
+  height: 52px;
+  min-height: 52px;
+  background: #171719;
+  background-color: #171719;
+  color: #f5f5f7;
+  border-bottom: 1px solid #303033;
+  box-shadow: none;
+}
+body[data-page] header.site-header.npd-header .npd-menu.nav-toggle [data-menu-label] {
+  color: #f5f5f7;
+  font-size: 14px;
+  line-height: 1.25;
+}
+body[data-page] header.site-header.npd-header .npd-global-nav.site-nav > a[aria-current="page"] {
+  color: #fff;
+  background: transparent;
+  border-radius: 0;
+  padding-inline: clamp(6px, 0.8vw, 14px);
+}
+/* The managed homepage has an older editorial selector based on :has()
+   with greater specificity than the general header. Restore accessible text,
+   truthful link labels, the portal action and the intended global dimensions. */
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .header-inner {
+  width: min(calc(100% - 64px), 1180px);
+  max-width: 1180px;
+  min-height: 52px;
+  height: 52px;
+  gap: clamp(14px, 2vw, 30px);
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .brand {
+  width: 176px;
+  max-width: 176px;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav {
+  gap: 0;
+  justify-content: space-between;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a {
+  color: #d6d6da;
+  font-size: 12.5px;
+  font-weight: 430;
+  line-height: 1.15;
+  letter-spacing: 0;
+  padding-block: 0;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:hover,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:focus-visible {
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child {
+  display: inline-flex;
+  min-height: 32px;
+  height: 32px;
+  padding-inline: 15px;
+  border-radius: 999px;
+  background: #b50f0b;
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child:hover,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child:focus-visible {
+  background: #d41b15;
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
+  font-size: 12.5px;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::before,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: none;
+}
+@media (max-width: 620px) {
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .header-inner {
+    width: calc(100% - 36px);
+  }
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .brand {
+    width: 158px;
+    max-width: 158px;
+  }
+}
+.npd-header-inner.header-inner,
+body[data-page="home"] .npd-header-inner.header-inner,
+html[data-np-estate="corporate"] .header-inner {
+  width: min(calc(100% - 64px), 1180px);
+  max-width: 1180px;
+  min-height: 52px;
+  height: 52px;
+  margin-inline: auto;
+  gap: clamp(14px, 2vw, 30px);
+}
+.npd-header .brand,
+html[data-np-estate="corporate"] .site-header .brand {
+  flex: 0 0 auto;
+  width: 176px;
+  max-width: 176px;
+  height: auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.npd-header .brand .brand-logo img {
+  filter: grayscale(1) brightness(0) invert(1);
+}
+html[data-np-estate="corporate"] .site-header .brand img {
+  max-width: 100%;
+  height: auto;
+  filter: grayscale(1) brightness(0) invert(1);
+}
+.npd-global-nav.site-nav,
+body[data-page="home"] .npd-global-nav.site-nav,
+html[data-np-estate="corporate"] .desktop-nav {
+  min-width: 0;
+  height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.npd-global-nav.site-nav > a:not(.btn),
+body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn),
+html[data-np-estate="corporate"] .desktop-nav > a {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  height: 44px;
+  margin: 0;
+  padding-inline: clamp(6px, 0.8vw, 14px);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #d6d6da;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 12.5px;
+  font-weight: 430;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+.npd-global-nav.site-nav > a:not(.btn):hover,
+.npd-global-nav.site-nav > a:not(.btn)[aria-expanded="true"],
+.npd-global-nav.site-nav > a[aria-current="page"],
+html[data-np-estate="corporate"] .desktop-nav > a:hover,
+html[data-np-estate="corporate"] .desktop-nav > a[aria-current="page"] {
+  color: #fff;
+  background: transparent;
+}
+.npd-global-nav.site-nav > a[aria-current="page"]::after,
+html[data-np-estate="corporate"] .desktop-nav a::after {
+  content: none;
+}
+.npd-global-nav.site-nav > a:last-child,
+body[data-page="home"] .npd-global-nav.site-nav > a:last-child,
+html[data-np-estate="corporate"] .desktop-nav > a:last-child {
+  margin-inline-start: clamp(6px, .8vw, 14px);
+  padding-inline: 15px;
+  min-height: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: #b50f0b;
+  color: #fff;
+  font-weight: 580;
+  line-height: 1;
+}
+.npd-global-nav.site-nav > a:last-child:hover,
+.npd-global-nav.site-nav > a:last-child:focus-visible,
+body[data-page="home"] .npd-global-nav.site-nav > a:last-child:not(.btn):hover,
+body[data-page="home"] .npd-global-nav.site-nav > a:last-child:not(.btn):focus-visible,
+html[data-np-estate="corporate"] .desktop-nav > a:last-child:hover,
+html[data-np-estate="corporate"] .desktop-nav > a:last-child:focus-visible {
+  background: #d41b15;
+  color: #fff;
+}
+.npd-header :is(a, button):focus-visible,
+html[data-np-estate="corporate"] .site-header :is(a, button, summary):focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -3px;
+  border-radius: 3px;
+}
+/* Preserve the approved primary logo geometry; the public header uses a
+   white visual treatment only while displayed against the dark chrome. */
+.npd-header .brand:focus-visible,
+html[data-np-estate="corporate"] .site-header .brand:focus-visible {
+  outline-offset: 2px;
+}
+/* Next.js combines route styles in a different order from the static bundle.
+   Keep the global navigation legible even when legacy light-header rules win
+   the cascade during Chromium and WebKit production builds. */
+html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child) {
+  color: #d6d6da !important;
+}
+html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child):is(:hover, :focus-visible, [aria-current="page"]) {
+  color: #fff !important;
+}
+@media (forced-colors: active) {
+  html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child) {
+    color: LinkText !important;
+  }
+}
+/* Category panels follow the same low-glare colour hierarchy as the bar. */
+@media (min-width: 1181px) {
+  .npd-header .npd-mega,
+  .site-header[data-site-header] .npd-mega {
+    background: #242426;
+    background-color: #242426;
+    border-top: 1px solid #3b3b3e;
+    border-bottom: 1px solid #3b3b3e;
+    box-shadow: 0 20px 44px rgb(0 0 0 / 23%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .npd-header .npd-mega-column > p { color: #a8a8ad; }
+  .npd-header .npd-mega-column a { color: #f5f5f7; }
+  .npd-header .npd-mega-column a:hover,
+  .npd-header .npd-mega-column a:focus-visible { color: #fff; text-decoration: underline; }
+}
+.npd-header .npd-menu.nav-toggle,
+body[data-page="home"] .npd-header .npd-menu.nav-toggle {
+  min-height: 44px;
+  color: #f5f5f7;
+  background: transparent;
+  border: 0;
+  font-weight: 500;
+}
+@media (max-width: 1180px) {
+  .npd-global-nav.site-nav,
+  body[data-page="home"] .npd-global-nav.site-nav {
+    top: 52px;
+    height: auto;
+    max-height: calc(100svh - 52px);
+    padding-block: 12px 24px;
+    background: #242426;
+    border-bottom: 1px solid #404044;
+    box-shadow: 0 18px 34px rgb(0 0 0 / 20%);
+  }
+  .npd-global-nav.site-nav > a:not(.btn),
+  body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
+    min-height: 48px;
+    height: auto;
+    justify-content: flex-start;
+    padding-inline: 4px;
+    border-bottom: 1px solid #424247;
+    color: #f5f5f7;
+    font-size: 16px;
+  }
+  .npd-global-nav.site-nav > a:last-child,
+  body[data-page="home"] .npd-global-nav.site-nav > a:last-child {
+    justify-content: center;
+    align-self: start;
+    width: fit-content;
+    min-height: 44px;
+    height: 44px;
+    margin: 14px 0 0;
+    padding-inline: 18px;
+    background: #b50f0b;
+    color: #fff;
+  }
+}
+@media (max-width: 1300px) {
+  html[data-np-estate="corporate"] .desktop-nav { display: none; }
+  html[data-np-estate="corporate"] .mobile-menu { display: block; }
+  html[data-np-estate="corporate"] .header-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+}
+html[data-np-estate="corporate"] .mobile-menu summary {
+  min-height: 44px;
+  height: 44px;
+  min-width: 56px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #f5f5f7;
+  font-size: 13px;
+  font-weight: 500;
+}
+html[data-np-estate="corporate"] .mobile-menu nav {
+  top: 52px;
+  max-height: calc(100svh - 52px);
+  padding-block: 12px 24px;
+  background: #242426;
+  border-color: #404044;
+  box-shadow: 0 18px 34px rgb(0 0 0 / 20%);
+}
+html[data-np-estate="corporate"] .mobile-menu nav a {
+  color: #f5f5f7;
+  border-color: #424247;
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 48px;
+}
+html[data-np-estate="corporate"] .mobile-menu nav a:hover { color: #fff; }
+html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
+  background: #3a3a3e;
+  color: #fff;
+}
+@media (max-width: 620px) {
+  .npd-header-inner.header-inner,
+  body[data-page="home"] .npd-header-inner.header-inner,
+  html[data-np-estate="corporate"] .header-inner { width: calc(100% - 36px); }
+  .npd-header .brand,
+  html[data-np-estate="corporate"] .site-header .brand { width: 158px; max-width: 158px; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .npd-header.site-header,
+  body[data-page="home"] .npd-header.site-header,
+  html[data-np-estate="corporate"] .site-header { background: #171719; background-color: #171719; }
+  .npd-header .npd-mega,
+  .npd-global-nav.site-nav,
+  html[data-np-estate="corporate"] .mobile-menu nav { background: #242426; background-color: #242426; }
+}
+@media (pointer: coarse) {
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:last-child {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 22px;
+  }
+  .npd-global-nav.site-nav > a:last-child,
+  body[data-page="home"] .npd-global-nav.site-nav > a:last-child,
+  html[data-np-estate="corporate"] .desktop-nav > a:last-child {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npd-global-nav.site-nav > a,
+  html[data-np-estate="corporate"] .desktop-nav > a { transition: none; }
+}
+@media (forced-colors: active) {
+  body[data-page] header.site-header.npd-header {
+    background: Canvas;
+    background-color: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+  body[data-page] header.site-header.npd-header .npd-menu.nav-toggle [data-menu-label] {
+    color: CanvasText;
+  }
+  .npd-header.site-header,
+  body[data-page="home"] .npd-header.site-header,
+  html[data-np-estate="corporate"] .site-header,
+  .npd-header .npd-mega,
+  .npd-global-nav.site-nav,
+  html[data-np-estate="corporate"] .mobile-menu nav {
+    color: CanvasText;
+    background: Canvas;
+    background-color: Canvas;
+    border-color: CanvasText;
+  }
+  .npd-header :is(a, button),
+  html[data-np-estate="corporate"] .site-header :is(a, button, summary) { color: LinkText; }
+  .npd-global-nav.site-nav > a:last-child,
+  html[data-np-estate="corporate"] .desktop-nav > a:last-child { border: 1px solid ButtonText; background: ButtonFace; color: ButtonText; }
+  .npd-header .brand .brand-logo img,
+  html[data-np-estate="corporate"] .site-header .brand img { filter: none; }
+}
+@media print {
+  body[data-page] header.site-header.npd-header {
+    background: transparent;
+    background-color: transparent;
+    color: #000;
+  }
+  body[data-page] header.site-header.npd-header .npd-menu.nav-toggle [data-menu-label] {
+    color: #000;
+  }
+  .npd-header.site-header,
+  html[data-np-estate="corporate"] .site-header { background: transparent; color: #000; }
+  .npd-header .brand .brand-logo img,
+  html[data-np-estate="corporate"] .site-header .brand img { filter: none; }
+}
+
+
+/* Apple.com web-footer structural adaptation. Native TVML/UIKit footer symbols do not apply to websites. */
+.npd-footer.site-footer,
+footer.site-footer:has(> .container > .footer-grid) {
+  background: #f5f5f7;
+  border-block-start: 1px solid #d2d2d7;
+  color: #424245;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.45;
+  padding-block: 0 16px;
+}
+.npd-footer > .container,
+footer.site-footer > .container:has(> .footer-grid) {
+  display: flex;
+  flex-direction: column;
+  width: min(calc(100% - 44px), 980px);
+  max-width: 980px;
+  margin-inline: auto;
+}
+.npd-footer .npd-footer-notices,
+footer.site-footer .footer-notices {
+  order: 0;
+  display: block;
+  max-width: none;
+  margin: 0;
+  padding-block: 19px 17px;
+  border: 0;
+  border-block-end: 1px solid #d2d2d7;
+}
+.npd-footer .npd-footer-notices p,
+footer.site-footer .footer-notices p {
+  margin: 0 0 7px;
+  color: #6e6e73;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 95ch;
+}
+.npd-footer .npd-footer-notices p:last-child,
+footer.site-footer .footer-notices p:last-child { margin-bottom: 0; }
+.npd-footer .npd-footer-top,
+footer.site-footer .footer-grid {
+  order: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 28px;
+  padding-block: 22px 0;
+}
+.npd-footer .npd-footer-top > .npd-footer-identity,
+footer.site-footer .footer-grid > .footer-intro {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding-block: 0 24px;
+  margin: 0;
+}
+.npd-footer .npd-footer-identity .footer-brand,
+footer.site-footer .footer-grid .footer-intro .footer-brand {
+  display: block;
+  flex: 0 0 auto;
+  width: min(180px, 100%);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.npd-footer .npd-footer-identity .brand-logo,
+.npd-footer .npd-footer-identity .brand-logo img { width: 100%; height: auto; }
+.npd-footer .npd-footer-identity p,
+footer.site-footer .footer-grid .footer-intro p {
+  max-width: 53ch;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6e6e73;
+}
+footer.site-footer .footer-grid .footer-registration {
+  display: inline-block;
+  font-size: 12px;
+  color: #6e6e73;
+}
+.npd-footer .npd-footer-top > div:not(.npd-footer-identity),
+footer.site-footer .footer-grid > div:not(.footer-intro) { min-width: 0; }
+.npd-footer .npd-footer-top h2,
+footer.site-footer .footer-grid h3,
+.npd-footer .np-apple-footer-disclosure summary,
+footer.site-footer .np-apple-footer-disclosure summary {
+  margin: 0 0 10px;
+  color: #1d1d1f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.333;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.npd-footer .np-apple-footer-disclosure summary h2,
+footer.site-footer .np-apple-footer-disclosure summary h3 { margin: 0; font: inherit; }
+.npd-footer .np-apple-footer-disclosure,
+footer.site-footer .np-apple-footer-disclosure { display: block; }
+.npd-footer .np-apple-footer-disclosure summary,
+footer.site-footer .np-apple-footer-disclosure summary {
+  list-style: none;
+  cursor: default;
+  pointer-events: none;
+}
+.npd-footer .np-apple-footer-disclosure summary::-webkit-details-marker,
+footer.site-footer .np-apple-footer-disclosure summary::-webkit-details-marker { display: none; }
+.npd-footer .np-apple-footer-disclosure:not([open]) > .np-apple-footer-disclosure-links,
+footer.site-footer .np-apple-footer-disclosure:not([open]) > .np-apple-footer-disclosure-links { display: none; }
+.npd-footer .np-apple-footer-disclosure-links,
+footer.site-footer .np-apple-footer-disclosure-links { display: grid; align-content: start; }
+.npd-footer .npd-footer-top > div > a,
+.npd-footer .np-apple-footer-disclosure-links > a,
+footer.site-footer .footer-grid > div > a,
+footer.site-footer .np-apple-footer-disclosure-links > a {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 3px 0;
+  color: #424245;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-decoration: none;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.npd-footer .npd-footer-top a:hover,
+.npd-footer .npd-footer-legal :is(a, button):hover,
+footer.site-footer .footer-grid a:hover { color: #1d1d1f; text-decoration: underline; text-underline-offset: 3px; }
+.npd-footer :is(a, button, summary, select):focus-visible,
+footer.site-footer .footer-grid :is(a, button, summary):focus-visible {
+  outline: 2px solid #ad1525;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.npd-footer .npd-footer-legal {
+  order: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px 0;
+  margin: 18px 0 0;
+  padding: 13px 0 0;
+  border-block-start: 1px solid #d2d2d7;
+}
+.npd-footer .npd-footer-legal :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-height: 28px;
+  margin: 0;
+  padding: 3px 13px;
+  border: 0;
+  border-inline-end: 1px solid #d2d2d7;
+  background: transparent;
+  color: #424245;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.npd-footer .npd-footer-legal :first-child { padding-inline-start: 0; }
+.npd-footer .npd-footer-legal :last-child { border-inline-end: 0; }
+.npd-footer .npd-footer-bottom,
+footer.site-footer .footer-bottom {
+  order: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 7px 20px;
+  margin: 0;
+  padding-block: 13px 0;
+  border: 0;
+  color: #6e6e73;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.npd-footer .npd-footer-bottom a,
+footer.site-footer .footer-bottom a { color: inherit; text-decoration: none; }
+.npd-footer .npd-footer-bottom a:hover,
+footer.site-footer .footer-bottom a:hover { text-decoration: underline; }
+.npd-footer .npd-footer-bottom > .np-locale-control {
+  margin: 0;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+}
+@media (max-width: 833px) {
+  .npd-footer .npd-footer-top,
+  footer.site-footer .footer-grid {
+    display: block;
+    padding-block: 0;
+  }
+  .npd-footer .npd-footer-top > .npd-footer-identity,
+  footer.site-footer .footer-grid > .footer-intro {
+    display: flex;
+    padding-block: 24px;
+    border-block-end: 1px solid #d2d2d7;
+  }
+  .npd-footer .npd-footer-top > div:not(.npd-footer-identity),
+  footer.site-footer .footer-grid > div:not(.footer-intro) { border-block-end: 1px solid #d2d2d7; }
+  .npd-footer .np-apple-footer-disclosure summary,
+  footer.site-footer .np-apple-footer-disclosure summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    color: #1d1d1f;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .npd-footer .np-apple-footer-disclosure summary::after,
+  footer.site-footer .np-apple-footer-disclosure summary::after {
+    content: "+";
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+  }
+  .npd-footer .np-apple-footer-disclosure[open] summary::after,
+  footer.site-footer .np-apple-footer-disclosure[open] summary::after { content: "−"; }
+  .npd-footer .np-apple-footer-disclosure-links,
+  footer.site-footer .np-apple-footer-disclosure-links { padding-block: 0 10px; padding-inline: 12px 0; }
+  .npd-footer .npd-footer-top > div > a,
+  .npd-footer .np-apple-footer-disclosure-links > a,
+  footer.site-footer .footer-grid > div > a,
+  footer.site-footer .np-apple-footer-disclosure-links > a { min-height: 44px; }
+  .npd-footer .npd-footer-top > div:not(.npd-footer-identity) > h2,
+  footer.site-footer .footer-grid > div:not(.footer-intro) > h3 {
+    margin: 0;
+    padding-block: 14px;
+  }
+  .npd-footer .npd-footer-bottom,
+  footer.site-footer .footer-bottom { align-items: start; flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .npd-footer > .container,
+  footer.site-footer > .container:has(> .footer-grid) { width: calc(100% - 36px); }
+  .npd-footer .npd-footer-identity .footer-brand { width: min(160px, 100%); }
+  .npd-footer .npd-footer-legal { gap: 3px 0; }
+  .npd-footer .npd-footer-legal :is(a, button) { min-height: 44px; padding-inline: 9px; }
+}
+@media (forced-colors: active) {
+  .npd-footer.site-footer,
+  footer.site-footer:has(> .container > .footer-grid) {
+    background: Canvas; border-color: CanvasText; color: CanvasText;
+  }
+  .npd-footer :is(a, button),
+  footer.site-footer .footer-grid a { color: LinkText; }
+}
+/* Keep inherited legacy footer heading margins out of disclosure headings. */
+.npd-footer.site-footer .npd-footer-top .np-apple-footer-disclosure summary h2 {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+

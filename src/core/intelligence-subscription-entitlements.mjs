@@ -6,6 +6,8 @@
  * and release switch MUST be loaded from independently verified server state.
  * Never populate these objects from request JSON, pricing DOM or query strings.
  */
+import { decideIntelligenceFreeTrialEntitlement } from "./intelligence-free-trial.mjs";
+
 const PLAN_DEFINITIONS = Object.freeze({
   starter: Object.freeze({
     monthlySearchLimit: 25,
@@ -52,6 +54,11 @@ export function decideIntelligenceEntitlement({ principal, grant, feature, usage
   if (!principal?.verifiedServerSide || principal.mfaVerified !== true || !principal.tenantId || !principal.subject) return deny("identity_not_verified");
   if (!["cognito-oidc", "entra-oidc"].includes(principal.identityProvider)) return deny("identity_provider_not_approved");
   if (typeof principal.tenantId !== "string" || typeof principal.subject !== "string") return deny("invalid_identity");
+  // A no-card offer is a separately verified, never-auto-billed grant.
+  // Missing release flags fail closed; paid Stripe subscriptions retain the original path.
+  if (grant?.source === "verified-free-trial-ledger") {
+    return decideIntelligenceFreeTrialEntitlement({ principal, grant, feature, usage, release, now });
+  }
   if (!grant || grant.source !== "verified-stripe-webhook-ledger" || grant.webhookSignatureVerified !== true || grant.contractAccepted !== true) return deny("subscription_not_verified");
   if (grant.tenantId !== principal.tenantId || grant.subject !== principal.subject) return deny("tenant_or_subject_mismatch");
   if (typeof grant.stripeCustomerId !== "string" || !/^cus_[a-zA-Z0-9]{6,}$/u.test(grant.stripeCustomerId)) return deny("billing_account_not_verified");
