@@ -1,7 +1,8 @@
 package com.novapharm.intelligence.research
 
 import android.content.Context
-import android.graphics.Color
+import android.os.Build
+import android.view.WindowInsets
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -15,17 +16,41 @@ import android.util.TypedValue
  */
 object NovaSparseCircuitResearchScreen {
     fun create(context: Context, summary: NovaSparseCircuitSummary? = null): View {
-        val scroll = ScrollView(context)
+        val canvas = context.getColor(R.color.nova_research_canvas)
+        val primaryInk = context.getColor(R.color.nova_research_primary)
+        val secondaryInk = context.getColor(R.color.nova_research_secondary)
+        val scroll = ScrollView(context).apply {
+            setBackgroundColor(canvas)
+            isFillViewport = true
+            clipToPadding = false
+            // Android 15 edge-to-edge: respect status bars and gesture navigation.
+            // Older supported APIs retain their legacy system window insets.
+            setOnApplyWindowInsetsListener { view, insets ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val bars = insets.getInsets(WindowInsets.Type.systemBars())
+                    view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+                } else {
+                    @Suppress("DEPRECATION")
+                    view.setPadding(
+                        insets.systemWindowInsetLeft,
+                        insets.systemWindowInsetTop,
+                        insets.systemWindowInsetRight,
+                        insets.systemWindowInsetBottom
+                    )
+                }
+                insets
+            }
+        }
         val column = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             val pad = (20 * resources.displayMetrics.density).toInt()
             setPadding(pad, pad, pad, pad)
-            setBackgroundColor(Color.WHITE)
+            setBackgroundColor(canvas)
         }
-        fun line(value: String, size: Float, heading: Boolean = false) {
+        fun line(value: String, size: Float, heading: Boolean = false, secondary: Boolean = false) {
             val text = TextView(context).apply {
                 this.text = value
-                setTextColor(Color.rgb(29, 29, 31))
+                setTextColor(if (secondary) secondaryInk else primaryInk)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, size)
                 setPadding(0, 0, 0, (12 * resources.displayMetrics.density).toInt())
                 if (heading) {
@@ -37,10 +62,10 @@ object NovaSparseCircuitResearchScreen {
             }
             column.addView(text)
         }
-        line("NovaPharm Intelligence", 14f)
+        line("NovaPharm Intelligence", 14f, secondary = true)
         line("Sparse-circuit research", 27f, true)
         line("Research only · Not a clinical or production AI feature", 16f, true)
-        line("Internal neural circuits are not medicine source evidence or regulatory authorisations.", 15f)
+        line("Internal neural circuits are not medicine source evidence or regulatory authorisations.", 15f, secondary = true)
         if (summary == null) {
             line("No independently verified circuit experiment is connected.", 15f)
         } else {
@@ -52,7 +77,7 @@ object NovaSparseCircuitResearchScreen {
             line("Evaluation samples: ${summary.sampleCount}", 15f)
             line("Evaluation deltas are descriptive and do not prove a causal explanation.", 15f)
         }
-        line("A trained synthetic attention experiment exists offline, but no model is downloaded, run or connected to this Android research view.", 14f)
+        line("A trained synthetic attention experiment exists offline, but no model is downloaded, run or connected to this Android research view.", 14f, secondary = true)
         line("A qualified reviewer must confirm licences, held-out evaluation, ablations and provenance before release.", 14f)
         scroll.addView(column)
         return scroll

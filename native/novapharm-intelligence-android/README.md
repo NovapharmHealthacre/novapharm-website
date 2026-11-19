@@ -63,3 +63,13 @@ This separate Kotlin research-only scorer does not activate a model, access phar
 ## Separate offline alignment receipt
 
 The independent `src/main/kotlin/com/novapharm/intelligence/ml/NovaAlignmentResearchReceipt.kt` test candidate is source-only and is not wired to the Android sparse-circuit application. It is a deterministic denial contract, not a production model, data-rights check or signed Android service. See `ALIGNMENT_RESEARCH_README.md` for synthetic tests and independent approval gates.
+
+## Android HIG-inspired adaptive appearance and edge-to-edge correction — 19 November 2026
+
+The offline Android research shell previously declared a permanently light `Theme.Material.Light.NoActionBar` and rendered fixed white canvas / graphite text irrespective of Android Dark Theme. On Android 15, edge-to-edge can also put content behind status/navigation bars without window-inset handling.
+
+The candidate now selects an **original NovaPharm** `NovaResearchTheme` in `res/values/styles.xml` and `res/values-night/styles.xml`, with matching `colors.xml` palettes: light canvas `#FFFFFF`, primary text `#1D1D1F`, secondary text `#424245`, brand red `#E3120B`; dark canvas `#1C1C1E`, primary text `#F5F5F7`, secondary text `#D1D1D6`, readable dark red `#FF6961`. These are original color values, not an Apple font, symbols or Android copy of a UIKit API. The native Activity can be recreated on system-appearance changes; no `configChanges` override suppresses that behaviour.
+
+The read-only `ScrollView` now receives actual system-bar insets with the API 30+ `WindowInsets.Type.systemBars()` contract and an Android 26–29 fallback. Text remains user-scalable SP and accessibility headings are preserved. No INTERNET or sensitive permissions, runtime model service, customer records, or production connection have been added.
+
+The JVM `NovaHigAppearanceContractTest.kt` checks day/night color consistency, 4.5:1 canvas-to-foreground contrast, resource theme pairing, native system-inset handling and offline safety as part of the existing `gradle :app:testDebugUnitTest :app:assembleDebug` job. **This is source and debug-build verification only.** Real Android devices across light/dark toggles, gesture/three-button navigation, landscape, 200% font scaling, TalkBack and Android 15 edge-to-edge still require independent acceptance. No signed Play Store distribution, identity backend, or live pharmaceutical data is implied.
