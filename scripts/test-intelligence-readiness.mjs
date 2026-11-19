@@ -29,6 +29,10 @@ try {
   assert.equal(readiness.pandora.intendedAnalyticalWorkspaces, 22);
   assert.equal(readiness.pandora.productionOperational, false);
   assert.equal(readiness.production.status, "not-certified");
+  assert.equal(readiness.unifiedCapabilities.groups.length, 6);
+  assert.equal(readiness.unifiedCapabilities.customerReleaseApproved, false);
+  assert.ok(readiness.unifiedCapabilities.groups.every(group => group.productionCertified === false));
+  assert.ok(readiness.unifiedCapabilities.groups.every(group => group.requiredEvidence.includes("source_rights")));
   assert.equal(readiness.forecasting.persistedValueCount, 0);
   assert.equal(JSON.stringify(readiness).includes("secret"), false);
   console.log("Intelligence readiness rejects customers and never fabricates global data, NOVA or production forecasts.");

@@ -88,7 +88,8 @@
             "Key": "classification",
             "Value": "business-contact-data"
           }
-        ]
+        ],
+        "DeletionProtectionEnabled": true
       }
     },
     "LogGroup": {
@@ -319,6 +320,12 @@
         "DefaultRouteSettings": {
           "ThrottlingBurstLimit": 5,
           "ThrottlingRateLimit": 2
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/novapharm-contact-production"
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"route\":\"$context.routeKey\",\"method\":\"$context.httpMethod\",\"status\":\"$context.status\",\"latencyMs\":\"$context.responseLatency\",\"integrationStatus\":\"$context.integrationStatus\"}"
         }
       }
     },

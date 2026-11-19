@@ -64,3 +64,61 @@ test('supplier ESCO photographs are shown only after rights and exact-variant ap
       assert.doesNotMatch(row.image,/^\/assets\/media\/esco\/esco-p[0-9]/);
   }
 });
+
+
+test('ESCO marketplace deep-links to selected Bag-ready product with separate payment authority',()=>{
+ const generator=read('scripts/generate-commerce-marketplace.mjs');
+ const marketplace=read('assets/js/commerce-marketplace.js');
+ const esco=read('assets/js/esco-catalogue.js');
+ const products=read('src/content/products-editorial.html');
+ assert(generator.includes("href:'/products/esco/?product='+encodeURIComponent(p.id)+'#esco-catalogue'"));
+ assert(marketplace.includes('View product and add to Bag'));
+ assert(!marketplace.includes('Explore and enquire'));
+ assert(marketplace.includes('cardCheckoutAuthority===false'));
+ assert(esco.includes('new URLSearchParams(window.location.search).get("product")'));
+ assert(esco.includes('known.has(directProductId)'));
+ assert(esco.includes('openProductDetails(directProductId)'));
+ assert(esco.includes('NovaPharm internal SKU NP-ESCO-'));
+ assert(products.includes('Shop ESCO'));
+});
+
+test('search engines can discover every product reference without executing JavaScript',()=>{
+ const html=read('products/marketplace/index.html');
+ const catalogue=JSON.parse(read('assets/data/commerce-marketplace.json')).products;
+ const links=[...html.matchAll(/class="mp-source-index-link" href="([^"]+)"/g)].map(m=>m[1].replaceAll('&amp;','&'));
+ assert.equal(links.length,392);
+ assert.equal(new Set(links).size,392);
+ for(const item of catalogue)assert(links.includes(item.href),'Missing indexable link for '+item.sku);
+ assert.match(html,/<summary>Browse all 392 product records by name<\/summary>/);
+ assert.match(html,/hreflang="en-GB" href="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/hreflang="x-default" href="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/property="og:url" content="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/name="twitter:title" content="Nutraxin &amp; ESCO Marketplace|name="twitter:title" content="Nutraxin & ESCO Marketplace/);
+ const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
+ const collection=schemas.find(x=>x['@type']==='CollectionPage'&&x.url==='https://novapharmhealthcare.com/products/marketplace/');
+ assert(collection,'Canonical marketplace CollectionPage schema missing');
+ assert.equal(collection.mainEntity['@type'],'ItemList');
+ assert.equal(collection.mainEntity.numberOfItems,392);
+ assert.equal(collection.mainEntity.itemListElement.length,392);
+ assert(!collection.mainEntity.itemListElement.some(x=>x.offers||x.availability),'Collection must not claim sales approval');
+ const sitemap=read('sitemap.xml');
+ assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'));
+ assert(!sitemap.includes('products/esco/?product='),'Per-record ESCO query links are not sitemap canonicals');
+});
+
+test('public marketplace search is scoped, progressively filtered and ranked without history persistence',()=>{
+ const generator=read('scripts/generate-commerce-marketplace.mjs');
+ const script=read('assets/js/commerce-marketplace.js');
+ const stylesheet=read('assets/css/commerce-marketplace.css');
+ assert.match(generator,/aria-describedby="mp-search-scope"/);
+ assert.match(generator,/aria-controls="mp-grid"/);
+ assert.match(generator,/id="mp-clear"/);
+ assert.match(generator,/value="relevance"/);
+ assert.match(script,/search\.addEventListener\('input'/);
+ assert.match(script,/sort\.value==='relevance'/);
+ assert.match(script,/clearSearch\.addEventListener\('click'/);
+ assert.match(script,/searchScope\.textContent=/);
+ assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB|caches\.open/);
+ assert.match(stylesheet,/\.mp-search-clear\[hidden\]/);
+ assert.match(stylesheet,/forced-colors:active/);
+});

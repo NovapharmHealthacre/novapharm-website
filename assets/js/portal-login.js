@@ -5,6 +5,14 @@ if (loginForm) {
   const submit = loginForm.querySelector("button[type=submit]");
   const entraLogin = loginForm.querySelector("[data-entra-login]");
 
+  // Authenticated paths retain existing server-side security and authorization.
+  // Announce only generic progress and failures; never echo entered credentials.
+  if (status) {
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    status.setAttribute("aria-atomic", "true");
+  }
+
   const updateEntraLink = () => {
     if (!entraLogin) return;
     const accessType = loginForm.querySelector('input[name="accessType"]:checked')?.value || "customer";
@@ -40,6 +48,7 @@ if (loginForm) {
     event.preventDefault();
     if (!loginForm.reportValidity() || submit.disabled) return;
     submit.disabled = true;
+    loginForm.setAttribute("aria-busy", "true");
     if (status) {
       status.textContent = "Checking credentials...";
       status.className = "alert";
@@ -70,6 +79,7 @@ if (loginForm) {
         status.className = "alert alert-danger";
       }
       submit.disabled = false;
+      loginForm.setAttribute("aria-busy", "false");
     }
   });
 }

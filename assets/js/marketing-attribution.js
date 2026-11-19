@@ -1,9 +1,13 @@
 import { CONSENT_STORAGE_KEY, parseConsent } from "./cookie-consent.js";
+import { publicAnalyticsRoute } from "./consent-analytics.js";
 
 const ATTRIBUTION_KEY = "np_marketing_attribution";
 const CAMPAIGN_FIELDS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 
 function analyticsAllowed() {
+  // Only explicitly reviewed public information routes may use optional
+  // attribution, even when a visitor has previously consented.
+  if (!publicAnalyticsRoute(location.pathname)) return false;
   try {
     return parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY))?.categories?.analytics === true;
   } catch {
@@ -21,6 +25,9 @@ function safeUrl(value) {
 }
 
 function collectAttribution() {
+  // Do not even examine campaign or referrer details on legal, identity,
+  // checkout, order, portal or unreviewed public-commerce routes.
+  if (!publicAnalyticsRoute(location.pathname)) return null;
   const params = new URLSearchParams(location.search);
   const campaign = Object.fromEntries(CAMPAIGN_FIELDS
     .map((field) => [field, params.get(field)])

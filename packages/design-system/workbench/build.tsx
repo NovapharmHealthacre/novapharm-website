@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import React from "react";
 import {
   AccessibleChart,
+  ContentImage,
   ApprovalStatus,
   AuditHistory,
   Breadcrumbs,
@@ -70,7 +71,7 @@ function Workbench() {
     <SkipLink />
     <Navigation label="Component workbench" homeHref="#top" brand={<img src={logo} width="260" height="55" alt="NovaPharm Healthcare" />} items={[{ href: "#directions", label: "Directions" }, { href: "#component-workbench", label: "Components", current: true }, { href: "#governance", label: "Governance" }]} actions={<Button tone="secondary">Review build</Button>} />
     <main id="main-content">
-      <Hero eyebrow="NovaPharm governed design system" title="One coherent system. Four distinct experiences." summary="Reusable semantic components, property-specific art direction and evidence-led interaction patterns for the public estate and secure portal." media={<img src={heroImage} width="1200" height="800" alt="Pharmaceutical cartons moving through a controlled supply environment" />} actions={<><a className="np-button np-button--primary" href="#directions">Compare directions</a><a className="np-button np-button--secondary" href="#component-workbench">Inspect components</a></>} />
+      <Hero eyebrow="NovaPharm governed design system" title="One coherent system. Four distinct experiences." summary="Reusable semantic components, property-specific art direction and evidence-led interaction patterns for the public estate and secure portal." media={<ContentImage src={heroImage} width={1200} height={800} alt="Pharmaceutical cartons moving through a controlled supply environment" loading="eager" />} actions={<><a className="np-button np-button--primary" href="#directions">Compare directions</a><a className="np-button np-button--secondary" href="#component-workbench">Inspect components</a></>} />
       <section id="directions" className="workbench-intro"><p className="np-eyebrow">Creative-direction evidence</p><h2>Three high-fidelity systems, evaluated against one regulated brief.</h2><p>Each direction demonstrates Corporate, NIT, Founder, Portal and compact mobile expression. Direction A is the selected foundation; B and C supply limited supporting patterns.</p></section>
       <Direction id="direction-a" index="A" name="Regulated Continuum" direction="continuum" thesis="Controlled continuity: editorial photography and a continuous evidence line connect strategy, quality and movement." />
       <Direction id="direction-b" index="B" name="Institutional Atlas" direction="atlas" thesis="Geographic intelligence: market layers and calibrated cartographic structure make international context legible." />

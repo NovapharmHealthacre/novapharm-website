@@ -9,18 +9,21 @@
   --npd-line-strong: #aeb3b8;
   --npd-soft: #f5f6f7;
   --npd-white: #ffffff;
-  --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --npd-compact: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Arial Narrow", Arial, sans-serif);
+  --npd-mono: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
+  --npd-editorial: var(--np-type-editorial, "Iowan Old Style", Georgia, serif);
   --npd-container: 1200px;
   --npd-copy: 720px;
-  --npd-header: 56px;
+  --npd-header: 68px;
   --font: var(--npd-system);
-  --serif: var(--npd-system);
+  --serif: var(--npd-editorial);
   --container: var(--npd-container);
   --header-height: var(--npd-header);
 }
 
 html {
-  scroll-padding-top: 112px;
+  scroll-padding-top: calc(var(--npd-header) + 56px);
   background: var(--npd-white);
 }
 
@@ -28,7 +31,7 @@ body {
   background: var(--npd-white);
   color: var(--npd-text);
   font-family: var(--npd-system);
-  font-size: 17px;
+  font-size: var(--np-type-body-size, 1.0625rem);
   line-height: 1.55;
   letter-spacing: 0;
 }
@@ -104,11 +107,18 @@ body[data-page="home"] .npd-header-inner.header-inner {
 
 .npd-global-nav.site-nav,
 body[data-page="home"] .npd-global-nav.site-nav {
+  position: static;
+  inset: auto;
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
   gap: 0;
   height: var(--npd-header);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .npd-global-nav.site-nav > a:not(.btn),
@@ -124,7 +134,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   background: transparent;
   color: #24272a;
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 520;
   line-height: 1;
   text-decoration: none;
@@ -201,7 +211,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   align-items: center;
   min-height: 52px;
   color: var(--npd-text);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 520;
   text-decoration: none;
   white-space: nowrap;
@@ -268,7 +278,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-eyebrow {
   margin: 0 0 18px;
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   line-height: 1.3;
   text-transform: uppercase;
@@ -316,7 +326,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   max-width: 620px;
   margin: 24px 0 0;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.45;
 }
 
@@ -439,7 +449,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-portfolio-list article > span,
 .npd-account-stages span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -485,7 +495,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-roadmap span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -585,7 +595,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-split figcaption {
   margin-top: 12px;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.4;
 }
 
@@ -666,7 +676,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-maturity span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -743,7 +753,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   max-width: 760px;
   margin: 34px 0 0;
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-facts,
@@ -771,7 +781,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-product-meta dt,
 .npd-composition dt {
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 620;
 }
 
@@ -830,7 +840,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-capability-list > a > span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -1064,7 +1074,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   display: inline-flex;
   align-items: center;
   color: var(--npd-text);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -1144,7 +1154,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-product-card p {
   margin: 0 0 8px;
   color: var(--npd-red-dark);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1182,7 +1192,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-breadcrumb :where(a, span) {
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   white-space: nowrap;
 }
 
@@ -1257,7 +1267,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-portfolio-list article div > p:first-child {
   margin: 0 0 8px;
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -1282,7 +1292,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-insight-list span {
   margin: 0 0 12px;
   color: var(--npd-red-dark);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1307,7 +1317,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-insight-lead > span {
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-insight-secondary {
@@ -1352,7 +1362,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-insight-list :where(span, time) {
   margin: 0;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-insight-list time {
@@ -1445,7 +1455,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   margin: 4px 0 18px;
   color: var(--npd-ink);
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0;
@@ -1463,7 +1473,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   background: transparent;
   color: var(--npd-text);
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.35;
   text-align: left;
   text-decoration: none;
@@ -1496,7 +1506,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-footer-notices p {
   margin: 10px 0;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.55;
 }
 
@@ -1508,7 +1518,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding-top: 18px;
   border-top: 1px solid var(--npd-line);
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-footer-bottom a {
@@ -1754,11 +1764,13 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   :root {
-    --npd-header: 54px;
+    --npd-header: 60px;
   }
+}
 
+@media (max-width: 600px) {
   .container {
     width: calc(100% - 44px);
   }
@@ -1783,7 +1795,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
   .npd-local-nav a {
     min-height: 48px;
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
   }
 
   .npd-local-nav div div {
@@ -2074,7 +2086,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 
   .npd-footer-bottom {
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
   }
 }
 
@@ -2260,7 +2272,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     min-height: var(--npd-header);
     padding: 0 clamp(5px, .55vw, 9px);
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
     font-weight: 500;
     white-space: nowrap;
     color: #303034;
@@ -2302,7 +2314,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column > p {
     margin: 0 0 16px;
     color: #77777c;
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
     line-height: 1.25;
     font-weight: 500;
   }
@@ -2411,4 +2423,264 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .cookie-banner { padding: 14px 16px; }
   .cookie-banner .cookie-actions { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .cookie-banner .cookie-actions .btn:last-child { grid-column: 1 / -1; }
+}
+
+/* NovaPharm typography roles: system, compact operations, mono identifiers, editorial. */
+/* Keep the body/UI in the native system face; editorial is opt-in, not a global heading override. */
+.npd-main :is(code, kbd, samp, pre, [data-typography="mono"], .np-code, .batch-code, .sku-code) {
+  font-family: var(--npd-mono);
+  font-variant-ligatures: none;
+}
+.npd-main :is(.operational-table, .dense-table, [data-typography="compact"]) {
+  font-family: var(--npd-compact);
+  font-variant-numeric: tabular-nums;
+}
+.npd-main :is(table, .metric-value, .data-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+.npd-main :is(.editorial-quote, .editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--npd-editorial);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.npd-main :is(input, select, textarea, button) {
+  font-family: var(--npd-system);
+  font-synthesis: none;
+}
+@media (pointer: coarse) {
+  .npd-main :is(button, .btn, [role="button"]) { min-height: 44px; }
+}
+/* HIG typography implementation: natural optical sizing, readable leading and
+   browser-driven text reflow without replacing the approved NovaPharm art direction. */
+.npd-main :where(h1, h2, h3, h4, h5, h6) {
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+}
+.npd-main :where(p, li, dd, blockquote) { font-optical-sizing: auto; }
+.npd-main :where(.prose, .article-body, .policy-body, [data-typography="reading"])
+  :where(p, li, dd) {
+  line-height: var(--np-type-reading-leading, 1.65);
+  max-width: var(--np-type-measure, 68ch);
+}
+.npd-main :where(.page-hero-copy > p, .section-heading > p, [data-typography="lead"]) {
+  font-size: var(--np-type-lead-size, clamp(1.125rem, 1.6vw, 1.375rem));
+  line-height: 1.52;
+}
+.npd-main :where(figcaption, .source-note, [data-typography="caption"]) {
+  font-size: var(--np-type-caption-size, 0.875rem);
+  line-height: var(--np-type-interface-leading, 1.45);
+}
+.npd-main :where(.npd-editorial, .prose, .article-body, .policy-body) {
+  min-width: 0;
+}
+.npd-main :where(table) :where(th, td) {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+.npd-main :where(code, kbd, samp, .sku, .lot-number, .batch-number, [data-typography="mono"]) {
+  font-family: var(--npd-mono);
+  font-variant-ligatures: none;
+}
+@media (max-width: 640px) {
+  .npd-main :where(h1, h2, h3, h4, p, li, dd, .prose, .article-body, .policy-body) {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  .npd-main :where(.action-row, .npd-action-row, .npd-buttons) {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-contrast: more) {
+  .npd-main :where(.source-note, figcaption, .article-meta) {
+    color: var(--npd-ink);
+  }
+}
+
+/* Public account pathway — optional HIG-aligned explanation, never a login gate. */
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
+.npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
+.npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
+.npd-account-guidance p{margin:0 0 10px;max-width:66ch}
+.npd-account-guidance a{color:#1655a4;text-underline-offset:3px}
+
+/* Apple HIG-inspired, NovaPharm-owned Privacy presentation.
+ * Legal policy language/metadata remain authoritative and unchanged.
+ * No proprietary Apple marks, fonts, images, or native-only permission UI. */
+body[data-page="legal/privacy"] .page-hero {
+  min-height: 350px;
+  padding: clamp(90px, 11vw, 146px) 0 clamp(44px, 6vw, 78px);
+  background: #ffffff;
+}
+body[data-page="legal/privacy"] .page-hero::before,
+body[data-page="legal/privacy"] .page-hero-signal { display: none; }
+body[data-page="legal/privacy"] .page-hero h1 {
+  font-family: var(--npd-system);
+  font-size: clamp(2.65rem, 6vw, 5.3rem);
+  font-weight: 660;
+  letter-spacing: 0;
+  line-height: 1.04;
+  max-width: 900px;
+}
+body[data-page="legal/privacy"] .page-hero p { max-width: 64ch; line-height: 1.6; }
+body[data-page="legal/privacy"] .legal-section { background: #ffffff; }
+body[data-page="legal/privacy"] .legal-layout {
+  gap: clamp(26px, 5vw, 74px);
+  grid-template-columns: minmax(210px, 0.32fr) minmax(0, 1fr);
+  grid-template-areas: "privacy-aside privacy-article";
+}
+body[data-page="legal/privacy"] .legal-layout > aside { grid-area: privacy-aside; }
+body[data-page="legal/privacy"] .legal-layout > article { grid-area: privacy-article; }
+body[data-page="legal/privacy"] .legal-content > section { scroll-margin-top: 115px; }
+body[data-page="legal/privacy"] .np-privacy-overview {
+  margin: 0 0 clamp(34px, 5vw, 56px);
+  padding: clamp(24px, 4.2vw, 56px);
+  border: 1px solid #e5e7e9;
+  border-radius: 22px;
+  background: #f6f7f8;
+}
+body[data-page="legal/privacy"] .np-privacy-overview .np-privacy-eyebrow {
+  margin: 0 0 14px;
+  color: var(--npd-red-dark);
+  font-size: var(--np-type-caption-size, 0.875rem);
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+body[data-page="legal/privacy"] .np-privacy-overview h2 {
+  max-width: 15ch;
+  margin: 0 0 18px;
+  color: var(--npd-ink);
+  font-family: var(--npd-system);
+  font-size: clamp(2.15rem, 4.1vw, 3.7rem);
+  font-weight: 670;
+  letter-spacing: 0;
+  line-height: 1.09;
+  text-wrap: balance;
+}
+body[data-page="legal/privacy"] .np-privacy-overview .np-privacy-lead {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--npd-text);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.65;
+}
+body[data-page="legal/privacy"] .np-privacy-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin: 30px 0 clamp(32px, 5vw, 54px);
+}
+body[data-page="legal/privacy"] .np-privacy-primary-action {
+  min-height: 46px;
+  padding: 12px 19px;
+  border: 1px solid var(--npd-ink);
+  border-radius: 999px;
+  background: var(--npd-ink);
+  color: #ffffff;
+  font: 650 0.95rem/1.35 var(--npd-system);
+  cursor: pointer;
+}
+body[data-page="legal/privacy"] .np-privacy-primary-action:hover { background: #333333; }
+body[data-page="legal/privacy"] .np-privacy-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  color: #252525;
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+body[data-page="legal/privacy"] .np-privacy-principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.3vw, 30px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+body[data-page="legal/privacy"] .np-privacy-principles li {
+  min-width: 0;
+  padding-top: 20px;
+  border-top: 1px solid #cfd3d6;
+}
+body[data-page="legal/privacy"] .np-privacy-principles h3 {
+  margin: 0 0 10px;
+  color: var(--npd-ink);
+  font: 670 clamp(1.04rem, 1.5vw, 1.24rem)/1.28 var(--npd-system);
+  letter-spacing: 0;
+}
+body[data-page="legal/privacy"] .np-privacy-principles p {
+  margin: 0;
+  color: var(--npd-text);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+body[data-page="legal/privacy"] .np-privacy-topic-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 13px 21px;
+  padding-top: 23px;
+  margin-top: clamp(28px, 4vw, 40px);
+  border-top: 1px solid #cfd3d6;
+}
+body[data-page="legal/privacy"] .np-privacy-topic-links .np-privacy-topic-label {
+  flex-basis: 100%;
+  color: #4e545a;
+  font-size: var(--np-type-caption-size, 0.875rem);
+  font-weight: 720;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+body[data-page="legal/privacy"] .np-privacy-topic-links a {
+  color: var(--npd-ink);
+  font-size: 0.93rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-decoration: underline;
+  text-decoration-color: #8b9198;
+  text-underline-offset: 5px;
+}
+body[data-page="legal/privacy"] .np-privacy-overview :is(a, button):focus-visible,
+body[data-page="legal/privacy"] .legal-content :is(a, button):focus-visible {
+  outline: 3px solid var(--npd-red-dark);
+  outline-offset: 4px;
+}
+body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overview) > h2 {
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+  letter-spacing: 0;
+  line-height: 1.22;
+}
+body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overview) > p {
+  line-height: 1.75;
+}
+@media (max-width: 860px) {
+  body[data-page="legal/privacy"] .legal-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "privacy-article" "privacy-aside";
+  }
+  body[data-page="legal/privacy"] .np-privacy-principles { grid-template-columns: 1fr; }
+  body[data-page="legal/privacy"] .np-privacy-principles li { max-width: 68ch; }
+}
+@media (max-width: 560px) {
+  body[data-page="legal/privacy"] .page-hero { min-height: 0; padding: 90px 0 44px; }
+  body[data-page="legal/privacy"] .np-privacy-overview { padding: 24px 19px; border-radius: 17px; }
+  body[data-page="legal/privacy"] .np-privacy-primary-actions { align-items: stretch; flex-direction: column; }
+  body[data-page="legal/privacy"] .np-privacy-primary-action,
+  body[data-page="legal/privacy"] .np-privacy-secondary-action { width: 100%; justify-content: center; text-align: center; }
+  body[data-page="legal/privacy"] .np-privacy-topic-links { gap: 13px 18px; }
+}
+@media (prefers-contrast: more) {
+  body[data-page="legal/privacy"] .np-privacy-overview { border-color: #5b5b5b; }
+  body[data-page="legal/privacy"] .np-privacy-topic-links a { text-decoration-color: currentColor; }
+}
+@media (forced-colors: active) {
+  body[data-page="legal/privacy"] .np-privacy-overview,
+  body[data-page="legal/privacy"] .np-privacy-primary-action { border: 1px solid CanvasText; }
+  body[data-page="legal/privacy"] .np-privacy-primary-action { background: ButtonFace; color: ButtonText; }
 }

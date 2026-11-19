@@ -40,10 +40,20 @@ export function validatedNutraxinIntentQuery(search: string): string {
   return sku ? `?intent=nutraxin&sku=${encodeURIComponent(sku)}` : "";
 }
 
+/** Brand-neutral, bounded pre-login catalogue intent. Never an order or payment. */
+export function validatedCustomerCommerceIntentQuery(search: string): string {
+  const nutraxin = validatedNutraxinIntentQuery(search);
+  if (nutraxin) return nutraxin;
+  const params = new URLSearchParams(search);
+  if (params.size === 1 && params.get("intent") === "esco") return "?intent=esco";
+  return "";
+}
+
 export function destinationAfterPortalLogin(accessType: string, search: string, standardDestination: string): string {
   if (accessType !== "customer") return standardDestination;
-  const query = validatedNutraxinIntentQuery(search);
+  const query = validatedCustomerCommerceIntentQuery(search);
   if (!query) return standardDestination;
+  if (query === "?intent=esco") return "/portal/products/?collection=esco";
   const sku = new URLSearchParams(query).get("sku");
   return `/portal/products/?nutraxin_sku=${encodeURIComponent(sku ?? "")}`;
 }

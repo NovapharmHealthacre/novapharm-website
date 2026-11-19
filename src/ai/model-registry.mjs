@@ -11,6 +11,9 @@ export const PUBLIC_SEMANTIC_MODEL = Object.freeze({
   quantisation: "Sparse integer term-frequency vectors; no neural weights",
   remoteModelLoading: false,
   generation: false,
+  mechanisticCircuitAccess: "unavailable-no-neural-weights",
+  mechanisticCircuitVerified: false,
+  sparseCircuitsApplicable: false,
   limitations: [
     "Retrieval only; it does not reason about clinical care or generate medical content.",
     "Semantic coverage is limited to the registered vocabulary and approved public corpus.",

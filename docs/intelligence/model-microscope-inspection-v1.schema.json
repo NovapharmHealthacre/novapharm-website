@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novapharm:schemas:model-microscope-inspection-v1",
+  "title": "Nova Model Microscope reviewed candidate response",
+  "description": "Non-publishable read-only candidate metadata. Not permission, model inference or source-evidence admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "state",
+    "modelId",
+    "modelVersion",
+    "layerId",
+    "featureId",
+    "architecture",
+    "featureHypothesis",
+    "datasetRef",
+    "evaluationRef",
+    "provenanceSha256",
+    "visualizationSha256",
+    "modelArtifactSha256",
+    "explanationState",
+    "authorisationChannel",
+    "canPublish",
+    "inferenceEnabled",
+    "clinicalDecisionReady",
+    "regulatoryDecisionReady",
+    "commercialDecisionReady"
+  ],
+  "properties": {
+    "contract": {
+      "const": "novapharm.intelligence.model-microscope.v1"
+    },
+    "state": {
+      "const": "research_candidate_only"
+    },
+    "modelId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "modelVersion": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "layerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "featureId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "architecture": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96
+    },
+    "featureHypothesis": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 480
+    },
+    "datasetRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "evaluationRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "provenanceSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "visualizationSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "explanationState": {
+      "const": "hypothesis_only"
+    },
+    "authorisationChannel": {
+      "const": "protected_backend"
+    },
+    "canPublish": {
+      "const": false
+    },
+    "inferenceEnabled": {
+      "const": false
+    },
+    "clinicalDecisionReady": {
+      "const": false
+    },
+    "regulatoryDecisionReady": {
+      "const": false
+    },
+    "commercialDecisionReady": {
+      "const": false
+    },
+    "modelArtifactSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

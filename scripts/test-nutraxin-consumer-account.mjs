@@ -93,10 +93,16 @@ test("server Python remains parsable without importing boto3",()=>{
 test("Bag markup remains exactly matched to generator, including account entry",()=>{
  const html=read("products/nutraxin/bag/index.html");
  const source=read("scripts/apply-corporate-product-discipline.mjs");
- const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const rtlPublished=html.includes('<script src="/assets/js/rtl-localization.js"></script>');
+ const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const actual=generator?.split("  return \`")[1]?.split("\`;")[0];
- assert.equal(actual,expected);
+ assert.ok(expected, "RTL release must retain the canonical Bag landmark and its English-language boundary");
+ const approved=rtlPublished
+   ? actual?.replace('data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>')
+   : actual;
+ assert.equal(expected,approved,
+   "Checked-in and finalized Bag HTML must match their authorized generator states");
  assert.match(expected,/\/products\/nutraxin\/account\//);
 });
 
@@ -112,4 +118,29 @@ test("password recovery stays with Cognito Managed Login and never exposes passw
  assert.doesNotMatch(html,/type="password"|autocomplete="new-password"|client_secret/);
  assert.ok(html.includes('href="/account-application/"'));
  assert.doesNotMatch(html,/data-admin-approve|data-business-role|data-wholesale-order/);
+});
+
+test("consumer onboarding is optional, role-bound and privacy-discoverable",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const css=read("assets/css/nutraxin-consumer-account.css");
+ const publicPanel=html.split('data-nx-account-public>')[1]?.split('data-nx-account-private')[0];
+ const privatePanel=html.split('data-nx-account-private hidden>')[1]?.split('data-nx-account-status')[0];
+ assert.ok(publicPanel?.includes("<details class=\"nx-account-help\">"));
+ assert.ok(privatePanel?.includes("<details class=\"nx-account-help\">"));
+ assert.match(publicPanel,/You can browse products and use the guest bag without registering/);
+ assert.match(publicPanel,/email and complete any required security checks/i);
+ assert.match(privatePanel,/privacy and data-rights information/);
+ assert.match(html,/href="#main">Skip to account content/);
+ assert.match(css,/\.nx-account-help summary:focus-visible/);
+ assert.match(css,/\.nx-skip-link:focus/);
+ assert.doesNotMatch(publicPanel,/data-admin-approve|data-wholesale-order|navigator\.credentials/);
+ const portal=read("portal/index.html");
+ assert.match(portal,/<details class="portal-account-help">/);
+ assert.match(portal,/This public website never asks for a portal username/);
+ const business=read("account-application/index.html");
+ const siteGenerator=read("scripts/apply-corporate-product-discipline.mjs");
+ const siteStyles=read("assets/css/corporate-product-discipline.css");
+ assert.match(business,/<details class="npd-account-guidance">/);
+ assert.match(siteGenerator,/<details class="npd-account-guidance">/);
+ assert.match(siteStyles,/\.npd-account-guidance summary:focus-visible/);
 });

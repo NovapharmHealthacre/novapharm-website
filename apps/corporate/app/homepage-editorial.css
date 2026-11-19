@@ -704,16 +704,16 @@
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav,
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav {
   align-items: center;
-  gap: clamp(18px, 2.8vw, 52px);
+  gap: 0;
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav > a,
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav > a {
-  color: #151518;
+  color: #d6d6da;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: clamp(.88rem, 1.08vw, 1.18rem);
-  font-weight: 450;
-  line-height: 1.2;
-  letter-spacing: -.012em;
+  font-size: 12.5px;
+  font-weight: 430;
+  line-height: 1.15;
+  letter-spacing: 0;
   white-space: nowrap;
   padding-block: 14px;
   text-decoration: none;
@@ -725,9 +725,16 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
 body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
   font-size: 0;
 }
-body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+/* Keep the visible Intelligence label inside the link's layout box.
+   ::after is reserved for the underline; using it as copy pushed the
+   label underneath the Contact link on the approved homepage. */
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::before {
   content: "Intelligence";
-  font-size: clamp(.88rem, 1.08vw, 1.18rem);
+  color: inherit;
+  font-size: 12.5px;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: "";
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand:focus-visible,
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header a:focus-visible {

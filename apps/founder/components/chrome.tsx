@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FounderEvidenceProvider, OpenEvidenceLink } from "@/components/founder-evidence";
 import { founderContact, founderProfile, profileReviewedOn } from "@/lib/site-data";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 const navigation = Object.freeze([
   { href: "/about/", label: "About" },
@@ -19,7 +21,7 @@ function isCurrent(pathname: string, href: string): boolean {
   return pathname === href || (href === "/thinking/" && pathname.startsWith("/essays/"));
 }
 
-function SiteHeader(): React.JSX.Element {
+function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JSX.Element {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -28,8 +30,8 @@ function SiteHeader(): React.JSX.Element {
   useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <header className="site-header" data-site-header>
-      <Link className="brand" href="/" aria-label="Vishal Chakravarty — home">
+    <header className="site-header" data-site-header lang={locale}>
+      <Link className="brand" href="/" aria-label="Vishal Chakravarty — home" lang="en-GB">
         <span className="brand-mark" aria-hidden="true">
           VC
         </span>
@@ -42,10 +44,15 @@ function SiteHeader(): React.JSX.Element {
         aria-controls="site-navigation"
         onClick={() => setOpen((current) => !current)}
       >
-        <span>Menu</span>
+        <span>{interfaceLabel(locale, "Menu")}</span>
         <span className="menu-glyph" aria-hidden="true" />
       </button>
-      <nav id="site-navigation" className="site-navigation" data-open={open} aria-label="Primary navigation">
+      <nav
+        id="site-navigation"
+        className="site-navigation"
+        data-open={open}
+        aria-label={interfaceLabel(locale, "Primary navigation")}
+      >
         <ul className="site-nav-list">
           {navigation.map((item) => (
             <li key={item.href}>
@@ -54,12 +61,12 @@ function SiteHeader(): React.JSX.Element {
                 aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
                 onClick={() => setOpen(false)}
               >
-                {item.label}
+                {interfaceLabel(locale, item.label)}
               </Link>
             </li>
           ))}
           <li className="evidence-nav-item">
-            <OpenEvidenceLink>Ask Vishal’s Work</OpenEvidenceLink>
+            <OpenEvidenceLink>{interfaceLabel(locale, "Ask Vishal’s Work")}</OpenEvidenceLink>
           </li>
           <li>
             <Link
@@ -68,7 +75,7 @@ function SiteHeader(): React.JSX.Element {
               aria-current={pathname === "/contact/" ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
-              Contact
+              {interfaceLabel(locale, "Contact")}
             </Link>
           </li>
         </ul>
@@ -77,7 +84,7 @@ function SiteHeader(): React.JSX.Element {
   );
 }
 
-function SiteFooter(): React.JSX.Element {
+function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JSX.Element {
   return (
     <footer className="site-footer">
       <div className="footer-intro">
@@ -93,15 +100,15 @@ function SiteFooter(): React.JSX.Element {
         <div>
           <p>{founderProfile.proposition}</p>
         </div>
-        <nav aria-label="Footer navigation">
-          <Link href="/about/">About</Link>
-          <Link href="/ventures/">Ventures</Link>
-          <Link href="/thinking/">Thinking</Link>
-          <Link href="/media/">Media</Link>
-          <Link href="/gallery/">Portrait</Link>
-          <Link href="/facts/">Profile</Link>
-          <OpenEvidenceLink>Ask Vishal’s Work</OpenEvidenceLink>
-          <Link href="/privacy/">Privacy</Link>
+        <nav aria-label="Footer navigation" lang={locale}>
+          <Link href="/about/">{interfaceLabel(locale, "About")}</Link>
+          <Link href="/ventures/">{interfaceLabel(locale, "Ventures")}</Link>
+          <Link href="/thinking/">{interfaceLabel(locale, "Thinking")}</Link>
+          <Link href="/media/">{interfaceLabel(locale, "Media")}</Link>
+          <Link href="/gallery/">{interfaceLabel(locale, "Portrait")}</Link>
+          <Link href="/facts/">{interfaceLabel(locale, "Profile")}</Link>
+          <OpenEvidenceLink>{interfaceLabel(locale, "Ask Vishal’s Work")}</OpenEvidenceLink>
+          <Link href="/privacy/">{interfaceLabel(locale, "Privacy")}</Link>
         </nav>
         <div className="footer-contact">
           <a href={`mailto:${founderContact.email}`}>{founderContact.email}</a>
@@ -113,22 +120,29 @@ function SiteFooter(): React.JSX.Element {
       <div className="footer-base">
         <span>© {profileReviewedOn.slice(0, 4)} Vishal Chakravarty</span>
         <span>Pharmaceutical entrepreneurship · Market access · Regulated markets</span>
+        <InterfaceLocaleSwitcher locale={locale} />
       </div>
     </footer>
   );
 }
 
-export function SiteChrome({ children }: { readonly children: React.ReactNode }): React.JSX.Element {
+export function SiteChrome({
+  children,
+  locale,
+}: {
+  readonly children: React.ReactNode;
+  readonly locale: InterfaceLocale;
+}): React.JSX.Element {
   return (
     <FounderEvidenceProvider>
       <a className="skip-link" href="#main">
         Skip to main content
       </a>
-      <SiteHeader />
-      <main id="main" tabIndex={-1}>
+      <SiteHeader locale={locale} />
+      <main id="main" tabIndex={-1} lang="en-GB" data-np-untranslated>
         {children}
       </main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
     </FounderEvidenceProvider>
   );
 }

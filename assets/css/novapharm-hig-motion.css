@@ -1,0 +1,116 @@
+/*
+ * NovaPharm Apple HIG motion adaptation (web) — 2026-11-15.
+ * Use motion only to explain a state change. These timings are NovaPharm
+ * design choices, not values prescribed by Apple or native SwiftUI APIs.
+ */
+:root {
+  --np-motion-contract: 1;
+  --np-motion-instant: 80ms;
+  --np-motion-fast: 140ms;
+  --np-motion-standard: 220ms;
+  --np-motion-reveal: 260ms;
+  --np-motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --np-motion-ease-out: cubic-bezier(.2, .8, .2, 1);
+}
+
+/* Stateful feedback should never delay an action or depend on animation to
+ * convey success, errors, loading, selection or navigation.
+ */
+:where(.np-button, .np-tabs [role="tab"], [data-np-motion="feedback"]) {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--np-motion-fast);
+  transition-timing-function: var(--np-motion-ease-out);
+}
+:where(.np-button, .np-tabs [role="tab"], [data-np-motion="feedback"]):active {
+  transition-duration: var(--np-motion-instant);
+}
+
+/* Match the direction of a right-hand drawer; never lock interaction behind
+ * its transition. The aria/visibility state is supplied by the component.
+ */
+.np-drawer {
+  transition: transform var(--np-motion-standard) var(--np-motion-ease),
+              visibility var(--np-motion-standard);
+}
+
+/* Animate the presentation of a dialog only, not every frequent interaction.
+ * Closing remains immediate and interruptible.
+ */
+.np-dialog[open] {
+  animation: np-dialog-enter var(--np-motion-standard) var(--np-motion-ease-out) both;
+}
+@keyframes np-dialog-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Optional semantic reveal for specific context transitions. Do not attach
+ * to pages, charts or recurring controls by default.
+ */
+[data-np-motion="enter"] {
+  animation: np-context-enter var(--np-motion-reveal) var(--np-motion-ease-out) both;
+}
+@keyframes np-context-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Preserve focus and selected states; restrict hover feedback to devices
+ * that actually have a fine pointer.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .np-button:not(:disabled):hover { transition-duration: var(--np-motion-fast); }
+}
+
+/* Existing public hero parallax/ambient effects are purely decorative:
+ * retain their static artwork but stop perpetual motion by default.
+ * This does not suppress a purposeful, finite loading/status indicator.
+ */
+.hero-cinematic-grid,
+.hero-cinematic-orbit,
+.hero-signal-card,
+.module-hero-media picture img,
+/* The Next.js Corporate homepage has no body[data-page] attribute. */
+.pharma-home-media img,
+body[data-page="home"] .pharma-home-media img {
+  animation: none !important;
+}
+
+/* Browser accessibility preference takes precedence over every animation.
+ * Static statuses, visible focus and state labels remain fully available.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --np-motion-instant: 0ms;
+    --np-motion-fast: 0ms;
+    --np-motion-standard: 0ms;
+    --np-motion-reveal: 0ms;
+  }
+  :where(*, *::before, *::after) {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  html[data-motion="ready"] [data-reveal],
+  [data-np-motion="enter"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+/* Data-saving users receive the same nonessential-motion fallback. */
+@media (prefers-reduced-data: reduce) {
+  html[data-motion="ready"] [data-reveal],
+  [data-np-motion="enter"] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (forced-colors: active) {
+  :where(.np-button, .np-tabs [role="tab"], [data-np-motion="feedback"]):focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 3px;
+  }
+}

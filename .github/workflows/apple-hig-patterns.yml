@@ -1,0 +1,51 @@
+name: Apple HIG Patterns Contract
+on:
+  pull_request:
+    paths:
+      - 'packages/design-system/src/**'
+      - 'packages/design-system/test/**'
+      - 'apps/portal/components/wms-capacity-scenario-studio.tsx'
+      - 'apps/portal/components/wms-recorded-evidence-studio.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/components/professional-workspaces.tsx'
+      - 'apps/portal/test/intelligence-draft-safety.test.ts'
+      - 'apps/portal/lib/observed-chart-series.ts'
+      - 'apps/portal/test/observed-chart-series.test.ts'
+      - 'apps/portal/lib/wms-scenario-history.ts'
+      - 'apps/portal/test/wms-fullscreen-contract.test.ts'
+      - 'apps/portal/test/wms-scenario-history.test.ts'
+      - 'apps/portal/app/employee-distribution.css'
+      - 'apps/portal/test/wms-patterns.test.ts'
+      - 'docs/design/apple-hig-patterns-2026-11-16.md'
+      - '.github/workflows/apple-hig-patterns.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  patterns-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Typecheck shared design system
+        run: npm run typecheck -w @novapharm/design-system
+      - name: Check shared patterns including modal and charts
+        run: npm run test -w @novapharm/design-system
+      - name: Verify WMS pattern markup
+        run: npx tsx --test apps/portal/test/wms-patterns.test.ts
+      - name: Validate WMS resource planning constraints
+        run: npx tsx --test apps/portal/test/wms-capacity-scenario.test.ts
+      - name: Prevent missing medicine observations being charted as zero
+        run: npx tsx --test apps/portal/test/observed-chart-series.test.ts
+      - name: Verify local WMS undo/redo history semantics
+        run: npx tsx --test apps/portal/test/wms-scenario-history.test.ts
+      - name: Verify optional full-screen safety and controls
+        run: npx tsx --test apps/portal/test/wms-fullscreen-contract.test.ts
+      - name: Ensure local Intelligence drafts are safely recoverable
+        run: npx tsx --test apps/portal/test/intelligence-draft-safety.test.ts
