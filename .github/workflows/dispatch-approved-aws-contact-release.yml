@@ -21,7 +21,20 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 2
+      - name: Enforce owner-approved contact-production permission
+        id: owner_hold
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
+          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "hold=true" >> "$GITHUB_OUTPUT"
+            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+          fi
       - name: Skip contact publication for Nova ML-only main merges
+        if: steps.owner_hold.outputs.hold == 'false'
         id: private_release
         shell: bash
         run: |
@@ -100,7 +113,7 @@ jobs:
             echo "Other changes: preserve the verified contact publisher workflow."
           fi
       - name: Avoid a duplicate release for a directly published commit
-        if: steps.private_release.outputs.skip != 'true'
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true'
         id: publisher
         shell: bash
         env:
@@ -132,7 +145,7 @@ jobs:
           done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
           echo "skip=false" >> "$GITHUB_OUTPUT"
       - name: Verify AWS contact candidate is already activated
-        if: steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
         env:
           CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
         run: |
@@ -142,7 +155,7 @@ jobs:
           jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' /tmp/contact-health.json
           echo 'Confirmed AWS contact intake is enabled. No real enquiry data was read.'
       - name: Dispatch independently verified exact-SHA contact release
-        if: steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
+        if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.sha }}
