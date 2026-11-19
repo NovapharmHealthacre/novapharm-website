@@ -6,7 +6,12 @@
  */
 const SURFACES = new Set(["web", "ios", "android"]);
 const CLASSES = new Set(["consumer-digital", "organization-only-enterprise", "physical-goods"]);
-const APPLE_STOREFRONTS = new Set(["US", "BR", "EU", "JP", "OTHER"]);
+// EU is a legal grouping, not an App Store country/storefront identifier.
+const EU_MEMBER_STOREFRONTS = new Set(["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"]);
+// Review-only identifiers: unknown ISO-like country codes default to ordinary StoreKit review;
+// this is NOT an entitlement or proof of a verified signed AppStore storefront.
+const storefrontIsWellFormed = (value) => value === "OTHER" ||
+  (typeof value === "string" && /^[A-Z]{2}$/u.test(value) && !["EU", "XX", "ZZ"].includes(value));
 
 function decision(classification, requiredChannel, reason, requires = []) {
   return Object.freeze({
@@ -23,7 +28,7 @@ function decision(classification, requiredChannel, reason, requires = []) {
 /** Returns a fail-closed *review recommendation*. Never initiates a purchase. */
 export function reviewCommerceChannel({ productClass, surface, storefront = "OTHER", organizationOnly = false } = {}) {
   if (!CLASSES.has(productClass) || !SURFACES.has(surface) ||
-      (surface === "ios" && !APPLE_STOREFRONTS.has(storefront))) {
+      (surface === "ios" && !storefrontIsWellFormed(storefront))) {
     return decision("unclassified", "none", "invalid-or-unassessed-commerce-scope");
   }
 
@@ -35,7 +40,7 @@ export function reviewCommerceChannel({ productClass, surface, storefront = "OTH
 
   if (productClass === "organization-only-enterprise") {
     if (organizationOnly !== true) {
-      return decision("consumer-digital", surface === "ios" ? "storekit-review" : "platform-billing-review",
+      return decision("consumer-digital", surface === "ios" ? "storekit-review" : surface === "android" ? "google-play-billing-review" : "web-subscription-review",
         "organization-only-exception-unproven", ["verify-consumer-applicability", "owner-production-acceptance"]);
     }
     return decision(productClass, "existing-enterprise-contract-access", "no-in-app-purchase-or-steering-approved", [
@@ -44,11 +49,12 @@ export function reviewCommerceChannel({ productClass, surface, storefront = "OTH
   }
 
   if (surface === "ios") {
-    const alternative = ["BR", "EU", "JP"].includes(storefront);
+    const alternative = ["BR", "JP"].includes(storefront) || EU_MEMBER_STOREFRONTS.has(storefront);
+    const market = EU_MEMBER_STOREFRONTS.has(storefront) ? "EU" : storefront;
     return decision(productClass, "storekit-review", "apple-native-consumer-digital-purchase", [
       "verified-app-store-connect-products", "signed-storekit-tests", "verified-transaction-and-restoration",
       "subscription-terms-and-refunds", "approved-customer-entitlement-backend", "owner-production-acceptance",
-      ...(alternative ? [`${storefront}-alternative-payment-entitlement-not-established`] : []),
+      ...(alternative ? [`${market}-alternative-payment-entitlement-not-established`] : []),
     ]);
   }
   if (surface === "android") {
