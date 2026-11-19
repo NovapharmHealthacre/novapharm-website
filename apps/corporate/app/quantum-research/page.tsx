@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false }
 };
 export default function QuantumResearchPage() {
-  return <main className={styles.page} id="quantum-research">
+  return <section className={styles.page} id="quantum-research">
     <div className={styles.shell}>
       <p className={styles.eyebrow}>NovaPharm Healthcare / Research architecture</p>
       <h1>Quantum and computational science.</h1>
@@ -32,5 +32,5 @@ export default function QuantumResearchPage() {
       <h2>Official technical references</h2>
       <ul className={styles.references}>{quantumProgram.links.map((link) => <li key={link.href}><a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}</ul>
     </div>
-  </main>;
+  </section>;
 }

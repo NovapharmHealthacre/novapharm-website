@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/core/intelligence-quantum-research.mjs'
       - 'scripts/test-intelligence-quantum-research.mjs'
+      - 'scripts/test-intelligence-quantum-cross-platform.mjs'
       - 'scripts/research/quantum-bell-pilot.py'
       - 'docs/intelligence/quantum-research-program-v1.json'
       - '.github/workflows/intelligence-quantum-research.yml'
@@ -23,6 +24,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: node --test scripts/test-intelligence-quantum-research.mjs
+      - run: node --test scripts/test-intelligence-quantum-research.mjs scripts/test-intelligence-quantum-cross-platform.mjs
       - run: python -m py_compile scripts/research/quantum-bell-pilot.py
       - run: python scripts/research/quantum-bell-pilot.py --help
