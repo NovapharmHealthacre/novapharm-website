@@ -24,7 +24,7 @@ test("authorised geography consumes accepted postcode centroid and renders no fa
   const map = read("apps/portal/components/governed-healthcare-map.tsx");
   assert.match(workspace, /<GovernedHealthcareMap origin=\{response\.origin\}/);
   assert.match(map, /NEXT_PUBLIC_APPLE_MAPS_TOKEN/);
-  assert.match(map, /cdn\.apple-mapkit\.com\/mk\/6\/mapkit\.core\.js/);
+  assert.ok(map.includes("https://cdn.apple-mapkit.com/mk/6/mapkit.core.js"));
   assert.match(map, /showsUserLocation: false/);
   assert.match(map, /recorded coordinates/);
   assert.match(map, /clusteringIdentifier: `novapharm-\$\{point\.kind\}`/);
@@ -38,7 +38,7 @@ test("Expo candidate offers opt-in external map references without background ge
   assert.match(app, /screen: "maps", label: "Maps and location"/);
   assert.match(app, /<MapsResearchScreen/);
   assert.match(screen, /Linking\.openURL\(target\)/);
-  assert.match(screen, /maps\.apple\.com\/\?ll=/);
+  assert.ok(screen.includes("https://maps.apple.com/?ll="));
   assert.doesNotMatch(screen, /fetch\(|Geolocation|watchPosition|AsyncStorage|SecureStore/);
   const manifest = JSON.parse(read("native/novapharm-intelligence-mobile/app.json")).expo;
   assert.equal(manifest.android.permissions, undefined);
@@ -52,7 +52,7 @@ test("separate iOS and Android native code stays permission-free and source-gate
   assert.match(swift, /import MapKit/);
   assert.match(swift, /Map\(position: \$camera\)/);
   assert.match(swiftPackage, /NovaMapKitView\.swift/);
-  assert.match(kotlin, /https:\/\/maps\.apple\.com/);
+  assert.ok(kotlin.includes("https://maps.apple.com"));
   assert.doesNotMatch(android, /android\\.permission\\.(?:ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|INTERNET)/);
 });
 
