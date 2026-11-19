@@ -13,6 +13,9 @@
     "../../docs/intelligence/global-pharma-sources-20261117.json",
     "CountryDirectoryScreen.tsx",
     "../../docs/intelligence/country-101-client-catalog-20261118.json",
+    "ScienceResearchMobile.tsx",
+    "../../docs/intelligence/science-research-capabilities-20261118.json",
+    "../../docs/intelligence/openai-science-methods-20261118.json",
     "SignalsResearchScreen.tsx",
     "../../apps/portal/data/nova-signals-research.ts"
   ]

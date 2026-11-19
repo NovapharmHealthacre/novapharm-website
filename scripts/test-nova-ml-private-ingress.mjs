@@ -17,9 +17,12 @@ test("the private-only merge guard includes the Nova ML probe and its contract w
     "scripts/test-nova-ml-private-ingress.mjs",
     ".github/workflows/nova-ml-private-ingress-acceptance.yml",
   ]) assert.ok(guard.includes(path), path);
+  // The owner production hold must precede BOTH the private-only and publisher gates.
+  // Keep this test aligned with fail-closed deployment policy; do not remove the hold.
   assert.match(guard, /id: owner_hold/);
-  assert.match(guard, /\.productionSignoff == "granted" and \.productionPermissions\.activatePublicCustomerAccess == true/);
-  assert.match(guard, /if: steps\.owner_hold\.outputs\.hold == 'false' && steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
+  assert.ok(guard.includes('.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true'));
+  const guardedDispatch = "if: steps.owner_hold.outputs.hold == 'false' && steps.private_release.outputs.skip != 'true' && steps.publisher.outputs.skip != 'true'";
+  assert.equal(guard.split(guardedDispatch).length - 1, 2, "both health verification and dispatch require explicit owner permission");
 });
 
 test("four released Nova ML ingress routes remain monitored; the fifth research route is gated but not live", () => {

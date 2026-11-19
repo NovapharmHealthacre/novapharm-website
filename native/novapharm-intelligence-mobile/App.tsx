@@ -22,15 +22,16 @@ import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intellige
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
-import { SignalsResearchScreen } from "./SignalsResearchScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
+import { ScienceResearchMobile } from "./ScienceResearchMobile";
+import { SignalsResearchScreen } from "./SignalsResearchScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -113,7 +114,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "countries" || selected === "visual" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -240,7 +241,7 @@ export default function App() {
               <View style={styles.metricGrid}>
                 <Metric number={String(intelligenceWorkspaceCatalogue.length)} label="Canonical workspaces" />
                 <Metric number={String(sourceRegister.sources.length)} label="Source candidates" />
-                <Metric number={String(countryTerritoryCandidateLabels)} label="Country/territory labels (unverified)" />
+                 <Metric number={String(countryTerritoryCandidateLabels)} label="Country/territory labels (unverified)" />
                 <Metric number={String(sourceRegions.length - 1)} label="Source regions" />
               </View>
               <View style={styles.rule} />
@@ -292,6 +293,7 @@ export default function App() {
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
+                { screen: "science", label: "Science research", detail: "Offline evidence and scientific-method review; no live model or medicine data" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
               ] as const).map((item) => (
                 <Pressable
@@ -309,6 +311,10 @@ export default function App() {
           )}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
+          {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
+            const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
+            if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
+          }} />}
 
           {screen === "research" && (
             <>
@@ -336,7 +342,7 @@ export default function App() {
                 This screen reads bundled, non-sensitive governance metadata only.
                 No model weights, pharmaceutical data, patient imagery, external requests or verification receipts are loaded.
               </Text>
-              <SignalsResearchScreen />
+               <SignalsResearchScreen />
               <View style={styles.rule} />
               <SectionHeading
                 title="Nova ML research"
