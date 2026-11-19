@@ -217,6 +217,17 @@ jobs:
               .github/workflows/dispatch-approved-aws-contact-release.yml|.github/workflows/publish-aws-contact-production.yml|scripts/aws/contact-release-routing.test.mjs)
                 # A publisher policy-only update must not be silently skipped.
                 ;;
+              .github/workflows/public-pages-browser-acceptance.yml)
+                # Exact CI-only runner LTS pin after two ubuntu-26.04 apt timeouts.
+                # Any other browser workflow change still requires normal public release verification.
+                previous_browser_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
+                candidate_browser_blob=$(git hash-object "$changed" 2>/dev/null || true)
+                if [ "$previous_browser_blob" = '395e59896229d6a90f72669e897d73921d974841' ] && [ "$candidate_browser_blob" = '0d1cd50ce38328f0d9bb21bf72fa87e55d60dd95' ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
               *)
                 private_only=false
                 ;;

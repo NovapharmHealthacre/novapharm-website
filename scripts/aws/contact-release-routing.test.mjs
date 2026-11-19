@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const get = path => readFileSync(".github/workflows/" + path, "utf8");
 test("public-only Pages release jobs must never auto-overwrite live AWS contact", () => {
@@ -548,6 +549,24 @@ test("CLIP default-OFF source-only merge keeps AWS contact publisher isolated by
     assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs"], false), false);
     assert.equal(isSafeSourceOnly(["server.mjs", "package.json"], true), false);
     for (const p of publicChanges) assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs", p], true), false);
+  }
+});
+
+test("exact LTS browser CI runner fix skips AWS contact only for reviewed Git blob", () => {
+  const path = ".github/workflows/public-pages-browser-acceptance.yml";
+  const bytes = readFileSync(path);
+  const blob = createHash("sha1").update("blob " + bytes.length + "\0").update(bytes).digest("hex");
+  assert.equal(blob, "0d1cd50ce38328f0d9bb21bf72fa87e55d60dd95", "browser CI runner change has drifted: review before release");
+  const previous = "395e59896229d6a90f72669e897d73921d974841";
+  for (const name of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const src = get(name);
+    const first = src.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1] ?? "";
+    assert.ok(!first.split("|").includes(path), "browser workflow must never be broadly private-only");
+    const branch = src.match(/\.github\/workflows\/public-pages-browser-acceptance\.yml\)\s*\n([\s\S]*?)\n\s*;;/m)?.[1] ?? "";
+    assert.ok(branch.includes(previous) && branch.includes("0d1cd50ce38328f0d9bb21bf72fa87e55d60dd95"), "exact Git old/new hashes required");
+    assert.ok(branch.includes("private_only=false"), "all other runner CI edits must remain public");
+    assert.ok(branch.includes("git rev-parse") && branch.includes("git hash-object"), "first-parent hash proof required");
+    assert.ok(src.includes("scripts/aws/contact-release-routing.test.mjs"), "neutral regression changes must not dispatch AWS");
   }
 });
 
