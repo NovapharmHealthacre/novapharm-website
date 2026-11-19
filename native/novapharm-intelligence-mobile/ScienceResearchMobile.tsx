@@ -5,6 +5,7 @@
 import React from "react";
 import { Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import quantumProgram from "../../docs/intelligence/quantum-research-program-v1.json";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
@@ -21,6 +22,26 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
       <Text style={styles.statusTitle}>Design preview only</Text>
       <Text style={styles.description}>No model connected. No new scientific data ingested. No experiments, medical decisions or AI responses are enabled.</Text>
     </View>
+    <Text style={styles.sectionTitle} accessibilityRole="header">Quantum and computational science</Text>
+    <Text style={styles.description}>Offline source catalogue only. Cirq, OpenFermion, Qualtran and qsim are research references; no packages, model, processor, cloud jobs or private data are connected to this app.</Text>
+    {quantumProgram.modules.map((module) =>
+      <View style={styles.card} key={module.id}>
+        <Text style={styles.methodTag}>{module.status.replaceAll("-", " ").toUpperCase()}</Text>
+        <Text style={styles.cardTitle} accessibilityRole="header">{module.title}</Text>
+        <Text style={styles.description}>{module.description}</Text>
+      </View>
+    )}
+    <Text style={styles.smallHeading} accessibilityRole="header">Verification DNA</Text>
+    {quantumProgram.principles.map((item) =>
+      <View style={styles.reviewStage} key={item.title}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.description}>{item.detail}</Text>
+      </View>
+    )}
+    <Text style={styles.footer}>No H₂ or drug computation has been validated. Simulations are not physical quantum measurements. Source checks, clinical safety, licences, human review and deployment remain separately gated.</Text>
+    <Pressable accessibilityRole="link" accessibilityLabel="Read Google Quantum AI software documentation in external browser" style={styles.sourceLink} onPress={() => { void Linking.openURL("https://quantumai.google/software"); }}>
+      <Text style={styles.sourceLinkLabel}>Google Quantum AI — official software documentation</Text>
+    </Pressable>
     <Text style={styles.sectionTitle} accessibilityRole="header">Six research workflows</Text>
     {catalog.workflows.map((workflow, index) =>
       <View style={styles.card} key={workflow.id}>
