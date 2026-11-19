@@ -27,3 +27,9 @@ A passing local result has `scope: "STRUCTURAL_PREFLIGHT_ONLY"`. Only after sepa
 - Sample geometries in unit tests are entirely synthetic and exist solely to verify that malformed submissions fail closed.
 - Keep patient, dispensing, business-sensitive fleet and distribution movement data outside this preflight; the Apple MapKit JS use proposed for protected geographic research is not an approval for cross-platform warehouse fleet tracking.
 - Source rights, country, survey timestamp, venue owner and update/rollback responsibilities must be accepted in the operating system; a local `.json` file cannot provide independent proof.
+
+## Release isolation and independent acceptance
+
+This offline IMDF preflight is a **source-evidence and geometry-denial gate only**, not a surveyed venue, approved indoor-map dataset, production MapKit tile entitlement or floor-navigation release. Exact source-file changes in `.github/workflows/imdf-venue-evidence-preflight.yml`, `docs/maps/imdf-venue-preflight-20261119.md`, `scripts/imdf/venue-preflight.mjs` and `scripts/imdf/venue-preflight.test.mjs` are private/source-only work and must **not** dispatch the unrelated AWS contact-publication workflow. Mixed changes to the public site, Nutraxin catalogue, customer contact or any unreviewed tool retain ordinary release gates. See security-tracking issue #867.
+
+The 19 November 2026 IMDF-only merge inadvertently entered an AWS-contact release workflow. Publisher run #44461838697 failed the forward-only ancestor/evidence check and skipped the real Pages publication and every live-domain check; this is not production deployment evidence. The next source-only release must verify both dispatcher and publisher skip their AWS/public deployment steps on the exact main merge commit. Surveyed IMDF rights, geometry admission, floor-level routes, device testing, MapKit domain token, native signing and owner production sign-off remain separately outstanding.
