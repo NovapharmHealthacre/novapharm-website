@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 0,
+    "platformsAssessed": 6,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -413,7 +413,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/accessibility",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/accessibility.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -425,18 +425,23 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable by translating inclusive principles into semantic HTML, keyboard-only flows, readable scaling, WCAG contrast, visible status text, alternative navigation, reduced motion and media alternatives. Native VoiceOver/Switch Control requirements need browser/accessibility-tool equivalents rather than unsupported API claims."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable directly to iOS/iPadOS: Dynamic Type/200% text, VoiceOver, keyboard and Switch Control, visual/nonvisual status, recommended 44pt control targets, motion preferences and on-device Assistive Access testing. None is verified merely by static Expo source tests."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as cross-platform accessibility intent using TalkBack, Android accessibility services, font scaling, large touch targets, alternate actions, keyboard/switch access and reduced motion. Apple-specific APIs and exact native point defaults are not transplanted to Android."
         }
-      }
+      },
+      "guidelineReviewEvidence": [
+        "2026-11-19 official complete Markdown article review: https://developer.apple.com/design/human-interface-guidelines/accessibility.md (Discussion, Vision, Hearing, Mobility, Speech, Cognitive, Platform considerations, resources and change log).",
+        "Source requirements recorded: larger text (aim for 200% where relevant), legible contrast in both appearances, information beyond color, VoiceOver labeling, caption/transcript alternatives, clear touch/control spacing, simpler gestures and alternatives, physical keyboard/Voice Control/Switch Control, motion reduction and Assistive Access considerations.",
+        "Platform-specific nuance: Apple's iOS 44x44 pt is a recommended default control size, not the listed minimum (28x28 pt); distinguish web CSS pixels from native points. This is an article-level review only, without device or production acceptance."
+      ]
     },
     {
       "section": "Foundations",
@@ -509,7 +514,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/color",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/color.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -521,18 +526,23 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as design principle to public and protected web interfaces: semantic brand tokens, distinguishable interactive states, text alternatives to color and light/dark/high-contrast browser checks; Apple UIKit/SwiftUI color APIs are not web APIs. No implementation verified."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as Apple-native guidance: system semantic foreground/background colors, dynamic appearance and increased-contrast support, restrained accents and actual device/lighting tests. The Expo palette source contracts alone do not verify native color behavior."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable by adaptation of contrast, meaningful semantic color roles, distinct status signals and dark/contrast appearance, using Android conventions rather than Apple-specific UIKit/SwiftUI color APIs. No actual device conformance or release evidence."
         }
-      }
+      },
+      "guidelineReviewEvidence": [
+        "2026-11-19 official complete Markdown article review: https://developer.apple.com/design/human-interface-guidelines/color.md (Discussion, Best practices, Inclusive color, System colors, Liquid Glass color, Color management, Platform considerations, Specifications and change log).",
+        "Source requirements recorded: consistent semantic purpose; light, dark and increased-contrast adaptations; non-color status cues; contextual contrast for labels and maps; appropriate iOS semantic system colors; restrained tinted controls; device/lighting tests and color-profile fidelity.",
+        "Scope boundary: article text reviewed, not a certificate of NovaPharm CSS/native color conformity; physical contrast/appearance, protected sessions and deployed/signed releases remain unverified."
+      ]
     },
     {
       "section": "Foundations",

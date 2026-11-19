@@ -292,6 +292,20 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
     "native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs",
     "native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs"
   ];
+  const appearanceChangeSet = [
+    "native/novapharm-intelligence-mobile/MapsResearchScreen.tsx",
+    "native/novapharm-intelligence-mobile/App.tsx",
+    "native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx",
+    "native/novapharm-intelligence-mobile/appearance.ts",
+    "native/novapharm-intelligence-mobile/app.json",
+    "native/novapharm-intelligence-mobile/package.json",
+    "native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs",
+    "native/novapharm-intelligence-mobile/README.md",
+    "docs/design/apple-hig-three-platform-adoption-20261118.md",
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
   const policyRepairChanges = [
     ".github/workflows/dispatch-approved-aws-contact-release.yml",
     ".github/workflows/publish-aws-contact-production.yml",
@@ -319,6 +333,10 @@ test("HIG-only web and mobile merges never dispatch the unrelated AWS contact re
       line.includes("scripts/aws/contact-release-routing.test.mjs") && line.trim().endsWith(")"));
     assert.ok(neutralLine, file + " must retain the neutral publisher-guard clause");
     const neutralPatterns = neutralLine.trim().replace(/\)$/, "").split("|");
+    for (const p of appearanceChangeSet) {
+      assert.ok(covers(p) || neutralPatterns.includes(p),
+        file + " cannot trigger unrelated AWS contact for appearance change " + p);
+    }
     const policySource = "docs/design/apple-hig-172-topic-adoption-20261118.md";
     assert.ok(covers(policySource), file + " must classify the repair's private source evidence");
     for (const changed of policyRepairChanges.filter((value) => value !== policySource)) {
@@ -480,6 +498,56 @@ test("Official pharmaceutical publisher probe source-only changes do not dispatc
     assert.match(branch, /private_only=false/);
     assert.ok(!/\bserver\.mjs\|/.test(caseLine),
       "shared server must not be in the main private-only path list");
+  }
+});
+
+test("CLIP default-OFF source-only merge keeps AWS contact publisher isolated by exact Git blobs", () => {
+  const privateChanged = [
+    ".github/workflows/intelligence-clip-research-contract.yml",
+    "apps/portal/app/gateway/[...path]/route.ts",
+    "apps/portal/components/clip-visual-search.tsx",
+    "docs/ai-model-register.json",
+    "docs/ai-risk-register.md",
+    "docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md",
+    "docs/intelligence/visual-search-cross-platform-contract.json",
+    "native/novapharm-intelligence-apple/NovaClipVisualSearch.swift",
+    "native/novapharm-intelligence-android/clipResearch/build.gradle.kts",
+    "scripts/test-intelligence-visual-search.mjs",
+    "services/clip/serve.py",
+    "src/core/intelligence-visual-search.mjs"
+  ];
+  const reviewed = {"serverOld":"4e8c233d1dbf085545763de4bd4de093ea95ec11","serverNew":"12dd72527ae561d6506d9573d418959d6f337189","packageOld":"733efc6571364754e46bfcadb8141d5d6c3481ba","packageNew":"c2ad27febc151c09e9629ed602ad989a01e90213"};
+  const neutral = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs"
+  ];
+  const publicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "scripts/imdf/unreviewed-tool.mjs"
+  ];
+  for (const filename of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const src = get(filename);
+    const first = src.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(first, filename + " must have source-only classifier");
+    const patterns = first.trim().replace(/\)$/, "").split("|");
+    const isPrivate = p => patterns.some(rule => p === rule ||
+      (rule.endsWith("/*") && p.startsWith(rule.slice(0, -1))));
+    for (const p of privateChanged) assert.ok(isPrivate(p), filename + " misses protected CLIP research source: " + p);
+    for (const p of publicChanges) assert.equal(isPrivate(p), false, filename + " must not hide public changes: " + p);
+    for (const hash of Object.values(reviewed)) assert.ok(src.includes(hash), filename + " must pin exact reviewed blob: " + hash);
+    assert.ok(src.includes("git hash-object"), filename + " must inspect proposed exact blob");
+    assert.ok(src.includes("git rev-parse"), filename + " must inspect original first-parent blob");
+    assert.ok(src.includes("private_only=false"), filename + " must reject unreviewed changes");
+    const isSafeSourceOnly = (changed, exactShared) => changed.some(isPrivate) &&
+      changed.every(p => isPrivate(p) || neutral.includes(p) ||
+        (exactShared && (p === "server.mjs" || p === "package.json")));
+    assert.equal(isSafeSourceOnly([...privateChanged, ...neutral, "server.mjs", "package.json"], true), true);
+    assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs"], false), false);
+    assert.equal(isSafeSourceOnly(["server.mjs", "package.json"], true), false);
+    for (const p of publicChanges) assert.equal(isSafeSourceOnly([...privateChanged, "server.mjs", p], true), false);
   }
 });
 
