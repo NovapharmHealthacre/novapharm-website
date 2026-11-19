@@ -137,7 +137,7 @@ countries and 12 global/EU source candidates, and the country-expansion
 proposal contributes 24 additional research-only countries.
 
 **Verified source-code state:** 101/101 source candidates have worklist
-entries, 7 official publisher terms pages are linked, **0/101 source grants
+entries, 9 official publisher terms pages are linked and 1 additional publisher access-application requirement is recorded, **0/101 source grants
 are independently accepted**, 0 ingested datasets are accepted, and 0
 source candidates are certified customer-live. A link to permissive
 publisher terms is not evidence of field-specific rights, a valid signed
@@ -148,15 +148,32 @@ grant, a working API, a configured production pipeline or tenant approval.
 | United States — FDA openFDA/Drugs@FDA | https://open.fda.gov/terms/ | Most openFDA materials described as CC0/public domain; some copyrightable third-party submissions and warned fields are excluded | Exact endpoint, response-field copyright screen, accepted uses, publisher credit and rate limits |
 | Singapore — HSA registered therapeutic products | https://developers.data.gov.sg/open-data-licence , https://data.gov.sg/privacy-and-terms , https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view | Singapore Open Data Licence v1.0 permits commercial and non-commercial reuse with mandatory attribution; excludes personal data, third-party rights, patents, trademarks and design rights. API access also has separate terms and limits | Bind dataset ID and observed version, exact permitted fields and required attribution; inspect excluded content, current API restrictions and independently signed production rights decision |
 | European Union / EEA — EMA PMS Public API **beta** | https://www.ema.europa.eu/en/documents/other/products-management-services-pms-public-api-terms-conditions_en.pdf ; https://api.pms.ema.europa.eu/public/v1/swagger | EMA's published terms dated **12 June 2026** restrict beta use to familiarisation, testing and analytical exploration — **not business purposes**. EMA registration is required, and its terms require **prior authorisation** to sell, sublicense, incorporate or redistribute content after full release; source data is reference-only and national authorities prevail | **Do not connect to NovaPharm commercial or customer services.** Verify official transition out of beta, obtain written EMA permission where required, complete scope/field review and signed grant before considering ingestion |
+| France — ANSM/HAS BDPM official downloadable medicine tables | https://base-donnees-publique.medicaments.gouv.fr/telechargement ; https://www.data.gouv.fr/datasets/base-de-donnees-publique-des-medicaments-base-officielle | Official French download conditions permit reproduction, redistribution and exploitation of the files, require accurate meaning, attribution, update dates and **no suggestion of state endorsement**; linked notices and product documents may need different rights | Scope and checksum each official table/resource release, preserve French national CIS/CIP identities, publication dates, updates and permitted derivative/AI/redistribution use before independent approval |
+| Ireland — HPRA Human Medicines Authorised Products | https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products ; https://data.gov.ie/dataset/medicines-authorised-or-transfer-pending-products/resource/6987c2af-0c40-48da-8207-76b5da141266 | The official data.gov.ie listing expressly identifies the XML dataset as **Creative Commons Attribution 4.0**; reusable commercially with attribution, but third-party works and personal data are excluded | Verify current XML resource version and controlled download, source attribution, Irish-native authorisation IDs and rights of any linked SPC or patient leaflet before independent admission |
 | Spain — AEMPS CIMA REST | https://sede.aemps.gob.es/datos-abiertos/ | Official open-data listing permits use and reuse, subject to conditions such as attribution; lists CIMA REST | Pin CIMA endpoint/data subset and relevant AEMPS legal notice; confirm commercial AI/derivative, cache and redistribution terms |
 | Canada — Health Canada DPD | https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe | Official DPD dataset is listed under the Open Government Licence — Canada; this does not prove every API response/third-party field is in scope | Match API response to licensed dataset version and exact fields; attribution, limitations and independent source approval |
 | United Kingdom — NHSBSA EPD with SNOMED | https://opendata.nhsbsa.net/pages/terms-and-conditions and https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code | Dataset-level licence applies (generally OGL), mandatory NHSBSA attribution and fair-use API access; BNF/SNOMED/dm+d may involve separate rights | Verify exact resource and version, third-party terminology reuse, checksum, immutable ingestion evidence and independent acceptance |
 | Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
 
-For the other 94 source candidates, the worklist explicitly states
+For the other 91 source candidates, the worklist explicitly states
 `PUBLIC_TERMS_NOT_YET_SCREENED`; none may inherit terms from a different
-publisher or country. These seven screens include sources with bounded preview code and the EMA PMS beta with no approved commercial connector. They are **not**
-seven activated country integrations.
+publisher or country. The nine licence/terms notices plus Norway's separate access-application notice do **not** constitute
+any activated country integrations.
+
+### Norway DMP FHIR — publisher access application required
+
+The Norwegian Medical Products Agency's [official access instructions](https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/how-to-access-the-fhir-service)
+(published **22 June 2026**) require organisations to contact DMP and
+state the organisation/registration number, contact, purpose, requested data,
+test versus production environment, and destination of use. This is **not a
+public reuse licence**. The separate `publisherAccessRequirementsUrl` field
+is populated, `sourceAccessApprovalRequired: true`, and the worklist shows
+`PUBLISHER_ACCESS_APPLICATION_REQUIRED`, **not** `PUBLIC_NOTICE_LOCATED`.
+No application was sent, no DMP credentials were issued, no Norway API call
+or database ingestion was made, and no commercial use is authorised.
+
+Norway's service lists product codes sourced from Farmalogg, which
+requires separate rights review before commercial re-publication. <https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service>
 
 ### Per-source activation acceptance, never inferred from an open notice
 
