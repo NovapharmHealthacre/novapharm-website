@@ -21,10 +21,14 @@ test("customer sign-in binds only approved paid intent to the signed PKCE cookie
       "https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=professional&cycle=monthly",
     ));
     assert.equal(response.status, 302);
-    const cookie = response.cookies.get("__Host-npi_oidc_tx");
-    assert.ok(cookie);
-    const state = new URL(response.headers.get("location") ?? "").searchParams.get("state");
-    const verified = verifyCustomerLoginTransaction({cookieValue:cookie.value, state, signingKey:key});
+    // A route handler is typed as Response. Verify its real Set-Cookie header,
+    // not a framework-only .cookies accessor that the Response contract lacks.
+    const cookieHeader = response.headers.get("set-cookie") ?? "";
+    const cookieValue = decodeURIComponent(cookieHeader.match(/(?:^|[, ]+)__Host-npi_oidc_tx=([^;]+)/)?.[1] ?? "");
+    assert.ok(cookieValue, "Signed PKCE transaction cookie must be issued");
+    const state = new URL(response.headers.get("location") ?? "").searchParams.get("state") ?? "";
+    assert.ok(state, "Signed PKCE state must be issued");
+    const verified = verifyCustomerLoginTransaction({cookieValue, state, signingKey:key});
     assert.equal(verified.requestedPlan, "professional");
     assert.equal(verified.requestedCycle, "monthly");
     assert.equal(verified.grantsTenantAccess, false);

@@ -39,8 +39,9 @@ export async function requestIntelligenceSubscriptionCheckout({
     const data: unknown = JSON.parse(raw);
     if (!data || typeof data !== "object") return null;
     const payload = data as Record<string, unknown>;
-    if (payload.ok !== true || payload.code !== "checkout_session_created_no_entitlement" || typeof payload.checkoutUrl !== "string") return null;
-    const parsed = new URL(payload.checkoutUrl);
+    const checkoutUrl = payload["checkoutUrl"];
+    if (payload["ok"] !== true || payload["code"] !== "checkout_session_created_no_entitlement" || typeof checkoutUrl !== "string") return null;
+    const parsed = new URL(checkoutUrl);
     // Inspect parsed origin and the whole path, never a host substring.
     if (parsed.origin !== "https://checkout.stripe.com" || parsed.username ||
         parsed.password || parsed.search || parsed.hash ||
