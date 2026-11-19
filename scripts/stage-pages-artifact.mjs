@@ -248,7 +248,7 @@ for (const asset of Object.values(aiManifest.assets || {})) {
 }
 for (const source of aiManifest.sources) {
   if (!source.url?.startsWith("https://novapharmhealthcare.com/") ||
-      /(?:^|\\/)(?:_secure|portal|admin|employee|contact|account-application|legal)(?:\\/|$)/i.test(source.file)) {
+      new RegExp("(?:^|/)(?:_secure|portal|admin|employee|contact|account-application|legal)(?:/|$)", "i").test(source.file)) {
     throw new Error("Unapproved private or form-data source included in AI release");
   }
 }
