@@ -44,3 +44,13 @@ test("failed public index requests reset so a retry can succeed", () => {
   assert.match(controller, /manifestPromise = null;/);
   assert.match(controller, /Published-evidence search is temporarily unavailable/);
 });
+
+test("cancel or close during slow index initialization does not create a detached worker", () => {
+  assert.match(controller, /let semanticGeneration = 0/);
+  assert.match(controller, /const generation = \+\+semanticGeneration/);
+  assert.match(controller, /if \(generation !== semanticGeneration \|\| !dialog\.open\) return;/);
+  assert.match(controller, /const activeWorker = new Worker/);
+  assert.match(controller, /if \(generation !== semanticGeneration \|\| worker !== activeWorker \|\| !dialog\.open\) return;/);
+  assert.match(controller, /const stopSemantic = \(reason = "disabled"\) => \{\s*\+\+semanticGeneration/);
+  assert.match(controller, /if \(generation !== semanticGeneration \|\| !dialog\.open\) return;\s*stopSemantic\(\);/);
+});
