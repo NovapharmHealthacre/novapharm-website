@@ -41,7 +41,7 @@ test("More retains accessible review, research, maps and account entry points", 
   assert.match(more, /onPress=\{\(\) => changeScreen\(item.screen\)\}/);
   assert.match(app, /moreAction: \{ minHeight: 56/);
   assert.match(app, /<CountryDirectoryScreen \/>/);
-  assert.match(app, /en === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "maps" \|\| selected === "account" \|\| selected === "countries"\)\);/);
+  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "maps" \|\| selected === "account" \|\| selected === "countries"\)/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {
