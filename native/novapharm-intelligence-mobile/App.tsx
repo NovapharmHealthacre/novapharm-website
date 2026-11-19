@@ -22,13 +22,13 @@ import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intellige
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
-
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -108,7 +108,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -282,6 +282,7 @@ export default function App() {
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
+                { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
               ] as const).map((item) => (
                 <Pressable
@@ -397,7 +398,50 @@ export default function App() {
               <Text style={styles.meta}>Visualizations may suggest hypotheses but cannot establish model causality, clinical safety or regulatory validity. Use accepted source records and human review.</Text>
             </>
           )}
-          {screen === "account" && (
+          {screen === "visual" && (
+            <>
+              <SectionHeading
+                title="Visual catalogue research"
+                detail="OpenAI CLIP research candidate. English text-to-approved-public-image retrieval is not enabled in the unsigned mobile preview."
+              />
+              <View style={styles.card} accessible accessibilityLabel="CLIP visual research disabled. Authentication and licensed private inference unavailable.">
+                <Text style={styles.cardTitle}>Research candidate · not connected</Text>
+                <Text style={styles.description}>
+                  No model weights, image catalogue, external visual API or uploaded images are included.
+                  A signed board-only session, protected gateway, licensed artwork, independent
+                  quality evaluation and verified private model runtime are required.
+                </Text>
+                <Text style={styles.meta}>
+                  Contract: {CLIP_MOBILE_RELEASE.contract} · Runtime: {CLIP_MOBILE_RELEASE.state}
+                </Text>
+              </View>
+              <TextInput
+                accessibilityLabel="Public-image CLIP query unavailable before signed app and board-only gateway approval"
+                editable={false}
+                placeholder="Describe approved public artwork"
+                placeholderTextColor={palette.tertiary}
+                style={styles.input}
+                value=""
+              />
+              <Text style={styles.meta}>
+                Search disabled until independent mobile identity, CSRF, source-rights and
+                model-service release evidence is accepted. Similarity cannot establish
+                medicine identity, strength, authenticity, safety or regulatory status.
+              </Text>
+              <View style={styles.rule} />
+              <SectionHeading title="Enterprise activation gates" />
+              {[
+                "Signed iOS/Android app with secure board session, MFA and revocation",
+                "Licensed public-image index and audited source-rights expiry",
+                "Independent CLIP lookalike, strength and out-of-domain evaluation",
+                "Approved private runtime, exact-host gateway and fail-closed rollback",
+                "Protected device and accessibility acceptance before distribution"
+              ].map((item) => (
+                <View key={item} style={styles.requirement}><Text style={styles.description}>{item}</Text></View>
+              ))}
+            </>
+          )}
+                    {screen === "account" && (
             <>
               <SectionHeading title="Enterprise access" detail="Identity and data availability are independent permission decisions." />
               <View style={styles.card}>
