@@ -26,7 +26,7 @@
     "allGuidelinePagesFullyReviewed": false,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 156,
+    "platformsAssessed": 171,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -63,6 +63,80 @@
       "fullTextReviewIndependentlyVerifiedForAll172": false,
       "platformApplicabilityApprovedForAll516": false,
       "implementationOrProductionConformanceCertified": false
+    },
+    "productionEvidenceAudit": {
+      "reviewedOn": "2026-11-19",
+      "verifiedImplementationCount": 0,
+      "meaning": "Selected public origin observations do not establish complete Apple HIG compliance across NovaPharm web, iOS and Android. Only independently accepted, platform-appropriate production receipts may change implementation to verified.",
+      "scopedPublicEvidence": [
+        {
+          "topic": "Right to left",
+          "sourceRun": 44528135812,
+          "jobId": 135574047765,
+          "jobConclusion": "success",
+          "scope": "Live public RTL layout-preview, not full translation or all routes",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98"
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44532249980,
+          "jobId": 135588345804,
+          "jobConclusion": "success",
+          "scope": "Public Capabilities 6 live rendered Chromium/WebKit viewports; screenshot artifact 14534074840",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44532250088,
+          "jobId": 135588343721,
+          "jobConclusion": "success",
+          "scope": "Public Oncology 8 live rendered Chromium/WebKit viewport/layout checks and exact public CSS bytes; artifact 14534534397",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        },
+        {
+          "topic": "Images",
+          "sourceRun": 44532250088,
+          "jobId": 135588343721,
+          "jobConclusion": "success",
+          "scope": "Public Oncology hero portrait uncropped in 8 live viewport/browser combinations; artifact 14534534397",
+          "liveSourceSha": null,
+          "repositoryRunHead": "bb96952db2e4dcaa19526a8ab321b8081b6aeca7"
+        }
+      ],
+      "excludedAsAcceptance": [
+        {
+          "run": 44528135827,
+          "workflow": "Corporate live Chromium WebKit Firefox acceptance",
+          "workflowConclusion": "success",
+          "job": "live-browser",
+          "jobConclusion": "skipped",
+          "reason": "Job skipped because upstream publisher deployment was not performed; green workflow is not a live browser receipt."
+        },
+        {
+          "workflow": "Source-only Apple HIG and cross-platform CI",
+          "reason": "Static/browser preview checks do not prove the exact deployed revision, authenticated protected flows, real assistive technology or signed native distribution."
+        }
+      ],
+      "unmetProgrammeGates": [
+        "Individual full-guideline review and three-platform applicability decision for every topic",
+        "Bounded production scope and actual applicable route/application manifest",
+        "Exact production or signed mobile release receipt and immutable source revision",
+        "Browser/device screenshots, keyboard/assistive-technology and 200–400% zoom/reflow acceptance",
+        "Role/tenant/clinical data boundaries where protected services apply",
+        "Independent Quality/Security reviewer approval and owner production authorization where required"
+      ],
+      "productionSignoffSource": "config/intelligence/owner-production-constraints.json",
+      "productionSignoffObserved": "not_granted",
+      "readOnlyEvidenceOnly": true,
+      "distinctObservedPublicLiveRuns": [
+        44528135812,
+        44532249980,
+        44532250088
+      ],
+      "recordedPartialTopicPlatformObservations": 4,
+      "note": "Partial topic records may share one underlying workflow run. Three distinct successful read-only public live runs, four topic/platform partial observations; no full independently signed acceptance."
     }
   },
   "topics": [
@@ -739,7 +813,32 @@
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/images.md",
       "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Oncology live custom-domain Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088/artifacts/14534534397",
+          "jobId": 135588343721,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/oncology/",
+          "checkedJourneys": [
+            "Live hero portrait is visually uncut at widths 390, 768, 1440 and 1728 in Chromium and WebKit",
+            "Oncology hero screenshot artifact preserved"
+          ],
+          "scopeLimits": [
+            "One hero image only, not sitewide imagery",
+            "No image-rights source review in this CI job",
+            "No alt-text/VoiceOver acceptance of all images",
+            "No signed mobile app production proof"
+          ],
+          "provenanceNote": "A page-specific live image crop check; not conformance for Apple's complete Images guidance."
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -860,7 +959,56 @@
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/layout.md",
       "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Live Capabilities Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532249980/artifacts/14534074840",
+          "jobId": 135588345804,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/capabilities/",
+          "checkedJourneys": [
+            "Read-only rendered page in Chromium and WebKit at widths 390, 768 and 1440",
+            "Approved Capabilities photo/editorial CSS visual acceptance"
+          ],
+          "scopeLimits": [
+            "No full document/brand conformance",
+            "No screen reader/real hardware accessibility testing",
+            "No independent production sign-off",
+            "No proof this live page SHA equals PR #878 head"
+          ],
+          "provenanceNote": "Workflow run anchored to repository SHA bb96952db2e4dcaa19526a8ab321b8081b6aeca7; browser log recorded approved CSS asset hash. Do not invent a live page SHA."
+        },
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19",
+          "workflow": "Oncology live custom-domain Chromium and WebKit acceptance",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088",
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44532250088/artifacts/14534534397",
+          "jobId": 135588343721,
+          "observedLiveSourceSha": null,
+          "checkedRoute": "https://novapharmhealthcare.com/oncology/",
+          "checkedJourneys": [
+            "Read-only live Oncology hero rendering in Chromium and WebKit at widths 390, 768, 1440 and 1728",
+            "Verified exact public oncology-hope-v2.css bytes against source on repository checkout SHA bb96952db2e4dcaa19526a8ab321b8081b6aeca7",
+            "No horizontal overflow, full-bleed hero, three aligned cards, continuous fade"
+          ],
+          "scopeLimits": [
+            "Specific Oncology hero, not every page/element",
+            "No VoiceOver/keyboard/200–400% zoom acceptance",
+            "No independent HIG review or native iOS/Android receipt"
+          ],
+          "provenanceNote": "Exact live oncology CSS bytes checked against GitHub job source commit bb96952db2e4dcaa19526a8ab321b8081b6aeca7; full live HTML source-SHA meta not independently established by this job."
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -1021,9 +1169,29 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/right-to-left",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/right-to-left.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
-      "webEvidence": [],
+      "webEvidence": [
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "workflow": "RTL live public layout-preview proof",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44528135812",
+          "jobId": 135574047765,
+          "jobConclusion": "success",
+          "observedAt": "2026-11-19T12:53:56Z",
+          "publicOrigin": "https://novapharmhealthcare.com/",
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "verifiedScope": "Published public RTL layout-preview assets, language-cookie disclosure, and preserved public B2B contact service as tested by scripts/verify-live-rtl-origin.mjs",
+          "notProven": [
+            "Arabic and Hebrew translation",
+            "all public routes and controls",
+            "authenticated Portal or Intelligence",
+            "iOS/Android signed packages or physical devices",
+            "independent whole-topic acceptance"
+          ]
+        }
+      ],
       "iosEvidence": [],
       "androidEvidence": [],
       "releaseEvidence": [],
@@ -1033,23 +1201,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply directional layout, logical CSS positioning, meaningful control/icon mirroring, mixed-script bidirectional text, locale-aware number handling and exclusion of brand/photo mirroring. Current public RTL layout preview is partial and not translated or production-accepted across all routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On iOS, verify native semantic leading/trailing layout, Arabic and Hebrew localization, VoiceOver reading order, intact phone/medicine identifiers, appropriate SF Symbol RTL variants, unchanged logos and exact device signing and release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply Android-native RTL layout direction, localized resource strings, mixed-script number isolation, navigation gesture/control mirroring where appropriate and TalkBack reading order; never borrow native Apple SF Symbols or assume signed Android release."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/right-to-left.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official Apple Right to left article reviewed 2026-11-19: https://developer.apple.com/design/human-interface-guidelines/right-to-left.md. Covers mixed-language paragraph/list alignment, numerals/progress orientation, directional controls, image order, mirrored navigation icons and deliberate non-mirroring of logos, photographs and universal symbols.",
+        "NovaPharm web interpretation: RTL must be a truthfully labelled layout preview until Arabic/Hebrew translation, regional numbers and full customer/commerce flows are accepted; avoid flipping actual branded marks and product photographs. Cross-platform parity requires separate native accessibility/device outcomes.",
+        "Bounded public origin check: GitHub workflow run 44528135812, job 135574047765 executed its read-only public RTL script successfully on 19 November and printed deployed public source d00b2eee866d4a2dd2ff7d87ded583be0d7cab98. This is not article-wide conformance, full translation or protected/mobile go-live."
+      ]
     },
     {
       "section": "Foundations",
@@ -1137,7 +1310,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/typography",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/typography.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1149,23 +1322,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a cross-platform design goal: use readable semantic CSS type scales, browser-based 200/400% zoom/reflow, accessible font stacks and unclipped medicine tables and labels; this does not grant redistribution rights to downloaded SF binaries, and real all-route browser rendering remains outstanding."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as direct iOS native guidance: use native text styles and Dynamic Type across accessibility size categories, adapt line wrapping and layout, avoid truncation, test VoiceOver and physical devices. Use platform-provided system fonts rather than distributing Apple's proprietary font files."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as readable typography and adaptability using Android-native system fonts, font scaling and accessibility services; apply Material/Android semantics and TalkBack testing instead of copying iOS points or SwiftUI Font APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/typography.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/typography.md. Official article emphasizes minimum readable text sizes by Apple platform (iOS/iPadOS 17pt default and 11pt minimum), weight and readable hierarchy; Dynamic Type must preserve meaning, avoid truncation and allow adaptive stacking. Custom typefaces require equivalent accessibility scaling; do not embed proprietary Apple system fonts in applications.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Foundations",
@@ -2892,7 +3070,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2904,23 +3082,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a web inventory and design classification for ordinary HTML buttons, accessible disclosures, context actions, keyboard/focus-return menus and links. Each actual action has to be mapped to a child-topic acceptance test and verified on public or protected routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as an Apple-native component index, but each child control is scoped to supported iOS/iPadOS capabilities; Dock menus and desktop menu bars must not be marked implemented on iPhone because the index contains links to them."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable as a comparison index for Android commands, contextual actions, long-press and overflow navigation; preserve Android Material semantics, TalkBack and Back rather than importing Apple ActivityView, AppKit menu bar or system toolbar APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/menus-and-actions.md. The official Menus and actions page is a collection group linking activity views, buttons, context menus, edit menus, menus, pull-down/pop-up buttons, toolbars and platform-specific system menus. It is a taxonomy for additional child-article review, not an independently testable universal framework component.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Components",
@@ -5355,7 +5538,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/gestures",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/gestures.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5367,23 +5550,28 @@
       "sourceRequestedPlatforms": "iOS, Android",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to swipe-to-reveal filters, mobile menus and tables only when visible click/keyboard equivalents exist, targets are large enough and focus/announcements are preserved; browser touch gestures must never be the only way to submit a business enquiry or complete regulated workflow."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to actual iPhone/iPad gestures and standard Apple navigation/undo expectations; offer discoverable accessible buttons and VoiceOver/Switch Control alternatives, respect edge-swipe system navigation and do not override system gestures for commercial tasks."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable via Android-native touch, drag, long-press and system Back gestures, with visible alternatives, TalkBack/keyboard support and no gesture-only payment/medicine decisions; Apple three-finger and shake-to-undo behavior is not an Android API requirement."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gestures.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/gestures.md. Official article recommends expected tap/swipe/drag behavior, feedback and disabled states, avoiding custom gestures unless needed; provide a non-gesture alternative for critical actions and do not conflict with platform system gestures. iOS three-finger undo/redo and iPad four-finger switching are platform-specific, not universal web shortcuts.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Inputs",
@@ -6248,7 +6436,7 @@
       "priority": "Critical",
       "url": "https://developer.apple.com/design/human-interface-guidelines/machine-learning",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/machine-learning.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6260,23 +6448,28 @@
       "sourceRequestedPlatforms": "Intelligence",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to NovaPharm Intelligence search/ranking and model explanations as design obligations: no silent pharmaceutical certainty, distinguish accepted clinical facts from model inferences, show provenance and corrections, protect tenancy, require licensed data and avoid training or activating unapproved research models."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable to iOS ML-powered user journeys only when an approved signed feature actually exists; use clear user control, permissions, error correction and privacy boundaries with VoiceOver. Core ML/Create ML documentation does not itself prove any NovaPharm native deployment."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Applicable on Android as comparable model-transparency, privacy, source attribution and corrections goals; integrate only approved Android-capable inference and TalkBack behavior, never infer Core ML entitlement or signed Android app acceptance from Apple design guidance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/machine-learning.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Official 2026-11-19 primary-source article inspection: https://developer.apple.com/design/human-interface-guidelines/machine-learning.md. Official article classifies ML as critical or complementary, public or private, proactive/reactive, visible/invisible and dynamic/static; stresses sensitivity, privacy, optional feedback, calibration, honest limitations and accessible correction of mistakes. Attribution and human-correctable results matter especially when incorrect suggestions have consequences.",
+        "NovaPharm applicability carefully interpreted across public website, authenticated Portal/Intelligence and separate mobile app prototypes. These are source-specific design acceptance needs, not a claim of working deployed behavior.",
+        "Not production accepted: sitewide accessibility/keyboard/zoom journeys, authenticated tenancy and actual signed iOS/Android builds require independent release receipts. Implementation status intentionally remains not_verified."
+      ]
     },
     {
       "section": "Technologies",
