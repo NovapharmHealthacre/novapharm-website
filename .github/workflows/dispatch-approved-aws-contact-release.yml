@@ -49,6 +49,20 @@ jobs:
                   private_only=false
                 fi
                 ;;
+              apps/corporate/app/design-system.css)
+                # Source-reviewed #856 breadcrumb target only; future CSS changes are public releases.
+                old_css_blob=$(git rev-parse "HEAD^1:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                new_css_blob=$(git rev-parse "HEAD:apps/corporate/app/design-system.css" 2>/dev/null || true)
+                if [ "$old_css_blob" = "35a79b8b0051ac353d98e6f70ae9446d44955b5c" ] && [ "$new_css_blob" = "85ca93d1f501de09e99f4114852daacb4d1b77f1" ]; then
+                  found_ml=true
+                else
+                  private_only=false
+                fi
+                ;;
+              .github/workflows/visual-refinement.yml|scripts/audit-website-hig-source.mjs|scripts/test-apple-hig-census.mjs)
+                # HIG test and source-audit changes do not alter customer contact infrastructure.
+                found_ml=true
+                ;;
               packages/medicines-intelligence/src/index.ts)
                 # Shared barrel: only the reviewed L0 export insertion is research-only.
                 export_diff=$(git diff --unified=0 "$GITHUB_SHA^1" "$GITHUB_SHA" -- "$changed" | grep -E '^[+-][^+-]' || true)
