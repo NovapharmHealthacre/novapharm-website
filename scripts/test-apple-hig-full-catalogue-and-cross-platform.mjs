@@ -451,10 +451,51 @@ test("eight more primary HIG foundation/icon articles have unique source finding
     assert.equal(topic.platformApplicability.android.state, "not_applicable", name);
     assert.equal(topic.platformApplicability.web.state, "not_applicable", name);
   }
-  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 27);
-  assert.equal(tracker.meta.platformsAssessed, 81);
+  assert.ok(tracker.topics.filter(x => x.guidelineReview === "reviewed").length >= 27);
+  assert.ok(tracker.meta.platformsAssessed >= 81);
   assert.ok(tracker.topics.every(x => x.implementation === "not_verified"));
   assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage, 172);
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
+
+test("25 additional current official article decisions are source-grounded and fail closed for release", () => {
+  const names = [
+    "Text fields", "Sidebars", "Scroll views", "Focus and selection", "Undo and redo",
+    "Settings", "Onboarding", "Notifications", "File management", "Managing notifications",
+    "Disclosure controls", "Pickers", "Tab views", "Launching", "Modality",
+    "Offering help", "Action sheets", "Segmented controls", "Navigation and search",
+    "Sheets", "Windows", "Popovers", "Context menus", "Text views", "Virtual keyboards"
+  ];
+  assert.equal(new Set(names).size, 25);
+  for (const name of names) {
+    const topic = tracker.topics.find(x => x.title === name);
+    assert.ok(topic, name);
+    assert.equal(topic.guidelineReview, "reviewed", name);
+    assert.equal(topic.guidelineReviewEvidence?.length, 3, name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes(topic.markdown), name);
+    assert.ok(topic.guidelineReviewEvidence[0].includes("2026-11-19"), name);
+    assert.equal(topic.implementation, "not_verified", name);
+    assert.deepEqual(topic.releaseEvidence, [], name);
+    for (const platform of ["web", "ios", "android"]) {
+      const d = topic.platformApplicability[platform];
+      assert.ok(d && ["applicable", "not_applicable"].includes(d.state), name + "/" + platform);
+      assert.ok(typeof d.rationale === "string" && d.rationale.length >= 75, name + "/" + platform);
+    }
+  }
+  for (const name of ["Tab views", "Windows"]) {
+    assert.equal(tracker.topics.find(x => x.title === name).platformApplicability.ios.state,
+      "not_applicable", "Do not treat AppKit/iPadOS-only components as native iPhone iOS requirements");
+  }
+  const reviewedCount = tracker.topics.filter(x => x.guidelineReview === "reviewed").length;
+  const appliedCount = tracker.topics.flatMap(x => Object.values(x.platformApplicability))
+    .filter(d => d.state !== "unassessed").length;
+  assert.equal(reviewedCount, 52, "25 new article assessments plus 27 already documented");
+  assert.equal(appliedCount, 156, "75 new platform assessments plus 81 already documented");
+  assert.equal(tracker.meta.platformsAssessed, appliedCount);
+  assert.ok(tracker.topics.every(x => x.implementation === "not_verified"),
+    "Source documentation must not imply live deployment");
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+  assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage, 172);
 });
