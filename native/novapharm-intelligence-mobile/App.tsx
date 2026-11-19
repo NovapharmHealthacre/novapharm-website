@@ -294,7 +294,7 @@ export default function App() {
             </>
           )}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
-          {screen === "maps" && <MapsResearchScreen />}
+          {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
 
           {screen === "research" && (
             <>
