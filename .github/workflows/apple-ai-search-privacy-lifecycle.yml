@@ -6,6 +6,7 @@ on:
       - "src/ai/search-controller.mjs"
       - "src/ai/privacy-guard.mjs"
       - "scripts/test-apple-ai-search-lifecycle.mjs"
+      - "scripts/test-apple-ai-search-behavior.mjs"
       - "docs/design/apple-ai-generative-ml-privacy-audit-20261119.md"
       - ".github/workflows/apple-ai-search-privacy-lifecycle.yml"
 
@@ -24,6 +25,6 @@ jobs:
       - name: Syntax and Apple privacy lifecycle regression
         run: |
           node --check src/ai/search-controller.mjs
-          node --test scripts/test-apple-ai-search-lifecycle.mjs
+          node --test scripts/test-apple-ai-search-lifecycle.mjs scripts/test-apple-ai-search-behavior.mjs
           node scripts/test-ai-policy.mjs
           node scripts/test-ai-privacy.mjs
