@@ -176,3 +176,20 @@ test("Apple official markdown source drift is disclosed rather than silently ove
   }
   assert.match(report, /Craft and Delight/);
 });
+
+test("historical 18 Apple upload aliases remain distinct from current 32 without fake hash parity", () => {
+  assert.equal(ledger.attachments.length, 32);
+  assert.equal(ledger.historicalReferenceUploads.length, 18);
+  assert.equal(ledger.knownOwnerUploadsCount, 50);
+  const names = [...ledger.attachments, ...ledger.historicalReferenceUploads].map((x) => x.name);
+  assert.equal(new Set(names).size, 50);
+  const historicalAudit = ledger.historicalReferenceUploads.find((x) => x.name === "NovaPharm_Apple_HIG_Estate_Audit_2026-11-15.md");
+  assert.equal(historicalAudit.inspectionLevel, "source_text_reviewed");
+  for (const item of ledger.historicalReferenceUploads) {
+    assert.equal(item.sha256, null);
+    assert.equal(item.byteIdenticalToLaterUpload, "not_verified");
+    assert.equal(item.integratedIntoProduction, false);
+    assert.equal(item.licenseReviewed, false);
+  }
+  assert.match(report, /50 known owner uploads/);
+});
