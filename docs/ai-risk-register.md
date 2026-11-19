@@ -138,6 +138,12 @@ These are **source-stage mitigations only**, not evidence that production cloud 
 
 **Stop condition:** deny a release if training can be initiated from the public site or a mobile client, if a client-selected budget/region can bypass a trusted backend, if model/data rights are missing, or if source-only tests are misrepresented as production activation.
 
+## Country-source coverage evidence and release-scope safety — 18 November 2026
+
+The 101 registry entries are discovery **source candidates**, not 101 countries, licensed integrations or production-ready feeds. The current metadata has 77 distinct named countries and two additional jurisdictional labels (Global and European Union / EEA), all unreviewed and candidate-only. Source-state fields are unaudited declarations; rights, operational data admission, model validity, identity, device signing and production approval require independent evidence.
+
+The protected-only source assessor and its regression/CI files are exactly allowlisted in both AWS contact-release scope classifiers. A source-only governance merge must not invoke a public customer-contact deployment; publisher policy-only updates remain subject to guarded public-release verification. See `docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md`. All owner constraints remain active; this note grants no production rights or budget.
+
 ## OpenAI Signals and research engineering risk extension — 18 November 2026
 
 | Risk | Implemented source-only prevention | Production release prerequisite | Accountable owner |
