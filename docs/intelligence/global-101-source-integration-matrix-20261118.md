@@ -137,7 +137,7 @@ countries and 12 global/EU source candidates, and the country-expansion
 proposal contributes 24 additional research-only countries.
 
 **Verified source-code state:** 101/101 source candidates have worklist
-entries, 5 official publisher terms pages are linked, **0/101 source grants
+entries, 6 official publisher terms pages are linked, **0/101 source grants
 are independently accepted**, 0 ingested datasets are accepted, and 0
 source candidates are certified customer-live. A link to permissive
 publisher terms is not evidence of field-specific rights, a valid signed
@@ -146,16 +146,17 @@ grant, a working API, a configured production pipeline or tenant approval.
 | Candidate jurisdiction/source | Official terms or dataset notice | Public notice finding (not legal sign-off) | Required decision before admission |
 |---|---|---|---|
 | United States — FDA openFDA/Drugs@FDA | https://open.fda.gov/terms/ | Most openFDA materials described as CC0/public domain; some copyrightable third-party submissions and warned fields are excluded | Exact endpoint, response-field copyright screen, accepted uses, publisher credit and rate limits |
+| Singapore — HSA registered therapeutic products | https://developers.data.gov.sg/open-data-licence , https://data.gov.sg/privacy-and-terms , https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view | Singapore Open Data Licence v1.0 permits commercial and non-commercial reuse with mandatory attribution; excludes personal data, third-party rights, patents, trademarks and design rights. API access also has separate terms and limits | Bind dataset ID and observed version, exact permitted fields and required attribution; inspect excluded content, current API restrictions and independently signed production rights decision |
 | Spain — AEMPS CIMA REST | https://sede.aemps.gob.es/datos-abiertos/ | Official open-data listing permits use and reuse, subject to conditions such as attribution; lists CIMA REST | Pin CIMA endpoint/data subset and relevant AEMPS legal notice; confirm commercial AI/derivative, cache and redistribution terms |
 | Canada — Health Canada DPD | https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe | Official DPD dataset is listed under the Open Government Licence — Canada; this does not prove every API response/third-party field is in scope | Match API response to licensed dataset version and exact fields; attribution, limitations and independent source approval |
 | United Kingdom — NHSBSA EPD with SNOMED | https://opendata.nhsbsa.net/pages/terms-and-conditions and https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code | Dataset-level licence applies (generally OGL), mandatory NHSBSA attribution and fair-use API access; BNF/SNOMED/dm+d may involve separate rights | Verify exact resource and version, third-party terminology reuse, checksum, immutable ingestion evidence and independent acceptance |
 | Global trial registry — ClinicalTrials.gov | https://clinicaltrials.gov/terms-conditions | Public study-record interface; some third-party record content may carry copyright and additional terms | Record-level permitted fields, attribution, version and commercial/AI reuse decision, then signed rights receipt |
 
-For the other 96 source candidates, the worklist explicitly states
+For the other 95 source candidates, the worklist explicitly states
 `PUBLIC_TERMS_NOT_YET_SCREENED`; none may inherit terms from a different
-publisher or country. These five screens are selected because relevant
+publisher or country. These six screens are selected because relevant
 bounded source-adapter/bridge code already exists. They are **not**
-five activated country integrations.
+six activated country integrations.
 
 ### Per-source activation acceptance, never inferred from an open notice
 
@@ -179,3 +180,23 @@ five activated country integrations.
 
 This prescreen never modifies the source registry's `not-reviewed` /
 `candidate-only` fields or the owner production constraints.
+
+### Historical official upstream connectivity evidence (source-only CI)
+
+The following GitHub Actions workflows completed actual bounded one-record
+HTTP reads on 18 November 2026. Their source-only artifacts expire after
+seven days. This is not current 24/7 API availability, an accepted licence,
+production ingestion, commercial access or customer/mobile publication.
+
+| National or global source | Exact source-only upstream CI | Historical probe result |
+|---|---|---|
+| US FDA Drugs@FDA (US) | [PR #844](https://github.com/NovapharmHealthacre/novapharm-website/pull/844), [run 44312719802](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44312719802) | One-record schema-bound HTTP read passed; cannot publish |
+| Singapore HSA (SG) | [PR #844](https://github.com/NovapharmHealthacre/novapharm-website/pull/844), [run 44312719802](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44312719802) | One-record schema-bound HTTP read passed; cannot publish |
+| Spain AEMPS CIMA (ES) | [PR #846](https://github.com/NovapharmHealthacre/novapharm-website/pull/846), [run 44285589910](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44285589910) | Native registration-bound HTTP read passed; cannot publish |
+| Canada DPD (CA) | [PR #847](https://github.com/NovapharmHealthacre/novapharm-website/pull/847), [run 44286286570](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44286286570) | Native DIN-bound HTTP read passed; cannot publish |
+
+The CI evidence above belongs to **open, unmerged pull requests** at this
+checkpoint. No claim is made that these source-only probes have been deployed.
+Even where an official publisher offers open commercial reuse, additional
+field/third-party terms, protected data-admission controls and independent
+owner production approval remain unmet.
