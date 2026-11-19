@@ -626,6 +626,10 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
       t.platformApplicability[p]?.state === "unassessed");
     const applicablePlatforms = ["web","ios","android"].filter(p =>
       t.platformApplicability[p]?.state === "applicable");
+    // A conceptually out-of-scope Apple API is only a CANDIDATE. It still
+    // requires real independent approval before "not_applicable" is accepted.
+    const candidateOutOfScope = unassessedPlatforms.length === 0 &&
+      applicablePlatforms.length === 0;
     const platformEvidence = Object.fromEntries(["web","ios","android"].map(p => {
       const list = t[p + "Evidence"];
       return [p, {
@@ -645,14 +649,17 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
       if (!platformEvidence[p].fullReleaseAccepted)
         blockers.push("accepted_" + p + "_release_receipt");
     }
-    if (applicablePlatforms.length === 0) blockers.push("justified_scope_disposition");
+    if (candidateOutOfScope && t.implementation !== "not_applicable")
+      blockers.push("independently_accepted_out_of_scope_disposition");
+    if (applicablePlatforms.length === 0 && !candidateOutOfScope)
+      blockers.push("unresolved_platform_scope");
     if (t.implementation !== "verified" && t.implementation !== "not_applicable")
       blockers.push("final_independent_implementation_approval");
     return {
       sourceRowIndex: t.sourceRowIndex ?? index,
       title: t.title, section: t.section, priority: t.priority,
       officialMarkdown: t.markdown, articleReview: t.guidelineReview,
-      implementation: t.implementation,
+      implementation: t.implementation, candidateOutOfScope,
       unassessedPlatforms, applicablePlatforms, platformEvidence, blockers
     };
   }).sort((a,b) => (priorities[a.priority] ?? 99) - (priorities[b.priority] ?? 99)
@@ -669,6 +676,13 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     assessedPlatformDecisions: decisions,
     registeredProductionVerifiedTopics: verified,
     registeredNotApplicableTopics: tracker.topics.filter(t => t.implementation === "not_applicable").length,
+    candidateOutOfScopeTopicsPendingIndependentApproval: topics
+      .filter(t => t.candidateOutOfScope && t.implementation !== "not_applicable")
+      .map(t => ({title:t.title,sourceRowIndex:t.sourceRowIndex})),
+    // A reviewed non-applicable topic is not a production "verified implementation".
+    // Track accepted total dispositions separately from genuine deployments.
+    allTopicsIndependentlyDispositioned: tracker.topics.every(t =>
+      t.implementation === "verified" || t.implementation === "not_applicable"),
     recordedPartialLiveObservations: tracker.topics.flatMap(t =>
       ["web","ios","android"].flatMap(p => (t[p+"Evidence"]||[]).filter(e =>
         e && typeof e === "object" && e.verificationLevel === "partial"))).length,
@@ -683,6 +697,10 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.equal(report.assessedPlatformDecisions, 270);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 6);
+  assert.equal(report.allTopicsIndependentlyDispositioned, false);
+  assert.ok(report.candidateOutOfScopeTopicsPendingIndependentApproval
+    .some(t => t.title === "Digit entry views"),
+    "Apple tvOS-only Digit entry is a pending N/A candidate, not a shipped web/iOS/Android component");
   assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
     .map(x => x.sourceRun)).size, 4, "4 genuinely distinct live-origin run receipts");
   assert.equal(report.productionCanBeCertified, false);
@@ -1139,5 +1157,20 @@ test("10 official HIG productivity/commerce topics have bounded platform-specifi
   assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,90);
   assert.equal(tracker.meta.platformsAssessed,270);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
+  assert.equal(tracker.meta.allPlatformsProductionVerified,false);
+});
+
+test("full HIG completion distinguishes approved out-of-scope topics from shipped features", () => {
+  // A native Apple tvOS-only control cannot be "production-implemented" in a
+  // product comprising web/iOS/Android solely by writing code or a guideline review.
+  const tv=tracker.topics.find(t => t.title === "Digit entry views");
+  assert.ok(tv);
+  assert.equal(tv.guidelineReview,"reviewed");
+  assert.deepEqual(["web","ios","android"].map(p=>tv.platformApplicability[p].state),
+    ["not_applicable","not_applicable","not_applicable"]);
+  assert.equal(tv.implementation,"not_verified");
+  assert.deepEqual(tv.releaseEvidence,[]);
+  assert.equal(tracker.topics.some(t=>t.implementation==="not_applicable"),false);
+  assert.equal(tracker.topics.some(t=>t.implementation==="verified"),false);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
