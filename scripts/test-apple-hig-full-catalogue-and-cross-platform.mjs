@@ -490,12 +490,126 @@ test("25 additional current official article decisions are source-grounded and f
   const reviewedCount = tracker.topics.filter(x => x.guidelineReview === "reviewed").length;
   const appliedCount = tracker.topics.flatMap(x => Object.values(x.platformApplicability))
     .filter(d => d.state !== "unassessed").length;
-  assert.equal(reviewedCount, 52, "25 new article assessments plus 27 already documented");
-  assert.equal(appliedCount, 156, "75 new platform assessments plus 81 already documented");
+  assert.ok(reviewedCount >= 52, "Do not regress previous 52 source assessments");
+  assert.ok(appliedCount >= 156, "Do not regress previous 156 platform decisions");
   assert.equal(tracker.meta.platformsAssessed, appliedCount);
   assert.ok(tracker.topics.every(x => x.implementation === "not_verified"),
     "Source documentation must not imply live deployment");
   assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
   assert.equal(tracker.meta.ownerReviewAttestation.indexedTopicsWithinAttestedCoverage, 172);
+});
+
+const ownerProductionConstraints = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
+const isSha = value => typeof value === "string" && /^[a-f0-9]{40}$/.test(value);
+const isGitHubReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/(?:actions\/runs|pull|issues)\/[0-9]+/.test(value);
+
+/**
+ * Structural acceptance rules: authenticating claims against live services,
+ * production logs and real devices still requires an independent human check.
+ * The static CI gate must NOT turn a green workflow or a source commit into
+ * a verified HIG implementation.
+ */
+function validateProductionVerifiedTopic(topic) {
+  assert.equal(topic.guidelineReview, "reviewed", topic.title + ": source article required");
+  const platforms = ["web", "ios", "android"];
+  const inScope = platforms.filter(p => topic.platformApplicability[p]?.state === "applicable");
+  assert.ok(inScope.length > 0, topic.title + ": zero applicable platforms cannot be a verified implementation");
+  assert.ok(platforms.every(p =>
+    ["applicable", "not_applicable"].includes(topic.platformApplicability[p]?.state)),
+    topic.title + ": all three applicability decisions required");
+  assert.ok(Array.isArray(topic.releaseEvidence) && topic.releaseEvidence.length >= inScope.length,
+    topic.title + ": distinct independent production release receipts required");
+  for (const platform of inScope) {
+    const rows = topic[platform + "Evidence"];
+    assert.ok(Array.isArray(rows) && rows.length > 0,
+      topic.title + "/" + platform + ": actual delivered platform evidence required");
+    const full = rows.find(row => row && typeof row === "object" &&
+      row.platform === platform && row.verificationLevel === "full" &&
+      row.jobConclusion === "success" && isSha(row.observedLiveSourceSha) &&
+      isGitHubReceipt(row.runUrl) && isGitHubReceipt(row.independentReviewUrl) &&
+      typeof row.observedAt === "string" && !Number.isNaN(Date.parse(row.observedAt)) &&
+      typeof row.accessibilityEvidenceUrl === "string" &&
+      /^https:\/\//.test(row.accessibilityEvidenceUrl) &&
+      typeof row.releaseReceiptUrl === "string" && /^https:\/\//.test(row.releaseReceiptUrl) &&
+      Array.isArray(row.checkedJourneys) && row.checkedJourneys.length > 0 &&
+      Array.isArray(row.assistiveTechnology) && row.assistiveTechnology.length > 0);
+    assert.ok(full, topic.title + "/" + platform + ": complete live/device observation and independent receipt required");
+    if (platform !== "web") {
+      assert.ok(typeof full.signedArtifactUrl === "string" &&
+        /^https:\/\//.test(full.signedArtifactUrl),
+      topic.title + "/" + platform + ": signed native build/store distribution receipt required");
+    } else if (full.protectedCustomerService === true) {
+      assert.equal(ownerProductionConstraints.productionSignoff, "granted",
+        "Protected production cannot be accepted while signoff remains not_granted");
+      assert.ok(typeof full.tenantIsolationEvidenceUrl === "string" &&
+        /^https:\/\//.test(full.tenantIsolationEvidenceUrl),
+      topic.title + "/web: protected tenant boundary proof required");
+    }
+    const release = topic.releaseEvidence.find(row => row && typeof row === "object" &&
+      row.platform === platform && row.reviewDecision === "approved" &&
+      row.observedLiveSourceSha === full.observedLiveSourceSha &&
+      isGitHubReceipt(row.independentReviewUrl) &&
+      typeof row.releaseReceiptUrl === "string" &&
+      row.releaseReceiptUrl === full.releaseReceiptUrl);
+    assert.ok(release, topic.title + "/" + platform + ": a reviewed exact-SHA release record is required");
+  }
+}
+
+test("verified HIG claims cannot be manufactured from source-only checks, skipped jobs or incomplete receipts", () => {
+  const rtl = tracker.topics.find(x => x.title === "Right to left");
+  const audit = tracker.meta.productionEvidenceAudit;
+  assert.equal(ownerProductionConstraints.productionSignoff, "not_granted");
+  assert.equal(audit.productionSignoffObserved, "not_granted");
+  assert.equal(audit.readOnlyEvidenceOnly, true);
+  assert.equal(audit.verifiedImplementationCount,
+    tracker.topics.filter(x => x.implementation === "verified").length);
+  assert.equal(audit.verifiedImplementationCount, 0);
+  assert.equal(rtl.guidelineReview, "reviewed");
+  assert.ok(rtl.guidelineReviewEvidence[0].includes(rtl.markdown));
+  assert.equal(rtl.webEvidence.length, 1);
+  const scoped = rtl.webEvidence[0];
+  assert.equal(scoped.verificationLevel, "partial");
+  assert.equal(scoped.jobConclusion, "success");
+  assert.ok(isSha(scoped.observedLiveSourceSha));
+  assert.ok(isGitHubReceipt(scoped.runUrl));
+  assert.deepEqual(["web", "ios", "android"].map(p => rtl.platformApplicability[p].state),
+    ["applicable", "applicable", "applicable"]);
+  assert.equal(rtl.implementation, "not_verified");
+  assert.deepEqual(rtl.releaseEvidence, []);
+  assert.ok(audit.excludedAsAcceptance.some(x => x.run === 44528135827 &&
+    x.job === "live-browser" && x.jobConclusion === "skipped"),
+    "A skipped production-browser job must never count as a live verification");
+  for (const topic of tracker.topics) {
+    if (topic.implementation === "verified") validateProductionVerifiedTopic(topic);
+  }
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
+
+test("production acceptance evidence rejects forged or scoped-only fixture", () => {
+  const topic = structuredClone(tracker.topics.find(x => x.title === "Right to left"));
+  topic.implementation = "verified";
+  assert.throws(() => validateProductionVerifiedTopic(topic),
+    /distinct independent production release receipts required/);
+  topic.releaseEvidence = [{platform:"web",reviewDecision:"approved"},{platform:"ios"},{platform:"android"}];
+  assert.throws(() => validateProductionVerifiedTopic(topic),
+    /complete live\/device observation and independent receipt required/);
+  topic.webEvidence = [{
+    platform:"web",verificationLevel:"full",jobConclusion:"skipped",
+    observedLiveSourceSha:"d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+    runUrl:"https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44528135827"
+  }];
+  assert.throws(() => validateProductionVerifiedTopic(topic),
+    /complete live\/device observation and independent receipt required/);
+});
+
+test("independent primary source review and bounded live RTL evidence cannot masquerade as full production programme completion", () => {
+  assert.equal(tracker.topics.filter(x => x.guidelineReview === "reviewed").length, 53);
+  assert.equal(tracker.meta.platformsAssessed, 159);
+  assert.equal(tracker.topics.flatMap(x => Object.values(x.platformApplicability))
+    .filter(x => x.state !== "unassessed").length, 159);
+  assert.equal(tracker.topics.filter(x => x.implementation === "verified").length, 0);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
 });
