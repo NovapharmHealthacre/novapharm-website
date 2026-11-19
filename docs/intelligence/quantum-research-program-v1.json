@@ -62,8 +62,8 @@
     {
       "id": "noise",
       "title": "Noise and Calibration Lab",
-      "description": "Simulated noise tests must be distinguished from real processor calibration snapshots.",
-      "status": "planned"
+      "description": "Bounded local Bell-state readout-bit-flip toy model with analytical probability checks; not physical quantum calibration, quantum error correction or a hardware result.",
+      "status": "offline-prototype"
     },
     {
       "id": "hybrid",

@@ -49,6 +49,11 @@ Record H2 geometry, multiplicity, charge, basis, source integrals and version-pi
 
 Offline safety tests: `python3 scripts/research/test-quantum-h2-benchmark.py -v`. Plain preflight: `python3 scripts/research/quantum-h2-benchmark.py`. A separate approved, dependency-locked and network-isolated environment is required before execution, rights/compatibility review, repeatability and scientific acceptance. VQE, noise and hardware benchmarks remain unimplemented.
 
+## Noise and calibration research — synthetic, not a device calibration
+The first-party standard-library `scripts/research/quantum-noise-reference.py` models an **independent classical bit-flip readout error** on each of two Bell-state bits with per-bit probability p in [0, 0.2]; it does not simulate a full physical quantum processor. For this ideal Bell source, predicted P(01)=P(10)=p(1-p) and P(00)=P(11)=[(1-p)²+p²]/2. This is a **synthetic sensitivity/verification exercise only**, with no gates/coherence errors, error correction, measured calibration drift or hardware claims. Finite-shot count discrepancies are sampling noise, not proof of device reliability.
+
+Run `python3 scripts/research/test-quantum-noise-reference.py -v` (five offline safety and analytical tests locally passed) or `python3 scripts/research/quantum-noise-reference.py --shots 1000 --seed 42 --readout-error 0.1`. The latter local smoke produced 00=398, 01=92, 10=97, 11=413, observed disagreement 18.9%, analytic expectation 18%. That is a single seeded synthetic sample, not a scientific effect size or experimental processor characterization.
+
 ## Required production/research acceptance
 - Independent review of developer licences, dependencies, data rights, commercial/AI reuse, source revocation and citations.
 - Signed rights-cleared non-patient dataset/experiment provenance and independent scientific replication with negative controls.
