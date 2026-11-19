@@ -50,7 +50,7 @@ jobs:
       - run: node --test scripts/test-apple-hig-attachment-audit.mjs
       - name: Preserve 172-topic HIG production acceptance gaps (not a compliance certificate)
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-production-audit-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/172-topic-gap-ledger.json
@@ -87,7 +87,7 @@ jobs:
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Preserve observed origin/provenance gaps, including failures
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-public-html-sample-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/public-origin-sample.json
@@ -96,7 +96,7 @@ jobs:
 
       - name: Preserve public rendered keyboard/axe receipts and screenshots
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-public-rendered-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/rendered-public/
@@ -119,7 +119,7 @@ jobs:
         run: HIG_VERIFY_LIVE_LINKS=1 node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Preserve the full URL-health evidence (including failures)
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-210-link-reachability-${{ github.sha }}
           path: artifacts/apple-hig-link-health/report.json
