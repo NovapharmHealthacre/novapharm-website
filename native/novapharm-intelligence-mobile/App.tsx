@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   View
 } from "react-native";
+import { inspectSyntheticFeature } from "../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -26,9 +27,9 @@ import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
-import { novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
+import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "maps" | "countries" | "visual" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -108,7 +109,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "countries" || selected === "visual" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -135,6 +136,7 @@ export default function App() {
   const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
 
@@ -282,6 +284,7 @@ export default function App() {
                 { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
+                { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
@@ -352,7 +355,7 @@ export default function App() {
               <View style={styles.rule} />
               <SectionHeading
                 title="Native model programme"
-                detail="The four protected Nova ML workspaces need separate mobile identity, licensing, signed model and device approval."
+                detail="The four original native ML extensions and separately gated Model Microscope candidate require independent identity, licensing, review and device approval."
               />
               {novaMlWorkspaceCatalogue.map((item) => (
                 <View key={item.slug} style={styles.card}>
@@ -361,6 +364,42 @@ export default function App() {
                   <Text style={styles.meta}>{item.platform} · Not enabled in this preview</Text>
                 </View>
               ))}
+            </>
+          )}
+          {screen === "inspect" && (
+            <>
+              <SectionHeading title="Model Microscope" detail="Read-only neural-network inspection research. No live models or approved inspection artifacts are installed." />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>No approved model inspections</Text>
+                <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
+                <Text style={styles.meta}>Private source-only preview · Zero production inference · Zero network requests · No patient data</Text>
+              </View>
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Synthetic model reference</Text>
+                <Text style={styles.description}>Run a locally defined 4 × 4 neural-network feature demonstration. It is not an approved medicine model, clinical explanation or live AI service.</Text>
+                <Pressable accessibilityRole="button" accessibilityLabel="Run synthetic neuron feature reference" style={styles.syntheticButton} onPress={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>
+                  <Text style={styles.syntheticButtonLabel}>Run synthetic reference</Text>
+                </Pressable>
+                {syntheticExample ? <View accessible accessibilityLabel="Synthetic four by four feature grid, no medical data" style={styles.syntheticGrid}>
+                  {syntheticExample.optimizedGrid.map((line, row) => <View key={row} style={styles.syntheticRow}>
+                    {line.map((value, column) => <View key={column} style={[styles.syntheticPixel, { backgroundColor: "rgba(29,29,31," + value + ")" }]} />)}
+                  </View>)}
+                  <Text style={styles.meta}>Initial activation {syntheticExample.initialActivation} · Maximized {syntheticExample.finalActivation}. Synthetic only.</Text>
+                </View> : null}
+              </View>
+              <SectionHeading title="Interpretability research lifecycle" />
+              {modelMicroscopeInspectionStages.map((stage) => (
+                <View key={stage.id} style={styles.card}>
+                  <Text style={styles.cardTitle}>{stage.title}</Text>
+                  <Text style={styles.description}>{stage.summary}</Text>
+                  <Text style={styles.meta}>Not operational · Requires: {stage.requiredEvidence}</Text>
+                </View>
+              ))}
+              <SectionHeading title="Research requirements" />
+              {novaMlWorkspaceCatalogue.find((module) => module.slug === "nova-model-microscope")?.requirements.map((requirement) => (
+                <View style={styles.requirement} key={requirement}><Text style={styles.description}>{requirement}</Text></View>
+              ))}
+              <Text style={styles.meta}>Visualizations may suggest hypotheses but cannot establish model causality, clinical safety or regulatory validity. Use accepted source records and human review.</Text>
             </>
           )}
           {screen === "visual" && (
@@ -477,6 +516,11 @@ function createStyles(palette: MobilePalette) {
   backText: { color: palette.primary, fontSize: 16, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
+  syntheticButton: { backgroundColor: palette.primary, minHeight: 46, borderRadius: 10, paddingHorizontal: 14, alignItems: "center", justifyContent: "center", alignSelf: "flex-start", marginTop: 14 },
+  syntheticButtonLabel: { color: palette.canvas, fontSize: 13, fontWeight: "600" },
+  syntheticGrid: { marginTop: 14, alignSelf: "flex-start", gap: 5 },
+  syntheticRow: { flexDirection: "row", gap: 5 },
+  syntheticPixel: { width: 40, height: 40, borderColor: palette.border, borderWidth: 1, borderRadius: 4 },
   navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
   navigationLarge: { flexWrap: "wrap" },
   navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },

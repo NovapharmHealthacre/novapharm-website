@@ -70,9 +70,10 @@ test("all 22 canonical workspaces resolve to the existing protected executive mo
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/data-operations/"), null);
 });
 
-test("Nova ML remains four independently named, protected Intelligence extensions", () => {
-  assert.equal(novaMlWorkspaceCatalogue.length, 4);
-  assert.equal(new Set(novaMlWorkspaceSlugs).size, 4);
+test("Nova ML and model interpretability remain five independently named protected extensions", () => {
+  assert.equal(novaMlWorkspaceCatalogue.length, 5);
+  assert.equal(new Set(novaMlWorkspaceSlugs).size, 5);
+  assert.equal(novaMlWorkspaceSlugs.includes("nova-model-microscope"), true);
   assert.equal(intelligenceWorkspaceCatalogue.length, 22, "native extensions must not redefine the canonical medicine workspaces");
 
   const landing = resolvePortalView("/portal/executive-platform/nova-ml/");
@@ -102,5 +103,6 @@ test("Nova ML remains four independently named, protected Intelligence extension
     "/portal/executive-platform/nova-ml/unapproved-model/",
     "/portal/executive-platform/nova-ml/nova-ml-studio/secret/",
     "/portal/executive-platform/nova-ml/admin/",
+    "/portal/executive-platform/nova-ml/nova-model-microscope/private-model/",
   ]) assert.equal(resolvePortalView(route), null, route);
 });

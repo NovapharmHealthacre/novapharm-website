@@ -263,6 +263,18 @@
       "rollback": "Retain existing governed source-first process and human decisions",
       "productionApproved": false,
       "customerVisible": false
+    },
+    {
+      "id": "model-feature-interpretability",
+      "requiredData": "An owned or explicitly licensed inspectable neural model, immutable version and independently verified non-patient evaluation dataset",
+      "lawfulBasis": "Source/model rights, privacy assessment, purpose limitation and retention not yet approved",
+      "validationPlan": "Reproducible feature visualization and activation tests, circuit falsification, stability/negative controls, licence checks, cross-tenant rights tests, accessibility and reviewer sign-off",
+      "humanOwner": "AI Research, Quality, Information Security and Privacy",
+      "prohibitedUse": "Medical/regulatory/commercial conclusions, reverse engineering inaccessible third-party models, patient-data analysis or autonomous decisions",
+      "modelRisk": "Polysemantic neurons, unstable visualizations, spurious correlations, persuasive false explanations, PHI exposure and source leakage",
+      "monitoring": "Reviewed artifact revision, rights revocation, evidence audit, error/counterexample review and inspector permissions",
+      "rollback": "Disable inspector; retain original accepted source data and existing governed human workflows",
+      "maturity": "source-only-not-operational"
     }
   ]
 }

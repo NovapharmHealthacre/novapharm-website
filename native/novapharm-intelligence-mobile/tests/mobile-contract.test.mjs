@@ -85,3 +85,49 @@ test("Expo CLIP preview is a real iOS/Android screen but never claims live infer
   assert.doesNotMatch(app, /fetch\(|Authorization:|access_token|client_secret|WebView/);
   assert.doesNotMatch(contract, /fetch\(|Authorization:|access_token|client_secret|AsyncStorage/);
 });
+
+test("web and iOS/Android private previews expose one non-live governed model microscope", () => {
+  const modules = read("apps/portal/data/nova-ml-modules.ts");
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  const routes = read("apps/portal/data/routes.ts");
+  assert.match(modules, /slug: "nova-model-microscope"/);
+  assert.match(routes, /novaMlWorkspaceSlugs/);
+  assert.match(web, /No approved inspection artifacts available/);
+  assert.match(mobile, /Model Microscope/);
+  assert.match(mobile, /screen === "inspect"/);
+  assert.match(mobile, /No approved model inspections/);
+  assert.doesNotMatch(mobile, /fetch\(|AsyncStorage|SecureStore|access_token/);
+});
+
+test("web and mobile share five not-operational inspection stages without a model runtime", () => {
+  const catalog = read("apps/portal/data/nova-ml-modules.ts");
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  for (const stage of ["model-registry", "feature-evidence", "circuit-hypotheses", "failure-analysis", "review-export"]) {
+    assert.match(catalog, new RegExp('id: "' + stage + '"'));
+  }
+  assert.match(catalog, /state: "not-operational"/);
+  assert.match(web, /modelMicroscopeInspectionStages\.map/);
+  assert.match(mobile, /modelMicroscopeInspectionStages\.map/);
+  assert.doesNotMatch(mobile, /src\/core\/ai\/model-microscope\.mjs|model-microscope-signed-evidence\.mjs|fetch\(|URLSession|Authorization:/);
+});
+
+test("protected web and offline mobile both expose only the first-party synthetic feature reference", () => {
+  const web = read("apps/portal/components/nova-ml-workspaces.tsx");
+  const mobile = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(web, /inspectSyntheticFeature/);
+  assert.match(web, /Run synthetic reference/);
+  assert.match(mobile, /inspectSyntheticFeature/);
+  assert.match(mobile, /Run synthetic reference/);
+  assert.match(web, /Synthetic only/);
+  assert.match(mobile, /Synthetic only/);
+  assert.doesNotMatch(mobile, /model-microscope-signed-evidence\.mjs|model-microscope\.mjs|fetch\(/);
+});
+
+test("Expo recognizes shared first-party mjs reference in both platform bundles", () => {
+  const metro = read("native/novapharm-intelligence-mobile/metro.config.cjs");
+  assert.match(metro, /sourceExts/);
+  assert.match(metro, /"mjs"/);
+  assert.match(metro, /watchFolders/);
+});
