@@ -21,9 +21,10 @@ import { inspectSyntheticFeature } from "../../src/core/ai/model-microscope-synt
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
 import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { MapsResearchScreen } from "./MapsResearchScreen";
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -108,7 +109,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
@@ -276,6 +277,7 @@ export default function App() {
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
+                { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
               ] as const).map((item) => (
                 <Pressable
@@ -292,6 +294,7 @@ export default function App() {
             </>
           )}
           {screen === "review" && <MultimodalReviewScreen />}
+          {screen === "maps" && <MapsResearchScreen />}
 
           {screen === "research" && (
             <>
