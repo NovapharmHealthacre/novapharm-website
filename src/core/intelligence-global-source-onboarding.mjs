@@ -172,6 +172,18 @@ export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
       "Record attribution, rate limits, terms checksum and independently signed permitted-use decision"
     ])
   }),
+  "asia-pacific-singapore-hsa-data-gov-sg": Object.freeze({
+    termsUrl: "https://developers.data.gov.sg/open-data-licence",
+    apiTermsUrl: "https://data.gov.sg/privacy-and-terms",
+    datasetUrl: "https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view",
+    scope: "HSA listing of registered therapeutic products, dataset d_767279312753558cbf19d48344577084",
+    publishedTermsPosture: "SINGAPORE_ODL_1_COMMERCIAL_REUSE_WITH_ATTRIBUTION_AND_EXCLUSIONS",
+    outstanding: Object.freeze([
+      "Record exact HSA dataset version, record fields, download/API terms and attribution notice",
+      "Exclude personal data, third-party rights, patents/trademarks and any other non-licensed content",
+      "Verify API identity, rate limits, native licence-number mapping and separately accepted source/use grant"
+    ])
+  }),
   "europe-spain-aemps-cima": Object.freeze({
     termsUrl: "https://sede.aemps.gob.es/datos-abiertos/",
     scope: "AEMPS CIMA REST catalogue, not non-CIMA licensed dossiers",
@@ -221,14 +233,38 @@ export const PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119 = Object.freeze({
  *
  * No caller argument can turn a public terms link into a signed grant.
  */
+/**
+ * Historical, source-only GitHub Actions HTTP receipts, 18 November 2026.
+ * These attest one-record bounded upstream reads, NOT current uptime,
+ * private production operation or legal licence acceptance. Artifacts expire.
+ */
+export const SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118 = Object.freeze({
+  "north-america-united-states-fda-openfda": Object.freeze({
+    pullRequest: 844, workflowRun: 44312719802, upstreamSourceId: "us-fda-drugsfda"
+  }),
+  "asia-pacific-singapore-hsa-data-gov-sg": Object.freeze({
+    pullRequest: 844, workflowRun: 44312719802, upstreamSourceId: "sg-hsa-registered-products"
+  }),
+  "europe-spain-aemps-cima": Object.freeze({
+    pullRequest: 846, workflowRun: 44285589910, upstreamSourceId: "es-aemps-cima"
+  }),
+  "north-america-canada-health-canada-drug-product-database": Object.freeze({
+    pullRequest: 847, workflowRun: 44286286570, upstreamSourceId: "ca-health-canada-dpd"
+  })
+});
+
 export function buildPublisherRightsPrescreenWorklist(registry) {
   const coverage = buildGlobalSourceOnboardingCoverage(registry);
   const knownKeys = new Set(coverage.sourceEntries.map(entry => entry.candidateKey));
   const unknownScreenedKeys = Object.keys(PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119)
     .filter(key => !knownKeys.has(key));
   if (unknownScreenedKeys.length !== 0) deny("publisher terms review references an unknown registry source");
+  const unknownProbeKeys = Object.keys(SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118)
+    .filter(key => !knownKeys.has(key));
+  if (unknownProbeKeys.length !== 0) deny("source HTTP evidence references an unknown registry source");
   const sourceEntries = coverage.sourceEntries.map(entry => {
     const evidence = PUBLIC_PUBLISHER_TERMS_PRESCREEN_20261119[entry.candidateKey] ?? null;
+    const historicalProbe = SOURCE_ONLY_HTTP_PROBE_CI_CHECKPOINTS_20261118[entry.candidateKey] ?? null;
     return Object.freeze({
       candidateKey: entry.candidateKey,
       jurisdictionLabel: entry.jurisdictionLabel,
@@ -237,6 +273,18 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
       proposedAdapterId: entry.implementationId,
       officialReferenceUrl: entry.officialReferenceUrl,
       publisherTermsUrl: evidence?.termsUrl ?? null,
+      publisherApiTermsUrl: evidence?.apiTermsUrl ?? null,
+      officialDatasetUrl: evidence?.datasetUrl ?? null,
+      sourceOnlyHttpProbeCiCheckpoint: historicalProbe === null ? null : Object.freeze({
+        verifiedCheckpointDate: "2026-11-18",
+        stage: "ONE_RECORD_UPSTREAM_CI_ONLY_NOT_PRODUCTION",
+        upstreamSourceId: historicalProbe.upstreamSourceId,
+        pullRequestUrl: `https://github.com/NovapharmHealthacre/novapharm-website/pull/${historicalProbe.pullRequest}`,
+        workflowRunUrl: `https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/${historicalProbe.workflowRun}`,
+        sourceRightsVerified: false,
+        productionConnected: false,
+        customerLive: false
+      }),
       termsPosture: evidence?.publishedTermsPosture ?? "UNASSESSED",
       termsScreeningStatus: evidence
         ? "PUBLIC_NOTICE_LOCATED_LEGAL_ACCEPTANCE_PENDING"
@@ -261,6 +309,8 @@ export function buildPublisherRightsPrescreenWorklist(registry) {
     reviewedOn: "2026-11-19",
     totalSourceCandidates: sourceEntries.length,
     publicPublisherNoticesLocated: sourceEntries.filter(row => row.publisherTermsUrl !== null).length,
+    sourceOnlyHttpProbeCiCheckpointCount: sourceEntries.filter(row =>
+      row.sourceOnlyHttpProbeCiCheckpoint !== null).length,
     independentlyLicensedSourceCandidates: 0,
     customerLiveSourceCandidates: 0,
     sourceEntries: Object.freeze(sourceEntries)
