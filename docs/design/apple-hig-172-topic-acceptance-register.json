@@ -123,6 +123,30 @@
           "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
           "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
           "provenance": "Independently read GitHub Actions artifact 14539093077 results.json: 12/12 actual live Chromium/WebKit observations saw the same public HTML novapharm-source-sha meta value; zero narrow gaps and 0 automated axe violations across three mobile Chromium routes."
+        },
+        {
+          "topic": "Accessibility",
+          "sourceRun": 44677599844,
+          "jobId": 136093044118,
+          "jobConclusion": "success",
+          "scope": "Six fixed public routes, 320/390/1440px, Chromium/WebKit, 36 read-only rendered observations; first Tab focus, H1, 6 mobile axe scans; artifact 14602609082",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "artifactId": 14602609082,
+          "evidenceJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+          "provenance": "Actual downloaded first-party GitHub Actions artifact results.json independently checked: 36 live observations, zero recorded narrow gaps, same observed public source SHA. Limited to selected read-only public pages, not a complete accessibility or product release certificate."
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44677599844,
+          "jobId": 136093044118,
+          "jobConclusion": "success",
+          "scope": "Six fixed public routes, 320/390/1440px, Chromium/WebKit, 36 read-only rendered observations; page H1, overflow and viewport screenshots; artifact 14602609082",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "artifactId": 14602609082,
+          "evidenceJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+          "provenance": "Actual downloaded first-party GitHub Actions artifact results.json independently checked: 36 live observations, zero recorded narrow gaps, same observed public source SHA. Limited to selected read-only public pages, not a complete accessibility or product release certificate."
         }
       ],
       "excludedAsAcceptance": [
