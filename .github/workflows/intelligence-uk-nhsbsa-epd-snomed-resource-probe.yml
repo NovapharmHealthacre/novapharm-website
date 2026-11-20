@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
       - 'scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
       - 'scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
       - 'docs/intelligence/uk-nhsbsa-epd-snomed-resource-probe-20261120.md'
@@ -37,6 +40,7 @@ jobs:
           node --check scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
           node --check scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
           node --test scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
+          node --test scripts/aws/contact-release-routing.test.mjs
       - name: Observe official NHSBSA metadata endpoint without prescribing data
         run: |
           mkdir -p artifacts/nhsbsa-epd-snomed-metadata
