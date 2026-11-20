@@ -143,7 +143,7 @@ for (const crawler of ["Claude-SearchBot", "PerplexityBot", "Applebot"]) {
   const rule = new RegExp("User-agent: " + crawler + "\\nAllow: /\\n");
   if (!rule.test(robots)) fail(crawler + " cannot discover public content");
 }
-if (!/User-agent: GPTBot[\\s\\S]*?Disallow: \\//.test(robots)) fail("GPTBot training policy is not explicitly separated");
+if (!/User-agent: GPTBot[\s\S]*?Disallow: \//.test(robots)) fail("GPTBot training policy is not explicitly separated");
 for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xml"]) {
   if (!existsSync(join(root, sitemap))) fail(`missing ${sitemap}`);
   if (!robots.includes(`Sitemap: ${SITE_URL}/${sitemap}`)) fail(`robots.txt does not reference ${sitemap}`);
