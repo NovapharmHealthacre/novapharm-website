@@ -79,8 +79,13 @@ public enum NovaStoreKitReadOnlyCatalog {
         let ids = Set(productIDs)
         guard ids.count == productIDs.count,
               ids.allSatisfy({ id in
-                  (3...128).contains(id.utf8.count) &&
-                  id.range(of: #"^[A-Za-z0-9][A-Za-z0-9._-]+$"#, options: .regularExpression) != nil
+                  let bytes = Array(id.utf8)
+                  guard (3...128).contains(bytes.count) else { return false }
+                  return bytes.enumerated().allSatisfy { index, byte in
+                      let alphanumeric = (byte >= 48 && byte <= 57) ||
+                          (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122)
+                      return alphanumeric || (index > 0 && (byte == 46 || byte == 95 || byte == 45))
+                  }
               }) else {
             throw NovaStoreKitCatalogError.invalidProductIdentifiers
         }
@@ -98,6 +103,7 @@ public enum NovaStoreKitReadOnlyCatalog {
         productIDs: [String],
         permit: NovaStoreKitCatalogPermit
     ) async throws -> [NovaStoreKitProductSummary] {
+        #if DEBUG
         let validatedIDs = try preflight(productIDs: productIDs, permit: permit)
         guard AppStore.canMakePayments else {
             throw NovaStoreKitCatalogError.paymentsRestricted
@@ -116,5 +122,10 @@ public enum NovaStoreKitReadOnlyCatalog {
                     description: $0.description
                 )
             }
+        #else
+        // Compile-time guard: even a forged preview permit cannot turn a
+        // Release build into a product-catalogue surface.
+        throw NovaStoreKitCatalogError.productionNotAuthorized
+        #endif
     }
 }
