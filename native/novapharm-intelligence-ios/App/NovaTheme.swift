@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Original NovaPharm identity, with an accessible brighter red in Dark Mode.
-/// The light brand is #E3120B; the dark adaptation #FF6961 offers a stronger
+/// The light brand is #E3120B; the dark adaptation #FF9189 offers a stronger
 /// distinction from system dark grouped backgrounds and preserves brand character.
 /// System text/surfaces remain dynamic for contrast, appearance and legibility.
 enum NovaTheme {
@@ -12,7 +12,7 @@ enum NovaTheme {
     /// #D9130D passes on #F2F2F7 whereas the brand red #E3120B is only ~4.32:1.
     static let accent = Color(uiColor: UIColor { traits in
         if traits.userInterfaceStyle == .dark {
-            return UIColor(red: 255.0 / 255, green: 105.0 / 255, blue: 97.0 / 255, alpha: 1)
+            return UIColor(red: 255.0 / 255, green: 145.0 / 255, blue: 137.0 / 255, alpha: 1)
         }
         return UIColor(red: 217.0 / 255, green: 19.0 / 255, blue: 13.0 / 255, alpha: 1)
     })
