@@ -15,8 +15,8 @@ The owner requested a source-to-live audit of **every page, module, product, wor
 | ESCO catalogue references | 373 | 12 ranges, item identity and conservative unverified-stock flags; not 373 separate public product pages |
 | Portal declared modules | 54 | Unique route, role mapping, visibility, protected release classification |
 | Intelligence workspace definitions | 22 | Five source-labeled existing-read-only and 17 gated, not authorised live availability |
-| Native project directories | 5 | SwiftUI, SwiftPM, Android debug, Expo and StoreKit candidates, not signed production releases |
-| **Total overlapping source records** | **523** | **Not a count of independently deployed features** |
+| WMS 16-workspace operating blueprint | 16 | Twelve map to registered employee routes; four remain integration-gated, none are 3PL-approved |\n| Native project directories | 5 | SwiftUI, SwiftPM, Android debug, Expo and StoreKit candidates, not signed production releases |
+| **Total overlapping source records** | **539** | **Not a count of independently deployed features** |
 
 Additional source assertions: 54 Portal modules split as customer 18, employee 13, executive/board 18 and admin 5; 48 navigation-visible and six dependency-hidden; five modules have controlled repository write implementation explicitly **not released**. WMS routes are part of protected employee/executive and Distribution workflows, not a verified separately deployed warehouse service. Marketplace aggregates **19 Nutraxin + 373 ESCO = 392 candidates**; the product list does not prove unified checkout, authorised saleability or actual stock.
 
@@ -42,3 +42,7 @@ A current **draft** [PR #1000](https://github.com/NovapharmHealthacre/novapharm-
 The new CI workflow checks **every source row**, publishes an inspectable JSON with source SHA-256 hashes, and deliberately leaves live-route, physical accessibility, reviewer and owner acceptance receipts as null. It neither changes production code nor publishes a new application.
 
 **Completion boundary:** 172/172 Apple source reviews and 516/516 web/iOS/Android applicability assessments are registered, but **0/172 HIG topics** have independent full production acceptance. Source census completeness is not product or independent verification completion.
+
+## Additional WMS blueprint coverage (21 November)
+
+The standalone 16-workspace WMS navigation map is included in the executable census. Twelve workspaces point to existing employee routes; four intentionally have no module link (Waves & execution, Yard & delivery, AI planning studio, Labour & automation). The design controls are a review blueprint, not 16 activated WMS services, approved inventory, signed POD or physical warehouse stock. Full operational acceptance requires authorized 3PL reconciliation and role-bound receipts.
