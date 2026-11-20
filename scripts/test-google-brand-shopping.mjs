@@ -64,7 +64,7 @@ test("the actual Next.js corporate website uses the same Knowledge Panel entity 
   const iconPath = ["assets", "brand", "pwa-icon-512.png"].join("/");
 
   assert(seoSource.includes("export function organisationSchema()"), "Next.js organization generator missing");
-  assert(seoSource.includes("url: `\\${siteUrl}/" + iconPath + "`"), "Next.js square Google logo does not match canonical homepage");
+  assert(seoSource.includes("url: `${siteUrl}/" + iconPath + "`"), "Next.js square Google logo does not match canonical homepage");
   assert(seoSource.includes("width: 512") && seoSource.includes("height: 512"), "Next.js company logo must retain 512x512 dimensions");
   assert(seoSource.includes('sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"]'), "Next.js company identity must keep the two verified external public references");
   assert(seoSource.includes('page.slug === "about/company" ? { mainEntity: { "@id": organisationId } }'), "Live company WebPage must point to same Organization entity");
