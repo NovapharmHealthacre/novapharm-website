@@ -189,4 +189,5 @@ jobs:
           retention-days: 7
       - name: Protect private app previews on public GitHub
         if: ${{ !github.event.repository.private }}
-        run: echo "::notice::Public repository: private Simulator binaries, screenshots, and XCResult uploads are suppressed. Functional test status remains in CI logs."
+        run: |
+          echo "::notice::Public repository: private Simulator binaries, screenshots, and XCResult uploads are suppressed. Functional test status remains in CI logs."
