@@ -34,3 +34,14 @@ GitHub code, a merged PR, or a screenshot of a new Merchant account does not dem
 Owner screenshot shows Google Merchant Center account 5902381696, PRODUCTS SOURCE 2, message 'Your products have been updated', 19 new products added, all attribute names recognised, no product-file issues. This proves file ingestion only; it does not prove each SKU is approved for free listings or Shopping.
 
 The 19 product URLs, source file, schema offers and site purchase actions must publish in_stock only with the owner's attested inventory and delivery commitment. Merchant Center source must fetch the latest live TSV after deployment. Inspect Products > All products and Needs attention to establish each SKU's status. No automatic claim of Google approval is authorised.
+
+## Search-discovery and Merchant feed remediation — 20 November 2026
+
+On 20 November the Merchant Center connector reported LOW click potential for all 19 products and no daily product performance rows for 10–20 November. Missing daily rows do **not** prove zero Shopping impressions. Google's web-search URL Inspection results showed 8 discovered/not indexed, 11 unknown to Google; all 19 product detail URLs had zero web-search impressions for 10–17 November, although the sitemap was downloaded successfully.
+
+- Generated Merchant descriptions now include catalogue-confirmed ingredient **names**, not generic range-only text. No invented GTIN, MPN, therapeutic claim, or dosing assertion is supplied.
+- Product and WebPage JSON-LD, concise page metadata and social descriptions remain aligned with their canonical offers. Product Offer seller includes the public logo.
+- Updated product detail URLs use 2026-11-20 sitemap last-modified values, while untouched URLs retain previous dates.
+- Prices, pack names, stock gating, UK shipping charge, image links and 19 product IDs remain unchanged.
+- After deployment verify live TSV and pages, resubmit the existing sitemap, request indexing using Google Search Console UI for priority URLs, and monitor Search visibility separately from Shopping impressions and clicks.
+- Obtain manufacturer-authenticated GTINs and UK pack-label confirmation before modifying identifiers.
