@@ -8,6 +8,7 @@ struct NovaCountryDirectoryView: View {
         case research = "Research"
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var searchText = ""
     @State private var filter: CoverageFilter = .all
 
@@ -48,13 +49,23 @@ struct NovaCountryDirectoryView: View {
                 .accessibilityIdentifier("novapharm.countries.readonly-notice")
             }
             Section {
-                Picker("Reference coverage", selection: $filter) {
-                    ForEach(CoverageFilter.allCases, id: \.self) { value in
-                        Text(value.rawValue).tag(value)
+                if dynamicTypeSize.isAccessibilitySize {
+                    Picker("Reference coverage", selection: $filter) {
+                        ForEach(CoverageFilter.allCases, id: \.self) { value in
+                            Text(value.rawValue).tag(value)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("novapharm.countries.coverage-filter")
+                } else {
+                    Picker("Reference coverage", selection: $filter) {
+                        ForEach(CoverageFilter.allCases, id: \.self) { value in
+                            Text(value.rawValue).tag(value)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("novapharm.countries.coverage-filter")
                 }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("novapharm.countries.coverage-filter")
                 LabeledContent("Matching countries", value: "\(visibleCountries.count)")
                     .accessibilityIdentifier("novapharm.countries.count")
             }
