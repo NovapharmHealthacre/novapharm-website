@@ -46,7 +46,7 @@ const catalogueIngredients = (ref) => ref.formulation.map(item =>
 const catalogDescription = (p, ref) => {
   const ingredients = catalogueIngredients(ref);
   assert(ingredients.length, "No documented ingredients for " + p.sku);
-  return p.name + " by Nutraxin is a food supplement supplied as " + p.pack +
+  return p.name + " is a food supplement supplied as " + p.pack +
     " (" + ref.dosageForm + "). The supplied product catalogue records " +
     ingredients.join("; ") + ". Composition is presented " + ref.servingText.toLowerCase() +
     ". The catalogue is a product information reference, not a substitute for " +
