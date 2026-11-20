@@ -533,8 +533,41 @@ test("25 additional current official article decisions are source-grounded and f
 
 const ownerProductionConstraints = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
 const isSha = value => typeof value === "string" && /^[a-f0-9]{40}$/.test(value);
-const isGitHubReceipt = value => typeof value === "string" &&
-  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/(?:actions\/runs|pull|issues)\/[0-9]+/.test(value);
+// Receipt types must be distinguishable before live GitHub review read-back.
+// A generic PR/issue link must not masquerade as a completed workflow or
+// independently submitted APPROVED review. These checks validate syntax only;
+// authenticity and current reviewed head are checked separately over GitHub.
+const isActionsRunReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/actions\/runs\/[1-9]\d*$/.test(value);
+const isIndependentReviewReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/pull\/[1-9]\d*#pullrequestreview-[1-9]\d*$/.test(value);
+const isOwnerReleaseReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/(?:issues\/[1-9]\d*#issuecomment-[1-9]\d*|pull\/[1-9]\d*#pullrequestreview-[1-9]\d*)$/.test(value);
+
+
+test("HIG production receipt types do not accept arbitrary issues or unapproved PR pages", () => {
+  const workflow = "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085";
+  const review = "https://github.com/NovapharmHealthacre/novapharm-website/pull/900#pullrequestreview-12345";
+  const comment = "https://github.com/NovapharmHealthacre/novapharm-website/issues/890#issuecomment-7032548826";
+  assert.equal(isActionsRunReceipt(workflow), true);
+  assert.equal(isIndependentReviewReceipt(review), true);
+  assert.equal(isOwnerReleaseReceipt(comment), true);
+  assert.equal(isOwnerReleaseReceipt(review), true);
+  for (const invalid of [
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890",
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/900",
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890#issuecomment-7032548826/extra",
+    "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085?fake=1",
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/900#issuecomment-12345"
+  ]) {
+    assert.equal(isActionsRunReceipt(invalid), false, invalid);
+    assert.equal(isIndependentReviewReceipt(invalid), false, invalid);
+  }
+  assert.equal(isIndependentReviewReceipt(workflow), false);
+  assert.equal(isActionsRunReceipt(review), false);
+  assert.equal(isOwnerReleaseReceipt(workflow), false,
+    "CI run success cannot by itself establish owner release authorization");
+});
 
 /**
  * Structural acceptance rules: authenticating claims against live services,
@@ -559,7 +592,7 @@ function validateProductionVerifiedTopic(topic) {
     const full = rows.find(row => row && typeof row === "object" &&
       row.platform === platform && row.verificationLevel === "full" &&
       row.jobConclusion === "success" && isSha(row.observedLiveSourceSha) &&
-      isGitHubReceipt(row.runUrl) && isGitHubReceipt(row.independentReviewUrl) &&
+      isActionsRunReceipt(row.runUrl) && isIndependentReviewReceipt(row.independentReviewUrl) &&
       typeof row.observedAt === "string" && !Number.isNaN(Date.parse(row.observedAt)) &&
       typeof row.accessibilityEvidenceUrl === "string" &&
       /^https:\/\//.test(row.accessibilityEvidenceUrl) &&
@@ -581,7 +614,7 @@ function validateProductionVerifiedTopic(topic) {
     const release = topic.releaseEvidence.find(row => row && typeof row === "object" &&
       row.platform === platform && row.reviewDecision === "approved" &&
       row.observedLiveSourceSha === full.observedLiveSourceSha &&
-      isGitHubReceipt(row.independentReviewUrl) &&
+      isIndependentReviewReceipt(row.independentReviewUrl) &&
       typeof row.releaseReceiptUrl === "string" &&
       row.releaseReceiptUrl === full.releaseReceiptUrl);
     assert.ok(release, topic.title + "/" + platform + ": a reviewed exact-SHA release record is required");
@@ -593,7 +626,7 @@ function validateProductionVerifiedTopic(topic) {
 function validateOwnerSignoff() {
   assert.ok(["not_granted", "granted"].includes(ownerProductionConstraints.productionSignoff));
   if (ownerProductionConstraints.productionSignoff === "granted") {
-    assert.ok(isGitHubReceipt(ownerProductionConstraints.productionSignoffEvidenceUrl),
+    assert.ok(isOwnerReleaseReceipt(ownerProductionConstraints.productionSignoffEvidenceUrl),
       "Owner signoff needs an independently reviewable release receipt");
   }
 }
@@ -606,7 +639,7 @@ function validateApprovedOutOfScopeTopic(topic) {
     topic.title + ": every platform needs an explicit out-of-scope rationale");
   const a = topic.notApplicableApproval;
   assert.ok(a && a.reviewDecision === "approved" &&
-    isGitHubReceipt(a.independentReviewUrl) &&
+    isIndependentReviewReceipt(a.independentReviewUrl) &&
     typeof a.approvedAt === "string" && !Number.isNaN(Date.parse(a.approvedAt)) &&
     typeof a.reason === "string" && a.reason.length >= 40,
     topic.title + ": independent reviewer-approved N/A disposition required");
@@ -643,7 +676,7 @@ test("verified HIG claims cannot be manufactured from source-only checks, skippe
   assert.equal(scoped.verificationLevel, "partial");
   assert.equal(scoped.jobConclusion, "success");
   assert.ok(isSha(scoped.observedLiveSourceSha));
-  assert.ok(isGitHubReceipt(scoped.runUrl));
+  assert.ok(isActionsRunReceipt(scoped.runUrl));
   assert.deepEqual(["web", "ios", "android"].map(p => rtl.platformApplicability[p].state),
     ["applicable", "applicable", "applicable"]);
   assertRegisteredAcceptance(rtl);
@@ -793,8 +826,33 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.ok(report.candidateOutOfScopeTopicsPendingIndependentApproval
     .some(t => t.title === "Digit entry views"),
     "Apple tvOS-only Digit entry is a pending N/A candidate, not a shipped web/iOS/Android component");
-  assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
-    .map(x => x.sourceRun)).size, 4, "4 genuinely distinct live-origin run receipts");
+  const indexedProofs = tracker.meta.productionEvidenceAudit.scopedPublicEvidence;
+  const sourceProofs = tracker.topics.flatMap(t =>
+    ["web","ios","android"].flatMap(platform =>
+      (t[platform + "Evidence"] || [])
+        .filter(e => e && e.verificationLevel === "partial")
+        .map(e => ({
+          topic: t.title, platform, jobId: e.jobId,
+          sourceRun: Number(e.runUrl?.match(/\/runs\/([0-9]+)/)?.[1] || 0)
+        }))));
+  assert.equal(indexedProofs.length, sourceProofs.length,
+    "Every topic/platform partial observation must appear in the source-run receipt index");
+  assert.equal(indexedProofs.length, tracker.meta.productionEvidenceAudit.recordedPartialTopicPlatformObservations,
+    "Metadata partial-observation count must reconcile to the indexed artifact records");
+  for (const e of sourceProofs) {
+    assert.ok(e.sourceRun > 0, e.topic + ": partial evidence has no real workflow run URL");
+    const related = indexedProofs.filter(p => p.topic === e.topic &&
+      p.sourceRun === e.sourceRun && p.jobId === e.jobId);
+    assert.equal(related.length, 1,
+      e.topic + ": every partial platform proof requires exactly one scoped indexed receipt");
+    assert.equal(related[0].jobConclusion, "success",
+      e.topic + ": a skipped or failed job cannot count as a public production observation");
+  }
+  assert.deepEqual(
+    [...new Set(indexedProofs.map(x => x.sourceRun))].sort((a,b) => a-b),
+    [...tracker.meta.productionEvidenceAudit.distinctObservedPublicLiveRuns].sort((a,b) => a-b),
+    "Live-run provenance must reconcile across indexed receipts and distinct workflow runs");
+
   assert.equal(report.productionCanBeCertified, expectedProgrammeCertified());
   assert.equal(topics.length, 172);
   assert.equal(new Set(topics.map(t => t.sourceRowIndex)).size, 172);
@@ -852,6 +910,8 @@ test("optional read-only public website HTML sample (not HIG compliance)",
   mkdirSync(directory, {recursive:true});
   const report = {
     schema:"novapharm.hig-public-html-sample.v1",
+    workflowCheckoutSha:process.env.GITHUB_SHA || null,
+    pullRequestHeadSha:process.env.HIG_PR_HEAD_SHA || null,
     observedAt:new Date().toISOString(),
     origin, observedBy:"read-only Node HTTP HTML; NOT rendered browser",
     testedRouteCount:routes.length,
@@ -879,15 +939,21 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
     assert.ok(Array.isArray(topic.iosEvidence));
     assert.ok(Array.isArray(topic.androidEvidence));
     assertRegisteredAcceptance(topic);
-    for (const proof of topic.webEvidence) {
+    for (const proof of topic.webEvidence.filter(p =>
+      p.evidenceType === "scoped_live_public_observation" && p.verificationLevel === "partial")) {
       assert.equal(proof.verificationLevel, "partial", name);
       assert.equal(proof.jobConclusion, "success", name);
-      assert.ok(isGitHubReceipt(proof.runUrl), name);
+      assert.ok(isActionsRunReceipt(proof.runUrl), name);
       assert.ok(typeof proof.artifactUrl === "string" && proof.artifactUrl.includes("/artifacts/"), name);
       assert.ok(proof.checkedJourneys.length >= 2, name);
       assert.ok(proof.scopeLimits.length >= 2, name);
-      if (proof.jobId !== 135618272024) assert.equal(proof.observedLiveSourceSha, null,
-        "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
+      if (![135618272024,136093044118].includes(proof.jobId)) {
+        assert.equal(proof.observedLiveSourceSha, null,
+          "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
+      } else {
+        assert.ok(isSha(proof.observedLiveSourceSha),
+          "Only independently observed public HTML SHA may be attached to a rendered live receipt");
+      }
     }
   }
   const layout = tracker.topics.find(t => t.title === "Layout");
@@ -946,6 +1012,7 @@ test("optional read-only rendered public HIG evidence sampling",
               engine, viewport:viewport.name, pathname, httpStatus:null,
               publishedSourceSha:null, hasH1:false, language:null,
               horizontalOverflowPx:null, firstKeyboardFocusVisible:false,
+              keyboardFocusSequence:[],
               seriousAxeViolations:[], otherAxeViolations:[],
               blockedExternalOrUnsafeRequests:0, errors:[]
             };
@@ -985,6 +1052,49 @@ test("optional read-only rendered public HIG evidence sampling",
               });
               if (!row.firstKeyboardFocusVisible)
                 row.errors.push("First Tab did not reach a visible focus target");
+              // Five bounded Tab stops give reviewers a navigation trace instead
+              // of one Boolean. This records only element roles/tags and CSS
+              // cues, never typed values, page contents or personal data.
+              const observeFocusedElement = () => page.evaluate(() => {
+                const element = document.activeElement;
+                if (!element || element === document.body) {
+                  return { tag: null, role: null, inViewport: false,
+                    cssFocusCueHeuristic: false };
+                }
+                const rect = element.getBoundingClientRect();
+                const style = getComputedStyle(element);
+                return {
+                  tag: element.tagName.toLowerCase(),
+                  role: element.getAttribute("role"),
+                  inViewport: rect.width > 0 && rect.height > 0 &&
+                    rect.right > 0 && rect.bottom > 0 &&
+                    rect.left < innerWidth && rect.top < innerHeight,
+                  cssFocusCueHeuristic:
+                    (style.outlineStyle !== "none" &&
+                      Number.parseFloat(style.outlineWidth) > 0) ||
+                    style.boxShadow !== "none"
+                };
+              });
+              row.keyboardFocusSequence.push(await observeFocusedElement());
+              for (let tabIndex = 1; tabIndex < 5; tabIndex += 1) {
+                await page.keyboard.press("Tab");
+                row.keyboardFocusSequence.push(await observeFocusedElement());
+              }
+              // A five-row trace is not evidence of five actual keyboard targets:
+              // each Tab must reach an element, and the first target must be
+              // visible within the viewport. Keep other focus-cue observations
+              // heuristic until independently inspected by an AT reviewer.
+              if (row.keyboardFocusSequence.length !== 5 ||
+                  row.keyboardFocusSequence.some(stop => !stop.tag)) {
+                row.errors.push("Incomplete five-stop keyboard navigation evidence");
+              }
+              if (!row.keyboardFocusSequence[0]?.inViewport) {
+                row.errors.push("First keyboard target was outside the viewport");
+              }
+              row.keyboardStopsInViewport = row.keyboardFocusSequence
+                .filter(stop => stop.inViewport).length;
+              row.keyboardFocusCueHeuristicCount = row.keyboardFocusSequence
+                .filter(stop => stop.cssFocusCueHeuristic).length;
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1026,15 +1136,22 @@ test("optional read-only rendered public HIG evidence sampling",
     schema:"novapharm.hig-read-only-public-rendered-evidence.v1",
     generatedAt:new Date().toISOString(),
     origin,sourceCommit:process.env.GITHUB_SHA || null,
-    methodology:"Read-only published public Chromium/WebKit, keyboard tab and axe on mobile Chromium only",
+    pullRequestHeadSha:process.env.HIG_PR_HEAD_SHA || null,
+    sourceCommitMeaning:"GitHub Actions checkout SHA (often a synthetic PR merge commit); not the PR head and not the observed live origin SHA",
+    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
     scope:"Six public routes, three screen widths (320, 390, 1440) and two engines; screenshots private to CI",
     cautions:["No authenticated roles, account submissions, billing or patient data",
-      "Only first keyboard focus probed; not a complete WCAG audit",
+      "Only five sampled Tab stops per case; no full keyboard, focus-visible, assistive-technology or WCAG audit",
       "No independent manual VoiceOver, TalkBack, NVDA, zoom, RTL or signed native app proof",
-      "Source PR SHA is not assumed identical to published origin SHA",
+      "Workflow checkout, pull request head and published origin are separate provenance values; source-only merges are not deployed releases",
       "Blocked off-domain resources may affect rendering",
       "Passed observations do not automatically promote any HIG topic to verified"],
-    total:rows.length,failed:rows.filter(r=>r.errors.length).length,rows
+    total:rows.length,failed:rows.filter(r=>r.errors.length).length,
+    keyboardFocusObservations:rows.reduce((sum,r) => sum + r.keyboardFocusSequence.length,0),
+    keyboardTargetsInViewport:rows.reduce((sum,r) => sum + (r.keyboardStopsInViewport||0),0),
+    keyboardCueHeuristicObservations:rows.reduce((sum,r) =>
+      sum + (r.keyboardFocusCueHeuristicCount||0),0),
+    rows
   };
   const observedShas = [...new Set(rows.map(r => r.publishedSourceSha).filter(Boolean))];
   result.uniquePublishedSourceShas = observedShas;
@@ -1048,6 +1165,8 @@ test("optional read-only rendered public HIG evidence sampling",
     " observations, " + result.failed + " gaps. This is NOT a production conformance certificate.");
   assert.equal(result.total, routes.length * widths.length * 2);
    assert.equal(result.total, 36, "Read-only production scope must not silently shrink");
+  assert.equal(result.keyboardFocusObservations, result.total * 5,
+    "Five bounded keyboard Tab observations per public browser/viewport/page case are required");
   assert.equal(result.failed,0,"Observed public browser/accessibility gaps: see screenshot and JSON artifact");
    assert.equal(result.singlePublicReleaseObserved, true,
      "Every public rendered HIG observation must share the same exact published source SHA");
@@ -1120,8 +1239,9 @@ test("11 remaining Critical Apple primary articles and collection indices have d
 test("real 12/12 read-only live rendered observations remain scoped to partial Accessibility and Layout evidence", () => {
   const publicRun = 44540795085;
   const audit = tracker.meta.productionEvidenceAudit;
-  assert.equal(audit.distinctObservedPublicLiveRuns.length, 4);
-  assert.equal(new Set(audit.distinctObservedPublicLiveRuns).size, 4);
+  assert.equal(new Set(audit.distinctObservedPublicLiveRuns).size,
+    audit.distinctObservedPublicLiveRuns.length,
+    "The historical live runs must remain deduplicated, but future real runs are allowed");
   assert.ok(audit.distinctObservedPublicLiveRuns.includes(publicRun));
   for (const name of ["Accessibility", "Layout"]) {
     const topic = tracker.topics.find(t => t.title === name);
@@ -1165,6 +1285,58 @@ test("downloaded successful live-rendered artifact confirms public provenance bu
     "CI PR code SHA is not the deployed public HTML SHA");
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, tracker.meta.productionEvidenceAudit.verifiedImplementationCount);
   assert.equal(tracker.meta.allPlatformsProductionVerified, expectedProgrammeCertified());
+});
+
+test("independently inspected 36 public browser observations are only partial web evidence", () => {
+  const audit = tracker.meta.productionEvidenceAudit;
+  const proof = audit.expandedRenderedPublicArtifactReadback;
+  assert.ok(proof, "A genuine read-back of the public rendered artifact is required");
+  assert.equal(proof.sourceRun, 44677599844);
+  assert.equal(proof.jobId, 136093044118);
+  assert.equal(proof.artifactId, 14602609082);
+  assert.equal(proof.evidenceFile, "results.json");
+  assert.equal(proof.evidenceJsonSha256,
+    "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2");
+  assert.equal(proof.totalObservations, 36);
+  assert.equal(proof.failedObservations, 0);
+  assert.equal(proof.renderedScreenshots, 18);
+  assert.equal(proof.reportedAxeRuleViolations, 0);
+  assert.equal(proof.automatedAxeAuditedMobileChromiumRoutes, 6);
+  assert.equal(proof.observedLiveShaUniformAcrossRoutes, true);
+  assert.deepEqual(proof.viewportWidths, [320,390,1440]);
+  assert.deepEqual(proof.browsers, ["chromium","webkit"]);
+  assert.deepEqual(proof.observedRoutes,
+    ["/", "/contact/", "/legal/accessibility/", "/capabilities/", "/oncology/", "/products/"]);
+  assert.equal(proof.publishedSourceSha, "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98");
+  for (const title of ["Accessibility","Layout"]) {
+    const t = tracker.topics.find(x => x.title === title);
+    const receipts = t.webEvidence.filter(e => e.jobId === proof.jobId);
+    assert.equal(receipts.length, 1, title + ": one bounded receipt per article");
+    const e = receipts[0];
+    assert.equal(e.verificationLevel, "partial", title);
+    assert.equal(e.jobConclusion, "success", title);
+    assert.equal(e.observedLiveSourceSha, proof.publishedSourceSha, title);
+    assert.equal(e.checkedRoutes.length, 6, title);
+    assert.equal(e.readBackArtifact.totalRenderedObservations, 36, title);
+    assert.equal(e.readBackArtifact.narrowGapCount, 0, title);
+    assert.equal(e.readBackArtifact.resultJsonSha256, proof.evidenceJsonSha256, title);
+    assertRegisteredAcceptance(t);
+    if (t.implementation === "verified") {
+      assert.ok(t.releaseEvidence.length > 0,
+        title + ": an independent full receipt, never the partial observation, must authorize the released implementation");
+      assert.ok(t.webEvidence.some(r => r.verificationLevel === "full"),
+        title + ": only a separate fully verified live web record can support production acceptance");
+    }
+  }
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(proof.sourceRun));
+  const observedPartialCount = tracker.topics.reduce((n,t) =>
+    n + ["web","ios","android"].reduce((x,p) =>
+      x + (t[p+"Evidence"]||[]).filter(e => e?.verificationLevel === "partial").length,0),0);
+  assert.ok(observedPartialCount >= 8,
+    "Preserve the eight historic scoped partial receipts but permit future independently evidenced runs");
+  assert.equal(audit.recordedPartialTopicPlatformObservations, observedPartialCount);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, expectedProgrammeCertified(),
+    "The real production gate must derive from all independently accepted topics and owner signoff");
 });
 
 test("12 additional current Apple HIG articles establish reasoned non-applicability, not fake native support", () => {
@@ -1361,10 +1533,20 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
   assert.equal(expoPackage.private, true);
   assert.equal(expoConfig.expo?.ios?.supportsTablet, true);
   assert.equal(expoConfig.expo?.android?.edgeToEdgeEnabled, true);
-  assert.equal(Boolean(expoConfig.expo?.ios?.bundleIdentifier), false,
-    "A production iOS bundle identity requires a separate signed-app release review");
-  assert.equal(Boolean(expoConfig.expo?.android?.package), false,
-    "An Android app ID/signing rollout needs an independent release gate");
+  // Today this is an unsigned research candidate. If an independently
+  // authorized release later adds app identifiers, the existence of an ID is
+  // not itself a signed app/device/store receipt and must not break CI.
+  for (const [platform, identifier] of [
+    ["ios", expoConfig.expo?.ios?.bundleIdentifier],
+    ["android", expoConfig.expo?.android?.package]
+  ]) {
+    if (identifier == null) continue;
+    assert.ok(typeof identifier === "string" &&
+      /^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*){2,}$/.test(identifier),
+      platform + ": a candidate application identifier must be a non-placeholder reverse-domain ID");
+    assert.doesNotMatch(identifier, /(?:example|placeholder|invalid)/i,
+      platform + ": placeholder app identifiers cannot qualify for release");
+  }
   assert.ok(expoReadme.includes("Not a signed IPA/APK/AAB"));
 
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, tracker.meta.productionEvidenceAudit.verifiedImplementationCount);
