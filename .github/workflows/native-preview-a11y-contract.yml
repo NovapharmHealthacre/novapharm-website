@@ -1,0 +1,33 @@
+name: Native preview accessibility and honest empty states
+
+on:
+  pull_request:
+    paths:
+      - scripts/test-native-preview-a11y-contract.mjs
+      - native/novapharm-intelligence-ios/App/NovaRootView.swift
+      - native/novapharm-intelligence-android/app/src/main/java/com/novapharm/intelligence/research/NovaSparseCircuitResearchScreen.kt
+      - native/novapharm-intelligence-ios/project.yml
+      - native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml
+      - .github/workflows/native-preview-a11y-contract.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-preview-ux:
+    name: Review static source guard for SwiftUI and TalkBack preview semantics
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Validate no false saved state, heading navigation or release rights
+        run: node --test scripts/test-native-preview-a11y-contract.mjs
