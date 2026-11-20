@@ -115,6 +115,7 @@ private struct NovaCountryDetailView: View {
             Section("Unverified source discovery") {
                 LabeledContent("Publisher reference candidates", value: "\(country.candidateSourceCount)")
                 LabeledContent("Licence / source access", value: "Not reviewed")
+                    .accessibilityIdentifier("novapharm.country.rights-status")
                 LabeledContent("Medicine datasets admitted", value: "None")
                 LabeledContent("Customer publication", value: "Disabled")
                     .accessibilityIdentifier("novapharm.country.live-status")
