@@ -95,3 +95,26 @@ test("all 101 native Swift country references precisely match the canonical sour
   assert.match(view, /No medicine facts or private information are loaded/);
   assert.doesNotMatch(view, /\bURLSession\b|\bfetch\s*\(|\bWKWebView\b|\bASWebAuthenticationSession\b/);
 });
+
+
+test("native UI acceptance uses an actual XCTest UI target and stable accessible identifiers", () => {
+  const appTest = read("native/novapharm-intelligence-ios/UITests/NovaPharmNativeUITests.swift");
+  const countryView = read("native/novapharm-intelligence-ios/App/NovaCountryDirectoryView.swift");
+  const workflow = read(".github/workflows/nova-ios-swift-native.yml");
+  assert.match(config, /NovaPharmNativeUITests:\s*\n\s*type: bundle\.ui-testing/);
+  assert.match(config, /testTargets:\s*\n\s*-\s+NovaPharmNativeUITests/);
+  assert.match(config, /TEST_TARGET_NAME: NovaPharmNative/);
+  assert.match(view, /novapharm\.bookmark\.toggle/);
+  assert.match(view, /novapharm\.saved\./);
+  assert.match(view, /novapharm\.workspace\./);
+  assert.match(countryView, /novapharm\.country\.live-status/);
+  assert.match(countryView, /novapharm\.countries\.readonly-notice/);
+  assert.match(appTest, /testNativeTabsAndGatedWorkspaceNavigation/);
+  assert.match(appTest, /testCountryDirectoryAndOfflineRights/);
+  assert.match(appTest, /testSavedShortcutPersistsAcrossAppRelaunchAndCanBeDeleted/);
+  assert.match(workflow, /xcodebuild test/);
+  assert.match(workflow, /-only-testing:NovaPharmNativeUITests/);
+  assert.match(workflow, /-parallel-testing-enabled NO/);
+  assert.match(workflow, /CODE_SIGNING_ALLOWED=NO/);
+  assert.doesNotMatch(appTest, /URLSession|http[s]?:\/\/|WKWebView|Cognito|client_secret|access_token/);
+});
