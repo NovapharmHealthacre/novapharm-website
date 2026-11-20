@@ -56,10 +56,18 @@ test("Next.js route source count cannot be confused with public or authenticated
   const pages = walk("apps").filter(file =>
     /^apps\/[^/]+\/(?:src\/)?app\/(?:.*\/)?page\.(?:tsx|jsx|ts|js)$/.test(file));
   assert.equal(pages.length, manifest.nextPages.sourcePageFiles);
-  assert.equal(manifest.nextPages.sourcePageFiles, 26);
+  assert.equal(manifest.nextPages.sourcePageFiles, 27);
+  assert.deepEqual(manifest.nextPages.standaloneResearchRoutes,[{
+    route:"/quantum-research/",source:"apps/corporate/app/quantum-research/page.tsx",
+    access:"public_candidate"
+  }]);
+  for (const page of manifest.nextPages.standaloneResearchRoutes) {
+    assert.ok(pages.includes(page.source), "Standalone research source missing: "+page.source);
+    assert.match(read(page.source), /No live quantum hardware/);
+  }
   for (const catchAll of manifest.nextPages.dynamicCatchAllSources)
     assert.ok(pages.includes(catchAll), "Unrepresented dynamic catch-all: " + catchAll);
-  assert.match(manifest.nextPages.warning, /NOT 26 user-facing URL routes/);
+  assert.match(manifest.nextPages.warning, /NOT 27 user-facing URL routes/);
   const corporatePages = read(manifest.corporate.pageRegister);
   assert.equal(occurrences(corporatePages, /\bpage\(\s*"[^"]*"\s*,\s*"[^"]+"/g),
     manifest.corporate.declaredPageDefinitions);
@@ -126,7 +134,7 @@ test("native prototypes are not certified installed iOS or Android releases", ()
 });
 
 
-test("expanded route-candidate ledger stays source-only across 138 distinct cases", async () => {
+test("expanded route-candidate ledger stays source-only across 139 distinct cases", async () => {
   const { execFileSync } = await import("node:child_process");
   execFileSync(process.execPath, ["scripts/render-apple-hig-route-acceptance-candidates.mjs"],
     {stdio:"pipe",timeout:20000});
@@ -139,11 +147,14 @@ test("expanded route-candidate ledger stays source-only across 138 distinct case
     "Source-plan report must display the current owner signoff state without granting acceptance");
   assert.equal(ledger.sourceBaselineSha,manifest.sourceSnapshotSha);
   assert.deepEqual(ledger.counts,{
-    corporatePages:32,articles:6,nutraxinProducts:19,portalModules:54,
-    intelligenceWorkspaces:22,novaMLResearch:5,totalCandidates:138
+    corporatePages:32,standaloneResearchRoutes:1,articles:6,nutraxinProducts:19,portalModules:54,
+    intelligenceWorkspaces:22,novaMLResearch:5,totalCandidates:139
   });
-  assert.equal(ledger.candidates.length,138);
-  assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,138);
+  assert.equal(ledger.candidates.length,139);
+  assert.ok(ledger.candidates.some(x=>
+    x.kind==="standalone_research_page" && x.route==="/quantum-research/" &&
+    x.access==="public_candidate" && x.independentApproval===null));
+  assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,139);
   assert.equal(ledger.candidates.filter(x=>x.kind==="portal_module"
     && x.access==="protected_candidate").length,54);
   assert.equal(ledger.candidates.filter(x=>x.kind==="intelligence_workspace"

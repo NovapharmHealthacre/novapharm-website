@@ -36,6 +36,15 @@ const record = (kind,route,source,details={}) => ({
 const candidates = [
   ...pageDefinitions.map(x=>record("corporate_page","/"+(x.slug?x.slug+"/":""),manifest.corporate.pageRegister,
     {pageKind:x.kind,access:"public_candidate"})),
+  ...manifest.nextPages.standaloneResearchRoutes.map(x => {
+    assert.match(x.route, /^\/[a-z0-9-]+\/$/);
+    assert.match(x.source, /^apps\/corporate\/app\/[a-z0-9-]+\/page\.tsx$/);
+    assert.ok(read(x.source).includes("No live quantum hardware"), "No standalone disclosure");
+    return record("standalone_research_page", x.route, x.source, {
+      access:"public_candidate", hardwareExecutionAccepted:false,
+      independentScientificReviewAccepted:false
+    });
+  }),
   ...articles.map(x=>record("corporate_article","/news-insights/"+x.slug+"/",x.file,
     {access:"public_candidate"})),
   ...productRegister.products.map(x=>record("catalogue_product","/products/nutraxin/"+x.slug+"/",
@@ -54,6 +63,7 @@ const candidates = [
 ];
 const counts = {
   corporatePages:pageDefinitions.length,
+  standaloneResearchRoutes:manifest.nextPages.standaloneResearchRoutes.length,
   articles:articles.length,
   nutraxinProducts:productRegister.products.length,
   portalModules:portalModules.length,
@@ -62,12 +72,13 @@ const counts = {
   totalCandidates:candidates.length
 };
 assert.equal(counts.corporatePages,manifest.corporate.declaredPageDefinitions);
+assert.equal(counts.standaloneResearchRoutes,1);
 assert.equal(counts.articles,manifest.corporate.articleImportReferences);
 assert.equal(counts.nutraxinProducts,manifest.corporate.nutraxinProducts);
 assert.equal(counts.portalModules,manifest.portal.declaredModules);
 assert.equal(counts.intelligenceWorkspaces,manifest.portal.intelligenceWorkspaces);
 assert.equal(counts.novaMLResearch,5);
-assert.equal(counts.totalCandidates,138);
+assert.equal(counts.totalCandidates,139);
 assert.equal(new Set(candidates.map(item=>item.route)).size,candidates.length,
   "Expanded source route candidates must be unique before public/device acceptance");
 assert.ok(candidates.every(x=>x.route.startsWith("/") && x.status === "source_candidate_not_production_verified"));

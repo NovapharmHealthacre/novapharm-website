@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import scienceMethods from "../../../docs/intelligence/openai-science-methods-20261118.json";
+import quantumProgram from "../../../docs/intelligence/quantum-research-program-v1.json";
 import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
+import { assessQuantumResourcePlan } from "../../../src/core/intelligence-quantum-resource-estimate.mjs";
 import { intelligenceWorkspaceBySlug } from "../data/intelligence-workspaces";
 import styles from "./science-research-workspace.module.css";
 
@@ -10,6 +13,19 @@ import styles from "./science-research-workspace.module.css";
  * The catalogue is public metadata; it is not a model/API execution surface.
  */
 export function ScienceResearchWorkspace() {
+  const [selectedQubits, setSelectedQubits] = useState(20);
+  const resourceReview = assessQuantumResourcePlan({
+    schemaVersion: "npi.quantum-simulator-preflight.v1",
+    backend: "classical-state-vector-only",
+    qubits: selectedQubits,
+    shots: 512,
+    circuitGates: 500,
+    memoryBudgetMiB: 64,
+    hardwareExecutionRequested: false,
+    paidComputeRequested: false,
+    protectedDataRequested: false,
+    productionApproved: false
+  });
   return <section className={styles["root"]} aria-labelledby="science-title" data-science-status="design-only">
     <header className={styles["header"]}>
       <p className={styles["eyebrow"]}>NovaPharm Intelligence / Scientific research</p>
@@ -21,6 +37,39 @@ export function ScienceResearchWorkspace() {
       <div><strong>{catalog.workflows.length}</strong><span>Designed research workflows</span></div>
       <div><strong>0</strong><span>Connected research models</span></div>
       <div><strong>0</strong><span>Approved new science datasets</span></div>
+    </section>
+    <section className={styles["methodsSection"]} aria-labelledby="quantum-research-title" data-quantum-research="source-only">
+      <div className={styles["sectionHeading"]}>
+        <h2 id="quantum-research-title">Quantum and computational science</h2>
+        <p>A research-only programme inspired by Google Quantum AI. No quantum hardware, molecular model, cloud job or customer experiment is connected. Classical computing remains the reference baseline.</p>
+      </div>
+      <div className={styles["methodsGrid"]}>
+        {quantumProgram.modules.map((module) => <article className={styles["methodCard"]} key={module.id}>
+          <p className={styles["methodType"]}>{module.status.replaceAll("-", " ")} · no production activation</p>
+          <h3>{module.title}</h3>
+          <p>{module.description}</p>
+        </article>)}
+      </div>
+      <section className={styles["lifecycle"]} aria-labelledby="quantum-ram-preflight">
+        <h3 id="quantum-ram-preflight">State-vector memory preflight</h3>
+        <p>This interactive calculator only evaluates the mathematical memory footprint of one complex128 state vector. No simulator, chemistry job, quantum processor, cloud service or data upload runs.</p>
+        <fieldset className={styles["capacityGroup"]}>
+          <legend>Choose an illustrative qubit count</legend>
+          <div className={styles["relatedLinks"]}>
+            {[10, 20, 25, 30].map((count) =>
+              <button key={count} type="button" className={styles["relatedLink"]} aria-pressed={selectedQubits === count} onClick={() => setSelectedQubits(count)}>{count} qubits</button>
+            )}
+          </div>
+        </fieldset>
+        <p role="status">{selectedQubits} qubits · {resourceReview.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB theoretical vector storage · 64 MiB declared study budget. {resourceReview.conservativeResearchCandidate ? "Within source review threshold only." : "Exceeds the conservative research advisory."}</p>
+        <p>Actual RAM overhead, runtime, licence requirements, price and physical qubit counts remain unknown. This preflight never approves execution.</p>
+      </section>
+      <div className={styles["lifecycle"]}>
+        <h3>Scientific verification DNA</h3>
+        <ul>{quantumProgram.principles.map((item) => <li key={item.title}><strong>{item.title}.</strong> {item.detail}</li>)}</ul>
+        <p>Only an optional local two-qubit Cirq smoke is defined in source. No H₂ molecular benchmark, real quantum-device measurement, independent replication or pharmaceutical benefit is claimed.</p>
+        <p>{quantumProgram.links.map((item, index) => <span key={item.href}>{index ? " · " : ""}<a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a></span>)}</p>
+      </div>
     </section>
     <section aria-labelledby="science-workflows-title">
       <div className={styles["sectionHeading"]}><h2 id="science-workflows-title">Research workspaces</h2><p>Built on the existing evidence and rights architecture, without creating unsupported scientific claims.</p></div>

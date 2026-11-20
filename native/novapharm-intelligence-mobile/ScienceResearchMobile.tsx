@@ -5,6 +5,8 @@
 import React, { useState } from "react";
 import { AccessibilityInfo, Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import { assessQuantumResourcePlan } from "../../src/core/intelligence-quantum-resource-estimate.mjs";
+import quantumProgram from "../../docs/intelligence/quantum-research-program-v1.json";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
@@ -13,6 +15,19 @@ type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
   const styles = useColorScheme() === "dark" ? darkStyles : lightStyles;
+  const [selectedQubits, setSelectedQubits] = React.useState(20);
+  const resourceReview = assessQuantumResourcePlan({
+    schemaVersion: "npi.quantum-simulator-preflight.v1",
+    backend: "classical-state-vector-only",
+    qubits: selectedQubits,
+    shots: 512,
+    circuitGates: 500,
+    memoryBudgetMiB: 64,
+    hardwareExecutionRequested: false,
+    paidComputeRequested: false,
+    protectedDataRequested: false,
+    productionApproved: false
+  });
   const [sourceOpenFeedback, setSourceOpenFeedback] = useState<{ id: string; message: string } | null>(null);
 
   async function openResearchReference(id: string, sourceUrl: string) {
@@ -42,6 +57,37 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
       <Text style={styles.statusTitle}>Design preview only</Text>
       <Text style={styles.description}>No model connected. No new scientific data ingested. No experiments, medical decisions or AI responses are enabled.</Text>
     </View>
+    <Text style={styles.sectionTitle} accessibilityRole="header">Quantum and computational science</Text>
+    <Text style={styles.description}>Offline source catalogue only. Cirq, OpenFermion, Qualtran and qsim are research references; no packages, model, processor, cloud jobs or private data are connected to this app.</Text>
+    {quantumProgram.modules.map((module) =>
+      <View style={styles.card} key={module.id}>
+        <Text style={styles.methodTag}>{module.status.replaceAll("-", " ").toUpperCase()}</Text>
+        <Text style={styles.cardTitle} accessibilityRole="header">{module.title}</Text>
+        <Text style={styles.description}>{module.description}</Text>
+      </View>
+    )}
+    <View style={styles.card} accessibilityLabel="Classical state vector capacity preflight; no quantum execution">
+      <Text style={styles.cardTitle} accessibilityRole="header">State-vector RAM preflight</Text>
+      <Text style={styles.description}>Illustrative complex128 vector only; 64 MiB declared limit. This tool does not execute models, reserve memory, contact servers or approve research.</Text>
+      {([10, 20, 25, 30] as const).map((count) =>
+        <Pressable key={count} accessibilityRole="button" accessibilityLabel={count + " qubits, preview theoretical memory only"} accessibilityState={{ selected: count === selectedQubits }} style={styles.relatedButton} onPress={() => setSelectedQubits(count)}>
+          <Text style={styles.relatedText}>{count} qubits{count === selectedQubits ? " · selected" : ""}</Text>
+        </Pressable>
+      )}
+      <Text style={styles.state} accessibilityLiveRegion="polite">{selectedQubits} qubits · {resourceReview.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB theoretical storage · {resourceReview.conservativeResearchCandidate ? "Review-only candidate" : "Exceeds conservative advisory"}</Text>
+      <Text style={styles.description}>This is not a RAM availability, runtime, price, fault tolerance or production approval. No compute job is started.</Text>
+    </View>
+    <Text style={styles.smallHeading} accessibilityRole="header">Verification DNA</Text>
+    {quantumProgram.principles.map((item) =>
+      <View style={styles.reviewStage} key={item.title}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.description}>{item.detail}</Text>
+      </View>
+    )}
+    <Text style={styles.footer}>No H₂ or drug computation has been validated. Simulations are not physical quantum measurements. Source checks, clinical safety, licences, human review and deployment remain separately gated.</Text>
+    <Pressable accessibilityRole="link" accessibilityLabel="Read Google Quantum AI software documentation in external browser" style={styles.sourceLink} onPress={() => { void Linking.openURL("https://quantumai.google/software"); }}>
+      <Text style={styles.sourceLinkLabel}>Google Quantum AI — official software documentation</Text>
+    </Pressable>
     <Text style={styles.sectionTitle} accessibilityRole="header">Six research workflows</Text>
     {catalog.workflows.map((workflow, index) =>
       <View style={styles.card} key={workflow.id}>
@@ -76,6 +122,7 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         <Text style={styles.smallHeading}>Independent research verification</Text>
         <Text style={styles.description}>{entry.validationTrack.replaceAll("_", " ")} track · Publisher report not independently verified · Retractions/corrections: {entry.retractionCorrectionStatus.replaceAll("_", " ")}</Text>
         <Pressable accessibilityRole="link" accessibilityLabel={`Read original OpenAI source: ${entry.title}`}
+          accessibilityHint="Opens a public source in your device browser. No research data is sent."
           style={styles.sourceLink} onPress={() => { void openResearchReference(entry.id, entry.sourceUrl); }}>
           <Text style={styles.sourceLinkLabel}>Read original source</Text>
         </Pressable>
@@ -103,28 +150,28 @@ function createStyles(palette: MobilePalette) {
   const color = { ink: palette.primary, secondary: palette.secondary, border: palette.border, grouped: palette.grouped, accent: palette.accent };
   return StyleSheet.create({
   container: { paddingTop: 22, paddingBottom: 30 },
-  breadcrumb: { fontSize: 11, fontWeight: "700", letterSpacing: 1.1, color: color.accent },
+  breadcrumb: { fontSize: 13, fontWeight: "700", letterSpacing: 1.1, color: color.accent },
   title: { fontSize: 29, lineHeight: 35, letterSpacing: -0.7, fontWeight: "700", color: color.ink, marginTop: 12 },
-  lead: { color: color.secondary, fontSize: 14, lineHeight: 22, marginTop: 12 },
+  lead: { color: color.secondary, fontSize: 17, lineHeight: 26, marginTop: 12 },
   status: { marginTop: 20, marginBottom: 28, backgroundColor: color.grouped, borderRadius: 12, padding: 16 },
-  statusTitle: { fontSize: 14, fontWeight: "700", color: color.ink, lineHeight: 20 },
-  description: { fontSize: 13, color: color.secondary, lineHeight: 20, marginTop: 6 },
+  statusTitle: { fontSize: 16, fontWeight: "700", color: color.ink, lineHeight: 20 },
+  description: { fontSize: 16, color: color.secondary, lineHeight: 24, marginTop: 6 },
   sectionTitle: { fontSize: 23, fontWeight: "700", lineHeight: 29, color: color.ink, marginBottom: 13 },
   card: { padding: 18, borderWidth: 1, borderColor: color.border, borderRadius: 13, marginBottom: 11 },
-  index: { color: color.accent, fontSize: 11, fontWeight: "700", marginBottom: 12 },
+  index: { color: color.accent, fontSize: 13, fontWeight: "700", marginBottom: 12 },
   cardTitle: { color: color.ink, fontWeight: "700", fontSize: 17, lineHeight: 23 },
-  state: { color: color.secondary, backgroundColor: color.grouped, padding: 10, fontSize: 12, marginTop: 14, borderRadius: 7 },
-  smallHeading: { marginTop: 16, marginBottom: 6, fontSize: 12, fontWeight: "700", color: color.ink },
-  requirement: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 4 },
-  relatedButton: { minHeight: 44, justifyContent: "center", borderWidth: 1, borderColor: color.border, borderRadius: 9, paddingHorizontal: 12, marginTop: 7 },
-  relatedText: { fontSize: 12, color: color.ink, lineHeight: 19, fontWeight: "600" },
+  state: { color: color.secondary, backgroundColor: color.grouped, padding: 10, fontSize: 15, lineHeight: 22, marginTop: 14, borderRadius: 7 },
+  smallHeading: { marginTop: 16, marginBottom: 6, fontSize: 15, fontWeight: "700", color: color.ink },
+  requirement: { fontSize: 16, lineHeight: 24, color: color.secondary, marginTop: 4 },
+  relatedButton: { minHeight: 48, justifyContent: "center", borderWidth: 1, borderColor: color.border, borderRadius: 9, paddingHorizontal: 12, paddingVertical: 8, marginTop: 7 },
+  relatedText: { fontSize: 16, color: color.ink, lineHeight: 24, fontWeight: "600" },
   reviewStage: { padding: 14, borderWidth: 1, borderColor: color.border, borderRadius: 11, marginTop: 9 },
-  methodTag: { color: color.accent, marginBottom: 10, fontSize: 11, fontWeight: "700", lineHeight: 17 },
-  sourceLink: { minHeight: 44, marginTop: 14, alignSelf: "flex-start", justifyContent: "center" },
-  sourceLinkLabel: { fontSize: 13, fontWeight: "700", textDecorationLine: "underline", color: color.ink },
-  sourceOpenError: { fontSize: 13, lineHeight: 20, marginTop: 8, color: color.ink },
-  sourceDisclaimer: { fontSize: 11, lineHeight: 16, marginTop: 4, color: color.secondary },
-  footer: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 18 }
+  methodTag: { color: color.accent, marginBottom: 10, fontSize: 13, fontWeight: "700", lineHeight: 20 },
+  sourceLink: { minHeight: 48, marginTop: 14, alignSelf: "flex-start", justifyContent: "center" },
+  sourceLinkLabel: { fontSize: 16, fontWeight: "700", textDecorationLine: "underline", color: color.ink },
+  sourceOpenError: { fontSize: 14, lineHeight: 21, marginTop: 8, color: color.ink },
+  sourceDisclaimer: { fontSize: 14, lineHeight: 21, marginTop: 4, color: color.secondary },
+  footer: { fontSize: 15, lineHeight: 23, color: color.secondary, marginTop: 18 }
 });
 }
 const lightStyles = createStyles(mobileLightPalette);

@@ -20,6 +20,14 @@ gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 
 The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
 
+## Private Android debug APK artifact
+
+The existing GitHub Actions workflow now retains the **offline Kotlin research shell** `app-debug.apk` and a SHA-256 checksum for authorized device testing after `:app:testDebugUnitTest :app:assembleDebug` succeeds. The workflow also checks the APK contains the Android manifest and application bytecode before uploading it.
+
+This is a **debug-key signed, research-only APK**, not the complete NovaPharm Intelligence or Customer Portal Android product. It contains a source-only sparse-circuit review screen with no network or private medical/customer data. Debug signing is unsuitable for a production/Play Store identity and may change between CI runners; app updates across such APKs may require uninstalling the previous debug copy, which removes local app data. No Google Play Console purchase is required for a trusted developer to install an APK on an authorized test device.
+
+Artifact retention is seven days. A successful Gradle test and APK generation are not proof of on-device TalkBack, Android 15 edge-to-edge, permissions, secure authentication, production API admission, regulated-data compliance or successful Play Store submission. Independent Android device validation and signed release engineering remain outstanding.
+
 ## Future production integration
 
 A signed NovaPharm Intelligence Android app must provide independently authenticated, revocable, server-owned tenant and source permissions; it must verify a versioned service response over TLS, supply explicitly authorised research summaries to the view, and support user correction and abandonment without storing private research records. This prototype intentionally does none of those operations. JSON fields are **not authorisation** and a structurally valid summary is **not causal verification**. There is no built-in model weight access or inference.

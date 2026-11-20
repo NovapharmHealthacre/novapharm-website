@@ -1,8 +1,74 @@
 const GRAPH_ROOT = "https://graph.microsoft.com/v1.0";
 import { isResolvedSecret } from "../../core/secret-value.mjs";
 
-function encodePath(path) {
-  return String(path).split("/").filter(Boolean).map(encodeURIComponent).join("/");
+/**
+ * Prevent ambiguous Graph driveItem paths reaching requests or folder creation.
+ * Reject encoded separators, traversal and control characters before encoding.
+ * Does not authorise site/library access and does not make a document public.
+ */
+const INVALID_SEGMENT = /[\\#%?<>:"|*\u0000-\u001f\u007f]/u;
+
+function assertSafeSharePointSegment(segment) {
+  if (typeof segment !== "string" ||
+      segment.length === 0 || segment.length > 255 ||
+      segment !== segment.trim() ||
+      segment.endsWith(".") ||
+      segment.includes("/") ||
+      /^\.+$/.test(segment) ||
+      INVALID_SEGMENT.test(segment)) {
+    throw Object.assign(new TypeError("Invalid SharePoint path segment."), {
+      code: "sharepoint_invalid_path"
+    });
+  }
+  return segment;
+}
+
+function safeSharePointPathSegments(path, { allowRoot = false } = {}) {
+  if (typeof path !== "string" ||
+      (path.length === 0 && !allowRoot) ||
+      path.length > 400 ||
+      path.startsWith("/") || path.endsWith("/") || path.includes("//")) {
+    throw Object.assign(new TypeError("Invalid SharePoint folder path."), {
+      code: "sharepoint_invalid_path"
+    });
+  }
+  const segments = path === "" ? [] : path.split("/");
+  if (!segments.length && !allowRoot) {
+    throw Object.assign(new TypeError("Empty SharePoint folder path."), {
+      code: "sharepoint_invalid_path"
+    });
+  }
+  return segments.map(assertSafeSharePointSegment);
+}
+
+export function encodeSafeSharePointPath(path, options = {}) {
+  return safeSharePointPathSegments(path, options).map(encodeURIComponent).join("/");
+}
+
+const MAX_FOLDER_CHILD_PAGES = 25;
+
+/** Only accept a continuation to the same Graph drive and parent children endpoint. */
+export function safeSharePointNextPagePath(nextLink, expectedEndpoint) {
+  const invalid = () => Object.assign(new Error("Unsafe SharePoint continuation."), {
+    code: "sharepoint_pagination_invalid"
+  });
+  if (typeof nextLink !== "string" || !nextLink.length ||
+      nextLink.length > 16384 || typeof expectedEndpoint !== "string") {
+    throw invalid();
+  }
+  let next;
+  let expected;
+  try {
+    next = new URL(nextLink);
+    expected = new URL(GRAPH_ROOT + expectedEndpoint);
+  } catch {
+    throw invalid();
+  }
+  if (next.origin !== expected.origin || next.pathname !== expected.pathname ||
+      !next.search || next.hash || next.username || next.password) {
+    throw invalid();
+  }
+  return next.pathname.slice(new URL(GRAPH_ROOT).pathname.length) + next.search;
 }
 
 export function sharePointConfigFromEnv() {
@@ -120,14 +186,43 @@ export class GraphClient {
   }
 
   async ensureFolder(driveId, folderPath) {
-    const segments = String(folderPath).split("/").filter(Boolean);
+    const segments = safeSharePointPathSegments(folderPath);
     let parent = "root";
     let item = null;
     for (const segment of segments) {
-      const children = await this.request(`/drives/${driveId}/items/${parent}/children?$select=id,name,folder,webUrl`);
-      item = children.value.find((child) => child.name.toLowerCase() === segment.toLowerCase() && child.folder);
+      const base = "/drives/" + encodeURIComponent(driveId) +
+        "/items/" + encodeURIComponent(parent) + "/children";
+      let cursor = base + "?$select=id,name,folder,webUrl";
+      const seen = new Set();
+      item = null;
+      // Never create a duplicate without checking available continuation pages.
+      for (let page = 0; cursor && page < MAX_FOLDER_CHILD_PAGES; page += 1) {
+        if (seen.has(cursor)) {
+          throw Object.assign(new Error("Repeated SharePoint continuation."), {
+            code: "sharepoint_pagination_invalid"
+          });
+        }
+        seen.add(cursor);
+        const children = await this.request(cursor);
+        if (!Array.isArray(children?.value)) {
+          throw Object.assign(new Error("Invalid SharePoint children response."), {
+            code: "sharepoint_pagination_invalid"
+          });
+        }
+        item = children.value.find((child) =>
+          typeof child?.name === "string" &&
+          child.name.toLowerCase() === segment.toLowerCase() && child.folder);
+        if (item) break;
+        const nextLink = children["@odata.nextLink"];
+        cursor = nextLink == null ? null : safeSharePointNextPagePath(nextLink, base);
+      }
+      if (!item && cursor) {
+        throw Object.assign(new Error("SharePoint children page limit reached."), {
+          code: "sharepoint_pagination_limit"
+        });
+      }
       if (!item) {
-        item = await this.request(`/drives/${driveId}/items/${parent}/children`, {
+        item = await this.request(base, {
           method: "POST",
           body: JSON.stringify({ name: segment, folder: {}, "@microsoft.graph.conflictBehavior": "fail" })
         });
@@ -138,7 +233,7 @@ export class GraphClient {
   }
 
   async uploadSmallFile(driveId, folderPath, fileName, bytes, contentType) {
-    const target = `${encodePath(folderPath)}/${encodeURIComponent(fileName)}`;
+    const target = `${encodeSafeSharePointPath(folderPath)}/${encodeURIComponent(assertSafeSharePointSegment(fileName))}`;
     return this.request(`/drives/${driveId}/root:/${target}:/content`, {
       method: "PUT",
       body: bytes,
@@ -155,11 +250,42 @@ export class GraphClient {
   }
 
   async listFolderChildren(driveId, folderPath) {
-    const path = encodePath(folderPath);
-    const endpoint = path
-      ? `/drives/${driveId}/root:/${path}:/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`
-      : `/drives/${driveId}/root/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`;
-    return this.request(endpoint);
+    const path = encodeSafeSharePointPath(folderPath, { allowRoot: true });
+    const base = path
+      ? "/drives/" + encodeURIComponent(driveId) + "/root:/" + path + ":/children"
+      : "/drives/" + encodeURIComponent(driveId) + "/root/children";
+    let cursor = base + "?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl";
+    const seen = new Set();
+    const children = [];
+    // Complete the metadata list before the secure-content caller writes files.
+    for (let page = 0; cursor && page < MAX_FOLDER_CHILD_PAGES; page += 1) {
+      if (seen.has(cursor)) {
+        throw Object.assign(new Error("Repeated SharePoint continuation."), {
+          code: "sharepoint_pagination_invalid"
+        });
+      }
+      seen.add(cursor);
+      const response = await this.request(cursor);
+      if (!Array.isArray(response?.value)) {
+        throw Object.assign(new Error("Invalid SharePoint children response."), {
+          code: "sharepoint_pagination_invalid"
+        });
+      }
+      children.push(...response.value);
+      if (children.length > 5000) {
+        throw Object.assign(new Error("SharePoint children item limit reached."), {
+          code: "sharepoint_pagination_limit"
+        });
+      }
+      const nextLink = response["@odata.nextLink"];
+      cursor = nextLink == null ? null : safeSharePointNextPagePath(nextLink, base);
+    }
+    if (cursor) {
+      throw Object.assign(new Error("SharePoint children page limit reached."), {
+        code: "sharepoint_pagination_limit"
+      });
+    }
+    return { value: children };
   }
 
   async downloadFile(driveId, itemId) {
