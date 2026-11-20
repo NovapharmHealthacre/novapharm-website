@@ -65,6 +65,49 @@ for (const [path,mime] of [
   catch(error) {row.issues.push(String(error).slice(0,200));}
   checks.push(row);
 }
+// Cross-check the independently published Merchant TSV against all 19 live product pages.
+// Feed declarations are not independent stock, label, GTIN ownership or order verification.
+const feedRow={path:"/shopping/nutraxin-uk.tsv",passed:false,issues:[]};
+try {
+  const feedUrl=origin+feedRow.path+"?restore-test="+encodeURIComponent(nonce);
+  const response=await fetch(feedUrl,{
+    signal:AbortSignal.timeout(20000),redirect:"follow",
+    headers:{"Cache-Control":"no-cache, no-store, max-age=0","Pragma":"no-cache","User-Agent":"NovaPharm-Post-Release-ReadOnly-Verification/1.0"}
+  });
+  assert(response.ok,feedRow.issues,"Merchant feed HTTP "+response.status);
+  if(response.ok){
+    const tsv=await response.text();
+    const lines=tsv.trim().split(/\r?\n/);
+    const header=(lines.shift()||"").split("\t");
+    const columns=["id","link","image_link","gtin","brand","price","availability"];
+    const indexes=Object.fromEntries(columns.map(key=>[key,header.indexOf(key)]));
+    for(const key of columns)assert(indexes[key]>=0,feedRow.issues,"Merchant column missing: "+key);
+    assert(lines.length===products.length,feedRow.issues,"Merchant SKU count differs from 19-product source");
+    if(columns.every(key=>indexes[key]>=0)){
+      const seen=new Set();
+      const expected=new Map(products.map(p=>[p.sku,p]));
+      for(const line of lines){
+        const values=line.split("\t");
+        const pick=key=>values[indexes[key]]||"";
+        const sku=pick("id"),product=expected.get(sku);
+        assert(!seen.has(sku),feedRow.issues,"Duplicate Merchant SKU "+sku);
+        seen.add(sku);
+        assert(!!product,feedRow.issues,"Unknown Merchant SKU "+sku);
+        if(!product)continue;
+        assert(pick("link")===origin+"/products/nutraxin/"+product.slug+"/",feedRow.issues,"Merchant product URL differs: "+sku);
+        assert(pick("gtin")===product.gtin13&&ean13(pick("gtin")),feedRow.issues,"Merchant GTIN differs or checksum invalid: "+sku);
+        assert(pick("brand")==="Nutraxin",feedRow.issues,"Merchant brand differs: "+sku);
+        assert(pick("image_link").startsWith(origin+"/assets/media/products/nutraxin/"),feedRow.issues,"Merchant image URL not on approved product path: "+sku);
+        assert(/^\d+(\.\d{2})? GBP$/.test(pick("price")),feedRow.issues,"Merchant GBP price format invalid: "+sku);
+        assert(["in_stock","out_of_stock","preorder","backorder"].includes(pick("availability")),feedRow.issues,"Merchant availability declaration unsupported: "+sku);
+      }
+      for(const p of products)assert(seen.has(p.sku),feedRow.issues,"Merchant SKU missing: "+p.sku);
+    }
+  }
+} catch(error){feedRow.issues.push(String(error).slice(0,200));}
+feedRow.passed=feedRow.issues.length===0;
+checks.push(feedRow);
+
 const report = {timestamp:new Date().toISOString(), expectedRelease, origin,
   note:"Production content verification only. No checkout transaction, private account login, data-source licence or payment activation is asserted.",
   expectedSkuCount:products.length, checks,
