@@ -48,7 +48,7 @@ test("More retains review, research, Model Microscope, maps, disabled Visual, Sc
   assert.match(app, /editable=\{false\}/);
   assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
   assert.match(app, /<CountryDirectoryScreen \/>/);
-  const selectedUnderMore = app.match(/tab\\.screen === "more" && \\(selected === "review"[\\s\\S]*?selected === "distribution-preview"\\)\\)/)?.[0] ?? "";
+  const selectedUnderMore = app.match(/tab\.screen === "more" && \(selected === "review"[\s\S]*?selected === "distribution-preview"\)\)/)?.[0] ?? "";
   assert.ok(selectedUnderMore, "More must own the complete accessible active-tab state");
   for (const nested of ["review", "research", "inspect", "maps", "visual",
     "countries", "science", "account", "customer-portal-preview", "distribution-preview"]) {
