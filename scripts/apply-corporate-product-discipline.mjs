@@ -660,6 +660,14 @@ function materialize(relative, route, main, metadata = null, template = null) {
       '<link rel="preload" as="image" href="/assets/media/oncology/hope-tomorrow-portrait.jpg" type="image/jpeg" fetchpriority="high">'
     );
   }
+  // The existing client-side Nutraxin bag and checkout must actually load on every
+  // consumer shopping route. Never enable it on the separate B2B order-request page.
+  if (route.startsWith("/products/nutraxin/") &&
+      route !== "/products/nutraxin/order-request/" &&
+      !html.includes('src="/assets/js/nutraxin-retail-store.js"')) {
+    html = html.replace("</body>",
+      '  <script type="module" src="/assets/js/nutraxin-retail-store.js"></script>\n</body>');
+  }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
     html = html.replace("</body>", '  <script type="module" src="/assets/js/nutraxin-order-request.js"></script></body>');

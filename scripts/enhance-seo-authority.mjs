@@ -87,7 +87,7 @@ function canonicalOrganization() {
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
