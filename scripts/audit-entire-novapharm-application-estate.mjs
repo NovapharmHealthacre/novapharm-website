@@ -199,7 +199,7 @@ export function buildEstateAudit() {
   // protected employee routes and four deliberately unimplemented workflows.
   // Verify the mapping without implying physical 3PL or warehouse authority.
   const wms = [...read(sources.wmsMap).matchAll(
-    /\\{\\s*group:\\s*"([^"]+)",\\s*title:\\s*"([^"]+)",\\s*module:\\s*(?:"([^"]+)"|null),/g
+    /\{\s*group:\s*"([^"]+)",\s*title:\s*"([^"]+)",\s*module:\s*(?:"([^"]+)"|null),/g
   )].map(match => ({ group: match[1], title: match[2], module: match[3] ?? null }));
   assert.equal(wms.length, 16, "WMS workspace source map drift");
   const employeeModules = new Map(modules.filter(m => m.area === "employee").map(m => [m.code, m]));
