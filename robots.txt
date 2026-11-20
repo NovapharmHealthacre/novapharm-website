@@ -42,7 +42,40 @@ Disallow: /docs/
 Disallow: /api/
 Disallow: /NP_
 
-# Search discovery and model-training access are separate decisions.
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+User-agent: Applebot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+# Public search access is independent of model-training permission.
 User-agent: GPTBot
 Disallow: /
 

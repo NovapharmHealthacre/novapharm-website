@@ -6,12 +6,19 @@
   "scope": "Source tree evidence only. No deployed route, authenticated session, physical-device accessibility, signed native build or independent release approval is implied.",
   "nextPages": {
     "source": "apps/*/(src/)app/**/page.{tsx,jsx,ts,js}",
-    "sourcePageFiles": 26,
+    "sourcePageFiles": 27,
     "dynamicCatchAllSources": [
       "apps/corporate/app/[[...slug]]/page.tsx",
       "apps/portal/app/[[...slug]]/page.tsx"
     ],
-    "warning": "26 page files is NOT 26 user-facing URL routes: catch-all pages render many entries from registers and can reject unknown paths."
+    "warning": "27 source page files are NOT 27 user-facing URL routes: catch-all pages may render many registered entries; the standalone quantum research source is a separately identified, unverified candidate.",
+    "standaloneResearchRoutes": [
+      {
+        "route": "/quantum-research/",
+        "source": "apps/corporate/app/quantum-research/page.tsx",
+        "access": "public_candidate"
+      }
+    ]
   },
   "corporate": {
     "pageRegister": "apps/corporate/data/pages.ts",

@@ -48,7 +48,15 @@ test("More retains review, research, Model Microscope, maps, disabled Visual, Sc
   assert.match(app, /editable=\{false\}/);
   assert.match(app, /CLIP_MOBILE_RELEASE\.state/);
   assert.match(app, /<CountryDirectoryScreen \/>/);
-  assert.match(app, /tab\.screen === "more" && \(selected === "review" \|\| selected === "research" \|\| selected === "inspect" \|\| selected === "maps" \|\| selected === "visual" \|\| selected === "countries" \|\| selected === "science" \|\| selected === "account"\)/);
+  const selectedUnderMore = app.match(/tab\.screen === "more" && \(selected === "review"[\s\S]*?selected === "distribution-preview"\)\)/)?.[0] ?? "";
+  assert.ok(selectedUnderMore, "More must own the complete accessible active-tab state");
+  for (const nested of ["review", "research", "inspect", "maps", "visual",
+    "countries", "science", "account", "customer-portal-preview", "distribution-preview"]) {
+    assert.ok(selectedUnderMore.includes('selected === "' + nested + '"'),
+      "More must remain active in " + nested);
+  }
+  assert.match(more, /screen: "customer-portal-preview", label: "Customer Portal"/);
+  assert.match(more, /screen: "distribution-preview", label: "Distribution"/);
 });
 
 test("research navigation does not silently activate data, credentials or Apple assets", () => {

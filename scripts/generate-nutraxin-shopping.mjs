@@ -81,6 +81,13 @@ for (const product of registered.products) {
     assert.equal(json.sku, p.sku);
     schemaCount++;
     json.description = description;
+    // Do not publish "availability not asserted" alongside a retail Offer
+    // that explicitly asserts InStock / OutOfStock. Avoid conflicting signals.
+    if (Array.isArray(json.additionalProperty)) {
+      json.additionalProperty = json.additionalProperty.filter(
+        (property) => property.name !== "Public status"
+      );
+    }
     json.offers = {
       "@type": "Offer", url, priceCurrency: "GBP",
       price: money(p.retail_price_pence),

@@ -18,11 +18,15 @@ import {
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
+  if (route === "/about/company/") return "2026-11-20";
   if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") return "2026-11-20";
   return ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
     ? "2026-11-10" : releaseDate;
 };
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
+// The approved 512px square NovaPharm mark is the preferred Google Organization logo.
+// Keep the wide wordmark as a separate image for on-site corporate branding.
+const squareLogoUrl = `${SITE_URL}/assets/brand/pwa-icon-512.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articleDirectory)
@@ -71,13 +75,21 @@ function canonicalOrganization() {
     logo: {
       "@type": "ImageObject",
       "@id": `${SITE_URL}/#logo`,
+      url: squareLogoUrl,
+      contentUrl: squareLogoUrl,
+      width: 512,
+      height: 512,
+      caption: `${company.name} brand mark`
+    },
+    image: {
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/#wordmark`,
       url: logoUrl,
       contentUrl: logoUrl,
       width: 2048,
       height: 258,
       caption: company.name
     },
-    image: { "@id": `${SITE_URL}/#logo` },
     identifier: {
       "@type": "PropertyValue",
       propertyID: "Companies House company number",
@@ -86,8 +98,9 @@ function canonicalOrganization() {
     },
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
+    mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
@@ -238,6 +251,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
+          ...(route === "/about/company/" ? { mainEntity: { "@id": ORGANIZATION_ID } } : {}),
           dateModified: materialPageReleaseDate(route)
         };
       }
@@ -255,6 +269,16 @@ function enhanceJsonLd(html, route, article, leader) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
   const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   return html.replace("</head>", `${serialized}\n</head>`);
+}
+
+function addCompanyIdentityLinks(html, route) {
+  if (route !== "/about/company/" || html.includes("data-company-identity-links")) return html;
+  const anchor = `<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a>`;
+  if (!html.includes(anchor)) throw new Error("Company identity references need the visible Companies House record link.");
+  const links = '<p data-company-identity-links>Public company identity cross-references: ' +
+    '<a href="https://www.linkedin.com/company/novapharm-healthcare/">NovaPharm on LinkedIn</a> and ' +
+    '<a href="https://www.wikidata.org/wiki/Q137660644">Wikidata (community-maintained)</a>.</p>';
+  return html.replace(anchor, anchor + links);
 }
 
 function insertHeadSignals(html, canonical, article, leader) {
@@ -359,6 +383,7 @@ for (const file of [...new Set(publicFiles)]) {
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
+  html = addCompanyIdentityLinks(html, route);
   // Keep the editorial trust notice last: the downstream authorship reconciler
   // replaces its terminal section, so the native share link must precede it.
   html = addNativeArticleShare(html, article, canonical);
@@ -428,8 +453,10 @@ const imageEntries = [...imagesByPage.entries()].map(([page, images]) => `<url><
 write("sitemap-images.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${imageEntries.join("")}</urlset>\n`);
 
 const privateRules = protectedPaths.map((path) => `Disallow: ${path}`).join("\n");
-write("robots.txt", `User-agent: *\nAllow: /\n${privateRules}\n\nUser-agent: Googlebot\nAllow: /\n${privateRules}\n\nUser-agent: Bingbot\nAllow: /\n${privateRules}\n\nUser-agent: OAI-SearchBot\nAllow: /\n${privateRules}\n\n# Search discovery and model-training access are separate decisions.\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/sitemap-insights.xml\nSitemap: ${SITE_URL}/sitemap-images.xml\n`);
+write("robots.txt", `User-agent: *\nAllow: /\n${privateRules}\n\nUser-agent: Googlebot\nAllow: /\n${privateRules}\n\nUser-agent: Bingbot\nAllow: /\n${privateRules}\n\nUser-agent: OAI-SearchBot\nAllow: /\n${privateRules}\n\nUser-agent: Claude-SearchBot\nAllow: /\n${privateRules}\n\nUser-agent: PerplexityBot\nAllow: /\n${privateRules}\n\nUser-agent: Applebot\nAllow: /\n${privateRules}\n\n# Public search access is independent of model-training permission.\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/sitemap-insights.xml\nSitemap: ${SITE_URL}/sitemap-images.xml\n`);
 write(`${INDEXNOW_KEY}.txt`, `${INDEXNOW_KEY}\n`);
+write("llms.txt", "# NovaPharm Healthcare\n> Official public pages for NovaPharm Healthcare Ltd, a UK healthcare and pharmaceutical business. This is a navigational guide for readers and AI-assisted search tools, not an independent source of regulatory approval or commercial authorisation.\n\n## Official company and identity\n- [Official website](https://novapharmhealthcare.com/): Corporate overview and published capabilities\n- [Company](https://novapharmhealthcare.com/about/): Corporate background and operating context\n- [Leadership](https://novapharmhealthcare.com/leadership/): Named leadership biographies\n- [Governance](https://novapharmhealthcare.com/about/governance/): Public governance information\n- [Capabilities](https://novapharmhealthcare.com/capabilities/): Services and operating scope\n- [Contact](https://novapharmhealthcare.com/contact/): Official business contact route\n\n## Nutraxin UK food supplements\n- [Nutraxin product collection](https://novapharmhealthcare.com/products/nutraxin/): Browse the 19 listed food supplement products and product detail pages\n- [Products overview](https://novapharmhealthcare.com/products/): Consumer supplement and separate pharmaceutical portfolio navigation\n- [Vitamin D3 + K2, 120 tablets](https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/): Example individual product with pack details and current published UK price\n- [Magnesium Complex + Vitamin B6, 60 tablets](https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/): Example individual product with supplier-transcribed composition\n\n## Pharmaceutical and technology work\n- [Regulatory services](https://novapharmhealthcare.com/regulatory-services/): UK and international regulatory services\n- [Oncology](https://novapharmhealthcare.com/oncology/): Oncology strategy and planned capabilities\n- [Technology](https://novapharmhealthcare.com/technology/): NovaPharm Intelligence and published technology status\n- [Insights](https://novapharmhealthcare.com/news-insights/): Editorial articles with published attribution\n\n## Index and boundaries\n- [Canonical XML sitemap](https://novapharmhealthcare.com/sitemap.xml): Public indexable URL inventory\n- [Editorial and legal standards](https://novapharmhealthcare.com/legal/): Source and content governance\n- Product availability, medicines authorisations, regulatory status and health claims should be assessed from the current official product pages and competent authorities, not assumed from this guide.\n- Private account, portal, internal documentation and customer records are not public reference sources.\n- Discovery and citation by any third-party search engine or AI assistant is controlled by that service; publication of this guide does not guarantee indexing, inclusion, ranking or endorsement.\n");
+
 
 write("seo/generated/entity-register.json", `${JSON.stringify(canonicalEntities, null, 2)}\n`);
 write("seo/generated/page-metadata-register.json", `${JSON.stringify(pageRecords, null, 2)}\n`);
