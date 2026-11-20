@@ -78,7 +78,7 @@ for (const [topic, criteria] of criteriaEntries) {
   assert.ok(criteria.every(x => x.length >= 55));
 }
 
-test("source route acceptance has 138 evidence-empty candidate routes and explicit HIG critical-topic scope", () => {
+test("source route acceptance has 139 evidence-empty candidate routes and explicit HIG critical-topic scope", () => {
   const ledger = readJSON(candidateFile);
   const tracker = readJSON("docs/design/apple-hig-172-topic-acceptance-register.json");
   const owner = readJSON("config/intelligence/owner-production-constraints.json");
@@ -87,7 +87,7 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
   assert.equal(ledger.sourceOnly, true);
   assert.equal(ledger.fullUrlUniverseProven, false);
   assert.equal(ledger.deployedOriginOrArtifactAccepted, false);
-  assert.equal(ledger.candidates.length, 138);
+  assert.equal(ledger.candidates.length, 139);
   assert.equal(owner.productionSignoff, "not_granted");
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
   assert.equal(owner.productionPermissions.activatePublicCustomerAccess, false);
@@ -106,9 +106,9 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
 
   const publicCount = ledger.candidates.filter(x => x.access === "public_candidate").length;
   const protectedCount = ledger.candidates.filter(x => x.access === "protected_candidate").length;
-  assert.equal(publicCount, 57);
+  assert.equal(publicCount, 58);
   assert.equal(protectedCount, 81);
-  assert.equal(publicCount + protectedCount, 138);
+  assert.equal(publicCount + protectedCount, 139);
 
   const entries = ledger.candidates.map(candidate => {
     assert.equal(candidate.status, "source_candidate_not_production_verified");
@@ -141,7 +141,7 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
   });
   const requiredSourceTopicRoutePairs = entries.reduce(
     (sum, entry) => sum + entry.requiredHigSourceReviewTopics.length, 0);
-  assert.equal(requiredSourceTopicRoutePairs, 1152);
+  assert.equal(requiredSourceTopicRoutePairs, 1158);
   assert.equal(new Set(entries.map(e => e.route)).size, entries.length);
   assert.ok(entries.every(e => e.acceptance === "not_verified" &&
     e.independentQualitySecurityApproval === null && e.deployedSourceSha === null));
@@ -154,7 +154,7 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
     productionVerificationCount: 0,
     acceptedNotApplicableCount: 0,
     sourceTopicRoutePairs: requiredSourceTopicRoutePairs,
-    scope: "First-wave route/topic QA BACKLOG only. Not 1152 passed tests, not exhaustive HIG scope, not live or protected acceptance.",
+    scope: "First-wave route/topic QA BACKLOG only. Not 1158 passed tests, not exhaustive HIG scope, not live or protected acceptance.",
     publicRoutes: publicCount,
     protectedRoutes: protectedCount,
     // Requirements are tasks for an independent acceptance run; there are no
@@ -173,7 +173,7 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
   };
   mkdirSync("artifacts/apple-hig-production-audit", { recursive: true });
   writeFileSync(planFile, JSON.stringify(plan, null, 2) + "\n");
-  assert.equal(plan.entries.length, 138);
+  assert.equal(plan.entries.length, 139);
   assert.equal(Object.keys(plan.criteriaCatalogue).length, 10);
   assert.ok(plan.entries.every(entry =>
     entry.firstWaveCriteriaRefs.every(name => plan.criteriaCatalogue[name]?.checks.length >= 3) &&

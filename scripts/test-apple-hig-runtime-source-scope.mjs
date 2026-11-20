@@ -44,10 +44,19 @@ test("Next.js route source count cannot be confused with public or authenticated
   const pages = walk("apps").filter(file =>
     /^apps\/[^/]+\/(?:src\/)?app\/(?:.*\/)?page\.(?:tsx|jsx|ts|js)$/.test(file));
   assert.equal(pages.length, manifest.nextPages.sourcePageFiles);
-  assert.equal(manifest.nextPages.sourcePageFiles, 26);
+  assert.equal(manifest.nextPages.sourcePageFiles, 27);
+  assert.deepEqual(manifest.nextPages.standaloneResearchRoutes, [{
+    route: "/quantum-research/",
+    source: "apps/corporate/app/quantum-research/page.tsx",
+    access: "public_candidate"
+  }]);
+  for (const standalone of manifest.nextPages.standaloneResearchRoutes) {
+    assert.ok(pages.includes(standalone.source), "Missing standalone source: " + standalone.source);
+    assert.match(read(standalone.source), /No live quantum hardware/);
+  }
   for (const catchAll of manifest.nextPages.dynamicCatchAllSources)
     assert.ok(pages.includes(catchAll), "Unrepresented dynamic catch-all: " + catchAll);
-  assert.match(manifest.nextPages.warning, /NOT 26 user-facing URL routes/);
+  assert.match(manifest.nextPages.warning, /NOT 27 user-facing URL routes/);
   const corporatePages = read(manifest.corporate.pageRegister);
   assert.equal(occurrences(corporatePages, /\bpage\(\s*"[^"]*"\s*,\s*"[^"]+"/g),
     manifest.corporate.declaredPageDefinitions);
@@ -111,10 +120,13 @@ test("expanded route-candidate ledger stays source-only across 138 distinct case
   assert.equal(ledger.productionSignoff,"not_granted");
   assert.equal(ledger.sourceBaselineSha,manifest.sourceSnapshotSha);
   assert.deepEqual(ledger.counts,{
-    corporatePages:32,articles:6,nutraxinProducts:19,portalModules:54,
-    intelligenceWorkspaces:22,novaMLResearch:5,totalCandidates:138
+    corporatePages:32,standaloneResearchRoutes:1,articles:6,nutraxinProducts:19,portalModules:54,
+    intelligenceWorkspaces:22,novaMLResearch:5,totalCandidates:139
   });
-  assert.equal(ledger.candidates.length,138);
+  assert.equal(ledger.candidates.length,139);
+  assert.ok(ledger.candidates.some(x =>
+    x.kind === "standalone_research_page" && x.route === "/quantum-research/" &&
+    x.access === "public_candidate" && x.independentApproval === null));
   assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,138);
   assert.equal(ledger.candidates.filter(x=>x.kind==="portal_module"
     && x.access==="protected_candidate").length,54);
