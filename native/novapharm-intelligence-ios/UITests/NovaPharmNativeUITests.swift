@@ -60,6 +60,62 @@ final class NovaPharmNativeUITests: XCTestCase {
     }
 
     @MainActor
+    func testOfflineCountryFiltersKeepUnapprovedCoverageDistinct() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Intelligence"].waitForExistence(timeout: 15))
+
+        let directory = app.buttons["novapharm.intelligence.countries"]
+        for _ in 0..<5 where !directory.isHittable { app.swipeUp() }
+        XCTAssertTrue(directory.waitForExistence(timeout: 10))
+        directory.tap()
+        XCTAssertTrue(app.navigationBars["Countries"].waitForExistence(timeout: 10))
+
+        // Exercise real native SwiftUI segmented controls and actual list contents.
+        // These are offline publisher research categories, NOT validated data rights.
+        let research = app.buttons["Research"]
+        let candidates = app.buttons["Candidates"]
+        let count = app.descendants(matching: .any)["novapharm.countries.count"]
+        XCTAssertTrue(research.waitForExistence(timeout: 10))
+        XCTAssertTrue(candidates.exists)
+        XCTAssertTrue(count.waitForExistence(timeout: 10),
+            "Country filter must expose its accessible count")
+        XCTAssertTrue(count.label.contains("101"),
+            "Unfiltered directory must report all 101 offline scopes")
+        research.tap()
+        XCTAssertTrue(count.label.contains("24"),
+            "Research coverage must identify exactly 24 geography-only scopes")
+        XCTAssertTrue(app.buttons["novapharm.country.BW"].waitForExistence(timeout: 10),
+            "Botswana is a geography-only research scope")
+        XCTAssertFalse(app.buttons["novapharm.country.DZ"].exists,
+            "Algeria has candidate references and must not appear in research-only coverage")
+
+        candidates.tap()
+        XCTAssertTrue(count.label.contains("77"),
+            "Candidate coverage must identify exactly 77 unapproved publisher-reference scopes")
+        XCTAssertTrue(app.buttons["novapharm.country.DZ"].waitForExistence(timeout: 10),
+            "Algeria is a source-candidate scope")
+        XCTAssertFalse(app.buttons["novapharm.country.BW"].exists,
+            "Geography-only Botswana must not be shown as a publisher candidate")
+
+        app.buttons["novapharm.country.DZ"].tap()
+        XCTAssertTrue(app.navigationBars["Algeria"].waitForExistence(timeout: 10))
+        let rights = app.descendants(matching: .any)["novapharm.country.rights-status"]
+        XCTAssertTrue(rights.waitForExistence(timeout: 10),
+            "Rights must be exposed to assistive technology")
+        XCTAssertTrue(rights.label.contains("Not reviewed")
+            || (rights.value as? String)?.contains("Not reviewed") == true,
+            "Publisher rights must remain unapproved in the native candidate")
+
+        let publication = app.descendants(matching: .any)["novapharm.country.live-status"]
+        XCTAssertTrue(publication.waitForExistence(timeout: 10),
+            "Customer publication status must be accessible")
+        XCTAssertTrue(publication.label.contains("Disabled")
+            || (publication.value as? String)?.contains("Disabled") == true,
+            "Offline candidate must not imply customer release")
+    }
+
+    @MainActor
     func testSavedShortcutPersistsAcrossAppRelaunchAndCanBeDeleted() throws {
         let app = XCUIApplication()
         app.launch()
