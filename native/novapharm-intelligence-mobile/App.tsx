@@ -34,6 +34,72 @@ type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "resea
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
+type MobileAuthGate = Readonly<{
+  id: string;
+  title: string;
+  acceptance: string;
+  state: "not_verified";
+}>;
+
+const gates: ReadonlyArray<MobileAuthGate> = Object.freeze([
+  {
+    id: "native-identities",
+    title: "Native application identity",
+    acceptance: "Approved iOS bundle ID, Android application ID and controlled signing identities.",
+    state: "not_verified" as const
+  },
+  {
+    id: "public-native-oidc-client",
+    title: "Dedicated mobile Cognito client",
+    acceptance: "Separate native public client with no client secret and app-specific callback ownership.",
+    state: "not_verified" as const
+  },
+  {
+    id: "browser-pkce-callback",
+    title: "System-browser PKCE",
+    acceptance: "Authorization code with S256, independently bound state/nonce and verified native callback.",
+    state: "not_verified" as const
+  },
+  {
+    id: "mfa",
+    title: "Verified MFA",
+    acceptance: "Device-tested MFA enrollment, challenge, timeout, and recovery for the intended user population.",
+    state: "not_verified" as const
+  },
+  {
+    id: "secure-revocable-session",
+    title: "Secure revocable sessions",
+    acceptance: "Hardware-backed storage policy, token rotation, expiry, remote revocation and logout verification.",
+    state: "not_verified" as const
+  },
+  {
+    id: "tenant-and-source-rights",
+    title: "Tenant and pharmaceutical data rights",
+    acceptance: "Server-enforced tenant ownership, medicine identity and per-country source-use grants.",
+    state: "not_verified" as const
+  },
+  {
+    id: "privacy-observability",
+    title: "Privacy and security evidence",
+    acceptance: "No tokens in logs, encrypted diagnostic handling, device loss and failure-mode acceptance.",
+    state: "not_verified" as const
+  },
+  {
+    id: "signed-device-and-owner-review",
+    title: "Signed beta and release approval",
+    acceptance: "Independent iOS/Android device tests, accessibility review and explicit owner release signoff.",
+    state: "not_verified" as const
+  }
+].map((gate) => Object.freeze(gate)));
+
+const mobileAuthReadiness = Object.freeze({
+  status: "blocked" as const,
+  canSignIn: false as const,
+  customerDataEnabled: false as const,
+  gates
+});
+
+
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
 const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
@@ -459,6 +525,15 @@ export default function App() {
                 <Text style={styles.description}>A reviewed mobile Cognito authorization-code and PKCE flow, MFA, tenant scoping, secure storage, revocation and signed release are required.</Text>
                 <Text style={styles.meta}>No credentials, JWTs or private customer/medicine records are collected by this preview.</Text>
               </View>
+              <SectionHeading title="Mobile login acceptance" detail="The AWS web client does not establish mobile sign-in readiness. All eight gates remain unverified." />
+              {mobileAuthReadiness.gates.map((gate) => (
+                <View key={gate.id} style={styles.requirement} accessible
+                  accessibilityLabel={gate.title + ". Not verified. " + gate.acceptance}>
+                  <Text style={styles.cardTitle}>{gate.title} · Not verified</Text>
+                  <Text style={styles.description}>{gate.acceptance}</Text>
+                </View>
+              ))}
+              <Text style={styles.meta}>Readiness checklist only. No login SDK, credential capture, permissions or customer access is enabled.</Text>
               <SectionHeading title="Private access controls" />
               {["A verified person and tenant", "Source-specific rights and country", "Independent data admission", "Session expiry and revocation", "Complete auditing and rollback"].map((item) => (
                 <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>
