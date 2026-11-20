@@ -8,7 +8,7 @@ test("all Portal view types expose a shared, focusable keyboard bypass", () => {
   const layout = read("apps/portal/app/layout.tsx");
   const client = read("apps/portal/components/portal-client.tsx");
   assert.match(layout, /<a className="portal-skip-link" href="#portal-content">Skip to portal content<\/a>/);
-  assert.match(layout, /<div id="portal-content" role="region" aria-label="Portal content" tabIndex=\{-1\}/);
+  assert.match(layout, /<section id="portal-content" aria-label="Portal content" tabIndex=\{-1\}/);
   assert.ok(layout.indexOf('className="portal-skip-link"') <
     layout.indexOf('id="portal-content"'), "Bypass must precede protected or login content");
   for (const branch of ["login", "password-change", "entra-complete", "module"]) {
@@ -44,7 +44,7 @@ test("corporate main landmark is a real keyboard bypass destination", () => {
   const css = read("apps/corporate/app/globals.css");
   const browser = read("apps/corporate/test/browser-acceptance.ts");
   assert.match(layout, /<a className="skip-link" href="#main-content">Skip to main content<\/a>/);
-  assert.match(layout, /<main id="main-content" tabIndex=\{-1\}/);
+  assert.match(layout, /<main id="main-content" lang="en-GB" data-np-untranslated tabIndex=\{-1\}/);
   assert.match(css, /\.skip-link\s*\{[^}]*min-height:\s*44px;/s);
   assert.match(css, /\.skip-link\s*\{[^}]*inset-inline-start:\s*12px;/s);
   assert.match(browser, /await page\.keyboard\.press\("Tab"\)/);
