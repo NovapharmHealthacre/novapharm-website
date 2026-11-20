@@ -12,6 +12,7 @@ on:
       - assets/data/nutraxin-retail-catalogue.json
       - assets/data/esco-catalogue.json
       - apps/portal/data/intelligence-workspaces.ts
+      - apps/portal/components/wms-prototype-workspace-map.tsx
       - packages/portal-contracts/src/module-catalog.json
       - native/novapharm-intelligence-ios/project.yml
       - native/novapharm-intelligence-android/app/build.gradle.kts
