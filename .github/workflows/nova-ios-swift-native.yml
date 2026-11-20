@@ -24,6 +24,8 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2 # include PR merge parents for exact PR-head ancestry verification
       - name: Record tested commit and pull-request-head provenance
         env:
           NOVAPHARM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
