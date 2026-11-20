@@ -120,7 +120,9 @@ const assetPaths=[
  "/assets/js/novapharm.js",
  "/assets/js/cookie-consent.js",
  "/assets/js/visual-refinement.js",
- "/assets/js/marketing-attribution.js"
+ "/assets/js/marketing-attribution.js",
+ "/assets/css/intelligence-interactive-experience.css",
+ "/assets/js/intelligence-interactive-experience.js"
 ];
 for(const path of assetPaths){
  try{
@@ -129,7 +131,7 @@ for(const path of assetPaths){
   if(!res.ok||text.length<100)addIssue(path,"asset-failed","HTTP "+res.status+", bytes "+text.length);
  }catch(e){addIssue(path,"asset-request-error",e.message);}
 }
-for(const path of ["/","/contact/","/products/nutraxin/","/technology/","/oncology/"]){
+for(const path of ["/","/contact/","/products/nutraxin/","/technology/","/technology/experience/","/oncology/","/distribution/","/markets/"]){
  if(!checked.find(x=>x.path===path&&x.httpStatus===200))addIssue(path,"critical-route","Critical public route failed");
 }
 if(skuPaths.length!==19)addIssue("/products/nutraxin/","source-sku-count","Expected 19, source contains "+skuPaths.length);
