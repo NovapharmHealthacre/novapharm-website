@@ -418,7 +418,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     // Wait for a genuine seeded product link, not merely the empty panel shell.
     await page.locator(".search-results a").first().waitFor({ state: "visible", timeout: 15_000 });
     assert.ok(await page.locator(".search-results a").count() > 0, `${engine}: authorised search returned no seeded products`);
-    assert.equal(await page.getByLabel("Search authorised records").getAttribute("aria-expanded"), "true",
+    assert.equal(await page.locator('.portal-search > button[type="submit"]').getAttribute("aria-expanded"), "true",
       `${engine}: open search popup must expose expanded state`);
     await captureInteractionState(page, engine, mobileViewport, "interaction.search-results");
 
@@ -426,7 +426,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.locator(".search-results a").first().focus();
     await page.keyboard.press("Escape");
     await page.locator(".search-results").waitFor({ state: "detached" });
-    assert.equal(await page.getByLabel("Search authorised records").getAttribute("aria-expanded"), "false",
+    assert.equal(await page.locator('.portal-search > button[type="submit"]').getAttribute("aria-expanded"), "false",
       `${engine}: Escape must collapse the search popup`);
     assert.equal(await page.getByLabel("Search authorised records").inputValue(), "",
       `${engine}: Escape must clear the previous authorised search`);
