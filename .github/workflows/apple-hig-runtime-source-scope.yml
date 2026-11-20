@@ -19,6 +19,7 @@ on:
       - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
       - 'scripts/test-apple-hig-runtime-source-scope.mjs'
       - 'scripts/test-apple-hig-route-topic-plan.mjs'
+      - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
       - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
       - '.github/workflows/apple-hig-runtime-source-scope.yml'
   push:
@@ -40,6 +41,7 @@ on:
       - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
       - 'scripts/test-apple-hig-runtime-source-scope.mjs'
       - 'scripts/test-apple-hig-route-topic-plan.mjs'
+      - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
       - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
       - '.github/workflows/apple-hig-runtime-source-scope.yml'
   workflow_dispatch:
@@ -69,6 +71,8 @@ jobs:
         run: node --test scripts/test-apple-hig-runtime-source-scope.mjs
       - name: Generate source-only critical HIG route-topic QA plan
         run: node --test scripts/test-apple-hig-route-topic-plan.mjs
+      - name: Generate 516 evidence-empty web/iOS/Android HIG acceptance slots
+        run: node --test scripts/test-apple-hig-516-platform-acceptance-plan.mjs
       - name: Preserve unverified source route acceptance candidates for independent review
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -77,5 +81,6 @@ jobs:
           path: |
             artifacts/apple-hig-production-audit/source-route-candidates.json
             artifacts/apple-hig-production-audit/source-route-topic-plan.json
+            artifacts/apple-hig-production-audit/516-platform-acceptance-plan.json
           if-no-files-found: warn
           retention-days: 30
