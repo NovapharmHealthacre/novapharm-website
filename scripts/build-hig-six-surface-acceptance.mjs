@@ -24,7 +24,7 @@ export const SURFACES = Object.freeze([
     source: "apps/portal and distribution modules", access: "protected",
     checkpoints: ["real available routes and exact release SHA", "role-bounded inventory, FEFO, QA, picks, dispatch and POD", "safe simulated transactions; idempotent failure/undo and audit records", "keyboard, touch, responsive, offline/error, labels and contrast"] },
   { id: "ios", label: "Native iOS / iPadOS", platform: "ios",
-    source: "native/novapharm-intelligence-apple and native/novapharm-intelligence-mobile", access: "native",
+    source: "native/novapharm-intelligence-ios (SwiftUI app); native/novapharm-intelligence-apple (SwiftPM library); native/novapharm-intelligence-mobile (Expo preview)", access: "native",
     checkpoints: ["real app target, bundle ID, signed build and controlled install receipt", "Xcode/Swift UI tests, real iPhone/iPad VoiceOver and Dynamic Type", "dark/light, reduce motion, landscape, keyboard and system permissions", "identity/session/data-rights and approved App Store/TestFlight release scope"] },
   { id: "android", label: "Native Android", platform: "android",
     source: "native/novapharm-intelligence-android and native/novapharm-intelligence-mobile", access: "native",
