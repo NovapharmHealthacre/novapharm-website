@@ -202,7 +202,7 @@ test("interface localization does not claim that clinical, legal, or regulated e
     assert.match(component, /items\.map\(\(\[label, href\]\) =>/);
     assert.match(component, /const isPortal = href === "\/portal\/";/);
     assert.match(component, /href=\{isPortal \? portalOrigin : href\}/);
-    assert.match(component, /aria-current=\{!isPortal && isCurrentCorporateNavigation\(pathname, href\)/);
+    assert.match(component, /aria-current=\{!isPortal \? currentCorporateNavigationAriaValue\(pathname, href\) : undefined\}/);
   }
   assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
