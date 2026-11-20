@@ -18,6 +18,7 @@ const sources = Object.freeze({
   esco: "assets/data/esco-catalogue.json",
   portal: "packages/portal-contracts/src/module-catalog.json",
   intelligence: "apps/portal/data/intelligence-workspaces.ts",
+  wmsMap: "apps/portal/components/wms-prototype-workspace-map.tsx",
   nativeIos: "native/novapharm-intelligence-ios/project.yml",
   nativeAndroid: "native/novapharm-intelligence-android/app/build.gradle.kts",
   owner: "config/intelligence/owner-production-constraints.json"
@@ -194,6 +195,34 @@ export function buildEstateAudit() {
         realLiveWorkspaceAndMedicineRightsVerified:false
       });
 
+  // The owner's 16-workspace WMS blueprint contains some links to existing
+  // protected employee routes and four deliberately unimplemented workflows.
+  // Verify the mapping without implying physical 3PL or warehouse authority.
+  const wms = [...read(sources.wmsMap).matchAll(
+    /\\{\\s*group:\\s*"([^"]+)",\\s*title:\\s*"([^"]+)",\\s*module:\\s*(?:"([^"]+)"|null),/g
+  )].map(match => ({ group: match[1], title: match[2], module: match[3] ?? null }));
+  assert.equal(wms.length, 16, "WMS workspace source map drift");
+  const employeeModules = new Map(modules.filter(m => m.area === "employee").map(m => [m.code, m]));
+  let wmsLinked = 0, wmsNeedsIntegration = 0;
+  for (const entry of wms) {
+    const slug = entry.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const linked = entry.module === null ? null : employeeModules.get(entry.module);
+    if (entry.module !== null && (!linked || !linked.visibleInNavigation))
+      addError("WMS blueprint linked to missing or hidden employee module: " + entry.title);
+    if (linked) wmsLinked++;
+    else wmsNeedsIntegration++;
+    add("wms-workspace", slug, sources.wmsMap, "protected-candidate",
+      linked?.route ?? null, {
+        title: entry.title, group: entry.group,
+        linkedEmployeeModule: entry.module,
+        integrationRequired: entry.module === null,
+        sourceMappingDoesNotCreateWarehouseService: true,
+        physicalStockOrDispatchAuthorityVerified: false
+      });
+  }
+  assert.equal(wmsLinked,12);
+  assert.equal(wmsNeedsIntegration,4);
+
   for (const project of native) add("native-project",project,"native/"+project,
     "signed-device-release-pending",null,{ signedDeviceReleaseAccepted:false });
   const ios = read(sources.nativeIos);
@@ -213,6 +242,8 @@ export function buildEstateAudit() {
     portal: { modules:54, navigationVisible:navVisible, dependencyGated:hidden,
       ownerControlledWriteCodeNotReleased:sourceWritesUnreleased, byArea:roles },
     intelligence: {total:22, sourceReadOnly:5, gated:17},
+    distributionWms: {sourceWorkspaces:16, employeeRouteMapped:wmsLinked,
+      externalIntegrationRequired:wmsNeedsIntegration, independent3plExecutionApproved: false},
     commerce: {nutraxinSku:19, escoCatalogueReferences:373, marketplaceSourceCandidates:392},
     ownerProductionSignoff:owner.productionSignoff,
     independentProductionAcceptanceClaimedByThisSourceAudit:0,
