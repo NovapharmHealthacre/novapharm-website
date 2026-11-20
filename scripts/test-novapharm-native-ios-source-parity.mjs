@@ -91,7 +91,7 @@ test("all 101 native Swift country references precisely match the canonical sour
   assert.equal(source.summary.customerLiveNationalCountries, 0);
   assert.equal(source.liveMedicineRowsIncluded, false);
   assert.deepEqual(swiftCountries, expected);
-  assert.match(view, /searchable\(text: \$searchText/);
+  assert.match(view, /modifier\(NovaAdaptiveSearchModifier\(searchText: \$searchText/);
   assert.match(view, /No medicine facts or private information are loaded/);
   assert.doesNotMatch(view, /\bURLSession\b|\bfetch\s*\(|\bWKWebView\b|\bASWebAuthenticationSession\b/);
 });
