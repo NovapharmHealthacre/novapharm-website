@@ -1,9 +1,15 @@
 import { createHash } from "node:crypto";
 import {
   cpSync,
+  constants,
+  closeSync,
   existsSync,
+  fstatSync,
+  fsyncSync,
   mkdirSync,
+  openSync,
   readdirSync,
+  renameSync,
   readFileSync,
   rmSync,
   statSync,
@@ -214,8 +220,16 @@ for (const requiredPath of requiredPublicPaths) {
 // The source catalogue includes confidential pricing-planning metadata.
 // Public storefronts need product data, never NovaPharm's internal margin.
 const escoDataPath = join(output, "assets/data/esco-catalogue.json");
-if (!existsSync(escoDataPath)) throw new Error("Public ESCO catalogue data missing");
-const escoPublicData = JSON.parse(readFileSync(escoDataPath, "utf8"));
+// Open exactly the generated regular file, without following a substituted
+// symlink. Never check a pathname and later write through that pathname.
+const escoReadFd = openSync(escoDataPath, constants.O_RDONLY | constants.O_NOFOLLOW);
+let escoPublicData;
+try {
+  if (!fstatSync(escoReadFd).isFile()) throw new Error("Public ESCO catalogue is not a regular file");
+  escoPublicData = JSON.parse(readFileSync(escoReadFd, "utf8"));
+} finally {
+  closeSync(escoReadFd);
+}
 if (escoPublicData.entriesTotal !== 373 || escoPublicData.categories?.length !== 12 ||
     escoPublicData.requestQuoteOnly !== true || escoPublicData.checkoutEnabled !== false) {
   throw new Error("Refusing a public ESCO catalogue with unverified item count or commercial eligibility");
@@ -225,7 +239,22 @@ const safeEscoJson = JSON.stringify(escoPublicData, null, 2) + "\n";
 if (safeEscoJson.includes("targetGrossMargin")) {
   throw new Error("Confidential ESCO margin reached the public artifact");
 }
-writeFileSync(escoDataPath, safeEscoJson, "utf8");
+// An exclusively created temporary file plus atomic rename prevents the
+// public candidate ever containing a partially rewritten or symlinked JSON.
+const escoTmpPath = escoDataPath + ".sanitized-" + process.pid;
+const escoWriteFd = openSync(escoTmpPath,
+  constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+try {
+  writeFileSync(escoWriteFd, safeEscoJson, "utf8");
+  fsyncSync(escoWriteFd);
+} finally {
+  closeSync(escoWriteFd);
+}
+try {
+  renameSync(escoTmpPath, escoDataPath);
+} finally {
+  rmSync(escoTmpPath, { force: true });
+}
 
 // Fail closed if an older Next.js or root-static build would overwrite the
 // owner-approved Earth homepage and the 19 restored, sellable-by-policy-only
