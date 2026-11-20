@@ -1,5 +1,6 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { createHash } from "node:crypto";
 import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
 
 const origin = "https://novapharmhealthcare.com";
@@ -42,6 +43,8 @@ async function visit() {
       const html = await request(path);
       record.httpOk = true;
       record.bytes = html.length;
+      // Digest of the actual fetched public HTML bytes, NOT the deployed Git source SHA.
+      record.htmlSnapshotSha256 = createHash("sha256").update(html).digest("hex");
       // Screening only: inspect public SSR semantics, not real keyboard/AT behavior.
       record.higSignals = inspectPublicHigSignals(html);
       record.warnings.push(...record.higSignals.warnings.map(x => "HIG SSR screening: " + x));
@@ -83,6 +86,7 @@ const quantum = { path:"/quantum-research/", httpOk:false, canonical:"", title:"
 try {
   const html = await request(quantum.path);
   quantum.httpOk = true;
+  quantum.htmlSnapshotSha256 = createHash("sha256").update(html).digest("hex");
   quantum.title = (html.match(/<title\b[^>]*>([^<]*)<\/title>/i)?.[1] || "").slice(0, 180);
   quantum.h1 = (html.match(/<h1\b[^>]*>([^<]*)<\/h1>/i)?.[1] || "").slice(0, 180);
   quantum.canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1] || "";
@@ -119,6 +123,9 @@ const result = {
     withOneH1: screened.filter(x => x.higSignals.h1Elements === 1).length,
     withLinkedSkipTarget: screened.filter(x => x.higSignals.skipLinkWithTarget).length,
     withSourceSha: screened.filter(x => Boolean(x.higSignals.deployedSourceSha)).length,
+    missingSourceSha: screened.filter(x => !x.higSignals.deployedSourceSha).length,
+    routesWithHtmlSnapshotDigest: routes.filter(x => Boolean(x.htmlSnapshotSha256)).length,
+    htmlSnapshotDigestIsNotDeployedSourceSha: true,
     distinctObservedLiveShas: [...new Set(screened.map(x => x.higSignals.deployedSourceSha).filter(Boolean))]
   },
   issues, routes
@@ -126,6 +133,8 @@ const result = {
 mkdirSync(dirname(output), { recursive: true });
 writeFileSync(output, JSON.stringify(result, null, 2) + "\n");
 console.log(JSON.stringify({ expected: expectedPaths.length, live: livePaths.length, checked: routes.length,
-  failed: failed.length, productGtinNotPublished: incompleteProductSEO.length, issues }));
+  failed: failed.length, productGtinNotPublished: incompleteProductSEO.length,
+  higScreened: screened.length, sourceShaMissing: result.higScreening.missingSourceSha,
+  htmlSnapshotDigests: result.higScreening.routesWithHtmlSnapshotDigest, issues }));
 if (failed.length) console.error("Route failures: " + JSON.stringify(failed.map(r => ({ path: r.path, errors: r.errors })).slice(0, 70)));
 if (failed.length || issues.length) process.exitCode = 1;
