@@ -13,6 +13,7 @@ function assertSafeSharePointSegment(segment) {
       segment.length === 0 || segment.length > 255 ||
       segment !== segment.trim() ||
       segment.endsWith(".") ||
+      segment.includes("/") ||
       /^\.+$/.test(segment) ||
       INVALID_SEGMENT.test(segment)) {
     throw Object.assign(new TypeError("Invalid SharePoint path segment."), {
