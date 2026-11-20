@@ -83,7 +83,7 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Sample four immutable public routes via read-only HTML GET
+      - name: Sample six fixed public routes via read-only HTML GET
         env:
           HIG_SAMPLE_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
@@ -91,7 +91,7 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit
-      - name: Inspect three fixed public origins in Chromium/WebKit; no form submission
+      - name: Inspect six fixed public routes in Chromium/WebKit; no form submission
         env:
           HIG_RENDER_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
