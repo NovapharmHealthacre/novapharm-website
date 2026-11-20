@@ -18,6 +18,14 @@ test("all 19 source-approved Nutraxin product pages and critical core routes are
   assert.deepEqual(report.issues, []);
 });
 
+
+test("post-build ESCO and Marketplace routes are required live but absent from prebuild sitemap is allowed", () => {
+  const prebuild = clean.filter(path => !["/products/esco/", "/products/marketplace/"].includes(path));
+  assert.deepEqual(audit(prebuild,clean).issues,[]);
+  assert.ok(audit(prebuild,clean.filter(path => path !== "/products/esco/")).issues
+    .includes("Required live sitemap route missing: /products/esco/"));
+});
+
 test("quiet loss of a product from live or source sitemap cannot count as full coverage", () => {
   assert.ok(audit(clean,clean.filter(x=>x!==productPaths[4])).issues
     .includes("Required live sitemap route missing: " + productPaths[4]));
