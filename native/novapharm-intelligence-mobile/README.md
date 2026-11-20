@@ -12,6 +12,17 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
 
+## Portal and Distribution mobile planning navigation — 20 November 2026
+
+The shared Expo research prototype now includes a **private, offline navigation map** for the separate NovaPharm Customer Portal and Distribution workstreams under **More**. It is deliberately explicit about what is not implemented:
+
+- **Customer Portal — 10 planned modules:** Dashboard; My Account; Products; Price Lists; Orders; Invoices; Statements; Delivery Tracking; Documents; Support Tickets.
+- **Distribution — 9 planned modules:** Inventory; Batches & FEFO; Quality Assurance; Replenishment; Pick & Pack; Dispatch; Proof of Delivery; Returns; Performance.
+
+Each screen has accessible, responsive module search, module-level detail navigation, required-release prerequisites and a clear *not connected* status. Source: `PrivateOperationsPreviewScreen.tsx`, with `tests/private-portal-distribution-preview.test.mjs` guarding both navigation and the no-network/no-transaction safety boundary.
+
+This is **functional planning navigation**, not a functioning customer portal or warehouse management system. No accounts, invoices, batches, warehouse data or operational services have been integrated. These previews should become operational only after separate identity, source rights, security/quality and device acceptance. Future user-facing Portal and Distribution apps may need separately approved native app identifiers and build profiles; they are not automatically released by the Intelligence app's simulator/APK profiles.
+
 ## Private pre-store build profiles — 20 November 2026
 
 We can develop and test before Apple Developer Program enrolment or opening Google Play Console. The committed `eas.json` has **only two non-store profiles**:
