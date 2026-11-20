@@ -25,10 +25,34 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
   assert.equal(org.identifier.value, "16716501");
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
-  const approvedLogoAsset = ["assets", "brand", "novapharm-healthcare-logo.png"].join("/");
+  const approvedLogoAsset = ["assets", "brand", "pwa-icon-512.png"].join("/");
+  assert.equal(org.logo["@id"], origin + "/#logo");
   assert.equal(org.logo.url, origin + "/" + approvedLogoAsset);
+  assert.equal(org.logo.contentUrl, org.logo.url);
+  assert.equal(org.logo.width, 512);
+  assert.equal(org.logo.height, 512);
   assert(existsSync(join(root, approvedLogoAsset)));
+  const logoBytes = readFileSync(join(root, approvedLogoAsset));
+  assert.equal(logoBytes.readUInt32BE(16), 512, "Knowledge Panel logo must really be square");
+  assert.equal(logoBytes.readUInt32BE(20), 512, "Knowledge Panel logo must really be square");
+  const approvedWordmarkAsset = ["assets", "brand", "novapharm-healthcare-logo.png"].join("/");
+  assert.equal(org.image.url, origin + "/" + approvedWordmarkAsset);
+  assert.equal(org.mainEntityOfPage["@id"], origin + "/#webpage");
   assert(!org.address, "Do not expose a residential registered office address in structured data");
+});
+
+test("public company-facts page names the same UK organization and links genuine identity records", () => {
+  const html = read("about/company/index.html");
+  const page = scripts(html).find(s => s["@type"] === "WebPage");
+  assert.equal(page?.mainEntity?.["@id"], origin + "/#organization");
+  assert.equal(page?.about?.["@id"], origin + "/#organization");
+  assert.equal(page?.url, origin + "/about/company/");
+  assert.match(html, /NOVAPHARM HEALTHCARE LTD/);
+  assert.match(html, /16716501/);
+  assert.match(html, /data-company-identity-links/);
+  assert.match(html, /https:\/\/www\.linkedin\.com\/company\/novapharm-healthcare\//);
+  assert.match(html, /https:\/\/www\.wikidata\.org\/wiki\/Q137660644/);
+  assert.equal((html.match(/data-company-identity-links/g) || []).length, 1);
 });
 
 test("all 19 consumer product pages have a working storefront module and internally consistent Offers", () => {
