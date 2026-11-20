@@ -59,6 +59,10 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert(!(schema.additionalProperty || []).some(v => v.name === "Public status"),
       "The Product Offer must not contradict an old unavailability note");
     assert.equal(schema.description, item.description, "Feed/Product structured description drift");
+    assert.equal(schema.image, item.image_link, "Feed image must equal Product JSON-LD image");
+    const pageImagePath = new URL(item.image_link).pathname;
+    assert(html.includes('src="' + pageImagePath + '"'),
+      "Feed image must also appear as a real fallback <img> on the landing page");
     assert.equal(schema.offers.seller.logo,
       "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png");
     const meta = html.match(/<meta name="description" content="([^"]+)">/);
