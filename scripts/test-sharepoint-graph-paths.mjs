@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { GraphClient, encodeSafeSharePointPath } from "../src/integrations/sharepoint/graph-client.mjs";
+import { GraphClient, encodeSafeSharePointPath, safeSharePointNextPagePath } from "../src/integrations/sharepoint/graph-client.mjs";
 
 const INVALID_PATHS = [
   "", "/", "/root", "root/", "root//child", ".", "..", "root/..",
@@ -72,4 +72,89 @@ test("valid file upload keeps the established Graph path and does not access cre
   await client.listFolderChildren("driveA", "");
   assert.equal(requests[0].path,
     "/drives/driveA/root/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl");
+});
+
+
+test("folder discovery reads a second page before POST", async () => {
+  const client = new GraphClient({});
+  const calls = [];
+  const prefix = "/drives/driveA/items/root/children";
+  client.request = async (path, options) => {
+    calls.push({ path, method: options?.method });
+    if (path === prefix + "?$select=id,name,folder,webUrl") {
+      return {
+        value: Array.from({length: 200}, (_, i) => ({id: "item-" + i, name: "Other " + i, folder: {}})),
+        "@odata.nextLink": "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=page2"
+      };
+    }
+    if (path === prefix + "?$skiptoken=page2") {
+      return {value: [{id: "found-page-2", name: "Research", folder: {}}]};
+    }
+    throw new Error("Unexpected stub request: " + path);
+  };
+  const found = await client.ensureFolder("driveA", "research");
+  assert.equal(found.id, "found-page-2");
+  assert.equal(calls.length, 2);
+  assert.equal(calls.filter(c => c.method === "POST").length, 0);
+});
+
+test("continuation remains on the exact Graph origin, drive and item", () => {
+  const endpoint = "/drives/driveA/items/root/children";
+  assert.equal(safeSharePointNextPagePath(
+    "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=a%2Fb",
+    endpoint), endpoint + "?$skiptoken=a%2Fb");
+  const invalid = [
+    "https://graph.microsoft.com.evil.test/v1.0/drives/driveA/items/root/children?$skiptoken=a",
+    "https://evil.test/v1.0/drives/driveA/items/root/children?$skiptoken=a",
+    "http://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=a",
+    "https://graph.microsoft.com/v1.0/drives/other/items/root/children?$skiptoken=a",
+    "https://graph.microsoft.com/v1.0/drives/driveA/items/other/children?$skiptoken=a",
+    "https://graph.microsoft.com/v1.0/me/drive/root/children?$skiptoken=a",
+    "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children",
+    "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=a#fragment",
+    "/v1.0/drives/driveA/items/root/children?$skiptoken=a",
+    null, "x".repeat(16385)
+  ];
+  for (const link of invalid) {
+    assert.throws(() => safeSharePointNextPagePath(link, endpoint),
+      error => error.code === "sharepoint_pagination_invalid");
+  }
+});
+
+test("repeated continuation fails closed without creating a folder", async () => {
+  const client = new GraphClient({});
+  let calls = 0;
+  client.request = async (_path, options) => {
+    assert.notEqual(options?.method, "POST");
+    calls += 1;
+    return {value: [], "@odata.nextLink":
+      "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=repeat"};
+  };
+  await assert.rejects(() => client.ensureFolder("driveA", "Missing"),
+    error => error.code === "sharepoint_pagination_invalid");
+  assert.equal(calls, 2);
+});
+
+test("pagination limit fails closed before creating a folder", async () => {
+  const client = new GraphClient({});
+  let pages = 0;
+  client.request = async (_path, options) => {
+    assert.notEqual(options?.method, "POST");
+    pages += 1;
+    return {value: [], "@odata.nextLink":
+      "https://graph.microsoft.com/v1.0/drives/driveA/items/root/children?$skiptoken=" + pages};
+  };
+  await assert.rejects(() => client.ensureFolder("driveA", "Missing"),
+    error => error.code === "sharepoint_pagination_limit");
+  assert.equal(pages, 25);
+});
+
+test("malformed page response cannot trigger a folder creation", async () => {
+  const client = new GraphClient({});
+  client.request = async (_path, options) => {
+    assert.notEqual(options?.method, "POST");
+    return {unknown: []};
+  };
+  await assert.rejects(() => client.ensureFolder("driveA", "Missing"),
+    error => error.code === "sharepoint_pagination_invalid");
 });

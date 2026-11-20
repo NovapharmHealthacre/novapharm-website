@@ -9,6 +9,7 @@ test("authority, conflict, version and data safety failures are terminal", () =>
     "graph_auth_400", "graph_auth_401", "graph_auth_403", "graph_auth_404",
     "sharepoint_credentials_missing", "sharepoint_upload_conflict_gate",
     "sharepoint_invalid_path", "sharepoint_invalid_event_payload",
+    "sharepoint_pagination_invalid", "sharepoint_pagination_limit",
     "document_missing", "document_not_cleared", "unsupported_operation"]) {
     assert.deepEqual(classifySharePointSyncFailure(code), { code, action: "block" }, code);
   }

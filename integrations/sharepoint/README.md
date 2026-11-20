@@ -42,6 +42,16 @@ Board-only effective permissions, tenant-scoped rights, conflict-safe file
 versioning, malware screening or successful live synchronization. Those gates
 must be verified separately before enabling the existing outbox worker.
 
+### Safe Graph folder pagination
+
+`ensureFolder` checks matching folders across bounded Microsoft Graph `@odata.nextLink`
+pages before attempting folder creation. Continuations must remain on the
+identical Graph origin, drive and parent-child endpoint. Invalid, repeated and
+excessive continuations fail closed; five offline tests exercise synthetic
+201-item pages, malicious links and limits without live Graph requests.
+Folder-creation races and effective group permissions remain separate
+provider-side release gates tracked in issue #898.
+
 ## Fail-closed outbox boundary (source-only; pending deployment review)
 
 The legacy Microsoft Graph small-file PUT helper remains in the repository but is **not an approved document synchronization method**. The event processor now explicitly rejects `upload_document` events with `sharepoint_upload_conflict_gate` before folder creation, object download, upload or metadata PATCH. This is a deliberate safe stop: existing content must not be implicitly replaced, especially after an ambiguous partial-success retry.

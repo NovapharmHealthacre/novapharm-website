@@ -8,6 +8,8 @@ const BLOCKED = new Set([
   "sharepoint_invalid_event_payload",
   "sharepoint_upload_conflict_gate",
   "sharepoint_invalid_path",
+  "sharepoint_pagination_invalid",
+  "sharepoint_pagination_limit",
   "document_missing",
   "document_not_cleared",
   "unsupported_operation",
