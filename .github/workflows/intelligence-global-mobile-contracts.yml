@@ -82,15 +82,10 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Resolve candidate only if an approved lockfile is not committed
+      - name: Require committed Expo lockfile without dependency re-resolution
         run: |
-          if [ -f package-lock.json ]; then
-            echo 'Using committed mobile package-lock.json; refusing to regenerate dependencies'
-          else
-            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-            echo 'Generated a candidate mobile dependency lockfile for review'
-          fi
-          node -e 'const p=require("./package.json"),l=require("./package-lock.json"); if (l.lockfileVersion !== 3 || l.packages?.[""]?.name !== p.name) process.exit(1)'
+          test -s package-lock.json
+          node -e 'const p=require("./package.json"),l=require("./package-lock.json"); if (l.lockfileVersion !== 3 || l.packages?.[""]?.name !== p.name || l.packages?.[""]?.version !== p.version) process.exit(1)'
       - name: Verify lockfile registry and integrity before any dependency install
         run: |
           node -e '
@@ -110,7 +105,7 @@ jobs:
           path: native/novapharm-intelligence-mobile/package-lock.json
           if-no-files-found: error
           retention-days: 7
-      - name: Verify clean install using generated dependency lockfile
+      - name: Verify clean install using committed dependency lockfile
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify TypeScript and exact React Native imports
         run: npm run typecheck
