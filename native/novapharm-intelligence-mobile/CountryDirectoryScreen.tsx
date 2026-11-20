@@ -4,7 +4,7 @@
  * No HTTP, customer authentication, medicine records or source-use rights.
  */
 import React, { useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
+import { FlatList, Linking, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
 import catalogue from "../../docs/intelligence/country-101-client-catalog-20261118.json";
 import ownerNationalBrief from "../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
@@ -22,6 +22,7 @@ type CountryStyles = ReturnType<typeof createStyles>;
 
 function CountryCard({ country, wide, styles }: { country: Country; wide: boolean; styles: CountryStyles }) {
   const [expanded, setExpanded] = useState(false);
+  const [externalLinkError, setExternalLinkError] = useState("");
   const ownerBrief = ownerBriefByCountry.get(country.country);
   return (
     <View style={[styles.card, wide && styles.cardWide]}>
@@ -36,7 +37,24 @@ function CountryCard({ country, wide, styles }: { country: Country; wide: boolea
           <Text style={styles.state}>Owner-supplied national research requirements · Not independently verified</Text>
           <Text style={styles.sourceText}>{ownerBrief.pharmaceuticalDataRequired}</Text>
           <Text style={styles.sourceText}>{ownerBrief.sourceAccessAsSupplied}</Text>
-          <Text style={styles.sourceText}>{ownerBrief.references.map((reference) => reference.label).join(" · ")}</Text>
+          <Text style={styles.sourceText}>External publisher links are user-initiated; opening one contacts the destination site.</Text>
+          {ownerBrief.references.map((reference) => (
+            <Pressable key={reference.url} style={styles.action} accessibilityRole="link"
+              accessibilityLabel={"Open unverified external source reference " + reference.label}
+              onPress={() => {
+                setExternalLinkError("");
+                if (!/^https:\/\/[a-z0-9.-]+(?:\/|\?|$)/i.test(reference.url)) {
+                  setExternalLinkError("This source reference URL is not safe to open.");
+                  return;
+                }
+                void Linking.openURL(reference.url).catch(() => {
+                  setExternalLinkError("Unable to open the external publisher reference.");
+                });
+              }}>
+              <Text style={styles.actionText}>{reference.label} · External website</Text>
+            </Pressable>
+          ))}
+          {!!externalLinkError && <Text style={styles.sourceText} accessibilityRole="alert">{externalLinkError}</Text>}
           <Text style={styles.sourceText}>Reference metadata only · No approved data licence · No connected upstream API</Text>
         </View>
       )}
