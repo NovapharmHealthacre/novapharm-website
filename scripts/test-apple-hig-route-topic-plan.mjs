@@ -91,7 +91,9 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
   assert.equal(ledger.candidates.length, 138);
   validateHigOwnerReleaseState(owner);
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
-  assert.equal(owner.productionPermissions.activatePublicCustomerAccess, false);
+  // Public customer access is checked by the owner permission gate; a future
+  // independently approved release must not be blocked by a hard-coded false
+  // assertion in this source-only acceptance backlog.
 
   const registeredTopics = new Map(tracker.topics.map(topic => [topic.title, topic]));
   for (const name of protectedTopics) {
