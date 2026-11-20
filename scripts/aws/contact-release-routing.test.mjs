@@ -1084,3 +1084,61 @@ test("isolated Expo and StoreKit source-only merges remain private without suppr
     assert.match(workflow, /found_ml=true/);
   }
 });
+
+
+test("four-country receipt router is an exact-blob private change, never blanket server publication approval", () => {
+  const reviewedOriginal = "4c7afb1c4b46f241cdfcaa722d0123a8d6becb2b";
+  const reviewedCandidate = "98a874fd012599583401b01724acf22f0d73da51";
+  const server = readFileSync("server.mjs");
+  const currentBlob = createHash("sha1")
+    .update("blob " + server.length + "\0").update(server).digest("hex");
+  assert.equal(currentBlob, reviewedCandidate, "Board-only server source review requires fresh sign-off on changes");
+
+  const privateChanges = [
+    "apps/portal/app/gateway/[...path]/route.ts",
+    "docs/intelligence/four-country-board-source-receipt-gateway-20261120.md",
+    "scripts/test-intelligence-official-live-pharma-server-gate.mjs",
+    ".github/workflows/intelligence-official-live-pharma-probes.yml",
+  ];
+  const publicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+  ];
+  for (const file of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml"
+  ]) {
+    const content = get(file);
+    const line = content.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, file + " has an exact source-only classifier");
+    const patterns = line.trim().replace(/\)$/, "").split("|");
+    const classified = path => patterns.some(pattern =>
+      path === pattern || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1))));
+    for (const path of privateChanges) {
+      assert.equal(classified(path), true, file + " must isolate " + path);
+    }
+    for (const path of publicChanges) {
+      assert.equal(classified(path), false, file + " must not hide " + path);
+    }
+    assert.equal(classified("server.mjs"), false, "Shared server must never have a blanket private exemption");
+    const serverCase = content.match(/server\.mjs\)\s*\n([\s\S]*?)\n\s*;;/)?.[1] || "";
+    assert.ok(serverCase.includes(reviewedOriginal) && serverCase.includes(reviewedCandidate),
+      file + " must pin both exact reviewed blobs");
+    assert.match(serverCase, /server_sha/);
+    assert.match(serverCase, /original_blob/);
+    assert.match(serverCase, /candidate_blob/);
+    assert.match(serverCase, /private_only=false/);
+
+    const consideredPrivate = files => files.some(classified) &&
+      files.every(x => classified(x) || x === "server.mjs" ||
+        x === "scripts/aws/contact-release-routing.test.mjs" ||
+        x === ".github/workflows/dispatch-approved-aws-contact-release.yml" ||
+        x === ".github/workflows/publish-aws-contact-production.yml");
+    assert.equal(consideredPrivate([...privateChanges, "server.mjs"]), true);
+    for (const path of publicChanges) {
+      assert.equal(consideredPrivate([...privateChanges, "server.mjs", path]), false,
+        "Public and source-only mixed changes retain the production acceptance gate");
+    }
+  }
+});
