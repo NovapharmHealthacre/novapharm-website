@@ -62,7 +62,7 @@ async function boundedMap(items, workers, check) {
     }
   }));
 }
-const pagePaths = new Set(["/","/quantum-research/","/products/nutraxin/bag/","/products/nutraxin/account/"]);
+const pagePaths = new Set(["/","/quantum-research/","/products/nutraxin/bag/","/products/nutraxin/account/","/products/esco/","/products/esco/bag/"]);
 const outbound = new Map();
 const checkedPages = [];
 try {
