@@ -249,13 +249,13 @@ for (const product of registered.products) {
       '<script type="application/ld+json">' +
       JSON.stringify(breadcrumbMarkup(p, url)) + "</script>\n</head>");
   }
-  if (!html.includes('data-nutraxin-answers="true"')) {
-    assert(html.includes("</main>"), "Missing product main content: " + p.sku);
-    html = html.replace("</main>", answerSection(p, product, inStock) + "</main>");
-  }
   if (!html.includes('data-nutraxin-related="true"')) {
     assert(html.includes("</main>"), "Missing product main content: " + p.sku);
     html = html.replace("</main>", relatedProductsMarkup(p, product) + "</main>");
+  }
+  if (!html.includes('data-nutraxin-answers="true"')) {
+    assert(html.includes("</main>"), "Missing product main content: " + p.sku);
+    html = html.replace("</main>", answerSection(p, product, inStock) + "</main>");
   }
   if (!html.includes('/assets/css/nutraxin-merchant.css')) {
     html = html.replace("</head>", '<link rel="stylesheet" href="/assets/css/nutraxin-merchant.css">\n</head>');
