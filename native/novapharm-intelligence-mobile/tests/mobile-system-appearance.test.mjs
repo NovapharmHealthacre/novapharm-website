@@ -133,19 +133,19 @@ test("101-country iOS/Android directory tracks system light and dark appearance"
   assert.match(app, /<CountryDirectoryScreen\s*\/>/);
   assert.match(countryScreen, /useColorScheme\(\) === "dark"/);
   assert.match(countryScreen, /darkMode \? mobileDarkPalette : mobileLightPalette/);
-  assert.match(countryScreen, /useMemo\(\(\) => createStyles\(tokens\), \[darkMode\]\)/);
-  assert.match(countryScreen, /function createStyles\(tokens: MobilePalette\)/);
+  assert.match(countryScreen, /useMemo\(\(\) => createStyles\(palette\), \[darkMode\]\)/);
+  assert.match(countryScreen, /function createStyles\(palette: MobilePalette\)/);
   assert.match(countryScreen, /<CountryCard country=\{item\} wide=\{twoColumns\} styles=\{styles\} \/>/);
-  assert.match(countryScreen, /placeholderTextColor=\{tokens\.tertiary\}/);
-  assert.match(countryScreen, /selectedText: \{ color: tokens\.canvas \}/);
-  assert.match(countryScreen, /actionText: \{[^}]*color: tokens\.accent/);
+  assert.match(countryScreen, /placeholderTextColor=\{palette\.tertiary\}/);
+  assert.match(countryScreen, /selectedText: \{ color: palette\.canvas \}/);
+  assert.match(countryScreen, /actionText: \{[^}]*color: palette\.accent/);
   assert.match(tokens, /mobileLightPalette/);
   assert.match(tokens, /mobileDarkPalette/);
 });
 
 test("country cards use shared semantic colours with no light-only surfaces or network activation", () => {
   for (const role of ["canvas", "grouped", "border", "primary", "secondary", "tertiary", "accent"]) {
-    assert.ok(countryScreen.includes("tokens." + role), "Missing shared role " + role);
+    assert.ok(countryScreen.includes("palette." + role), "Missing shared role " + role);
   }
   assert.doesNotMatch(countryScreen, /#[A-Fa-f0-9]{6}\b/, "Do not hardcode light-only country colours");
   assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|SecureStore|AsyncStorage|access_token|client_secret|Authorization:/i);
