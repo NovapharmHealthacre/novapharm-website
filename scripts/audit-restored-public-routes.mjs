@@ -74,6 +74,28 @@ async function visit() {
   }
 }
 await Promise.all(Array.from({ length: 5 }, visit));
+// Noindex scientific reference is intentionally excluded from sitemap; verify separately.
+const quantum = { path:"/quantum-research/", httpOk:false, canonical:"", title:"", h1:"", errors:[], warnings:[], noindex:false };
+try {
+  const html = await request(quantum.path);
+  quantum.httpOk = true;
+  quantum.title = (html.match(/<title\b[^>]*>([^<]*)<\/title>/i)?.[1] || "").slice(0, 180);
+  quantum.h1 = (html.match(/<h1\b[^>]*>([^<]*)<\/h1>/i)?.[1] || "").slice(0, 180);
+  quantum.canonical = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1] || "";
+  quantum.noindex = /<meta\s+name=["']robots["']\s+content=["']noindex,\s*nofollow["']/i.test(html);
+  if (!quantum.title || !quantum.h1) quantum.errors.push("Quantum title or H1 missing");
+  if (!quantum.noindex) quantum.errors.push("Quantum research must remain noindex,nofollow");
+  if (quantum.canonical !== origin + quantum.path) quantum.errors.push("Quantum canonical mismatch");
+  if (/<form\b|<input\b|data-login-form|data-contact-form/i.test(html)) quantum.errors.push("Interactive/identifiable research input prohibited");
+  if (!html.includes('/assets/css/quantum-research.css')) quantum.errors.push("Reviewed quantum CSS not referenced");
+  const css = await request("/assets/css/quantum-research.css", false);
+  if (css.length < 1000) quantum.errors.push("Reviewed quantum stylesheet missing or empty");
+  if (livePaths.includes(quantum.path)) quantum.errors.push("Noindex quantum page must not be in canonical sitemap");
+} catch (error) {
+  quantum.errors.push("Quantum reference not live: " + String(error).slice(0, 180));
+}
+routes.push(quantum);
+
 routes.sort((a, b) => a.path.localeCompare(b.path));
 const failed = routes.filter(r => r.errors.length);
 const incompleteProductSEO = routes.filter(r => /^\/products\/nutraxin\/[a-z0-9-]+\/$/.test(r.path) && !r.gtin13);
