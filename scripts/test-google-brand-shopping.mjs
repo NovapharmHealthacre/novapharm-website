@@ -50,8 +50,8 @@ test("public company-facts page names the same UK organization and links genuine
   assert.match(html, /NOVAPHARM HEALTHCARE LTD/);
   assert.match(html, /16716501/);
   assert.match(html, /data-company-identity-links/);
-  assert.match(html, /https:\/\/www\.linkedin\.com\/company\/novapharm-healthcare\//);
-  assert.match(html, /https:\/\/www\.wikidata\.org\/wiki\/Q137660644/);
+  assert(html.includes('href="https://www.linkedin.com/company/novapharm-healthcare/"'), "Exact company LinkedIn href missing");
+  assert(html.includes('href="https://www.wikidata.org/wiki/Q137660644"'), "Exact Wikidata href missing");
   assert.equal((html.match(/data-company-identity-links/g) || []).length, 1);
 });
 
