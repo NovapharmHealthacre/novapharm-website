@@ -13,14 +13,14 @@ function attribute(tag, name) {
 
 export function inspectPublicHigSignals(html) {
   if (typeof html !== "string") throw new TypeError("Public markup must be a string");
-  const htmlTag = html.match(/<html\\b[^>]*>/i)?.[0] ?? "";
-  const tags = [...html.matchAll(/<meta\\b[^>]*>/gi)].map(match => match[0]);
+  const htmlTag = html.match(/<html\b[^>]*>/i)?.[0] ?? "";
+  const tags = [...html.matchAll(/<meta\b[^>]*>/gi)].map(match => match[0]);
   const meta = name => tags.find(tag => attribute(tag, "name")?.toLowerCase() === name) ?? "";
   const viewport = attribute(meta("viewport"), "content") ?? "";
   const provenance = attribute(meta("novapharm-source-sha"), "content") ?? "";
   const language = attribute(htmlTag, "lang");
-  const h1Elements = [...html.matchAll(/<h1\\b/gi)].length;
-  const skipLinks = [...html.matchAll(/<a\\b[^>]*>/gi)].map(match => match[0]).filter(tag => {
+  const h1Elements = [...html.matchAll(/<h1\b/gi)].length;
+  const skipLinks = [...html.matchAll(/<a\b[^>]*>/gi)].map(match => match[0]).filter(tag => {
     const href = attribute(tag, "href") ?? "";
     const label = (attribute(tag, "class") ?? "") + " " + (attribute(tag, "aria-label") ?? "");
     return /^#[A-Za-z][A-Za-z0-9_-]*$/.test(href) &&
@@ -28,12 +28,12 @@ export function inspectPublicHigSignals(html) {
   });
   const skipTargetPresent = skipLinks.some(link => {
     const target = (attribute(link, "href") ?? "").slice(1);
-    return [...html.matchAll(/<[^>]+\\bid\\s*=\\s*(?:\"([^\"]+)\"|'([^']+)')[^>]*>/gi)]
+    return [...html.matchAll(/<[^>]+\bid\s*=\s*(?:\"([^\"]+)\"|'([^']+)')[^>]*>/gi)]
       .some(match => (match[1] ?? match[2]) === target);
   });
   const signals = {
     language,
-    responsiveViewport: /(?:^|[,;\\s])width\\s*=\\s*device-width(?:$|[,;\\s])/i.test(viewport),
+    responsiveViewport: /(?:^|[,;\s])width\s*=\s*device-width(?:$|[,;\s])/i.test(viewport),
     h1Elements,
     skipLinkWithTarget: skipTargetPresent,
     deployedSourceSha: /^[a-f0-9]{40}$/i.test(provenance) ? provenance.toLowerCase() : null
