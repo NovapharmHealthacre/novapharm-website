@@ -37,6 +37,8 @@ private struct PreviewNotice: View {
 }
 
 private struct IntelligenceHomeView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         List {
             Section {
@@ -53,7 +55,7 @@ private struct IntelligenceHomeView: View {
                     )
                     .foregroundStyle(NovaTheme.accent)
                 }
-                .frame(height: 180)
+                .frame(height: dynamicTypeSize.isAccessibilitySize ? 320 : 180)
                 .accessibilityLabel("Module catalogue sizes: Intelligence 22, Customer Portal 10, Distribution 9")
                 ForEach(NovaArea.allCases, id: \.rawValue) { area in
                     LabeledContent(area.title, value: "\(NovaCatalog.modules(in: area).count) documented modules")
