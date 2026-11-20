@@ -28,7 +28,7 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert.equal(item.brand, "Nutraxin");
     assert(item.title.startsWith("Nutraxin "));
     assert(item.title.length <= 70, "Feed title exceeds editorial target");
-    assert(!/\\b(sachets|effervescent|chewable)\\b.*\\b\\1\\b/i.test(item.title),
+    assert(!/\b(sachets|effervescent|chewable)\b.*\b\1\b/i.test(item.title),
       "Feed title repeats a product form");
     assert(item.description.includes(ref.formulation[0].name), "Catalogue ingredient missing from feed");
     assert(item.description.includes("See the product label"), "No unsupported health claims");
