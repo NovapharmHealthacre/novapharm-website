@@ -1,5 +1,6 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
 
 const origin = "https://novapharmhealthcare.com";
 const output = "artifacts/site-restoration/live-route-audit.json";
@@ -41,6 +42,9 @@ async function visit() {
       const html = await request(path);
       record.httpOk = true;
       record.bytes = html.length;
+      // Screening only: inspect public SSR semantics, not real keyboard/AT behavior.
+      record.higSignals = inspectPublicHigSignals(html);
+      record.warnings.push(...record.higSignals.warnings.map(x => "HIG SSR screening: " + x));
       record.title = (html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "").replace(/<[^>]*>/g, "").slice(0, 180);
       record.h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "").replace(/<[^>]*>/g, "").slice(0, 180);
       const canonicalTag = [...html.matchAll(/<link\b[^>]*>/gi)].map(m => m[0])
@@ -99,12 +103,24 @@ routes.push(quantum);
 routes.sort((a, b) => a.path.localeCompare(b.path));
 const failed = routes.filter(r => r.errors.length);
 const incompleteProductSEO = routes.filter(r => /^\/products\/nutraxin\/[a-z0-9-]+\/$/.test(r.path) && !r.gtin13);
+const screened = routes.filter(route => route.higSignals);
 const result = {
   timestamp: new Date().toISOString(), origin,
   methodology: "Read-only unauthenticated HTTPS cache-bypassed requests, no customer/medical data, no form submits or checkout, source and live sitemap union",
   expectedPaths: expectedPaths.length, liveSitemapPaths: livePaths.length,
   checked: routes.length, failures: failed.length,
   productGtinNotPublished: incompleteProductSEO.length,
+  higScreening: {
+    meaning: "Public SSR HTML signals only; not rendered keyboard/VoiceOver/WCAG or independently accepted Apple HIG",
+    sourceReadOnly: true,
+    routesScreened: screened.length,
+    withDocumentLanguage: screened.filter(x => Boolean(x.higSignals.language)).length,
+    withDeviceWidthViewport: screened.filter(x => x.higSignals.responsiveViewport).length,
+    withOneH1: screened.filter(x => x.higSignals.h1Elements === 1).length,
+    withLinkedSkipTarget: screened.filter(x => x.higSignals.skipLinkWithTarget).length,
+    withSourceSha: screened.filter(x => Boolean(x.higSignals.deployedSourceSha)).length,
+    distinctObservedLiveShas: [...new Set(screened.map(x => x.higSignals.deployedSourceSha).filter(Boolean))]
+  },
   issues, routes
 };
 mkdirSync(dirname(output), { recursive: true });
