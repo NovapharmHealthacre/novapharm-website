@@ -102,6 +102,7 @@ jobs:
           retention-days: 7
       - name: Do not publish debug APK from public repository
         if: ${{ !github.event.repository.private }}
-        run: echo "::notice::Public repository: APK artifact upload suppressed. Use approved private QA storage."
+        run: |
+          echo "::notice::Public repository: APK artifact upload suppressed. Use approved private QA storage."
       - name: Reaffirm debug release boundary
         run: echo "Research debug APK only. Not a release-signed production app, Play Store release or connected medicine service."
