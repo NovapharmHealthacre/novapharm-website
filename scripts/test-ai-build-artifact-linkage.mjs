@@ -42,6 +42,8 @@ test("offline research job builds the final approved public fixture, not an inco
   assert.match(workflow, /Produce research-only public evidence fixtures without publishing[\s\S]*?npm run build:public-only/);
   assert.match(workflow, /node scripts\/test-owner-corrections\.mjs/);
   assert.doesNotMatch(workflow, /PLATFORM_MODE=PUBLIC_ONLY node scripts\/build-pages\.mjs/);
+  assert.match(workflow, /node --test scripts\/test-apple-ai-search-lifecycle\.mjs scripts\/test-apple-ai-search-behavior\.mjs/);
+  assert.doesNotMatch(workflow, /node scripts\/test-ai-privacy\.mjs/);
 });
 
 test("research bootstrap stays user-initiated and is not part of released public website", () => {

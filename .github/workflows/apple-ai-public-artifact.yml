@@ -45,7 +45,10 @@ jobs:
           node scripts/test-owner-corrections.mjs
           node scripts/build-ai-knowledge-index.mjs
           node scripts/test-ai-index.mjs
-          node scripts/test-ai-privacy.mjs
+          # The owner-approved public website intentionally omits the retired AI notices.
+          # Test the offline AI controller's source privacy contract and behaviour,
+          # rather than asserting an unlaunched public feature exists.
+          node --test scripts/test-apple-ai-search-lifecycle.mjs scripts/test-apple-ai-search-behavior.mjs
 
   approved-public-hold:
     needs: source-contract
