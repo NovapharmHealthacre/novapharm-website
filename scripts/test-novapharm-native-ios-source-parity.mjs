@@ -127,6 +127,13 @@ test("iOS accessibility and iPad smoke tests have explicit, non-skippable eviden
   assert.match(view, /dynamicTypeSize\.isAccessibilitySize \? 320 : 180/);
   assert.match(countryView, /if dynamicTypeSize\.isAccessibilitySize/);
   assert.match(countryView, /\.pickerStyle\(\.menu\)/);
+  assert.match(view, /struct NovaAdaptiveSearchModifier: ViewModifier/);
+  assert.match(view, /novapharm\.workspaces\.inline-search/);
+  assert.match(countryView, /novapharm\.countries\.inline-search/);
+  assert.match(view, /\.modifier\(NovaAdaptiveSearchModifier\(searchText:/);
+  assert.match(countryView, /\.modifier\(NovaAdaptiveSearchModifier\(searchText:/);
+  assert.match(ui, /inlineSearch\.isHittable/);
+  assert.match(ui, /coverageFilter\.isHittable/);
   assert.match(ui, /performAccessibilityAudit\(for:/);
   assert.match(ui, /\.contrast, \.textClipped, \.hitRegion, \.sufficientElementDescription/);
   assert.match(ui, /testLargestDynamicTypeMaintainsResearchNavigation/);
