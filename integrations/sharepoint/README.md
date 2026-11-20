@@ -60,3 +60,18 @@ foreign, malformed or excessive pages fail closed rather than silently
 publishing an incomplete local file manifest. Offline tests cover 201-item
 folders, hostile cursors, repeated links and page limits. This does not
 prove live provider compatibility or atomicity across nested folders.
+
+## Fail-closed outbox boundary (source-only; pending deployment review)
+
+The legacy Microsoft Graph small-file PUT helper remains in the repository but is **not an approved document synchronization method**. The event processor now explicitly rejects `upload_document` events with `sharepoint_upload_conflict_gate` before folder creation, object download, upload or metadata PATCH. This is a deliberate safe stop: existing content must not be implicitly replaced, especially after an ambiguous partial-success retry.
+
+`blocked` events are **not automatically picked up again** by the outbox poller. Permission denials, version conflicts, malformed events and uncleared documents are terminal until a separately authorised operator reconciles the record and explicitly requeues it. Transient service failures can still back off and retry for the supported `ensure_entity_folder` operation. The `scripts/test-sharepoint-sync-error-policy.mjs` test is offline and does not call Graph, load credentials, touch a database or start AWS services.
+
+**Not a permission certification or activation:** Board-only effective site access, tenant identity consent, conflict-safe create/revise with eTag validation, malware and retention controls, provider concurrency tests, and owner release approval remain open in GitHub Issue #898. The Graph helper’s existence is not evidence that uploads are available.
+
+
+The worker also validates and rejects disallowed operations **before any Microsoft Graph
+authentication or site/drive discovery**. An upload-only batch is blocked and
+audited without issuing Graph calls. The separate, supported folder-creation
+operation remains eligible for site/drive discovery after preflight. This is
+enforced by offline preflight and source-order checks, not a live production test.
