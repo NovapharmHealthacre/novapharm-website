@@ -29,7 +29,7 @@ test("source index excludes sensitive pages and enforces public-only source rule
   assert.match(builder, /\.filter\(\(\[slug\]\) => !excludedPublicRoute\(slug\)\)/);
   assert.match(builder, /const noindex = robotTags\\.some/);
   assert.match(builder, /excludedNoindexPublicPages\\.push\\(source\\.file\\)/);
-  assert.match(builder, /html\\.matchAll\\(\\/<meta/);
+  assert.ok(builder.includes("html.matchAll(/<meta"), "Must inspect actual robots meta tags");
   assert.match(builder, /readFileSync\(join\(root, source\.file\), "utf8"\)/);
   for (const boundary of ["portal and private routes", "customer and supplier records", "uploaded documents", "supplier pricing"]) {
     assert.ok(builder.includes(boundary));
