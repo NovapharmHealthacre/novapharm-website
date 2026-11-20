@@ -1339,8 +1339,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 93,
-      "referenceCount": 242,
+      "usageCount": 92,
+      "referenceCount": 241,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1416,7 +1416,6 @@
         "scripts/enhance-seo-authority.mjs",
         "scripts/generate-nutraxin-shopping.mjs",
         "scripts/programme/validate-brand-assets.mjs",
-        "scripts/test-google-brand-shopping.mjs",
         "scripts/test-nutraxin-merchant.mjs",
         "scripts/test-owner-corrections.mjs",
         "scripts/test-public-visual-versioning.mjs",
@@ -5943,8 +5942,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 9,
-      "referenceCount": 22,
+      "usageCount": 8,
+      "referenceCount": 21,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
