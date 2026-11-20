@@ -886,8 +886,13 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
       assert.ok(typeof proof.artifactUrl === "string" && proof.artifactUrl.includes("/artifacts/"), name);
       assert.ok(proof.checkedJourneys.length >= 2, name);
       assert.ok(proof.scopeLimits.length >= 2, name);
-      if (proof.jobId !== 135618272024) assert.equal(proof.observedLiveSourceSha, null,
-        "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
+      if (![135618272024,136093044118].includes(proof.jobId)) {
+        assert.equal(proof.observedLiveSourceSha, null,
+          "Do not convert a run head or exact CSS bytes into an unobserved HTML release SHA");
+      } else {
+        assert.ok(isSha(proof.observedLiveSourceSha),
+          "Only independently observed public HTML SHA may be attached to a rendered live receipt");
+      }
     }
   }
   const layout = tracker.topics.find(t => t.title === "Layout");
@@ -1120,8 +1125,8 @@ test("11 remaining Critical Apple primary articles and collection indices have d
 test("real 12/12 read-only live rendered observations remain scoped to partial Accessibility and Layout evidence", () => {
   const publicRun = 44540795085;
   const audit = tracker.meta.productionEvidenceAudit;
-  assert.equal(audit.distinctObservedPublicLiveRuns.length, 4);
-  assert.equal(new Set(audit.distinctObservedPublicLiveRuns).size, 4);
+  assert.equal(audit.distinctObservedPublicLiveRuns.length, 5);
+  assert.equal(new Set(audit.distinctObservedPublicLiveRuns).size, 5);
   assert.ok(audit.distinctObservedPublicLiveRuns.includes(publicRun));
   for (const name of ["Accessibility", "Layout"]) {
     const topic = tracker.topics.find(t => t.title === name);
@@ -1165,6 +1170,52 @@ test("downloaded successful live-rendered artifact confirms public provenance bu
     "CI PR code SHA is not the deployed public HTML SHA");
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, tracker.meta.productionEvidenceAudit.verifiedImplementationCount);
   assert.equal(tracker.meta.allPlatformsProductionVerified, expectedProgrammeCertified());
+});
+
+test("independently inspected 36 public browser observations are only partial web evidence", () => {
+  const audit = tracker.meta.productionEvidenceAudit;
+  const proof = audit.expandedRenderedPublicArtifactReadback;
+  assert.ok(proof, "A genuine read-back of the public rendered artifact is required");
+  assert.equal(proof.sourceRun, 44677599844);
+  assert.equal(proof.jobId, 136093044118);
+  assert.equal(proof.artifactId, 14602609082);
+  assert.equal(proof.evidenceFile, "results.json");
+  assert.equal(proof.evidenceJsonSha256,
+    "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2");
+  assert.equal(proof.totalObservations, 36);
+  assert.equal(proof.failedObservations, 0);
+  assert.equal(proof.renderedScreenshots, 18);
+  assert.equal(proof.reportedAxeRuleViolations, 0);
+  assert.equal(proof.automatedAxeAuditedMobileChromiumRoutes, 6);
+  assert.equal(proof.observedLiveShaUniformAcrossRoutes, true);
+  assert.deepEqual(proof.viewportWidths, [320,390,1440]);
+  assert.deepEqual(proof.browsers, ["chromium","webkit"]);
+  assert.deepEqual(proof.observedRoutes,
+    ["/", "/contact/", "/legal/accessibility/", "/capabilities/", "/oncology/", "/products/"]);
+  assert.equal(proof.publishedSourceSha, "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98");
+  for (const title of ["Accessibility","Layout"]) {
+    const t = tracker.topics.find(x => x.title === title);
+    const receipts = t.webEvidence.filter(e => e.jobId === proof.jobId);
+    assert.equal(receipts.length, 1, title + ": one bounded receipt per article");
+    const e = receipts[0];
+    assert.equal(e.verificationLevel, "partial", title);
+    assert.equal(e.jobConclusion, "success", title);
+    assert.equal(e.observedLiveSourceSha, proof.publishedSourceSha, title);
+    assert.equal(e.checkedRoutes.length, 6, title);
+    assert.equal(e.readBackArtifact.totalRenderedObservations, 36, title);
+    assert.equal(e.readBackArtifact.narrowGapCount, 0, title);
+    assert.equal(e.readBackArtifact.resultJsonSha256, proof.evidenceJsonSha256, title);
+    assert.deepEqual(t.releaseEvidence, [], title + ": partial public receipt is NOT release approval");
+    assert.equal(t.implementation, "not_verified", title + ": do not auto-promote a partial receipt");
+  }
+  assert.ok(audit.distinctObservedPublicLiveRuns.includes(proof.sourceRun));
+  const observedPartialCount = tracker.topics.reduce((n,t) =>
+    n + ["web","ios","android"].reduce((x,p) =>
+      x + (t[p+"Evidence"]||[]).filter(e => e?.verificationLevel === "partial").length,0),0);
+  assert.equal(observedPartialCount, 8);
+  assert.equal(audit.recordedPartialTopicPlatformObservations, observedPartialCount);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false,
+    "A source-only, unsigned and unapproved HIG ledger cannot claim production completion");
 });
 
 test("12 additional current Apple HIG articles establish reasoned non-applicability, not fake native support", () => {
