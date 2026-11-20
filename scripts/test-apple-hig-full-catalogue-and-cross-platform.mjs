@@ -533,8 +533,41 @@ test("25 additional current official article decisions are source-grounded and f
 
 const ownerProductionConstraints = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
 const isSha = value => typeof value === "string" && /^[a-f0-9]{40}$/.test(value);
-const isGitHubReceipt = value => typeof value === "string" &&
-  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/(?:actions\/runs|pull|issues)\/[0-9]+/.test(value);
+// Receipt types must be distinguishable before live GitHub review read-back.
+// A generic PR/issue link must not masquerade as a completed workflow or
+// independently submitted APPROVED review. These checks validate syntax only;
+// authenticity and current reviewed head are checked separately over GitHub.
+const isActionsRunReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/actions\/runs\/[1-9]\d*$/.test(value);
+const isIndependentReviewReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/pull\/[1-9]\d*#pullrequestreview-[1-9]\d*$/.test(value);
+const isOwnerReleaseReceipt = value => typeof value === "string" &&
+  /^https:\/\/github\.com\/NovapharmHealthacre\/novapharm-website\/(?:issues\/[1-9]\d*#issuecomment-[1-9]\d*|pull\/[1-9]\d*#pullrequestreview-[1-9]\d*)$/.test(value);
+
+
+test("HIG production receipt types do not accept arbitrary issues or unapproved PR pages", () => {
+  const workflow = "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085";
+  const review = "https://github.com/NovapharmHealthacre/novapharm-website/pull/900#pullrequestreview-12345";
+  const comment = "https://github.com/NovapharmHealthacre/novapharm-website/issues/890#issuecomment-7032548826";
+  assert.equal(isActionsRunReceipt(workflow), true);
+  assert.equal(isIndependentReviewReceipt(review), true);
+  assert.equal(isOwnerReleaseReceipt(comment), true);
+  assert.equal(isOwnerReleaseReceipt(review), true);
+  for (const invalid of [
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890",
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/900",
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890#issuecomment-7032548826/extra",
+    "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44540795085?fake=1",
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/900#issuecomment-12345"
+  ]) {
+    assert.equal(isActionsRunReceipt(invalid), false, invalid);
+    assert.equal(isIndependentReviewReceipt(invalid), false, invalid);
+  }
+  assert.equal(isIndependentReviewReceipt(workflow), false);
+  assert.equal(isActionsRunReceipt(review), false);
+  assert.equal(isOwnerReleaseReceipt(workflow), false,
+    "CI run success cannot by itself establish owner release authorization");
+});
 
 /**
  * Structural acceptance rules: authenticating claims against live services,
@@ -559,7 +592,7 @@ function validateProductionVerifiedTopic(topic) {
     const full = rows.find(row => row && typeof row === "object" &&
       row.platform === platform && row.verificationLevel === "full" &&
       row.jobConclusion === "success" && isSha(row.observedLiveSourceSha) &&
-      isGitHubReceipt(row.runUrl) && isGitHubReceipt(row.independentReviewUrl) &&
+      isActionsRunReceipt(row.runUrl) && isIndependentReviewReceipt(row.independentReviewUrl) &&
       typeof row.observedAt === "string" && !Number.isNaN(Date.parse(row.observedAt)) &&
       typeof row.accessibilityEvidenceUrl === "string" &&
       /^https:\/\//.test(row.accessibilityEvidenceUrl) &&
@@ -581,7 +614,7 @@ function validateProductionVerifiedTopic(topic) {
     const release = topic.releaseEvidence.find(row => row && typeof row === "object" &&
       row.platform === platform && row.reviewDecision === "approved" &&
       row.observedLiveSourceSha === full.observedLiveSourceSha &&
-      isGitHubReceipt(row.independentReviewUrl) &&
+      isIndependentReviewReceipt(row.independentReviewUrl) &&
       typeof row.releaseReceiptUrl === "string" &&
       row.releaseReceiptUrl === full.releaseReceiptUrl);
     assert.ok(release, topic.title + "/" + platform + ": a reviewed exact-SHA release record is required");
@@ -593,7 +626,7 @@ function validateProductionVerifiedTopic(topic) {
 function validateOwnerSignoff() {
   assert.ok(["not_granted", "granted"].includes(ownerProductionConstraints.productionSignoff));
   if (ownerProductionConstraints.productionSignoff === "granted") {
-    assert.ok(isGitHubReceipt(ownerProductionConstraints.productionSignoffEvidenceUrl),
+    assert.ok(isOwnerReleaseReceipt(ownerProductionConstraints.productionSignoffEvidenceUrl),
       "Owner signoff needs an independently reviewable release receipt");
   }
 }
@@ -606,7 +639,7 @@ function validateApprovedOutOfScopeTopic(topic) {
     topic.title + ": every platform needs an explicit out-of-scope rationale");
   const a = topic.notApplicableApproval;
   assert.ok(a && a.reviewDecision === "approved" &&
-    isGitHubReceipt(a.independentReviewUrl) &&
+    isIndependentReviewReceipt(a.independentReviewUrl) &&
     typeof a.approvedAt === "string" && !Number.isNaN(Date.parse(a.approvedAt)) &&
     typeof a.reason === "string" && a.reason.length >= 40,
     topic.title + ": independent reviewer-approved N/A disposition required");
@@ -643,7 +676,7 @@ test("verified HIG claims cannot be manufactured from source-only checks, skippe
   assert.equal(scoped.verificationLevel, "partial");
   assert.equal(scoped.jobConclusion, "success");
   assert.ok(isSha(scoped.observedLiveSourceSha));
-  assert.ok(isGitHubReceipt(scoped.runUrl));
+  assert.ok(isActionsRunReceipt(scoped.runUrl));
   assert.deepEqual(["web", "ios", "android"].map(p => rtl.platformApplicability[p].state),
     ["applicable", "applicable", "applicable"]);
   assertRegisteredAcceptance(rtl);
@@ -908,7 +941,7 @@ test("actual production Capabilities/Oncology rendered screenshots are partial e
       p.evidenceType === "scoped_live_public_observation" && p.verificationLevel === "partial")) {
       assert.equal(proof.verificationLevel, "partial", name);
       assert.equal(proof.jobConclusion, "success", name);
-      assert.ok(isGitHubReceipt(proof.runUrl), name);
+      assert.ok(isActionsRunReceipt(proof.runUrl), name);
       assert.ok(typeof proof.artifactUrl === "string" && proof.artifactUrl.includes("/artifacts/"), name);
       assert.ok(proof.checkedJourneys.length >= 2, name);
       assert.ok(proof.scopeLimits.length >= 2, name);
