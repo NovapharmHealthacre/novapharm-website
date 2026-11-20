@@ -27,7 +27,9 @@ test("source index excludes sensitive pages and enforces public-only source rule
   for (const name of ["contact", "account-application", "investor-information", "careers"]) assert.ok(builder.includes('"' + name + '"'));
   assert.match(builder, /slug === "legal" \|\| slug\.startsWith\("legal\/"\)/);
   assert.match(builder, /\.filter\(\(\[slug\]\) => !excludedPublicRoute\(slug\)\)/);
-  assert.match(builder, /if \(\/noindex\/i\.test\(/);
+  assert.match(builder, /const noindex = robotTags\\.some/);
+  assert.match(builder, /excludedNoindexPublicPages\\.push\\(source\\.file\\)/);
+  assert.match(builder, /html\\.matchAll\\(\\/<meta/);
   assert.match(builder, /readFileSync\(join\(root, source\.file\), "utf8"\)/);
   for (const boundary of ["portal and private routes", "customer and supplier records", "uploaded documents", "supplier pricing"]) {
     assert.ok(builder.includes(boundary));
