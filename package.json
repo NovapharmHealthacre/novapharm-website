@@ -14,7 +14,7 @@
     "build:public-only": "PLATFORM_MODE=PUBLIC_ONLY node scripts/build-site.mjs",
     "build:base": "PLATFORM_MODE=FULL_PLATFORM node scripts/build-pages.mjs",
     "seo:enhance": "node scripts/enhance-seo-authority.mjs",
-    "seo:validate": "node scripts/validate-seo-authority.mjs && node scripts/validate-social-authority.mjs",
+    "seo:validate": "node scripts/validate-seo-authority.mjs && node scripts/validate-social-authority.mjs && node --test scripts/test-google-brand-shopping.mjs",
     "seo:indexnow:dry-run": "node scripts/indexnow.mjs",
     "visual:validate": "node scripts/validate-visual-refinement.mjs",
     "visual:modules": "node scripts/validate-module-media-sanity.mjs",
