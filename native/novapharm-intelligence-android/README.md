@@ -11,7 +11,7 @@
 - `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
 - `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
 
-**Android accessibility preflight:** The offline research `ScrollView` has a named read-only accessibility pane on Android 9+ while preserving the individual TextView descendants. Display headings use Android's native accessibility-heading semantics and text is specified in scalable `sp` units. `NovaResearchAccessibilityContractTest.kt` guards these source contracts, as well as the no-permissions/no-backup/no-cleartext fail-closed shell. This is **not** a TalkBack device audit: screen-reader traversal, magnification, larger fonts, orientation and real APK install still require independent emulator/physical-device evidence before any HIG production acceptance.
+**Android accessibility preflight:** The offline research `ScrollView` has a named read-only accessibility pane on Android 9+, preserving native TextView descendants. Android accessibility headings and scalable `sp` sizes remain in place; `NovaResearchAccessibilityContractTest.kt` guards these and the offline/no-backup/no-cleartext boundary. This does **not** replace TalkBack on-device testing or approval.
 
 From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
 
@@ -22,7 +22,13 @@ gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 
 The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
 
-The PR's pinned GitHub Actions workflow requires a nonempty **debug-only** `app-debug.apk` and computes its SHA-256 checksum in `SHA256SUMS.txt`. **The APK, checksum and source-provenance receipt are uploaded only when the GitHub repository is private**, using a short-lived (7-day) artifact named `novapharm-android-research-debug-<PR head SHA>`. This repository is currently public, so the upload step is intentionally skipped: a public repository is **not** a private QA delivery channel. For private device testing, use a separately approved private repository or protected storage. The Gradle build and tests still run in CI without distributing an APK. Check the checksum before controlled test-device installation, and do not put the prototype in public stores. This is an ordinary Android debug-key build, **not** a release-signed distribution, actual TalkBack acceptance, an independent reviewer signoff, or an authorized customer app. No paid infrastructure is provisioned by this packaging step.
+## Private Android debug APK artifact
+
+The GitHub Actions workflow builds the **offline Kotlin research shell** `app-debug.apk` and calculates its SHA-256 checksum after `:app:testDebugUnitTest :app:assembleDebug` succeeds. The workflow independently checks compiled APK manifest, application bytecode, package name and sensitive-permission denials. **The APK, checksum and source-provenance receipt are uploaded only if the repository is private**. This repository is currently public, so CI builds and inspects the APK but deliberately skips artifact distribution. Private device QA requires separately approved protected storage or a private repository.
+
+This is a **debug-key signed, research-only APK**, not the complete NovaPharm Intelligence or Customer Portal Android product. It contains a source-only sparse-circuit review screen with no network or private medical/customer data. Debug signing is unsuitable for a production/Play Store identity and may change between CI runners; app updates across such APKs may require uninstalling the previous debug copy, which removes local app data. No Google Play Console purchase is required for a trusted developer to install an APK on an authorized test device.
+
+Where private-repository upload is permitted, artifact retention is seven days and names identify the source PR head; the receipt records the actual tested checkout/tree. A successful Gradle test and APK generation are not proof of on-device TalkBack, Android 15 edge-to-edge, permissions, secure authentication, production API admission, regulated-data compliance or successful Play Store submission. Independent Android device validation and signed release engineering remain outstanding.
 
 ## Future production integration
 

@@ -18,7 +18,7 @@ export const publicRtlDirectories = Object.freeze([
   "cro", "distribution", "investor-information", "leadership", "legal",
   "market-access", "markets", "news-insights", "oncology", "partner-with-us",
   "products", "product-portfolio", "regulatory-services",
-  "service-unavailable", "services", "technology", "trust-centre",
+  "service-unavailable", "services", "technology", "quantum-research", "trust-centre",
 ]);
 const rootFiles = Object.freeze(["index.html", "404.html", "500.html", "portal/index.html"]);
 const rtlScript = '<script src="/assets/js/rtl-localization.js"></script>';

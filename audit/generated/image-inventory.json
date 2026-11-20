@@ -2144,16 +2144,19 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 10,
+      "referenceCount": 13,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
+        "index.html",
         "scripts/build-public-pages.mjs",
+        "scripts/enhance-seo-authority.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-apple-app-icons.mjs",
-        "scripts/validate-site.mjs"
+        "scripts/validate-site.mjs",
+        "seo/knowledge-panel-identity-release-20261120.md"
       ],
       "exactDuplicateGroup": "exact-021",
       "perceptualDuplicateCandidateGroup": "visual-candidate-013",

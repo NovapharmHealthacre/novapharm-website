@@ -18,11 +18,15 @@ import {
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
+  if (route === "/about/company/") return "2026-11-20";
   if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") return "2026-11-20";
   return ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
     ? "2026-11-10" : releaseDate;
 };
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
+// The approved 512px square NovaPharm mark is the preferred Google Organization logo.
+// Keep the wide wordmark as a separate image for on-site corporate branding.
+const squareLogoUrl = `${SITE_URL}/assets/brand/pwa-icon-512.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articleDirectory)
@@ -71,13 +75,21 @@ function canonicalOrganization() {
     logo: {
       "@type": "ImageObject",
       "@id": `${SITE_URL}/#logo`,
+      url: squareLogoUrl,
+      contentUrl: squareLogoUrl,
+      width: 512,
+      height: 512,
+      caption: `${company.name} brand mark`
+    },
+    image: {
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/#wordmark`,
       url: logoUrl,
       contentUrl: logoUrl,
       width: 2048,
       height: 258,
       caption: company.name
     },
-    image: { "@id": `${SITE_URL}/#logo` },
     identifier: {
       "@type": "PropertyValue",
       propertyID: "Companies House company number",
@@ -86,6 +98,7 @@ function canonicalOrganization() {
     },
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
+    mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
@@ -238,6 +251,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
+          ...(route === "/about/company/" ? { mainEntity: { "@id": ORGANIZATION_ID } } : {}),
           dateModified: materialPageReleaseDate(route)
         };
       }
@@ -255,6 +269,16 @@ function enhanceJsonLd(html, route, article, leader) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
   const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   return html.replace("</head>", `${serialized}\n</head>`);
+}
+
+function addCompanyIdentityLinks(html, route) {
+  if (route !== "/about/company/" || html.includes("data-company-identity-links")) return html;
+  const anchor = `<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a>`;
+  if (!html.includes(anchor)) throw new Error("Company identity references need the visible Companies House record link.");
+  const links = '<p data-company-identity-links>Public company identity cross-references: ' +
+    '<a href="https://www.linkedin.com/company/novapharm-healthcare/">NovaPharm on LinkedIn</a> and ' +
+    '<a href="https://www.wikidata.org/wiki/Q137660644">Wikidata (community-maintained)</a>.</p>';
+  return html.replace(anchor, anchor + links);
 }
 
 function insertHeadSignals(html, canonical, article, leader) {
@@ -359,6 +383,7 @@ for (const file of [...new Set(publicFiles)]) {
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
+  html = addCompanyIdentityLinks(html, route);
   // Keep the editorial trust notice last: the downstream authorship reconciler
   // replaces its terminal section, so the native share link must precede it.
   html = addNativeArticleShare(html, article, canonical);

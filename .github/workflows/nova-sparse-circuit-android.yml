@@ -26,15 +26,23 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 2 # include PR merge parents for exact PR-head ancestry verification
-      - name: Record tested checkout and PR source provenance
+          fetch-depth: 2 # allow exact source head vs. tested PR-merge parent verification
+      - name: Record tested source and checkout provenance
         env:
           NOVAPHARM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           checkout_sha="$(git rev-parse HEAD)"
           test "$checkout_sha" = "$GITHUB_SHA"
-          git merge-base --is-ancestor "$NOVAPHARM_PR_HEAD_SHA" "$checkout_sha"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            set -- $(git show -s --format=%P HEAD)
+            if [ "$#" -ne 2 ] || [ "$2" != "$NOVAPHARM_PR_HEAD_SHA" ]; then
+              echo "::error::Pull-request source SHA does not match tested merge commit"
+              exit 1
+            fi
+          else
+            test "$checkout_sha" = "$NOVAPHARM_PR_HEAD_SHA"
+          fi
           {
             printf 'repository=%s\n' "$GITHUB_REPOSITORY"
             printf 'event=%s\n' "$GITHUB_EVENT_NAME"
@@ -51,35 +59,49 @@ jobs:
       - uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
         with:
           gradle-version: "8.9"
-      - name: Check Android SDK availability
+      - name: Check Android SDK and build-tool availability
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
+          set -euo pipefail
           test -d "$ANDROID_HOME"
           if [ ! -d "$ANDROID_HOME/platforms/android-35" ]; then
-            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35" "build-tools;35.0.0"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35"
           fi
-      - name: Build debug-only research shell and run security denial unit tests
+          if [ ! -x "$ANDROID_HOME/build-tools/35.0.0/aapt" ]; then
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;35.0.0"
+          fi
+      - name: Build research shell and run denial unit tests
         working-directory: native/novapharm-intelligence-android
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
-      - name: Preserve debug APK integrity receipt for private device QA
-        working-directory: native/novapharm-intelligence-android
+      - name: Inspect and checksum private debug APK
         run: |
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/outputs/apk/debug/SHA256SUMS.txt
-          test -s app/build/outputs/apk/debug/SHA256SUMS.txt
-      - name: Upload non-production Android debug APK and SHA-256 (private repositories only)
+          set -euo pipefail
+          apk="native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$apk"
+          unzip -Z1 "$apk" > "$RUNNER_TEMP/novapharm-apk-entries.txt"
+          grep -Fx "AndroidManifest.xml" "$RUNNER_TEMP/novapharm-apk-entries.txt"
+          grep -Fx "classes.dex" "$RUNNER_TEMP/novapharm-apk-entries.txt"
+          aapt="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          "$aapt" dump badging "$apk" > "$RUNNER_TEMP/novapharm-apk-badging.txt"
+          grep -F "package: name='com.novapharm.intelligence.research'" "$RUNNER_TEMP/novapharm-apk-badging.txt"
+          "$aapt" dump permissions "$apk" > "$RUNNER_TEMP/novapharm-apk-permissions.txt"
+          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-apk-permissions.txt"; then
+            echo "::error::Unexpected sensitive permission in compiled research APK"
+            exit 1
+          fi
+          sha256sum "$apk" > "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
+      - name: Upload debug APK only from private repositories
         if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-android-research-debug-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.apk
-            native/novapharm-intelligence-android/app/build/outputs/apk/debug/SHA256SUMS.txt
+            native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256
             ${{ runner.temp }}/novapharm-android-test-provenance.txt
           if-no-files-found: error
           retention-days: 7
-      - name: Never expose private-QA APK artifacts from a public repository
+      - name: Do not publish debug APK from public repository
         if: ${{ !github.event.repository.private }}
-        run: echo "::notice::Repository is public; debug APK artifact upload suppressed. Use a separately approved private QA destination."
-      - name: Reaffirm release boundary
-        run: echo "CI debug APK is not a release-signed production NovaPharm app, commercial release or connected model service."
+        run: echo "::notice::Public repository: APK artifact upload suppressed. Use approved private QA storage."
+      - name: Reaffirm debug release boundary
+        run: echo "Research debug APK only. Not a release-signed production app, Play Store release or connected medicine service."
