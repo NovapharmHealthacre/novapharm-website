@@ -2146,10 +2146,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 10,
-      "referenceCount": 13,
+      "usageCount": 11,
+      "referenceCount": 15,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
+        "apps/corporate/lib/seo.ts",
         "creative-assets/asset-register.json",
         "final-report/official-logo-register.md",
         "index.html",

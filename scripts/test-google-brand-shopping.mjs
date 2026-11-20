@@ -55,6 +55,28 @@ test("public company-facts page names the same UK organization and links genuine
   assert.equal((html.match(/data-company-identity-links/g) || []).length, 1);
 });
 
+test("the actual Next.js corporate website uses the same Knowledge Panel entity as the static source", () => {
+  const home = scripts(read("index.html")).find(s =>
+    (Array.isArray(s["@type"]) ? s["@type"] : [s["@type"]]).includes("Organization"));
+  assert(home, "Canonical Organization schema missing from the static source");
+  const seoSource = read("apps/corporate/lib/seo.ts");
+  const rendererSource = read("apps/corporate/components/page-renderer.tsx");
+  const iconPath = ["assets", "brand", "pwa-icon-512.png"].join("/");
+
+  assert(seoSource.includes("export function organisationSchema()"), "Next.js organization generator missing");
+  assert(seoSource.includes("url: `${siteUrl}/" + iconPath + "`"), "Next.js square Google logo does not match canonical homepage");
+  assert(seoSource.includes("width: 512") && seoSource.includes("height: 512"), "Next.js company logo must retain 512x512 dimensions");
+  assert(seoSource.includes('sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"]'), "Next.js company identity must keep the two verified external public references");
+  assert(seoSource.includes('page.slug === "about/company" ? { mainEntity: { "@id": organisationId } }'), "Live company WebPage must point to same Organization entity");
+  assert(rendererSource.includes("data-company-identity-links"), "Live company page is missing visible corporate identity references");
+  assert(rendererSource.includes('href="https://www.linkedin.com/company/novapharm-healthcare/"'), "Live corporate LinkedIn href must be exact");
+  assert(rendererSource.includes('href="https://www.wikidata.org/wiki/Q137660644"'), "Live corporate Wikidata href must be exact");
+  assert.equal(home.logo.width, 512);
+  assert.equal(home.logo.height, 512);
+  assert.equal(home.identifier.value, "16716501");
+  assert(!home.address, "Registered residential address must remain absent from public Organization schema");
+});
+
 test("all 19 consumer product pages have a working storefront module and internally consistent Offers", () => {
   assert.equal(registered.length, 19);
   assert.equal(catalogue.products.length, 19);
