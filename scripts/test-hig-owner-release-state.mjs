@@ -64,3 +64,56 @@ test("customer activation, billing and paid infrastructure remain explicitly gat
   x.initialInfrastructureBudget.newChargeableResourceProvisioning = true;
   assert.throws(() => validateHigOwnerReleaseState(x), /No paid AWS provisioning/);
 });
+
+test("all currently disabled production permissions fail closed on unauthorized activation", () => {
+  for (const key of Object.keys(actual.productionPermissions)) {
+    const attempt = copy(actual);
+    attempt.productionPermissions[key] = true;
+    assert.throws(() => validateHigOwnerReleaseState(attempt), undefined,
+      "A disabled production permission must not become active without its own authorization: " + key);
+  }
+});
+
+test("signoff does not authorize unapproved medicine data, paid vendor tools or infrastructure", () => {
+  const granted = copy(actual);
+  granted.productionSignoff = "granted";
+  granted.productionSignoffEvidenceUrl =
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
+  granted.productionSignoffApprovedSourceSha = "a".repeat(40);
+  granted.productionSignoffGrantedAt = "2026-11-20T11:30:00Z";
+  for (const permission of [
+    "admitUnapprovedMedicineData", "provisionNewPaidInfrastructure",
+    "purchaseVendorLicenses", "activateNativePalantir",
+    "activateNativePrisma", "activateNativeBloomberg"
+  ]) {
+    const attempt = copy(granted);
+    attempt.productionPermissions[permission] = true;
+    assert.throws(() => validateHigOwnerReleaseState(attempt), undefined,
+      permission + " must remain forbidden under source-rights and zero-spend policies");
+  }
+});
+
+test("additional customer-facing permissions require distinct approval receipts", () => {
+  const granted = copy(actual);
+  granted.productionSignoff = "granted";
+  granted.productionSignoffEvidenceUrl =
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
+  granted.productionSignoffApprovedSourceSha = "a".repeat(40);
+  granted.productionSignoffGrantedAt = "2026-11-20T11:30:00Z";
+  const evidenceKeys = {
+    enableCustomerSubscriptions: "subscriptionsAuthorizationEvidenceUrl",
+    sendExternalEmail: "externalEmailReleaseEvidenceUrl",
+    cutOverPortalDnsOrApiMapping: "portalCutoverReleaseEvidenceUrl"
+  };
+  for (const [permission, evidenceKey] of Object.entries(evidenceKeys)) {
+    const attempt = copy(granted);
+    attempt.productionPermissions[permission] = true;
+    assert.throws(() => validateHigOwnerReleaseState(attempt),
+      /release\/authorization receipt/,
+      permission + ": future source state cannot bypass its own receipt");
+    attempt[evidenceKey] =
+      "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
+    assert.equal(validateHigOwnerReleaseState(attempt).productionAcceptedByThisValidation,
+      false, "A syntactically plausible URL does not mean authenticated review or deployment");
+  }
+});
