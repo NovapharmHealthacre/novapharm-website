@@ -62,7 +62,13 @@ function validateResponseUrl(response, expectedUrl) {
 }
 
 async function readBoundedOfficialJson(response) {
-  if (!response || response.ok !== true) fail("official publisher unavailable");
+  if (!response || response.ok !== true) {
+    // Status is a public protocol integer, not untrusted response text.
+    // Retain actionable diagnostics without logging body, headers or identifiers.
+    const status = Number.isInteger(response?.status) && response.status >= 400 && response.status <= 599
+      ? ` (HTTP ${response.status})` : "";
+    fail("official publisher unavailable" + status);
+  }
   const type = response.headers?.get?.("content-type") || "";
   if (!/\bapplication\/json\b/i.test(type) &&
       !/\bapplication\/[^;\s]+\+json\b/i.test(type)) {
