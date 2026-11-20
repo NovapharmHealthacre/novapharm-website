@@ -18,6 +18,8 @@ on:
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
       - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
       - 'scripts/test-apple-hig-runtime-source-scope.mjs'
+      - 'scripts/hig-owner-release-state.mjs'
+      - 'scripts/test-hig-owner-release-state.mjs'
       - 'scripts/test-apple-hig-route-topic-plan.mjs'
       - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
       - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
@@ -40,6 +42,8 @@ on:
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
       - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
       - 'scripts/test-apple-hig-runtime-source-scope.mjs'
+      - 'scripts/hig-owner-release-state.mjs'
+      - 'scripts/test-hig-owner-release-state.mjs'
       - 'scripts/test-apple-hig-route-topic-plan.mjs'
       - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
       - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
@@ -67,6 +71,8 @@ jobs:
           node-version: '24'
       - name: Validate source-scope contract syntax
         run: node --check scripts/test-apple-hig-runtime-source-scope.mjs
+      - name: Check future release signoff claims and reject unauthorized customer activation
+        run: node --test scripts/test-hig-owner-release-state.mjs
       - name: Validate route and native source inventory, no network or cloud accounts
         run: node --test scripts/test-apple-hig-runtime-source-scope.mjs
       - name: Generate source-only critical HIG route-topic QA plan

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import test from "node:test";
+import {validateHigOwnerReleaseState} from "./hig-owner-release-state.mjs";
 
 // This is an acceptance BACKLOG derived from the owner's canonical HIG
 // register. No line in this report certifies a live deployment or a signed app.
@@ -46,10 +47,11 @@ test("generate 516 evidence-empty, platform-appropriate HIG source-to-production
 
   assert.equal(register.topics.length, 172);
   assert.equal(new Set(register.topics.map(t => t.url)).size, 172);
-  assert.equal(owner.productionSignoff, "not_granted",
-    "Production gate changed: a separate signed release workflow must review this source-only plan");
+  validateHigOwnerReleaseState(owner);
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
-  assert.equal(owner.productionPermissions.enableCustomerBilling, false);
+  // Customer billing remains denied unless the separately validated owner
+  // signoff and billing-specific evidence are present; this source-only plan
+  // cannot re-authorize or activate billing.
 
   const counts = {
     topicCount: register.topics.length,
