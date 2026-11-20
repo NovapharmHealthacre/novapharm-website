@@ -167,7 +167,7 @@ test("lockfile handoff cannot manufacture credentials or production mobile build
   assert.equal(app.ios.bundleIdentifier, undefined);
   assert.equal(app.android.package, undefined);
   assert.doesNotMatch(mobileCandidate, /eas build|xcodebuild archive|gradle .*bundleRelease|app-store|play-store|AWS_ACCESS_KEY_ID|client_secret|access_token/i);
-  assert.match(read("native/novapharm-intelligence-mobile/README.md"), /This does not yet make mobile builds reproducible/);
+  assert.match(read("native/novapharm-intelligence-mobile/README.md"), /Reproducibility is still pending/);
 });
 
 
