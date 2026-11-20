@@ -202,9 +202,16 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     await page.keyboard.press("Tab");
     assert.equal(await bypass.evaluate((el) => el === document.activeElement), true,
       `${engine} ${viewport.name}: first Tab must reach the skip link`);
-    const box = await bypass.boundingBox();
-    assert.ok(box && box.y >= 0 && box.x >= 0,
-      `${engine} ${viewport.name}: focused skip link must be onscreen`);
+    await page.waitForFunction(() => {
+      const link = document.querySelector<HTMLAnchorElement>(".skip-link");
+      if (!link || document.activeElement !== link) return false;
+      const rect = link.getBoundingClientRect();
+      const style = getComputedStyle(link);
+      return rect.width >= 44 && rect.height >= 44 &&
+        rect.left >= 0 && rect.top >= 0 &&
+        rect.right <= innerWidth && rect.bottom <= innerHeight &&
+        style.visibility === "visible" && Number(style.opacity) > 0.95;
+    }, null, { timeout: 2500 });
     await page.keyboard.press("Enter");
     assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content",
       `${engine} ${viewport.name}: Enter must move focus to main content`);
