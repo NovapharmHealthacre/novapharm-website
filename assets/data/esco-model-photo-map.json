@@ -1,0 +1,495 @@
+{
+  "source": "ESCO 2026 supplier catalogue",
+  "imageRightStatus": "Manufacturer website-use rights requested, not yet independently confirmed",
+  "mappedImagesCount": 61,
+  "images": {
+    "ESCO-CAT-0001": {
+      "model": "EHF 106",
+      "sourcePage": 7,
+      "path": "/assets/media/esco/esco-p07-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0002": {
+      "model": "EHF 105",
+      "sourcePage": 7,
+      "path": "/assets/media/esco/esco-p07-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0003": {
+      "model": "EHF 113P",
+      "sourcePage": 7,
+      "path": "/assets/media/esco/esco-p07-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0005": {
+      "model": "EHF 110",
+      "sourcePage": 9,
+      "path": "/assets/media/esco/esco-p09-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0010": {
+      "model": "EHF 153",
+      "sourcePage": 9,
+      "path": "/assets/media/esco/esco-p09-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0014": {
+      "model": "EHF 119E",
+      "sourcePage": 10,
+      "path": "/assets/media/esco/esco-p10-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0018": {
+      "model": "EHF 162",
+      "sourcePage": 11,
+      "path": "/assets/media/esco/esco-p11-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0021": {
+      "model": "EHF 133",
+      "sourcePage": 12,
+      "path": "/assets/media/esco/esco-p12-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0022": {
+      "model": "EHF 120",
+      "sourcePage": 12,
+      "path": "/assets/media/esco/esco-p12-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0026": {
+      "model": "EHF 195",
+      "sourcePage": 14,
+      "path": "/assets/media/esco/esco-p14-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0028": {
+      "model": "EHF 199",
+      "sourcePage": 14,
+      "path": "/assets/media/esco/esco-p14-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0029": {
+      "model": "EHF 197",
+      "sourcePage": 14,
+      "path": "/assets/media/esco/esco-p14-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0034": {
+      "model": "EHF 158",
+      "sourcePage": 15,
+      "path": "/assets/media/esco/esco-p15-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0035": {
+      "model": "EHF 143",
+      "sourcePage": 15,
+      "path": "/assets/media/esco/esco-p15-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0040": {
+      "model": "EHF 149",
+      "sourcePage": 16,
+      "path": "/assets/media/esco/esco-p16-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0047": {
+      "model": "EHF 166",
+      "sourcePage": 20,
+      "path": "/assets/media/esco/esco-p20-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0048": {
+      "model": "EHF 165",
+      "sourcePage": 20,
+      "path": "/assets/media/esco/esco-p20-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0050": {
+      "model": "EHF 160",
+      "sourcePage": 20,
+      "path": "/assets/media/esco/esco-p20-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0053": {
+      "model": "EHS 025",
+      "sourcePage": 22,
+      "path": "/assets/media/esco/esco-p22-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0054": {
+      "model": "ESS 004",
+      "sourcePage": 22,
+      "path": "/assets/media/esco/esco-p22-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0058": {
+      "model": "EHF 171",
+      "sourcePage": 19,
+      "path": "/assets/media/esco/esco-p19-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0061": {
+      "model": "EHF 104",
+      "sourcePage": 19,
+      "path": "/assets/media/esco/esco-p19-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0064": {
+      "model": "EHF 138",
+      "sourcePage": 21,
+      "path": "/assets/media/esco/esco-p21-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0066": {
+      "model": "EHF 128",
+      "sourcePage": 26,
+      "path": "/assets/media/esco/esco-p26-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0068": {
+      "model": "EHF 137",
+      "sourcePage": 26,
+      "path": "/assets/media/esco/esco-p26-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0072": {
+      "model": "EHF 181",
+      "sourcePage": 26,
+      "path": "/assets/media/esco/esco-p26-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0073": {
+      "model": "EHF 135",
+      "sourcePage": 27,
+      "path": "/assets/media/esco/esco-p27-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0077": {
+      "model": "EHF 139",
+      "sourcePage": 27,
+      "path": "/assets/media/esco/esco-p27-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0078": {
+      "model": "EHF 136",
+      "sourcePage": 27,
+      "path": "/assets/media/esco/esco-p27-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0083": {
+      "model": "EHF 151",
+      "sourcePage": 28,
+      "path": "/assets/media/esco/esco-p28-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0084": {
+      "model": "EHF 152",
+      "sourcePage": 28,
+      "path": "/assets/media/esco/esco-p28-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0088": {
+      "model": "EHF 142",
+      "sourcePage": 29,
+      "path": "/assets/media/esco/esco-p29-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0090": {
+      "model": "EHS 028",
+      "sourcePage": 29,
+      "path": "/assets/media/esco/esco-p29-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0092": {
+      "model": "EHF 140",
+      "sourcePage": 30,
+      "path": "/assets/media/esco/esco-p30-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0093": {
+      "model": "EHF 141",
+      "sourcePage": 30,
+      "path": "/assets/media/esco/esco-p30-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0095": {
+      "model": "EHF 107",
+      "sourcePage": 30,
+      "path": "/assets/media/esco/esco-p30-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0141": {
+      "model": "EHD 084",
+      "sourcePage": 44,
+      "path": "/assets/media/esco/esco-p44-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0142": {
+      "model": "EHD 091",
+      "sourcePage": 44,
+      "path": "/assets/media/esco/esco-p44-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0143": {
+      "model": "EHD 085",
+      "sourcePage": 44,
+      "path": "/assets/media/esco/esco-p44-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0146": {
+      "model": "EHD 086",
+      "sourcePage": 45,
+      "path": "/assets/media/esco/esco-p45-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0174": {
+      "model": "EHD 092",
+      "sourcePage": 46,
+      "path": "/assets/media/esco/esco-p46-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0176": {
+      "model": "EHD 102",
+      "sourcePage": 46,
+      "path": "/assets/media/esco/esco-p46-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0178": {
+      "model": "EHD 095",
+      "sourcePage": 47,
+      "path": "/assets/media/esco/esco-p47-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0183": {
+      "model": "EHD 087",
+      "sourcePage": 48,
+      "path": "/assets/media/esco/esco-p48-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0200": {
+      "model": "ESL 029",
+      "sourcePage": 52,
+      "path": "/assets/media/esco/esco-p52-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0207": {
+      "model": "ESL 158",
+      "sourcePage": 53,
+      "path": "/assets/media/esco/esco-p53-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0209": {
+      "model": "ESL 086",
+      "sourcePage": 54,
+      "path": "/assets/media/esco/esco-p54-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0212": {
+      "model": "ESL 089",
+      "sourcePage": 54,
+      "path": "/assets/media/esco/esco-p54-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0216": {
+      "model": "ESL 024",
+      "sourcePage": 58,
+      "path": "/assets/media/esco/esco-p58-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0218": {
+      "model": "ESL 049",
+      "sourcePage": 58,
+      "path": "/assets/media/esco/esco-p58-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0226": {
+      "model": "ESL 154",
+      "sourcePage": 60,
+      "path": "/assets/media/esco/esco-p60-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0230": {
+      "model": "ELG 151",
+      "sourcePage": 63,
+      "path": "/assets/media/esco/esco-p63-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0235": {
+      "model": "ELG 161",
+      "sourcePage": 63,
+      "path": "/assets/media/esco/esco-p63-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0238": {
+      "model": "ELG 121",
+      "sourcePage": 64,
+      "path": "/assets/media/esco/esco-p64-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0245": {
+      "model": "ELG 102",
+      "sourcePage": 65,
+      "path": "/assets/media/esco/esco-p65-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0246": {
+      "model": "ELG 103",
+      "sourcePage": 65,
+      "path": "/assets/media/esco/esco-p65-image03.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0247": {
+      "model": "ESL 014",
+      "sourcePage": 65,
+      "path": "/assets/media/esco/esco-p65-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0254": {
+      "model": "ELP 119",
+      "sourcePage": 68,
+      "path": "/assets/media/esco/esco-p68-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0255": {
+      "model": "ELP 115",
+      "sourcePage": 68,
+      "path": "/assets/media/esco/esco-p68-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0259": {
+      "model": "ELP 103",
+      "sourcePage": 69,
+      "path": "/assets/media/esco/esco-p69-image01.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    },
+    "ESCO-CAT-0265": {
+      "model": "ELP 188",
+      "sourcePage": 69,
+      "path": "/assets/media/esco/esco-p69-image02.webp",
+      "provenance": "ESCO 2026 catalogue PDF; image paired with printed model identifier",
+      "variantConfirmed": false,
+      "rightsConfirmed": false
+    }
+  }
+}
