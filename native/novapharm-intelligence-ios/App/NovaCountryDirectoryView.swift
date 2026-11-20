@@ -48,6 +48,21 @@ struct NovaCountryDirectoryView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("novapharm.countries.readonly-notice")
             }
+            if dynamicTypeSize.isAccessibilitySize {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Search national scopes")
+                            .font(.headline)
+                        TextField("Search", text: $searchText)
+                            .font(.body)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .accessibilityLabel("Search national scopes")
+                            .accessibilityIdentifier("novapharm.countries.inline-search")
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
             Section {
                 if dynamicTypeSize.isAccessibilitySize {
                     Picker("Reference coverage", selection: $filter) {
@@ -97,7 +112,7 @@ struct NovaCountryDirectoryView: View {
                 ContentUnavailableView.search(text: searchText)
             }
         }
-        .searchable(text: $searchText, prompt: "Country, ISO code or region")
+        .modifier(NovaAdaptiveSearchModifier(searchText: $searchText, prompt: "Country, ISO code or region"))
         .navigationTitle("Countries")
     }
 }
