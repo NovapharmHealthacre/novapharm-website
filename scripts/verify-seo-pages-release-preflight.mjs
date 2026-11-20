@@ -55,8 +55,8 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
   if (!guide.includes("# NovaPharm Healthcare") ||
       !guide.includes(HOST + "/products/nutraxin/") ||
       !guide.includes(HOST + "/sitemap.xml")) issues.push("Public AI source guide incomplete");
-  // Match complete HTTPS URLs, not a hostname substring that may occur inside an attacker-controlled URL.
-  for (const token of guide.split(/[\\s<>()\\[\\]"']+/)) {
+  // Parse complete guide URLs, rather than matching a trusted hostname anywhere in a string.
+  for (const token of guide.split(/[\s<>()\[\]"']+/)) {
     if (!token.startsWith("https://") && !token.startsWith("http://")) continue;
     let url;
     try { url = new URL(token.replace(/[.,;]+$/, "")); }
@@ -65,7 +65,7 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
       issues.push("AI source guide links to an unverified external host");
       break;
     }
-    if (/^\\/(?:admin|portal|employee|api)(?:\\/|$)/i.test(url.pathname)) {
+    if (/^\/(?:admin|portal|employee|api)(?:\/|$)/i.test(url.pathname)) {
       issues.push("AI source guide exposes a protected route");
       break;
     }

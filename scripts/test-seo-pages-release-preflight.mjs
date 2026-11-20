@@ -76,14 +76,14 @@ test("contact candidate cannot silently switch the verified AWS API origin",()=>
 
 test("AI source guide rejects protected NovaPharm URLs",()=>{
   const x=fixture({ownerApproved:true,candidateActive:true});
-  x.files["llms.txt"] += "\\nhttps://novapharmhealthcare.com/portal/internal/";
+  x.files["llms.txt"] += "\nhttps://novapharmhealthcare.com/portal/internal/";
   const r=auditSeoCandidate(x);
   assert.equal(r.sourceReady,false);
   assert(r.issues.some(issue=>issue.includes("protected route")));
 });
 test("AI source guide rejects deceptive lookalike hosts instead of matching a hostname substring",()=>{
   const x=fixture({ownerApproved:true,candidateActive:true});
-  x.files["llms.txt"] += "\\nhttps://novapharmhealthcare.com.evil.example/products/nutraxin/";
+  x.files["llms.txt"] += "\nhttps://novapharmhealthcare.com.evil.example/products/nutraxin/";
   const r=auditSeoCandidate(x);
   assert.equal(r.sourceReady,false);
   assert(r.issues.some(issue=>issue.includes("unverified external host")));
