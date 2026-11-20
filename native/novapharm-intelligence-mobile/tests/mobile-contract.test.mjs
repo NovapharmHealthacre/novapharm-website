@@ -189,5 +189,5 @@ test("committed lockfile does not bypass auth, signing, data rights or release a
   assert.equal(app.ios.bundleIdentifier, undefined);
   assert.equal(app.android.package, undefined);
   assert.doesNotMatch(mobileCandidate, /eas build|xcodebuild archive|gradle .*bundleRelease|app-store|play-store|AWS_ACCESS_KEY_ID|client_secret|access_token/i);
-  assert.match(read("native/novapharm-intelligence-mobile/README.md"), /Reproducibility is still pending independent acceptance/);
+  assert.match(read("native/novapharm-intelligence-mobile/README.md"), /Reproducibility and security are still pending independent acceptance/);
 });
