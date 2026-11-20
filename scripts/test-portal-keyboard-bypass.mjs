@@ -38,3 +38,16 @@ test("actual Chromium and WebKit acceptance checks keyboard focus and activation
   assert.match(workflow, /Run all portal roles, routes and responsive viewports/);
   assert.match(workflow, /run:\s*npm run portal:test:browser/);
 });
+
+test("corporate main landmark is a real keyboard bypass destination", () => {
+  const layout = read("apps/corporate/app/layout.tsx");
+  const css = read("apps/corporate/app/globals.css");
+  const browser = read("apps/corporate/test/browser-acceptance.ts");
+  assert.match(layout, /<a className="skip-link" href="#main-content">Skip to main content<\/a>/);
+  assert.match(layout, /<main id="main-content" tabIndex=\{-1\}/);
+  assert.match(css, /\.skip-link\s*\{[^}]*min-height:\s*44px;/s);
+  assert.match(css, /\.skip-link\s*\{[^}]*inset-inline-start:\s*12px;/s);
+  assert.match(browser, /await page\.keyboard\.press\("Tab"\)/);
+  assert.match(browser, /await page\.keyboard\.press\("Enter"\)/);
+  assert.match(browser, /document\.activeElement\?\.id\), "main-content"/);
+});
