@@ -64,4 +64,9 @@ test("authorised Portal search supports Escape from result links and preserves k
   assert.match(dashboard, /aria-controls=\{searchOpen \? searchResultsId : undefined\} aria-expanded=\{searchOpen\}/);
   assert.match(dashboard, /aria-label="Close search results" onClick=\{dismissSearch\}/);
   assert.match(dashboard, /setSearchFailure\(null\);\s*setSearchAnnouncement\("Search results closed\."\);/);
+  const browser = read("apps/portal/test/browser-acceptance.ts");
+  assert.ok(browser.includes('await page.locator(".search-results a").first().focus();'));
+  assert.ok(browser.includes('await page.getByRole("button", { name: "Close search results" }).click();'));
+  assert.ok(browser.includes('Escape must collapse the search popup'));
+  assert.ok(browser.includes('close button must return focus to search'));
 });
