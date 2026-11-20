@@ -178,3 +178,23 @@ test("restricted research audience accepts only a bounded, non-sensitive classif
     );
   }
 });
+
+
+test("native Science reference links fail closed and announce browser failures without exposing sensitive data", () => {
+  const source = read("native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx");
+  const references = JSON.parse(read("docs/intelligence/openai-science-methods-20261118.json")).methods;
+  assert.ok(references.length >= 9);
+  assert.ok(references.every(x => /^https:\/\/openai\.com(?:\/|$)/.test(x.sourceUrl)),
+    "Bundled Science discovery links must remain approved public HTTPS origins");
+  assert.match(source, /async function openResearchReference\(id: string, sourceUrl: string\)/);
+  assert.match(source, /const approvedReference = \/\^https:/);
+  assert.match(source, /if \(!approvedReference\)/);
+  assert.match(source, /await Linking\.openURL\(sourceUrl\)/);
+  assert.match(source, /try \{[\s\S]*await Linking\.openURL\(sourceUrl\);[\s\S]*\} catch \{/);
+  assert.match(source, /AccessibilityInfo\.announceForAccessibility\(message\)/);
+  assert.match(source, /sourceOpenFeedback\?\.id === entry\.id/);
+  assert.match(source, /accessibilityRole="alert" accessibilityLiveRegion="polite"/);
+  assert.match(source, /void openResearchReference\(entry\.id, entry\.sourceUrl\)/);
+  assert.doesNotMatch(source, /void Linking\.openURL\(entry\.sourceUrl\)/);
+  assert.doesNotMatch(source, /fetch\(|XMLHttpRequest|Authorization:|client_secret|access_token|OPENAI_API_KEY/i);
+});
