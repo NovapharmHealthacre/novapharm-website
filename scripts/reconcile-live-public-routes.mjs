@@ -9,6 +9,10 @@ const criticalRoutes = Object.freeze([
   "/products/marketplace/", "/regulatory-services/", "/services/",
   "/trust-centre/"
 ]);
+// The approved static builder generates these routes after the earlier SEO pass.
+// Their absence from checked-in prebuild sitemap.xml is valid; absence from
+// the final LIVE sitemap is a release failure.
+const generatedAfterSeo = new Set(["/products/esco/", "/products/marketplace/"]);
 const neverIndexed = Object.freeze([
   "/quantum-research/", "/products/esco/bag/", "/products/track/",
   "/portal/dashboard/", "/portal/executive-platform/command-centre/",
@@ -41,7 +45,7 @@ export function reconcilePublicRouteUniverse({ expectedPaths, livePaths, product
   const live = new Set(livePaths);
   const requiredProducts = productSlugs.map(slug => "/products/nutraxin/" + slug + "/");
   const requirements = [...new Set([...criticalRoutes, ...requiredProducts])];
-  const missingFromSourceSitemap = requirements.filter(path => !expected.has(path));
+  const missingFromSourceSitemap = requirements.filter(path => !generatedAfterSeo.has(path) && !expected.has(path));
   const missingFromLiveSitemap = requirements.filter(path => !live.has(path));
   const sourceNotLive = expectedPaths.filter(path => !live.has(path));
   const unexpectedIndexedNutraxinPages = livePaths.filter(path =>
