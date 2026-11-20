@@ -9,7 +9,7 @@ import { extractVisibleBlocks } from "./lib/html-text.mjs";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
-const releaseDate = process.env.AI_INDEX_DATE || "2026-07-22";
+const releaseDate = process.env.AI_INDEX_DATE || new Date().toISOString().slice(0, 10);
 // AI retrieval excludes forms, private-intent journeys, and legal policy pages.
 // Legal notices must be read directly, not represented as machine-vetted advice.
 const excludedRoutes = new Set(["contact", "account-application", "investor-information", "careers"]);
@@ -40,7 +40,7 @@ const pageSources = Object.entries(pageMeta)
     file: fileForSlug(slug),
     url: `${siteUrl}${routePath(slug)}`,
     title: meta.title,
-    date: releaseDate,
+    date: null,
     evidenceStatus: "approved public canonical page",
     capabilityBoundary: slug === "oncology"
       ? "Strategic B2B oncology focus; no product approval, stock, availability, treatment or authorisation claim."
@@ -52,7 +52,7 @@ const leadershipSources = leadership.map((person) => ({
   file: `leadership/${person.slug}/index.html`,
   url: `${siteUrl}/leadership/${person.slug}/`,
   title: `${person.displayName} | NovaPharm Healthcare leadership`,
-  date: releaseDate,
+  date: null,
   evidenceStatus: "approved public leadership profile",
   capabilityBoundary: "Public professional and governance information only; private CV, contact and personal information are excluded."
 }));
