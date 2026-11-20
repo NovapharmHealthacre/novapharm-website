@@ -18,14 +18,14 @@ for(const [name,engine] of [["Chromium",chromium],["WebKit",webkit]]){
     const page=await context.newPage();
     page.setDefaultTimeout(15000);
     await page.goto(origin+"/products/esco/?restore_test="+Date.now(),{waitUntil:"domcontentloaded",timeout:30000});
-    const input=page.locator("[data-esco-search]");
+    const input=page.locator("input#esco-search");
     await input.waitFor();
-    await input.fill("Fowler Bed");
+    await input.fill("EHF 106");
     await page.waitForFunction(()=>document.querySelector("[data-esco-visible-count]")?.textContent?.trim().startsWith("1 catalogue"));
     await input.fill("");
     row.catalogue=await page.locator("[data-esco-entry]").count()===373;
     if(!row.catalogue)throw Error("Live ESCO collection lacks 373 entries");
-    const add=page.locator('[data-esco-add="ESCO-CAT-0001"]').first();
+    const add=page.locator('button[data-esco-add="ESCO-CAT-0001"]').first();
     await add.click();
     const bagSaved=await page.evaluate(()=>{
       try{return JSON.parse(localStorage.getItem("novapharm-esco-quote-list-v1")||"[]");}
