@@ -46,3 +46,20 @@ test("standalone public candidate has no inline code, paid SDK or external runti
   assert.doesNotMatch(html,/\/assets\/brand\/favicon\.svg/, "Existing root favicon fallback needs no duplicate inventory reference");
   assert.doesNotMatch(html, /https:\/\/(?!quantumai\.google\/|novapharmhealthcare\.com\/)/);
 });
+
+test("both controlled Pages release paths require exact live quantum provenance and noindex", () => {
+  for(const workflow of [
+    ".github/workflows/pages-live-publish.yml",
+    ".github/workflows/pages-public-release-recovery.yml"
+  ]){
+    const body=read(workflow);
+    assert.ok(body.includes('quantum-research/index.html'), workflow+" trigger");
+    assert.ok(body.includes("Verify exact quantum reference publication and noindex on custom domain"),workflow);
+    assert.ok(body.includes('novapharm-source-sha'),workflow);
+    assert.ok(body.includes('noindex, nofollow'),workflow);
+    assert.ok(body.includes('quantum-research.css?source='),workflow);
+    assert.ok(body.includes('Quantum research route missing, stale, indexable, or unsafe'),workflow);
+    assert.ok(body.indexOf('Verify exact quantum reference publication') < body.indexOf('Mark publication successful'), workflow);
+    assert.ok(body.includes('! grep -Eiq'),workflow+" public form exclusion");
+  }
+});
