@@ -3,7 +3,6 @@
   "lastReviewed": "2026-11-09",
   "notes": "Indexed catalogue entries are not independently saleable variants. Images on collection are category examples, not verified images of each listed item. No prices or availability are asserted.",
   "currency": "GBP",
-  "targetGrossMargin": 0.25,
   "checkoutEnabled": false,
   "requestQuoteOnly": true,
   "entriesTotal": 373,
