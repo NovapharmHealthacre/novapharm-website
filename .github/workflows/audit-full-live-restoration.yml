@@ -14,7 +14,7 @@ permissions:
 jobs:
   full-public-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 19
+    timeout-minutes: 29
     steps:
       - name: Check out exact PR source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -24,6 +24,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
+      - name: Install locked dependencies and rebuild current approved canonical metadata
+        run: |
+          npm ci --ignore-scripts
+          npm run build:public-only
       - name: Audit live sitemap, each canonical route, tabs, all 19 Nutraxin products, assets and safe portal entries
         run: node scripts/audit-live-corporate-restoration.mjs
       - name: Publish exhaustive evidence even if there are live regressions
