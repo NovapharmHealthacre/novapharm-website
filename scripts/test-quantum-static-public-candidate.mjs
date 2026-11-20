@@ -38,5 +38,6 @@ test("standalone public candidate has no inline code, paid SDK or external runti
   assert.ok(css.includes(".nq-grid"));
   assert.ok(html.includes('href="/assets/css/quantum-research.css"'));
   assert.doesNotMatch(html,/<script\b/i); // only the normal release builder may inject RTL bootstrap
+  assert.doesNotMatch(html,/\/assets\/brand\/favicon\.svg/, "Existing root favicon fallback needs no duplicate inventory reference");
   assert.doesNotMatch(html, /https:\/\/(?!quantumai\.google\/|novapharmhealthcare\.com\/)/);
 });
