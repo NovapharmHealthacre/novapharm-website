@@ -49,27 +49,22 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
   const page = await probe(fetchImpl, origin + "/");
   if (page.status !== 200) reject("login_page_not_public");
   const markup = await page.text();
-  const legacyEntry = markup.includes("Understand the medicine") &&
-    (markup.includes("Invitation-only access") ||
-     (markup.includes("Create a business account") &&
-      markup.includes("Subscription checkout and medicines access become available only after")));
-  const approvedHumanEntry = markup.includes("A more human") &&
-    markup.includes("intelligence for") &&
-    markup.includes("medicine.") &&
-    markup.includes("Create a business account") &&
-    markup.includes("Your business email, password and verification are handled by NovaPharm");
-  // The new founder-facing password+TOTP card goes straight to the pinned
-  // Cognito USER_AUTH API. It must still show the approved account, recovery
-  // and secure-sign-in contracts; identity alone never grants a workspace.
+  // A public 200 is not enough: require the current approved Writing copy.
+  // Return only fixed, non-sensitive diagnostic codes; never log page content,
+  // Cognito URLs, user identifiers, cookie values or private workspace data.
+  if (markup.length > 2_000_000) reject("login_copy_or_constraints_invalid");
+  if (markup.includes("Create a business account")) reject("legacy_account_cta_published");
+  if (!markup.includes("Register a sign-in") ||
+      !markup.includes('href="/auth/customer/register"')) reject("registration_cta_not_published");
+  if (!markup.includes("Registering a sign-in does not approve a business account, activate a subscription or grant access to private workspaces or medicine data.")) {
+    reject("approval_disclaimer_not_published");
+  }
   const approvedCardEntry = markup.includes("A more human") &&
     markup.includes("intelligence for") &&
     markup.includes("medicine.") &&
     markup.includes("Sign in with your business email and password. Authenticator verification follows.") &&
-    markup.includes("Create a business account") &&
     markup.includes("/auth/customer/start?mode=reset");
-  if (markup.length > 2_000_000 ||
-      !(legacyEntry || approvedHumanEntry || approvedCardEntry) ||
-      !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
+  if (!approvedCardEntry || !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");
   if (companyPage.status !== 200) reject("corporate_intelligence_page_not_public");
