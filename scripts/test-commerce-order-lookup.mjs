@@ -6,6 +6,10 @@ test('unified order lookup is generated in public release output',()=>{
  const html=read('products/track/index.html');
  assert.match(html,/data-np-order-lookup/);
  assert.match(html,/Follow your order/);
+ assert.match(html,/<meta name="robots" content="noindex, follow">/);
+ assert.match(html,/property="og:url" content="https:\/\/novapharmhealthcare.com\/products\/track\/"/);
+ assert.doesNotMatch(html,/property="og:url" content="https:\/\/novapharmhealthcare.com\/products\/"/);
+
  assert.match(html,/Only the order state is retrieved/);
  assert.match(html,/assets\/js\/commerce-order-track\.js/);
  assert.match(html,/assets\/css\/commerce-order-track\.css/);
