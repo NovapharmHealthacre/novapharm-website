@@ -107,6 +107,8 @@ jobs:
           retention-days: 7
       - name: Verify clean install using committed dependency lockfile
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Audit production dependency advisories (high and critical release gate)
+        run: npm audit --omit=dev --audit-level=high --no-fund
       - name: Verify TypeScript and exact React Native imports
         run: npm run typecheck
       - name: Compile offline JavaScript bundles for both platforms
