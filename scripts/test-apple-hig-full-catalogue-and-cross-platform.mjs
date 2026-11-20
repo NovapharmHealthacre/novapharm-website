@@ -1238,12 +1238,12 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
 
   // Real source audit: these are reviewable package/app candidates, not
   // evidence of signed distribution, tested physical devices or customer login.
-  assert.match(applePkg, /\\.library\\(name:\\s*"NovaMLApple"/);
-  assert.match(applePkg, /\\.iOS\\(\\.v17\\)/);
-  assert.match(appleReadme, /not\\*\\* a signed|not a signed/i);
-  assert.match(androidGradle, /applicationId\\s*=\\s*"com\\.novapharm\\.intelligence\\.research"/);
-  assert.match(androidGradle, /versionName\\s*=\\s*"0\\.1\\.0-research"/);
-  assert.doesNotMatch(androidManifest, /<uses-permission\\b[^>]*android:name="android\\.permission\\.INTERNET"/i);
+  assert.ok(applePkg.includes('.library(name: "NovaMLApple"'));
+  assert.ok(applePkg.includes(".iOS(.v17)"));
+  assert.ok(appleReadme.includes("not** a signed") || appleReadme.includes("not a signed"));
+  assert.ok(androidGradle.includes('applicationId = "com.novapharm.intelligence.research"'));
+  assert.ok(androidGradle.includes('versionName = "0.1.0-research"'));
+  assert.doesNotMatch(androidManifest, /<uses-permission\b[^>]*android:name="android\.permission\.INTERNET"/i);
   assert.match(androidManifest, /android:allowBackup="false"/);
   assert.match(androidManifest, /android:usesCleartextTraffic="false"/);
   assert.match(androidReadme, /not a signed Play Store release/i);
@@ -1254,7 +1254,7 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
     "A production iOS bundle identity requires a separate signed-app release review");
   assert.equal(Boolean(expoConfig.expo?.android?.package), false,
     "An Android app ID/signing rollout needs an independent release gate");
-  assert.match(expoReadme, /Not a signed IPA\\/APK\\/AAB/i);
+  assert.ok(expoReadme.includes("Not a signed IPA/APK/AAB"));
 
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0,
     "Native library/prototype source cannot certify shipped iOS/Android HIG features");
