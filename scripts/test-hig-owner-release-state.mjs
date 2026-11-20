@@ -5,6 +5,16 @@ import { validateHigOwnerReleaseState } from "./hig-owner-release-state.mjs";
 
 const actual = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json","utf8"));
 const copy = value => structuredClone(value);
+const synthetic = value => {
+  const candidate = copy(value);
+  // Synthetic future-state tests must not inherit real release switches,
+  // otherwise a legitimate later production approval could break unrelated
+  // negative-case tests or hide which distinct receipt is being examined.
+  for (const permission of Object.keys(candidate.productionPermissions))
+    candidate.productionPermissions[permission] = false;
+  candidate.initialInfrastructureBudget.newChargeableResourceProvisioning = false;
+  return candidate;
+};
 
 test("current owner constraints are validated without hard-coding a permanent denial", () => {
   const checked = validateHigOwnerReleaseState(actual);
@@ -15,7 +25,7 @@ test("current owner constraints are validated without hard-coding a permanent de
 });
 
 test("source-only test permits a future documented release without self-certifying it", () => {
-  const next = copy(actual);
+  const next = synthetic(actual);
   next.productionSignoff = "granted";
   next.productionSignoffEvidenceUrl =
     "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
@@ -36,7 +46,7 @@ test("source-only test permits a future documented release without self-certifyi
 test("reject a claimed signoff with missing, placeholder or non-specific receipts", () => {
   for (const missing of ["productionSignoffEvidenceUrl",
     "productionSignoffApprovedSourceSha","productionSignoffGrantedAt"]) {
-    const x = copy(actual);
+    const x = synthetic(actual);
     x.productionSignoff = "granted";
     x.productionSignoffEvidenceUrl = "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000";
     x.productionSignoffApprovedSourceSha = "a".repeat(40);
@@ -45,7 +55,7 @@ test("reject a claimed signoff with missing, placeholder or non-specific receipt
     assert.throws(() => validateHigOwnerReleaseState(x), undefined,
       "Missing owner receipt field must not pass: " + missing);
   }
-  const x = copy(actual);
+  const x = synthetic(actual);
   x.productionSignoff = "granted";
   x.productionSignoffEvidenceUrl = "https://example.com/placeholder";
   x.productionSignoffApprovedSourceSha = "b".repeat(40);
@@ -54,7 +64,7 @@ test("reject a claimed signoff with missing, placeholder or non-specific receipt
 });
 
 test("customer activation, billing and paid infrastructure remain explicitly gated", () => {
-  const x = copy(actual);
+  const x = synthetic(actual);
   x.productionPermissions.activatePublicCustomerAccess = true;
   assert.throws(() => validateHigOwnerReleaseState(x), /explicit owner signoff/);
   x.productionPermissions.activatePublicCustomerAccess = false;
@@ -65,9 +75,9 @@ test("customer activation, billing and paid infrastructure remain explicitly gat
   assert.throws(() => validateHigOwnerReleaseState(x), /No paid AWS provisioning/);
 });
 
-test("all currently disabled production permissions fail closed on unauthorized activation", () => {
+test("all production permission switches require independent authorization before activation", () => {
   for (const key of Object.keys(actual.productionPermissions)) {
-    const attempt = copy(actual);
+    const attempt = synthetic(actual);
     attempt.productionSignoff = "not_granted";
     attempt.productionPermissions[key] = true;
     assert.throws(() => validateHigOwnerReleaseState(attempt), undefined,
@@ -76,9 +86,7 @@ test("all currently disabled production permissions fail closed on unauthorized 
 });
 
 test("signoff does not authorize unapproved medicine data, paid vendor tools or infrastructure", () => {
-  const granted = copy(actual);
-  for (const permission of Object.keys(granted.productionPermissions))
-    granted.productionPermissions[permission] = false;
+  const granted = synthetic(actual);
   granted.productionSignoff = "granted";
   granted.productionSignoffEvidenceUrl =
     "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
@@ -97,9 +105,7 @@ test("signoff does not authorize unapproved medicine data, paid vendor tools or 
 });
 
 test("additional customer-facing permissions require distinct approval receipts", () => {
-  const granted = copy(actual);
-  for (const permission of Object.keys(granted.productionPermissions))
-    granted.productionPermissions[permission] = false;
+  const granted = synthetic(actual);
   granted.productionSignoff = "granted";
   granted.productionSignoffEvidenceUrl =
     "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
