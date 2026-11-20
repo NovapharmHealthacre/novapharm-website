@@ -4,8 +4,9 @@
  * Apple Maps URLs open the operating system's external map/browser on demand.
  */
 import React, { useMemo, useState } from "react";
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+import { buildAndroidMapUrl } from "./android-map-url";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 function decimal(value: string, minimum: number, maximum: number): number | null {
@@ -31,13 +32,15 @@ export function MapsResearchScreen({ darkMode = false }: { darkMode?: boolean })
       return;
     }
     const safeLabel = label.trim().slice(0, 80) || "Reference location";
-    const target = `https://maps.apple.com/?ll=${encodeURIComponent(String(lat))},${encodeURIComponent(String(lon))}&q=${encodeURIComponent(safeLabel)}`;
+    const target = Platform.OS === "android"
+      ? buildAndroidMapUrl(lat, lon)
+      : `https://maps.apple.com/?ll=${encodeURIComponent(String(lat))},${encodeURIComponent(String(lon))}&q=${encodeURIComponent(safeLabel)}`;
     setOpening(true);
     try {
       await Linking.openURL(target);
       setStatus("Opened the reference coordinate in an external map. The point has not been independently verified.");
     } catch {
-      setStatus("No compatible map/browser could open the reference. The app did not transmit or save it.");
+      setStatus("Could not confirm that an external map opened. The app does not store the coordinates.");
     } finally {
       setOpening(false);
     }
@@ -45,7 +48,7 @@ export function MapsResearchScreen({ darkMode = false }: { darkMode?: boolean })
 
   return <View style={styles.wrapper}>
     <Text style={styles.heading} accessibilityRole="header">Maps and location</Text>
-    <Text style={styles.description}>Research preview. Enter a non-sensitive, source-reviewed reference coordinate. This opens an external map on iOS or Android; it is not the platform's live, authenticated geography dataset.</Text>
+    <Text style={styles.description}>Research preview. Enter a non-sensitive, source-reviewed reference coordinate. Opening an external map shares the chosen coordinates with that map provider. It is not a live, authenticated geography dataset.</Text>
     <View style={styles.form}>
       <Text style={styles.label}>Latitude</Text>
       <TextInput accessibilityLabel="Latitude in decimal degrees" value={latitude} onChangeText={setLatitude}
