@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
-import { isCurrentCorporateNavigation } from "../lib/navigation-current";
+import { currentCorporateNavigationAriaValue } from "../lib/navigation-current";
 
 interface DesktopNavigationProps {
   readonly items: readonly (readonly [string, string])[];
@@ -25,7 +25,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
         key={href}
         href={isPortal ? portalOrigin : href}
         rel={isPortal ? "nofollow" : undefined}
-        aria-current={!isPortal && isCurrentCorporateNavigation(pathname, href) ? "page" : undefined}
+        aria-current={!isPortal ? currentCorporateNavigationAriaValue(pathname, href) : undefined}
       >{interfaceLabel(locale, label)}</a>;
     })}
   </nav>;
