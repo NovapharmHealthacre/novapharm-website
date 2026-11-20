@@ -17,9 +17,9 @@ export function stampMarketplaceSourceRevision(html, sha) {
     "Final Marketplace canonical does not match approved public route");
   const robots = html.match(/<meta\s+name=["']robots["']\s+content=["']([^"']*)["'][^>]*>/i)?.[1] ?? "";
   assert.ok(!/\bnoindex\b/i.test(robots), "Do not claim source provenance for a noindex Marketplace release");
-  const cleaned = html.replace(/\s*<meta\s+name=["']novapharm-source-sha["']\s+content=["'][^"']*["']\s*\/?>/gi, "");
+  const cleaned = html.replace(/\s*<meta\s+name=["']novapharm-source-sha["']\s+content=["'][^"']*["']\s*\/?>\s*/gi, "");
   const stamped = cleaned.replace("</head>",
-    '  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
+    '\n  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
   assert.equal([...stamped.matchAll(/<meta\s+name=["']novapharm-source-sha["']/gi)].length, 1,
     "Marketplace must contain exactly one source revision");
   return stamped;
