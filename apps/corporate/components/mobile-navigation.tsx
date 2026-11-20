@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
-import { isCurrentCorporateNavigation } from "../lib/navigation-current";
+import { currentCorporateNavigationAriaValue } from "../lib/navigation-current";
 
 interface MobileNavigationProps {
   readonly items: readonly (readonly [string, string])[];
@@ -66,7 +66,7 @@ export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigati
             key={href}
             href={isPortal ? portalOrigin : href}
             rel={isPortal ? "nofollow" : undefined}
-            aria-current={!isPortal && isCurrentCorporateNavigation(pathname, href) ? "page" : undefined}
+            aria-current={!isPortal ? currentCorporateNavigationAriaValue(pathname, href) : undefined}
             onClick={close}
           >{interfaceLabel(locale, label)}</a>;
         })}
