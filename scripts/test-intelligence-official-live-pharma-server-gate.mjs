@@ -42,3 +42,43 @@ test("board route returns only a nonpublishable receipt; no customer search alia
   assert.ok(server.includes('function json(response, status, payload, headers = {})'));
   assert.ok(server.includes('"Cache-Control": "no-store"'));
 });
+
+test("protected source gateway adds Canadian and Spanish receipts without weakening FDA/HSA guards", () => {
+  const block = server.slice(begin, end);
+  const gateway = readFileSync(new URL("../apps/portal/app/gateway/[...path]/route.ts", import.meta.url), "utf8");
+  const canada = readFileSync(new URL("../src/core/intelligence-canada-dpd-public-live-probe.mjs", import.meta.url), "utf8");
+  const spain = readFileSync(new URL("../src/core/intelligence-es-cima-public-live-probe.mjs", import.meta.url), "utf8");
+  const constraints = JSON.parse(readFileSync(new URL("../config/intelligence/owner-production-constraints.json", import.meta.url), "utf8"));
+
+  assert.ok(server.includes('import { CA_DPD_SOURCE, probeCanadianDpdPublicSource }'));
+  assert.ok(server.includes('import { ES_CIMA_PROBE, probeCimaPublicMedicine }'));
+  assert.ok(block.includes("sourceId !== CA_DPD_SOURCE.sourceId"));
+  assert.ok(block.includes("sourceId !== ES_CIMA_PROBE.sourceId"));
+  assert.ok(block.includes("await probeCanadianDpdPublicSource()"));
+  assert.ok(block.includes("await probeCimaPublicMedicine()"));
+  assert.ok(block.includes("await probeOfficialPublicPharmaSource(sourceId)"));
+
+  const auth = block.indexOf('scopedAuthentication(request, response, ["board"])');
+  const disabled = block.indexOf('NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED !== "true"');
+  const allowlist = block.indexOf("Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)");
+  const quota = block.indexOf('rateLimit(request, "official-public-live-source-probe"');
+  const canadaCall = block.indexOf("await probeCanadianDpdPublicSource()");
+  const spainCall = block.indexOf("await probeCimaPublicMedicine()");
+  assert.ok(auth >= 0 && disabled > auth && allowlist > disabled && quota > allowlist);
+  assert.ok(canadaCall > quota && spainCall > quota);
+  assert.ok(!block.includes("response.body") && !block.includes("sourceRecords"));
+  assert.ok(canada.includes('sourceId: "ca-health-canada-dpd"'));
+  assert.ok(spain.includes('sourceId:"es-aemps-cima"'));
+  assert.ok(canada.includes("canPublish:false") && canada.includes("rawDrugRecordsRetained:false"));
+  assert.ok(spain.includes("canPublish:false") && spain.includes("rawMedicineRecordsRetained:false"));
+
+  const exactPath = "v1/intelligence/sources/official/public-live-probe";
+  assert.ok(gateway.includes(String.raw`/^v1\/intelligence\/sources\/official\/public-live-probe$/`));
+  const methodGuard = gateway.indexOf('path === "' + exactPath + '") && request.method !== "GET"');
+  const upstreamTarget = gateway.indexOf("target = new URL(");
+  assert.ok(methodGuard > 0 && methodGuard < upstreamTarget,
+    "Non-GET methods must fail before the protected gateway considers the upstream");
+  assert.equal(constraints.productionSignoff, "not_granted");
+  assert.equal(constraints.productionPermissions.activatePublicCustomerAccess, false);
+  assert.equal(constraints.productionPermissions.admitUnapprovedMedicineData, false);
+});
