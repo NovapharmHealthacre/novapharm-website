@@ -13,6 +13,36 @@ import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/set
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
+test("customer sign-in binds only approved paid intent to the signed PKCE cookie", () => {
+  const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  try {
+    const response = startCustomerIdentity(new NextRequest(
+      "https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=professional&cycle=monthly",
+    ));
+    assert.equal(response.status, 302);
+    // A route handler is typed as Response. Verify its real Set-Cookie header,
+    // not a framework-only .cookies accessor that the Response contract lacks.
+    const cookieHeader = response.headers.get("set-cookie") ?? "";
+    const cookieValue = decodeURIComponent(cookieHeader.match(/(?:^|[, ]+)__Host-npi_oidc_tx=([^;]+)/)?.[1] ?? "");
+    assert.ok(cookieValue, "Signed PKCE transaction cookie must be issued");
+    const state = new URL(response.headers.get("location") ?? "").searchParams.get("state") ?? "";
+    assert.ok(state, "Signed PKCE state must be issued");
+    const verified = verifyCustomerLoginTransaction({cookieValue, state, signingKey:key});
+    assert.equal(verified.requestedPlan, "professional");
+    assert.equal(verified.requestedCycle, "monthly");
+    assert.equal(verified.grantsTenantAccess, false);
+    const denied = startCustomerIdentity(new NextRequest(
+      "https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=enterprise&cycle=monthly",
+    ));
+    assert.equal(denied.status, 503);
+    assert.equal(denied.headers.get("set-cookie"), null);
+  } finally {
+    if (previous === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = previous;
+  }
+});
+
 test("customer start is fail-closed without server signing key", () => {
   const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
   delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];

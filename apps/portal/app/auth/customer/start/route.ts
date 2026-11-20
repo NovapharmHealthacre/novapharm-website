@@ -6,8 +6,13 @@ export const dynamic = "force-dynamic";
 /** Cognito-managed identity and recovery. Neither path issues a customer session. */
 export function GET(request?: NextRequest): Response {
   try {
+    // The core validates and HMAC-binds any requested billing intent.
+    const requestedPlan = request?.nextUrl.searchParams.get("plan") ?? undefined;
+    const requestedCycle = request?.nextUrl.searchParams.get("cycle") ?? undefined;
     const transaction = createCustomerLoginTransaction({
       signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+      requestedPlan,
+      requestedCycle,
     });
     // Cognito's two-step choice-based password screen can omit its forgot-link.
     // Official /forgotPassword accepts the same OAuth+PKCE parameters as /authorize.
