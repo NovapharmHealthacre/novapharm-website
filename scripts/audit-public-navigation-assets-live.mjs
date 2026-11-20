@@ -74,6 +74,15 @@ await boundedMap([...pagePaths],6,async path=>{
   try {
     const html=await get(path);
     if(!/<html\b/i.test(html))throw Error("HTML document missing");
+    if(path==="/products/"){
+      if(!html.includes('data-products-editorial="approved-2026-11"') ||
+         !html.includes("Different products.") ||
+         !html.includes("One purpose.") ||
+         !html.includes("/products/esco/") ||
+         !html.includes("/products/nutraxin/") ||
+         !html.includes("/assets/css/products-editorial.css"))
+        throw Error("Outdated pre-restoration Products overview is still published");
+    }
     if(path==="/products/esco/"){
       if(!html.includes("data-esco-catalogue") || (html.match(/data-esco-entry/g)||[]).length<373)
         throw Error("ESCO 373-product catalogue body is missing or incomplete");
