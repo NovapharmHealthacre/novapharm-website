@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - scripts/test-contact-draft-synthetic-browser.mjs
+      - assets/js/contact-production.js
+      - infra/aws/contact-production/index.js
       - .github/workflows/test-contact-draft-synthetic-browser.yml
 
 permissions:
@@ -19,7 +21,8 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: release/contact-scoped-managed-candidate-20261120
+          # Pin the exact candidate tree; mutable draft branch advances must not silently change acceptance target.
+          ref: 147885c079631280a4243068958e3dd19c35dd41
           path: contact-draft
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
