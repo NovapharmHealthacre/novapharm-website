@@ -5,6 +5,15 @@ import { merchantSaleReady } from "../assets/js/nutraxin-retail-store.js";
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const catalogue = JSON.parse(read("assets/data/nutraxin-retail-catalogue.json"));
 const registered = JSON.parse(read("docs/nutraxin-product-register.json"));
+const ukGtins = JSON.parse(read("assets/data/nutraxin-gtin-uk.json"));
+const validEan13 = value => {
+  if (!/^\d{13}$/.test(value)) return false;
+  const digits = Array.from(value, Number);
+  const weighted = digits.slice(0, 12).reduce((sum, digit, index) =>
+    sum + digit * (index % 2 ? 3 : 1), 0);
+  return (10 - weighted % 10) % 10 === digits[12];
+};
+const gtinBySku = new Map(ukGtins.products.map(row => [row.sku, row]));
 const lines = read("shopping/nutraxin-uk.tsv").replace(/\n$/, "").split("\n");
 const heads = lines[0].split("\t");
 const parsed = lines.slice(1).map(line => Object.fromEntries(line.split("\t").map((value, i) => [heads[i], value])));
@@ -26,6 +35,12 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert.equal(item.image_link, "https://novapharmhealthcare.com/assets/media/products/nutraxin/" + ref.imageBase + ".png");
     assert.equal(item.availability, ready ? "in_stock" : "out_of_stock");
     assert.equal(item.brand, "Nutraxin");
+    const gtinRow = gtinBySku.get(item.id);
+    assert(gtinRow, "Unmapped UK GTIN: " + item.id);
+    assert.equal(gtinRow.slug, product.slug, "GTIN slug mismatch");
+    assert.equal(gtinRow.pack, product.pack, "GTIN must match exact UK sellable pack");
+    assert.equal(item.gtin, gtinRow.gtin13, "Merchant GTIN mismatch");
+    assert(validEan13(item.gtin), "Invalid EAN-13 in Merchant feed");
     assert(item.title.startsWith("Nutraxin "));
     assert(item.title.length <= 70, "Feed title exceeds editorial target");
     assert(!/\b(sachets|effervescent|chewable)\b.*\b\1\b/i.test(item.title),
@@ -38,6 +53,7 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)].map(m => JSON.parse(m[1]));
     const schema = nodes.find(node => node["@type"] === "Product");
     assert(schema && schema.offers);
+    assert.equal(schema.gtin13, item.gtin, "Product JSON-LD GTIN must equal feed");
     assert.equal(schema.description, item.description, "Feed/Product structured description drift");
     assert.equal(schema.offers.seller.logo,
       "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png");
@@ -112,4 +128,21 @@ test("Nutraxin product search metadata, UK shipping and breadcrumb discovery", (
       registered.products.find(x => x.sku === p.sku).range && x.sku !== p.sku);
     assert(others.some(x => related.includes('/products/nutraxin/' + x.slug + '/')));
   }
+});
+
+test("UK 19-pack GTIN evidence, uniqueness and promotional variant exclusions", () => {
+  assert.equal(ukGtins.market, "GB");
+  assert.equal(ukGtins.manufacturerVerified, false,
+    "Evidence remains owner-confirmed, not manufacturer-certified");
+  assert.equal(ukGtins.products.length, 19);
+  assert.equal(gtinBySku.size, 19);
+  const codes = ukGtins.products.map(entry => entry.gtin13);
+  assert.equal(new Set(codes).size, 19);
+  assert(codes.every(validEan13));
+  assert(ukGtins.products.every(entry => entry.sourceUrl.startsWith("https://")));
+  assert.equal(gtinBySku.get("NUT-UK-VMAX-E15").gtin13, "8680512630708");
+  assert.equal(gtinBySku.get("NUT-UK-CG-T30").gtin13, "8680512630357");
+  assert(!codes.includes("8680512634140"), "Never use 1+1 promo GTIN for single pack");
+  assert(!codes.includes("8680512631392"), "Never use 3-for-2 promo GTIN for single pack");
+  assert.equal(parsed.length, gtinBySku.size);
 });
