@@ -16,12 +16,18 @@ async function fetchJson(url) {
 }
 
 function knowledgeIndex() {
-  knowledgePromise ||= fetchJson(INDEX_URL);
+  knowledgePromise ||= fetchJson(INDEX_URL).catch((error) => {
+    knowledgePromise = null;
+    throw error;
+  });
   return knowledgePromise;
 }
 
 function sourceManifest() {
-  manifestPromise ||= fetchJson(MANIFEST_URL);
+  manifestPromise ||= fetchJson(MANIFEST_URL).catch((error) => {
+    manifestPromise = null;
+    throw error;
+  });
   return manifestPromise;
 }
 
@@ -96,7 +102,10 @@ export async function initialiseSearchDialog(dialog) {
   let currentAnswer = "";
   let semanticRequest = null;
   let previousFocus = null;
-  let persistentCacheAvailable = true;
+  let persistentCacheAvailable = typeof indexedDB !== "undefined";
+  cacheClear.hidden = !persistentCacheAvailable;
+  let queryVersion = 0;
+  let semanticGeneration = 0;
 
   const announce = (message) => {
     status.textContent = message;
@@ -161,6 +170,7 @@ export async function initialiseSearchDialog(dialog) {
   const semanticSearch = (query) => new Promise((resolve, reject) => {
     if (!worker || !semanticReady) return resolve([]);
     const requestId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+    if (semanticRequest) semanticRequest.resolve([]);
     semanticRequest = { requestId, resolve, reject };
     worker.postMessage({ type: "search", requestId, query, limit: 8 });
     setTimeout(() => {
@@ -171,31 +181,46 @@ export async function initialiseSearchDialog(dialog) {
   });
 
   const runSearch = async (query) => {
-    announce("Searching approved public information...");
+    const version = ++queryVersion;
+    results.removeAttribute("aria-busy");
+    const isCurrent = () => version === queryVersion && dialog.open;
+    if (!query) return renderMessage("Enter a question or search term.");
+    // Check sensitive AI requests before loading or ranking any source material.
+    if (mode !== "search") {
+      const policy = evaluatePublicPolicy(query);
+      if (!policy.allowed) return renderMessage(policy.message, policy.category === "empty" ? "information" : "refusal");
+    }
+    announce(mode === "search" ? "Searching published pages..." : "Checking approved published evidence...");
     results.setAttribute("aria-busy", "true");
     try {
       const knowledge = await knowledgeIndex();
+      if (!isCurrent()) return;
       const keywordResults = searchKeywordIndex(knowledge.keywordIndex, knowledge.chunks, query);
       if (mode === "search") return renderSearchResults(keywordResults);
-      const policy = evaluatePublicPolicy(query);
-      if (!policy.allowed) return renderMessage(policy.message, policy.category === "empty" ? "information" : "refusal");
       const semanticResults = semanticReady ? await semanticSearch(query) : [];
+      if (!isCurrent()) return;
       renderAnswer(mergeResults(keywordResults, semanticResults), query);
     } catch {
-      renderMessage("Published-evidence search is temporarily unavailable. Please use the website navigation or try again later.", "information");
+      if (isCurrent()) renderMessage("Published-evidence search is temporarily unavailable. Conventional navigation remains available; retry the search when ready.", "information");
     } finally {
-      results.removeAttribute("aria-busy");
+      if (isCurrent()) results.removeAttribute("aria-busy");
     }
   };
 
   const startSemantic = async () => {
+    const generation = ++semanticGeneration;
     semanticEnable.disabled = true;
     semanticCancel.hidden = false;
     progress.hidden = false;
     announce("Preparing private on-device semantic retrieval...");
-    const knowledge = await knowledgeIndex();
-    worker = new Worker("/assets/ai/runtime/semantic-worker.mjs", { type: "module", name: "novapharm-private-semantic-search" });
-    worker.addEventListener("message", (event) => {
+    try {
+      const knowledge = await knowledgeIndex();
+      // Closing/cancelling during index loading must never start a new worker.
+      if (generation !== semanticGeneration || !dialog.open) return;
+      const activeWorker = new Worker("/assets/ai/runtime/semantic-worker.mjs", { type: "module", name: "novapharm-private-semantic-search" });
+      worker = activeWorker;
+      activeWorker.addEventListener("message", (event) => {
+        if (generation !== semanticGeneration || worker !== activeWorker || !dialog.open) return;
       if (event.data.type === "progress") {
         progress.max = event.data.total || 1;
         progress.value = event.data.total ? event.data.loaded : 0;
@@ -205,7 +230,8 @@ export async function initialiseSearchDialog(dialog) {
       }
       if (event.data.type === "ready") {
         semanticReady = true;
-        semanticEnable.textContent = "Private semantic retrieval enabled";
+        semanticEnable.disabled = false;
+        semanticEnable.textContent = "Disable private semantic retrieval";
         semanticCancel.hidden = true;
         cacheClear.hidden = !persistentCacheAvailable;
         progress.hidden = true;
@@ -242,10 +268,59 @@ export async function initialiseSearchDialog(dialog) {
         }
       }
     });
-    worker.postMessage({ type: "init", knowledge, useCache: true });
+      activeWorker.postMessage({ type: "init", knowledge, useCache: true });
+    } catch {
+      if (generation !== semanticGeneration || !dialog.open) return;
+      stopSemantic();
+      announce("Semantic retrieval could not be enabled. Conventional search remains available.");
+    }
   };
 
+  const stopSemantic = (reason = "disabled") => {
+    ++semanticGeneration;
+    if (semanticRequest) {
+      semanticRequest.resolve([]);
+      semanticRequest = null;
+    }
+    worker?.terminate();
+    worker = null;
+    semanticReady = false;
+    semanticEnable.disabled = false;
+    semanticEnable.textContent = "Enable private semantic retrieval";
+    semanticCancel.hidden = true;
+    cacheClear.hidden = !persistentCacheAvailable;
+    progress.hidden = true;
+    if (reason !== "closed") {
+      progressLabel.textContent = reason === "cancelled"
+        ? "Download cancelled. Conventional search still works."
+        : "Semantic retrieval disabled. Optional downloaded assets may remain in this browser; use Clear optional cache to delete them.";
+    }
+  };
+
+  // Removing browser assets is separate from inference: users can clear data while AI is off.
+  const clearStoredSemanticAssets = () => new Promise((resolve) => {
+    if (typeof indexedDB === "undefined") return resolve(false);
+    try {
+      const request = indexedDB.deleteDatabase("novapharm-public-ai");
+      request.onsuccess = () => resolve(true);
+      request.onerror = request.onblocked = () => resolve(false);
+    } catch {
+      resolve(false);
+    }
+  });
+
   modeButtons.forEach((button) => button.addEventListener("click", () => {
+    // Mode changes invalidate prior in-flight answers and their visible output.
+    ++queryVersion;
+    if (semanticRequest) {
+      semanticRequest.resolve([]);
+      semanticRequest = null;
+    }
+    results.replaceChildren();
+    currentAnswer = "";
+    copyButton.hidden = true;
+    results.removeAttribute("aria-busy");
+    announce("");
     mode = button.dataset.aiMode;
     modeButtons.forEach((candidate) => candidate.setAttribute("aria-pressed", String(candidate === button)));
     dialog.querySelector("[data-ai-mode-help]").textContent = mode === "search"
@@ -259,23 +334,31 @@ export async function initialiseSearchDialog(dialog) {
     event.preventDefault();
     runSearch(input.value.trim());
   });
-  semanticEnable.addEventListener("click", () => startSemantic().catch(() => {
-    semanticEnable.disabled = false;
-    semanticCancel.hidden = true;
-    progress.hidden = true;
-    announce("Semantic retrieval could not be enabled. Conventional search remains available.");
-  }));
+  semanticEnable.addEventListener("click", () => {
+    if (semanticReady) {
+      stopSemantic();
+      announce("Semantic retrieval disabled. Conventional search remains available.");
+      return;
+    }
+    void startSemantic();
+  });
   semanticCancel.addEventListener("click", () => {
-    worker?.terminate();
-    worker = null;
-    semanticReady = false;
-    semanticEnable.disabled = false;
-    semanticCancel.hidden = true;
-    progress.hidden = true;
-    progressLabel.textContent = "Download cancelled. Conventional search still works.";
+    stopSemantic("cancelled");
     announce("Semantic model download cancelled.");
   });
-  cacheClear.addEventListener("click", () => worker?.postMessage({ type: "clear-cache" }));
+  cacheClear.addEventListener("click", async () => {
+    // Terminate live retrieval before deleting its optional persistent cache.
+    stopSemantic();
+    announce("Clearing optional browser retrieval assets...");
+    const cleared = await clearStoredSemanticAssets();
+    if (cleared) {
+      progressLabel.textContent = "Optional browser retrieval assets cleared. Conventional search is available.";
+      announce("Optional browser retrieval assets cleared.");
+    } else {
+      progressLabel.textContent = "Could not clear optional assets. Check browser storage settings and try again.";
+      announce("Optional assets could not be cleared.");
+    }
+  });
   copyButton.addEventListener("click", async () => {
     if (!currentAnswer) return;
     try {
@@ -286,7 +369,18 @@ export async function initialiseSearchDialog(dialog) {
     }
   });
   dialog.querySelector("[data-ai-close]").addEventListener("click", () => dialog.close());
-  dialog.addEventListener("close", () => previousFocus?.focus());
+  dialog.addEventListener("close", () => {
+    // Clear retained text and in-memory retrieval state when the user exits.
+    ++queryVersion;
+    stopSemantic("closed");
+    input.value = "";
+    currentAnswer = "";
+    results.replaceChildren();
+    results.removeAttribute("aria-busy");
+    copyButton.hidden = true;
+    announce("");
+    previousFocus?.focus();
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
