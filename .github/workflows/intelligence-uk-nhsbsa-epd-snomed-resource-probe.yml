@@ -1,0 +1,62 @@
+name: Intelligence UK NHSBSA EPD SNOMED resource metadata probe
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
+      - 'scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
+      - 'scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs'
+      - 'docs/intelligence/uk-nhsbsa-epd-snomed-resource-probe-20261120.md'
+      - '.github/workflows/intelligence-uk-nhsbsa-epd-snomed-resource-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-resource-metadata:
+    name: UK NHSBSA current SNOMED metadata and fail-closed rights contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      NODE_USE_ENV_PROXY: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Run metadata identity and negative-source unit tests
+        run: |
+          node --check src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
+          node --check scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
+          node --check scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
+          node --test scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs
+      - name: Observe official NHSBSA metadata endpoint without prescribing data
+        run: |
+          mkdir -p artifacts/nhsbsa-epd-snomed-metadata
+          node scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs > artifacts/nhsbsa-epd-snomed-metadata/receipt.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const x=JSON.parse(readFileSync('artifacts/nhsbsa-epd-snomed-metadata/receipt.json','utf8'));
+          if(x.country!=='GB'||x.resourceName!=='EPD_SNOMED_202605'||
+            !x.officialPublisherMetadataVerified||x.publisherRowsRead!==0||
+            x.retiredEpdSourceUsed!==false||x.publisherDataAdmitted!==false||
+            x.customerCountryLive!==false||x.canPublish!==false||
+            x.rawMetadataRetained!==false||x.snomedTerminologyRightsReviewed!==false){
+            throw new Error('NHSBSA source metadata or release contract not verified');
+          }
+          console.log('NHSBSA resource metadata verified; no clinical/prescribing records or publication');
+          NODE
+      - name: Archive receipt only for internal source review
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
+        with:
+          name: intelligence-uk-nhsbsa-snomed-resource-receipt
+          path: artifacts/nhsbsa-epd-snomed-metadata/receipt.json
+          if-no-files-found: error
+          retention-days: 7
