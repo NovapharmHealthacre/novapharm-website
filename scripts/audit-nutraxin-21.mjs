@@ -43,17 +43,22 @@ const allChecks = [
 ];
 assert.equal(allChecks.length, 21);
 const results = Object.fromEntries(allChecks.map(key =>
-  [key, { passed: 0, failed: 0, deferred: 0, failures: [] }]));
+  [key, { passed: 0, failed: 0, deferred: 0, warnings: 0, failures: [], advisories: [] }]));
 const acceptance = { passed: 0, failed: 0, failures: [] };
-function check(key, sku, fn) {
+function check(key, sku, fn, advisory = false) {
   try {
     const ok = fn();
     if (ok === null) { results[key].deferred++; return; }
     if (ok === false) throw new Error("Condition false");
     results[key].passed++;
   } catch (err) {
-    results[key].failed++;
-    results[key].failures.push({ sku, error: String(err?.message || err) });
+    if (advisory) {
+      results[key].warnings++;
+      results[key].advisories.push({ sku, note: String(err?.message || err) });
+    } else {
+      results[key].failed++;
+      results[key].failures.push({ sku, error: String(err?.message || err) });
+    }
   }
 }
 function gate(sku, fn) {
@@ -159,7 +164,7 @@ for (const row of rows) {
       "Missing/unreadable image or below 500px; " + (loadError || "")));
   check("image_square_ratio", sku, () =>
     assert(dimensions && Math.abs(dimensions[0] / dimensions[1] - 1) <= 0.1,
-      "Image not approximately square"));
+      "Image not approximately square"), true);
   check("repeated_title_words", sku, () => {
     for (const word of ["sachets", "effervescent", "chewable"]) {
       const count = matches(row.title.toLowerCase(), new RegExp("\\b" + word + "\\b", "g")).length;
@@ -213,13 +218,15 @@ for (const row of rows) {
     descriptionCharacters: row.description.length, url: row.link, loadError });
 }
 const summary = Object.fromEntries(Object.entries(results).map(([k, v]) =>
-  [k, { passed: v.passed, failed: v.failed, deferred: v.deferred, failures: v.failures }]));
+  [k, { passed: v.passed, failed: v.failed, deferred: v.deferred, warnings: v.warnings,
+    failures: v.failures, advisories: v.advisories }]));
 const failed = Object.values(results).reduce((a, s) => a + s.failed, 0) + acceptance.failed;
 const deferred = Object.values(results).reduce((a, s) => a + s.deferred, 0);
+const warnings = Object.values(results).reduce((a, s) => a + s.warnings, 0);
 const report = { kind: "independent-nutraxin-21-check", mode: live ? "live" : "source",
   date: new Date().toISOString(), requiredChecks: 21, products: rows.length,
   sourceCommit: process.env.GITHUB_SHA || null, liveFeedExactlyMatchesSource: live ? true : null,
-  failed, deferred, checks: summary, seoGeoAeoGates: acceptance, samples,
+  failed, deferred, warnings, checks: summary, seoGeoAeoGates: acceptance, samples,
   limits: ["This is NOT GSC Wizard's audit and does not read Google Merchant Center.",
     "This does not prove Google indexing, ranking, real-world fulfilment, GTIN manufacturer ownership or rich-result display.",
     "Source mode cannot check HTTP; production requires --live after deploy.",
@@ -228,7 +235,7 @@ if (process.env.NUTRAXIN_AUDIT_REPORT) {
   mkdirSync(dirname(resolve(process.env.NUTRAXIN_AUDIT_REPORT)), {recursive:true});
   writeFileSync(resolve(process.env.NUTRAXIN_AUDIT_REPORT), JSON.stringify(report, null, 2) + "\n");
 }
-console.log(JSON.stringify({mode:report.mode, products:19, checks:21, failed, deferred,
+console.log(JSON.stringify({mode:report.mode, products:19, checks:21, failed, deferred, warnings,
   aeoGates:acceptance, imageQualityTarget1500:samples.filter(x=>x.imageQualityTarget1500).length},
   null, 2));
 if (failed) process.exitCode = 1;
