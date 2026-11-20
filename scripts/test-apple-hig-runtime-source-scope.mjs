@@ -108,7 +108,7 @@ test("native prototypes are not certified installed iOS or Android releases", ()
 });
 
 
-test("expanded route-candidate ledger stays source-only across 138 distinct cases", async () => {
+test("expanded route-candidate ledger stays source-only across 139 distinct cases", async () => {
   const { execFileSync } = await import("node:child_process");
   execFileSync(process.execPath, ["scripts/render-apple-hig-route-acceptance-candidates.mjs"],
     {stdio:"pipe",timeout:20000});
@@ -127,7 +127,7 @@ test("expanded route-candidate ledger stays source-only across 138 distinct case
   assert.ok(ledger.candidates.some(x =>
     x.kind === "standalone_research_page" && x.route === "/quantum-research/" &&
     x.access === "public_candidate" && x.independentApproval === null));
-  assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,138);
+  assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,139);
   assert.equal(ledger.candidates.filter(x=>x.kind==="portal_module"
     && x.access==="protected_candidate").length,54);
   assert.equal(ledger.candidates.filter(x=>x.kind==="intelligence_workspace"
