@@ -74,43 +74,9 @@ const adjustments = [
   [/electric.*bed|led ot lights/i, 1.25],
   [/ice-lined|freezer|steam sterilizer|autoclave/i, 1.25]
 ];
-// Commercial planning inputs. Owner-declared stock is NOT warehouse-verified or pickable.
+// Public merchandising prices are quotation guides, not cost or margin models.
+// Internal supplier economics and inventory planning belong only in access-controlled systems.
 const OWNER_DECLARED_STOCK_UNITS_PER_CATALOGUE_REFERENCE = 10000;
-const ILLUSTRATIVE_OUTBOUND_SHIPPING_GBP = Object.freeze({
-  'Hospital Furniture': 55, 'Ward Equipment': 8, 'Hospital Trolleys': 28,
-  'SS Hollowware': 5, 'Hospital Sundries': 3, 'Hospital Linen & OT Textiles': 5,
-  'Sterilization & Refrigeration Equipment': 160, 'Laboratory Equipment': 25,
-  'Laboratory Glassware & Consumables': 4, 'Laboratory Plasticware': 4,
-  'Surgical Instruments': 7, 'OT & Surgical Lights': 140
-});
-const ILLUSTRATIVE_CARD_FEE_FRACTION = 0.025; // Sensitivity assumption, NOT actual Stripe tariff.
-const ILLUSTRATIVE_CARD_FEE_FIXED_GBP = 0.20;
-const ILLUSTRATIVE_3_MONTH_STORAGE_RESERVE_FRACTION = 0.01; // Hypothetical reserve, NOT warehouse rent.
-const TARGET_GROSS_MARGIN_FRACTION = 0.25;
-const money = n => Math.round((n + Number.EPSILON) * 100) / 100;
-function costEnvelopeForIllustration(priceExVat, category) {
-  const outboundDelivery = ILLUSTRATIVE_OUTBOUND_SHIPPING_GBP[category];
-  if (!Number.isFinite(outboundDelivery)) throw Error('Missing illustrative outbound cost for ' + category);
-  const maxTotalVariableCost = money(priceExVat * (1 - TARGET_GROSS_MARGIN_FRACTION));
-  const cardFee = money(priceExVat * ILLUSTRATIVE_CARD_FEE_FRACTION + ILLUSTRATIVE_CARD_FEE_FIXED_GBP);
-  const threeMonthStorageReserve = money(priceExVat * ILLUSTRATIVE_3_MONTH_STORAGE_RESERVE_FRACTION);
-  const maximumSupplierAndInboundCost = money(maxTotalVariableCost - outboundDelivery - cardFee - threeMonthStorageReserve);
-  return {
-    assumptionsOnly: true,
-    grossMarginTarget: TARGET_GROSS_MARGIN_FRACTION,
-    maximumTotalVariableCostGbp: maxTotalVariableCost,
-    illustrativeOutboundDeliveryAllocationGbp: outboundDelivery,
-    illustrativeCardFeeAllocationGbp: cardFee,
-    illustrativeThreeMonthStorageReserveGbp: threeMonthStorageReserve,
-    maximumSupplierAndInboundCostGbp: Math.max(0, maximumSupplierAndInboundCost),
-    modelFeasibleBeforeActualCosts: maximumSupplierAndInboundCost > 0,
-    actualSupplierCostKnown: false,
-    actualFreightKnown: false,
-    actualPaymentFeesKnown: false,
-    actualStorageChargesKnown: false,
-    grossProfitProven: false
-  };
-}
 const svgEscape = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 function roundPrice(v) {
   if (v >= 1000) return Math.max(1, Math.round(v / 10) * 10);
@@ -136,10 +102,8 @@ export function guideFor(item) {
     inventoryEvidence: 'OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED',
     availableToPromiseUnits: null,
     stockVerified: false,
-    unitEconomics: costEnvelopeForIllustration(guidePriceExVatGbp, item.category),
     supplierUnitCostKnown: false,
     grossMarginGuaranteed: false,
-    maximumFullyLandedCostFor25PercentMarginGbp: Math.round(guidePriceExVatGbp * 0.75 * 100) / 100,
     priceApprovedForCheckout: false,
     checkoutEligible: false,
     publicGuideOnly: true
@@ -229,24 +193,10 @@ export function buildMerchandising(entries) {
   const output={
     version:'esco-uk-guide-2026-11-09', source:'Owner-authorised category-level UK research and illustrative price modelling, not supplier prices',
     taxPolicy:'Ex VAT guide only. Confirm tax per product and customer; freight not included.',
-    marginPolicy:'25% gross margin is a target only; supplier delivered costs and additional fees are unknown.',
     checkoutEnabled:false, paymentCollectionEnabled:false, requestQuoteOnly:true, currency:'GBP',
-    ownerDeclaredInventoryUnitsPerCatalogueReference: OWNER_DECLARED_STOCK_UNITS_PER_CATALOGUE_REFERENCE,
-    totalOwnerDeclaredInventoryUnits: entries.length * OWNER_DECLARED_STOCK_UNITS_PER_CATALOGUE_REFERENCE,
     inventoryEvidence: 'OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED',
     stockVerified: false,
     availableToPromiseVerified: false,
-    unitEconomicsAssumptions: {
-      basis: 'Illustrative planning sensitivity, not verified costs or a promise of margin',
-      targetGrossMargin: TARGET_GROSS_MARGIN_FRACTION,
-      illustrativeCardProcessingRate: ILLUSTRATIVE_CARD_FEE_FRACTION,
-      illustrativeCardProcessingFixedGbp: ILLUSTRATIVE_CARD_FEE_FIXED_GBP,
-      illustrativeThreeMonthStorageReserveFraction: ILLUSTRATIVE_3_MONTH_STORAGE_RESERVE_FRACTION,
-      illustrativeOutboundDeliveryByCategoryGbp: ILLUSTRATIVE_OUTBOUND_SHIPPING_GBP,
-      vat: 'Excluded; assess rate and customer treatment for each confirmed SKU',
-      marginBasis: 'Guide price ex VAT less all variable costs divided by guide price ex VAT',
-      actualSupplierFreightRentFeesVerified: false
-    },
     entriesTotal:373, guidePrices:prices, visualPreviews:visuals
   };
   writeFileSync('assets/data/esco-uk-guide-prices.json',JSON.stringify(output,null,2)+'\n','utf8');
