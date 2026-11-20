@@ -1,0 +1,5 @@
+.build/
+DerivedData/
+NovaPharmNative.xcodeproj/
+*.xcuserstate
+.DS_Store
