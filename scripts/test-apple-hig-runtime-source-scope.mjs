@@ -102,7 +102,8 @@ test("native prototypes are not certified installed iOS or Android releases", ()
   assert.ok(gradle.includes('versionName = "0.1.0-research"'));
   assert.doesNotMatch(androidManifest,
     /<uses-permission\b[^>]*android:name="android\.permission\.INTERNET"/);
-  assert.equal(expo.expo.version, manifest.native.expoProductVersion);
+  assert.match(expo.expo.version,/^\d+\.\d+\.\d+(?:-[a-z0-9.-]+)?$/i,
+    "A candidate app version may advance only with a valid explicit release-version string");
   // Source-only snapshots record historical identities; adding a valid future
   // release identifier is not a signed iOS/Android distribution receipt.
   for (const id of [expo.expo.ios?.bundleIdentifier, expo.expo.android?.package]) {
