@@ -72,14 +72,22 @@ const articleSources = articles.map((article) => ({
 }));
 
 const sourceDefinitions = [...pageSources, ...leadershipSources, ...articleSources];
-const sources = sourceDefinitions.map((source) => {
+// Respect the final published robots directive. A public URL with noindex is
+// intentionally omitted, not an index-build failure or an excuse to reindex it.
+const excludedNoindexPublicPages = [];
+const sources = sourceDefinitions.flatMap((source) => {
   const html = readFileSync(join(root, source.file), "utf8");
-  if (/noindex/i.test(html.match(/<meta name="robots" content="([^"]+)"/i)?.[1] || "")) {
-    throw new Error(`AI source ${source.file} is noindex.`);
+  const robotTags = [...html.matchAll(/<meta\\b[^>]*>/gi)].map((match) => match[0]);
+  const noindex = robotTags.some((tag) =>
+    /\\bname\\s*=\\s*["']robots["']/i.test(tag) &&
+    /\\bcontent\\s*=\\s*["'][^"']*\\bnoindex\\b/i.test(tag));
+  if (noindex) {
+    excludedNoindexPublicPages.push(source.file);
+    return [];
   }
   const blocks = extractVisibleBlocks(html);
   if (!blocks.length) throw new Error(`AI source ${source.file} produced no approved blocks.`);
-  return { ...source, blocks, sourceHash: sha256(blocks.map((block) => `${block.type}:${block.text}`).join("\n")) };
+  return [{ ...source, blocks, sourceHash: sha256(blocks.map((block) => `${block.type}:${block.text}`).join("\n")) }];
 });
 
 const chunks = chunkPublicSources(sources);
@@ -117,6 +125,7 @@ const manifest = {
   corpusHash,
   approvedSourceCount: sources.length,
   chunkCount: chunks.length,
+  excludedNoindexPublicPages,
   excludedContent: [
     "portal and private routes",
     "customer and supplier records",
