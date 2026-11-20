@@ -11,6 +11,8 @@
 - `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
 - `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
 
+**Android accessibility preflight:** The offline research `ScrollView` has a named read-only accessibility pane on Android 9+ while preserving the individual TextView descendants. Display headings use Android's native accessibility-heading semantics and text is specified in scalable `sp` units. `NovaResearchAccessibilityContractTest.kt` guards these source contracts, as well as the no-permissions/no-backup/no-cleartext fail-closed shell. This is **not** a TalkBack device audit: screen-reader traversal, magnification, larger fonts, orientation and real APK install still require independent emulator/physical-device evidence before any HIG production acceptance.
+
 From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
 
 ```sh
