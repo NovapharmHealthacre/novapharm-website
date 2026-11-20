@@ -61,7 +61,7 @@ test("authorised Portal search supports Escape from result links and preserves k
   assert.ok(dashboard.includes('active instanceof Element && active.closest(".portal-search") !== null'));
   assert.match(dashboard, /event\.key === "Escape" && withinSearch/);
   assert.match(dashboard, /setSearchAnnouncement\("Search cleared\."\);\s*searchInputRef\.current\?\.focus\(\);/);
-  assert.match(dashboard, /aria-controls=\{searchOpen \? searchResultsId : undefined\} aria-expanded=\{searchOpen\}/);
+  assert.match(dashboard, /<button type="submit" disabled=\{searchBusy\} aria-expanded=\{searchOpen\} aria-controls=\{searchOpen \? searchResultsId : undefined\}>Search<\/button>/);
   assert.match(dashboard, /aria-label="Close search results" onClick=\{dismissSearch\}/);
   assert.match(dashboard, /setSearchFailure\(null\);\s*setSearchAnnouncement\("Search results closed\."\);/);
   const browser = read("apps/portal/test/browser-acceptance.ts");
