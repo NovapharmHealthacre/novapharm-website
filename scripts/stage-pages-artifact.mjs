@@ -80,6 +80,7 @@ const requiredPublicPaths = [
   "CNAME",
   "da125ceca8032e01fc98782c388f894f.txt",
   "feed.xml",
+  "llms.txt",
   "assets",
   "capabilities/index.html",
   "cro/index.html",
