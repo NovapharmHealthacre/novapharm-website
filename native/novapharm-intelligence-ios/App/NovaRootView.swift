@@ -37,6 +37,16 @@ private struct PreviewNotice: View {
 }
 
 private struct IntelligenceHomeView: View {
+    // SwiftUI adapts this chart's height to larger accessibility text sizes.
+    @ScaledMetric(relativeTo: .body) private var moduleChartHeight: CGFloat = 180
+
+    // VoiceOver must receive the same current catalogue counts as the chart.
+    private var moduleChartAccessibilitySummary: String {
+        "Module catalogue sizes: " + NovaArea.allCases.map { area in
+            "\(area.title) \(NovaCatalog.modules(in: area).count)"
+        }.joined(separator: ", ")
+    }
+
     var body: some View {
         List {
             Section {
@@ -53,8 +63,9 @@ private struct IntelligenceHomeView: View {
                     )
                     .foregroundStyle(NovaTheme.accent)
                 }
-                .frame(height: 180)
-                .accessibilityLabel("Module catalogue sizes: Intelligence 22, Customer Portal 10, Distribution 9")
+                .frame(height: moduleChartHeight)
+                .accessibilityLabel(moduleChartAccessibilitySummary)
+                .accessibilityIdentifier("novapharm.intelligence.modules-chart")
                 ForEach(NovaArea.allCases, id: \.rawValue) { area in
                     LabeledContent(area.title, value: "\(NovaCatalog.modules(in: area).count) documented modules")
                         .font(.subheadline)
@@ -65,7 +76,7 @@ private struct IntelligenceHomeView: View {
                     NovaCountryDirectoryView()
                 }
                 .accessibilityIdentifier("novapharm.intelligence.countries")
-                NavigationLink("Explore 22 research workspaces") {
+                NavigationLink("Explore \(NovaCatalog.modules(in: .intelligence).count) research workspaces") {
                     WorkspaceListView(area: .intelligence)
                 }
                 .accessibilityIdentifier("novapharm.intelligence.workspaces")
