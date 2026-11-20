@@ -1125,10 +1125,11 @@ test("NHSBSA metadata probe is private-only in both AWS public-contact publisher
 test("four-country receipt router is an exact-blob private change, never blanket server publication approval", () => {
   const reviewedOriginal = "4c7afb1c4b46f241cdfcaa722d0123a8d6becb2b";
   const reviewedCandidate = "98a874fd012599583401b01724acf22f0d73da51";
+  const authFirstCandidate = "2eec7181887666efc1f718176a67f20282e80369";
   const server = readFileSync("server.mjs");
   const currentBlob = createHash("sha1")
     .update("blob " + server.length + "\0").update(server).digest("hex");
-  assert.equal(currentBlob, reviewedCandidate, "Board-only server source review requires fresh sign-off on changes");
+  assert.equal(currentBlob, authFirstCandidate, "Board-only server source review requires fresh sign-off on changes");
 
   const privateChanges = [
     "apps/portal/app/gateway/[...path]/route.ts",
@@ -1159,8 +1160,9 @@ test("four-country receipt router is an exact-blob private change, never blanket
     }
     assert.equal(classified("server.mjs"), false, "Shared server must never have a blanket private exemption");
     const serverCase = content.match(/server\.mjs\)\s*\n([\s\S]*?)\n\s*;;/)?.[1] || "";
-    assert.ok(serverCase.includes(reviewedOriginal) && serverCase.includes(reviewedCandidate),
-      file + " must pin both exact reviewed blobs");
+    assert.ok(serverCase.includes(reviewedOriginal) && serverCase.includes(reviewedCandidate) &&
+      serverCase.includes(authFirstCandidate),
+      file + " must pin the previous and new exact reviewed server blobs");
     assert.match(serverCase, /server_sha/);
     assert.match(serverCase, /original_blob/);
     assert.match(serverCase, /candidate_blob/);

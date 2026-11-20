@@ -82,3 +82,19 @@ test("protected source gateway adds Canadian and Spanish receipts without weaken
   assert.equal(constraints.productionPermissions.activatePublicCustomerAccess, false);
   assert.equal(constraints.productionPermissions.admitUnapprovedMedicineData, false);
 });
+
+test("NHSBSA private probe authenticates board scope and checks default-off flag before consuming rate quota", () => {
+  const start = server.indexOf('if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe" && request.method === "GET")');
+  const stop = server.indexOf('if (pathname === "/api/v1/intelligence/visual/readiness" && request.method === "GET")', start);
+  assert.ok(start > 0 && stop > start, "NHSBSA source route must be a separate GET-only handler");
+  const block = server.slice(start, stop);
+  const auth = block.indexOf('scopedAuthentication(request, response, ["board"])');
+  const enabled = block.indexOf('NPI_NHSBSA_PRIVATE_API_PROBE_ENABLED !== "true"');
+  const quota = block.indexOf('rateLimit(request, "nhsbsa-private-source-probe"');
+  const provider = block.indexOf("await inspectNhsbsaEpdPrivateApi(");
+  assert.ok(auth >= 0 && enabled > auth && quota > enabled && provider > quota,
+    "Only authenticated, enabled board requests may consume quota or query NHSBSA");
+  assert.ok(block.includes("if (!session) return;"));
+  assert.ok(block.includes("return json(response, 429"));
+  assert.ok(!block.includes("customerAccessEnabled: true"));
+});
