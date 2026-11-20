@@ -21,8 +21,8 @@
         await initialiseSearchDialog(dialog);
         dialog.dispatchEvent(new CustomEvent("ai:open", { detail: { trigger } }));
       } catch {
-        // Preserve a real no-model search directory when optional JS is unavailable.
-        window.location.assign("/search/");
+        // The public /search/ route is retired; fail back to the approved corporate home.
+        window.location.assign("/");
       } finally {
         opening = false;
       }

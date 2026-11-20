@@ -49,6 +49,7 @@ test("offline research job builds the final approved public fixture, not an inco
 test("research bootstrap stays user-initiated and is not part of released public website", () => {
   assert.ok(Buffer.byteLength(bootstrap) < 2500);
   assert.match(bootstrap, /import\("\/assets\/ai\/runtime\/search-controller\.mjs"\)/);
-  assert.match(bootstrap, /window\.location\.assign\("\/search\/"\)/);
+  assert.match(bootstrap, /window\.location\.assign\("\/"\)/);
+  assert.doesNotMatch(bootstrap, /window\.location\.assign\("\/search\/"\)/);
   assert.doesNotMatch(bootstrap, /fetch\(|sendBeacon|gtag\(|localStorage|sessionStorage|WebSocket/);
 });
