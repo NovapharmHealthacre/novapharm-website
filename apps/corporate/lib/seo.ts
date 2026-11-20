@@ -38,13 +38,30 @@ export function organisationSchema() {
     legalName: company.legalName,
     alternateName: "NovaPharm",
     url: siteUrl,
-    logo: { "@type": "ImageObject", url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`, width: 2048, height: 258 },
-    image: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${siteUrl}/#logo`,
+      url: `${siteUrl}/assets/brand/pwa-icon-512.png`,
+      contentUrl: `${siteUrl}/assets/brand/pwa-icon-512.png`,
+      width: 512,
+      height: 512,
+      caption: "NovaPharm Healthcare brand mark",
+    },
+    image: {
+      "@type": "ImageObject",
+      "@id": `${siteUrl}/#wordmark`,
+      url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
+      contentUrl: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
+      width: 2048,
+      height: 258,
+      caption: company.name,
+    },
     description: company.summary,
     foundingDate: company.incorporated,
-    identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber },
+    identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber, url: company.companiesHouseUrl },
+    mainEntityOfPage: { "@id": `${siteUrl}/#webpage` },
     founder: { "@id": vishal.id },
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries", url: `${siteUrl}/contact/`, availableLanguage: "English" },
@@ -72,7 +89,7 @@ export function pageSchema(page: CorporatePage) {
   const url = absoluteUrl(page.slug ? `/${page.slug}/` : "/");
   const pageType = page.kind === "contact" ? "ContactPage" : page.slug === "about" ? "AboutPage" : "WebPage";
   const graph: unknown[] = [
-    { "@type": pageType, "@id": `${url}#webpage`, url, name: meta.title, description: meta.description, isPartOf: { "@id": websiteId }, about: { "@id": organisationId }, breadcrumb: { "@id": `${url}#breadcrumb` }, inLanguage: "en-GB" },
+    { "@type": pageType, "@id": `${url}#webpage`, url, name: meta.title, description: meta.description, isPartOf: { "@id": websiteId }, about: { "@id": organisationId }, ...(page.slug === "about/company" ? { mainEntity: { "@id": organisationId } } : {}), breadcrumb: { "@id": `${url}#breadcrumb` }, inLanguage: "en-GB" },
     breadcrumbs(page.slug, page.heroTitle),
   ];
   if (page.kind === "services") {
