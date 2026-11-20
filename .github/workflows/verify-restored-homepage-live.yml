@@ -1,0 +1,61 @@
+name: Verify restored public homepage at live custom domain
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/verify-restored-homepage-live.yml
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-restored-homepage-live.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-origin-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Confirm updated Earth homepage and protected existing routes on independent origin
+        shell: bash
+        env:
+          LIVE_ORIGIN: https://novapharmhealthcare.com
+        run: |
+          set -euo pipefail
+          cache="earth-home-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
+          successful=false
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error --location --retry 1 --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              -H 'Pragma: no-cache' \
+              "$LIVE_ORIGIN/?${cache}-${attempt}" -o /tmp/novapharm-restored-home.html; then
+              if grep -Fq 'novapharm-scoped-homepage-restore: approved-earth-hero' /tmp/novapharm-restored-home.html \
+                && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/novapharm-restored-home.html \
+                && grep -Fq '/assets/media/home/earth-reference-1400.jpg' /tmp/novapharm-restored-home.html \
+                && grep -Fq 'A better way to understand, access and move medicine.' /tmp/novapharm-restored-home.html \
+                && ! grep -Fq 'class="npd-hero npd-hero-media"' /tmp/novapharm-restored-home.html; then
+                successful=true
+                break
+              fi
+            fi
+            sleep 8
+          done
+          if [ "$successful" != true ]; then
+            echo "::error::Custom-domain root is still serving the old homepage or new assets are absent."
+            exit 1
+          fi
+          curl --fail --silent --show-error --location --max-time 20 \
+            "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache}" -o /tmp/novapharm-restored-style.css
+          grep -Fq 'nph-earth-hero-landscape' /tmp/novapharm-restored-style.css
+          curl --fail --silent --show-error --location --max-time 20 \
+            "$LIVE_ORIGIN/assets/media/home/earth-reference-1400.jpg?${cache}" -o /tmp/novapharm-restored-earth.jpg
+          test "$(wc -c < /tmp/novapharm-restored-earth.jpg)" -ge 60000
+          for route in contact products/nutraxin; do
+            curl --fail --silent --show-error --location --max-time 20 \
+              "$LIVE_ORIGIN/$route/?${cache}" -o "/tmp/novapharm-preserved-${route//\//-}.html"
+          done
+          grep -Fq 'Contact NovaPharm' /tmp/novapharm-preserved-contact.html
+          grep -Fq 'Nutraxin' /tmp/novapharm-preserved-products-nutraxin.html
+          echo "PASSED: live Earth homepage, CSS, image, contact and Nutraxin routes verified with cache-bypassing origin requests."
