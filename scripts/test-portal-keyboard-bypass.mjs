@@ -58,7 +58,7 @@ test("authorised Portal search supports Escape from result links and preserves k
   assert.match(dashboard, /const dismissSearch = useCallback\(\(\) => \{/);
   assert.match(dashboard, /\+\+searchGeneration\.current;\s*setSearchOpen\(false\);\s*setSearchResults\(\[\]\);/);
   assert.match(dashboard, /const withinSearch = active === searchInputRef\.current \|\|/);
-  assert.match(dashboard, /active instanceof Element && active\.closest\("\\.portal-search"\) !== null/);
+  assert.ok(dashboard.includes('active instanceof Element && active.closest(".portal-search") !== null'));
   assert.match(dashboard, /event\.key === "Escape" && withinSearch/);
   assert.match(dashboard, /setSearchAnnouncement\("Search cleared\."\);\s*searchInputRef\.current\?\.focus\(\);/);
   assert.match(dashboard, /aria-controls=\{searchOpen \? searchResultsId : undefined\} aria-expanded=\{searchOpen\}/);
