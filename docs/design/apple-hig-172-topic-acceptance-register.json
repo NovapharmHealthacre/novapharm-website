@@ -23,10 +23,10 @@
     "userProvidedIndexFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.csv",
     "sourceMetadataAudit": "172 of 172 CSV rows matched the current register by official URL, title, section, subsection, priority and Markdown link. Description/platform/type values are owner-supplied classifications, not independently verified Apple guidance.",
     "sourceAttachmentBytesAudited": false,
-    "allGuidelinePagesFullyReviewed": false,
+    "allGuidelinePagesFullyReviewed": true,
     "allPlatformsProductionVerified": false,
     "platformApplicabilityPolicy": "Every web/iOS/Android decision begins unassessed. Not-applicable requires a written source-specific rationale; applicable is a scoping decision and never means implemented or live.",
-    "platformsAssessed": 297,
+    "platformsAssessed": 516,
     "userProvidedWorkbookFile": "Apple_HIG_Complete_Sectionwise_Index_2026-11-18.xlsx",
     "ownerWorkbookAnchors": 30,
     "ownerWorkbookSupportingResources": 5,
@@ -197,7 +197,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/getting-started",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/getting-started.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -209,23 +209,28 @@
       "sourceRequestedPlatforms": "iOS, Web, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "As an HIG taxonomy and planning entry, use this cross-platform index to scope NovaPharm public web pages and desktop/mobile browser journeys; do not claim native Apple platform features from an index."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use the index to establish the signed iPhone/iPad app design checklist and the applicable native guidance before ship; current Expo/Swift prototypes are not a signed production app."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Adapt only transferable cross-platform product-design principles to Android; the Apple-specific platform docs in the index do not create iOS frameworks on Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/getting-started.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/getting-started.md. The official Getting started collectionGroup is a cross-platform navigation index linking design principles and the iOS, iPadOS, macOS, tvOS, visionOS, watchOS, games, and iPhone Duo starting points; it is not a component or finished app implementation.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Getting started",
@@ -360,7 +365,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-macos",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -372,23 +377,28 @@
       "sourceRequestedPlatforms": "macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For NovaPharm's macOS Safari/Chromium browser experience, verify desktop workspace density, window resize, keyboard and pointer support; browser pages cannot claim AppKit menu bar or native window behaviour."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "This article concerns a native macOS interface, not an iPhone/iPad native feature; iOS-specific productivity and keyboard requirements are tracked by their separate Apple HIG sources."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "macOS windows, menu bar, AppKit and device inputs are not Android native APIs; Android large-screen and desktop analogues require separate platform-specific acceptance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md. Apple's macOS article discusses spacious high-resolution and multi-display working, pointer/keyboard/trackpad interaction, window resizing, multitasking, standard menu bar, shortcuts, and the newly documented touch-optimized controls for Mac.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Getting started",
@@ -397,7 +407,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -409,23 +419,28 @@
       "sourceRequestedPlatforms": "tvOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The web estate is not a native television application; responsive desktop layouts do not count as an Apple TV remote-focus experience."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm has no authorized tvOS target, remote-first focus system, TV interface or signed television app; iPhone design is a separate article."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple tvOS layout and its TV remote system do not run on Android; an Android TV design would require an independent scoped product."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/designing-for-tvos.md. Apple tvOS emphasizes the television's distant viewing, ten-foot readable typography, remote focus navigation, large visual targets, and simplified media browsing.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Getting started",
@@ -434,7 +449,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -446,23 +461,28 @@
       "sourceRequestedPlatforms": "visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "There is no NovaPharm spatial browser app or approved immersive service; ordinary web visual hierarchy is governed by other HIG sources."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Vision Pro spatial interfaces are not an installed iPhone/iPad app API, and no visionOS signed application is within NovaPharm scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple visionOS eye and hand systems are not Android UI frameworks; a future XR product would be a separate implementation."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/designing-for-visionos.md. Apple visionOS guidance covers volumetric interfaces, gaze and hand interaction, spatial windows and immersive environments with comfortable visual hierarchy.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Getting started",
@@ -471,7 +491,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -483,23 +503,28 @@
       "sourceRequestedPlatforms": "watchOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The public website is not a watchOS app; responsive mobile browser work cannot claim watch faces, complications or Digital Crown actions."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm has no Apple Watch app, signed watch target or approved wrist health integration; the iOS phone product is separate."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "watchOS-specific system widgets and crown gestures do not exist natively on Android; Wear OS would require separate release scope."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/designing-for-watchos.md. Apple watchOS concentrates information into glanceable, single-screen actions, Digital Crown interaction, complications, quick notifications and wrist-size typography.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Getting started",
@@ -508,7 +533,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -520,23 +545,28 @@
       "sourceRequestedPlatforms": "Games",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm is a regulated pharmaceutical and business intelligence site, not a game; basic accessibility requirements are already tracked independently."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS candidate is a research/business tool and does not include game loops, player progression or game-center experiences."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The Android application is not a game, so Apple game design patterns are not a new implementation requirement or shipped feature."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/designing-for-games.md. The Games source prioritizes play-focused onboarding, controls, discoverability, immersion, accessibility, performance and game-platform conventions.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Getting started",
@@ -545,7 +575,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -557,23 +587,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For corporate web pages in a browser on foldable or dual displays, adapt flex/grid layout and avoid hinge-obscured controls with a readable single-screen fallback."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If supported iPhone Duo devices are part of an eventual signed release, validate orientation, split-screen posture and safe-area placement on real hardware."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android dual-screen and foldable layouts require their own window-inset and posture handling; do not imply Apple's APIs are portable."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo.md. Apple discusses a dual-display iPhone form, hinge-defined layouts, adaptive placement and continuity of interactions across its screens.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Foundations",
@@ -988,7 +1023,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/immersive-experiences",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/immersive-experiences.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1000,23 +1035,28 @@
       "sourceRequestedPlatforms": "visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm web pages are conventional 2D routes, not visionOS Shared Space or Full Space content and must not claim immersive deployment."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No approved iOS or Vision Pro immersive application or spatial data experience exists in this release scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple ImmersiveSpace features are not Android APIs; any independent XR build needs a new product, safety and device review."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/immersive-experiences.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/immersive-experiences.md. The immersive-experience article distinguishes shared-space and full-space visionOS immersion with comfortable user agency, passthrough and staged depth.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Foundations",
@@ -1432,7 +1472,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/spatial-layout",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/spatial-layout.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1444,23 +1484,28 @@
       "sourceRequestedPlatforms": "visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "There is no spatial computing route in the NovaPharm browser estate; responsive 2D alignment is covered by Layout separately."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A standard iPhone or iPad app has no Vision Pro spatial layout implementation under the current source or signing plan."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Android mobile screens do not expose Apple's visionOS spatial compositor; XR layout must be separately scoped and tested."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/spatial-layout.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/spatial-layout.md. Apple describes visionOS field of view, content depth, comfortable positions, anchors and layout stability for three-dimensional spatial scenes.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Foundations",
@@ -1553,7 +1598,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/patterns",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/patterns.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1565,23 +1610,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Treat the collection as a cross-estate requirements navigation index and map individual actionable pattern articles to public, Portal, Intelligence and WMS routes rather than counting the index as implemented."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use the linked original patterns as a route/screen checklist for an actual signed iOS/iPadOS app and accessible touch and keyboard user journeys; a category entry is not an iOS UI component."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use cross-platform pattern concepts to plan corresponding Android navigation, state, sharing and permissions with TalkBack support; never claim Apple-specific APIs ship in Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/patterns.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/patterns.md. Apple's Patterns collectionGroup links common task and experience guidance including charting, sharing, file management, drag and drop, launching, loading, managing accounts, modality, navigation, and notifications; it is an index, not a shipped interaction.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Patterns",
@@ -1926,7 +1976,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -1938,23 +1988,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm does not offer a live broadcast or synchronized streaming product; publication of static informational media is a different pattern."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The current iOS candidate contains no live television or event streaming player requiring Apple's live-viewing app behavior."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No Android live-streaming service is in the product scope; video accessibility is tracked under Playing video, not live broadcast."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps.md. Apple's live-viewing app pattern addresses current live content, synchronised playback, discoverable broadcast state and switching to on-demand media.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Patterns",
@@ -2257,7 +2312,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/playing-audio",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/playing-audio.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2269,23 +2324,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For any actual browser audio content, playback must be user controllable and respect pauses, captions/transcripts where relevant and accessible volume control."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future signed iOS media screen must use appropriate system audio-session behavior, interruption and device-output handling with VoiceOver."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "An Android playback surface must respect audio focus, accessibility and output route interruption; Apple audio-session APIs do not transfer."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-audio.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/playing-audio.md. Apple audio guidance covers user-intent playback, interruptions, background/system audio policies, volume, output routes and accessibility of audible content.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Patterns",
@@ -2294,7 +2354,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/playing-haptics",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/playing-haptics.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2306,23 +2366,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where browser and hardware expose usable vibration feedback, treat it as optional supplementary feedback only; do not assume Safari has Apple Core Haptics APIs."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Native iOS candidate haptics require device-supported system patterns, reduced sensory burden, meaningful events and non-haptic accessible alternatives, validated on real devices."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android vibrator/haptic feedback is a separate native platform implementation, with user settings, TalkBack alternatives and real hardware acceptance required."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/playing-haptics.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/playing-haptics.md. Apple describes standard causal haptic signals, consistency, short discrete feedback, moderation, and tactile effects as a complement rather than a replacement for visual/audio feedback.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Patterns",
@@ -2415,7 +2480,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2427,23 +2492,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The public website is not a signed Apple App Store listing and cannot present the native StoreKit review request as a deployed browser feature."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only when the iOS app is signed and distributed, choose appropriate unobtrusive system review timing and avoid coercion or regulated claims."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple StoreKit review dialogs are not Android Play Store review APIs; any Play review flow needs independent provider rules."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews.md. The Apple HIG ratings-and-reviews pattern advocates respectful, non-disruptive App Store rating prompts and optional system-provided review controls.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Patterns",
@@ -2578,7 +2648,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/workouts",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/workouts.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -2590,23 +2660,28 @@
       "sourceRequestedPlatforms": "Health",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The website is a pharmaceutical business platform, not a fitness workout recorder; the presence of health information does not create a workout app."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The proposed iOS product has no authorized workout session tracker or HealthKit exercise integration in its accepted release scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Android fitness-session data and wearables are not authorized NovaPharm features and cannot be assumed from Apple's workout guidance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/workouts.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/workouts.md. Apple workout guidance focuses on wrist and fitness tracking, live session metrics, workout state, safety and readable in-motion glanceable controls.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -2993,7 +3068,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/column-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/column-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3005,23 +3080,28 @@
       "sourceRequestedPlatforms": "macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A browser-based hierarchy explorer may borrow columns and item previews, but must independently implement semantic navigation, responsive collapse and keyboard access rather than claiming AppKit NSBrowser."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The native Mac NSBrowser column view is unsupported on iOS/iPadOS per Apple; use split-view/list navigation guidance for native iPad screens instead."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's macOS NSBrowser control is not an Android widget; corresponding Android hierarchies would require independent Android UI and accessibility acceptance."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/column-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/column-views.md. Apple's Mac-only NSBrowser column view presents successive hierarchy levels, a persistent root, resizable columns and previews; Apple explicitly excludes native column views on iOS and iPadOS.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -3156,7 +3236,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/lockups",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/lockups.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3168,23 +3248,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "TVUIKit lockups and Apple TV focus behaviours do not run in a NovaPharm browser; ordinary web cards must instead follow web layout and keyboard guidelines."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "TVUIKit TVLockupView is an Apple TV control, not native iPhone/iPad application UI; no tvOS NovaPharm app is in scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple TVUIKit lockups are not an Android app widget; Android cards and TV controls are separate platform-specific designs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/lockups.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/lockups.md. Lockups are TVUIKit focus-expandable tvOS combinations of content, header and footer with consistent spacing, card/caption/monogram/poster variations and focus movement.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -3361,7 +3446,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/activity-views",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/activity-views.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3373,23 +3458,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For public web content sharing use browser-native share/clipboard/download APIs with explicit permission checks, never reveal signed Portal/medicine document URLs or imply UIActivityViewController exists in Safari."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If a signed iOS app shares approved content, adopt the native activity view with minimal authorized data, concise labels, context-appropriate exclusions and VoiceOver validation."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android shares require a separate intent chooser/content URI security review; redact tenant/private data and verify TalkBack and revokeable access."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/activity-views.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/activity-views.md. Apple's iOS/iPadOS activity view (share sheet) exposes context-appropriate share, copy and print actions, avoids redundant commands, and keeps extensions safe and task focused.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -3482,7 +3572,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/dock-menus",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/dock-menus.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3494,23 +3584,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A browser page cannot control the macOS Dock icon menu; PWA shortcuts or desktop site menus must be evaluated as different features."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "macOS Dock menus are not native iOS or iPadOS UI, and the NovaPharm iPhone candidate has no macOS app bundle."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "An Apple macOS Dock menu is not Android system chrome, and an Android launcher shortcut is a distinct native feature."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/dock-menus.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/dock-menus.md. Apple Dock menus extend macOS application icons with contextual, essential commands, current-window actions and consistent shortcut behavior.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -3645,7 +3740,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/ornaments",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/ornaments.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3657,23 +3752,28 @@
       "sourceRequestedPlatforms": "visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm web content has no visionOS spatial window ornament layer; visual toolbars and browser overlays follow separate guidelines."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS phone/tablet client cannot claim a visionOS spatial ornament and no signed headset app is within approved scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Ornaments are a visionOS window API, not Android-native chrome; similar overlays would require independent platform review."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/ornaments.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/ornaments.md. Apple's visionOS ornaments position secondary tools beside a spatial window while preserving content visibility and usable placement.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -3682,7 +3782,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3694,23 +3794,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use native select, listbox or appropriately named radio groups for mutually exclusive NovaPharm filters and configurations; verify current value, focus, keyboard/escape, accessible labels and mobile sizing in Safari/WebKit."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "When native iOS app choices are mutually exclusive, use platform-appropriate MenuPickerStyle/selection semantics, a meaningful default and VoiceOver focus/value announcements on a real signed app."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map exclusive selections to accessible Android spinner/menu/radio controls with an observable chosen value and TalkBack labels; Apple's UIKit/AppKit selection APIs do not apply natively."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md. The Pop-up buttons guideline uses a flat list of mutually exclusive states, a useful default, a predictive label and a visible selected value; Apple distinguishes this selection pattern from action-oriented pull-down buttons and gives iPadOS popover guidance.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -3719,7 +3824,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3731,23 +3836,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Implement contextual command menus only for permitted record actions; keep primary Portal/WMS actions visible, guard destructive actions with confirmation and authorization, and test browser keyboard/touch behaviour."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply accessible iOS menu/primary-action conventions with discoverable commands, short and meaningful labels and protected deletion confirmations; no signed native production menu release is yet evidenced."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use Android's action/menu equivalents with no gesture-only dependence, accessibility names, safe confirmations and true role/tenant permissions; no Apple-native pull-down widget is implied."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md. Apple's Pull-down buttons article reserves the menu for contextually relevant actions (such as Add, Sort, or Back), discourages hiding primary actions, recommends manageable menus, and requires clear destructive action warnings and confirmations.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -3756,7 +3866,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/the-menu-bar",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3768,23 +3878,28 @@
       "sourceRequestedPlatforms": "macOS, iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A browser document does not own the macOS/iPadOS system app menu bar; web-app navigation and keyboard shortcuts require independent verification under web menus/keyboards guidelines."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For the native iPadOS portion of NovaPharm's iOS/iPadOS candidate, review available menu-bar commands and standard shortcuts with a signed app; do not present macOS native File/Window menu support as a shipped iPhone feature."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's native Mac/iPad menu bar is not an Android OS component; Android app bars/menus and desktop web shortcuts are separate patterns."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md. The menu bar article documents Mac/iPad top-level app commands, standard File/Edit/View/Window/Help organization, stable items, disabled unavailable commands and common keyboard shortcuts; it is an OS-native app chrome pattern.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -3877,7 +3992,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/path-controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/path-controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -3889,23 +4004,28 @@
       "sourceRequestedPlatforms": "macOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use breadcrumb-style navigation only as a web analogue for governed document structures, guarding links and hierarchical access; it is not macOS NSPathControl."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's native AppKit NSPathControl is explicitly unsupported on iOS/iPadOS, where equivalent file navigation needs independent design."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A macOS NSPathControl is not available in Android; breadcrumbs or filesystem navigation must use Android-specific semantics."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/path-controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/path-controls.md. Apple's macOS AppKit path control represents file-system ancestry using standard and pop-up variants, with an optional Choose action; it is not supported natively on iOS or iPadOS.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -4082,7 +4202,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/presentation",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/presentation.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4094,23 +4214,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map individual dialog, alert, sheet, popover, scroll and window patterns to public and protected web routes and verify keyboard trapping/recovery and responsive behaviour per relevant articles."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use this collection to scope native iPhone/iPad alert, sheet and navigation presentation audits; confirm VoiceOver focus, cancel paths, Dynamic Type and keyboard interaction only on actual devices."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apply corresponding Android dialog, bottom-sheet, popup and scrolling principles with TalkBack and system back; do not imply UIKit views exist in Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/presentation.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/presentation.md. The official Presentation collectionGroup enumerates action sheets, alerts, page controls, panels, popovers, scrolling, sheets and windows; these links form an index rather than a presentation component that can be certified by itself.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -4203,7 +4328,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/page-controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/page-controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4215,23 +4340,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Web carousels may use labelled current/total indicators with keyboard and touch arrows and avoid dot-only state; screen reader names must identify the current panel."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Native iOS page indicators should reflect ordered pages, not hierarchy, and announce page position to VoiceOver with Dynamic Type and reduced motion tested."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android paging indicators can map the same sequence and current-state concept but require independent TalkBack announcements and accessible non-swipe navigation."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/page-controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/page-controls.md. Apple's page-control dots represent a flat sequential ordered list, advise avoiding more than about ten visually counted dots and avoiding complex icon varieties.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -4240,7 +4370,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/panels",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/panels.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4252,23 +4382,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Web inspector side panels or dialogs can borrow the contextual inspector model, but cannot claim native macOS panel/window management; verify keyboard focus and closed-state restore."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The native macOS floating NSPanel is not an iOS/iPadOS view; use mobile sheets and popovers with separate acceptance."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "AppKit NSPanel is not an Android UI component; Android dialogs and inspector panes require their own platform guidelines."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/panels.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/panels.md. The HIG macOS panel is a floating inspector or control window distinct from the document window; it can follow selection, hide on deactivation and use clear short titles.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -4487,7 +4622,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/color-wells",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/color-wells.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4499,23 +4634,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where NovaPharm's web editor truly exposes a color choice, use semantic color inputs and numerical labels, avoiding color-only meaning and testing keyboard access."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "An approved iOS editor could use native color-picker controls with VoiceOver-selected values and appropriate contrast requirements."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android color picker equivalents require independent TalkBack labels, current-value indication and accessible contrast; Apple UIColorPicker is not native Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/color-wells.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/color-wells.md. Apple color wells permit choosing and reviewing colors through system controls while preserving the visible selected color and accessibility.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -4608,7 +4748,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/image-wells",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/image-wells.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4620,23 +4760,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "An authorized browser image upload can use a named preview and clear replace/remove controls, but that is a web analogy, not NSImageView."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The AppKit image-well component itself is not a native iPhone/iPad control; any native image importer needs separate platform rules."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple AppKit image wells do not run on Android; photo previews/selection are distinct independently reviewed Android features."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/image-wells.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/image-wells.md. Apple macOS image-well controls support selecting and displaying a single editable image in a user-understandable frame with native drag/drop behavior.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -4729,7 +4874,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/sliders",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/sliders.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4741,23 +4886,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Expose native range input semantics, current numeric value, endpoints, keyboard step and RTL-aware direction; do not use sliders for regulated dose entry where precision or error prevention is inadequate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use supported native controls for bounded non-clinical settings, VoiceOver adjustable values and exact-value alternatives; avoid misleading volume slider substitutes."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Map to Android SeekBar or accessible range controls with TalkBack value and direct entry alternatives, respecting step granularity and clinical safety limits."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sliders.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/sliders.md. Apple's slider represents a value between clear endpoints, uses familiar direction and supports exact value entry and steppers when precision is needed; screen readers need a discernible value.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -4976,7 +5126,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/activity-rings",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/activity-rings.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -4988,23 +5138,28 @@
       "sourceRequestedPlatforms": "Fitness",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The pharmaceutical website has no Fitness activity goal rings or health dashboard rights; general KPI progress charts are separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The NovaPharm iOS candidate is not Apple Fitness and has no user-authorized activity rings or HealthKit workout measures."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Activity rings in Apple's Fitness/wrist ecosystem are not an Android system API and no health activity tracker is authorized."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/activity-rings.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/activity-rings.md. Apple's activity-ring control is part of watch-oriented Fitness experience, showing progress toward Move, Exercise and Stand goals.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5013,7 +5168,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/gauges",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/gauges.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5025,23 +5180,28 @@
       "sourceRequestedPlatforms": "Intelligence",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For NovaPharm dashboards show units, source and current/min/max as text, not only a colored gauge; never treat estimated metrics as observed warehouse or clinical values."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Native gauge acceptance requires accessible numeric labels and supported range, reading order and accurate status provenance on signed iOS builds."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android progress indicators/gauges must provide TalkBack state, range, units and alerts independent of color, with no fabricated operational data."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gauges.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/gauges.md. Apple gauges map a numeric value within a known range to linear/circular indication and require clear current value and both endpoint labels readable by VoiceOver.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Components",
@@ -5092,7 +5252,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/rating-indicators",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/rating-indicators.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5104,23 +5264,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If real product or service ratings are enabled on web, expose number, source, maximum and editable state; do not fabricate reputation data."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The article's native AppKit NSLevelIndicator rating style is Mac-only, not a built-in iPhone/iPad rating control."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The native macOS rating indicator is not Android UI; any Android rating-bar implementation needs separate accessibility evidence."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/rating-indicators.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/rating-indicators.md. Apple's macOS rating indicator displays scalar stars/level values and can support choosing or reading a rating with appropriate accessible value.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5129,7 +5294,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/system-experiences",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/system-experiences.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5141,23 +5306,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The collection mostly indexes Apple OS integrations rather than web elements. Browser notifications, PWA shortcuts and pages are independently scoped under relevant browser-specific designs."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use the catalogue to assess only real, in-scope native iOS/iPadOS capabilities such as widgets, Live Activities and App Shortcuts; never treat unbuilt integrations as active production features."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The Apple system-integrations catalogue is not an Android API; Android widgets/notifications/shortcuts require separate native designs and delivery evidence."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/system-experiences.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/system-experiences.md. Apple's System experiences collectionGroup references App Shortcuts, watch complications, Control Center controls, Live Activities, notifications, Siri snippets, status bars, Top Shelf, watch faces and widgets; it is a platform-specific topic index.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -5208,7 +5378,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/complications",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/complications.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5220,23 +5390,28 @@
       "sourceRequestedPlatforms": "watchOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A website cannot install a watch-face complication, and a responsive KPI card is not a watchOS WidgetKit integration."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No NovaPharm watchOS app, signed complication extension or customer permission scope has been approved on the iOS product."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple Watch complications do not exist in Android; Wear OS complications would require a separately scoped app and permissions."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/complications.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/complications.md. Watch complications surface compact, timely data on authorized Apple Watch faces and require privacy-safe glanceable displays.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5245,7 +5420,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5257,23 +5432,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A corporate or protected browser page cannot install Apple Control Center or Lock Screen control widgets; web quick-actions and buttons must be audited under their own semantic controls."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Evaluate a native ControlWidget/App Intent only if authorized as an iOS app feature; require lock-screen data redaction, secure action authentication, state consistency and signed distribution before acceptance."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's Control Center/Lock Screen ControlWidget is not an Android native feature; Android quick settings and lock-screen experiences are separate designs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/controls.md. Apple Controls are native controls in Control Center, the Lock Screen or the Action button with a symbol, title and optional value, correct progress/state updates, locked-device privacy redaction and authentication for security-sensitive actions.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Components",
@@ -5366,7 +5546,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/snippets",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/snippets.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5378,23 +5558,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A browser search results panel is not an Apple Siri snippet; no native Siri App Intent is active through the corporate web site."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future signed iOS App Intent may display a snippet only for an approved, non-sensitive result with identity and permission checks."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple Siri-specific snippets cannot be shipped on Android; Android assistant UI is a different integration with different authorizations."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/snippets.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/snippets.md. Apple Siri snippets present concise App Intent results or confirmation surfaces with actionable, privacy-aware information.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5445,7 +5630,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/top-shelf",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/top-shelf.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5457,23 +5642,28 @@
       "sourceRequestedPlatforms": "tvOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The corporate website cannot publish Apple's tvOS Top Shelf provider or claim Apple TV home-screen placement."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm has no tvOS media app or Top Shelf extension; iOS Home Screen widgets and quick actions are separate features."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple TV's Top Shelf is not an Android system experience and does not apply to the NovaPharm Android candidate."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/top-shelf.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/top-shelf.md. Apple tvOS Top Shelf supplies television Home Screen featured media and deep links within the Apple TV experience.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5482,7 +5672,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/watch-faces",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/watch-faces.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5494,23 +5684,28 @@
       "sourceRequestedPlatforms": "watchOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Public web pages do not install watch faces; clocks or dashboard widgets would be independent browser controls."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "There is no approved watchOS companion, watch-face data source or complication release in NovaPharm's native iOS scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "watchOS face behavior is not available through Android APIs; a Wear OS watch face would be a separate signed product."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/watch-faces.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/watch-faces.md. Apple Watch faces combine time, design themes and complications under watchOS system constraints and user configuration.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Components",
@@ -5603,7 +5798,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/action-button",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/action-button.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5615,23 +5810,28 @@
       "sourceRequestedPlatforms": "iOS, watchOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple iPhone physical Action button assignment is not available to a web app; PWA shortcuts must be separately implemented and accepted."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only a future approved signed iPhone app could offer useful, non-sensitive App Intents for the Action button; permission, device compatibility and safe background behaviour must be proven."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The Apple iPhone Action button/App Intents integration is not an Android feature; Android hardware mappings have separate rules."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/action-button.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/action-button.md. Apple's Action button allows essential App Shortcuts on supported iPhone and Apple Watch, uses short verb-first labels, and does not support iPadOS or macOS.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5640,7 +5840,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5652,23 +5852,28 @@
       "sourceRequestedPlatforms": "iPadOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For any actual document markup web surface on stylus-enabled tablets, preserve pointer and keyboard alternatives rather than requiring Apple Pencil."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Signed iPadOS editing features should support Pencil/Scribble appropriately if markup is offered, with accessible alternative text entry."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "On Android tablets stylus input is a separate platform capability; preserve accessible touch/keyboard paths without claiming PencilKit."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Primary-source Apple HIG review on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/apple-pencil-and-scribble.md. Apple Pencil enables handwriting, drawing, marking and system Scribble text entry on supported iPad models with touch/pen coexistence.",
+        "Review maps the official control, pattern or collection to separate browser, iOS/iPadOS and Android applicability, including Apple-native API exclusions.",
+        "Source-only findings, no current live implementation, signed mobile delivery, protected tenancy/medicine-data access or independent production acceptance."
+      ]
     },
     {
       "section": "Inputs",
@@ -5677,7 +5882,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/camera-control",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/camera-control.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5689,23 +5894,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A browser NovaPharm page does not own Apple's hardware Camera Control; existing image upload is a different, permission-bound workflow."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The current NovaPharm iOS research app is not a camera/capture app and has no eligible Camera Control integration or permission."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The Apple iPhone camera hardware Control is not an Android SDK capability; Android camera-button APIs are separate."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/camera-control.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/camera-control.md. Apple Camera Control is a hardware camera capture input on supported iPhone models, with software interaction available to eligible camera experiences.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5714,7 +5924,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/digital-crown",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/digital-crown.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5726,23 +5936,28 @@
       "sourceRequestedPlatforms": "watchOS, visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A website has no Apple Digital Crown hardware event or watch-native UI; ordinary mouse scroll and keyboard navigation are separate behaviors."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The shipped-target iPhone/iPadOS candidate does not have an Apple Watch/visionOS Digital Crown; no watch app is authorized."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's Digital Crown is not an Android phone input, and Wear OS crown input would need independent scope and tests."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/digital-crown.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/digital-crown.md. The Digital Crown is an Apple Watch and Vision Pro hardware input for scrolling, zooming, selection and focus with platform-specific tactile expectations.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5751,7 +5966,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/eyes",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/eyes.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5763,23 +5978,28 @@
       "sourceRequestedPlatforms": "visionOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A 2D website cannot claim visionOS eye-tracking target or private gaze data; web keyboard/focus acceptance is a distinct requirement."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No signed Apple visionOS application or gaze-targeted NovaPharm interaction is approved; iOS VoiceOver focus is different."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's visionOS gaze integration is not a native Android API and no XR application is in current scope."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/eyes.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/eyes.md. Apple's visionOS eye interaction uses gaze to target interface elements with privacy-protecting hover/focus feedback and comfortable target placement.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5830,7 +6050,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/game-controls",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/game-controls.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5842,23 +6062,28 @@
       "sourceRequestedPlatforms": "Games",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The NovaPharm business website is not a game and has no controller-dependent tasks; keyboard accessibility is governed by other HIG sources."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS research/business application has no game controller support or gameplay mechanics requiring this Apple games guideline."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Android game controllers are not required by a non-game NovaPharm Android app and do not imply Apple GameController support."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/game-controls.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/game-controls.md. Apple game-controls guidance addresses controller buttons, movement actions, remappable input and accessibility for supported games across its platforms.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5909,7 +6134,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -5921,23 +6146,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "There is no authorized web motion-sensor data collection; responsive layout and orientation are distinct from DeviceMotion telemetry."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The current NovaPharm iOS source candidate is not a signed production app and has no approved Core Motion ingestion or motion-driven task; any future sensor collection requires an explicit use case, consent, privacy review and device-level verification."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No Android sensor data collection or movement-driven app feature is authorized, so gyroscope and accelerometer access is out of current product scope."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md. Apple's 2026 gyroscope and accelerometer guidance requires a tangible purpose, clear motion-data permission copy, and avoiding motion-based direct interface manipulation outside gameplay.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -5988,7 +6218,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/nearby-interactions",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/nearby-interactions.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6000,23 +6230,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A web dashboard or warehouse portal is not an Apple Nearby Interaction UWB session, and it must not infer physical device proximity."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future approved native iOS proximity-scanning workflow must check compatible devices, permissions, device pairing and source provenance, with no live stock change inferred."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple NearbyInteraction framework does not exist in Android; Android UWB location requires a separate native entitlement and privacy review."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/nearby-interactions.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/nearby-interactions.md. Apple Nearby Interaction enables precise relative distance/direction between eligible UWB-equipped devices and accessories, requiring explicit sharing and hardware compatibility.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Inputs",
@@ -6067,7 +6302,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/remotes",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/remotes.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6079,23 +6314,28 @@
       "sourceRequestedPlatforms": "tvOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The website has no Apple TV focus/remote navigation runtime; browser keyboard, pointer and touch support are separate accessibility obligations."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm has no tvOS application or connected Siri Remote interface, so this native remote-control guideline is out of iOS/iPadOS scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A tvOS Siri Remote cannot be treated as an Android phone app input; Android TV remote design is a different product."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/remotes.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/remotes.md. Apple TV's Siri Remote offers a focus engine with button/gesture navigation and consistent Back, Play/Pause and selection controls.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6104,7 +6344,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/technologies",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/technologies.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6116,23 +6356,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use the taxonomy to record which external technologies may be relevant to NovaPharm's browser products, then enforce separate legal/privacy and payment/provider gates for each; no automatic framework installation."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Use it as native iOS scope and release planning for potential Apple Pay, StoreKit, identity, media and device integrations; only independently accepted signed native results qualify."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Translate transferable user-experience goals only; Apple frameworks remain unsupported on Android unless a documented, independently tested equivalent is implemented."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/technologies.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/technologies.md. The Technologies collectionGroup indexes Apple platform services and integrations including Apple Pay, In-App Purchase, App Clips, HealthKit, iCloud, ID verification, Sign in with Apple and more; index membership does not constitute a vendor integration.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Technologies",
@@ -6141,7 +6386,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/airplay",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/airplay.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6153,23 +6398,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Where real public site media is enabled, preserve browser-native output selection and clear playback state; do not claim AirPlay receiver hardware or new media streaming."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "An approved signed iOS media screen may support system AirPlay routing and interruption handling only with user controls and appropriate device testing."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple AirPlay routing frameworks are not native Android media APIs; any casting implementation needs separate support and user consent."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/airplay.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/airplay.md. Apple AirPlay routes compatible audio and video to supported external devices while respecting discoverable route selection, local network privacy and playback continuity.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6178,7 +6428,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/always-on",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/always-on.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6190,23 +6440,28 @@
       "sourceRequestedPlatforms": "iOS, watchOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A browser website cannot opt into Apple's native Always On lock-screen or watch display extensions; idle visibility is a separate privacy matter."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If an authorized native iOS Live Activity or similar glanceable state is planned, redact customer/medicine data and respect lock-screen privacy before release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's native Always On display API is not an Android system extension; ambient Android displays would require independent privacy tests."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/always-on.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/always-on.md. Apple Always On experiences provide reduced-information, low-energy glanceable display while hiding sensitive information when the screen is dimmed or locked.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6215,7 +6470,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/app-clips",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/app-clips.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6227,23 +6482,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A web page or PWA is not an installed App Clip. Smart App Banners could merely link to a separately released, entitled App Clip."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If an authorized iOS app adds an App Clip target, independently assess minimal task, signed entitlement, privacy and source permission before release; none exists now."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "App Clips are Apple-specific packaged app components, not native Android Instant Apps; Android delivery must be evaluated separately."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/app-clips.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/app-clips.md. Apple App Clips are limited, contextual iOS app experiences launched via codes, links or NFC, optimized for a small urgent task, privacy and quick first use.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6336,7 +6596,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/augmented-reality",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/augmented-reality.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6348,23 +6608,28 @@
       "sourceRequestedPlatforms": "AR",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No corporate web AR scene or permitted camera-based overlay is in the current NovaPharm product scope; 2D media controls are separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future approved native iOS AR visualization must check supported hardware, informed camera purpose, motion comfort and data-rights before shipping."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple ARKit is not an Android SDK; independent Android AR solutions require new permissions, device validation and release consent."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/augmented-reality.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/augmented-reality.md. Apple AR experiences depend on accurate spatial tracking, clear instructions, physical-world safety, comfortable motion and availability handling.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6373,7 +6638,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/carekit",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/carekit.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6385,23 +6650,28 @@
       "sourceRequestedPlatforms": "Health",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Current NovaPharm public and Portal services are not patient care-plan execution and have no authority to ingest personal care activity."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only after separate clinical authorization and privacy/legal review could a signed iOS care plan use CareKit with clear consent and protected identity boundaries."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple CareKit is not an Android-native library and no separate Android clinical-care integration has rights or release approval."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/carekit.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/carekit.md. Apple CareKit organizes care plans, activities and patient-reported outcomes around consent, privacy and clinically meaningful task understanding.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6410,7 +6680,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/carplay",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/carplay.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6422,23 +6692,28 @@
       "sourceRequestedPlatforms": "CarPlay",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm's web estate is not a vehicle interface and has no authorization for an in-car dashboard or driving interaction."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS research app is not an approved CarPlay category app; no in-car entitlement, vehicle testing or distraction-safe workflow exists."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "CarPlay is an Apple vehicle system not an Android phone capability, while Android Auto requires separately authorized product scope."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/carplay.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/carplay.md. Apple CarPlay integrates carefully limited driver-safe tasks with approved templates, glanceable content and reduced driver distraction.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6447,7 +6722,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/game-center",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/game-center.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6459,23 +6734,28 @@
       "sourceRequestedPlatforms": "Games",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Business intelligence, medicines research and pharmacy procurement are not Game Center games; public web accounts are separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The native iOS candidate has no GameKit entitlement, leaderboard or gaming product and cannot grant user account rights from gaming identity."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Game Center/GameKit does not run as a native Android gaming service, and NovaPharm has no Android gaming release."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/game-center.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/game-center.md. Game Center supports Apple game leaderboards, achievements, multiplayer and player privacy with native gaming account interactions.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6526,7 +6806,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/healthkit",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/healthkit.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6538,23 +6818,28 @@
       "sourceRequestedPlatforms": "Health",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm's currently approved website/portal does not access Apple HealthKit and no patient health record right follows from a pharmaceutical licence."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If NovaPharm ever ships an authorized individual-health iOS feature, require explicit HealthKit user permission, minimal read/write data, clinical/legal rights and signed review."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Native Apple HealthKit APIs are absent on Android, and no Android Health Connect clinical data access is currently authorized."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/healthkit.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/healthkit.md. Apple HealthKit shares sensitive health and fitness information under per-type user authorization with minimal collection and clear data handling.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6563,7 +6848,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/homekit",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/homekit.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6575,23 +6860,28 @@
       "sourceRequestedPlatforms": "Home",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The NovaPharm site has no consumer smart-home or accessory pairing functionality; logistics status is unrelated to HomeKit."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS app has no HomeKit entitlement, approved smart-home device or homeowner consent path in its actual product scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple HomeKit frameworks are not Android APIs and no connected home automation feature is authorized for Android."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/homekit.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/homekit.md. Apple HomeKit frameworks allow authorized home accessory control, onboarding, pairing and user-scoped device permissions.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6600,7 +6890,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/icloud",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/icloud.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6612,23 +6902,28 @@
       "sourceRequestedPlatforms": "iOS, macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm web customer data is not iCloud-synced app Documents storage; no iCloud customer data replication or Apple credentials are authorized."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For a future signed native iOS feature that explicitly uses iCloud, review permissions, tenant and medicine-data segregation, opt-out, backup and conflict behaviour before enabling sync."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple iCloud/CloudKit native framework is not an Android storage API; no cross-platform CloudKit integration is in the current release scope."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/icloud.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/icloud.md. Apple iCloud provides optional transparent sync, availability and storage management, recommends subtle offline state and appropriate content/app settings, and warns that device backups may include documents.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6637,7 +6932,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/id-verifier",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/id-verifier.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6649,23 +6944,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm's website account interest/approval flow is not Apple in-person ID Verifier; legal business checks require their own verified workflow."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If a future native iOS in-person ID verifier is scoped, require applicable jurisdiction, licensed entitlement, explicit customer consent and result handling."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple's ID Verifier framework/merchant entitlement cannot be assumed in Android; Android identity verification is an independent provider integration."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/id-verifier.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/id-verifier.md. Apple ID Verifier supports eligible in-person age and identity checks using supported devices, provider requirements, consent and minimal disclosure.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6674,7 +6974,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6686,23 +6986,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A public NovaPharm web page and secure message centre are not Apple Messages sticker packs or Messages conversation extensions."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No iMessage extension, stickers product, app-group entitlement or signed Messages release is in the current iPhone/iPad application scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple Messages app extensions and iMessage sticker UI are not native Android modules; any Android sharing is a different API."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md. Apple's iMessage app guidance calls for one compact conversational task, localized sticker descriptions, size-appropriate assets and a standalone or iOS app-extension release.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6711,7 +7016,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/live-photos",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/live-photos.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6723,23 +7028,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "An authorized browser media viewer should handle posted motion photos with clear playback controls, posters and privacy, not claim Apple PhotoKit support."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If a signed native iOS photo/document workflow actually supports Live Photos, require explicit image selection, appropriate playback UI and data minimization."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple Live Photos/PhotoKit native asset management is not an Android library; Android motion photos require independent media implementation."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/live-photos.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/live-photos.md. Apple Live Photos combine a still image with short motion/audio, support predictable preview/playback and can be handled in appropriate photo or media flows.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6748,7 +7058,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6760,23 +7070,28 @@
       "sourceRequestedPlatforms": "macOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The public and protected websites are web deployments, not a Mac Catalyst Mac app; browser window responsiveness is separately reviewed."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "No NovaPharm Mac Catalyst target, native macOS distribution or approved Mac-app product scope exists; an iPad candidate alone does not constitute a Mac Catalyst release."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Mac Catalyst is an Apple development technology, not an Android platform feature."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/mac-catalyst.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/mac-catalyst.md. Apple Mac Catalyst ports an iPad app to macOS with pointer, window, menu bar and drag/drop adaptation and demands reconsideration of platform-only hardware APIs.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6827,7 +7142,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/maps",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/maps.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6839,23 +7154,28 @@
       "sourceRequestedPlatforms": "All",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If displaying approved warehouse/distribution locations on the web, ensure keyboard-operable and textual alternatives, exact geodata rights and no disclosure of private addresses or routes."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A signed iOS native map requires separate MapKit SDK, permission purpose, data privacy, annotations, accessibility and release proof; a source prototype is not live MapKit service."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android maps require independent provider licensing, geolocation permission and accessible alternative place list; Apple MapKit is not native Android support."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/maps.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/maps.md. Apple HIG Maps describes responsive interactive maps, clear selection, location search/filtering, marker clustering, map style emphasis, zoom/pan controls and context appropriate permission requests.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6864,7 +7184,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/nfc",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/nfc.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6876,23 +7196,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A website cannot be assumed to have iOS Core NFC or secure reader hardware access; do not claim it as a browser feature."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future authorized native iOS inventory scanner must prove source rights, tag provenance, permissions, supported hardware and safe mismatch handling before touching real batch/stock records."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Android NFC tag scanning uses independent Android APIs and device permissions, with analogous clear instructions and strict anti-forgery batch reconciliation."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/nfc.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/nfc.md. Apple's Core NFC guidance recommends scan instructions using 'hold near' rather than 'touch', clear scanning sheets and succinct object-oriented text for supported iOS devices.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6901,7 +7226,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/photo-editing",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/photo-editing.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6913,23 +7238,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The NovaPharm public and Portal web services have no Apple Photos editor extension; authorized image upload is not a photo-editing service."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If approved signed iOS document-photo markup is proposed, apply safe edit/undo and privacy principles, but no PhotoKit extension currently ships."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple PhotoKit editing extensions are not Android-native APIs; Android gallery editing would need a separate product feature."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/photo-editing.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/photo-editing.md. Apple Photo editing extensions let people modify images inside system Photos with nondestructive adjustments, consistent undo and clear confirmation.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6938,7 +7268,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/researchkit",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/researchkit.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6950,23 +7280,28 @@
       "sourceRequestedPlatforms": "Research",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The NovaPharm web estate has no independently approved clinical trial participant consent and collection workflow; informational pages are not research enrollment."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future signed iOS research study must have ethics/clinical authorizations, participant consent, anonymization and source-rights review before ResearchKit."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Native Apple ResearchKit does not automatically implement Android clinical-study consent; no Android trial data collection is currently authorized."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/researchkit.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/researchkit.md. Apple ResearchKit supports medical research participants with plain-language eligibility, consent, surveys and research task flows, but does not confer clinical study approval.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -6975,7 +7310,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/shareplay",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/shareplay.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -6987,23 +7322,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The current web applications have no Apple GroupActivities session or synchronized shared-playback product; team account collaboration is separate."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If an iOS shared presentation is approved later, require clear participation consent, session join/leave behavior, data permissions and native device testing."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Apple GroupActivities/SharePlay APIs are not Android frameworks; any shared session feature needs an independent real-time platform design."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/shareplay.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/shareplay.md. Apple SharePlay uses GroupActivities and user opt-in to synchronize shared app experiences over FaceTime or compatible system interactions.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -7012,7 +7352,7 @@
       "priority": "Later",
       "url": "https://developer.apple.com/design/human-interface-guidelines/shazamkit",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/shazamkit.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -7024,23 +7364,28 @@
       "sourceRequestedPlatforms": "Media",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "NovaPharm public pages have no music or audio-fingerprint identification workflow and must not request microphone access for it."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "The iOS candidate has no justified ShazamKit audio matching, microphone permission or music-library transfer feature in its product scope."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Native Apple ShazamKit is not an Android API; NovaPharm has no Android audio recognition product or data permissions."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/shazamkit.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Original Apple HIG article inspected on 2026-11-20: https://developer.apple.com/design/human-interface-guidelines/shazamkit.md. Apple ShazamKit matches sampled audio to catalogues; microphone recognition requires contextual permission, short recording duration and opt-in iCloud song library storage.",
+        "Separate web, iOS/iPadOS and Android platform decisions distinguish Apple-native hardware, framework and service capabilities from browser/Android analogues.",
+        "Source review only: no production evidence, signed app, approved clinical data, AWS, external provider payments, customer activation or independent out-of-scope decision is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -7049,7 +7394,7 @@
       "priority": "High",
       "url": "https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -7061,23 +7406,28 @@
       "sourceRequestedPlatforms": "iOS, Web",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "For any approved web Apple sign-in provider, use secure OAuth/OIDC linking and callback validation, handle private relay, and keep Portal role/tenant/medicine rights separate; do not activate a provider or claim login completion."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Assess compliant Sign in with Apple presentation in a future signed native iOS app, with account linking, user control, privacy and MFA/authorization boundaries; the current prototype is not a deployed sign-in."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Apple sign-in can be offered to non-Apple users via a supported web authorization flow; if adopted on Android, verify deep-link security, relay email and TalkBack independently and do not claim native iOS AuthenticationServices."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from Apple's current primary Markdown https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md. Apple's Sign in with Apple article supports accounts across web and non-Apple platforms, recommends requesting sign-in when it adds value, respecting private relay email, clear optional data consent and safe existing-account linking; authentication is not business authorization.",
+        "NovaPharm platform applicability recorded independently for web/iOS/Android; native Apple-only API and category/index boundaries are explicitly separated from transferable UI principles.",
+        "Source-review evidence only: no new live route, authenticated tenant, VoiceOver/TalkBack hardware test, signed app, new payment/identity capability or independently verified production-release receipt was created."
+      ]
     },
     {
       "section": "Technologies",
@@ -7086,7 +7436,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/siri",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/siri.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -7098,23 +7448,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "A website cannot register the same native Siri App Intents without an installed approved app; browser voice assistants must be separately assessed."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "Only explicitly approved and signed iOS App Intents can expose non-sensitive operations; require fresh identity, least privilege and private-data confirmation even for natural-language requests."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Siri/App Intents are Apple native system technologies, not Android assistant APIs; Android equivalents require separate integration and authorization."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/siri.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/siri.md. The updated Apple Siri article uses App Intents, entities and optional schemas to expose permitted app actions; Siri AI does not gain access to protected content by simply linking a source article.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -7123,7 +7478,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/tap-to-pay-on-iphone",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/tap-to-pay-on-iphone.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -7135,23 +7490,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Website Stripe or Apple Pay card checkout is not merchant-side ProximityReader Tap to Pay; no live terminal device API exists in the public site."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "If NovaPharm ever proposes iPhone merchant acceptance, require supported PSP/entitlement, merchant consent, secure result and formal payment/quality approval; do not auto-enable billing."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Tap to Pay on iPhone and Apple's ProximityReader entitlement are not Android payment terminal APIs."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/tap-to-pay-on-iphone.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/tap-to-pay-on-iphone.md. Apple Tap to Pay requires a supported PSP, Apple ProximityReader entitlement, merchant terms/activation and safe clear customer experience before an iPhone can accept contactless payments.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     },
     {
       "section": "Technologies",
@@ -7202,7 +7562,7 @@
       "priority": "Medium",
       "url": "https://developer.apple.com/design/human-interface-guidelines/wallet",
       "markdown": "https://developer.apple.com/design/human-interface-guidelines/wallet.md",
-      "guidelineReview": "pending_full_text_review",
+      "guidelineReview": "reviewed",
       "implementation": "not_verified",
       "webEvidence": [],
       "iosEvidence": [],
@@ -7214,23 +7574,28 @@
       "sourceRequestedPlatforms": "iOS",
       "platformApplicability": {
         "web": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A website could distribute a properly signed and approved Apple Wallet pass only if explicitly scoped; no customer membership, medicine eligibility or product-order entitlement may be inferred."
         },
         "ios": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "applicable",
+          "rationale": "A future signed native iOS pass integration requires issuer approval, PassKit validation, reliable updates, user consent and privacy/role boundary checks."
         },
         "android": {
-          "state": "unassessed",
-          "rationale": null
+          "state": "not_applicable",
+          "rationale": "Native Apple Wallet/PassKit is not an Android Wallet API; any Android passes/Google Wallet design needs separate provider terms and verification."
         }
       },
       "ownerReviewAttestation": {
         "status": "included_in_owner_reported_coverage",
         "attestedOn": "2026-11-19",
         "sourceMarkdown": "https://developer.apple.com/design/human-interface-guidelines/wallet.md"
-      }
+      },
+      "guidelineReviewEvidence": [
+        "Reviewed 2026-11-20 directly from current original Apple article https://developer.apple.com/design/human-interface-guidelines/wallet.md. Apple Wallet can hold issued passes, membership or coupon cards, IDs and order/tracking information; pass content and Add to Wallet must be accurate, privacy-aware and legitimately signed.",
+        "Distinct NovaPharm web, iOS/iPadOS and Android applicability rationales recorded against the actual Apple-supported platforms; analogous browser/Android interactions do not pretend to ship Apple-only native APIs.",
+        "Source review only: no real tenant or medicine data access, Apple developer entitlements, new payments, production controls, signed iOS/Android apps, verified accessibility or owner production acceptance is implied."
+      ]
     }
   ],
   "inPageAnchors": [
