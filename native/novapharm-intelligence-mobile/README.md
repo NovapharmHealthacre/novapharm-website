@@ -1,8 +1,10 @@
-# NovaPharm Intelligence — iOS and Android native candidate
+# NovaPharm Intelligence — Android pre-store build and shared research candidate
 
 **Status:** Source scaffold / private prototype only. Not a signed IPA/APK/AAB, TestFlight, Play Store, App Store, production app, customer launch or data integration. Does not call any API, log in, train a model or store private content.
 
-This independent Expo SDK 58 / React Native project lives in native/ to avoid changing the root package-lock.json, pnpm lock and existing website application deployments. It reads the canonical 22 workspace definitions from apps/portal/data/intelligence-workspaces.ts and the source-candidate register from docs/intelligence/global-pharma-sources-20261117.json. Both are local, non-sensitive metadata; no protected data is shipped.
+**Native iOS architecture decision (20 Nov 2026):** The production-directed iOS app is being developed in **Swift/SwiftUI** in [PR #917](https://github.com/NovapharmHealthacre/novapharm-website/pull/917), with a separate source tree at `native/novapharm-intelligence-ios/`. This Expo project remains the Android candidate and a historical cross-platform research prototype; it is **not** the iOS release build. Do not ship Expo iOS, run EAS iOS signing or claim the Swift app is a wrapper.
+
+This independent Expo SDK 58 / React Native research project lives in native/ to avoid changing the root package-lock.json, pnpm lock and existing website application deployments. It reads the canonical 22 workspace definitions from apps/portal/data/intelligence-workspaces.ts and the source-candidate register from docs/intelligence/global-pharma-sources-20261117.json. Both are local, non-sensitive metadata; no protected data is shipped.
 
 ## On a developer machine
 
@@ -21,25 +23,24 @@ The shared Expo research prototype now includes a **private, offline navigation 
 
 Each screen has accessible, responsive module search, module-level detail navigation, required-release prerequisites and a clear *not connected* status. Source: `PrivateOperationsPreviewScreen.tsx`, with `tests/private-portal-distribution-preview.test.mjs` guarding both navigation and the no-network/no-transaction safety boundary.
 
-This is **functional planning navigation**, not a functioning customer portal or warehouse management system. No accounts, invoices, batches, warehouse data or operational services have been integrated. These previews should become operational only after separate identity, source rights, security/quality and device acceptance. Future user-facing Portal and Distribution apps may need separately approved native app identifiers and build profiles; they are not automatically released by the Intelligence app's simulator/APK profiles.
+This is **functional planning navigation**, not a functioning customer portal or warehouse management system. No accounts, invoices, batches, warehouse data or operational services have been integrated. These previews should become operational only after separate identity, source rights, security/quality and device acceptance. Future user-facing Portal and Distribution apps may need separately approved native app identifiers and build profiles; they are not automatically released by the Android preview's private APK profile.
 
 ## Private pre-store build profiles — 20 November 2026
 
-We can develop and test before Apple Developer Program enrolment or opening Google Play Console. The committed `eas.json` has **only two non-store profiles**:
+We can develop and test before Apple Developer Program enrolment or opening Google Play Console. The committed `eas.json` has **only one pre-store build profile** for Android. **There is no Expo iOS build profile**:
 
 | Profile | Output | Intended use | Store membership required |
 | --- | --- | --- | --- |
 | `android-private-apk` | installable Android APK | private Android device/emulator testing | No Google Play Console |
-| `ios-simulator` | iOS Simulator-compatible app | Xcode Simulator / supported hosted simulator testing | No paid Apple Developer Program |
 
 The existing Expo app is still **an unconnected NovaPharm Intelligence research prototype**, not a ready customer app. The build profiles do not activate authentication, billing, medical datasets, app submissions or public deployment. There is deliberately no `production` build profile or `submit` configuration. `tests/prestore-build-profiles.test.mjs` checks these non-release boundaries; the existing mobile workflow runs its tests automatically.
 
 ### Preparing a private build
 
 1. In this directory, run `npm ci --ignore-scripts --no-audit --no-fund`, `npm run typecheck` and `npm run test:contracts`. The mobile CI performs an offline JavaScript bundle preflight for both platforms. **A JavaScript bundle is not a signed native application.**
-2. Before building, choose company-controlled, unique `expo.ios.bundleIdentifier` and `expo.android.package` values and review the brand icon/splash/permission settings. Do not invent IDs, insert credentials into Git, or change the owner's release constraints.
-3. For Expo-hosted builds, link a user-owned Expo project and approve any build-service usage/costs before running `npx eas-cli build --platform android --profile android-private-apk` or `npx eas-cli build --platform ios --profile ios-simulator`. An Expo account and valid project setup may be needed. The latter is **only** for iOS Simulator: it cannot be installed on a physical iPhone and does not use TestFlight.
-4. Alternatively, on an authorized Mac with Xcode, run local iOS Simulator development. A free Apple Personal Team can perform limited, time-expiring own-device installs through Xcode; it cannot distribute via TestFlight or Ad Hoc. Android Studio can compile and test local debug APKs without Play Console.
+2. Before building, choose a company-controlled, unique `expo.android.package` value and review the brand icon/splash/permission settings. Do not invent IDs, insert credentials into Git, or change the owner's release constraints.
+3. For Expo-hosted builds, link a user-owned Expo project and approve any build-service usage/costs before running `npx eas-cli build --platform android --profile android-private-apk`. An Expo account and valid project setup may be needed. The separate native Swift iOS app builds with Xcode; there is no supported Expo iOS release profile.
+4. For iOS Simulator development, use the new native SwiftUI Xcode project in PR #917; with a free Apple Personal Team, own-device signing remains limited and does not enable TestFlight. Android Studio can compile and test local debug APKs without Play Console.
 5. Store actual built artifact hashes, build IDs, device/OS matrices, VoiceOver/TalkBack and keyboard/font-scale results, regression findings and qualified reviewer receipts before advancing the acceptance register. Private APKs still require secure signing/key custody and must never be offered as published/approved apps.
 
 The broader NovaPharm **Customer Portal** (orders, invoices, statements, products, support and authorized account functions) and **Distribution operations** (inventory, batches/FEFO, QA, pick/dispatch/POD) remain **separate planned workstreams**, not live features in this Intelligence app. Reuse the same design system and governed backend contracts where appropriate, but only expose real customer/operational flows after dedicated Cognito mobile OIDC/PKCE, MFA, role/tenant isolation, data rights and service acceptance. The current 22 Intelligence workspaces are UI/source candidates, not 22 production-ready modules. The repository's `productionSignoff: not_granted` and £0 incremental infrastructure cap still apply.
@@ -57,7 +58,7 @@ The private Expo iOS/Android preview includes a **Research** tab backed by the s
 - Hardware-backed secure storage policy, session revocation, screenshot/clipboard and diagnostic data review.
 - Protected API Gateway per-source access grants with source-specific rights, tenant isolation, quota and immutable audit. No direct mobile calls to regulator APIs.
 - First-medicine identity and independently accepted source rights; enforce no licensed, private or health records before acceptance.
-- Expo package-lock generated and committed in this isolated directory after compatible dependency install; exact-head build/CI, iOS and Android simulator/device verification, app signing, official distribution and rollback.
+- Expo package-lock generated and committed in this isolated directory after compatible dependency install; exact-head build/CI, native Swift iOS and Android simulator/device verification, app signing, official distribution and rollback.
 
 Native/novapharm-intelligence-apple remains a separate Swift Package research prototype. It is not embedded automatically into this Expo app.
 
