@@ -1036,3 +1036,51 @@ test("source-only Model Microscope paths never trigger unrelated AWS contact or 
     }
   }
 });
+
+
+test("isolated Expo and StoreKit source-only merges remain private without suppressing release-policy review", () => {
+  const exactNativePaths = [
+    "native/novapharm-intelligence-mobile/package-lock.json",
+    "native/novapharm-intelligence-mobile/android-map-url.ts",
+    "native/novapharm-intelligence-mobile/tests/mobile-android-maps.test.mjs"
+  ];
+  const nativePackagePattern = "native/novapharm-intelligence-storekit/*";
+  const policyFiles = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml"
+  ];
+  const truePublicFiles = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css"
+  ];
+  for (const filename of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(filename);
+    const caseLine = workflow.match(/case "\$changed" in\s*\n\s*(apps\/portal\/\*[^\n]+)/)?.[1];
+    assert.ok(caseLine?.endsWith(")"), filename + " private arm missing");
+    const patterns = caseLine.slice(0, -1).split("|");
+    const matches = (path) => patterns.some((pattern) =>
+      pattern === path || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    for (const path of exactNativePaths) {
+      assert.ok(matches(path), filename + " native file must not invoke public AWS contact: " + path);
+    }
+    assert.ok(patterns.includes(nativePackagePattern), filename + " StoreKit package guard absent");
+    for (const path of [
+      "native/novapharm-intelligence-storekit/Package.swift",
+      "native/novapharm-intelligence-storekit/Sources/NovaStoreKitReadOnlyCatalog.swift",
+      "native/novapharm-intelligence-storekit/Tests/NovaStoreKitReadOnlyCatalogTests.swift"
+    ]) {
+      assert.ok(matches(path), filename + " StoreKit research file not protected: " + path);
+    }
+    for (const path of policyFiles) {
+      assert.equal(matches(path), false, filename + " release-policy edits must remain independently reviewed: " + path);
+    }
+    for (const path of truePublicFiles) {
+      assert.equal(matches(path), false, filename + " must still allow genuine public release: " + path);
+    }
+    assert.match(workflow, /private_only=true/);
+    assert.match(workflow, /found_ml=true/);
+  }
+});
