@@ -123,6 +123,7 @@ jobs:
             --path "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
             --format json > "$RUNNER_TEMP/novapharm-native-accessibility-summary.json"
       - name: Independently boot and launch an iPad Simulator
+        if: always() # iPad evidence must still be captured when preceding accessibility tests fail
         run: |
           set -euo pipefail
           app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
