@@ -1,0 +1,82 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+
+const origin="https://novapharmhealthcare.com";
+const stamp=Date.now();
+const failures=[];
+const checks=[];
+async function read(path,mime){
+  const url=new URL(path,origin);
+  url.searchParams.set("restoration_probe",String(stamp));
+  for(let attempt=0;attempt<3;attempt++){
+    const res=await fetch(url,{redirect:"follow",signal:AbortSignal.timeout(20000),
+      headers:{"Cache-Control":"no-cache,no-store,max-age=0","Pragma":"no-cache",
+        "User-Agent":"NovaPharm-392-Commerce-ReadOnly-Acceptance/1.0"}});
+    if(new URL(res.url).origin!==origin)throw Error("unexpected cross-origin redirect");
+    if(res.ok) {
+      const type=res.headers.get("content-type")||"";
+      if(mime&&!type.toLowerCase().includes(mime))throw Error("unexpected content-type "+type);
+      return res.text();
+    }
+    if(![429,500,502,503,504].includes(res.status)||attempt===2)throw Error("HTTP "+res.status);
+    await new Promise(r=>setTimeout(r,300*(attempt+1)));
+  }
+}
+async function check(path,mime,validate){
+  const row={path,passed:false,issue:null};
+  try {const body=await read(path,mime);validate(body);row.passed=true;}
+  catch(error){row.issue=String(error).slice(0,250);failures.push(row);}
+  checks.push(row);
+}
+function assert(ok,why){if(!ok)throw Error(why);}
+await Promise.all([
+  check("/", "text/html", html=>{
+    assert(html.includes("Medicine. Where it needs to be.")&&html.includes("Better access begins with better decisions."),"Approved Earth homepage rolled back");
+  }),
+  check("/products/","text/html",html=>{
+    assert(html.includes('data-products-editorial="approved-2026-11"')&&html.includes("Different products."),"Approved Products overview rolled back");
+  }),
+  check("/products/nutraxin/","text/html",html=>{
+    assert(html.includes("nutraxin-retail-store.js")&&html.includes("19 Nutraxin"),"Approved Nutraxin collection missing");
+  }),
+  check("/products/esco/","text/html",html=>{
+    assert(html.includes("data-esco-catalogue")&&(html.match(/data-esco-entry/g)||[]).length===373,"373-product ESCO missing");
+  }),
+  check("/products/marketplace/","text/html",html=>{
+    assert(html.includes('data-commerce-marketplace')&&html.includes("Everything, together."),"New marketplace template missing");
+    assert((html.match(/class="mp-source-index-link"/g)||[]).length===392,"392 product search links not published");
+    assert(html.includes('https://novapharmhealthcare.com/products/marketplace/'),"Marketplace canonical missing");
+    assert(html.includes("/assets/js/commerce-marketplace.js"),"Marketplace JS missing");
+    assert(html.includes("/products/esco/")&&html.includes("/products/nutraxin/"),"Portfolio routes missing");
+    assert(!html.includes('"@type":"Product"'),"Public marketplace must not invent Product/Offer authorities");
+  }),
+  check("/products/track/","text/html",html=>{
+    assert(html.includes("Follow your order.")&&html.includes("data-np-order-lookup"),"New status-only tracker missing");
+    assert(html.includes("https://novapharmhealthcare.com/products/track/"),"Tracking canonical missing");
+    assert(html.includes("/assets/js/commerce-order-track.js"),"Tracking script missing");
+    assert(!html.includes("data-order-payment-card")&&!html.includes("data-customer-address"),"Customer data must not be embedded");
+  }),
+  check("/assets/data/commerce-marketplace.json","application/json",body=>{
+    const j=JSON.parse(body);
+    assert(j.schema==="novapharm-public-merchant-discovery-v1"&&j.notPaymentAuthority===true&&j.products?.length===392,"Source index/count/status mismatch");
+    assert(j.products.filter(x=>x.brand==="Nutraxin").length===19&&j.products.filter(x=>x.brand==="ESCO").length===373,"19/373 brand split mismatch");
+    assert(new Set(j.products.map(x=>x.id)).size===392,"Duplicate identity");
+    assert(j.products.every(x=>x.cardCheckoutAuthority===false&&x.availabilityQuantity===null),"Browser may not authorise checkout or stock");
+    assert(!/grossMargin|unitEconomics|targetGrossMargin|supplierCost|maximumFullyLandedCost/i.test(body),"Private commerce economics leaked");
+  }),
+  check("/assets/js/commerce-order-track.js","javascript",body=>{
+    assert(body.includes("Object.hasOwn(labels,data.status)")&&body.includes("data.orderId!==ref"),"Server response status allowlist missing");
+    assert(!body.includes('method:"POST"')&&!body.includes('method: "POST"'),"Tracking must not initiate transactions");
+  }),
+  check("/assets/js/commerce-marketplace.js","javascript",body=>{
+    assert(body.includes("cardCheckoutAuthority")||body.includes("notPaymentAuthority")||body.includes("stockApi"),"Marketplace evidence context missing");
+  }),
+  check("/assets/css/commerce-marketplace.css","text/css",body=>assert(body.length>1000,"Marketplace CSS empty")),
+  check("/assets/css/commerce-order-track.css","text/css",body=>assert(body.length>1000,"Order tracking CSS empty"))
+]);
+const summary={timestamp:new Date().toISOString(),site:origin,
+  scope:"Read-only cache-bypassed GET of public Pages, 392-product index and static assets. NO order-status query, checkout, payment, account or customer records requested.",
+  checked:checks.length,passed:checks.filter(x=>x.passed).length,failed:failures.length,checks};
+mkdirSync("artifacts/site-restoration",{recursive:true});
+writeFileSync("artifacts/site-restoration/live-commerce-392.json",JSON.stringify(summary,null,2)+"\n");
+console.log(JSON.stringify({checked:summary.checked,passed:summary.passed,failed:summary.failed,failures:failures.slice(0,15)}));
+if(failures.length)process.exitCode=1;
