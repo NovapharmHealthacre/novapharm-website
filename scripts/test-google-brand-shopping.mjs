@@ -77,6 +77,22 @@ test("the actual Next.js corporate website uses the same Knowledge Panel entity 
   assert(!home.address, "Registered residential address must remain absent from public Organization schema");
 });
 
+
+test("corporate sitemap dates stay aligned with the two published November identity updates", () => {
+  const sitemap = read("sitemap.xml");
+  for (const pathname of ["/", "/about/company/"]) {
+    assert(
+      sitemap.includes(`<loc>${origin}${pathname}</loc><lastmod>2026-11-20</lastmod>`),
+      `Static sitemap date missing for ${pathname}`,
+    );
+  }
+  const source = read("apps/corporate/app/sitemap.ts");
+  assert(source.includes('const corporateIdentityDate = new Date("2026-11-20T00:00:00Z");'),
+    "Next.js sitemap identity modification date must match the approved release");
+  assert(source.includes('lastModified: slug === "" || slug === "about/company" ? corporateIdentityDate : contentDate'),
+    "The Next.js sitemap must update only the two edited corporate URLs");
+});
+
 test("all 19 consumer product pages have a working storefront module and internally consistent Offers", () => {
   assert.equal(registered.length, 19);
   assert.equal(catalogue.products.length, 19);
