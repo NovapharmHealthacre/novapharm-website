@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader locale={locale} />
         <CookieControls />
-        <main id="main-content" tabIndex={-1} lang="en-GB" data-np-untranslated>{children}</main>
+        <main id="main-content" lang="en-GB" data-np-untranslated tabIndex={-1}>{children}</main>
         <SiteFooter locale={locale} />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />
