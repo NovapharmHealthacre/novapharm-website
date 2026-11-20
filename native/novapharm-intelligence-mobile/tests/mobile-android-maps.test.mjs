@@ -30,7 +30,9 @@ test("Expo research screen routes iOS and Android separately and discloses provi
   assert.match(screen, /Platform\.OS === "android"/);
   assert.match(screen, /buildAndroidMapUrl\(lat, lon\)/);
   assert.match(screen, /https:\/\/maps\.apple\.com\/\?ll=/);
-  assert.match(screen, /Opening an external map shares the chosen coordinates/);
+  assert.match(screen, /Opening an external map shares the coordinates with that provider/);
+  assert.match(screen, /optional reference label stays local and is not included in the link/);
+  assert.doesNotMatch(screen, /&q=\$\{encodeURIComponent\(safeLabel\)\}/, "Do not forward optional iOS site or organisation labels to the map provider");
   assert.match(screen, /The app does not store the coordinates/);
   assert.doesNotMatch(screen, /navigator\.geolocation|expo-location|requestForegroundPermissions|fetch\(|AsyncStorage|SecureStore|access_token|client_secret/);
 });
