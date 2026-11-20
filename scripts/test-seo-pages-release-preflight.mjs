@@ -101,6 +101,8 @@ test("read-only preflight CI covers contact changes and owner approval controls"
   ]) {
     assert(workflow.includes('      - "' + path + '"'), "Preflight must run on changes to " + path);
   }
-  assert.match(workflow, /permissions:\\s*\\n\\s*contents:\\s*read/);
-  assert.doesNotMatch(workflow, /^\\s*(?:pages|deployments|id-token):\\s*write/m);
+  assert(workflow.includes("permissions:\n  contents: read"), "Preflight workflow must retain read-only token permissions");
+  for (const scope of ["pages", "deployments", "id-token"]) {
+    assert(!workflow.includes(scope + ": write"), "Preflight must never grant " + scope + " write permission");
+  }
 });
