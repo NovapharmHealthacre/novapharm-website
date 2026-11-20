@@ -42,10 +42,11 @@ const shortDescription = (p, ref) => {
 // Search titles should keep the verified product identity and pack information
 // without repeating the Nutraxin brand. Never truncate a product name mid-word.
 const searchTitle = p => [
-  p.name + " " + p.pack + " | NovaPharm UK",
-  p.name + " " + p.pack + " | UK",
+  feedTitle(p) + " | NovaPharm UK",
+  feedTitle(p) + " | UK",
   p.name + " | NovaPharm UK",
   p.name + " | UK",
+  feedTitle(p),
   p.name
 ].find(title => title.length <= 60);
 
