@@ -26,7 +26,7 @@ function fixture({ ownerApproved = false, candidateActive = false, liveActive = 
     "\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n";
   files["llms.txt"] = "# NovaPharm Healthcare\n"+base+"/products/nutraxin/\n"+base+"/sitemap.xml";
   files["portal/index.html"] = "This public website never asks for a portal username, password or confidential company record";
-  const active = '<form data-live-b2b-enquiry-form><input name="privacyAcknowledgement"><input name="safetyConfirmation"></form><script src="/assets/js/contact-production.js"></script>';
+  const active = '<form data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"><input name="privacyAcknowledgement"><input name="safetyConfirmation"></form><script src="/assets/js/contact-production.js"></script>';
   files["contact/index.html"] = candidateActive?active:"<form data-email-enquiry-form></form>";
   return {files,owner:{productionSignoff:ownerApproved?"granted":"not_granted",
     productionPermissions:{activatePublicCustomerAccess:ownerApproved}},
@@ -64,4 +64,12 @@ test("unavailable live contact evidence blocks the release",()=>{
   const r=auditSeoCandidate(x);
   assert.equal(r.sourceReady,true);assert.equal(r.releaseReady,false);
   assert(r.holds.includes("LIVE_CONTACT_UNKNOWN"));
+});
+
+test("contact candidate cannot silently switch the verified AWS API origin",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["contact/index.html"]=x.files["contact/index.html"].replace("h4dc1e4u57","unverifiedapi");
+  const r=auditSeoCandidate(x);
+  assert.equal(r.releaseReady,false);
+  assert(r.holds.includes("CONTACT_API_ORIGIN_DRIFT"));
 });

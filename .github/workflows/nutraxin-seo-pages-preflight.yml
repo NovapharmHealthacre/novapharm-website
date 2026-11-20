@@ -35,14 +35,25 @@ jobs:
         run: |
           npm run build:public-only
           node scripts/stage-pages-artifact.mjs _site
-      - name: Inspect 19 products, bots and the live contact safety hold
-        run: node scripts/verify-seo-pages-release-preflight.mjs _site
+      - name: Prove public-only candidate is blocked from downgrading contact
+        run: |
+          node scripts/verify-seo-pages-release-preflight.mjs _site
+          cp audit/generated/nutraxin-seo-release-preflight.json audit/generated/nutraxin-seo-release-preflight-public-only.json
+      - name: Test contact-preserving candidate in isolated CI artifact (never deploy)
+        env:
+          NOVAPHARM_CONTACT_RELEASE_ACCEPTED: "yes"
+          NOVAPHARM_CONTACT_API_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+          NOVAPHARM_CONTACT_ARTIFACT_ROOT: _site
+        run: |
+          node scripts/activate-contact-intake.mjs
+          node scripts/verify-seo-pages-release-preflight.mjs _site
+          cp audit/generated/nutraxin-seo-release-preflight.json audit/generated/nutraxin-seo-release-preflight-contact-preserving.json
       - name: Upload read-only evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: seo-pages-readonly-preflight
-          path: audit/generated/nutraxin-seo-release-preflight.json
+          path: audit/generated/nutraxin-seo-release-preflight*.json
           if-no-files-found: warn
           retention-days: 7
 

@@ -65,9 +65,12 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
     stagedContact.includes('name="privacyAcknowledgement"') &&
     stagedContact.includes('name="safetyConfirmation"');
   const liveActive = liveContactHttp === 200 && (liveContactHtml || "").includes("data-live-b2b-enquiry-form");
+  const liveOrigin = metaValue(liveContactHtml || "", /data-api-origin="([^"]+)"/i);
+  const candidateOrigin = metaValue(stagedContact, /data-api-origin="([^"]+)"/i);
   if (liveContactHttp !== 200) holds.push("LIVE_CONTACT_UNKNOWN");
   else if (liveActive && !candidateLive) holds.push("WOULD_DOWNGRADE_LIVE_CONTACT");
   else if (!liveActive) holds.push("LIVE_CONTACT_NOT_VERIFIED");
+  else if (candidateLive && (!liveOrigin || candidateOrigin !== liveOrigin)) holds.push("CONTACT_API_ORIGIN_DRIFT");
   if (owner?.productionSignoff !== "granted" ||
       owner?.productionPermissions?.activatePublicCustomerAccess !== true) holds.push("OWNER_APPROVAL_NOT_GRANTED");
   if (stagedContact.includes("data-login-form")) issues.push("Login form in contact artifact");
@@ -75,7 +78,8 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
   return { sourceReady, releaseReady: sourceReady && !holds.length,
     disposition: !sourceReady ? "SOURCE_INVALID" : holds.length ? "HELD_FOR_SAFETY_AND_OWNER_APPROVAL" : "PREVIEW_ELIGIBLE_FOR_OWNER_REVIEW",
     products, issues, holds, observed: { liveContactHttp, liveContactActive: liveActive,
-      stagedContactActive: candidateLive, ownerSignoff: owner?.productionSignoff || "unknown" },
+      stagedContactActive: candidateLive, contactOriginMatched: Boolean(liveOrigin && candidateOrigin === liveOrigin),
+      ownerSignoff: owner?.productionSignoff || "unknown" },
     note: "Read-only: no GitHub Pages deployment, DNS change, customer activation or AWS modification." };
 }
 
