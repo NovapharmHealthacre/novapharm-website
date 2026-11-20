@@ -69,7 +69,7 @@ try {
   const xml = await get("/sitemap.xml");
   for (const p of sitemapPaths(xml)) pagePaths.add(p);
 } catch(error){failures.push({path:"/sitemap.xml",issue:String(error).slice(0,150)});}
-if(pagePaths.size<62) failures.push({path:"/sitemap.xml",issue:"Missing public sitemap route coverage: "+pagePaths.size});
+if(pagePaths.size<64) failures.push({path:"/sitemap.xml",issue:"Missing public sitemap plus protected-visibility catalogue/Bag route coverage: "+pagePaths.size});
 await boundedMap([...pagePaths],6,async path=>{
   try {
     const html=await get(path);
