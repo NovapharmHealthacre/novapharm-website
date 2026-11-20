@@ -45,3 +45,11 @@ test("the parser never executes or follows links and accepts no non-string input
     '<main id="main"><h1>Home</h1></main></html>';
   assert.equal(inspectPublicHigSignals(html).skipLinkWithTarget, false);
 });
+
+
+test("a data-id attribute cannot impersonate a real skip-navigation target", () => {
+  const html = '<html lang="en"><meta name="viewport" content="width=device-width">' +
+    '<a class="skip-link" href="#main-content">Skip</a>' +
+    '<main data-id="main-content"><h1>NovaPharm</h1></main></html>';
+  assert.equal(inspectPublicHigSignals(html).skipLinkWithTarget, false);
+});
