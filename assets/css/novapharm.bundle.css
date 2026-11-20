@@ -4135,7 +4135,7 @@ body[data-page="technology"] .page-hero-cinematic::after {
 
 /* Source: module-art-direction.generated.css */
 /* Generated from config/module-art-direction.json. */
-[data-media-asset="home-supply-network"] img { object-position: 70% 50%; }
+[data-media-asset="home-earth-horizon"] img { object-position: 50% 100%; }
 [data-media-asset="about-operating-model"] img { object-position: 66% 50%; }
 [data-media-asset="company-corporate-structure"] img { object-position: 69% 52%; }
 [data-media-asset="governance-quality-oversight"] img { object-position: 70% 48%; }
@@ -4169,7 +4169,7 @@ body[data-page="technology"] .page-hero-cinematic::after {
 [data-media-asset="insight-three-pillar"] img { object-position: 52% 50%; }
 
 @media (max-width: 720px) {
-  [data-media-asset="home-supply-network"] img { object-position: 68% 50%; }
+  [data-media-asset="home-earth-horizon"] img { object-position: 50% 100%; }
   [data-media-asset="about-operating-model"] img { object-position: 72% 50%; }
   [data-media-asset="company-corporate-structure"] img { object-position: 73% 50%; }
   [data-media-asset="governance-quality-oversight"] img { object-position: 72% 48%; }
