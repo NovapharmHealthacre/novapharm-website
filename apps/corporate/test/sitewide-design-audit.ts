@@ -4,7 +4,8 @@ import { chromium } from "playwright";
 import { articles } from "../data/articles";
 import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { corporatePages } from "../data/pages";
-import { leadership } from "../data/site";
+import { leadership, navigation } from "../data/site";
+import { currentCorporateNavigationAriaValue, isCurrentCorporateNavigation } from "../lib/navigation-current";
 
 const origin = process.env.SITEWIDE_BASE_URL ?? "http://127.0.0.1:3178";
 const artifactDir = "../../artifacts/corporate-design-system";
@@ -66,6 +67,24 @@ async function audit() {
                 }
               }
             }
+            const expectedActiveNavigation = navigation.find(([, href]) =>
+              isCurrentCorporateNavigation(route, href))?.[1] ?? null;
+            // Wait for hydrated Next.js navigation semantics before reading the
+            // rendered client components; never infer state from source alone.
+            const expectedAriaState = expectedActiveNavigation
+              ? currentCorporateNavigationAriaValue(route, expectedActiveNavigation)
+              : undefined;
+            if (expectedActiveNavigation && expectedAriaState) {
+              // Locator polling runs in Playwright, not in an esbuild-transformed
+              // nested browser callback (which can reference an absent __name helper).
+              // Both navigation variants must actually expose the hydrated state.
+              for (const selector of [".desktop-nav", ".mobile-menu nav"]) {
+                await page.locator(selector + ' a[href="' + expectedActiveNavigation +
+                  '"][aria-current="' + expectedAriaState + '"]').waitFor({
+                  state: "attached", timeout: 10000
+                });
+              }
+            }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);
               const body=getComputedStyle(document.body);
@@ -76,6 +95,12 @@ async function audit() {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
+                currentNavigation: {
+                  desktop: [...document.querySelectorAll('.desktop-nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") })),
+                  mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") }))
+                },
                 homeNavLabel:(()=>{
                   const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
                   if(!link||!link.getClientRects().length)return null;
@@ -128,6 +153,13 @@ async function audit() {
             if(data.h1s!==1)faults.push(`H1 count: ${data.h1s}`);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
+            const expectedCurrent = expectedActiveNavigation && expectedAriaState
+              ? [{ href: expectedActiveNavigation, state: expectedAriaState }]
+              : [];
+            if (JSON.stringify(data.currentNavigation.desktop) !== JSON.stringify(expectedCurrent) ||
+                JSON.stringify(data.currentNavigation.mobile) !== JSON.stringify(expectedCurrent)) {
+              faults.push(`Current navigation accessibility state does not match ${expectedActiveNavigation ?? "no active section"}: ${JSON.stringify(data.currentNavigation)}`);
+            }
             if(data.scrollWidth>data.width+1)faults.push(`Horizontal overflow: ${data.scrollWidth}px`);
             if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
               faults.push(`Primary heading extends outside viewport: ${JSON.stringify(data.headlineBounds)}`);

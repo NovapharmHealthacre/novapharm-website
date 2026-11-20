@@ -10,6 +10,7 @@ const publicEntry = read("assets/css/novapharm.css");
 const corporateLayout = read("apps/corporate/app/layout.tsx");
 const corporateBrand = read("apps/corporate/components/brand.tsx");
 const corporateHeader = read("apps/corporate/components/site-header.tsx");
+const corporateDesktopNav = read("apps/corporate/components/desktop-navigation.tsx");
 const publicHome = read("index.html");
 const publicMenuScript = read("assets/js/novapharm.js");
 const homepageLegacyNavigation = read("apps/corporate/app/homepage-editorial.css");
@@ -55,7 +56,10 @@ test("Next.js corporate imports the same stylesheet and preserves the original a
   assert.match(corporateLayout, /assets\/css\/apple-web-navigation\.css/);
   assert.match(corporateBrand, /novapharm-healthcare-logo\.png/);
   assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
-  assert.match(corporateHeader, /<nav className="desktop-nav"/);
+  assert.match(corporateHeader, /<DesktopNavigation items=\{navigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
+  assert.match(corporateDesktopNav, /<nav className="desktop-nav"/);
+  assert.match(corporateDesktopNav, /aria-current=\{!isPortal \? currentCorporateNavigationAriaValue\(pathname, href\) : undefined\}/);
+  assert.match(corporateDesktopNav, /const isPortal = href === "\/portal\/";/);
   assert.match(corporateHeader, /<MobileNavigation/);
 });
 
