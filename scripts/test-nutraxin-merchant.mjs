@@ -76,3 +76,36 @@ test("19-stock declaration has owner traceability and in-stock Merchant parity",
   assert(catalogue.products.every(p => p.available_to_sell && p.ordering_enabled));
   assert(parsed.every(p => p.availability === "in_stock"));
 });
+
+
+test("Nutraxin product search metadata, UK shipping and breadcrumb discovery", () => {
+  const products = new Map(catalogue.products.map(p => [p.sku, p]));
+  for (const item of parsed) {
+    const p = products.get(item.id);
+    const html = read("products/nutraxin/" + p.slug + "/index.html");
+    const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
+    assert(title && title.length <= 60, "Title exceeds search display target: " + p.sku);
+    assert(!title.includes(" | Nutraxin | "), "Product title repeats brand: " + p.sku);
+    const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/)?.[1];
+    const twitterTitle = html.match(/<meta name="twitter:title" content="([^"]+)"/)?.[1];
+    assert.equal(ogTitle, title);
+    assert.equal(twitterTitle, title);
+    const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+      .map(m => JSON.parse(m[1]));
+    const webpage = nodes.find(node => node["@type"] === "WebPage");
+    const product = nodes.find(node => node["@type"] === "Product");
+    const breadcrumbs = nodes.find(node => node["@type"] === "BreadcrumbList");
+    assert.equal(webpage.name, title);
+    assert.equal(webpage.mainEntity["@id"], item.link + "#product");
+    assert.equal(breadcrumbs.itemListElement.length, 3);
+    assert.equal(breadcrumbs.itemListElement.at(-1).item, item.link);
+    assert.equal(product.offers.shippingDetails.shippingRate.value,
+      (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2));
+    assert.equal(product.offers.shippingDetails.shippingDestination.addressCountry, "GB");
+    const related = html.match(/<section[^>]+data-nutraxin-related="true"[\s\S]*?<\/section>/)?.[0];
+    assert(related, "Missing crawlable same-range related links: " + p.sku);
+    const others = registered.products.filter(x => x.range ===
+      registered.products.find(x => x.sku === p.sku).range && x.sku !== p.sku);
+    assert(others.some(x => related.includes('/products/nutraxin/' + x.slug + '/')));
+  }
+});
