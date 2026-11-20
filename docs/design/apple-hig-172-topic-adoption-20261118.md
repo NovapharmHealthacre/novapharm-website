@@ -388,3 +388,22 @@ Reviewed the current original Markdown pages for **Playing haptics; Column views
 **Candidate cumulative after the full dependent chain (#883 → #891 → this branch): 128/172 = 74.42% independently documented HIG source reviews; 384/516 = 74.42% separately reasoned web/iOS/Android decisions.** All 42 Critical, 61 High and 24 Medium guideline articles now have original-source review records on this candidate branch. **44 Later-priority articles and 132 platform decisions remain unassessed.** All 172 production implementation statuses remain `not_verified` (0/172). The 3 wholly out-of-scope candidates are pending independent approval, not accepted N/A and not shipped.
 
 This is review and scoping documentation only, with no production, tenant, payment, app signing, AWS or licensed medicine data mutation.
+
+## 20 November completion of the original 172-topic source-review and applicability register
+
+**The dependent candidate source register now contains 172/172 individually documented official Apple HIG topic reviews and 516/516 web/iOS/Android applicability decisions** (42 Critical, 61 High, 24 Medium, 45 Later). This is a source-reading and scoped decision milestone, **not** an independent Quality/Security approval, shipped feature audit, signed native application, or an Apple-endorsed certification.
+
+The final 44 Later-priority sources were reviewed in two batches, with original source URLs and topic-specific observations retained in the JSON register:
+
+- **Platforms / patterns:** Designing for tvOS, Designing for visionOS, Designing for watchOS, Designing for games, Designing for iPhone Duo, Immersive experiences, Spatial layout, Live-viewing apps, Playing audio, Ratings and reviews, Workouts.
+- **Apple controls / status:** Dock menus, Ornaments, Color wells, Image wells, Activity rings, Rating indicators, Complications, Snippets, Top Shelf, Watch faces.
+- **Device inputs:** Apple Pencil and Scribble, Camera Control, Digital Crown, Eyes, Game controls, Gyroscope and accelerometer, Nearby interactions, Remotes.
+- **Apple technologies:** AirPlay, Always On, Augmented reality, CareKit, CarPlay, Game Center, HealthKit, HomeKit, ID Verifier, iMessage apps and stickers, Live Photos, Photo editing, ResearchKit, SharePlay, ShazamKit.
+
+Source provenance example: [Apple HIG Gyroscope and accelerometer](https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md) requires a tangible reason for accessing motion sensors, purpose copy before permission and non-motion alternatives to direct UI manipulation. Apple [iMessage apps and stickers](https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md) requires compact conversation interaction and localized sticker descriptions; [ShazamKit](https://developer.apple.com/design/human-interface-guidelines/shazamkit.md) requires clear microphone purpose, short recordings and opt-in iCloud storage. None is an authorized live NovaPharm capability.
+
+The per-platform `not_applicable` decisions are **unapproved scope rationales**, not accepted programme dispositions. The source register currently has **28 topics whose three decisions are each not applicable** to the presently scoped web/iOS/Android product; these remain `implementation: "not_verified"` and must be independently approved for formal out-of-scope disposition. Topics assessed `applicable` require actual route/device, security/accessibility and exact-production-release receipts; some are conditional prospective capabilities and must be independently confirmed as true product requirements versus not-in-scope.
+
+**Release state unchanged: 0/172 production-verified implementations, zero independently accepted N/A dispositions, existing six bounded public live observations, `productionSignoff: not_granted`, zero new infrastructure budget.** Source review completion cannot activate a signed mobile app, clinical rights, payments, external identity providers or protected customers. Production certification remains false until #890 acceptance gates are satisfied.
+
+**Merge order:** #883 → #891 → #892, after passing exact-current-head CI, independent authorized Quality/Security `APPROVED` events, and reconciliation of changes from main. The latest merged-main register may still show earlier lower review totals; never present a candidate branch as deployed source.
