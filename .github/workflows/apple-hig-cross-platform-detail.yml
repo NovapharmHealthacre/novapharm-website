@@ -46,6 +46,8 @@ jobs:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Check native iOS/Android readable controls and consent state
+        run: node --test native/novapharm-intelligence-mobile/tests/hig-native-readable-controls.test.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs
       - run: node --test scripts/test-apple-hig-attachment-audit.mjs
       - name: Preserve 172-topic HIG production acceptance gaps (not a compliance certificate)
