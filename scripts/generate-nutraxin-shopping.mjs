@@ -39,11 +39,21 @@ const ready = p => retail.delivery_verified === true &&
   retail.checkout_enabled === true && retail.payment_collection_enabled === true &&
   p.ordering_enabled === true && p.available_to_sell === true;
 const clean = s => String(s).replace(/[\t\r\n]+/g, " ").trim();
+// Product facts originate from the owner-supplied register. Catalogue entries that
+// carry unresolved notes must not silently turn preliminary amounts into UK label claims.
+const catalogueIngredients = (ref) => ref.formulation.map(item =>
+  clean(item.name) + ((ref.notes || []).length ? "" : " (" + clean(item.amount) + ")"));
 const catalogDescription = (p, ref) => {
-  const ingredients = ref.formulation.map(item => clean(item.name)).filter(Boolean);
+  const ingredients = catalogueIngredients(ref);
   assert(ingredients.length, "No documented ingredients for " + p.sku);
-  return p.name + ", " + p.pack + ". Food supplement. Supplier catalogue lists: " +
-    ingredients.join(", ") + ". See the product label for full ingredients and directions.";
+  return p.name + " by Nutraxin is a food supplement supplied as " + p.pack +
+    " (" + ref.dosageForm + "). The supplied product catalogue records " +
+    ingredients.join("; ") + ". Composition is presented " + ref.servingText.toLowerCase() +
+    ". The catalogue is a product information reference, not a substitute for " +
+    "the final UK retail pack label. Check the physical label for the full " +
+    "ingredient list, allergens, cautions, recommended use and suitability " +
+    "before purchase or consumption. NovaPharm displays UK retail price and " +
+    "ordering status on this product page. See the product label for full ingredients and directions.";
 };
 const shortDescription = (p, ref) => {
   const first = clean(ref.formulation[0].name);
@@ -94,6 +104,47 @@ const feedTitle = (p) => {
     ? p.name.slice(0, -repeatedEnding.length) : p.name;
   return name + " " + p.pack;
 };
+// Visible, answer-first information for ordinary search and AI-powered discovery.
+// FAQ rich-result markup is intentionally omitted; claims are limited to source
+// composition and already-approved UK retail terms.
+const answerSection = (p, ref, inStock) => {
+  const list = ref.formulation.map(item => clean(item.name)).join(", ");
+  const composition = (ref.notes || []).length
+    ? "The supplied Nutraxin catalogue names " + list +
+      ". Exact amounts and complete ingredient declarations need confirmation against the UK pack."
+    : "The supplied Nutraxin catalogue records " +
+      ref.formulation.map(item => clean(item.name) + " " + clean(item.amount)).join("; ") +
+      ". These values are catalogue references rather than dosing instructions.";
+  const buy = inStock
+    ? "NovaPharm currently displays a UK retail price of £" + money(p.retail_price_pence) +
+      " including VAT. UK delivery is included under the published offer. " +
+      "Confirm final availability and terms at checkout."
+    : "Online ordering is currently unavailable for this item. Contact NovaPharm for availability.";
+  const rows = [
+    ["What is " + p.name + "?",
+      p.name + " is a Nutraxin food supplement supplied as " + p.pack +
+      " in " + ref.dosageForm + " form."],
+    ["What does the catalogue list for " + p.name + "?", composition],
+    ["How should I use this supplement?",
+      "The supplier catalogue says: " + ref.servingText +
+      ". This describes how the formulation is presented, not a recommended daily dose. " +
+      "Follow the final UK pack label and consult a healthcare professional when appropriate."],
+    ["Can I order it in the UK?", buy],
+    ["Is worldwide shipping available?",
+      "These published prices and shipping arrangements apply to the United Kingdom only. " +
+      "International retail availability has not been confirmed."]
+  ];
+  return '<section class="npd-section npd-nutraxin-answers" data-nutraxin-answers="true" ' +
+    'aria-labelledby="nx-answers-' + htmlAttribute(p.slug) + '">' +
+    '<div class="container"><h2 id="nx-answers-' + htmlAttribute(p.slug) +
+    '">Questions about ' + htmlAttribute(p.name) + '</h2>' +
+    rows.map(([question, answer]) => '<div class="npd-answer"><h3>' +
+      htmlAttribute(question) + '</h3><p>' + htmlAttribute(answer) + '</p></div>').join("") +
+    '<p>Product background: <a href="https://nutraxin.uk.com/products/" ' +
+    'rel="noopener noreferrer">Nutraxin UK product range</a>. ' +
+    'Supplier catalogue details and retail pack information must be reconciled before use.</p>' +
+    '</div></section>';
+};
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","shipping(country:price)"];
@@ -143,6 +194,7 @@ for (const product of registered.products) {
     assert.equal(json.sku, p.sku);
     schemaCount++;
     json.gtin13 = gtin.gtin13;
+    json.brand = { "@type": "Brand", name: "Nutraxin", url: "https://nutraxin.uk.com/" };
     json.description = description;
     json.offers = {
       "@type": "Offer", url, priceCurrency: "GBP",
@@ -189,6 +241,10 @@ for (const product of registered.products) {
     html = html.replace("</head>",
       '<script type="application/ld+json">' +
       JSON.stringify(breadcrumbMarkup(p, url)) + "</script>\n</head>");
+  }
+  if (!html.includes('data-nutraxin-answers="true"')) {
+    assert(html.includes("</main>"), "Missing product main content: " + p.sku);
+    html = html.replace("</main>", answerSection(p, product, inStock) + "</main>");
   }
   if (!html.includes('data-nutraxin-related="true"')) {
     assert(html.includes("</main>"), "Missing product main content: " + p.sku);
