@@ -34,6 +34,7 @@ await Promise.all([
   }),
   check("/products/","text/html",html=>{
     assert(html.includes('data-products-editorial="approved-2026-11"')&&html.includes("Different products."),"Approved Products overview rolled back");
+    assert(html.includes('class="npd-commerce-link"')&&html.includes('/products/marketplace/')&&html.includes('/products/track/'),"Marketplace and order tracker links missing on Products overview");
   }),
   check("/products/nutraxin/","text/html",html=>{
     assert(html.includes("nutraxin-retail-store.js")&&html.includes("19 Nutraxin"),"Approved Nutraxin collection missing");
