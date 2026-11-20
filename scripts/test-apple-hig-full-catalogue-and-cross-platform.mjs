@@ -1355,3 +1355,44 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
   validateOwnerSignoff();
   assert.equal(tracker.meta.allPlatformsProductionVerified, expectedProgrammeCertified());
 });
+
+
+test("172 distinct dated article-review observations and genuinely separate platform rationales", () => {
+  // Source-review quality gate only. This validates the written audit ledger,
+  // not the truth of external Apple content or production implementation.
+  const articleSummaries = new Set();
+  for (const topic of tracker.topics) {
+    const notes = topic.guidelineReviewEvidence;
+    assert.ok(Array.isArray(notes) && notes.length >= 2,
+      "Missing article-specific review notes: " + topic.title);
+    const first = notes[0].trim();
+    assert.ok(first.length >= 100,
+      "Article-specific source finding is too short: " + topic.title);
+    assert.ok(!articleSummaries.has(first),
+      "Copied article-specific review finding: " + topic.title);
+    articleSummaries.add(first);
+    const combined = notes.join(" ");
+    assert.ok(combined.includes(topic.markdown),
+      "Original official Markdown link is missing: " + topic.title);
+    assert.match(combined, /\b2026-11-(?:18|19|20)\b/u,
+      "Missing actual November source-review date: " + topic.title);
+    const rationales = ["web", "ios", "android"].map(platform => {
+      const decision = topic.platformApplicability[platform];
+      assert.ok(["applicable", "not_applicable"].includes(decision.state),
+        "Unassessed platform: " + topic.title + "/" + platform);
+      assert.ok(typeof decision.rationale === "string" &&
+        decision.rationale.trim().length >= 70,
+        "Insufficient platform-specific reason: " + topic.title + "/" + platform);
+      return decision.rationale.trim();
+    });
+    assert.equal(new Set(rationales).size, 3,
+      "Copied web/iOS/Android applicability rationale: " + topic.title);
+  }
+  assert.equal(articleSummaries.size, 172);
+  // Source review can be complete while approved N/A and deployment acceptance
+  // remain open; don't silently interpret documentation as a release receipt.
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, true);
+  assert.equal(tracker.meta.platformsAssessed, 516);
+  assert.equal(tracker.meta.productionEvidenceAudit.verifiedImplementationCount,
+    tracker.topics.filter(topic => topic.implementation === "verified").length);
+});
