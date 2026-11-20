@@ -39,6 +39,14 @@ test("exactly 22 canonical routes, five repository foundations and 17 dependency
   });
   assert.deepEqual(new Set(output.workspaces.map(x => x.slug)), new Set(catalogue.map(x => x.slug)));
   assert.ok(output.workspaces.every(x => x.productionAccepted === false && x.customerAccessible === false));
+  // Multimodal is a shared design contract, not a new route or approval.
+  assert.ok(output.workspaces.every(x =>
+    x.multimodalResearchPolicy?.workspaceSlug === x.slug &&
+    x.multimodalResearchPolicy.state === "research_plan_only" &&
+    x.multimodalResearchPolicy.modelInferenceEnabled === false &&
+    x.multimodalResearchPolicy.productionAccepted === false &&
+    x.multimodalResearchPolicy.canPublish === false &&
+    x.multimodalResearchPolicy.decisionReady === false));
   assert.equal(output.productionLive, false);
   assert.equal(output.customerReleaseApproved, false);
   assert.equal(output.sourceCountsIndependentlyAttested, false);
@@ -105,4 +113,56 @@ test("missing or untrusted evidence, drift and forged release statuses fail clos
       i ? x : { ...x, status: "production_accepted" }),
   }), /Invalid/);
   assert.throws(() => assess(counts, capabilityReport, catalogue.slice(0, 21)), /Invalid/);
+});
+
+
+test("all 22 readiness reports inherit fail-closed scientific safeguards", () => {
+  const report = assess();
+  assert.equal(report.workspaces.length, 22);
+  for (const workspace of report.workspaces) {
+    assert.equal(workspace.scientificResearch.contract, "novapharm.intelligence.science-readiness-boundary.v1");
+    assert.equal(workspace.scientificResearch.scientificAiProductionCertified, false);
+    assert.equal(workspace.scientificResearch.customerRestrictedModelAccessApproved, false);
+    assert.equal(workspace.scientificResearch.researchOutputReleaseApproved, false);
+    assert.equal(workspace.scientificResearch.clinicalDecisionReady, false);
+    assert.equal(workspace.scientificResearch.regulatoryDecisionReady, false);
+    assert.ok(workspace.scientificResearch.requiredGuardrails.includes("no_customer_facing_restricted_model_access"));
+  }
+});
+
+test("all 22 workspace readiness reports share the nine reviewed research method references, without accepting them as scientific evidence", () => {
+  const registry = JSON.parse(readFileSync(new URL("../docs/intelligence/openai-science-methods-20261118.json", import.meta.url), "utf8"));
+  const report = assess();
+  assert.equal(registry.methods.length, 9);
+  assert.equal(report.workspaces.length, 22);
+  for (const workspace of report.workspaces) {
+    const expected = registry.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug)).map(item => item.id);
+    assert.deepEqual(workspace.scientificMethodReferences, expected);
+    assert.equal(workspace.scientificMethodReferencesIndependentlyValidated, false);
+    assert.deepEqual(workspace.scientificMethodValidationTracks,
+      [...new Set(registry.methods.filter(item => item.linkedWorkspaces.includes(workspace.slug))
+        .map(item => item.validationTrack))]);
+    assert.deepEqual(workspace.scientificDossierRequiredStages, registry.claimIntegrityPolicy.requiredStages);
+    assert.equal(workspace.scientificDossierIndependentEvidenceAccepted, false);
+    assert.equal(workspace.scientificResearch.scientificAiProductionCertified, false);
+    assert.equal(workspace.productionAccepted, false);
+  }
+});
+
+test("source snapshot timestamps reject invalid calendar rollover and noncanonical UTC", () => {
+  const run = sourceSnapshotAt => assessIntelligence22Workspaces({
+    catalogue, capabilityReport, sourceCounts: counts, sourceSnapshotAt
+  });
+  assert.equal(run("2026-11-14T17:00:00Z").sourceSnapshotAt, "2026-11-14T17:00:00Z");
+  assert.equal(run("2026-11-14T17:00:00.1Z").sourceSnapshotAt, "2026-11-14T17:00:00.1Z");
+  assert.equal(run("2026-11-14T17:00:00.123Z").sourceSnapshotAt, "2026-11-14T17:00:00.123Z");
+  for (const invalid of [
+    "2026-02-30T17:00:00Z",
+    "2026-11-31T17:00:00Z",
+    "2026-11-14T17:00:00+00:00",
+    "2026-11-14T17:00:00.1234Z",
+    "2026-13-01T17:00:00Z"
+  ]) {
+    assert.throws(() => run(invalid), /Invalid private Intelligence workspace implementation assessment/, invalid);
+  }
 });

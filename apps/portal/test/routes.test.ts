@@ -37,7 +37,7 @@ test("area landing routes are canonical and unknown routes fail closed", () => {
   assert.equal(resolvePortalView("/public-data/"), null);
 });
 
-test("Medicines Intelligence has eight governed nested views and rejects every other child route", () => {
+test("Medicines Intelligence retains eight legacy views plus a protected Science research extension", () => {
   for (const subview of medicinesIntelligenceSubviews) {
     const view = resolvePortalView(`/portal/executive-platform/medicines-intelligence/${subview}/`);
     assert.equal(view?.kind, "module");
@@ -46,7 +46,20 @@ test("Medicines Intelligence has eight governed nested views and rejects every o
       assert.equal(view.subview, subview);
     }
   }
-  assert.equal(new Set(medicinesIntelligenceSubviews).size, 8);
+  const legacy = [
+    "medicine-search", "geography", "prescribers", "pharmacies",
+    "forecasts", "opportunities", "campaigns", "data-sources",
+  ];
+  assert.deepEqual(medicinesIntelligenceSubviews.slice(0, 8), legacy);
+  assert.equal(medicinesIntelligenceSubviews[8], "science-lab");
+  assert.equal(new Set(medicinesIntelligenceSubviews).size, 9);
+  const science = resolvePortalView("/portal/executive-platform/medicines-intelligence/science-lab/");
+  assert.equal(science?.kind, "module");
+  if (science?.kind === "module") {
+    assert.equal(science.module.code, "executive.nhs-data");
+    assert.equal(science.module.area, "executive", "Science must inherit board-level SSR protection");
+    assert.equal(science.subview, "science-lab");
+  }
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/unapproved-view/"), null);
   assert.equal(resolvePortalView("/portal/executive-platform/nhs-data/"), null);
 });
@@ -70,9 +83,10 @@ test("all 22 canonical workspaces resolve to the existing protected executive mo
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/data-operations/"), null);
 });
 
-test("Nova ML remains four independently named, protected Intelligence extensions", () => {
-  assert.equal(novaMlWorkspaceCatalogue.length, 4);
-  assert.equal(new Set(novaMlWorkspaceSlugs).size, 4);
+test("Nova ML and model interpretability remain five independently named protected extensions", () => {
+  assert.equal(novaMlWorkspaceCatalogue.length, 5);
+  assert.equal(new Set(novaMlWorkspaceSlugs).size, 5);
+  assert.equal(novaMlWorkspaceSlugs.includes("nova-model-microscope"), true);
   assert.equal(intelligenceWorkspaceCatalogue.length, 22, "native extensions must not redefine the canonical medicine workspaces");
 
   const landing = resolvePortalView("/portal/executive-platform/nova-ml/");
@@ -102,5 +116,6 @@ test("Nova ML remains four independently named, protected Intelligence extension
     "/portal/executive-platform/nova-ml/unapproved-model/",
     "/portal/executive-platform/nova-ml/nova-ml-studio/secret/",
     "/portal/executive-platform/nova-ml/admin/",
+    "/portal/executive-platform/nova-ml/nova-model-microscope/private-model/",
   ]) assert.equal(resolvePortalView(route), null, route);
 });

@@ -155,3 +155,18 @@ test("production-like isolated browser validation may use loopback HTTP but neve
   }), null);
   assert.equal(calls, 1);
 });
+
+test("Science research route inherits board-only verified session gate", () => {
+  const science = resolvePortalView("/portal/executive-platform/medicines-intelligence/science-lab/");
+  assert.equal(science?.kind, "module");
+  if (!science || science.kind !== "module") throw new Error("Missing protected science route");
+  assert.equal(science.module.code, "executive.nhs-data");
+  assert.equal(science.module.area, "executive");
+  assert.equal(science.subview, "science-lab");
+  assert.equal(sessionDecision(science, null), "deny");
+  assert.equal(sessionDecision(science, customerUser), "deny");
+  assert.equal(sessionDecision(science, { ...user, role: "employee", accessType: "employee", accessScopes: ["employee"] }), "deny");
+  assert.equal(sessionDecision(science, user), "allow");
+  assert.equal(sessionDecision(science, { ...user, accessScopes: ["admin"] }), "allow");
+  assert.equal(sessionDecision(science, { ...user, mustChangePassword: true }), "change-password");
+});

@@ -201,8 +201,9 @@ small { font-size: 0.78rem; }
 .page-hero-copy h1 { max-width: 910px; margin-bottom: 22px; }
 .page-hero-copy > p { max-width: 760px; font-size: 1.15rem; }
 .breadcrumbs { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 35px; color: var(--muted); font-size: .76rem; }
-.breadcrumbs span { display: flex; gap: 9px; }
-.breadcrumbs a { color: var(--navy); }
+/* Every breadcrumb link is a real mobile touch target, including the Home link. */
+.breadcrumbs span { display: flex; align-items: center; gap: 9px; }
+.breadcrumbs a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 2px; color: var(--navy); }
 .breadcrumbs i { font-style: normal; }
 
 .narrative-grid { display: grid; grid-template-columns: minmax(250px, .72fr) 1.28fr; gap: 100px; }

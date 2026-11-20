@@ -17,6 +17,7 @@ export const medicinesIntelligenceSubviews = Object.freeze([
   "opportunities",
   "campaigns",
   "data-sources",
+  "science-lab",
 ] as const);
 
 export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number] | IntelligenceWorkspaceSlug | NovaMlWorkspaceSlug;

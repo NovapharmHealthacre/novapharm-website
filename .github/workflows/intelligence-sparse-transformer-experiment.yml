@@ -1,0 +1,67 @@
+name: NovaPharm offline trained sparse transformer evaluation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/research/tiny-sparse-transformer-experiment.py"
+      - "scripts/research/validate-trained-sparse-transformer-report.mjs"
+      - "scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json"
+      - "scripts/test-intelligence-trained-sparse-transformer-report.mjs"
+      - ".github/workflows/intelligence-sparse-transformer-experiment.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  offline-synthetic-cpu:
+    name: Train synthetic CPU attention model and validate unverified research contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install pinned CPU-only research library
+        run: python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+      - name: Install pinned tensor-to-NumPy serialization dependency
+        run: python -m pip install --disable-pip-version-check "numpy==2.3.5"
+      - name: Run identical synthetic experiments twice; retain no checkpoints
+        run: |
+          python scripts/research/tiny-sparse-transformer-experiment.py > "$RUNNER_TEMP/report-one.json"
+          python scripts/research/tiny-sparse-transformer-experiment.py > "$RUNNER_TEMP/report-two.json"
+          python - "$RUNNER_TEMP/report-one.json" "$RUNNER_TEMP/report-two.json" <<'PY'
+          import json
+          import sys
+          a, b = [json.load(open(p, encoding="utf-8")) for p in sys.argv[1:]]
+          for document in (a, b):
+              document["candidateArtifact"]["provenance"].pop("evaluatedAt")
+          assert a == b, "Synthetic fixed-seed experiment is not reproducible"
+          assert a["classification"] == "synthetic-local-research-only"
+          assert a["evaluation"]["isolatedCircuitAccuracy"] >= 0
+          assert a["evaluation"]["ablatedLoss"] > a["evaluation"]["isolatedCircuitLoss"]
+          assert all(value is False for value in a["assurance"].values())
+          print("Reproducible CPU experiment and fail-closed result assertions passed")
+          PY
+      - name: Validate real trained experiment output through shared Node research contract
+        run: |
+          node scripts/research/validate-trained-sparse-transformer-report.mjs < "$RUNNER_TEMP/report-one.json" > "$RUNNER_TEMP/summary.json"
+          python - "$RUNNER_TEMP/summary.json" <<'PY'
+          import json
+          import sys
+          s = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert s["schemaVersion"] == "npi.sparse-circuit.v1"
+          assert s["status"] == "unverified-research-candidate"
+          assert s["valid"] is True
+          assert s["sampleCount"] >= 64
+          for key in ("mechanisticExplanationVerified", "productionEligible", "clinicalUsePermitted"):
+              assert s[key] is False
+          print("Only non-authorizing, bounded research summary was emitted")
+          PY
+      - name: Release boundary
+        run: echo "This workflow trains only generated toy data. It does not provide a clinical model, OpenAI sparse-circuits replication, model licence, signed app or production deployment."

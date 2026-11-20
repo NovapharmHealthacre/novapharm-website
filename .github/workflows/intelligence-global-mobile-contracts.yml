@@ -1,0 +1,117 @@
+name: Intelligence mobile and global source candidate contracts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths:
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/NovaMapKitView.swift'
+      - 'native/novapharm-intelligence-apple/Package.swift'
+      - 'native/novapharm-intelligence-android/**'
+      - 'apps/portal/components/governed-healthcare-map.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/proxy.ts'
+      - 'packages/security/src/index.ts'
+      - 'scripts/test-governed-maps-contract.mjs'
+      - 'docs/maps/**'
+      - 'apps/portal/data/nova-ml-modules.ts'
+      - 'docs/ai-use-case-register.json'
+      - 'src/core/intelligence-global-source-gateway.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
+      - 'src/core/intelligence-global-canonical-candidates.mjs'
+      - 'src/core/intelligence-global-source-aliases.mjs'
+      - 'scripts/test-intelligence-global-source-aliases.mjs'
+      - 'scripts/test-intelligence-global-canonical-candidates.mjs'
+      - 'scripts/test-intelligence-global-source-registry.mjs'
+      - 'docs/intelligence/global-source-candidate-v2.schema.json'
+      - 'docs/intelligence/global-source-enterprise-controls-20261117.md'
+      - 'scripts/test-intelligence-global-source-gateway.mjs'
+      - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+      - 'scripts/check-syntax.mjs'
+      - '.github/workflows/intelligence-global-mobile-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-source-contracts:
+    name: Global data rights + mobile preview source contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify CLIP source-only publication isolation
+        run: node --test scripts/aws/contact-release-routing.test.mjs
+      - name: Check governed backend candidate syntax
+        run: |
+          node --check src/core/intelligence-global-source-gateway.mjs
+          node --check src/core/intelligence-global-evidence-contract.mjs
+          node --check src/core/intelligence-global-canonical-candidates.mjs
+          node --check src/core/intelligence-global-source-aliases.mjs
+          node --check scripts/test-intelligence-global-canonical-candidates.mjs
+          node --check scripts/test-intelligence-global-source-registry.mjs
+          node --check scripts/test-intelligence-global-source-gateway.mjs
+      - name: Test upstream read-denial, source schema and 22-workspace catalogue
+        run: |
+          node --test scripts/test-intelligence-global-source-gateway.mjs
+          node --test scripts/test-intelligence-global-canonical-candidates.mjs
+          node --test scripts/test-intelligence-global-source-registry.mjs
+          node --test scripts/test-intelligence-global-source-aliases.mjs
+          node --test native/novapharm-intelligence-mobile/tests/*.test.mjs
+          node --test scripts/test-governed-maps-contract.mjs
+
+  mobile-bundle-preflight:
+    name: iOS/Android candidate typecheck and offline bundle preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: native/novapharm-intelligence-mobile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Require committed Expo lockfile without dependency re-resolution
+        run: |
+          test -s package-lock.json
+          node -e 'const p=require("./package.json"),l=require("./package-lock.json"); if (l.lockfileVersion !== 3 || l.packages?.[""]?.name !== p.name || l.packages?.[""]?.version !== p.version) process.exit(1)'
+      - name: Verify lockfile registry and integrity before any dependency install
+        run: |
+          node -e '
+          const l=require("./package-lock.json");
+          const packages=Object.entries(l.packages).filter(([name])=>name);
+          for (const [name, item] of packages) {
+            if (!item.resolved?.startsWith("https://registry.npmjs.org/") || !item.integrity?.startsWith("sha512-")) {
+              throw new Error("Unapproved resolver URL or missing SHA-512: " + name);
+            }
+          }
+          console.log("Validated npm registry and SHA-512 integrity for " + packages.length + " resolved packages");
+          '
+      - name: Upload isolated mobile lockfile for human dependency review
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-intelligence-mobile-lockfile-${{ github.sha }}
+          path: native/novapharm-intelligence-mobile/package-lock.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Verify clean install using committed dependency lockfile
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Audit production dependency advisories (high and critical release gate)
+        run: npm audit --omit=dev --audit-level=high --no-fund
+      - name: Verify TypeScript and exact React Native imports
+        run: npm run typecheck
+      - name: Compile offline JavaScript bundles for both platforms
+        run: |
+          npx expo export --platform ios --output-dir /tmp/novapharm-ios-candidate
+          npx expo export --platform android --output-dir /tmp/novapharm-android-candidate
