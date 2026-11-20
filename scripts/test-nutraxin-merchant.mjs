@@ -35,6 +35,7 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert.equal(item.image_link, "https://novapharmhealthcare.com/assets/media/products/nutraxin/" + ref.imageBase + ".png");
     assert.equal(item.availability, ready ? "in_stock" : "out_of_stock");
     assert.equal(item.brand, "Nutraxin");
+    assert.equal(item.google_product_category, "525", "Google Vitamins & Supplements taxonomy");
     const gtinRow = gtinBySku.get(item.id);
     assert(gtinRow, "Unmapped UK GTIN: " + item.id);
     assert.equal(gtinRow.slug, product.slug, "GTIN slug mismatch");
@@ -54,6 +55,9 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     const schema = nodes.find(node => node["@type"] === "Product");
     assert(schema && schema.offers);
     assert.equal(schema.gtin13, item.gtin, "Product JSON-LD GTIN must equal feed");
+    assert.equal(schema.category, "Vitamins & Supplements");
+    assert(!(schema.additionalProperty || []).some(v => v.name === "Public status"),
+      "The Product Offer must not contradict an old unavailability note");
     assert.equal(schema.description, item.description, "Feed/Product structured description drift");
     assert.equal(schema.offers.seller.logo,
       "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png");
@@ -110,6 +114,9 @@ test("Nutraxin product search metadata, UK shipping and breadcrumb discovery", (
     const twitterTitle = html.match(/<meta name="twitter:title" content="([^"]+)"/)?.[1];
     assert.equal(ogTitle, title);
     assert.equal(twitterTitle, title);
+    const twitterDescription = html.match(/<meta name="twitter:description" content="([^"]+)"/)?.[1];
+    const siteDescription = html.match(/<meta name="description" content="([^"]+)"/)?.[1];
+    assert.equal(twitterDescription, siteDescription, "Social preview cannot retain B2B-only product copy");
     const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
       .map(m => JSON.parse(m[1]));
     const webpage = nodes.find(node => node["@type"] === "WebPage");
