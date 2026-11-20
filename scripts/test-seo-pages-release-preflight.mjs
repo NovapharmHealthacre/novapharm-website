@@ -113,3 +113,23 @@ test("read-only preflight CI covers contact changes and owner approval controls"
     assert(!workflow.includes(scope + ": write"), "Preflight must never grant " + scope + " write permission");
   }
 });
+
+
+test("AI source guide rejects encoded private paths and credentialed source URLs", () => {
+  for (const url of [
+    "https://novapharmhealthcare.com/%70ortal/internal/",
+    "https://novapharmhealthcare.com/%2570ortal/internal/",
+    "https://novapharmhealthcare.com/%61dmin/"
+  ]) {
+    const x = fixture({ownerApproved:true,candidateActive:true});
+    x.files["llms.txt"] += "\n" + url;
+    const r = auditSeoCandidate(x);
+    assert.equal(r.sourceReady, false, "Encoded protected route must be blocked: " + url);
+    assert(r.issues.some(issue => issue.includes("protected route")));
+  }
+  const x = fixture({ownerApproved:true,candidateActive:true});
+  x.files["llms.txt"] += "\nhttps://user:secret@novapharmhealthcare.com/products/nutraxin/";
+  const r = auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);
+  assert(r.issues.some(issue => issue.includes("URL credentials")));
+});
