@@ -74,3 +74,21 @@ Official reference examples:
 - No account credentials, patient data, restricted supplier documents or proprietary fonts are placed in this report. No AWS provisioning, Mongo writes, SharePoint permission mutation, payment, portal activation or live public deployment is part of this PR.
 
 **This file itself is a source-only engineering audit. It does not fix the blocked items above or make 100% claims.**
+
+
+## 21 November 2026: fresh owner-archive integrity inspection
+
+The source inventory, complete 172-row Apple HIG CSV, ten-tab owner workbook, IMDF ZIP and three further owner archives were located in the owner's connected file library and processed **as original bytes**, without executing, installing or copying any Apple package assets into the site. This supplements the historical attachment register; it does not overwrite its earlier evidence boundaries.
+
+| Owner artifact | SHA-256 of original bytes | Actual contents/validation | Use and limits |
+| --- | --- | --- | --- |
+| `Apple_HIG_Complete_Sectionwise_Index_2026-11-18.csv` | `77d4d437a42835b83c30ea4378cf65d70d9e8c814750246c1440b36f79abbbca` | 172 rows / 172 unique primary official URLs | Owner source index, not a production implementation receipt |
+| `IMDF.zip` | `d40e5fa749a0d0ae013a77984e90531d8a4f44b429638e86b843847cae20cf64` | 10 members; ZIP CRC success; no path traversal | Historic indoor-map data-model examples only; no verified facility map or venue licence |
+| `ComposingCustomLayoutsWithSwiftUI(1).zip` | `0fe4ce8ac081e1d7e9248022e2ffc59f94ccafe5ff8846a0964e419d8aa1fd35` | 104 members; ZIP CRC success; no path traversal | Native SwiftUI reference; not copied into a web runtime |
+| `AnimatingViewsAndTransitions.zip` | `4335b52757b8ce3933c769cf14494873a4530914063cb1092c46b4d39a5c061f` | 181 members, 39 Swift files, three licence/readme subtrees; ZIP CRC success; no path traversal | Apple tutorial project has a licence text; this is not blanket permission for unrelated Apple branding/SDK assets |
+| `apple-ios-27-ui-kit_assets_2026-10-27_v32(1).zip` | `df3518b0ee2cdf7e4facf984e88b5df5ec8e5a97b8787d73eb55c589a7019c28` | 151 members: 150 PNG and one SVG; CRC success; no path traversal; no standalone licence/readme within archive | Visual reference only pending relevant rights/terms; no web/Android redistribution |
+| `apple-macos-27-ui-kit_assets_2026-10-28_v18.zip` | `abb9404f81f732a0ac58bd20d1ce600cb4a69061c33c61ead5b4070c016dcfb8` | 22 SVG members; CRC success; no path traversal; no standalone licence/readme within archive | Separate historical Apple design resource, not silently added to the 32-file November attachment baseline |
+
+The original 10-tab workbook directly identifies 172 primary guidelines, 30 selected in-page anchors and five supplemental resources. The independent official Apple source-health workflow in [draft PR #996](https://github.com/NovapharmHealthacre/novapharm-website/pull/996), [GitHub Actions run 44830167681](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44830167681), passed all 210 original reference URL/heading checks. It explicitly handles the old Siri heading as documented source drift. A successful URL/CRC/hash check is **not** a current full-text legal review, site accessibility acceptance, native app signature, clinical data permission, or 172/172 production certificate.
+
+A separate [Portal keyboard accessibility fix, draft PR #993](https://github.com/NovapharmHealthacre/novapharm-website/pull/993), has exact-head HIG/browser/security tests under evaluation. The corporate and protected public production branches remain unchanged by these audit findings.
