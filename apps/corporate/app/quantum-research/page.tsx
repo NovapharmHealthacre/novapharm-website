@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { assessQuantumResourcePlan } from "../../../../src/core/intelligence-quantum-resource-estimate.mjs";
 import quantumProgram from "../../../../docs/intelligence/quantum-research-program-v1.json";
+import { assessQuantumResourcePlan } from "../../../../src/core/intelligence-quantum-resource-estimate.mjs";
 import styles from "./quantum-research.module.css";
 
 export const metadata: Metadata = {

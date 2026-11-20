@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-
-import { assessQuantumResourcePlan } from "../../../src/core/intelligence-quantum-resource-estimate.mjs";
-import quantumProgram from "../../../docs/intelligence/quantum-research-program-v1.json";
 import scienceMethods from "../../../docs/intelligence/openai-science-methods-20261118.json";
+import quantumProgram from "../../../docs/intelligence/quantum-research-program-v1.json";
 import catalog from "../../../docs/intelligence/science-research-capabilities-20261118.json";
+import { assessQuantumResourcePlan } from "../../../src/core/intelligence-quantum-resource-estimate.mjs";
 import { intelligenceWorkspaceBySlug } from "../data/intelligence-workspaces";
 import styles from "./science-research-workspace.module.css";
 
@@ -51,17 +50,20 @@ export function ScienceResearchWorkspace() {
           <p>{module.description}</p>
         </article>)}
       </div>
-      <div className={styles["lifecycle"]} aria-labelledby="quantum-ram-preflight">
+      <section className={styles["lifecycle"]} aria-labelledby="quantum-ram-preflight">
         <h3 id="quantum-ram-preflight">State-vector memory preflight</h3>
         <p>This interactive calculator only evaluates the mathematical memory footprint of one complex128 state vector. No simulator, chemistry job, quantum processor, cloud service or data upload runs.</p>
-        <div className={styles["relatedLinks"]} role="group" aria-label="Select illustrative qubit count">
-          {[10, 20, 25, 30].map((count) =>
-            <button key={count} type="button" className={styles["relatedLink"]} aria-pressed={selectedQubits === count} onClick={() => setSelectedQubits(count)}>{count} qubits</button>
-          )}
-        </div>
+        <fieldset className={styles["capacityGroup"]}>
+          <legend>Choose an illustrative qubit count</legend>
+          <div className={styles["relatedLinks"]}>
+            {[10, 20, 25, 30].map((count) =>
+              <button key={count} type="button" className={styles["relatedLink"]} aria-pressed={selectedQubits === count} onClick={() => setSelectedQubits(count)}>{count} qubits</button>
+            )}
+          </div>
+        </fieldset>
         <p role="status">{selectedQubits} qubits · {resourceReview.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB theoretical vector storage · 64 MiB declared study budget. {resourceReview.conservativeResearchCandidate ? "Within source review threshold only." : "Exceeds the conservative research advisory."}</p>
         <p>Actual RAM overhead, runtime, licence requirements, price and physical qubit counts remain unknown. This preflight never approves execution.</p>
-      </div>
+      </section>
       <div className={styles["lifecycle"]}>
         <h3>Scientific verification DNA</h3>
         <ul>{quantumProgram.principles.map((item) => <li key={item.title}><strong>{item.title}.</strong> {item.detail}</li>)}</ul>
