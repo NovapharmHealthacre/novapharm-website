@@ -1,0 +1,29 @@
+# NovaPharm Healthcare
+> Official public pages for NovaPharm Healthcare Ltd, a UK healthcare and pharmaceutical business. This is a navigational guide for readers and AI-assisted search tools, not an independent source of regulatory approval or commercial authorisation.
+
+## Official company and identity
+- [Official website](https://novapharmhealthcare.com/): Corporate overview and published capabilities
+- [Company](https://novapharmhealthcare.com/about/): Corporate background and operating context
+- [Leadership](https://novapharmhealthcare.com/leadership/): Named leadership biographies
+- [Governance](https://novapharmhealthcare.com/about/governance/): Public governance information
+- [Capabilities](https://novapharmhealthcare.com/capabilities/): Services and operating scope
+- [Contact](https://novapharmhealthcare.com/contact/): Official business contact route
+
+## Nutraxin UK food supplements
+- [Nutraxin product collection](https://novapharmhealthcare.com/products/nutraxin/): Browse the 19 listed food supplement products and product detail pages
+- [Products overview](https://novapharmhealthcare.com/products/): Consumer supplement and separate pharmaceutical portfolio navigation
+- [Vitamin D3 + K2, 120 tablets](https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/): Example individual product with pack details and current published UK price
+- [Magnesium Complex + Vitamin B6, 60 tablets](https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/): Example individual product with supplier-transcribed composition
+
+## Pharmaceutical and technology work
+- [Regulatory services](https://novapharmhealthcare.com/regulatory-services/): UK and international regulatory services
+- [Oncology](https://novapharmhealthcare.com/oncology/): Oncology strategy and planned capabilities
+- [Technology](https://novapharmhealthcare.com/technology/): NovaPharm Intelligence and published technology status
+- [Insights](https://novapharmhealthcare.com/news-insights/): Editorial articles with published attribution
+
+## Index and boundaries
+- [Canonical XML sitemap](https://novapharmhealthcare.com/sitemap.xml): Public indexable URL inventory
+- [Editorial and legal standards](https://novapharmhealthcare.com/legal/): Source and content governance
+- Product availability, medicines authorisations, regulatory status and health claims should be assessed from the current official product pages and competent authorities, not assumed from this guide.
+- Private account, portal, internal documentation and customer records are not public reference sources.
+- Discovery and citation by any third-party search engine or AI assistant is controlled by that service; publication of this guide does not guarantee indexing, inclusion, ranking or endorsement.
