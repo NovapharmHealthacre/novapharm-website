@@ -211,6 +211,22 @@ for (const requiredPath of requiredPublicPaths) {
   if (!existsSync(target)) throw new Error(`Pages artifact is missing required public path: ${requiredPath}`);
 }
 
+// The source catalogue includes confidential pricing-planning metadata.
+// Public storefronts need product data, never NovaPharm's internal margin.
+const escoDataPath = join(output, "assets/data/esco-catalogue.json");
+if (!existsSync(escoDataPath)) throw new Error("Public ESCO catalogue data missing");
+const escoPublicData = JSON.parse(readFileSync(escoDataPath, "utf8"));
+if (escoPublicData.entriesTotal !== 373 || escoPublicData.categories?.length !== 12 ||
+    escoPublicData.requestQuoteOnly !== true || escoPublicData.checkoutEnabled !== false) {
+  throw new Error("Refusing a public ESCO catalogue with unverified item count or commercial eligibility");
+}
+delete escoPublicData.targetGrossMargin;
+const safeEscoJson = JSON.stringify(escoPublicData, null, 2) + "\n";
+if (safeEscoJson.includes("targetGrossMargin")) {
+  throw new Error("Confidential ESCO margin reached the public artifact");
+}
+writeFileSync(escoDataPath, safeEscoJson, "utf8");
+
 // Fail closed if an older Next.js or root-static build would overwrite the
 // owner-approved Earth homepage and the 19 restored, sellable-by-policy-only
 // Nutraxin public pages. A git merge alone is not proof of an approved Pages build.
