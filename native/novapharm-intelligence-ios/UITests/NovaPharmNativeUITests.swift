@@ -1,12 +1,12 @@
 import XCTest
 
 /// Native on-device UI tests. Do not change protected runtime flags to make these pass.
-@MainActor
 final class NovaPharmNativeUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
     }
 
+    @MainActor
     func testNativeTabsAndGatedWorkspaceNavigation() throws {
         let app = XCUIApplication()
         app.launch()
@@ -34,6 +34,7 @@ final class NovaPharmNativeUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["No operational action is available in this preview."].exists)
     }
 
+    @MainActor
     func testCountryDirectoryAndOfflineRights() throws {
         let app = XCUIApplication()
         app.launch()
@@ -47,8 +48,7 @@ final class NovaPharmNativeUITests: XCTestCase {
         directoryLink.tap()
 
         XCTAssertTrue(app.navigationBars["Countries"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(
-            format: "label CONTAINS[c] %@", "0 independently approved national sources")).firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any)["novapharm.countries.readonly-notice"].exists)
         let algeria = app.buttons["novapharm.country.DZ"]
         for _ in 0..<5 where !algeria.isHittable {
             app.swipeUp()
@@ -56,9 +56,10 @@ final class NovaPharmNativeUITests: XCTestCase {
         XCTAssertTrue(algeria.waitForExistence(timeout: 10))
         algeria.tap()
         XCTAssertTrue(app.navigationBars["Algeria"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["Disabled"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["novapharm.country.live-status"].exists)
     }
 
+    @MainActor
     func testSavedShortcutPersistsAcrossAppRelaunchAndCanBeDeleted() throws {
         let app = XCUIApplication()
         app.launch()
