@@ -1,0 +1,63 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+const read = path => readFileSync(path, "utf8");
+const ts = read("apps/portal/data/intelligence-workspaces.ts");
+const swift = read("native/novapharm-intelligence-ios/App/WorkspaceCatalog.swift");
+const policy = read("native/novapharm-intelligence-ios/App/ReleasePolicy.swift");
+const view = read("native/novapharm-intelligence-ios/App/NovaRootView.swift");
+const config = read("native/novapharm-intelligence-ios/project.yml");
+const constraints = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
+
+const webSlugs = [...ts.matchAll(/\{\s*slug:\s*"([^"]+)"/g)].map(m => m[1]);
+const nativeSlugs = [...swift.matchAll(/item\(\.intelligence,\s*"([^"]+)"/g)].map(m => m[1]);
+const portal = [...swift.matchAll(/item\(\.customerPortal,\s*"([^"]+)"/g)].map(m => m[1]);
+const distribution = [...swift.matchAll(/item\(\.distribution,\s*"([^"]+)"/g)].map(m => m[1]);
+
+test("Swift iOS Intelligence slugs stay exact, ordered and lossless against the canonical web catalogue", () => {
+  assert.equal(webSlugs.length, 22);
+  assert.deepEqual(nativeSlugs, webSlugs);
+  assert.equal(new Set(nativeSlugs).size, 22);
+});
+
+test("Swift-native Portal and Distribution preserve offline planning module coverage", () => {
+  assert.deepEqual(portal, [
+    "dashboard", "account", "products", "prices", "orders", "invoices",
+    "statements", "delivery", "documents", "support"
+  ]);
+  assert.deepEqual(distribution, [
+    "inventory", "batches", "quality", "replenishment",
+    "pick", "dispatch", "delivery", "returns", "performance"
+  ]);
+});
+
+test("native iOS is a SwiftUI app, not an Expo wrapper, with SwiftData and Charts", () => {
+  assert.match(config, /type: application/);
+  assert.match(config, /platform: iOS/);
+  assert.match(config, /IPHONEOS_DEPLOYMENT_TARGET: "17.0"/);
+  assert.match(config, /PRODUCT_BUNDLE_IDENTIFIER: com\.example\.NovaPharmNativePreview/);
+  assert.match(config, /CODE_SIGNING_ALLOWED: "NO"/);
+  assert.match(view, /import SwiftUI/);
+  assert.match(view, /import SwiftData/);
+  assert.match(view, /import Charts/);
+  assert.match(view, /Chart\(NovaArea\.allCases/);
+  assert.match(view, /NavigationStack/);
+  assert.match(view, /@Query/);
+  assert.doesNotMatch(view, /WKWebView|ReactNative|Expo|URLSession|fetch\(/);
+});
+
+test("source preview never circumvents release or sensitive-data gates", () => {
+  assert.equal(constraints.productionSignoff, "not_granted");
+  assert.equal(constraints.initialInfrastructureBudget.monthlyCapGbp, 0);
+  assert.equal(constraints.productionPermissions.activatePublicCustomerAccess, false);
+  assert.equal(constraints.productionPermissions.enableCustomerBilling, false);
+  for (const gate of [
+    "productionApproved", "authenticatedMobileClientAvailable",
+    "protectedNetworkOperationsEnabled", "billingEnabled", "privateDataCachingEnabled"
+  ]) {
+    assert.match(policy, new RegExp("static let " + gate + " = false"));
+  }
+  assert.match(policy, /canOpenProtectedWorkspace/);
+  assert.match(policy, /false\s*\n\s*}/);
+});

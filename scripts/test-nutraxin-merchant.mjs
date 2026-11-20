@@ -70,6 +70,13 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert(!meta[1].includes("qualified B2B review"), "Retail snippet must not be B2B-only");
     const page = nodes.find(node => node["@type"] === "WebPage");
     assert(page && page.dateModified === "2026-11-20");
+    const searchTitle = html.match(/<title>([^<]+)<\/title>/)?.[1];
+    assert(searchTitle && searchTitle.length <= 60, "Review overlong product title " + product.sku);
+    assert(searchTitle.startsWith("Nutraxin ") && searchTitle.endsWith(" | NovaPharm"));
+    assert(!searchTitle.includes("| Nutraxin |"), "Do not duplicate the supplier brand");
+    assert.equal(page.name, searchTitle, "WebPage schema title drift");
+    assert.equal(html.match(/<meta property="og:title" content="([^"]+)"/)?.[1], searchTitle);
+    assert.equal(html.match(/<meta name="twitter:title" content="([^"]+)"/)?.[1], searchTitle);
     assert.equal(schema.offers.price, price);
     assert.equal(schema.offers.priceCurrency, "GBP");
     assert.equal(schema.offers.availability, "https://schema.org/" + (ready ? "InStock" : "OutOfStock"));

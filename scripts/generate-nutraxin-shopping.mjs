@@ -66,14 +66,28 @@ const shortDescription = (p, ref) => {
 };
 // Search titles should keep the verified product identity and pack information
 // without repeating the Nutraxin brand. Never truncate a product name mid-word.
-const searchTitle = p => [
-  feedTitle(p) + " | NovaPharm UK",
-  feedTitle(p) + " | UK",
-  p.name + " | NovaPharm UK",
-  p.name + " | UK",
-  feedTitle(p),
-  p.name
-].find(title => title.length <= 60);
+// Preserve the PR #934 concise UK titles on the same source as Merchant data.
+const searchTitle = product => {
+  let name = product.name
+    .replace("Vitamin MAX C + D + Zinc", "Vitamin MAX C+D+Zinc")
+    .replace("Vitamin B12 Methylcobalamin", "B12 Methylcobalamin")
+    .replace("Vitamin B6", "B6");
+  let pack = product.pack;
+  if (/ sachets$/i.test(name) && /sachets/i.test(pack)) name = name.replace(/ sachets$/i, "");
+  if (/ effervescent$/i.test(name) && /effervescent/i.test(pack)) name = name.replace(/ effervescent$/i, "");
+  if (/ chewable$/i.test(name) && /chewable/i.test(pack)) name = name.replace(/ chewable$/i, "");
+  let title = `${name} ${pack} | NovaPharm`;
+  if (title.length > 60) {
+    pack = pack.replace(/effervescent tablets/i, "effervescent")
+      .replace(/chewable tablets/i, "chewables")
+      .replace(/sublingual tablets/i, "sublingual")
+      .replace(/tablets/i, "tabs");
+    title = `${name} ${pack} | NovaPharm`;
+  }
+  assert(title.length <= 60 && title.startsWith("Nutraxin "),
+    "Nutraxin search title requires editorial review: " + product.sku);
+  return title;
+};
 
 const breadcrumbMarkup = (p, url) => ({
   "@context": "https://schema.org",

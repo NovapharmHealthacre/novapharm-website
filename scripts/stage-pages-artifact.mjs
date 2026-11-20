@@ -73,6 +73,8 @@ const allowedRootFiles = new Set([
 
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
 const allowedPublicPortalFiles = new Set(["portal/index.html"]);
+// Public research content is exactly one reviewed HTML file, never an entire directory.
+const allowedPublicQuantumFiles = new Set(["quantum-research/index.html"]);
 
 const requiredPublicPaths = [
   "index.html",
@@ -109,6 +111,7 @@ const requiredPublicPaths = [
   "products/nutraxin/index.html",
   "shopping/nutraxin-uk.tsv",
   "products/strategic-portfolio/index.html",
+  "quantum-research/index.html",
   "trust-centre/index.html"
 ];
 
@@ -165,6 +168,20 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
       const approvedDestination = join(output, publicPath);
       mkdirSync(dirname(approvedDestination), { recursive: true });
       cpSync(approvedSource, approvedDestination, { force: true });
+    }
+    continue;
+  }
+  if (entry.isDirectory() && entry.name === "quantum-research") {
+    const contents = readdirSync(source, { withFileTypes: true });
+    if (contents.length !== 1 || contents[0].name !== "index.html" ||
+        !contents[0].isFile()) {
+      throw new Error("Unreviewed file in public quantum-research directory");
+    }
+    for (const reviewedPath of allowedPublicQuantumFiles) {
+      const reviewedSource = join(root, reviewedPath);
+      const reviewedDestination = join(output, reviewedPath);
+      mkdirSync(dirname(reviewedDestination), { recursive: true });
+      cpSync(reviewedSource, reviewedDestination, { force: true });
     }
     continue;
   }
@@ -244,7 +261,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
@@ -272,6 +289,15 @@ for (const page of canonicalPages) {
   if (markers.length !== 1 || markers[0][1] !== releaseSha) {
     throw new Error(`Canonical release provenance mismatch: ${page.file}`);
   }
+}
+
+// Keep non-indexable quantum reference traceable to the exact released source.
+const quantumCandidate = readFileSync(join(output, "quantum-research/index.html"), "utf8");
+if (!quantumCandidate.includes('name="robots" content="noindex, nofollow"') ||
+    /<form\b|data-login-form|data-contact-form|data-account-application/i.test(quantumCandidate) ||
+    (quantumCandidate.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g) ?? []).length !== 1 ||
+    !quantumCandidate.includes('<meta name="novapharm-source-sha" content="' + releaseSha + '">')) {
+  throw new Error("Quantum public candidate provenance mismatch");
 }
 
 const totalBytes = stagedFiles.reduce((sum, file) => sum + statSync(file).size, 0);
