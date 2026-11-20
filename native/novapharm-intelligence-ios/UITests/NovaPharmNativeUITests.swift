@@ -75,15 +75,24 @@ final class NovaPharmNativeUITests: XCTestCase {
         // These are offline publisher research categories, NOT validated data rights.
         let research = app.buttons["Research"]
         let candidates = app.buttons["Candidates"]
+        let count = app.descendants(matching: .any)["novapharm.countries.count"]
         XCTAssertTrue(research.waitForExistence(timeout: 10))
         XCTAssertTrue(candidates.exists)
+        XCTAssertTrue(count.waitForExistence(timeout: 10),
+            "Country filter must expose its accessible count")
+        XCTAssertTrue(count.label.contains("101"),
+            "Unfiltered directory must report all 101 offline scopes")
         research.tap()
+        XCTAssertTrue(count.label.contains("24"),
+            "Research coverage must identify exactly 24 geography-only scopes")
         XCTAssertTrue(app.buttons["novapharm.country.BW"].waitForExistence(timeout: 10),
             "Botswana is a geography-only research scope")
         XCTAssertFalse(app.buttons["novapharm.country.DZ"].exists,
             "Algeria has candidate references and must not appear in research-only coverage")
 
         candidates.tap()
+        XCTAssertTrue(count.label.contains("77"),
+            "Candidate coverage must identify exactly 77 unapproved publisher-reference scopes")
         XCTAssertTrue(app.buttons["novapharm.country.DZ"].waitForExistence(timeout: 10),
             "Algeria is a source-candidate scope")
         XCTAssertFalse(app.buttons["novapharm.country.BW"].exists,
