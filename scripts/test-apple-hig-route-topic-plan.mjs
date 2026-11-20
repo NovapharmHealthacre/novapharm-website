@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import test from "node:test";
+import {validateHigOwnerReleaseState} from "./hig-owner-release-state.mjs";
 
 const readJSON = name => JSON.parse(readFileSync(name, "utf8"));
 const candidateFile = "artifacts/apple-hig-production-audit/source-route-candidates.json";
@@ -88,7 +89,7 @@ test("source route acceptance has 138 evidence-empty candidate routes and explic
   assert.equal(ledger.fullUrlUniverseProven, false);
   assert.equal(ledger.deployedOriginOrArtifactAccepted, false);
   assert.equal(ledger.candidates.length, 138);
-  assert.equal(owner.productionSignoff, "not_granted");
+  validateHigOwnerReleaseState(owner);
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
   assert.equal(owner.productionPermissions.activatePublicCustomerAccess, false);
 
