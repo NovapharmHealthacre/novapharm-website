@@ -32,4 +32,20 @@ targets:
         SWIFT_VERSION: "6.0"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
     scheme:
-      testTargets: []
+      testTargets:
+        - NovaPharmNativeUITests
+  NovaPharmNativeUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: NovaPharmNative
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.NovaPharmNativePreview.UITests
+        GENERATE_INFOPLIST_FILE: "YES"
+        CODE_SIGNING_ALLOWED: "NO"
+        SWIFT_VERSION: "6.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        TEST_TARGET_NAME: NovaPharmNative
