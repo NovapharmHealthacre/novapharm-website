@@ -4,11 +4,13 @@
  * No HTTP, customer authentication, medicine records or source-use rights.
  */
 import React, { useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
+import { FlatList, Linking, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
 import catalogue from "../../docs/intelligence/country-101-client-catalog-20261118.json";
+import ownerNationalBrief from "../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 
 type Country = (typeof catalogue.countries)[number];
+const ownerBriefByCountry = new Map(ownerNationalBrief.countries.map((brief) => [brief.country, brief] as const));
 type Filter = "all" | "with-sources" | "research-only";
 const filters: ReadonlyArray<{ key: Filter; label: string }> = [
   { key: "all", label: "All" },
@@ -20,6 +22,8 @@ type CountryStyles = ReturnType<typeof createStyles>;
 
 function CountryCard({ country, wide, styles }: { country: Country; wide: boolean; styles: CountryStyles }) {
   const [expanded, setExpanded] = useState(false);
+  const [externalLinkError, setExternalLinkError] = useState("");
+  const ownerBrief = ownerBriefByCountry.get(country.country);
   return (
     <View style={[styles.card, wide && styles.cardWide]}>
       <Text style={styles.name} accessibilityRole="header">{country.country}</Text>
@@ -28,6 +32,32 @@ function CountryCard({ country, wide, styles }: { country: Country; wide: boolea
       <Text style={styles.description}>{country.candidateSourceCount
         ? country.candidateSourceCount + " publisher reference(s). Licensing, ingestion and customer publication not approved."
         : "No country-level pharmaceutical dataset identified or admitted."}</Text>
+      {ownerBrief && (
+        <View style={styles.source}>
+          <Text style={styles.state}>Owner-supplied national research requirements · Not independently verified</Text>
+          <Text style={styles.sourceText}>{ownerBrief.pharmaceuticalDataRequired}</Text>
+          <Text style={styles.sourceText}>{ownerBrief.sourceAccessAsSupplied}</Text>
+          <Text style={styles.sourceText}>External publisher links are user-initiated; opening one contacts the destination site.</Text>
+          {ownerBrief.references.map((reference) => (
+            <Pressable key={reference.url} style={styles.action} accessibilityRole="link"
+              accessibilityLabel={"Open unverified external source reference " + reference.label}
+              onPress={() => {
+                setExternalLinkError("");
+                if (!/^https:\/\/[a-z0-9.-]+(?:\/|\?|$)/i.test(reference.url)) {
+                  setExternalLinkError("This source reference URL is not safe to open.");
+                  return;
+                }
+                void Linking.openURL(reference.url).catch(() => {
+                  setExternalLinkError("Unable to open the external publisher reference.");
+                });
+              }}>
+              <Text style={styles.actionText}>{reference.label} · External website</Text>
+            </Pressable>
+          ))}
+          {!!externalLinkError && <Text style={styles.sourceText} accessibilityRole="alert">{externalLinkError}</Text>}
+          <Text style={styles.sourceText}>Reference metadata only · No approved data licence · No connected upstream API</Text>
+        </View>
+      )}
       {country.publisherResearchLead && (
         <View style={styles.source}>
           <Text style={styles.state}>Official publisher research lead · Not integrated</Text>
@@ -62,7 +92,7 @@ export function CountryDirectoryScreen() {
   const styles = useMemo(() => createStyles(palette), [darkMode]);
   const { width, fontScale } = useWindowDimensions();
   const largeText = fontScale >= 1.4;
-  // Match the root app: avoid cramped tablet columns at accessibility text sizes.
+  // Prevent cramped two-column cards at accessibility text sizes.
   const twoColumns = width >= 760 && !largeText;
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -76,6 +106,8 @@ export function CountryDirectoryScreen() {
         country.country, country.iso2, country.region,
         country.publisherResearchLead?.publisherName ?? "",
         country.publisherResearchLead?.leadType ?? "",
+        ownerBriefByCountry.get(country.country)?.pharmaceuticalDataRequired ?? "",
+        ownerBriefByCountry.get(country.country)?.sourceAccessAsSupplied ?? "",
         ...country.candidateSources.map((source) => source.provider + " " + source.domains)
       ].join(" ").normalize("NFKC").toLocaleLowerCase().includes(term);
     });
@@ -85,7 +117,7 @@ export function CountryDirectoryScreen() {
     <View style={styles.header}>
       <Text style={styles.eyebrow}>Global source evidence</Text>
       <Text style={styles.title} accessibilityRole="header">101 countries</Text>
-      <Text style={styles.explanation}>77 countries with publisher candidates. 24 more require source research. None has been approved for customer-live pharmaceutical data.</Text>
+      <Text style={styles.explanation}>77 countries with publisher candidates and owner-supplied research requirements. 24 more require source discovery. No pharmaceutical feeds or commercial reuse rights have been approved.</Text>
       <View style={styles.metrics}>
         <View style={styles.metric}><Text style={styles.number}>101</Text><Text style={styles.metricLabel}>Research scope</Text></View>
         <View style={styles.metric}><Text style={styles.number}>77</Text><Text style={styles.metricLabel}>With candidate source</Text></View>
