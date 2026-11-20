@@ -77,3 +77,7 @@ The tests use stable `accessibilityIdentifier` values and system accessibility e
 2. Review app name/bundle ID, original logo/app icon, accessibility and app privacy with the owner.
 3. Add native authentication and strongly scoped **non-production** API adapters with isolated integration tests only after the backend is accessible and rights are approved.
 4. Run real-device VoiceOver / Dynamic Type / reduced-motion / RTL / dark-mode acceptance, signed artifact verification and independent QA before store registration.
+
+## Reconciled large-text and iPad candidate (21 November 2026)
+
+The independent accessibility/iPad acceptance changes were transplanted onto the current main-line SwiftUI source. The source-derived Swift Charts VoiceOver summary and @ScaledMetric height from merged PR #921 are preserved, rather than replaced with hard-coded catalogue counts. An adaptive inline search and menu-style filter appear at accessibility Dynamic Type sizes, and XCTest provides contrast, clipped-text, hit-region and large-text interaction audits. The CI workflow also requires an actual iPad Simulator installation and launch, with missing simulator capacity treated as a failure. This remains unsigned and not production-approved; owner and independent device testing remain pending. Evidence artifacts are withheld from this public repository.
