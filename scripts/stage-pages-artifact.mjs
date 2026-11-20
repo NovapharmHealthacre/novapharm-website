@@ -35,6 +35,7 @@ const allowedTopLevelDirectories = new Set([
   "partner-with-us",
   "products",
   "product-portfolio",
+  "quantum-research",
   "regulatory-services",
   "service-unavailable",
   "services",
@@ -109,6 +110,7 @@ const requiredPublicPaths = [
   "products/nutraxin/index.html",
   "shopping/nutraxin-uk.tsv",
   "products/strategic-portfolio/index.html",
+  "quantum-research/index.html",
   "trust-centre/index.html"
 ];
 
@@ -272,6 +274,15 @@ for (const page of canonicalPages) {
   if (markers.length !== 1 || markers[0][1] !== releaseSha) {
     throw new Error(`Canonical release provenance mismatch: ${page.file}`);
   }
+}
+
+// Keep non-indexable quantum reference traceable to the exact released source.
+const quantumCandidate = readFileSync(join(output, "quantum-research/index.html"), "utf8");
+if (!quantumCandidate.includes('name="robots" content="noindex, nofollow"') ||
+    /<form\\b|data-login-form|data-contact-form|data-account-application/i.test(quantumCandidate) ||
+    (quantumCandidate.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g) ?? []).length !== 1 ||
+    !quantumCandidate.includes('<meta name="novapharm-source-sha" content="' + releaseSha + '">')) {
+  throw new Error("Quantum public candidate provenance mismatch");
 }
 
 const totalBytes = stagedFiles.reduce((sum, file) => sum + statSync(file).size, 0);
