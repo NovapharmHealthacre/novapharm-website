@@ -55,6 +55,8 @@ import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAna
 import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
 import { probeOfficialPublicPharmaSource, OFFICIAL_LIVE_PROBE_PLANS } from "./src/core/intelligence-official-live-pharma-probes.mjs";
+import { CA_DPD_SOURCE, probeCanadianDpdPublicSource } from "./src/core/intelligence-canada-dpd-public-live-probe.mjs";
+import { ES_CIMA_PROBE, probeCimaPublicMedicine } from "./src/core/intelligence-es-cima-public-live-probe.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
 import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
@@ -1013,7 +1015,8 @@ export async function handleRequest(request, response) {
         return json(response, 503, { error: "Official source live review has not been activated." });
       }
       const sourceId = url.searchParams.get("sourceId");
-      if (!sourceId || !Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)) {
+      if (!sourceId || (!Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId) &&
+          sourceId !== CA_DPD_SOURCE.sourceId && sourceId !== ES_CIMA_PROBE.sourceId)) {
         return json(response, 400, { error: "Unsupported official pharmaceutical source." });
       }
       // Authorised requests remain bounded BEFORE any publisher transport.
@@ -1021,7 +1024,11 @@ export async function handleRequest(request, response) {
         return json(response, 429, { error: "Official source probe rate limit reached." });
       }
       try {
-        const receipt = await probeOfficialPublicPharmaSource(sourceId);
+        const receipt = Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)
+          ? await probeOfficialPublicPharmaSource(sourceId)
+          : sourceId === CA_DPD_SOURCE.sourceId
+            ? await probeCanadianDpdPublicSource()
+            : await probeCimaPublicMedicine();
         return json(response, 200, receipt);
       } catch {
         return json(response, 503, { error: "Official publisher is not available for bounded live review." });
