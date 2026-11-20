@@ -141,6 +141,7 @@ test("iOS accessibility and iPad smoke tests have explicit, non-skippable eviden
   assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmNativeUITests/);
   assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmAccessibilityUITests/);
   assert.match(read("native/novapharm-intelligence-ios/App/NovaTheme.swift"), /traits\.userInterfaceStyle == \.dark/);
+  assert.match(workflow, /if: \$\{\{ always\(\) && steps\.native_build\.outcome == 'success' \}\}/);
   assert.match(workflow, /No iPad Simulator available; iPad acceptance remains blocked/);
   assert.match(workflow, /novapharm-ipad-simulator\.png/);
   assert.match(workflow, /NovaPharmNative-Accessibility\.xcresult/);
