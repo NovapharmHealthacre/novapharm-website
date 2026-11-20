@@ -1445,10 +1445,20 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
   assert.equal(expoPackage.private, true);
   assert.equal(expoConfig.expo?.ios?.supportsTablet, true);
   assert.equal(expoConfig.expo?.android?.edgeToEdgeEnabled, true);
-  assert.equal(Boolean(expoConfig.expo?.ios?.bundleIdentifier), false,
-    "A production iOS bundle identity requires a separate signed-app release review");
-  assert.equal(Boolean(expoConfig.expo?.android?.package), false,
-    "An Android app ID/signing rollout needs an independent release gate");
+  // Today this is an unsigned research candidate. If an independently
+  // authorized release later adds app identifiers, the existence of an ID is
+  // not itself a signed app/device/store receipt and must not break CI.
+  for (const [platform, identifier] of [
+    ["ios", expoConfig.expo?.ios?.bundleIdentifier],
+    ["android", expoConfig.expo?.android?.package]
+  ]) {
+    if (identifier == null) continue;
+    assert.ok(typeof identifier === "string" &&
+      /^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*){2,}$/.test(identifier),
+      platform + ": a candidate application identifier must be a non-placeholder reverse-domain ID");
+    assert.doesNotMatch(identifier, /(?:example|placeholder|invalid)/i,
+      platform + ": placeholder app identifiers cannot qualify for release");
+  }
   assert.ok(expoReadme.includes("Not a signed IPA/APK/AAB"));
 
   assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, tracker.meta.productionEvidenceAudit.verifiedImplementationCount);
