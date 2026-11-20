@@ -39,6 +39,37 @@ const shortDescription = (p, ref) => {
   assert(text.length <= 160, "Metadata too long for " + p.sku);
   return text;
 };
+// Search titles should keep the verified product identity and pack information
+// without repeating the Nutraxin brand. Never truncate a product name mid-word.
+const searchTitle = p => [
+  p.name + " " + p.pack + " | NovaPharm UK",
+  p.name + " " + p.pack + " | UK",
+  p.name + " | NovaPharm UK",
+  p.name + " | UK",
+  p.name
+].find(title => title.length <= 60);
+
+const breadcrumbMarkup = (p, url) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Products", item: site + "/products/" },
+    { "@type": "ListItem", position: 2, name: "Nutraxin", item: site + "/products/nutraxin/" },
+    { "@type": "ListItem", position: 3, name: p.name, item: url }
+  ]
+});
+const relatedProductsMarkup = (p, ref) => {
+  const related = registered.products.filter(other =>
+    other.range === ref.range && other.sku !== p.sku).slice(0, 3);
+  assert(related.length > 0, "No same-range discovery links for " + p.sku);
+  const links = related.map(other =>
+    '<li><a href="/products/nutraxin/' + other.slug + '/">' +
+    htmlAttribute(other.name + " — " + other.packSize) + '</a></li>').join("");
+  return '<section class="npd-section npd-nutraxin-related" data-nutraxin-related="true" ' +
+    'aria-label="Related Nutraxin products"><div class="container">' +
+    '<h2>Explore more Nutraxin ' + htmlAttribute(ref.range) + ' products</h2>' +
+    '<ul>' + links + '</ul></div></section>';
+};
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const header = ["id","title","description","link","image_link","availability","price","condition","brand","product_type","shipping(country:price)"];
@@ -55,6 +86,8 @@ for (const product of registered.products) {
   const inStock = ready(p);
   const description = catalogDescription(p, product);
   const metaDescription = shortDescription(p, product);
+  const title = searchTitle(p);
+  assert(title && title.length <= 60, "Search title is too long for " + p.sku);
   if (inStock) saleReady++;
   const availability = inStock ? "in_stock" : "out_of_stock";
   assert(Number.isSafeInteger(retail.provisional_uk_delivery_charge_pence) && retail.provisional_uk_delivery_charge_pence >= 0,
@@ -74,6 +107,8 @@ for (const product of registered.products) {
     const json = JSON.parse(content);
     if (json["@type"] === "WebPage") {
       json.description = metaDescription;
+      json.name = title;
+      json.mainEntity = { "@id": url + "#product" };
       json.dateModified = "2026-11-20";
       return '<script type="application/ld+json">' + JSON.stringify(json) + "</script>";
     }
@@ -87,11 +122,26 @@ for (const product of registered.products) {
       availability: "https://schema.org/" + (inStock ? "InStock" : "OutOfStock"),
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: "NovaPharm Healthcare Ltd",
-        url: site, logo: site + "/assets/brand/novapharm-healthcare-logo.png" }
+        url: site, logo: site + "/assets/brand/novapharm-healthcare-logo.png" },
+      // UK shipping terms come from the same owner-approved retail source as the feed.
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount", currency: "GBP",
+          value: (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2)
+        },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "GB" }
+      }
     };
     return '<script type="application/ld+json">' + JSON.stringify(json) + "</script>";
   });
   assert.equal(schemaCount, 1, "Missing Product schema " + p.slug);
+  html = html.replace(/<title>[^<]*<\/title>/,
+    "<title>" + htmlAttribute(title) + "</title>");
+  html = html.replace(/(<meta property="og:title" content=")[^"]*(">)/,
+    (_, before, after) => before + htmlAttribute(title) + after);
+  html = html.replace(/(<meta name="twitter:title" content=")[^"]*(">)/,
+    (_, before, after) => before + htmlAttribute(title) + after);
   html = html.replace(/(<meta name="description" content=")[^"]*(">)/,
     (_, before, after) => before + htmlAttribute(metaDescription) + after);
   html = html.replace(/(<meta property="og:description" content=")[^"]*(">)/,
@@ -106,6 +156,15 @@ for (const product of registered.products) {
   } else {
     assert(html.includes('class="npd-product-pack"'));
     html = html.replace(/(<p class="npd-product-pack">[^<]+<\/p>)/, "$1" + offer);
+  }
+  if (!html.includes('"@type":"BreadcrumbList"')) {
+    html = html.replace("</head>",
+      '<script type="application/ld+json">' +
+      JSON.stringify(breadcrumbMarkup(p, url)) + "</script>\n</head>");
+  }
+  if (!html.includes('data-nutraxin-related="true"')) {
+    assert(html.includes("</main>"), "Missing product main content: " + p.sku);
+    html = html.replace("</main>", relatedProductsMarkup(p, product) + "</main>");
   }
   if (!html.includes('/assets/css/nutraxin-merchant.css')) {
     html = html.replace("</head>", '<link rel="stylesheet" href="/assets/css/nutraxin-merchant.css">\n</head>');
