@@ -54,7 +54,7 @@ final class NovaStoreKitReadOnlyCatalogTests: XCTestCase {
     }
 
     func testInvalidProductIDCharactersAreDenied() {
-        for id in ["x", "with spaces", "com.novapharm/path", "com.novapharm.?x", ""] {
+        for id in ["x", "with spaces", "com.novapharm/path", "com.novapharm.?x", "com.novapharm.good\n", "com.novapharm.é", ""] {
             XCTAssertThrowsError(try NovaStoreKitReadOnlyCatalog.preflight(
                 productIDs: [id], permit: permit(reviewed: true, requested: true)
             )) { XCTAssertEqual($0 as? NovaStoreKitCatalogError, .invalidProductIdentifiers) }
