@@ -11,6 +11,8 @@
 - `app/src/test/java/com/novapharm/intelligence/research/NovaSparseCircuitReaderTest.kt` — parser and authority-forgery denial tests.
 - `.github/workflows/nova-sparse-circuit-android.yml` — pinned-toolchain CI intended to build and test the research-only debug APK.
 
+**Android accessibility preflight:** The offline research `ScrollView` has a named read-only accessibility pane on Android 9+, preserving native TextView descendants. Android accessibility headings and scalable `sp` sizes remain in place; `NovaResearchAccessibilityContractTest.kt` guards these and the offline/no-backup/no-cleartext boundary. This does **not** replace TalkBack on-device testing or approval.
+
 From a development machine with Android SDK 35, Gradle 8.9 and JDK 17, use:
 
 ```sh
@@ -22,11 +24,11 @@ The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicit
 
 ## Private Android debug APK artifact
 
-The existing GitHub Actions workflow now retains the **offline Kotlin research shell** `app-debug.apk` and a SHA-256 checksum for authorized device testing after `:app:testDebugUnitTest :app:assembleDebug` succeeds. The workflow also checks the APK contains the Android manifest and application bytecode before uploading it.
+The GitHub Actions workflow builds the **offline Kotlin research shell** `app-debug.apk` and calculates its SHA-256 checksum after `:app:testDebugUnitTest :app:assembleDebug` succeeds. The workflow independently checks the compiled APK manifest, application bytecode and exact package identity, and **rejects any declared Android permission** in the compiled APK (including permissions introduced by manifest merging). An offline, read-only research shell has no approved permission exceptions. **The APK, checksum and source-provenance receipt are uploaded only if the repository is private**. This repository is currently public, so CI builds and inspects the APK but deliberately skips artifact distribution. Private device QA requires separately approved protected storage or a private repository.
 
 This is a **debug-key signed, research-only APK**, not the complete NovaPharm Intelligence or Customer Portal Android product. It contains a source-only sparse-circuit review screen with no network or private medical/customer data. Debug signing is unsuitable for a production/Play Store identity and may change between CI runners; app updates across such APKs may require uninstalling the previous debug copy, which removes local app data. No Google Play Console purchase is required for a trusted developer to install an APK on an authorized test device.
 
-Artifact retention is seven days. A successful Gradle test and APK generation are not proof of on-device TalkBack, Android 15 edge-to-edge, permissions, secure authentication, production API admission, regulated-data compliance or successful Play Store submission. Independent Android device validation and signed release engineering remain outstanding.
+Where private-repository upload is permitted, artifact retention is seven days and names identify the source PR head; the receipt records the actual tested checkout/tree. A successful Gradle test and APK generation are not proof of on-device TalkBack, Android 15 edge-to-edge, permissions, secure authentication, production API admission, regulated-data compliance or successful Play Store submission. Independent Android device validation and signed release engineering remain outstanding.
 
 ## Future production integration
 
