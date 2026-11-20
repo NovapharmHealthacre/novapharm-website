@@ -6151,7 +6151,7 @@
         },
         "ios": {
           "state": "not_applicable",
-          "rationale": "NovaPharm's signed iOS research-app target has no authorized Core Motion ingestion or motion-driven tasks; a new rationale and consent would be required."
+          "rationale": "The current NovaPharm iOS source candidate is not a signed production app and has no approved Core Motion ingestion or motion-driven task; any future sensor collection requires an explicit use case, consent, privacy review and device-level verification."
         },
         "android": {
           "state": "not_applicable",
