@@ -30,6 +30,8 @@ test("Pages allowlist, provenance stamp, and RTL inventory include exactly the c
   assert.ok(stamp.includes('"quantum-research/index.html"'));
   assert.ok(stamp.includes("noindex, nofollow"));
   assert.ok(stage.includes("Quantum public candidate provenance mismatch"));
+  assert.ok(stage.includes(String.raw`/<form\\b|data-login-form`), "form detection must use a regex word boundary");
+  assert.ok(stamp.includes(String.raw`researchCandidate.replace(/\\s*<meta`), "repeat build must clean previous SHA");
 });
 test("standalone public candidate has no inline code, paid SDK or external runtime",()=>{
   const css=read("assets/css/quantum-research.css");

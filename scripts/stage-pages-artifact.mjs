@@ -279,7 +279,7 @@ for (const page of canonicalPages) {
 // Keep non-indexable quantum reference traceable to the exact released source.
 const quantumCandidate = readFileSync(join(output, "quantum-research/index.html"), "utf8");
 if (!quantumCandidate.includes('name="robots" content="noindex, nofollow"') ||
-    /<form\\b|data-login-form|data-contact-form|data-account-application/i.test(quantumCandidate) ||
+    /<form\b|data-login-form|data-contact-form|data-account-application/i.test(quantumCandidate) ||
     (quantumCandidate.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g) ?? []).length !== 1 ||
     !quantumCandidate.includes('<meta name="novapharm-source-sha" content="' + releaseSha + '">')) {
   throw new Error("Quantum public candidate provenance mismatch");
