@@ -58,7 +58,25 @@
     "expoProductVersion": "0.1.0",
     "expoHasProductionIOSBundleId": false,
     "expoHasProductionAndroidPackage": false,
-    "evidenceBoundary": "Source and debug builds cannot prove signed, installed, published, authorized or physically tested iOS/Android products."
+    "evidenceBoundary": "Source and debug builds cannot prove signed, installed, published, authorized or physically tested iOS/Android products.",
+    "iosSwiftUiApp": {
+      "path": "native/novapharm-intelligence-ios",
+      "project": "native/novapharm-intelligence-ios/project.yml",
+      "readme": "native/novapharm-intelligence-ios/README.md",
+      "sourceWorkflow": ".github/workflows/nova-ios-swift-native.yml",
+      "target": "NovaPharmNative",
+      "language": "Swift 6 and SwiftUI",
+      "testing": "Swift Testing and unsigned iOS Simulator/XCTest workflow",
+      "sourceBundleIdentifier": "com.example.NovaPharmNativePreview",
+      "signing": "CODE_SIGNING_ALLOWED=NO",
+      "productionBundleIdentifierVerified": false,
+      "signedReleaseVerified": false,
+      "physicalVoiceOverVerified": false,
+      "meaning": "Actual native iOS source app is present; unlike the separate Apple SwiftPM library, this target produces an unsigned development Simulator app, not a signed iOS release."
+    },
+    "androidResearchWorkflow": ".github/workflows/nova-sparse-circuit-android.yml",
+    "androidResearchReleaseBoundary": "Android applicationId com.novapharm.intelligence.research is an offline research/debug shell; no signed production APK/AAB or physical TalkBack acceptance.",
+    "nativeSystemParityWorkflow": ".github/workflows/intelligence-global-mobile-contracts.yml"
   },
   "production": {
     "constraints": "config/intelligence/owner-production-constraints.json",
@@ -96,5 +114,7 @@
       "required": "Authorized Quality/Security reviewer checks each platform evidence and N/A decision; owner signs off only after rights, release receipts and rollback evidence",
       "state": "pending"
     }
-  ]
+  ],
+  "sourceScopeCorrectionOn": "2026-11-21",
+  "sourceScopeCorrection": "The 20 Nov source inventory omitted the separate native SwiftUI iOS app. Read-back of main verified project.yml, Package.swift, README and native iOS workflow; unsigned simulator project is source/test evidence only."
 }
