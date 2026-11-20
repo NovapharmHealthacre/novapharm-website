@@ -793,8 +793,33 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.ok(report.candidateOutOfScopeTopicsPendingIndependentApproval
     .some(t => t.title === "Digit entry views"),
     "Apple tvOS-only Digit entry is a pending N/A candidate, not a shipped web/iOS/Android component");
-  assert.equal(new Set(tracker.meta.productionEvidenceAudit.scopedPublicEvidence
-    .map(x => x.sourceRun)).size, 4, "4 genuinely distinct live-origin run receipts");
+  const indexedProofs = tracker.meta.productionEvidenceAudit.scopedPublicEvidence;
+  const sourceProofs = tracker.topics.flatMap(t =>
+    ["web","ios","android"].flatMap(platform =>
+      (t[platform + "Evidence"] || [])
+        .filter(e => e && e.verificationLevel === "partial")
+        .map(e => ({
+          topic: t.title, platform, jobId: e.jobId,
+          sourceRun: Number(e.runUrl?.match(/\/runs\/([0-9]+)/)?.[1] || 0)
+        }))));
+  assert.equal(indexedProofs.length, sourceProofs.length,
+    "Every topic/platform partial observation must appear in the source-run receipt index");
+  assert.equal(indexedProofs.length, tracker.meta.productionEvidenceAudit.recordedPartialTopicPlatformObservations,
+    "Metadata partial-observation count must reconcile to the indexed artifact records");
+  for (const e of sourceProofs) {
+    assert.ok(e.sourceRun > 0, e.topic + ": partial evidence has no real workflow run URL");
+    const related = indexedProofs.filter(p => p.topic === e.topic &&
+      p.sourceRun === e.sourceRun && p.jobId === e.jobId);
+    assert.equal(related.length, 1,
+      e.topic + ": every partial platform proof requires exactly one scoped indexed receipt");
+    assert.equal(related[0].jobConclusion, "success",
+      e.topic + ": a skipped or failed job cannot count as a public production observation");
+  }
+  assert.deepEqual(
+    [...new Set(indexedProofs.map(x => x.sourceRun))].sort((a,b) => a-b),
+    [...tracker.meta.productionEvidenceAudit.distinctObservedPublicLiveRuns].sort((a,b) => a-b),
+    "Live-run provenance must reconcile across indexed receipts and distinct workflow runs");
+
   assert.equal(report.productionCanBeCertified, expectedProgrammeCertified());
   assert.equal(topics.length, 172);
   assert.equal(new Set(topics.map(t => t.sourceRowIndex)).size, 172);
