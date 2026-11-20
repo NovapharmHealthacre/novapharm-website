@@ -1,4 +1,7 @@
-import { createServer } from "node:http";
+import { createServer } from "node:https";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { execFileSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { resolve, join, sep, extname } from "node:path";
 import { chromium, webkit } from "playwright";
@@ -26,7 +29,10 @@ assert(privacy.includes("Secure business enquiry intake"), "Live data-processing
 assert(privacy.includes("automatic expiry") || privacy.includes("Automatic expiry"), "Retention disclosure missing");
 assert(privacy.includes("30 days"), "30-day TTL text missing");
 const types={".html":"text/html",".js":"text/javascript",".css":"text/css",".svg":"image/svg+xml"};
-const server=createServer((req,res)=>{
+const certFolder=mkdtempSync(join(tmpdir(),"novapharm-contact-synthetic-"));
+const keyPath=join(certFolder,"key.pem"),certPath=join(certFolder,"cert.pem");
+execFileSync("openssl",["req","-x509","-newkey","rsa:2048","-nodes","-keyout",keyPath,"-out",certPath,"-days","1","-subj","/CN=localhost","-addext","subjectAltName=DNS:localhost,IP:127.0.0.1"],{stdio:"ignore"});
+const server=createServer({key:readFileSync(keyPath),cert:readFileSync(certPath)},(req,res)=>{
   let u;
   try { u=new URL(req.url,"http://localhost"); } catch { res.writeHead(400).end();return; }
   const relative=decodeURIComponent(u.pathname).replace(/^\/+/,"");
@@ -38,12 +44,12 @@ const server=createServer((req,res)=>{
   catch {res.writeHead(404,{"content-type":"text/plain"}).end("not found");}
 });
 await new Promise((r,j)=>{server.once("error",j);server.listen(0,"127.0.0.1",r);});
-const local="http://127.0.0.1:"+server.address().port;
+const local="https://127.0.0.1:"+server.address().port;
 const results=[];
 try {
   for(const [label,engine] of [["Chromium",chromium],["WebKit",webkit]]){
     const browser=await engine.launch({headless:true});
-    const context=await browser.newContext({acceptDownloads:false});
+    const context=await browser.newContext({acceptDownloads:false,ignoreHTTPSErrors:true});
     const result={browser:label,valid:false,invalid:false,realExternalRequests:0,attempts:0};
     try {
       let failMode=false;
@@ -104,5 +110,5 @@ try {
     results.push(result);
     assert(result.valid && result.invalid,label+" valid and error mock flows");
   }
-} finally {await new Promise(r=>server.close(r));}
+} finally {await new Promise(r=>server.close(r));rmSync(certFolder,{recursive:true,force:true});}
 console.log(JSON.stringify({staticContract:true,syntheticOnly:true,results}));
