@@ -168,7 +168,7 @@ private struct ModuleDetailView: View {
 }
 
 private struct SavedModulesView: View {
-    @Query(sort: \.createdAt, order: .reverse) private var saved: [OfflineBookmark]
+    @Query(sort: \OfflineBookmark.createdAt, order: .reverse) private var saved: [OfflineBookmark]
 
     var body: some View {
         List {
