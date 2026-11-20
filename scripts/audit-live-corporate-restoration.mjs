@@ -4,7 +4,7 @@ const ORIGIN = "https://novapharmhealthcare.com";
 const now = new Date().toISOString();
 const expected = JSON.parse(readFileSync("seo/generated/page-metadata-register.json", "utf8"));
 const expectedByPath = new Map(expected.map(row => [new URL(row.canonical).pathname, row]));
-const skuPaths = [...expectedByPath.keys()].filter(route => route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/");
+const skuPaths = [...expectedByPath.keys()].filter(route => route.startsWith("/products/nutraxin/") && !["/products/nutraxin/","/products/nutraxin/bag/","/products/nutraxin/account/","/products/nutraxin/order-request/"].includes(route));
 const protectedPaths = path => path.startsWith("/products/") || path.startsWith("/legal/") || ["/contact/","/account-application/","/portal/"].includes(path);
 const driftSeverity = path => protectedPaths(path) ? "informational" : "failure";
 const issues = [];
@@ -64,7 +64,7 @@ async function auditRoute(path){
   try{
     const {res,text:html}=await timeoutFetch(url);
     const item={path,httpStatus:res.status,title:title(html),h1:taglessH1(html),contentType:res.headers.get("content-type"),bytes:html.length,hasEarth:html.includes("nph-earth-hero-landscape"),hasNewMegaMenu:html.includes('data-mega-trigger="intelligence"'),hasLiveEnquiry:html.includes("data-live-b2b-enquiry-form"),hasEmailDraft:html.includes("Open email draft"),nav:navText(html).slice(0,250)};
-    if(!res.ok) addIssue(path,"http",res.status+" "+res.url);
+    if(!res.ok) addIssue(path,"http",res.status+" "+res.url,driftSeverity(path));
     if(!item.contentType?.includes("text/html")) addIssue(path,"not-html",item.contentType);
     const reg=expectedByPath.get(path);
     if(reg&&res.ok){
