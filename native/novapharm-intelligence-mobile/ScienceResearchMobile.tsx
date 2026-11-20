@@ -2,8 +2,8 @@
  * One shared offline scientific research catalogue for iOS/Android.
  * No model, upstream API, credentials, patient records or protected data.
  */
-import React from "react";
-import { Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
+import React, { useState } from "react";
+import { AccessibilityInfo, Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
@@ -13,6 +13,27 @@ type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
   const styles = useColorScheme() === "dark" ? darkStyles : lightStyles;
+  const [sourceOpenFeedback, setSourceOpenFeedback] = useState<{ id: string; message: string } | null>(null);
+
+  async function openResearchReference(id: string, sourceUrl: string) {
+    setSourceOpenFeedback(null);
+    // Never pass data-driven deep links or non-OpenAI origins to the OS browser.
+    const approvedReference = /^https:\/\/openai\.com(?:\/|$)/.test(sourceUrl);
+    if (!approvedReference) {
+      const message = "The research reference is not an allowed HTTPS source.";
+      setSourceOpenFeedback({ id, message });
+      AccessibilityInfo.announceForAccessibility(message);
+      return;
+    }
+    try {
+      await Linking.openURL(sourceUrl);
+    } catch {
+      const message = "The external research link could not be opened. Please try again in your browser.";
+      setSourceOpenFeedback({ id, message });
+      AccessibilityInfo.announceForAccessibility(message);
+    }
+  }
+
   return <View accessibilityLabel="Scientific research, offline planning preview" style={styles.container}>
     <Text style={styles.breadcrumb}>NOVAPHARM INTELLIGENCE / SCIENCE</Text>
     <Text style={styles.title} accessibilityRole="header">Science, grounded in evidence.</Text>
@@ -55,9 +76,14 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
         <Text style={styles.smallHeading}>Independent research verification</Text>
         <Text style={styles.description}>{entry.validationTrack.replaceAll("_", " ")} track · Publisher report not independently verified · Retractions/corrections: {entry.retractionCorrectionStatus.replaceAll("_", " ")}</Text>
         <Pressable accessibilityRole="link" accessibilityLabel={`Read original OpenAI source: ${entry.title}`}
-          style={styles.sourceLink} onPress={() => { void Linking.openURL(entry.sourceUrl); }}>
+          style={styles.sourceLink} onPress={() => { void openResearchReference(entry.id, entry.sourceUrl); }}>
           <Text style={styles.sourceLinkLabel}>Read original source</Text>
         </Pressable>
+        {sourceOpenFeedback?.id === entry.id && (
+          <Text style={styles.sourceOpenError} accessibilityRole="alert" accessibilityLiveRegion="polite">
+            {sourceOpenFeedback.message}
+          </Text>
+        )}
         <Text style={styles.sourceDisclaimer}>Opens external browser on request · No Science model or dataset connected</Text>
       </View>
     )}
@@ -96,6 +122,7 @@ function createStyles(palette: MobilePalette) {
   methodTag: { color: color.accent, marginBottom: 10, fontSize: 11, fontWeight: "700", lineHeight: 17 },
   sourceLink: { minHeight: 44, marginTop: 14, alignSelf: "flex-start", justifyContent: "center" },
   sourceLinkLabel: { fontSize: 13, fontWeight: "700", textDecorationLine: "underline", color: color.ink },
+  sourceOpenError: { fontSize: 13, lineHeight: 20, marginTop: 8, color: color.ink },
   sourceDisclaimer: { fontSize: 11, lineHeight: 16, marginTop: 4, color: color.secondary },
   footer: { fontSize: 12, lineHeight: 19, color: color.secondary, marginTop: 18 }
 });
