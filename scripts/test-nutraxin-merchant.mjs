@@ -26,12 +26,22 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert.equal(item.image_link, "https://novapharmhealthcare.com/assets/media/products/nutraxin/" + ref.imageBase + ".png");
     assert.equal(item.availability, ready ? "in_stock" : "out_of_stock");
     assert.equal(item.brand, "Nutraxin");
+    assert(item.description.includes(ref.formulation[0].name), "Catalogue ingredient missing from feed");
+    assert(item.description.includes("See the product label"), "No unsupported health claims");
     assert.equal(item["shipping(country:price)"],
       "GB:" + (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
     const html = read("products/nutraxin/" + product.slug + "/index.html");
     const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)].map(m => JSON.parse(m[1]));
     const schema = nodes.find(node => node["@type"] === "Product");
     assert(schema && schema.offers);
+    assert.equal(schema.description, item.description, "Feed/Product structured description drift");
+    assert.equal(schema.offers.seller.logo,
+      "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png");
+    const meta = html.match(/<meta name="description" content="([^"]+)">/);
+    assert(meta && meta[1].length <= 160, "Product search snippet must be concise");
+    assert(!meta[1].includes("qualified B2B review"), "Retail snippet must not be B2B-only");
+    const page = nodes.find(node => node["@type"] === "WebPage");
+    assert(page && page.dateModified === "2026-11-20");
     assert.equal(schema.offers.price, price);
     assert.equal(schema.offers.priceCurrency, "GBP");
     assert.equal(schema.offers.availability, "https://schema.org/" + (ready ? "InStock" : "OutOfStock"));

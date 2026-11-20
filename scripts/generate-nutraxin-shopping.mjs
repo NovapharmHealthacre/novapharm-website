@@ -24,6 +24,23 @@ const ready = p => retail.delivery_verified === true &&
   retail.checkout_enabled === true && retail.payment_collection_enabled === true &&
   p.ordering_enabled === true && p.available_to_sell === true;
 const clean = s => String(s).replace(/[\t\r\n]+/g, " ").trim();
+const catalogDescription = (p, ref) => {
+  const ingredients = ref.formulation.map(item => clean(item.name)).filter(Boolean);
+  assert(ingredients.length, "No documented ingredients for " + p.sku);
+  return p.name + ", " + p.pack + ". Food supplement. Supplier catalogue lists: " +
+    ingredients.join(", ") + ". See the product label for full ingredients and directions.";
+};
+const shortDescription = (p, ref) => {
+  const first = clean(ref.formulation[0].name);
+  let text = p.name + " (" + p.pack + "). Food supplement featuring " + first +
+    ". UK price £" + money(p.retail_price_pence) + " at NovaPharm.";
+  if (text.length > 158) text = p.name + " (" + p.pack + "). Food supplement. UK price £" +
+    money(p.retail_price_pence) + " at NovaPharm.";
+  assert(text.length <= 160, "Metadata too long for " + p.sku);
+  return text;
+};
+const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
+  .replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const header = ["id","title","description","link","image_link","availability","price","condition","brand","product_type","shipping(country:price)"];
 const lines = [header.join("\t")];
 let saleReady = 0;
@@ -36,6 +53,8 @@ for (const product of registered.products) {
   const image = site + "/assets/media/products/nutraxin/" + product.imageBase + ".png";
   assert(existsSync(join(root, "assets/media/products/nutraxin", product.imageBase + ".png")));
   const inStock = ready(p);
+  const description = catalogDescription(p, product);
+  const metaDescription = shortDescription(p, product);
   if (inStock) saleReady++;
   const availability = inStock ? "in_stock" : "out_of_stock";
   assert(Number.isSafeInteger(retail.provisional_uk_delivery_charge_pence) && retail.provisional_uk_delivery_charge_pence >= 0,
@@ -43,7 +62,7 @@ for (const product of registered.products) {
   const ship = "GB:" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP";
   lines.push([
     p.sku, p.name + " - " + p.pack,
-    p.name + ", " + p.pack + ". Nutraxin food supplement in the " + product.range + " range.",
+    description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
     "new", "Nutraxin", "Food Supplements > " + product.range, ship
   ].map(clean).join("\t"));
@@ -53,19 +72,30 @@ for (const product of registered.products) {
   let schemaCount = 0;
   let html = original.replace(/<script type="application\/ld\+json">([^<]+)<\/script>/g, (tag, content) => {
     const json = JSON.parse(content);
+    if (json["@type"] === "WebPage") {
+      json.description = metaDescription;
+      json.dateModified = "2026-11-20";
+      return '<script type="application/ld+json">' + JSON.stringify(json) + "</script>";
+    }
     if (json["@type"] !== "Product") return tag;
     assert.equal(json.sku, p.sku);
     schemaCount++;
+    json.description = description;
     json.offers = {
       "@type": "Offer", url, priceCurrency: "GBP",
       price: money(p.retail_price_pence),
       availability: "https://schema.org/" + (inStock ? "InStock" : "OutOfStock"),
       itemCondition: "https://schema.org/NewCondition",
-      seller: { "@type": "Organization", name: "NovaPharm Healthcare Ltd" }
+      seller: { "@type": "Organization", name: "NovaPharm Healthcare Ltd",
+        url: site, logo: site + "/assets/brand/novapharm-healthcare-logo.png" }
     };
     return '<script type="application/ld+json">' + JSON.stringify(json) + "</script>";
   });
   assert.equal(schemaCount, 1, "Missing Product schema " + p.slug);
+  html = html.replace(/(<meta name="description" content=")[^"]*(">)/,
+    (_, before, after) => before + htmlAttribute(metaDescription) + after);
+  html = html.replace(/(<meta property="og:description" content=")[^"]*(">)/,
+    (_, before, after) => before + htmlAttribute(metaDescription) + after);
   const offer = '<div class="nx-merchant-offer" data-merchant-sku="' + p.sku + '">' +
     '<p class="nx-merchant-price">£' + money(p.retail_price_pence) +
     ' <small>including UK VAT</small></p><p class="nx-merchant-availability">' +
