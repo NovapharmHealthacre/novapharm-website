@@ -3,24 +3,24 @@ const origin = "https://novapharmhealthcare.com";
 const evidencePath = "artifacts/site-restoration/live-navigation-assets.json";
 const token = "nav-assets-" + Date.now();
 const failures = [];
-function clean(input) {
+function clean(input, basePath="/") {
   if (!input || /^(?:#|mailto:|tel:|javascript:|data:|blob:)/i.test(input)) return null;
   let link;
-  try { link = new URL(input.replace(/&amp;/g,"&"), origin + "/"); } catch { return null; }
+  try { link = new URL(input.replace(/&amp;/g,"&"), origin + basePath); } catch { return null; }
   if (link.origin !== origin) return null;
   if (!["http:", "https:"].includes(link.protocol)) return null;
   return link.pathname;
 }
-function pathsFromHTML(html) {
+function pathsFromHTML(html, basePath) {
   const result = new Set();
   for (const tag of html.match(/<(?:a|link|script|img|source)\b[^>]*>/gi) || []) {
     for (const attr of ["href","src"]) {
       const m = tag.match(new RegExp("(?:^|\\s)" + attr + "\\s*=\\s*([\"'])(.*?)\\1", "i"));
-      if (m) { const p = clean(m[2]); if(p) result.add(p); }
+      if (m) { const p = clean(m[2], basePath); if(p) result.add(p); }
     }
     const set = tag.match(/(?:^|\s)srcset\s*=\s*(["'])(.*?)\1/i);
     if(set) for(const part of set[2].split(",")) {
-      const p = clean(part.trim().split(/\s+/)[0]);
+      const p = clean(part.trim().split(/\s+/)[0], basePath);
       if (p) result.add(p);
     }
   }
@@ -67,7 +67,7 @@ await boundedMap([...pagePaths],6,async path=>{
   try {
     const html=await get(path);
     if(!/<html\b/i.test(html))throw Error("HTML document missing");
-    const references=pathsFromHTML(html);
+    const references=pathsFromHTML(html,path);
     for(const target of references) {
       if(!outbound.has(target))outbound.set(target,new Set());
       outbound.get(target).add(path);
