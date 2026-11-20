@@ -63,3 +63,9 @@ test("both controlled Pages release paths require exact live quantum provenance 
     assert.ok(body.includes('! grep -Eiq'),workflow+" public form exclusion");
   }
 });
+
+test("quantum stylesheet complies with global negative-letter-spacing restrictions", () => {
+  const css = read("assets/css/quantum-research.css");
+  assert.doesNotMatch(css, /\\bletter-spacing\\s*:\\s*-/i,
+    "Do not exempt quantum CSS from site-wide production CSS policy");
+});
