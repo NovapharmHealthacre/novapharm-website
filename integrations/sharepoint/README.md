@@ -52,6 +52,15 @@ excessive continuations fail closed; five offline tests exercise synthetic
 Folder-creation races and effective group permissions remain separate
 provider-side release gates tracked in issue #898.
 
+### Complete metadata enumeration for secure-content reads
+
+`listFolderChildren` now collects bounded Graph continuation pages before
+returning metadata to the protected-content synchronization caller. Repeated,
+foreign, malformed or excessive pages fail closed rather than silently
+publishing an incomplete local file manifest. Offline tests cover 201-item
+folders, hostile cursors, repeated links and page limits. This does not
+prove live provider compatibility or atomicity across nested folders.
+
 ## Fail-closed outbox boundary (source-only; pending deployment review)
 
 The legacy Microsoft Graph small-file PUT helper remains in the repository but is **not an approved document synchronization method**. The event processor now explicitly rejects `upload_document` events with `sharepoint_upload_conflict_gate` before folder creation, object download, upload or metadata PATCH. This is a deliberate safe stop: existing content must not be implicitly replaced, especially after an ambiguous partial-success retry.
