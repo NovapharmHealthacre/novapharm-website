@@ -38,9 +38,12 @@ export function MultimodalReviewScreen({ darkMode = false }: { darkMode?: boolea
   const [consent, setConsent] = useState(false);
   const [result, setResult] = useState<MultimodalReviewResult | null>(null);
   const update = (key: Key, value: string) => { setFields(p=>({...p,[key]:value}));setResult(null); };
-  const run = () => setResult(assessMultimodalEvidence({
+  const run = () => {
+    if (!consent) return;
+    setResult(assessMultimodalEvidence({
     ...fields, userInitiated:true, nonSensitiveMaterialConfirmed:consent, purpose:"catalogue-research"
-  }));
+    }));
+  };
   const reset = () => {setFields(fieldsInitial);setConsent(false);setResult(null)};
   return <View style={styles.root}>
     <Text style={styles.heading} accessibilityRole="header">Multimodal review</Text>
@@ -54,10 +57,14 @@ export function MultimodalReviewScreen({ darkMode = false }: { darkMode?: boolea
     </View>)}
     <Pressable accessibilityRole="checkbox" accessibilityState={{checked:consent}} accessibilityLabel="Confirm non-sensitive approved material" accessibilityHint="Required before submitting research samples for an offline conflict check"
       style={styles.checkboxRow} onPress={()=>{setConsent(p=>!p);setResult(null)}}>
-      <View style={[styles.checkbox,consent && styles.checked]} />
+      <View style={[styles.checkbox,consent && styles.checked]} accessible={false}>
+        <Text style={styles.checkboxMark}>{consent ? "✓" : ""}</Text>
+      </View>
       <Text style={styles.checkboxText}>I confirm these are non-sensitive, non-patient research samples.</Text>
     </Pressable>
-    <Pressable accessibilityRole="button" accessibilityHint="Runs an offline string consistency check; does not verify medicine identity" style={styles.primary} onPress={run}>
+    <Pressable accessibilityRole="button" accessibilityHint="Runs an offline string consistency check only after consent; does not verify medicine identity"
+      accessibilityState={{disabled: !consent}} disabled={!consent}
+      style={[styles.primary, !consent && styles.primaryDisabled]} onPress={run}>
       <Text style={styles.primaryText}>Review candidates</Text>
     </Pressable>
     <Pressable accessibilityRole="button" style={styles.secondary} onPress={reset}>
@@ -78,9 +85,12 @@ function createReviewStyles(palette: MobilePalette) {
   field:{marginTop:12},label:{fontSize:16,fontWeight:"600",color:palette.primary,marginBottom:6},
   input:{borderWidth:1,borderColor:palette.border,backgroundColor:palette.canvas,borderRadius:10,minHeight:48,paddingHorizontal:12,color:palette.primary,fontSize:17},
   checkboxRow:{flexDirection:"row",gap:12,alignItems:"center",minHeight:54,marginTop:18},
-  checkbox:{width:21,height:21,borderRadius:5,borderWidth:2,borderColor:palette.border},checked:{backgroundColor:palette.primary},
+  checkbox:{width:24,height:24,borderRadius:5,borderWidth:2,borderColor:palette.border,alignItems:"center",justifyContent:"center"},
+  checked:{backgroundColor:palette.primary,borderColor:palette.primary},
+  checkboxMark:{fontSize:17,fontWeight:"700",lineHeight:20,color:palette.canvas},
   checkboxText:{flex:1,fontSize:16,lineHeight:24,color:palette.secondary},
   primary:{backgroundColor:palette.primary,borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:12},
+  primaryDisabled:{opacity:0.6},
   primaryText:{color:palette.canvas,fontWeight:"700",fontSize:16},secondary:{borderWidth:1,borderColor:palette.border,borderRadius:10,minHeight:48,alignItems:"center",justifyContent:"center",marginTop:10},
   secondaryText:{color:palette.primary,fontWeight:"600",fontSize:16},output:{padding:16,backgroundColor:palette.grouped,borderRadius:12,marginTop:18},
   outputHeading:{color:palette.primary,fontWeight:"700",fontSize:16,marginBottom:8}

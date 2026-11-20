@@ -25,6 +25,10 @@ on:
       - scripts/build-site.mjs
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
+      - scripts/stamp-public-release-provenance.mjs
+      - scripts/test-quantum-static-public-candidate.mjs
+      - quantum-research/index.html
+      - assets/css/quantum-research.css
       - scripts/test-static-public-source-safety.mjs
       - scripts/validate-module-media-sanity.mjs
       - scripts/validate-visual-refinement.mjs
@@ -327,6 +331,33 @@ jobs:
             sleep 5
           done
           echo "PUBLIC RELEASE NOT CONFIRMED: custom domain does not serve the new Intelligence navigation and terminal modules" >&2
+          exit 1
+
+      - name: Verify exact quantum reference publication and noindex on custom domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            release_key="${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}"
+            if curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                "$LIVE_ORIGIN/quantum-research/?source=${release_key}" \
+                -o /tmp/novapharm-quantum-live.html \
+              && curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                "$LIVE_ORIGIN/assets/css/quantum-research.css?source=${release_key}" \
+                -o /tmp/novapharm-quantum-live.css \
+              && grep -Fq '<meta name="novapharm-source-sha" content="'"${GITHUB_SHA}"'">' /tmp/novapharm-quantum-live.html \
+              && grep -Fq '<meta name="robots" content="noindex, nofollow">' /tmp/novapharm-quantum-live.html \
+              && grep -Fq 'No live quantum hardware' /tmp/novapharm-quantum-live.html \
+              && grep -Fq '.nq-grid' /tmp/novapharm-quantum-live.css \
+              && ! grep -Eiq '(<form([[:space:]>])|data-login-form|data-contact-form|data-account-application|type="password"|type="file")' /tmp/novapharm-quantum-live.html; then
+              echo "Verified noindex quantum research route and CSS at exact source ${GITHUB_SHA}."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Quantum research route missing, stale, indexable, or unsafe on the custom domain." >&2
           exit 1
 
       - name: Mark publication successful

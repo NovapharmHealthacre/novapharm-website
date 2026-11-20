@@ -135,16 +135,31 @@ for (const article of articles) {
 }
 
 const robots = source("robots.txt");
-for (const crawler of ["Googlebot", "Bingbot", "OAI-SearchBot", "GPTBot", "Google-Extended"]) {
+for (const crawler of ["Googlebot", "Bingbot", "OAI-SearchBot", "Claude-SearchBot", "PerplexityBot", "Applebot", "GPTBot", "Google-Extended"]) {
   if (!robots.includes(`User-agent: ${crawler}`)) fail(`robots.txt lacks an explicit ${crawler} policy`);
 }
 if (!/User-agent: OAI-SearchBot[\s\S]*?Allow: \//.test(robots)) fail("OAI-SearchBot is not allowed to discover public content");
+for (const crawler of ["Claude-SearchBot", "PerplexityBot", "Applebot"]) {
+  const rule = new RegExp("User-agent: " + crawler + "\\nAllow: /\\n");
+  if (!rule.test(robots)) fail(crawler + " cannot discover public content");
+}
 if (!/User-agent: GPTBot[\s\S]*?Disallow: \//.test(robots)) fail("GPTBot training policy is not explicitly separated");
 for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xml"]) {
   if (!existsSync(join(root, sitemap))) fail(`missing ${sitemap}`);
   if (!robots.includes(`Sitemap: ${SITE_URL}/${sitemap}`)) fail(`robots.txt does not reference ${sitemap}`);
 }
 
+const aiGuide = source("llms.txt");
+for (const url of [SITE_URL + "/", SITE_URL + "/products/nutraxin/",
+  SITE_URL + "/sitemap.xml", SITE_URL + "/legal/"]) {
+  if (!aiGuide.includes(url)) fail("llms.txt missing canonical public source " + url);
+}
+if (/(?:\/portal\/|\/admin\/|\/api\/|\/docs\/)/.test(aiGuide)) {
+  fail("llms.txt must not expose protected routes");
+}
+if (!/does not guarantee indexing, inclusion, ranking or endorsement/.test(aiGuide)) {
+  fail("llms.txt must not claim guaranteed AI visibility");
+}
 const escoCollection = source("products/esco/index.html");
 const escoSchemas = parseSchemas(escoCollection, "products/esco/index.html");
 const escoEntity = escoSchemas.find((schema) => schema["@type"] === "CollectionPage");

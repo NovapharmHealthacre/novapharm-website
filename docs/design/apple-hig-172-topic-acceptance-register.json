@@ -123,6 +123,30 @@
           "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
           "repositoryRunHead": "e78b6115946d688de91b539c7fb1e1fd86bf7bd4",
           "provenance": "Independently read GitHub Actions artifact 14539093077 results.json: 12/12 actual live Chromium/WebKit observations saw the same public HTML novapharm-source-sha meta value; zero narrow gaps and 0 automated axe violations across three mobile Chromium routes."
+        },
+        {
+          "topic": "Accessibility",
+          "sourceRun": 44677599844,
+          "jobId": 136093044118,
+          "jobConclusion": "success",
+          "scope": "Six fixed public routes, 320/390/1440px, Chromium/WebKit, 36 read-only rendered observations; first Tab focus, H1, 6 mobile axe scans; artifact 14602609082",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "artifactId": 14602609082,
+          "evidenceJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+          "provenance": "Actual downloaded first-party GitHub Actions artifact results.json independently checked: 36 live observations, zero recorded narrow gaps, same observed public source SHA. Limited to selected read-only public pages, not a complete accessibility or product release certificate."
+        },
+        {
+          "topic": "Layout",
+          "sourceRun": 44677599844,
+          "jobId": 136093044118,
+          "jobConclusion": "success",
+          "scope": "Six fixed public routes, 320/390/1440px, Chromium/WebKit, 36 read-only rendered observations; page H1, overflow and viewport screenshots; artifact 14602609082",
+          "liveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "repositoryRunHead": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "artifactId": 14602609082,
+          "evidenceJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+          "provenance": "Actual downloaded first-party GitHub Actions artifact results.json independently checked: 36 live observations, zero recorded narrow gaps, same observed public source SHA. Limited to selected read-only public pages, not a complete accessibility or product release certificate."
         }
       ],
       "excludedAsAcceptance": [
@@ -154,10 +178,11 @@
         44528135812,
         44532249980,
         44532250088,
-        44540795085
+        44540795085,
+        44677599844
       ],
-      "recordedPartialTopicPlatformObservations": 6,
-      "note": "Four distinct successful first-party read-only public live workflow runs underpin six topic/platform partial observations. Same run may support different bounded checks; none is full implementation or signed native release proof.",
+      "recordedPartialTopicPlatformObservations": 8,
+      "note": "Five distinct successful first-party read-only public live workflow runs underpin eight bounded topic/platform partial observations. Two new partial observations reuse the six-route 36-case published browser artifact; neither is full implementation or native release proof.",
       "renderedPublicArtifactReadback": {
         "sourceRun": 44540795085,
         "jobId": 135618272024,
@@ -186,6 +211,39 @@
         "maximumHorizontalOverflowPx": 0,
         "firstTabVisibleFocusFailures": 0,
         "interpretation": "Verifies a scoped, real published public HTML SHA and limited user-interface observations only; exact source artifact evidence does not grant full HIG, WCAG, protected tenant or native production acceptance."
+      },
+      "expandedRenderedPublicArtifactReadback": {
+        "sourceRun": 44677599844,
+        "jobId": 136093044118,
+        "artifactId": 14602609082,
+        "evidenceFile": "results.json",
+        "evidenceJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+        "checkedAt": "2026-11-20",
+        "publishedSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+        "observedRoutes": [
+          "/",
+          "/contact/",
+          "/legal/accessibility/",
+          "/capabilities/",
+          "/oncology/",
+          "/products/"
+        ],
+        "browsers": [
+          "chromium",
+          "webkit"
+        ],
+        "viewportWidths": [
+          320,
+          390,
+          1440
+        ],
+        "totalObservations": 36,
+        "failedObservations": 0,
+        "renderedScreenshots": 18,
+        "observedLiveShaUniformAcrossRoutes": true,
+        "automatedAxeAuditedMobileChromiumRoutes": 6,
+        "reportedAxeRuleViolations": 0,
+        "interpretation": "Only scoped six-route, 36-viewport-and-browser read-only public observations. The observed public revision is not the current GitHub main head. Neither this evidence nor source CI confers full HIG, WCAG, signed iOS/Android, protected tenant, clinical or owner production acceptance."
       }
     }
   },
@@ -705,6 +763,64 @@
             "firstTabFocusFailures": 0,
             "offOriginRequestsBlocked": 0
           }
+        },
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-20T05:08:22.980Z",
+          "workflow": "Apple HIG 172-topic traceability and cross-platform detail — extended read-only public rendered sampling",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44677599844",
+          "jobId": 136093044118,
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44677599844/artifacts/14602609082",
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "sourceCommit": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "sourceCommitMeaning": "GitHub PR workflow checkout/merge context; not the observed public production release SHA",
+          "checkedTopic": "Accessibility",
+          "checkedRoutes": [
+            "https://novapharmhealthcare.com/",
+            "https://novapharmhealthcare.com/contact/",
+            "https://novapharmhealthcare.com/legal/accessibility/",
+            "https://novapharmhealthcare.com/capabilities/",
+            "https://novapharmhealthcare.com/oncology/",
+            "https://novapharmhealthcare.com/products/"
+          ],
+          "checkedJourneys": [
+            "36 read-only real public Chromium/WebKit observations: 6 routes × 3 viewport widths (320, 390, 1440) × 2 browser engines; all returned no recorded script/browser test gaps",
+            "Verified public document language, one main H1, horizontal overflow <= 2px, first Tab visible focus; all 36 observed the same published HTML meta SHA",
+            "Six 390px mobile Chromium axe WCAG2/2.1/2.2 audits reported zero violations; 18 public Chromium screenshots and all 36 JSON observation records retained"
+          ],
+          "scopeLimits": [
+            "Six selected public pages only; not authenticated Portal, Intelligence, WMS, account, protected data or cross-tenant permissions",
+            "Only initial Tab focus and automated axe scans on mobile Chromium; not full keyboard traversal, screen reader, native iOS/Android hardware, or manual accessibility acceptance",
+            "No 200–400% zoom, full internationalization/RTL, assistive technology, legally approved medicine data or production Quality/Security signoff",
+            "Observed public SHA is a historical deployed commit and was 350 main-history commits behind at independent check; no assertion that every source-only change impacts public rendering"
+          ],
+          "provenanceNote": "Independently read original 14602609082 ZIP results.json on 2026-11-20: 36/36 observations, zero browser assertions, same live HTML SHA d00b2eee866d4a2dd2ff7d87ded583be0d7cab98, zero automated axe findings on six mobile Chromium rows. Main history was separately 350 commits ahead at audit time. This is bounded real live observation, not a complete guideline production receipt.",
+          "readBackArtifact": {
+            "artifactId": 14602609082,
+            "jsonPath": "results.json",
+            "checkedAt": "2026-11-20",
+            "resultJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+            "totalRenderedObservations": 36,
+            "narrowGapCount": 0,
+            "uniqueObservedLiveShaCount": 1,
+            "publicRouteCount": 6,
+            "viewportWidths": [
+              320,
+              390,
+              1440
+            ],
+            "browsers": [
+              "chromium",
+              "webkit"
+            ],
+            "axeAuditedMobileChromiumRoutes": 6,
+            "axeRuleViolationCount": 0,
+            "chromiumScreenshots": 18,
+            "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98"
+          }
         }
       ],
       "iosEvidence": [],
@@ -1200,6 +1316,64 @@
             "horizontalOverflowMaximumPx": 0,
             "firstTabFocusFailures": 0,
             "offOriginRequestsBlocked": 0
+          }
+        },
+        {
+          "evidenceType": "scoped_live_public_observation",
+          "verificationLevel": "partial",
+          "platform": "web",
+          "jobConclusion": "success",
+          "observedAt": "2026-11-20T05:08:22.980Z",
+          "workflow": "Apple HIG 172-topic traceability and cross-platform detail — extended read-only public rendered sampling",
+          "runUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44677599844",
+          "jobId": 136093044118,
+          "artifactUrl": "https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/44677599844/artifacts/14602609082",
+          "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98",
+          "sourceCommit": "c4bdce6f8329f044393869cdbe56eee1fc365054",
+          "sourceCommitMeaning": "GitHub PR workflow checkout/merge context; not the observed public production release SHA",
+          "checkedTopic": "Layout",
+          "checkedRoutes": [
+            "https://novapharmhealthcare.com/",
+            "https://novapharmhealthcare.com/contact/",
+            "https://novapharmhealthcare.com/legal/accessibility/",
+            "https://novapharmhealthcare.com/capabilities/",
+            "https://novapharmhealthcare.com/oncology/",
+            "https://novapharmhealthcare.com/products/"
+          ],
+          "checkedJourneys": [
+            "36 read-only real public Chromium/WebKit observations: 6 routes × 3 viewport widths (320, 390, 1440) × 2 browser engines; all returned no recorded script/browser test gaps",
+            "Verified public document language, one main H1, horizontal overflow <= 2px, first Tab visible focus; all 36 observed the same published HTML meta SHA",
+            "Six 390px mobile Chromium axe WCAG2/2.1/2.2 audits reported zero violations; 18 public Chromium screenshots and all 36 JSON observation records retained"
+          ],
+          "scopeLimits": [
+            "Six selected public pages only; not authenticated Portal, Intelligence, WMS, account, protected data or cross-tenant permissions",
+            "Only initial Tab focus and automated axe scans on mobile Chromium; not full keyboard traversal, screen reader, native iOS/Android hardware, or manual accessibility acceptance",
+            "No 200–400% zoom, full internationalization/RTL, assistive technology, legally approved medicine data or production Quality/Security signoff",
+            "Observed public SHA is a historical deployed commit and was 350 main-history commits behind at independent check; no assertion that every source-only change impacts public rendering"
+          ],
+          "provenanceNote": "Independently read original 14602609082 ZIP results.json on 2026-11-20: 36/36 observations, zero browser assertions, same live HTML SHA d00b2eee866d4a2dd2ff7d87ded583be0d7cab98, zero automated axe findings on six mobile Chromium rows. Main history was separately 350 commits ahead at audit time. This is bounded real live observation, not a complete guideline production receipt.",
+          "readBackArtifact": {
+            "artifactId": 14602609082,
+            "jsonPath": "results.json",
+            "checkedAt": "2026-11-20",
+            "resultJsonSha256": "32405fe0243196abb86f4fbc9dde97e823c1c7828a2871b66a0960d4d134e5a2",
+            "totalRenderedObservations": 36,
+            "narrowGapCount": 0,
+            "uniqueObservedLiveShaCount": 1,
+            "publicRouteCount": 6,
+            "viewportWidths": [
+              320,
+              390,
+              1440
+            ],
+            "browsers": [
+              "chromium",
+              "webkit"
+            ],
+            "axeAuditedMobileChromiumRoutes": 6,
+            "axeRuleViolationCount": 0,
+            "chromiumScreenshots": 18,
+            "observedLiveSourceSha": "d00b2eee866d4a2dd2ff7d87ded583be0d7cab98"
           }
         }
       ],

@@ -140,6 +140,9 @@ export const crawlerPolicy = Object.freeze([
   { crawler: "Googlebot", purpose: "Google Search and Google AI features", publicAccess: true, trainingAccess: null },
   { crawler: "Bingbot", purpose: "Bing Search and Microsoft search experiences", publicAccess: true, trainingAccess: null },
   { crawler: "OAI-SearchBot", purpose: "ChatGPT Search discovery and citation", publicAccess: true, trainingAccess: false },
+  { crawler: "Claude-SearchBot", purpose: "Claude search discovery of public pages", publicAccess: true, trainingAccess: false },
+  { crawler: "PerplexityBot", purpose: "Perplexity search discovery of public pages", publicAccess: true, trainingAccess: false },
+  { crawler: "Applebot", purpose: "Apple Search and Siri discovery of public pages", publicAccess: true, trainingAccess: null },
   { crawler: "GPTBot", purpose: "Potential OpenAI model improvement", publicAccess: false, trainingAccess: false },
   { crawler: "Google-Extended", purpose: "Google model training and grounding outside normal Search crawling", publicAccess: false, trainingAccess: false }
 ]);

@@ -23,4 +23,15 @@ for (const record of register) {
   writeFileSync(full, html, "utf8");
   stamped += 1;
 }
-console.log(`Stamped ${stamped} generated canonical pages with verified Git source commit ${sha}.`);
+// The public quantum research reference is noindex and deliberately outside SEO's
+// indexable canonical register, but its released bytes still need commit provenance.
+const researchCandidatePath = resolve(root, "quantum-research/index.html");
+// Read directly: a separate existsSync check introduces a time-of-check/time-of-use gap.
+// Missing or unreadable source must fail closed before the artifact can be staged.
+let researchCandidate = readFileSync(researchCandidatePath, "utf8");
+assert.ok(researchCandidate.includes('name="robots" content="noindex, nofollow"'), "Quantum candidate must remain noindex");
+researchCandidate = researchCandidate.replace(/\s*<meta name="novapharm-source-sha" content="[0-9a-f]{40}">/gi, "");
+researchCandidate = researchCandidate.replace("</head>", '  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
+writeFileSync(researchCandidatePath, researchCandidate, "utf8");
+
+console.log(`Stamped ${stamped} generated canonical pages with verified Git source commit ${sha}; noindex quantum candidate stamped separately.`);
