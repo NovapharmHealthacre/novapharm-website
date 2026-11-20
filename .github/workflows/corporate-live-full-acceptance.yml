@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/test-corporate-live-acceptance.mjs'
       - 'scripts/test-corporate-live-logo-contract.mjs'
+      - 'scripts/test-corporate-live-publication-gate.mjs'
       - 'scripts/test-corporate-contact-failure.mjs'
       - '.github/workflows/corporate-live-full-acceptance.yml'
   workflow_run:
@@ -15,19 +16,64 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: corporate-live-acceptance-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  publisher-deployment:
+    name: Verify that upstream publisher actually deployed a public release
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      deployed: ${{ steps.probe.outputs.deployed }}
+    steps:
+      - name: Examine the completed publisher job outcomes
+        id: probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$UPSTREAM_RUN/jobs?per_page=100")"
+          scope="$(jq -r '[.jobs[] | select(.name == "release_scope") | .conclusion] | if length == 1 then .[0] else "invalid" end' <<< "$jobs")"
+          build="$(jq -r '[.jobs[] | select(.name == "build-and-verify") | .conclusion] | if length == 1 then .[0] else "invalid" end' <<< "$jobs")"
+          deploy="$(jq -r '[.jobs[] | select(.name == "deploy") | .conclusion] | if length == 1 then .[0] else "invalid" end' <<< "$jobs")"
+          test "$scope" = "success"
+          case "$deploy" in
+            success)
+              test "$build" = "success"
+              echo "deployed=true" >> "$GITHUB_OUTPUT"
+              echo "An actual public deployment completed: retain the strict live-source acceptance."
+              ;;
+            skipped)
+              test "$build" = "skipped"
+              echo "deployed=false" >> "$GITHUB_OUTPUT"
+              echo "Private-only source push: publisher did not deploy, so no new public SHA is expected."
+              ;;
+            *)
+              echo "::error::Unknown publisher deployment outcome: $deploy"
+              exit 1
+              ;;
+          esac
+
   live-browser:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    needs: publisher-deployment
+    if: >-
+      always() && (
+        github.event_name != 'workflow_run' ||
+        (github.event.workflow_run.conclusion == 'success' &&
+         needs.publisher-deployment.result == 'success' &&
+         needs.publisher-deployment.outputs.deployed == 'true')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - name: Checkout acceptance source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
       - name: Node 24
@@ -35,8 +81,10 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - name: Verify decoded-logo readiness and unchanged live failure gates
-        run: node --test scripts/test-corporate-live-logo-contract.mjs
+      - name: Verify decoded-logo readiness and publication-trigger safety
+        run: |
+          node --test scripts/test-corporate-live-logo-contract.mjs
+          node --test scripts/test-corporate-live-publication-gate.mjs
       - name: Install locked dependencies and browsers
         run: |
           npm ci --ignore-scripts
@@ -53,7 +101,7 @@ jobs:
         run: node scripts/test-corporate-contact-failure.mjs
       - name: Preserve screenshots, accessibility results and failures
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: corporate-live-acceptance-${{ github.run_id }}
           path: artifacts/corporate-live-acceptance

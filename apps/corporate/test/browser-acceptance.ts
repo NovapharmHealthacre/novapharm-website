@@ -565,7 +565,19 @@ async function runRtlPreflight(name: string, browserType: BrowserType): Promise<
             page.waitForNavigation({ waitUntil: "domcontentloaded" }),
             control.selectOption("en-GB"),
           ]);
+          // WebKit can report DOMContentLoaded before the final document/locale
+          // transition has settled. Keep the cookie and document assertions;
+          // do not weaken the RTL acceptance or silently retry a broken switch.
+          const resetCookie = (await context.cookies(baseUrl)).find((cookie) => cookie.name === "np_locale");
+          assert.equal(resetCookie?.value, "en-GB", `${name}: language switch did not persist English preference`);
+          await page.waitForFunction(
+            () => document.documentElement.getAttribute("dir") === "ltr" &&
+              document.documentElement.getAttribute("lang") === "en-GB",
+            undefined,
+            { timeout: 10_000 },
+          );
           assert.equal(await page.locator("html").getAttribute("dir"), "ltr", "switcher did not restore English direction");
+          assert.equal(await page.locator("html").getAttribute("lang"), "en-GB", "switcher did not restore English document language");
           await page.close();
         } finally {
           await context.close();

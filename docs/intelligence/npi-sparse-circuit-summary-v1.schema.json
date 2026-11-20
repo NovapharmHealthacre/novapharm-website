@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:novapharm:intelligence:sparse-circuit-summary:v1",
+  "title": "NovaPharm Intelligence sparse-circuit research summary (unverified)",
+  "description": "Read-only research display contract. Structurally valid metadata never grants model, evidence, tenant, commercial, clinical or production rights.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "valid",
+    "status",
+    "modelId",
+    "taskId",
+    "nodeCount",
+    "edgeCount",
+    "lossDeltaCircuitVsBaseline",
+    "lossDeltaAblatedVsCircuit",
+    "sampleCount",
+    "ablation",
+    "mechanisticExplanationVerified",
+    "productionEligible",
+    "clinicalUsePermitted"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "npi.sparse-circuit.v1"
+    },
+    "valid": {
+      "const": true
+    },
+    "status": {
+      "const": "unverified-research-candidate"
+    },
+    "modelId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+    },
+    "taskId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+    },
+    "nodeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2000
+    },
+    "edgeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8000
+    },
+    "lossDeltaCircuitVsBaseline": {
+      "type": "number"
+    },
+    "lossDeltaAblatedVsCircuit": {
+      "type": "number"
+    },
+    "sampleCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "ablation": {
+      "const": "mean"
+    },
+    "mechanisticExplanationVerified": {
+      "const": false
+    },
+    "productionEligible": {
+      "const": false
+    },
+    "clinicalUsePermitted": {
+      "const": false
+    }
+  }
+}

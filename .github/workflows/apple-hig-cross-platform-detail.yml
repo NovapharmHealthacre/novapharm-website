@@ -1,0 +1,127 @@
+name: Apple HIG 172-topic traceability and cross-platform detail
+on:
+  pull_request:
+    # Permanent design DNA: run source contract whenever site/app UI changes.
+    paths:
+      - 'apps/corporate/**'
+      - 'apps/status/**'
+      - 'apps/founder/**'
+      - 'apps/portal/**'
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'native/novapharm-intelligence-apple/**'
+      - 'native/novapharm-intelligence-android/**'
+      - 'assets/css/**'
+      - 'assets/js/**'
+      - 'packages/design-system/**'
+      - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-attachment-evidence-20261118.json'
+      - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
+      - 'scripts/test-apple-hig-attachment-audit.mjs'
+      - 'docs/design/apple-hig-172-topic-adoption-20261118.md'
+      - 'apps/portal/app/globals.css'
+      - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
+      - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - '.github/workflows/apple-hig-cross-platform-detail.yml'
+  workflow_dispatch:
+    inputs:
+      remote_check:
+        description: 'Check 172 HIG article URLs, 30 section anchors, 5 Apple resources and 3 MapKit/IMDF URLs'
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-contracts:
+    name: HIG 172 topics, portal target sizes and mobile readable forms
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - run: node --check scripts/test-apple-hig-attachment-audit.mjs
+      - run: node --test scripts/test-apple-hig-attachment-audit.mjs
+      - name: Preserve 172-topic HIG production acceptance gaps (not a compliance certificate)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-production-audit-${{ github.sha }}
+          path: artifacts/apple-hig-production-audit/172-topic-gap-ledger.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  public-html-sample:
+    name: Read-only public HTML and rendered sampling (not HIG compliance)
+    if: github.event_name == 'pull_request'
+    # The PR may be source-only while an unrelated public deployment is stale,
+    # unavailable or still awaiting signoff. Observe without turning this
+    # evidence-only job into a publishing or implementation acceptance gate.
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Sample four immutable public routes via read-only HTML GET
+        env:
+          HIG_SAMPLE_PUBLIC_ORIGIN: '1'
+        run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Install locked browser-audit tools, no cloud accounts
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium webkit
+      - name: Inspect three fixed public origins in Chromium/WebKit; no form submission
+        env:
+          HIG_RENDER_PUBLIC_ORIGIN: '1'
+        run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Preserve observed origin/provenance gaps, including failures
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-public-html-sample-${{ github.sha }}
+          path: artifacts/apple-hig-production-audit/public-origin-sample.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Preserve public rendered keyboard/axe receipts and screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-public-rendered-${{ github.sha }}
+          path: artifacts/apple-hig-production-audit/rendered-public/
+          if-no-files-found: warn
+          retention-days: 30
+
+  remote-apple-link-audit:
+    name: Manual Apple HIG 210-URL and section-anchor audit (not guideline review)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.remote_check }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify exact 210 links, including actual Markdown section-anchor headings
+        run: HIG_VERIFY_LIVE_LINKS=1 node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Preserve the full URL-health evidence (including failures)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-210-link-reachability-${{ github.sha }}
+          path: artifacts/apple-hig-link-health/report.json
+          if-no-files-found: warn
+          retention-days: 30

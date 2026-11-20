@@ -8,8 +8,10 @@ import {
   completeCognitoCardSignIn,
   type TotpChallenge,
 } from "../lib/cognito-card-auth";
+import { parseVerifiedTrialView, type VerifiedTrialView } from "../lib/intelligence-trial-view";
 import { AccountAccessHelp } from "./account-access-help";
 import styles from "./intelligence-sign-in.module.css";
+import { IntelligenceTrialOverview } from "./intelligence-trial-overview";
 
 /**
  * Cognito handles credential verification and mandatory TOTP. A separate,
@@ -18,6 +20,7 @@ import styles from "./intelligence-sign-in.module.css";
 type ApprovedCustomer = Readonly<{
   role: "owner" | "admin" | "analyst" | "viewer";
   plan: "starter" | "professional" | "enterprise";
+  trial: VerifiedTrialView | null;
 }>;
 
 const publicSite = "https://novapharmhealthcare.com";
@@ -60,6 +63,7 @@ async function readVerifiedSession(): Promise<ApprovedCustomer | null> {
     return {
       role: result["role"] as ApprovedCustomer["role"],
       plan: result["plan"] as ApprovedCustomer["plan"],
+      trial: result["plan"] === "starter" ? parseVerifiedTrialView(result["trial"]) : null,
     };
   } catch {
     return null;
@@ -263,6 +267,7 @@ export function IntelligenceSignIn() {
               <>
                 <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
                 <p className={styles["providerNote"]}>Medicines data and NOVA remain accessible only when source and permission gates are approved.</p>
+                {customer.trial ? <IntelligenceTrialOverview trial={customer.trial} /> : null}
                 <button className={styles["primaryAction"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
                   {signingOut ? "Signing out…" : "Sign out securely"}
                 </button>

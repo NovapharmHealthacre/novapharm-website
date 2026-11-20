@@ -41,6 +41,33 @@ Controls were informed by the [ICO guidance on AI and data protection](https://i
 
 Corporate Communications owns public source approval. Quality, Regulatory, Clinical, Privacy, Security and operational owners remain accountable for their respective decisions. AI may assist retrieval and drafting; it may not approve publication, qualification, release, treatment, safety, regulatory, financial or customer decisions.
 
+## Model interpretability extension (source-only candidate, 18 November 2026)
+
+The proposed `Nova Model Microscope` extends the **protected** Intelligence research experience, not public Search & Ask. It reuses the verified board route family and introduces five shared web/iOS/Android **planning** stages. It has no approved inspectable model, real feature/activation service, admitted visualizations, signed mobile package or deployed API. A future protected Node adapter must fail closed for any unverified tenant/model/source grant and must obtain separate independent rights/provenance and non-patient review before projecting bounded metadata. Any generated feature hypothesis is research-only, non-publishable and cannot ground a clinical, regulatory, safety or commercial decision.
+
+The canonical 22 pharmaceutical evidence workspaces remain source-first and do not acquire ML inspection capabilities by virtue of this prototype. Public and protected AI system cards should remain separately versioned before any production activation.
+
+
+## Research-only L0 sparsity boundary (18 November 2026)
+
+The `nova-l0-hard-concrete-research-v0` entry is **source-only research**, not a component of public Search & Ask or an active protected prediction model. Pure PyTorch, TypeScript, Swift and Kotlin hard-concrete candidates exist for offline mathematical evaluation. They contain no approved trained weights, patient records, model permission, hosted prediction endpoint, Core ML/LiteRT deployment or release sign-off. L0 regularisation is neither automatic interpretability nor a promise of smaller executable size or lower latency. Source and device-specific benchmarking, clinical exclusions, temporal holdouts, rights and governance review are mandatory before any separate deployment proposal. See `docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md`.
+
+## Deep-learning compute infrastructure boundary — November 2026 source extension
+
+The Nova ML compute architecture is a **non-executing, review-only candidate** for the protected web experience and future signed iOS and Android clients. Its source-controlled workload proposal constraints are implemented in `src/ai/compute-admission.mjs`, `native/novapharm-intelligence-apple/NovaComputePlan.swift`, and `native/novapharm-intelligence-android/NovaComputePlan.kt`. These local checks are advisory. They confer **no** authorisation to run training, request GPU capacity, upload data, access patient records or write results.
+
+The complete source-first architecture and unfulfilled cloud, data-rights, identity, budget, security, provenance and device-release gates are in [Deep-learning infrastructure adoption](architecture/deep-learning-infrastructure-20261118.md). The historical [OpenAI 2016 infrastructure article](https://openai.com/index/infrastructure-for-deep-learning/) informs experimental reproducibility and orchestration principles, not the deployment of obsolete Python 2.7/Theano or custom autoscaling tooling.
+
+Current owner constraint remains `productionSignoff: "not_granted"`, `monthlyCapGbp: 0`, with only GitHub source/CI/nonproduction design authorised. The public retrieval system, protected governance views, model providers and actual training services must never be conflated. There is no approved dataset, provisioned ML cluster, signed iOS or Android app, live training run or evidence of authenticated production ML activation in this source change.
+
+## Scholarly source traceability — additional 22-reference programme
+
+The multimodal research basis now records 22 supplied citation positions, **21 unique publications**, seven planned evaluation dimensions and 12 synthetic string-based negative controls. See `docs/intelligence/multimodal-22-reference-engineering-matrix-20261118.md`. These tests do not execute images, train a model, measure actual robustness or grant data and tenant rights. Production inference remains disabled by design.
+
+## Offline alignment and simulation research — 18 November 2026
+
+Nova ML now includes **source-only** evaluation contracts inspired by reward-model overoptimisation, AI-written critiques, instruction following and OpenAI Five. The offline Node module scores only caller-supplied numeric/categorical claims and returns explicitly unverified research receipts. Protected Nova ML Studio may display the directions as planned research, but it does not call these evaluators, train an agent, generate critiques or handle live source records. Swift and Kotlin contain display-only negative-claim validators, not production model runtimes. No approved model, human preference dataset, real independent ground truth, inference endpoint or production rights have been granted. See `docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md`.
+
 ## Deep-learning compute infrastructure boundary — November 2026 source extension
 
 The Nova ML compute architecture is a **non-executing, review-only candidate** for the protected web experience and future signed iOS and Android clients. Its source-controlled workload proposal constraints are implemented in `src/ai/compute-admission.mjs`, `native/novapharm-intelligence-apple/NovaComputePlan.swift`, and `native/novapharm-intelligence-android/NovaComputePlan.kt`. These local checks are advisory. They confer **no** authorisation to run training, request GPU capacity, upload data, access patient records or write results.
