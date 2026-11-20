@@ -82,10 +82,27 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Generate reviewable Expo dependency lockfile (candidate only)
+      - name: Resolve candidate only if an approved lockfile is not committed
         run: |
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          if [ -f package-lock.json ]; then
+            echo 'Using committed mobile package-lock.json; refusing to regenerate dependencies'
+          else
+            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+            echo 'Generated a candidate mobile dependency lockfile for review'
+          fi
           node -e 'const p=require("./package.json"),l=require("./package-lock.json"); if (l.lockfileVersion !== 3 || l.packages?.[""]?.name !== p.name) process.exit(1)'
+      - name: Verify lockfile registry and integrity before any dependency install
+        run: |
+          node -e '
+          const l=require("./package-lock.json");
+          const packages=Object.entries(l.packages).filter(([name])=>name);
+          for (const [name, item] of packages) {
+            if (!item.resolved?.startsWith("https://registry.npmjs.org/") || !item.integrity?.startsWith("sha512-")) {
+              throw new Error("Unapproved resolver URL or missing SHA-512: " + name);
+            }
+          }
+          console.log("Validated npm registry and SHA-512 integrity for " + packages.length + " resolved packages");
+          '
       - name: Upload isolated mobile lockfile for human dependency review
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
