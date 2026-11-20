@@ -83,8 +83,8 @@ test("forensic page identity and privacy choices do not regress", () => {
     "The Oncology H1 must have a spoken word boundary at its visual line break");
   assert.doesNotMatch(capabilitiesCss, /#767981/i,
     "Small Capabilities labels must not use the previously low-contrast grey");
-  assert.match(layout, /<main id="main-content" lang="en-GB" data-np-untranslated>/,
-    "Untranslated content must remain explicitly identified as English");
+  assert.match(layout, /<main id="main-content" lang="en-GB" data-np-untranslated tabIndex=\{-1\}>/,
+    "Untranslated content must remain English and keyboard bypass must focus the main landmark");
   assert.ok(layout.includes("<CookieControls />") &&
     layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content"'),
     "Cookie consent must be in normal document flow before main content");
