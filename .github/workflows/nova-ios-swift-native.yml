@@ -1,0 +1,94 @@
+name: NovaPharm native Swift iOS source and unsigned simulator build
+
+on:
+  pull_request:
+    paths:
+      - "native/novapharm-intelligence-ios/**"
+      - "scripts/test-novapharm-native-ios-source-parity.mjs"
+      - "apps/portal/data/intelligence-workspaces.ts"
+      - "config/intelligence/owner-production-constraints.json"
+      - ".github/workflows/nova-ios-swift-native.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  swift-native-ios:
+    name: Native Swift Testing and unsigned iOS Simulator compilation
+    runs-on: macos-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Verify catalogue parity and fail-closed production controls
+        run: node --test scripts/test-novapharm-native-ios-source-parity.mjs
+      - name: Record toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          xcrun --sdk iphonesimulator --show-sdk-version
+      - name: Swift Testing on native catalogue and security boundaries
+        run: swift test --package-path native/novapharm-intelligence-ios
+      - name: Generate the Xcode project from reviewed source
+        run: |
+          brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+          cd native/novapharm-intelligence-ios
+          xcodegen generate
+          xcodebuild -list -project NovaPharmNative.xcodeproj
+      - name: Build unsigned native SwiftUI iOS simulator app
+        run: |
+          set -eu
+          cd native/novapharm-intelligence-ios
+          xcodebuild -project NovaPharmNative.xcodeproj \
+            -scheme NovaPharmNative \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Archive simulator build and record checksum
+        run: |
+          set -eu
+          app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
+          test -d "$app"
+          ditto -c -k --keepParent "$app" "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.zip"
+          shasum -a 256 "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.zip" | tee "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.sha256"
+      - name: Boot iPhone Simulator, install and launch unsigned native app
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
+          test -d "$app"
+          device="$(xcrun simctl list -j devices available | python3 -c 'import json,sys; data=json.load(sys.stdin)["devices"]; phones=[d for devices in data.values() for d in devices if d.get("isAvailable") and d.get("name", "").startswith("iPhone")]; print(phones[0]["udid"] if phones else "")')"
+          test -n "$device" || { echo "::error::No available iPhone Simulator; do not claim runtime verification"; exit 1; }
+          printf '%s\n' "Simulator UDID: $device" | tee "$RUNNER_TEMP/novapharm-ios-simulator-device.txt"
+          xcrun simctl boot "$device" || true
+          xcrun simctl bootstatus "$device" -b
+          xcrun simctl install "$device" "$app"
+          xcrun simctl launch "$device" com.example.NovaPharmNativePreview | tee "$RUNNER_TEMP/novapharm-ios-launch-receipt.txt"
+          sleep 3
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
+          xcrun simctl ui "$device" appearance dark
+          sleep 3
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
+          test -s "$RUNNER_TEMP/novapharm-ios-launch-receipt.txt"
+          test -s "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
+          test -s "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
+          xcrun simctl terminate "$device" com.example.NovaPharmNativePreview || true
+      - name: Upload non-distributable iOS Simulator artifact for private review
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-swift-ios-simulator-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.zip
+            ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.sha256
+            ${{ runner.temp }}/novapharm-ios-simulator-device.txt
+            ${{ runner.temp }}/novapharm-ios-launch-receipt.txt
+            ${{ runner.temp }}/novapharm-ios-simulator-light.png
+            ${{ runner.temp }}/novapharm-ios-simulator-dark.png
+          if-no-files-found: error
+          retention-days: 7
