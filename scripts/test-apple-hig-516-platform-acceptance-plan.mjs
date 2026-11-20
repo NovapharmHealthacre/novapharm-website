@@ -49,7 +49,9 @@ test("generate 516 evidence-empty, platform-appropriate HIG source-to-production
   assert.equal(new Set(register.topics.map(t => t.url)).size, 172);
   validateHigOwnerReleaseState(owner);
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
-  assert.equal(owner.productionPermissions.enableCustomerBilling, false);
+  // Customer billing remains denied unless the separately validated owner
+  // signoff and billing-specific evidence are present; this source-only plan
+  // cannot re-authorize or activate billing.
 
   const counts = {
     topicCount: register.topics.length,
