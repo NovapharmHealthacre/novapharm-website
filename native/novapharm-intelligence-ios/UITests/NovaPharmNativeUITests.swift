@@ -60,6 +60,44 @@ final class NovaPharmNativeUITests: XCTestCase {
     }
 
     @MainActor
+    func testOfflineCountryFiltersKeepUnapprovedCoverageDistinct() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Intelligence"].waitForExistence(timeout: 15))
+
+        let directory = app.buttons["novapharm.intelligence.countries"]
+        for _ in 0..<5 where !directory.isHittable { app.swipeUp() }
+        XCTAssertTrue(directory.waitForExistence(timeout: 10))
+        directory.tap()
+        XCTAssertTrue(app.navigationBars["Countries"].waitForExistence(timeout: 10))
+
+        // Exercise real native SwiftUI segmented controls and actual list contents.
+        // These are offline publisher research categories, NOT validated data rights.
+        let research = app.buttons["Research"]
+        let candidates = app.buttons["Candidates"]
+        XCTAssertTrue(research.waitForExistence(timeout: 10))
+        XCTAssertTrue(candidates.exists)
+        research.tap()
+        XCTAssertTrue(app.buttons["novapharm.country.BW"].waitForExistence(timeout: 10),
+            "Botswana is a geography-only research scope")
+        XCTAssertFalse(app.buttons["novapharm.country.DZ"].exists,
+            "Algeria has candidate references and must not appear in research-only coverage")
+
+        candidates.tap()
+        XCTAssertTrue(app.buttons["novapharm.country.DZ"].waitForExistence(timeout: 10),
+            "Algeria is a source-candidate scope")
+        XCTAssertFalse(app.buttons["novapharm.country.BW"].exists,
+            "Geography-only Botswana must not be shown as a publisher candidate")
+
+        app.buttons["novapharm.country.DZ"].tap()
+        XCTAssertTrue(app.navigationBars["Algeria"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Not reviewed"].exists,
+            "Publisher rights must remain unapproved in the native candidate")
+        XCTAssertTrue(app.staticTexts["Disabled"].exists,
+            "Offline candidate must not imply customer release")
+    }
+
+    @MainActor
     func testSavedShortcutPersistsAcrossAppRelaunchAndCanBeDeleted() throws {
         let app = XCUIApplication()
         app.launch()
