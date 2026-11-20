@@ -7,10 +7,31 @@ This independent Expo SDK 58 / React Native project lives in native/ to avoid ch
 ## On a developer machine
 
 1. Install Node 22.13+ and an Android/iOS build environment as appropriate.
-2. Until the standalone lockfile is committed, use `npm install --package-lock-only --ignore-scripts --no-audit --no-fund` followed by `npm ci --ignore-scripts --no-audit --no-fund` and `npx expo install --check`. Review the resolved package-lock.json and compatibility findings before committing it. Once committed, use `npm ci` instead of `npm install`. Do not bootstrap this isolated app with the root npm/pnpm install.
+2. Use the committed, isolated `package-lock.json`: run `npm ci --ignore-scripts --no-audit --no-fund` and `npx expo install --check`; review any compatibility findings without silently regenerating the lockfile. Do not bootstrap this isolated app with the root npm/pnpm install.
 3. Run npm run typecheck and npm run test:contracts.
 4. Run npm start and inspect with Expo Go or an appropriate development build. Real iOS builds/signing require a Mac/Xcode and Apple credentials. Real Android builds require an Android toolchain and signing.
 5. Run accessibility/VoiceOver/TalkBack checks, Dynamic Type, text resize, RTL, tablet widths, dark-mode opt-in, offline and low-memory tests before release.
+
+## Private pre-store build profiles — 20 November 2026
+
+We can develop and test before Apple Developer Program enrolment or opening Google Play Console. The committed `eas.json` has **only two non-store profiles**:
+
+| Profile | Output | Intended use | Store membership required |
+| --- | --- | --- | --- |
+| `android-private-apk` | installable Android APK | private Android device/emulator testing | No Google Play Console |
+| `ios-simulator` | iOS Simulator-compatible app | Xcode Simulator / supported hosted simulator testing | No paid Apple Developer Program |
+
+The existing Expo app is still **an unconnected NovaPharm Intelligence research prototype**, not a ready customer app. The build profiles do not activate authentication, billing, medical datasets, app submissions or public deployment. There is deliberately no `production` build profile or `submit` configuration. `tests/prestore-build-profiles.test.mjs` checks these non-release boundaries; the existing mobile workflow runs its tests automatically.
+
+### Preparing a private build
+
+1. In this directory, run `npm ci --ignore-scripts --no-audit --no-fund`, `npm run typecheck` and `npm run test:contracts`. The mobile CI performs an offline JavaScript bundle preflight for both platforms. **A JavaScript bundle is not a signed native application.**
+2. Before building, choose company-controlled, unique `expo.ios.bundleIdentifier` and `expo.android.package` values and review the brand icon/splash/permission settings. Do not invent IDs, insert credentials into Git, or change the owner's release constraints.
+3. For Expo-hosted builds, link a user-owned Expo project and approve any build-service usage/costs before running `npx eas-cli build --platform android --profile android-private-apk` or `npx eas-cli build --platform ios --profile ios-simulator`. An Expo account and valid project setup may be needed. The latter is **only** for iOS Simulator: it cannot be installed on a physical iPhone and does not use TestFlight.
+4. Alternatively, on an authorized Mac with Xcode, run local iOS Simulator development. A free Apple Personal Team can perform limited, time-expiring own-device installs through Xcode; it cannot distribute via TestFlight or Ad Hoc. Android Studio can compile and test local debug APKs without Play Console.
+5. Store actual built artifact hashes, build IDs, device/OS matrices, VoiceOver/TalkBack and keyboard/font-scale results, regression findings and qualified reviewer receipts before advancing the acceptance register. Private APKs still require secure signing/key custody and must never be offered as published/approved apps.
+
+The broader NovaPharm **Customer Portal** (orders, invoices, statements, products, support and authorized account functions) and **Distribution operations** (inventory, batches/FEFO, QA, pick/dispatch/POD) remain **separate planned workstreams**, not live features in this Intelligence app. Reuse the same design system and governed backend contracts where appropriate, but only expose real customer/operational flows after dedicated Cognito mobile OIDC/PKCE, MFA, role/tenant isolation, data rights and service acceptance. The current 22 Intelligence workspaces are UI/source candidates, not 22 production-ready modules. The repository's `productionSignoff: not_granted` and £0 incremental infrastructure cap still apply.
 
 The current navigation is deliberately a research preview: an Overview with six governed pilot journeys, all 22 workspaces, a four-section **Overview / Workspaces / Sources / More** navigation (with research-only **Evidence Review**, **Nova ML research**, and **Enterprise access** and **Model Microscope** under More) covering sparse circuits and Nova ML alignment methods using the shared web/mobile evidence-conflict contract, and a **virtualized**, searchable and region-filtered global source list. The review is manually supplied string comparison, NOT CLIP/OCR inference, sensitive media ingestion, actual product verification or source authorisation. The layout adapts to wider tablets without importing customer records. All 101 source entries carry stable candidate IDs and are marked unapproved/unconnected. Existing read-only web routes are **not** treated as live mobile customer modules. Search filters bundled public candidate metadata only; it does not call regulatory APIs. Enterprise service controls are documented in docs/intelligence/global-source-enterprise-controls-20261117.md.
 
