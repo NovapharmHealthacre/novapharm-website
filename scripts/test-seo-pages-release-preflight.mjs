@@ -97,7 +97,14 @@ test("read-only preflight CI covers contact changes and owner approval controls"
     "contact/**",
     "assets/js/contact-production.js",
     "scripts/activate-contact-intake.mjs",
-    "config/intelligence/owner-production-constraints.json"
+    "config/intelligence/owner-production-constraints.json",
+    "assets/data/nutraxin-retail-catalogue.json",
+    "docs/nutraxin-product-register.json",
+    "sitemap.xml",
+    "portal/index.html",
+    "scripts/apply-corporate-product-discipline.mjs",
+    "package.json",
+    "package-lock.json"
   ]) {
     assert(workflow.includes('      - "' + path + '"'), "Preflight must run on changes to " + path);
   }
