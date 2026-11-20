@@ -128,8 +128,8 @@ jobs:
           xcrun xcresulttool get test-results summary \
             --path "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
             --format json > "$RUNNER_TEMP/novapharm-native-uitest-summary.json"
-      - name: Upload native UI test evidence even if interactive tests fail
-        if: always()
+      - name: Upload native UI test evidence if repository is private
+        if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-swift-native-uitest-evidence-${{ github.event.pull_request.head.sha || github.sha }}
@@ -139,7 +139,8 @@ jobs:
             ${{ runner.temp }}/novapharm-ios-test-provenance.txt
           if-no-files-found: ignore
           retention-days: 7
-      - name: Upload non-distributable iOS Simulator artifact for private review
+      - name: Upload non-distributable iOS Simulator artifact in private repositories only
+        if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-swift-ios-simulator-${{ github.event.pull_request.head.sha || github.sha }}
@@ -153,3 +154,6 @@ jobs:
             ${{ runner.temp }}/novapharm-ios-simulator-dark.png
           if-no-files-found: error
           retention-days: 7
+      - name: Protect private app previews in a public repository
+        if: ${{ !github.event.repository.private }}
+        run: echo "::notice::Public repository: Simulator app, UI screenshots and xcresult artifact uploads suppressed. Use approved private QA storage."
