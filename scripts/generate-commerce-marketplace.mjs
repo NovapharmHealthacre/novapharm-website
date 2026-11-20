@@ -140,15 +140,37 @@ const collectionSchema={
 assert(!html.includes('"@type":"Product"'),'Marketplace cannot claim ESCO saleable Product Offers');
 html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(collectionSchema)+'</script></head>');
 
-// SEO enhancement generates the sitemap before this derived route is created.
-// Append only the public canonical discovery page, never per-SKU ESCO query URLs.
+// Generated public discovery must never revert approved restoration sitemap routes.
+// SEO enhancement runs before this derived route exists, so reconcile its result
+// here. Only the indexable overview, ESCO collection and Marketplace are indexed;
+// bags, status lookup and per-product ESCO query URLs are deliberately excluded.
 const sitemapFile=join(root,'sitemap.xml');
-const currentSitemap=readFileSync(sitemapFile,'utf8');
-assert(currentSitemap.includes('</urlset>'),'Missing canonical sitemap root');
-const newEntry='<url><loc>'+marketplaceUrl+'</loc><lastmod>2026-11-12</lastmod></url>';
-const finalSitemap=currentSitemap.includes('<loc>'+marketplaceUrl+'</loc>')?
- currentSitemap:currentSitemap.replace('</urlset>',newEntry+'</urlset>');
-writeFileSync(sitemapFile,finalSitemap,'utf8');
+let revisedSitemap=readFileSync(sitemapFile,'utf8');
+assert(revisedSitemap.includes('</urlset>'),'Missing canonical sitemap root');
+for (const [route,lastmod] of [
+  ['/products/','2026-11-20'],
+  ['/products/esco/','2026-11-20'],
+  ['/products/marketplace/','2026-11-20']
+]) {
+  const loc='<loc>https://novapharmhealthcare.com'+route+'</loc>';
+  const occurrences=revisedSitemap.split(loc).length-1;
+  assert(occurrences<=1,'Duplicate canonical sitemap route '+route);
+  if (occurrences===0) {
+    revisedSitemap=revisedSitemap.replace('</urlset>',
+      '<url>'+loc+'<lastmod>'+lastmod+'</lastmod></url></urlset>');
+    continue;
+  }
+  const pos=revisedSitemap.indexOf(loc);
+  const open=revisedSitemap.lastIndexOf('<url>',pos), close=revisedSitemap.indexOf('</url>',pos);
+  assert(open>=0&&close>pos,'Malformed existing sitemap entry '+route);
+  const entry=revisedSitemap.slice(open,close+6);
+  assert(/<lastmod>[^<]*<\/lastmod>/.test(entry),'Missing sitemap lastmod '+route);
+  const updated=entry.replace(/<lastmod>[^<]*<\/lastmod>/,'<lastmod>'+lastmod+'</lastmod>');
+  revisedSitemap=revisedSitemap.slice(0,open)+updated+revisedSitemap.slice(close+6);
+}
+assert(!revisedSitemap.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>'));
+assert(!revisedSitemap.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>'));
+writeFileSync(sitemapFile,revisedSitemap,'utf8');
 const target=join(root,'products/marketplace/index.html');mkdirSync(dirname(target),{recursive:true});writeFileSync(target,html,'utf8');
 const callToAction='<section class="npd-commerce-link" aria-label="Unified product search"><p>ONE SEARCH. BOTH PORTFOLIOS.</p><h2>Explore the complete catalogue.</h2><a href="/products/marketplace/">Search all 392 products</a></section>';
 let productsIndex=template;

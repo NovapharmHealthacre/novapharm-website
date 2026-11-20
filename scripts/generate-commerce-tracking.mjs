@@ -38,6 +38,16 @@ function removeInheritedProductMedia(html) {
 
 let html=template.replace(main[0],content).replace(/<title>[\s\S]*?<\/title>/,'<title>Order Status | Nutraxin &amp; ESCO | NovaPharm</title>');
 html=html.replace(/<link rel="canonical" href="[^"]*"/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/track/"');
+
+// Status lookup is useful only to someone holding an opaque order reference.
+// Prevent indexing, and never inherit the Products overview's social identity.
+html=html.replace(/<meta name="robots" content="[^"]*">/,'<meta name="robots" content="noindex, follow">');
+html=html.replace(/<meta property="og:url" content="[^"]*">/,'<meta property="og:url" content="https://novapharmhealthcare.com/products/track/">');
+html=html.replace(/<meta property="og:title" content="[^"]*">/,'<meta property="og:title" content="Order Status | NovaPharm">');
+html=html.replace(/<meta property="og:description" content="[^"]*">/,'<meta property="og:description" content="Check a private order reference with NovaPharm. No customer details are shown.">');
+html=html.replace(/<meta name="twitter:title" content="[^"]*">/,'<meta name="twitter:title" content="Order Status | NovaPharm">');
+html=html.replace(/<meta name="twitter:description" content="[^"]*">/,'<meta name="twitter:description" content="Private reference-only order status. No personal details are displayed.">');
+
 html=html.replace(/<meta name="description" content="[^"]*">/,'<meta name="description" content="Check the latest order or order request status for NovaPharm Nutraxin and ESCO.">');
 html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-order-track.css"><script src="/assets/js/commerce-order-track.js" defer></script></head>');
 html=removeInheritedProductMedia(html);
