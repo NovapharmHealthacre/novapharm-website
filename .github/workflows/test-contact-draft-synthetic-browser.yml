@@ -38,5 +38,7 @@ jobs:
           node --check contact-draft/assets/js/contact-production.js
           node --check infra/aws/contact-production/index.js
           node --test scripts/aws/contact-production.test.mjs
+      - name: Verify production HTTPS health and CORS preflight without sending enquiries
+        run: node scripts/verify-contact-health-before-restore.mjs
       - name: Verify actual proposed public form and privacy with intercepted synthetic receipts
         run: node scripts/test-contact-draft-synthetic-browser.mjs
