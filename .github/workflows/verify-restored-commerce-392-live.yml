@@ -6,14 +6,18 @@ on:
       - scripts/verify-restored-commerce-392-live.mjs
       - .github/workflows/verify-restored-commerce-392-live.yml
   workflow_dispatch:
+  # Successful Pages deployments trigger a fresh read-only custom-domain check.
+  deployment_status:
   schedule:
-    - cron: "53 4 * * 3"
+    - cron: "53 4 * * *"
 
 permissions:
   contents: read
 
 jobs:
   verify-actual-live-commerce:
+    # Never treat a failed/pending or unrelated deployment as a public Pages release.
+    if: ${{ github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages') }}
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
