@@ -1,0 +1,36 @@
+name: Audit every public route against owner-approved site
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit-live-corporate-restoration.mjs
+      - .github/workflows/audit-full-live-restoration.yml
+      - seo/generated/page-metadata-register.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-public-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 19
+    steps:
+      - name: Check out exact PR source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Audit live sitemap, each canonical route, tabs, all 19 Nutraxin products, assets and safe portal entries
+        run: node scripts/audit-live-corporate-restoration.mjs
+      - name: Publish exhaustive evidence even if there are live regressions
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: live-corporate-restoration-audit-${{ github.sha }}
+          path: artifacts/site-restoration/live-restoration-audit.json
+          if-no-files-found: error
+          retention-days: 14
