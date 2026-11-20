@@ -1,9 +1,15 @@
 import { createHash } from "node:crypto";
 import {
   cpSync,
+  constants,
+  closeSync,
   existsSync,
+  fstatSync,
+  fsyncSync,
   mkdirSync,
+  openSync,
   readdirSync,
+  renameSync,
   readFileSync,
   rmSync,
   statSync,
@@ -209,6 +215,123 @@ writeFileSync(join(output, ".nojekyll"), "");
 for (const requiredPath of requiredPublicPaths) {
   const target = join(output, requiredPath);
   if (!existsSync(target)) throw new Error(`Pages artifact is missing required public path: ${requiredPath}`);
+}
+
+// The source catalogue includes confidential pricing-planning metadata.
+// Public storefronts need product data, never NovaPharm's internal margin.
+const escoDataPath = join(output, "assets/data/esco-catalogue.json");
+// Open exactly the generated regular file, without following a substituted
+// symlink. Never check a pathname and later write through that pathname.
+const escoReadFd = openSync(escoDataPath, constants.O_RDONLY | constants.O_NOFOLLOW);
+let escoPublicData;
+try {
+  if (!fstatSync(escoReadFd).isFile()) throw new Error("Public ESCO catalogue is not a regular file");
+  escoPublicData = JSON.parse(readFileSync(escoReadFd, "utf8"));
+} finally {
+  closeSync(escoReadFd);
+}
+if (escoPublicData.entriesTotal !== 373 || escoPublicData.categories?.length !== 12 ||
+    escoPublicData.requestQuoteOnly !== true || escoPublicData.checkoutEnabled !== false) {
+  throw new Error("Refusing a public ESCO catalogue with unverified item count or commercial eligibility");
+}
+delete escoPublicData.targetGrossMargin;
+const safeEscoJson = JSON.stringify(escoPublicData, null, 2) + "\n";
+if (safeEscoJson.includes("targetGrossMargin")) {
+  throw new Error("Confidential ESCO margin reached the public artifact");
+}
+// An exclusively created temporary file plus atomic rename prevents the
+// public candidate ever containing a partially rewritten or symlinked JSON.
+const escoTmpPath = escoDataPath + ".sanitized-" + process.pid;
+const escoWriteFd = openSync(escoTmpPath,
+  constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+try {
+  writeFileSync(escoWriteFd, safeEscoJson, "utf8");
+  fsyncSync(escoWriteFd);
+} finally {
+  closeSync(escoWriteFd);
+}
+try {
+  renameSync(escoTmpPath, escoDataPath);
+} finally {
+  rmSync(escoTmpPath, { force: true });
+}
+
+// ESCO category-level price research is for public guide figures only;
+// never publish supplier landed-cost ceilings, margin assumptions, or
+// owner-declared inventory planning quantities from the generated model.
+const escoGuidePath = join(output, "assets/data/esco-uk-guide-prices.json");
+const escoGuideReadFd = openSync(escoGuidePath, constants.O_RDONLY | constants.O_NOFOLLOW);
+let escoGuide;
+try {
+  if (!fstatSync(escoGuideReadFd).isFile()) throw new Error("ESCO guide is not a regular file");
+  escoGuide = JSON.parse(readFileSync(escoGuideReadFd, "utf8"));
+} finally {
+  closeSync(escoGuideReadFd);
+}
+if (escoGuide.entriesTotal !== 373 ||
+    escoGuide.checkoutEnabled !== false ||
+    escoGuide.paymentCollectionEnabled !== false ||
+    escoGuide.requestQuoteOnly !== true ||
+    Object.keys(escoGuide.guidePrices ?? {}).length !== 373 ||
+    Object.keys(escoGuide.visualPreviews ?? {}).length !== 373) {
+  throw new Error("Cannot publish unverified ESCO guide count, status, or product previews");
+}
+const safeGuidePrices = Object.fromEntries(
+  Object.entries(escoGuide.guidePrices).map(([id, item]) => {
+    if (!/^ESCO-CAT-\d{4}$/.test(id) || item.catalogueReference !== id ||
+        !Number.isFinite(item.guidePriceExVatGbp) || item.guidePriceExVatGbp <= 0 ||
+        item.priceApprovedForCheckout !== false ||
+        item.checkoutEligible !== false || item.publicGuideOnly !== true) {
+      throw new Error("ESCO guide row is not public-safe or owner-reviewed: " + id);
+    }
+    return [id, {
+      catalogueReference: id,
+      category: item.category,
+      guidePriceExVatGbp: item.guidePriceExVatGbp,
+      currency: item.currency,
+      taxDisplay: item.taxDisplay,
+      sourceType: item.sourceType,
+      deliveryIncluded: false,
+      priceApprovedForCheckout: false,
+      checkoutEligible: false,
+      publicGuideOnly: true
+    }];
+  })
+);
+const publicEscoGuide = {
+  version: escoGuide.version.replace(/-public-safe$/, "") + "-public-safe",
+  source: escoGuide.source,
+  taxPolicy: escoGuide.taxPolicy,
+  checkoutEnabled: false,
+  paymentCollectionEnabled: false,
+  requestQuoteOnly: true,
+  currency: escoGuide.currency,
+  inventoryEvidence: escoGuide.inventoryEvidence,
+  stockVerified: false,
+  availableToPromiseVerified: false,
+  entriesTotal: 373,
+  guidePrices: safeGuidePrices,
+  visualPreviews: escoGuide.visualPreviews
+};
+const safeEscoGuideJson = JSON.stringify(publicEscoGuide, null, 2) + "\n";
+if (/targetGrossMargin|unitEconomics|maximumSupplier|grossMargin|marginPolicy|maximumFullyLandedCost|ownerDeclared|totalOwnerDeclared|supplierCost|modelFeasible/i.test(safeEscoGuideJson)) {
+  throw new Error("Confidential ESCO economics leaked into public guide");
+}
+// Write a new regular file exclusively and swap into the private build tree
+// atomically. Never reopen a validated output pathname for writing.
+const escoGuideTmpPath = escoGuidePath + ".sanitized-" + process.pid;
+const escoGuideWriteFd = openSync(escoGuideTmpPath,
+  constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+try {
+  writeFileSync(escoGuideWriteFd, safeEscoGuideJson, "utf8");
+  fsyncSync(escoGuideWriteFd);
+} finally {
+  closeSync(escoGuideWriteFd);
+}
+try {
+  renameSync(escoGuideTmpPath, escoGuidePath);
+} finally {
+  rmSync(escoGuideTmpPath, { force: true });
 }
 
 // Fail closed if an older Next.js or root-static build would overwrite the
