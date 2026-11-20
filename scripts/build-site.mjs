@@ -82,8 +82,3 @@ await import("./version-public-visual-assets.mjs");
 
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
-
-// Materialize source-approved public AI evidence and browser runtime AFTER the reviewed
-// public pages are final. Never include protected, customer, supplier or portal data.
-// Source changes under src/ai must reach the generated public artifact for release review.
-await import("./build-ai-knowledge-index.mjs");
