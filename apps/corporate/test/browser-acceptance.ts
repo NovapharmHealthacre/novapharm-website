@@ -332,10 +332,31 @@ async function verifyKeyboardSkip(page: Page, engine: string, viewport: string):
   await page.keyboard.press("Tab");
   assert.equal(await skip.evaluate((element) => element === document.activeElement), true,
     `${engine} ${viewport}: skip link must be the first keyboard target`);
+  // Wait for the focused control's computed placement to settle after
+  // navigation/hydration. This does not hide an off-screen skip link: if
+  // it remains hidden, the test still fails and logs its actual CSS state.
+  await page.waitForLoadState("load");
+  const visibleFocus = await page.waitForFunction(() => {
+    const link = document.querySelector('a.skip-link[href="#main-content"]');
+    if (!link || link !== document.activeElement) return false;
+    const box = link.getBoundingClientRect();
+    const style = getComputedStyle(link);
+    return box.width > 0 && box.height > 0 &&
+      box.top >= 0 && box.left >= 0 &&
+      box.bottom <= window.innerHeight &&
+      box.right <= window.innerWidth &&
+      style.visibility !== "hidden" && style.display !== "none";
+  }, undefined, {timeout: 3000}).then(() => true).catch(() => false);
   const bounds = await skip.boundingBox();
-  const height = page.viewportSize()?.height ?? 0;
-  assert.ok(bounds && bounds.y >= 0 && bounds.y < height,
-    `${engine} ${viewport}: focused skip control is outside the viewport`);
+  const visualState = await skip.evaluate((element) => ({
+    isFocused: element === document.activeElement,
+    transform: getComputedStyle(element).transform,
+    position: getComputedStyle(element).position,
+    visibility: getComputedStyle(element).visibility,
+    documentScrollY: window.scrollY
+  }));
+  assert.ok(visibleFocus,
+    `${engine} ${viewport}: focused skip control is outside viewport; bounds=${JSON.stringify(bounds)}, state=${JSON.stringify(visualState)}`);
 
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => document.activeElement?.id === "main-content",
