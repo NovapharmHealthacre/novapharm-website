@@ -1084,3 +1084,40 @@ test("isolated Expo and StoreKit source-only merges remain private without suppr
     assert.match(workflow, /found_ml=true/);
   }
 });
+
+
+test("NHSBSA metadata probe is private-only in both AWS public-contact publishers", () => {
+  const privatePaths = [
+    ".github/workflows/intelligence-uk-nhsbsa-epd-snomed-resource-probe.yml",
+    "docs/intelligence/uk-nhsbsa-epd-snomed-resource-probe-20261120.md",
+    "scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs",
+    "scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs",
+    "src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs"
+  ];
+  const publicPaths = ["assets/js/contact-production.js", "products/nutraxin/index.html", "scripts/build-site.mjs"];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const patternLine = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(patternLine, file + " has no private change classifier");
+    const patterns = patternLine.trim().replace(/\)$/, "").split("|");
+    const matches = path => patterns.some(pattern =>
+      path === pattern || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    for (const path of privatePaths) {
+      assert.ok(matches(path), file + " must protect precise NHSBSA metadata-only file " + path);
+    }
+    assert.ok(!matches("server.mjs"), file + " must not bypass shared server review");
+    for (const path of publicPaths) {
+      assert.ok(!matches(path), file + " must keep actual public work under release acceptance");
+    }
+    const safelyClassified = changed => changed.some(matches) &&
+      changed.every(path => matches(path) ||
+        path === "scripts/aws/contact-release-routing.test.mjs" ||
+        path === ".github/workflows/dispatch-approved-aws-contact-release.yml" ||
+        path === ".github/workflows/publish-aws-contact-production.yml");
+    assert.ok(safelyClassified(privatePaths));
+    for (const path of publicPaths) {
+      assert.equal(safelyClassified([...privatePaths, path]), false);
+    }
+  }
+});
