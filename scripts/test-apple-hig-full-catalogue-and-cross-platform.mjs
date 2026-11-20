@@ -977,6 +977,7 @@ test("optional read-only rendered public HIG evidence sampling",
               engine, viewport:viewport.name, pathname, httpStatus:null,
               publishedSourceSha:null, hasH1:false, language:null,
               horizontalOverflowPx:null, firstKeyboardFocusVisible:false,
+              keyboardFocusSequence:[],
               seriousAxeViolations:[], otherAxeViolations:[],
               blockedExternalOrUnsafeRequests:0, errors:[]
             };
@@ -1016,6 +1017,34 @@ test("optional read-only rendered public HIG evidence sampling",
               });
               if (!row.firstKeyboardFocusVisible)
                 row.errors.push("First Tab did not reach a visible focus target");
+              // Five bounded Tab stops give reviewers a navigation trace instead
+              // of one Boolean. This records only element roles/tags and CSS
+              // cues, never typed values, page contents or personal data.
+              const observeFocusedElement = () => page.evaluate(() => {
+                const element = document.activeElement;
+                if (!element || element === document.body) {
+                  return { tag: null, role: null, inViewport: false,
+                    cssFocusCueHeuristic: false };
+                }
+                const rect = element.getBoundingClientRect();
+                const style = getComputedStyle(element);
+                return {
+                  tag: element.tagName.toLowerCase(),
+                  role: element.getAttribute("role"),
+                  inViewport: rect.width > 0 && rect.height > 0 &&
+                    rect.right > 0 && rect.bottom > 0 &&
+                    rect.left < innerWidth && rect.top < innerHeight,
+                  cssFocusCueHeuristic:
+                    (style.outlineStyle !== "none" &&
+                      Number.parseFloat(style.outlineWidth) > 0) ||
+                    style.boxShadow !== "none"
+                };
+              });
+              row.keyboardFocusSequence.push(await observeFocusedElement());
+              for (let tabIndex = 1; tabIndex < 5; tabIndex += 1) {
+                await page.keyboard.press("Tab");
+                row.keyboardFocusSequence.push(await observeFocusedElement());
+              }
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1057,7 +1086,7 @@ test("optional read-only rendered public HIG evidence sampling",
     schema:"novapharm.hig-read-only-public-rendered-evidence.v1",
     generatedAt:new Date().toISOString(),
     origin,sourceCommit:process.env.GITHUB_SHA || null,
-    methodology:"Read-only published public Chromium/WebKit, keyboard tab and axe on mobile Chromium only",
+    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
     scope:"Six public routes, three screen widths (320, 390, 1440) and two engines; screenshots private to CI",
     cautions:["No authenticated roles, account submissions, billing or patient data",
       "Only first keyboard focus probed; not a complete WCAG audit",
