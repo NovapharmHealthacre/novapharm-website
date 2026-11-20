@@ -41,3 +41,13 @@ This code-level safeguard does **not** prove site-specific Entra consent,
 Board-only effective permissions, tenant-scoped rights, conflict-safe file
 versioning, malware screening or successful live synchronization. Those gates
 must be verified separately before enabling the existing outbox worker.
+
+### Safe Graph folder pagination
+
+`ensureFolder` checks matching folders across bounded Microsoft Graph `@odata.nextLink`
+pages before attempting folder creation. Continuations must remain on the
+identical Graph origin, drive and parent-child endpoint. Invalid, repeated and
+excessive continuations fail closed; five offline tests exercise synthetic
+201-item pages, malicious links and limits without live Graph requests.
+Folder-creation races and effective group permissions remain separate
+provider-side release gates tracked in issue #898.

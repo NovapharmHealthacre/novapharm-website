@@ -45,6 +45,32 @@ export function encodeSafeSharePointPath(path, options = {}) {
   return safeSharePointPathSegments(path, options).map(encodeURIComponent).join("/");
 }
 
+const MAX_FOLDER_CHILD_PAGES = 25;
+
+/** Only accept a continuation to the same Graph drive and parent children endpoint. */
+export function safeSharePointNextPagePath(nextLink, expectedEndpoint) {
+  const invalid = () => Object.assign(new Error("Unsafe SharePoint continuation."), {
+    code: "sharepoint_pagination_invalid"
+  });
+  if (typeof nextLink !== "string" || !nextLink.length ||
+      nextLink.length > 16384 || typeof expectedEndpoint !== "string") {
+    throw invalid();
+  }
+  let next;
+  let expected;
+  try {
+    next = new URL(nextLink);
+    expected = new URL(GRAPH_ROOT + expectedEndpoint);
+  } catch {
+    throw invalid();
+  }
+  if (next.origin !== expected.origin || next.pathname !== expected.pathname ||
+      !next.search || next.hash || next.username || next.password) {
+    throw invalid();
+  }
+  return next.pathname.slice(new URL(GRAPH_ROOT).pathname.length) + next.search;
+}
+
 export function sharePointConfigFromEnv() {
   return {
     authMode: String(process.env.MICROSOFT_GRAPH_AUTH_MODE || (process.env.WEBSITE_INSTANCE_ID ? "managed-identity" : "client-secret")).toLowerCase(),
@@ -164,10 +190,40 @@ export class GraphClient {
     let parent = "root";
     let item = null;
     for (const segment of segments) {
-      const children = await this.request(`/drives/${driveId}/items/${parent}/children?$select=id,name,folder,webUrl`);
-      item = children.value.find((child) => child.name.toLowerCase() === segment.toLowerCase() && child.folder);
+      const base = "/drives/" + encodeURIComponent(driveId) +
+        "/items/" + encodeURIComponent(parent) + "/children";
+      let cursor = base + "?$select=id,name,folder,webUrl";
+      const seen = new Set();
+      item = null;
+      // Never create a duplicate without checking available continuation pages.
+      for (let page = 0; cursor && page < MAX_FOLDER_CHILD_PAGES; page += 1) {
+        if (seen.has(cursor)) {
+          throw Object.assign(new Error("Repeated SharePoint continuation."), {
+            code: "sharepoint_pagination_invalid"
+          });
+        }
+        seen.add(cursor);
+        const children = await this.request(cursor);
+        if (!Array.isArray(children?.value)) {
+          throw Object.assign(new Error("Invalid SharePoint children response."), {
+            code: "sharepoint_pagination_invalid"
+          });
+        }
+        item = children.value.find((child) =>
+          typeof child?.name === "string" &&
+          child.name.toLowerCase() === segment.toLowerCase() && child.folder);
+        if (item) break;
+        cursor = children["@odata.nextLink"]
+          ? safeSharePointNextPagePath(children["@odata.nextLink"], base)
+          : null;
+      }
+      if (!item && cursor) {
+        throw Object.assign(new Error("SharePoint children page limit reached."), {
+          code: "sharepoint_pagination_limit"
+        });
+      }
       if (!item) {
-        item = await this.request(`/drives/${driveId}/items/${parent}/children`, {
+        item = await this.request(base, {
           method: "POST",
           body: JSON.stringify({ name: segment, folder: {}, "@microsoft.graph.conflictBehavior": "fail" })
         });
