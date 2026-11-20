@@ -74,7 +74,7 @@ const APPROVED_REFERRER_HOSTS = new Set([
   "perplexity.ai", "www.perplexity.ai", "claude.ai", "www.claude.ai",
   "gemini.google.com", "copilot.microsoft.com"
 ]);
-const GOOGLE_SEARCH_HOST = /^(?:www\\.|search\\.)?google\\.(?:com|co\\.uk|co\\.in|com\\.au|ca|de|fr|es|it|nl|ae)$/;
+const GOOGLE_SEARCH_HOST = /^(?:www\.|search\.)?google\.(?:com|co\.uk|co\.in|com\.au|ca|de|fr|es|it|nl|ae)$/;
 
 export function safeAnalyticsReferrer(rawReferrer, pageOrigin) {
   if (typeof rawReferrer !== "string" || rawReferrer.length > 2048) return "";
