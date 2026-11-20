@@ -1,0 +1,93 @@
+import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
+
+const origin = "https://novapharmhealthcare.com";
+const output = "artifacts/site-restoration/live-route-audit.json";
+const nonce = (process.env.GITHUB_SHA || "local").slice(0, 12) + "-" + Date.now();
+const issues = [];
+const routes = [];
+const sitemapPaths = xml => [...new Set([...xml.matchAll(/<loc>\s*https:\/\/novapharmhealthcare\.com(\/[^<\s]*)\s*<\/loc>/gi)].map(m => m[1]))];
+const expectedPaths = sitemapPaths(readFileSync("sitemap.xml", "utf8"));
+
+async function request(path, expectHtml = true) {
+  const response = await fetch(origin + path + (path.includes("?") ? "&" : "?") + "audit=" + nonce, {
+    signal: AbortSignal.timeout(18000),
+    redirect: "follow",
+    headers: { "Cache-Control": "no-cache, no-store, max-age=0", "Pragma": "no-cache",
+      "User-Agent": "NovaPharm-Restoration-Audit/1.0" }
+  });
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  const mime = response.headers.get("content-type") || "";
+  if (expectHtml && !mime.includes("text/html")) throw new Error("Unexpected content-type " + mime);
+  return await response.text();
+}
+
+let livePaths = [];
+try {
+  livePaths = sitemapPaths(await request("/sitemap.xml", false));
+  if (!livePaths.length) issues.push("Live sitemap returned no NovaPharm URLs");
+} catch (error) {
+  issues.push("Live sitemap read failed: " + String(error).slice(0, 170));
+}
+const allPaths = [...new Set([...expectedPaths, ...livePaths])];
+if (allPaths.length < 59) issues.push("Expected at least 59 public routes; found " + allPaths.length);
+
+let position = 0;
+async function visit() {
+  while (position < allPaths.length) {
+    const path = allPaths[position++];
+    const record = { path, httpOk: false, title: "", h1: "", canonical: "", errors: [], warnings: [] };
+    try {
+      const html = await request(path);
+      record.httpOk = true;
+      record.bytes = html.length;
+      record.title = (html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "").replace(/<[^>]*>/g, "").slice(0, 180);
+      record.h1 = (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "").replace(/<[^>]*>/g, "").slice(0, 180);
+      const canonicalTag = [...html.matchAll(/<link\b[^>]*>/gi)].map(m => m[0])
+        .find(tag => /\brel\s*=\s*["']canonical["']/i.test(tag)) || "";
+      record.canonical = canonicalTag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] || "";
+      if (!record.title) record.errors.push("Missing title");
+      if (!record.h1) record.errors.push("Missing H1");
+      if (record.canonical !== origin + path) record.errors.push("Missing/mismatched canonical");
+      if (path === "/") {
+        record.approvedHome = html.includes("/assets/media/home/earth-reference-1400.jpg")
+          && html.includes("Better access begins with better decisions.")
+          && html.includes("Built for trust.");
+        if (!record.approvedHome) record.errors.push("Owner-approved Earth homepage missing");
+      }
+      if (/^\/products\/nutraxin\/[a-z0-9-]+\/$/.test(path)) {
+        record.gtin13 = /"gtin13"\s*:\s*"\d{13}"/.test(html);
+        record.productSchema = /"@type"\s*:\s*"Product"/.test(html);
+        record.visibleAnswers = /data-nutraxin-answers|npd-nutraxin-answers/.test(html);
+        if (!record.gtin13) record.warnings.push("GTIN13 not yet published");
+        if (!record.productSchema) record.warnings.push("Product JSON-LD not detected");
+        if (!record.visibleAnswers) record.warnings.push("Visible AEO answers not yet published");
+      }
+      if (path === "/contact/") {
+        record.emailDraftOnly = html.includes("Open email draft") && html.includes("does not collect or transmit enquiry details");
+        if (record.emailDraftOnly) record.warnings.push("Email draft only; no verified secure enquiry submission");
+      }
+    } catch (error) {
+      record.errors.push(String(error).slice(0, 200));
+    }
+    routes.push(record);
+  }
+}
+await Promise.all(Array.from({ length: 5 }, visit));
+routes.sort((a, b) => a.path.localeCompare(b.path));
+const failed = routes.filter(r => r.errors.length);
+const incompleteProductSEO = routes.filter(r => /^\/products\/nutraxin\/[a-z0-9-]+\/$/.test(r.path) && !r.gtin13);
+const result = {
+  timestamp: new Date().toISOString(), origin,
+  methodology: "Read-only unauthenticated HTTPS cache-bypassed requests, no customer/medical data, no form submits or checkout, source and live sitemap union",
+  expectedPaths: expectedPaths.length, liveSitemapPaths: livePaths.length,
+  checked: routes.length, failures: failed.length,
+  productGtinNotPublished: incompleteProductSEO.length,
+  issues, routes
+};
+mkdirSync(dirname(output), { recursive: true });
+writeFileSync(output, JSON.stringify(result, null, 2) + "\n");
+console.log(JSON.stringify({ expected: expectedPaths.length, live: livePaths.length, checked: routes.length,
+  failed: failed.length, productGtinNotPublished: incompleteProductSEO.length, issues }));
+if (failed.length) console.error("Route failures: " + JSON.stringify(failed.map(r => ({ path: r.path, errors: r.errors })).slice(0, 70)));
+if (failed.length || issues.length) process.exitCode = 1;
