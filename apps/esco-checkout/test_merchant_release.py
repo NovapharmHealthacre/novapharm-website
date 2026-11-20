@@ -65,6 +65,18 @@ class MerchantReleaseContract(unittest.TestCase):
         self.assertTrue(all(v["pricing_basis"] == "OWNER_BASE_APPROVED_DELIVERY_ESTIMATED"
                             for v in draft["records"]))
 
+    def test_missing_delivery_assumptions_are_unknown_and_never_authorize_payment(self):
+        rows = synthetic_matrix()
+        for row in rows:
+            row["illustrative_delivery_budget_gbp"] = ""
+        draft = mod.prepare_evidence(rows)
+        self.assertEqual(len(draft["records"]), 373)
+        self.assertTrue(all(x["merchant_base_price_pence"] == 12000 for x in draft["records"]))
+        self.assertTrue(all(x["illustrative_delivery_budget_pence"] is None for x in draft["records"]))
+        self.assertTrue(all(x["suggested_delivered_price_pence"] is None for x in draft["records"]))
+        self.assertTrue(all(x["pricing_basis"] == "OWNER_BASE_APPROVED_DELIVERY_UNVERIFIED" for x in draft["records"]))
+        self.assertTrue(all(x["release_authorised"] is False for x in draft["records"]))
+
     def test_all_draft_rows_are_blocked_from_payment(self):
         draft = mod.prepare_evidence(synthetic_matrix())
         with patch.object(mod, "read_matrix", return_value=synthetic_matrix()):
