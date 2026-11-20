@@ -35,7 +35,6 @@ const allowedTopLevelDirectories = new Set([
   "partner-with-us",
   "products",
   "product-portfolio",
-  "quantum-research",
   "regulatory-services",
   "service-unavailable",
   "services",
@@ -74,6 +73,8 @@ const allowedRootFiles = new Set([
 
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
 const allowedPublicPortalFiles = new Set(["portal/index.html"]);
+// Public research content is exactly one reviewed HTML file, never an entire directory.
+const allowedPublicQuantumFiles = new Set(["quantum-research/index.html"]);
 
 const requiredPublicPaths = [
   "index.html",
@@ -170,6 +171,20 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
     }
     continue;
   }
+  if (entry.isDirectory() && entry.name === "quantum-research") {
+    const contents = readdirSync(source, { withFileTypes: true });
+    if (contents.length !== 1 || contents[0].name !== "index.html" ||
+        !contents[0].isFile()) {
+      throw new Error("Unreviewed file in public quantum-research directory");
+    }
+    for (const reviewedPath of allowedPublicQuantumFiles) {
+      const reviewedSource = join(root, reviewedPath);
+      const reviewedDestination = join(output, reviewedPath);
+      mkdirSync(dirname(reviewedDestination), { recursive: true });
+      cpSync(reviewedSource, reviewedDestination, { force: true });
+    }
+    continue;
+  }
   if (entry.isDirectory() && allowedTopLevelDirectories.has(entry.name)) {
     copyDirectory(source, destination);
     continue;
@@ -246,7 +261,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {

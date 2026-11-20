@@ -25,7 +25,12 @@ test("Pages allowlist, provenance stamp, and RTL inventory include exactly the c
   const stage=read("scripts/stage-pages-artifact.mjs");
   const rtl=read("scripts/finalize-public-rtl.mjs");
   const stamp=read("scripts/stamp-public-release-provenance.mjs");
-  for(const source of [stage,rtl]) assert.ok(source.includes('"quantum-research"'));
+  assert.ok(rtl.includes('"quantum-research"'));
+  assert.ok(stage.includes('const allowedPublicQuantumFiles = new Set(["quantum-research/index.html"])'));
+  assert.ok(stage.includes('entry.isDirectory() && entry.name === "quantum-research"'));
+  assert.ok(stage.includes('Unreviewed file in public quantum-research directory'));
+  assert.ok(stage.includes('!allowedPublicQuantumFiles.has(stagedPath)'));
+  assert.doesNotMatch(stage, /^\s*"quantum-research",\s*$/m, "Quantum directory must never be bulk-copied");
   assert.ok(stage.includes('"quantum-research/index.html"'));
   assert.ok(stamp.includes('"quantum-research/index.html"'));
   assert.ok(stamp.includes("noindex, nofollow"));
