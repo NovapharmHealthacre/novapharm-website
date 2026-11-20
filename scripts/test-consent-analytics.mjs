@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { APPROVED_NUTRAXIN_PRODUCT_PATHS, validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
+import { APPROVED_NUTRAXIN_PRODUCT_PATHS, validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath, safeAnalyticsReferrer } from "../assets/js/consent-analytics.js";
 
 assert.equal(validGa4Id("G-ABCD123456"), true);
 for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
@@ -64,6 +64,28 @@ for (const forbidden of ["purchase", "qualified_enquiry", "qualified_early_acces
 }
 assert.equal(sanitiseMarketingEvent({event:"cta_click"}, "/contact/"), null);
 
+// GA4 acquisition attribution must be host-only, consented and limited to known
+// search/AI referrers. Never forward searches, full URLs or arbitrary sites.
+const siteOrigin = "https://novapharmhealthcare.com";
+for (const [raw, expected] of [
+  ["https://www.google.co.uk/search?q=personal+medical+query", "https://www.google.co.uk/"],
+  ["https://www.google.com/search?q=nutraxin", "https://www.google.com/"],
+  ["https://www.bing.com/search?q=health", "https://www.bing.com/"],
+  ["https://chatgpt.com/c/secret-id?foo=bar", "https://chatgpt.com/"],
+  ["https://www.perplexity.ai/search/secret?x=2", "https://www.perplexity.ai/"],
+  ["https://gemini.google.com/app/secret", "https://gemini.google.com/"],
+  ["https://novapharmhealthcare.com/products/nutraxin/?utm_source=google", ""],
+  ["https://other-healthcare.example/private/medical-case", ""],
+  ["https://www.google.co.uk.attacker.example/search?q=secret", ""],
+  ["http://www.google.com/search?q=secret", ""],
+  ["https://user:pass@www.google.com/search", ""],
+  ["https://www.google.com:8443/search", ""],
+  ["not a URL", ""],
+  ["", ""]
+]) assert.equal(safeAnalyticsReferrer(raw, siteOrigin), expected, "Referrer sanitization failed for " + raw);
+assert.equal(safeAnalyticsReferrer(null, siteOrigin), "");
+assert.equal(safeAnalyticsReferrer("x".repeat(2049), siteOrigin), "");
+
 const source = readFileSync("assets/js/consent-analytics.js", "utf8");
 const generator = readFileSync("scripts/enhance-seo-authority.mjs", "utf8");
 const store = readFileSync("assets/js/nutraxin-retail-store.js", "utf8");
@@ -77,7 +99,7 @@ assert.match(source, /"consent", "update"/);
 assert.match(source, /analytics_storage: "denied"/);
 assert.match(source, /analytics_storage: "granted"/);
 assert.match(source, /cookie_expires: 90 \* 24 \* 60 \* 60/);
-assert.match(source, /page_referrer: ""/);
+assert.match(source, /page_referrer: safeAnalyticsReferrer\\(document\\.referrer, location\\.origin\\)/);
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
 assert.match(generator, /publicAnalyticsRoute\(route\)/, "Publisher must use same exact route allowlist as browser");
 assert.match(generator, /html = html\.replace\(\/<meta name=/, "Rebuild must strip stale GA metadata from private routes");
