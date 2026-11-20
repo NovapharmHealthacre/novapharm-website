@@ -131,6 +131,9 @@ test("owner-supplied 77-country source requirements remain provenance-labelled a
   assert.match(native, /owner-national-pharma-source-brief-20261120\.json/);
   assert.match(web, /Owner-supplied pharmaceutical research brief/);
   assert.match(native, /Owner-supplied national research requirements/);
+  assert.ok(native.includes("Linking.openURL(reference.url)"), "iOS/Android external links must be user-triggered");
+  assert.ok(native.includes("External publisher links are user-initiated"), "External data-disclosure notice required");
+  assert.ok(native.includes("setExternalLinkError"), "Handle native browser-open failure explicitly");
   assert.doesNotMatch(native, /\bfetch\s*\(|XMLHttpRequest|Authorization:|client_secret|access_token/i);
   assert.doesNotMatch(web, /\bfetch\s*\(|gatewayJson\s*\(|Authorization:|client_secret|access_token/i);
 });
