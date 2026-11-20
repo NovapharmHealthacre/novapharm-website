@@ -14,7 +14,12 @@ assert.equal(manifest.approvedSourceCount, manifest.sources.length);
 assert.ok(manifest.approvedSourceCount >= 20, "Expected meaningful public evidence coverage");
 assert.equal(manifest.chunkCount, knowledge.chunks.length);
 assert.equal(manifest.corpusHash, knowledge.corpusHash);
-assert.ok(knowledge.chunks.length >= 300);
+// Retired, noindex and restricted routes must never be padded into the index to
+// satisfy a fixed chunk count. Require meaningful density per approved source.
+assert.ok(
+  knowledge.chunks.length >= manifest.approvedSourceCount * 8,
+  "Expected at least eight deterministic evidence chunks per included public source on average"
+);
 assert.ok(Object.keys(knowledge.keywordIndex.postings).length > 500);
 for (const required of ["page-home", "page-cro", "page-oncology", "page-products", "leader-vishal-chakravarty"]) {
   assert.ok(manifest.sources.some((source) => source.id === required), required);
