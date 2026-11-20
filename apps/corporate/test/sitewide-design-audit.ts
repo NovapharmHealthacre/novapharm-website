@@ -4,7 +4,8 @@ import { chromium } from "playwright";
 import { articles } from "../data/articles";
 import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { corporatePages } from "../data/pages";
-import { leadership } from "../data/site";
+import { leadership, navigation } from "../data/site";
+import { isCurrentCorporateNavigation } from "../lib/navigation-current";
 
 const origin = process.env.SITEWIDE_BASE_URL ?? "http://127.0.0.1:3178";
 const artifactDir = "../../artifacts/corporate-design-system";
@@ -66,6 +67,19 @@ async function audit() {
                 }
               }
             }
+            const expectedActiveNavigation = navigation.find(([, href]) =>
+              isCurrentCorporateNavigation(route, href))?.[1] ?? null;
+            // Wait for hydrated Next.js navigation semantics before reading the
+            // rendered client components; never infer state from source alone.
+            if (expectedActiveNavigation) {
+              await page.waitForFunction((href) => {
+                const matches = (selector: string) =>
+                  [...document.querySelectorAll<HTMLAnchorElement>(selector)]
+                    .some(link => link.getAttribute("href") === href &&
+                      link.getAttribute("aria-current") === "page");
+                return matches(".desktop-nav a") && matches(".mobile-menu nav a");
+              }, expectedActiveNavigation, { timeout: 10000 });
+            }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);
               const body=getComputedStyle(document.body);
@@ -76,6 +90,12 @@ async function audit() {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
+                currentNavigation: {
+                  desktop: [...document.querySelectorAll('.desktop-nav a[aria-current="page"]')]
+                    .map(link => link.getAttribute("href")),
+                  mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current="page"]')]
+                    .map(link => link.getAttribute("href"))
+                },
                 homeNavLabel:(()=>{
                   const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
                   if(!link||!link.getClientRects().length)return null;
@@ -128,6 +148,11 @@ async function audit() {
             if(data.h1s!==1)faults.push(`H1 count: ${data.h1s}`);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
+            const expectedCurrent = expectedActiveNavigation ? [expectedActiveNavigation] : [];
+            if (JSON.stringify(data.currentNavigation.desktop) !== JSON.stringify(expectedCurrent) ||
+                JSON.stringify(data.currentNavigation.mobile) !== JSON.stringify(expectedCurrent)) {
+              faults.push(`Current navigation accessibility state does not match ${expectedActiveNavigation ?? "no active section"}: ${JSON.stringify(data.currentNavigation)}`);
+            }
             if(data.scrollWidth>data.width+1)faults.push(`Horizontal overflow: ${data.scrollWidth}px`);
             if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
               faults.push(`Primary heading extends outside viewport: ${JSON.stringify(data.headlineBounds)}`);
