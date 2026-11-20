@@ -79,7 +79,8 @@ jobs:
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
           xcrun simctl terminate "$device" com.example.NovaPharmNativePreview || true
-      - name: Upload non-distributable iOS Simulator artifact for private review
+      - name: Upload non-distributable iOS Simulator artifact in private repositories only
+        if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-swift-ios-simulator-${{ github.sha }}
@@ -92,3 +93,7 @@ jobs:
             ${{ runner.temp }}/novapharm-ios-simulator-dark.png
           if-no-files-found: error
           retention-days: 7
+      - name: Explain private-artifact suppression in public repositories
+        if: ${{ !github.event.repository.private }}
+        run: |
+          echo "::notice::Public repository: non-distributable iOS Simulator binary, screenshots and launch receipts were not uploaded. CI build/launch results remain recorded in logs."
