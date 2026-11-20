@@ -68,6 +68,7 @@ test("customer activation, billing and paid infrastructure remain explicitly gat
 test("all currently disabled production permissions fail closed on unauthorized activation", () => {
   for (const key of Object.keys(actual.productionPermissions)) {
     const attempt = copy(actual);
+    attempt.productionSignoff = "not_granted";
     attempt.productionPermissions[key] = true;
     assert.throws(() => validateHigOwnerReleaseState(attempt), undefined,
       "A disabled production permission must not become active without its own authorization: " + key);
@@ -76,6 +77,8 @@ test("all currently disabled production permissions fail closed on unauthorized 
 
 test("signoff does not authorize unapproved medicine data, paid vendor tools or infrastructure", () => {
   const granted = copy(actual);
+  for (const permission of Object.keys(granted.productionPermissions))
+    granted.productionPermissions[permission] = false;
   granted.productionSignoff = "granted";
   granted.productionSignoffEvidenceUrl =
     "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
@@ -95,6 +98,8 @@ test("signoff does not authorize unapproved medicine data, paid vendor tools or 
 
 test("additional customer-facing permissions require distinct approval receipts", () => {
   const granted = copy(actual);
+  for (const permission of Object.keys(granted.productionPermissions))
+    granted.productionPermissions[permission] = false;
   granted.productionSignoff = "granted";
   granted.productionSignoffEvidenceUrl =
     "https://github.com/NovapharmHealthacre/novapharm-website/pull/1000#pullrequestreview-12345";
@@ -108,6 +113,7 @@ test("additional customer-facing permissions require distinct approval receipts"
   for (const [permission, evidenceKey] of Object.entries(evidenceKeys)) {
     const attempt = copy(granted);
     attempt.productionPermissions[permission] = true;
+    delete attempt[evidenceKey];
     assert.throws(() => validateHigOwnerReleaseState(attempt),
       /release\/authorization receipt/,
       permission + ": future source state cannot bypass its own receipt");
