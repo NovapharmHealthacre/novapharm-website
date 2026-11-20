@@ -10,6 +10,10 @@ on:
       - "src/seo/**"
       - "shopping/nutraxin-uk.tsv"
       - "products/nutraxin/**"
+      - "contact/**"
+      - "assets/js/contact-production.js"
+      - "scripts/activate-contact-intake.mjs"
+      - "config/intelligence/owner-production-constraints.json"
       - "robots.txt"
       - "llms.txt"
   workflow_dispatch:
