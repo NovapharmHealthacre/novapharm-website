@@ -33,11 +33,13 @@ export function buildMerchantReviewRows(data = catalogue) {
       owner_approved_catalogue_unit_price_ex_vat_gbp: guide.guidePriceExVatGbp.toFixed(2),
       owner_price_approval_date: "2026-11-09",
       owner_price_approval_scope: "LISTED_CATALOGUE_REFERENCE_EXCLUDING_DELIVERY_VAT_AND_UNCONFIRMED_VARIANTS",
-      illustrative_delivery_budget_gbp: guide.unitEconomics.illustrativeOutboundDeliveryAllocationGbp.toFixed(2),
-      illustrative_card_fee_gbp: guide.unitEconomics.illustrativeCardFeeAllocationGbp.toFixed(2),
-      illustrative_storage_reserve_gbp: guide.unitEconomics.illustrativeThreeMonthStorageReserveGbp.toFixed(2),
-      maximum_supplier_and_inbound_cost_for_modelled_25pct_margin_gbp:
-        guide.unitEconomics.maximumSupplierAndInboundCostGbp.toFixed(2),
+      // Merchant worksheet retains these columns, but private approved costing
+      // must be supplied outside this public repository. Never fabricate
+      // cost ceilings from consumer-facing guide prices.
+      illustrative_delivery_budget_gbp: "",
+      illustrative_card_fee_gbp: "",
+      illustrative_storage_reserve_gbp: "",
+      maximum_supplier_and_inbound_cost_for_modelled_25pct_margin_gbp: "",
       owner_declared_planning_units: guide.ownerDeclaredStockUnits,
       warehouse_allocatable_units: "",
       resolved_saleable_variant: "",
