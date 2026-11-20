@@ -34,3 +34,14 @@
 7. Maintain the standing owner constraints: `productionSignoff: not_granted`, no new chargeable resources, no unapproved medicine-data admission, no customer billing or protected production cutover.
 
 **Caveat:** Integration of owner-supplied research metadata into all three clients does **not** satisfy an API live-data integration or the worldwide source licensing programme.
+
+## SharePoint normalized owner-source storage (read-only metadata)
+The exact Markdown archive is retained, and a separate immutable structured JSON projection is also stored in the **same existing SharePoint Engineering Verification folder**:
+- `country-pharmaceutical-source-inventory-normalized-2026-11-20.json`
+- Original Markdown SHA-256: `60035222fd8feab1fe6c318d791b56a336595d022dc76dc0b27e406da82cc83c`
+- Stored normalized JSON SHA-256: `8bdb8cc5899fbe602fe146b24f7a6e5398cf2ec1f4aa8da71b8eaf20b12a3db8`
+- Verified by fetching the SharePoint object back and matching its bytes against the uploaded artifact.
+- No automatic Graph synchronization, cross-cloud writeback, owner-credential delegation, regulated content admission or tenant ACL override was enabled.
+- GitHub JSON remains the reviewable static app source; SharePoint is the owner document-and-metadata archive. Any future background sync requires separate conflict/version and least-privilege review tracked in issue #898.
+
+This projection has 77 country rows, 86 reference links and all status flags OFF. Although the SharePoint copy and proposed GitHub artifact have equivalent source facts and policy flags, do **not** claim they are byte-identical: their schema serialization differs.
