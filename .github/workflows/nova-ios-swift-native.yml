@@ -58,6 +58,27 @@ jobs:
           test -d "$app"
           ditto -c -k --keepParent "$app" "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.zip"
           shasum -a 256 "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.zip" | tee "$RUNNER_TEMP/NovaPharmNative-iOS-Simulator.sha256"
+      - name: Boot iPhone Simulator, install and launch unsigned native app
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
+          test -d "$app"
+          device="$(xcrun simctl list -j devices available | python3 -c 'import json,sys; data=json.load(sys.stdin)["devices"]; phones=[d for devices in data.values() for d in devices if d.get("isAvailable") and d.get("name", "").startswith("iPhone")]; print(phones[0]["udid"] if phones else "")')"
+          test -n "$device" || { echo "::error::No available iPhone Simulator; do not claim runtime verification"; exit 1; }
+          printf '%s\n' "Simulator UDID: $device" | tee "$RUNNER_TEMP/novapharm-ios-simulator-device.txt"
+          xcrun simctl boot "$device" || true
+          xcrun simctl bootstatus "$device" -b
+          xcrun simctl install "$device" "$app"
+          xcrun simctl launch "$device" com.example.NovaPharmNativePreview | tee "$RUNNER_TEMP/novapharm-ios-launch-receipt.txt"
+          sleep 3
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
+          xcrun simctl ui "$device" appearance dark
+          sleep 3
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
+          test -s "$RUNNER_TEMP/novapharm-ios-launch-receipt.txt"
+          test -s "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
+          test -s "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
+          xcrun simctl terminate "$device" com.example.NovaPharmNativePreview || true
       - name: Upload non-distributable iOS Simulator artifact for private review
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -65,5 +86,9 @@ jobs:
           path: |
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.zip
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.sha256
+            ${{ runner.temp }}/novapharm-ios-simulator-device.txt
+            ${{ runner.temp }}/novapharm-ios-launch-receipt.txt
+            ${{ runner.temp }}/novapharm-ios-simulator-light.png
+            ${{ runner.temp }}/novapharm-ios-simulator-dark.png
           if-no-files-found: error
           retention-days: 7
