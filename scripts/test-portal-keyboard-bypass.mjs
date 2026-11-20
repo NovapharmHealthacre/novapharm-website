@@ -51,3 +51,17 @@ test("corporate main landmark is a real keyboard bypass destination", () => {
   assert.match(browser, /await page\.keyboard\.press\("Enter"\)/);
   assert.match(browser, /document\.activeElement\?\.id\), "main-content"/);
 });
+
+
+test("authorised Portal search supports Escape from result links and preserves keyboard focus", () => {
+  const dashboard = read("apps/portal/components/dashboard.tsx");
+  assert.match(dashboard, /const dismissSearch = useCallback\(\(\) => \{/);
+  assert.match(dashboard, /\+\+searchGeneration\.current;\s*setSearchOpen\(false\);\s*setSearchResults\(\[\]\);/);
+  assert.match(dashboard, /const withinSearch = active === searchInputRef\.current \|\|/);
+  assert.match(dashboard, /active instanceof Element && active\.closest\("\\.portal-search"\) !== null/);
+  assert.match(dashboard, /event\.key === "Escape" && withinSearch/);
+  assert.match(dashboard, /setSearchAnnouncement\("Search cleared\."\);\s*searchInputRef\.current\?\.focus\(\);/);
+  assert.match(dashboard, /aria-controls=\{searchOpen \? searchResultsId : undefined\} aria-expanded=\{searchOpen\}/);
+  assert.match(dashboard, /aria-label="Close search results" onClick=\{dismissSearch\}/);
+  assert.match(dashboard, /setSearchFailure\(null\);\s*setSearchAnnouncement\("Search results closed\."\);/);
+});
