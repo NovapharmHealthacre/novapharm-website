@@ -10,11 +10,6 @@ on:
       - 'src/core/intelligence-source-snapshot-quarantine.mjs'
       - 'src/core/intelligence-global-evidence-contract.mjs'
       - 'server.mjs'
-      - 'apps/portal/app/gateway/[...path]/route.ts'
-      - 'docs/intelligence/four-country-board-source-receipt-gateway-20261120.md'
-      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
-      - '.github/workflows/publish-aws-contact-production.yml'
-      - 'scripts/aws/contact-release-routing.test.mjs'
       - 'scripts/run-intelligence-official-live-pharma-probes.mjs'
       - 'docs/intelligence/official-live-pharma-probes-20261118.md'
       - '.github/workflows/intelligence-official-live-pharma-probes.yml'
@@ -47,7 +42,7 @@ jobs:
           node --check scripts/test-intelligence-official-live-pharma-quarantine.mjs
           node --check server.mjs
           node --check scripts/run-intelligence-official-live-pharma-probes.mjs
-          node --test scripts/test-intelligence-official-live-pharma-probes.mjs scripts/test-intelligence-official-live-pharma-server-gate.mjs scripts/test-intelligence-official-live-pharma-quarantine.mjs scripts/aws/contact-release-routing.test.mjs
+          node --test scripts/test-intelligence-official-live-pharma-probes.mjs scripts/test-intelligence-official-live-pharma-server-gate.mjs scripts/test-intelligence-official-live-pharma-quarantine.mjs
       - name: Read one real publisher record per source, not a customer release
         run: |
           mkdir -p artifacts/live-public-source-observations
