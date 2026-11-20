@@ -15,6 +15,7 @@ test("owner-selected six distinct surfaces produce a traceable 172-by-six eviden
     ["corporate", "portal", "intelligence", "distribution", "ios", "android"]);
   assert.deepEqual(SURFACES.map(s => s.platform),
     ["web", "web", "web", "web", "ios", "android"]);
+  assert.match(SURFACES.find(s => s.id === "ios").source, /native\/novapharm-intelligence-ios/);
   const matrix = create();
   assert.equal(matrix.topics.length, 172);
   assert.equal(matrix.completion.reviewRecorded, 172);
