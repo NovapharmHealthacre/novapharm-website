@@ -35,8 +35,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
   return <html lang={locale} dir={directionForLocale(locale)} data-np-estate="portal"><body>
     <a className="portal-skip-link" href="#portal-content">Skip to portal content</a>
-    <div id="portal-content" role="region" aria-label="Portal content" tabIndex={-1}
-      lang="en-GB" data-np-untranslated>{children}</div>
+    <section id="portal-content" aria-label="Portal content" tabIndex={-1}
+      lang="en-GB" data-np-untranslated>{children}</section>
     <InterfaceLocaleSwitcher locale={locale} />
   </body></html>;
 }
