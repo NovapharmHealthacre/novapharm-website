@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { applyEscoBagMetadata, ESCO_BAG_CANONICAL, ESCO_BAG_TITLE, ESCO_BAG_DESCRIPTION } from "./esco-bag-metadata.mjs";
 const data=JSON.parse(readFileSync("assets/data/esco-catalogue.json","utf8"));
 const entries=data.categories.flatMap(x=>x.entries);
 test("source index has exactly 373 distinct ESCO references across 12 supplier categories",()=>{
@@ -316,4 +317,52 @@ test("Apple HIG ESCO search is inline, scoped, keyboard-ready and free of privat
   assert.match(css,/\.esco-search-scope/);
   assert.match(js,/input\?\.addEventListener\("input", apply\)/);
   assert.doesNotMatch(js,/searchHistory|recentSearch|searchTermsStorage/);
+});
+
+test("ESCO Bag has one noindex directive, its own social identity and no Products structured data", () => {
+  const original = [
+    '<head><title>Products | NovaPharm</title>',
+    '<meta name="description" content="Public Products overview">',
+    '<meta name="robots" content="index, follow, max-snippet:-1">',
+    '<link rel="canonical" href="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:url" content="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:title" content="Products | NovaPharm">',
+    '<meta property="og:description" content="Public Products overview">',
+    '<meta name="twitter:title" content="Products | NovaPharm">',
+    '<meta name="twitter:description" content="Public Products overview">',
+    '<script type="application/ld+json">{"@type":"WebPage","url":"https://novapharmhealthcare.com/products/"}</script>',
+    '</head>',
+  ].join("");
+  const output = applyEscoBagMetadata(original);
+  assert.equal((output.match(/<meta name="robots"/g)||[]).length,1);
+  assert.match(output,/<meta name="robots" content="noindex, follow">/);
+  assert.ok(output.includes('<link rel="canonical" href="'+ESCO_BAG_CANONICAL+'">'));
+  assert.ok(output.includes('<meta property="og:url" content="'+ESCO_BAG_CANONICAL+'">'));
+  assert.ok(output.includes('<meta property="og:title" content="'+ESCO_BAG_TITLE+'">'));
+  assert.ok(output.includes('<meta name="twitter:description" content="'+ESCO_BAG_DESCRIPTION+'">'));
+  assert.doesNotMatch(output,/application\/ld\+json/);
+  assert.doesNotMatch(output,/Public Products overview/);
+  assert.doesNotMatch(output,/content="index, follow/);
+  assert.match(original,/Public Products overview/);
+  const builder = readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  assert.ok(builder.includes("bagPage=applyEscoBagMetadata(bagPage);"));
+  assert.doesNotMatch(builder,/bagPage=bagPage\.replace\('<\/head>','<meta name="robots"/);
+});
+
+test("ESCO Bag metadata build fails closed on incomplete or downgraded templates", () => {
+  assert.throws(() => applyEscoBagMetadata("<head><title>Missing metadata</title></head>"),/missing required metadata/);
+  const source=[
+    "<head><title>Products</title>",
+    '<meta name="description" content="Products">',
+    '<meta name="robots" content="index, follow">',
+    '<link rel="canonical" href="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:url" content="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:title" content="Products">',
+    '<meta property="og:description" content="Products">',
+    '<meta name="twitter:title" content="Products">',
+    '<meta name="twitter:description" content="Products">',
+    '<meta name="robots" content="index, follow">',
+    "</head>"
+  ].join("");
+  assert.throws(() => applyEscoBagMetadata(source),/duplicate or incorrect public indexing metadata/);
 });
