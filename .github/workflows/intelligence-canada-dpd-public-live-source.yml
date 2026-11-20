@@ -1,0 +1,64 @@
+name: Intelligence Canada DPD official pharmaceutical live-source check
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-canada-dpd-public-live-probe.mjs'
+      - 'scripts/test-intelligence-canada-dpd-public-live-probe.mjs'
+      - 'scripts/run-intelligence-canada-dpd-public-live-probe.mjs'
+      - 'docs/intelligence/canada-dpd-public-live-source-20261118.md'
+      - '.github/workflows/intelligence-canada-dpd-public-live-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canadian-publisher-live:
+    name: Health Canada DPD native DIN and real public source read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      # Uses only the existing runner's trusted proxy env, if configured.
+      NODE_USE_ENV_PROXY: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Run static and source denial tests
+        run: |
+          node --check src/core/intelligence-canada-dpd-public-live-probe.mjs
+          node --check scripts/test-intelligence-canada-dpd-public-live-probe.mjs
+          node --check scripts/run-intelligence-canada-dpd-public-live-probe.mjs
+          node --test scripts/test-intelligence-canada-dpd-public-live-probe.mjs
+      - name: Verify one real public Health Canada Drug Product Database response
+        run: |
+          mkdir -p artifacts/canada-dpd-live
+          node scripts/run-intelligence-canada-dpd-public-live-probe.mjs > artifacts/canada-dpd-live/receipt.json
+          node --input-type=module <<'NODE'
+          import {readFileSync} from "node:fs";
+          const receipt=JSON.parse(readFileSync("artifacts/canada-dpd-live/receipt.json","utf8"));
+          if(receipt.country!=="CA" || receipt.sourceId!=="ca-health-canada-dpd" ||
+            !receipt.officialSourceHttpResponseVerified || receipt.schemaBoundRecords!==1 ||
+            !receipt.sourceNativeDinPreserved || !/^[a-f0-9]{64}$/.test(receipt.payloadSha256) ||
+            receipt.canPublish!==false || receipt.customerCountryLive!==false ||
+            receipt.rawDrugRecordsRetained!==false ||
+            receipt.licensedCommercialAiReuseIndependentlyApproved!==false ||
+            receipt.customerProductionDeploymentVerified!==false){
+            throw new Error("Government DIN source cannot be declared live or release-safe");
+          }
+          console.log("Health Canada public DIN source and native record schema verified; publication denied");
+          NODE
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
+        with:
+          name: intelligence-ca-dpd-public-live-source-receipt
+          path: artifacts/canada-dpd-live/receipt.json
+          if-no-files-found: error
+          retention-days: 7

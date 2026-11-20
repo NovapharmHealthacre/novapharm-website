@@ -1,0 +1,1635 @@
+{
+  "contract": "novapharm.intelligence.owner-national-source-brief.v1",
+  "asOf": "2026-11-20",
+  "source": {
+    "kind": "owner-supplied-research-notes",
+    "fileName": "country-pharmaceutical-source-inventory-owner-supplied-2026-11-20.md",
+    "sha256": "60035222fd8feab1fe6c318d791b56a336595d022dc76dc0b27e406da82cc83c",
+    "storage": "SharePoint NovapharmTier1 / Engineering Verification",
+    "independentlyVerified": false
+  },
+  "visibility": "internal-reference-metadata-only",
+  "notForClinicalRegulatoryOrCommercialDecisions": true,
+  "noPatientOrMedicineRecords": true,
+  "doesNotConferDataLicence": true,
+  "executableApisEnabled": false,
+  "distributionOrAiReuseApproved": false,
+  "summary": {
+    "ownerListedNationalCountries": 77,
+    "sourceReferenceLinks": 86,
+    "matchedCanonicalNationalCandidates": 77,
+    "customerLiveSources": 0
+  },
+  "cautions": [
+    "EMA records cannot replace national authorisation and reimbursement coverage.",
+    "Regulatory, reimbursement, prices, dispensing, claims and wholesale sales are distinct observations; do not combine them without source-unit and period reconciliation.",
+    "Public reference links and API documentation do not prove programmatic access rights, live connectivity, accuracy or commercial/AI reuse approval.",
+    "India ABDM Drug Registry public commercial API contract was not established by the supplied notes; do not scrape or reverse-engineer restricted government services.",
+    "Country-specific provider agreements, data rights, identity mappings and provenance must be independently approved before ingestion and customer publication."
+  ],
+  "countries": [
+    {
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines, prescribing, dispensing, cost, NHS geography, shortages, regulatory status",
+      "sourceAccessAsSupplied": "NHSBSA API/download; MHRA portal",
+      "references": [
+        {
+          "label": "NHSBSA",
+          "url": "https://opendata.nhsbsa.net/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "MHRA",
+          "url": "https://products.mhra.gov.uk/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Ireland",
+      "iso2": "IE",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Authorised products, manufacturers, transfers, shortages",
+      "sourceAccessAsSupplied": "HPRA XML download",
+      "references": [
+        {
+          "label": "HPRA",
+          "url": "https://data.gov.ie/en_GB/dataset/medicines-authorised-or-transfer-pending-products",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "France",
+      "iso2": "FR",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine registry, reimbursement, dispensing, expenditure",
+      "sourceAccessAsSupplied": "BDPM and Open Medic downloads",
+      "references": [
+        {
+          "label": "BDPM",
+          "url": "https://www.data.gouv.fr/datasets/base-de-donnees-publique-des-medicaments-base-officielle",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "Open Medic",
+          "url": "https://www.assurance-maladie.ameli.fr/etudes-et-donnees/open-medic-base-complete-depenses-medicaments",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Germany",
+      "iso2": "DE",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Marketing authorisations, SmPCs, product identity, pricing",
+      "sourceAccessAsSupplied": "BfArM/PharmNet portal; extended access restricted",
+      "references": [
+        {
+          "label": "BfArM/PharmNet",
+          "url": "https://www.pharmnet-bund.de/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Spain",
+      "iso2": "ES",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "National medicine approvals, compositions, packaging, SmPCs",
+      "sourceAccessAsSupplied": "AEMPS CIMA REST API",
+      "references": [
+        {
+          "label": "AEMPS CIMA",
+          "url": "https://cima.aemps.es/cima/rest/medicamentos",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Italy",
+      "iso2": "IT",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine lists, consumption, NHS expenditure",
+      "sourceAccessAsSupplied": "AIFA downloadable datasets",
+      "references": [
+        {
+          "label": "AIFA",
+          "url": "https://www.aifa.gov.it/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Netherlands",
+      "iso2": "NL",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine approvals, outpatient utilisation, reimbursement",
+      "sourceAccessAsSupplied": "MEB and GIP downloads/portals",
+      "references": [
+        {
+          "label": "MEB",
+          "url": "https://www.geneesmiddeleninformatiebank.nl/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "GIP",
+          "url": "https://www.gipdatabank.nl/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Belgium",
+      "iso2": "BE",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Product reference data, marketing status, prices, shortages",
+      "sourceAccessAsSupplied": "FAMHP and SAM services; API access review",
+      "references": [
+        {
+          "label": "FAMHP",
+          "url": "https://www.famhp.be/en",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Denmark",
+      "iso2": "DK",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine packs and official prices",
+      "sourceAccessAsSupplied": "Medicinpriser API",
+      "references": [
+        {
+          "label": "Medicinpriser",
+          "url": "https://api.medicinpriser.dk/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Sweden",
+      "iso2": "SE",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine information, benefits and reimbursement decisions",
+      "sourceAccessAsSupplied": "Fass API with usage terms; TLV separately",
+      "references": [
+        {
+          "label": "Fass API",
+          "url": "https://api.fass.se/documentation/index.html",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Norway",
+      "iso2": "NO",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine product master records, regulatory details",
+      "sourceAccessAsSupplied": "DMP FHIR service",
+      "references": [
+        {
+          "label": "DMP FHIR service",
+          "url": "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Finland",
+      "iso2": "FI",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines, sales/consumption statistics, safety",
+      "sourceAccessAsSupplied": "Fimea portal/download",
+      "references": [
+        {
+          "label": "Fimea",
+          "url": "https://fimea.fi/en",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Poland",
+      "iso2": "PL",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Registered medicines, public drug-program expenditure",
+      "sourceAccessAsSupplied": "NFZ API and URPL registry",
+      "references": [
+        {
+          "label": "NFZ API",
+          "url": "https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Czechia",
+      "iso2": "CZ",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Approved medicines, dispensing, distribution, shortages",
+      "sourceAccessAsSupplied": "SÚKL downloads",
+      "references": [
+        {
+          "label": "SÚKL",
+          "url": "https://sukl.gov.cz/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Austria",
+      "iso2": "AT",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines, shortages, supply interruptions",
+      "sourceAccessAsSupplied": "BASG portal/download",
+      "references": [
+        {
+          "label": "BASG",
+          "url": "https://www.basg.gv.at/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Switzerland",
+      "iso2": "CH",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Authorised medicines, reimbursed products, prices",
+      "sourceAccessAsSupplied": "Swissmedic downloads; BAG separately",
+      "references": [
+        {
+          "label": "Swissmedic",
+          "url": "https://www.swissmedic.ch/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Portugal",
+      "iso2": "PT",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine registry, prices and medicine expenditure",
+      "sourceAccessAsSupplied": "SNS Transparência API/download; INFARMED",
+      "references": [
+        {
+          "label": "SNS Transparência",
+          "url": "https://transparencia.sns.gov.pt/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Hungary",
+      "iso2": "HU",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Authorised medicine data",
+      "sourceAccessAsSupplied": "OGYEI/NNGYK portal",
+      "references": [
+        {
+          "label": "OGYEI/NNGYK",
+          "url": "https://ogyei.gov.hu/drug_database/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Greece",
+      "iso2": "GR",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "National product authorisations, shortages",
+      "sourceAccessAsSupplied": "EOF; feed discovery",
+      "references": [
+        {
+          "label": "EOF",
+          "url": "https://www.eof.gr/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Romania",
+      "iso2": "RO",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Drug authorisations and regulatory updates",
+      "sourceAccessAsSupplied": "ANMDMR; feed discovery",
+      "references": [
+        {
+          "label": "ANMDMR",
+          "url": "https://www.anm.ro/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Bulgaria",
+      "iso2": "BG",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines, approvals and notices",
+      "sourceAccessAsSupplied": "BDA; feed discovery",
+      "references": [
+        {
+          "label": "BDA",
+          "url": "https://www.bda.bg/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Croatia",
+      "iso2": "HR",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine records, safety and shortages",
+      "sourceAccessAsSupplied": "HALMED; feed discovery",
+      "references": [
+        {
+          "label": "HALMED",
+          "url": "https://www.halmed.hr/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Slovenia",
+      "iso2": "SI",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines and regulatory decisions",
+      "sourceAccessAsSupplied": "JAZMP; feed discovery",
+      "references": [
+        {
+          "label": "JAZMP",
+          "url": "https://www.jazmp.si/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Slovakia",
+      "iso2": "SK",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Registered products, safety",
+      "sourceAccessAsSupplied": "SÚKL; feed discovery",
+      "references": [
+        {
+          "label": "SÚKL",
+          "url": "https://www.sukl.sk/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Estonia",
+      "iso2": "EE",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine registration and consumption data",
+      "sourceAccessAsSupplied": "Ravimiamet; feed discovery",
+      "references": [
+        {
+          "label": "Ravimiamet",
+          "url": "https://www.ravimiamet.ee/en",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Latvia",
+      "iso2": "LV",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine registry and price references",
+      "sourceAccessAsSupplied": "ZVA; feed discovery",
+      "references": [
+        {
+          "label": "ZVA",
+          "url": "https://www.zva.gov.lv/en",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Lithuania",
+      "iso2": "LT",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "National medicinal products and licences",
+      "sourceAccessAsSupplied": "VVKT; feed discovery",
+      "references": [
+        {
+          "label": "VVKT",
+          "url": "https://vvkt.lrv.lt/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Ukraine",
+      "iso2": "UA",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Registered medicines, manufacturers and applications",
+      "sourceAccessAsSupplied": "State Expert Center official lists",
+      "references": [
+        {
+          "label": "State Expert Center",
+          "url": "https://www.dec.gov.ua/en/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Russia",
+      "iso2": "RU",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Registered drugs and regulatory records",
+      "sourceAccessAsSupplied": "GRLS downloadable registry",
+      "references": [
+        {
+          "label": "GRLS",
+          "url": "https://minzdrav.gov.ru/opendata/7707778246-grls",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Türkiye",
+      "iso2": "TR",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicine approvals, official reference prices, reimbursement",
+      "sourceAccessAsSupplied": "TİTCK portal",
+      "references": [
+        {
+          "label": "TİTCK",
+          "url": "https://www.titck.gov.tr/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Serbia",
+      "iso2": "RS",
+      "region": "Europe",
+      "sourceDocumentSection": "urope and the United Kingdom",
+      "pharmaceuticalDataRequired": "Medicines, licences and pharmacovigilance",
+      "sourceAccessAsSupplied": "ALIMS; feed discovery",
+      "references": [
+        {
+          "label": "ALIMS",
+          "url": "https://www.alims.gov.rs/english/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "United States",
+      "iso2": "US",
+      "region": "North America",
+      "sourceDocumentSection": "North America",
+      "pharmaceuticalDataRequired": "FDA approvals, NDC, labels, safety, recalls, Medicare/Medicaid utilisation",
+      "sourceAccessAsSupplied": "FDA openFDA and CMS APIs",
+      "references": [
+        {
+          "label": "FDA openFDA",
+          "url": "https://open.fda.gov/apis/drug/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "CMS",
+          "url": "https://data.cms.gov/api-docs",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Canada",
+      "iso2": "CA",
+      "region": "North America",
+      "sourceDocumentSection": "North America",
+      "pharmaceuticalDataRequired": "Drug identification numbers, authorisations, ingredients, shortages, adverse reactions",
+      "sourceAccessAsSupplied": "Health Canada DPD API and Canada Vigilance API",
+      "references": [
+        {
+          "label": "Health Canada DPD API",
+          "url": "https://health-products.canada.ca/api/drug/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Mexico",
+      "iso2": "MX",
+      "region": "North America",
+      "sourceDocumentSection": "North America",
+      "pharmaceuticalDataRequired": "Registered medicines, manufacturer/holder, prices, procurement",
+      "sourceAccessAsSupplied": "COFEPRIS portal/exports",
+      "references": [
+        {
+          "label": "COFEPRIS",
+          "url": "https://registros.cofepris.gob.mx/BRSDM/default.aspx",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Brazil",
+      "iso2": "BR",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Registered products, regulated factory/consumer/government prices, recalls",
+      "sourceAccessAsSupplied": "ANVISA / CMED downloads",
+      "references": [
+        {
+          "label": "ANVISA / CMED",
+          "url": "https://dados.anvisa.gov.br/dados/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Argentina",
+      "iso2": "AR",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Medicine registrations, manufacturers and national product records",
+      "sourceAccessAsSupplied": "ANMAT portal/download",
+      "references": [
+        {
+          "label": "ANMAT",
+          "url": "https://www.argentina.gob.ar/anmat",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Chile",
+      "iso2": "CL",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Medicine registration, public procurement, awards",
+      "sourceAccessAsSupplied": "ISP portal; ChileCompra API",
+      "references": [
+        {
+          "label": "ChileCompra API",
+          "url": "https://www.chilecompra.cl/api/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Colombia",
+      "iso2": "CO",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Product identifiers, registrations, reported medicine prices",
+      "sourceAccessAsSupplied": "INVIMA; SISMED open-data API",
+      "references": [
+        {
+          "label": "SISMED",
+          "url": "https://www.datos.gov.co/Salud-y-Protecci-n-Social/Consulta-p-blica-de-Precios-de-Medicamentos/3he6-m866",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Peru",
+      "iso2": "PE",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Product registration, pharmacy prices, supply alerts",
+      "sourceAccessAsSupplied": "DIGEMID portal/download",
+      "references": [
+        {
+          "label": "DIGEMID",
+          "url": "https://www.digemid.minsa.gob.pe/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Ecuador",
+      "iso2": "EC",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Product registration, sanitary permits",
+      "sourceAccessAsSupplied": "ARCSA portal",
+      "references": [
+        {
+          "label": "ARCSA",
+          "url": "https://www.controlsanitario.gob.ec/base-de-datos/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Uruguay",
+      "iso2": "UY",
+      "region": "Latin America",
+      "sourceDocumentSection": "Central and South America",
+      "pharmaceuticalDataRequired": "Medicines registry, price and procurement sources",
+      "sourceAccessAsSupplied": "Ministry of Public Health; feed discovery",
+      "references": [
+        {
+          "label": "Ministry of Public Health",
+          "url": "https://www.gub.uy/ministerio-salud-publica/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "India",
+      "iso2": "IN",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Drug approvals, manufacturing licences, medicine identity, controlled prices, trials",
+      "sourceAccessAsSupplied": "CDSCO portal; NPPA prices; CTRItrials",
+      "references": [
+        {
+          "label": "CDSCO",
+          "url": "https://cdscoonline.gov.in/CDSCO/cdscoDrugs",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "NPPA",
+          "url": "https://nppaipdms.gov.in/NPPA/PharmaSahiDaam/searchMedicine",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "CTRI",
+          "url": "https://www.ctri.nic.in/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "China",
+      "iso2": "CN",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "NMPA approvals, manufacturers, regulatory changes, clinical research",
+      "sourceAccessAsSupplied": "NMPA and CDE; no verified general public API",
+      "references": [
+        {
+          "label": "NMPA",
+          "url": "https://english.nmpa.gov.cn/database.html",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Japan",
+      "iso2": "JP",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Approvals, labels, adverse events, aggregated national drug utilisation",
+      "sourceAccessAsSupplied": "PMDA and MHLW NDB; portal/download",
+      "references": [
+        {
+          "label": "PMDA",
+          "url": "https://www.pmda.go.jp/english/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "South Korea",
+      "iso2": "KR",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Medicine permits, approvals, reimbursement and utilisation",
+      "sourceAccessAsSupplied": "MFDS OpenAPI and HIRA API",
+      "references": [
+        {
+          "label": "MFDS OpenAPI",
+          "url": "https://www.data.go.kr/data/15095677/openapi.do",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "HIRA API",
+          "url": "https://www.data.go.kr/data/15047819/openapi.do",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Taiwan",
+      "iso2": "TW",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered products, insured medicines, reimbursement schedules",
+      "sourceAccessAsSupplied": "NHI Open Data and TFDA",
+      "references": [
+        {
+          "label": "NHI Open Data",
+          "url": "https://data.nhi.gov.tw/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Singapore",
+      "iso2": "SG",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered drugs, manufacturers, importers, wholesalers, pharmacies",
+      "sourceAccessAsSupplied": "HSA data.gov.sg API/download",
+      "references": [
+        {
+          "label": "HSA data.gov.sg",
+          "url": "https://developers.data.gov.sg/datasets?agencies=Health+Sciences+Authority+(HSA)&resultId=d_767279312753558cbf19d48344577084",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Malaysia",
+      "iso2": "MY",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Approved and cancelled products, active ingredients, licensed manufacturers/importers/wholesalers",
+      "sourceAccessAsSupplied": "NPRA / KKMNOW Parquet downloads",
+      "references": [
+        {
+          "label": "NPRA / KKMNOW",
+          "url": "https://data.moh.gov.my/data-catalogue/pharmaceutical_products",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Indonesia",
+      "iso2": "ID",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered products and drug commodity data",
+      "sourceAccessAsSupplied": "BPOM Satu Data; API contract to verify",
+      "references": [
+        {
+          "label": "BPOM Satu Data",
+          "url": "https://satudata.pom.go.id/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Thailand",
+      "iso2": "TH",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Drug registration and medicine identity",
+      "sourceAccessAsSupplied": "Thai FDA web service; freshness verification needed",
+      "references": [
+        {
+          "label": "Thai FDA web service",
+          "url": "https://data.go.th/th/dataset/web-service-drug-reg",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Vietnam",
+      "iso2": "VN",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered medicines, manufacturers, prices and regulatory information",
+      "sourceAccessAsSupplied": "DAV portal",
+      "references": [
+        {
+          "label": "DAV",
+          "url": "https://dichvucong.dav.gov.vn/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Philippines",
+      "iso2": "PH",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Product registrations, licences, manufacturers",
+      "sourceAccessAsSupplied": "Philippines FDA portal",
+      "references": [
+        {
+          "label": "Philippines FDA",
+          "url": "https://verification.fda.gov.ph/Home.php",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Pakistan",
+      "iso2": "PK",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Approved drugs, manufacturers, prices and regulation",
+      "sourceAccessAsSupplied": "DRAP portal",
+      "references": [
+        {
+          "label": "DRAP",
+          "url": "https://e.dra.gov.pk/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered medicines and standard drug terminology",
+      "sourceAccessAsSupplied": "DGHS FHIR and DGDA; API access review",
+      "references": [
+        {
+          "label": "DGHS FHIR",
+          "url": "https://fhir.dghs.gov.bd/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Nepal",
+      "iso2": "NP",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered medicines and licensed products",
+      "sourceAccessAsSupplied": "DDA portal",
+      "references": [
+        {
+          "label": "DDA",
+          "url": "https://dams.dda.gov.np/manLogin/publicInfo1",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Sri Lanka",
+      "iso2": "LK",
+      "region": "Asia Pacific",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Registered medicine products, licences and recalls",
+      "sourceAccessAsSupplied": "NMRA; check data freshness",
+      "references": [
+        {
+          "label": "NMRA",
+          "url": "https://nmra.gov.lk/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Australia",
+      "iso2": "AU",
+      "region": "Oceania",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "ARTG products, safety, shortages, PBS reimbursement and utilisation",
+      "sourceAccessAsSupplied": "TGA downloads; PBS API",
+      "references": [
+        {
+          "label": "TGA",
+          "url": "https://www.tga.gov.au/resources/datasets",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "PBS API",
+          "url": "https://data.pbs.gov.au/document/91327.html",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "New Zealand",
+      "iso2": "NZ",
+      "region": "Oceania",
+      "sourceDocumentSection": "Asia and Oceania",
+      "pharmaceuticalDataRequired": "Medicines, product terminology and subsidy status",
+      "sourceAccessAsSupplied": "NZULM and Medsafe; download/licensing",
+      "references": [
+        {
+          "label": "NZULM",
+          "url": "https://info.nzulm.org.nz/data-access",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Saudi Arabia",
+      "iso2": "SA",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Registered products, official prices, manufacturer status, recalls",
+      "sourceAccessAsSupplied": "SFDA Open Data; download/portal",
+      "references": [
+        {
+          "label": "SFDA Open Data",
+          "url": "https://www.sfda.gov.sa/en/open-data",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "United Arab Emirates",
+      "iso2": "AE",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Registered drugs, authorisation holders, prices and licences",
+      "sourceAccessAsSupplied": "MOHAP Open Data API; EDE medicines directory",
+      "references": [
+        {
+          "label": "MOHAP Open Data API",
+          "url": "https://mohap.gov.ae/en/open-data/open-data-api",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Israel",
+      "iso2": "IL",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Registered medicines and product information",
+      "sourceAccessAsSupplied": "Ministry of Health portal/download",
+      "references": [
+        {
+          "label": "Ministry of Health",
+          "url": "https://israeldrugs.health.gov.il/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Jordan",
+      "iso2": "JO",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Registered products and published drug prices",
+      "sourceAccessAsSupplied": "JFDA open-data catalogue",
+      "references": [
+        {
+          "label": "JFDA open-data catalogue",
+          "url": "https://opendata.gov.jo/en/dataset/api_guide/drug-prices-838-2021",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Oman",
+      "iso2": "OM",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Medicine register, pricing and safety notices",
+      "sourceAccessAsSupplied": "Ministry of Health portal/download",
+      "references": [
+        {
+          "label": "Ministry of Health",
+          "url": "https://www.moh.gov.om/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Qatar",
+      "iso2": "QA",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Registered medicines, pricing and licensing",
+      "sourceAccessAsSupplied": "Ministry of Public Health portal",
+      "references": [
+        {
+          "label": "Ministry of Public Health",
+          "url": "https://www.moph.gov.qa/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Bahrain",
+      "iso2": "BH",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Product licences and medical establishments",
+      "sourceAccessAsSupplied": "NHRA; feed discovery",
+      "references": [
+        {
+          "label": "NHRA",
+          "url": "https://www.nhra.bh/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Kuwait",
+      "iso2": "KW",
+      "region": "Middle East",
+      "sourceDocumentSection": "Middle East",
+      "pharmaceuticalDataRequired": "Medicine licensing, pricing and procurement",
+      "sourceAccessAsSupplied": "Ministry of Health; feed discovery",
+      "references": [
+        {
+          "label": "Ministry of Health",
+          "url": "https://www.moh.gov.kw/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "South Africa",
+      "iso2": "ZA",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered medicines, Single Exit Prices, national public tenders",
+      "sourceAccessAsSupplied": "SAHPRA and Department of Health SEPdownloads",
+      "references": [
+        {
+          "label": "SAHPRA",
+          "url": "https://www.sahpra.org.za/databases-registers/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        },
+        {
+          "label": "Department of Health SEP",
+          "url": "https://www.health.gov.za/nhi-pee/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Nigeria",
+      "iso2": "NG",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered medicines, applicants, manufacturing status",
+      "sourceAccessAsSupplied": "NAFDAC Greenbook portal",
+      "references": [
+        {
+          "label": "NAFDAC Greenbook",
+          "url": "https://greenbook.nafdac.gov.ng/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Kenya",
+      "iso2": "KE",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Medicines register, product licences, regulatory status",
+      "sourceAccessAsSupplied": "PPB portal",
+      "references": [
+        {
+          "label": "PPB",
+          "url": "https://ppb.go.ke/products",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Ghana",
+      "iso2": "GH",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered medicines and authorisations",
+      "sourceAccessAsSupplied": "FDA Ghana; feed discovery",
+      "references": [
+        {
+          "label": "FDA Ghana",
+          "url": "https://fdaghana.gov.gh/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Tanzania",
+      "iso2": "TZ",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered medicinal products and import/manufacturing licences",
+      "sourceAccessAsSupplied": "TMDA portal",
+      "references": [
+        {
+          "label": "TMDA",
+          "url": "https://www.tmda.go.tz/pages/registered-medicinal-products",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Rwanda",
+      "iso2": "RW",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered drugs and licensing",
+      "sourceAccessAsSupplied": "Rwanda FDA portal",
+      "references": [
+        {
+          "label": "Rwanda FDA",
+          "url": "https://monitoring.rwandafda.gov.rw/register/hmdr/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Morocco",
+      "iso2": "MA",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Reference medicines, retail/hospital prices, reimbursement information",
+      "sourceAccessAsSupplied": "Morocco Open Data download",
+      "references": [
+        {
+          "label": "Morocco Open Data",
+          "url": "https://www.data.gov.ma/data/fr/dataset/referentiel-des-medicaments",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Egypt",
+      "iso2": "EG",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Medicine registration, national regulatory and safety records",
+      "sourceAccessAsSupplied": "EDA portal",
+      "references": [
+        {
+          "label": "EDA",
+          "url": "https://edaegypt.gov.eg/en/services/databases/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Algeria",
+      "iso2": "DZ",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Medicine registrations and manufacturing",
+      "sourceAccessAsSupplied": "Ministry of Pharmaceutical Industry; feed discovery",
+      "references": [
+        {
+          "label": "Ministry of Pharmaceutical Industry",
+          "url": "https://www.miph.gov.dz/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered medicines, safety and licensing",
+      "sourceAccessAsSupplied": "EFDA; feed discovery",
+      "references": [
+        {
+          "label": "EFDA",
+          "url": "https://www.efda.gov.et/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    },
+    {
+      "country": "Uganda",
+      "iso2": "UG",
+      "region": "Africa",
+      "sourceDocumentSection": "Africa",
+      "pharmaceuticalDataRequired": "Registered drugs and pharmacovigilance",
+      "sourceAccessAsSupplied": "NDA; feed discovery",
+      "references": [
+        {
+          "label": "NDA",
+          "url": "https://www.nda.or.ug/",
+          "sourceVerified": false,
+          "accessLicensed": false,
+          "apiConnected": false
+        }
+      ],
+      "rightsStatus": "not-reviewed",
+      "dataAdmission": "not-admitted",
+      "liveApiConnected": false
+    }
+  ]
+}

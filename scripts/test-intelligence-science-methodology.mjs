@@ -53,7 +53,11 @@ test("every method is scoped to existing Science-evidenced modules and is presen
   assert.match(web, /entry\.limitations/);
   assert.match(native, /entry\.limitations/);
   assert.match(web, /entry\.sourceUrl/);
-  assert.match(native, /Linking\.openURL\(entry\.sourceUrl\)/);
+  assert.match(native, /openResearchReference\(entry\.id, entry\.sourceUrl\)/);
+  assert.match(native, /await Linking\.openURL\(sourceUrl\)/);
+  assert.match(native, /approvedReference = \/\^https:/);
+  assert.match(native, /AccessibilityInfo\.announceForAccessibility\(message\)/);
+  assert.doesNotMatch(native, /void Linking\.openURL\(entry\.sourceUrl\)/);
   assert.doesNotMatch(web + native, /fetch\(|axios\(|api\.openai\.com|OPENAI_API_KEY|client_secret/);
 });
 

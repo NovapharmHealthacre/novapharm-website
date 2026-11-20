@@ -89,3 +89,51 @@ test("same offline public-source catalogue is used on Expo iOS and Android, with
   assert.equal(JSON.parse(read("native/novapharm-intelligence-mobile/app.json")).expo.ios.bundleIdentifier,undefined);
   assert.equal(JSON.parse(read("native/novapharm-intelligence-mobile/app.json")).expo.android.package,undefined);
 });
+
+test("owner-supplied 77-country source requirements remain provenance-labelled and offline across web/iOS/Android", () => {
+  const owner = JSON.parse(read("docs/intelligence/owner-national-pharma-source-brief-20261120.json"));
+  assert.equal(owner.contract, "novapharm.intelligence.owner-national-source-brief.v1");
+  assert.equal(owner.visibility, "internal-reference-metadata-only");
+  assert.equal(owner.source.independentlyVerified, false);
+  assert.equal(owner.noPatientOrMedicineRecords, true);
+  assert.equal(owner.doesNotConferDataLicence, true);
+  assert.equal(owner.executableApisEnabled, false);
+  assert.equal(owner.distributionOrAiReuseApproved, false);
+  assert.equal(owner.summary.ownerListedNationalCountries, 77);
+  assert.equal(owner.summary.sourceReferenceLinks, 86);
+  assert.equal(owner.summary.customerLiveSources, 0);
+  assert.equal(owner.countries.length, 77);
+  assert.equal(new Set(owner.countries.map(c => c.iso2)).size, 77);
+  const canonical = shared.countries.filter(c => c.candidateSourceCount > 0);
+  assert.deepEqual(owner.countries.map(c => c.iso2).sort(), canonical.map(c => c.iso2).sort());
+  assert.equal(owner.countries.reduce((n, c) => n + c.references.length, 0), 86);
+  for (const country of owner.countries) {
+    assert.ok(country.pharmaceuticalDataRequired.length > 5);
+    assert.ok(country.sourceAccessAsSupplied.length > 3);
+    assert.equal(country.rightsStatus, "not-reviewed");
+    assert.equal(country.dataAdmission, "not-admitted");
+    assert.equal(country.liveApiConnected, false);
+    for (const ref of country.references) {
+      const url = new URL(ref.url);
+      assert.equal(url.protocol, "https:");
+      assert.equal(url.username, "");
+      assert.equal(url.password, "");
+      assert.equal(url.hash, "");
+      assert.equal(ref.sourceVerified, false);
+      assert.equal(ref.accessLicensed, false);
+      assert.equal(ref.apiConnected, false);
+      assert.equal(url.searchParams.has("utm_source"), false);
+    }
+  }
+  const web = read("apps/portal/components/country-source-coverage.tsx");
+  const native = read("native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx");
+  assert.match(web, /owner-national-pharma-source-brief-20261120\.json/);
+  assert.match(native, /owner-national-pharma-source-brief-20261120\.json/);
+  assert.match(web, /Owner-supplied pharmaceutical research brief/);
+  assert.match(native, /Owner-supplied national research requirements/);
+  assert.ok(native.includes("Linking.openURL(reference.url)"), "iOS/Android external links must be user-triggered");
+  assert.ok(native.includes("External publisher links are user-initiated"), "External data-disclosure notice required");
+  assert.ok(native.includes("setExternalLinkError"), "Handle native browser-open failure explicitly");
+  assert.doesNotMatch(native, /\bfetch\s*\(|XMLHttpRequest|Authorization:|client_secret|access_token/i);
+  assert.doesNotMatch(web, /\bfetch\s*\(|gatewayJson\s*\(|Authorization:|client_secret|access_token/i);
+});
