@@ -6,6 +6,8 @@ on:
       - scripts/verify-restored-nutraxin-live.mjs
       - .github/workflows/verify-restored-nutraxin-live.yml
   workflow_dispatch:
+  # Read-only rollback checks after successful GitHub Pages publications.
+  deployment_status:
   schedule:
     - cron: "31 4 * * *"
 
@@ -14,6 +16,7 @@ permissions:
 
 jobs:
   verify-live-nutraxin:
+    if: ${{ github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

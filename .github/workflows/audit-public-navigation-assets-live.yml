@@ -6,14 +6,17 @@ on:
       - scripts/audit-public-navigation-assets-live.mjs
       - .github/workflows/audit-public-navigation-assets-live.yml
   workflow_dispatch:
+  # Read-only rollback checks after successful GitHub Pages publications.
+  deployment_status:
   schedule:
-    - cron: "17 3 * * 4"
+    - cron: "17 3 * * *"
 
 permissions:
   contents: read
 
 jobs:
   check-live-links-assets:
+    if: ${{ github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages') }}
     runs-on: ubuntu-latest
     timeout-minutes: 24
     steps:
