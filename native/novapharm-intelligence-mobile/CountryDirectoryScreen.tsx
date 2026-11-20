@@ -60,8 +60,10 @@ export function CountryDirectoryScreen() {
   const darkMode = useColorScheme() === "dark";
   const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
   const styles = useMemo(() => createStyles(palette), [darkMode]);
-  const { width } = useWindowDimensions();
-  const twoColumns = width >= 760;
+  const { width, fontScale } = useWindowDimensions();
+  const largeText = fontScale >= 1.4;
+  // Match the root app: avoid cramped tablet columns at accessibility text sizes.
+  const twoColumns = width >= 760 && !largeText;
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -146,9 +148,9 @@ function createStyles(palette: MobilePalette) {
   notice: { backgroundColor: palette.grouped, borderRadius: 12, padding: 15, marginTop: 17 },
   noticeTitle: { fontSize: 13, color: palette.primary, fontWeight: "700" },
   noticeBody: { fontSize: 12, lineHeight: 18, color: palette.secondary, marginTop: 5 },
-  search: { backgroundColor: palette.canvas, borderColor: palette.border, borderWidth: 1, borderRadius: 10, color: palette.primary, minHeight: 48, paddingHorizontal: 12, marginTop: 18, fontSize: 14 },
-  filters: { flexDirection: "row", gap: 8, marginTop: 13 },
-  filter: { flexGrow: 1, alignItems: "center", justifyContent: "center", minHeight: 44, borderRadius: 9, backgroundColor: palette.grouped, paddingHorizontal: 6 },
+  search: { backgroundColor: palette.canvas, borderColor: palette.border, borderWidth: 1, borderRadius: 10, color: palette.primary, minHeight: 48, paddingHorizontal: 12, marginTop: 18, fontSize: 17 },
+  filters: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 13 },
+  filter: { flexGrow: 1, minWidth: 92, alignItems: "center", justifyContent: "center", minHeight: 48, borderRadius: 9, backgroundColor: palette.grouped, paddingHorizontal: 8 },
   selected: { backgroundColor: palette.primary },
   filterText: { fontSize: 12, color: palette.primary, fontWeight: "600" },
   selectedText: { color: palette.canvas },
