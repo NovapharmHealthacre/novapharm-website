@@ -45,6 +45,7 @@ struct NovaCountryDirectoryView: View {
                 }
                 .padding(.vertical, 5)
                 .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("novapharm.countries.readonly-notice")
             }
             Section {
                 Picker("Reference coverage", selection: $filter) {
@@ -105,6 +106,7 @@ private struct NovaCountryDetailView: View {
                 LabeledContent("Licence / source access", value: "Not reviewed")
                 LabeledContent("Medicine datasets admitted", value: "None")
                 LabeledContent("Customer publication", value: "Disabled")
+                    .accessibilityIdentifier("novapharm.country.live-status")
                 Text(country.coverage == .sourceCandidatesOnly
                     ? "Existing discovery references need independent publisher rights, source validation and release authorization."
                     : "This scope has no admitted national medicine-level dataset. Publisher research and independent evidence are required.")
