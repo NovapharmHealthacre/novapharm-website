@@ -1045,8 +1045,21 @@ test("optional read-only rendered public HIG evidence sampling",
                 await page.keyboard.press("Tab");
                 row.keyboardFocusSequence.push(await observeFocusedElement());
               }
-              if (row.keyboardFocusSequence.length !== 5)
+              // A five-row trace is not evidence of five actual keyboard targets:
+              // each Tab must reach an element, and the first target must be
+              // visible within the viewport. Keep other focus-cue observations
+              // heuristic until independently inspected by an AT reviewer.
+              if (row.keyboardFocusSequence.length !== 5 ||
+                  row.keyboardFocusSequence.some(stop => !stop.tag)) {
                 row.errors.push("Incomplete five-stop keyboard navigation evidence");
+              }
+              if (!row.keyboardFocusSequence[0]?.inViewport) {
+                row.errors.push("First keyboard target was outside the viewport");
+              }
+              row.keyboardStopsInViewport = row.keyboardFocusSequence
+                .filter(stop => stop.inViewport).length;
+              row.keyboardFocusCueHeuristicCount = row.keyboardFocusSequence
+                .filter(stop => stop.cssFocusCueHeuristic).length;
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1098,6 +1111,9 @@ test("optional read-only rendered public HIG evidence sampling",
       "Passed observations do not automatically promote any HIG topic to verified"],
     total:rows.length,failed:rows.filter(r=>r.errors.length).length,
     keyboardFocusObservations:rows.reduce((sum,r) => sum + r.keyboardFocusSequence.length,0),
+    keyboardTargetsInViewport:rows.reduce((sum,r) => sum + (r.keyboardStopsInViewport||0),0),
+    keyboardCueHeuristicObservations:rows.reduce((sum,r) =>
+      sum + (r.keyboardFocusCueHeuristicCount||0),0),
     rows
   };
   const observedShas = [...new Set(rows.map(r => r.publishedSourceSha).filter(Boolean))];
