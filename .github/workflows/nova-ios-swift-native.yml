@@ -33,7 +33,18 @@ jobs:
           set -euo pipefail
           checkout_sha="$(git rev-parse HEAD)"
           test "$checkout_sha" = "$GITHUB_SHA"
-          git merge-base --is-ancestor "$NOVAPHARM_PR_HEAD_SHA" "$checkout_sha"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            # PR Actions check out an auto-merge commit. Its second parent SHA
+            # identifies the exact tested PR head even in a shallow clone.
+            parent_shas="$(git show -s --format=%P HEAD)"
+            set -- $parent_shas
+            if [ "$#" -ne 2 ] || [ "$2" != "$NOVAPHARM_PR_HEAD_SHA" ]; then
+              echo "::error::Tested PR merge head differs from the event head"
+              exit 1
+            fi
+          else
+            test "$checkout_sha" = "$NOVAPHARM_PR_HEAD_SHA"
+          fi
           {
             printf 'repository=%s\n' "$GITHUB_REPOSITORY"
             printf 'event=%s\n' "$GITHUB_EVENT_NAME"
