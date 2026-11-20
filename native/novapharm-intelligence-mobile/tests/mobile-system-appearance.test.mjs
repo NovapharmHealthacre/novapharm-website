@@ -155,3 +155,18 @@ test("country cards use shared semantic colours with no light-only surfaces or n
   assert.match(countryScreen, /keyExtractor=\{\(country\) => country\.iso2\}/);
 });
 
+
+
+test("country directory respects large iOS/Android text without forcing two tablet columns", () => {
+  assert.match(countryScreen, /const \{ width, fontScale \} = useWindowDimensions\(\)/);
+  assert.match(countryScreen, /const largeText = fontScale >= 1\.4/);
+  assert.match(countryScreen, /const twoColumns = width >= 760 && !largeText/);
+  assert.match(countryScreen, /numColumns=\{twoColumns \? 2 : 1\}/);
+  assert.match(countryScreen, /key=\{twoColumns \? "country-wide" : "country-narrow"\}/);
+  assert.match(countryScreen, /filters: \{ flexDirection: "row", flexWrap: "wrap"/);
+  assert.match(countryScreen, /filter: \{ flexGrow: 1, minWidth: 96/);
+  assert.match(countryScreen, /search: \{[^}]*minHeight: 48[^}]*fontSize: 17/);
+  assert.match(countryScreen, /accessibilityLabel="Search countries or source candidates"/);
+  assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
+  assert.doesNotMatch(countryScreen, /fetch\(|requestForegroundPermissions|access_token|client_secret|AsyncStorage|SecureStore/);
+});
