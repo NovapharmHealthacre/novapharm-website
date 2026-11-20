@@ -30,6 +30,8 @@ jobs:
           swift --version
       - name: Compile and test isolated read-only package
         run: swift test --package-path native/novapharm-intelligence-storekit
+      - name: Confirm production-configuration package compiles with preview denied
+        run: swift build -c release --package-path native/novapharm-intelligence-storekit
       - name: Ensure no purchase or transaction authorizations are in the source candidate
         run: |
           if grep -R -nE '\.purchase\(|Transaction\.(currentEntitlements|updates)|beginRefundRequest\(' native/novapharm-intelligence-storekit/Sources; then
