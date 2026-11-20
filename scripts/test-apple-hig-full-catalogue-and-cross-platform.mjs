@@ -696,8 +696,8 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     topics
   };
   assert.equal(report.totalTopics, 172);
-  assert.equal(report.independentlyDocumentedArticleReviews, 99);
-  assert.equal(report.assessedPlatformDecisions, 297);
+  assert.equal(report.independentlyDocumentedArticleReviews, 112);
+  assert.equal(report.assessedPlatformDecisions, 336);
   assert.equal(report.registeredProductionVerifiedTopics, 0);
   assert.equal(report.recordedPartialLiveObservations, 6);
   assert.equal(report.allTopicsIndependentlyDispositioned, false);
@@ -1220,8 +1220,8 @@ test("nine original Apple HIG native system/media article reviews preserve platf
     .guidelineReviewEvidence[0].includes("privacy-redacted"));
   assert.ok(tracker.topics.find(x=>x.title==="App Shortcuts")
     .guidelineReviewEvidence[0].includes("up to ten"));
-  assert.equal(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length,99);
-  assert.equal(tracker.meta.platformsAssessed,297);
+  assert.ok(tracker.topics.filter(t=>t.guidelineReview==="reviewed").length>=99);
+  assert.ok(tracker.meta.platformsAssessed>=297);
   assert.equal(tracker.topics.filter(t=>t.implementation==="verified").length,0);
   assert.equal(tracker.meta.allPlatformsProductionVerified,false);
 });
@@ -1260,4 +1260,49 @@ test("native iOS and Android prototypes do not count as shipped HIG production r
     "Native library/prototype source cannot certify shipped iOS/Android HIG features");
   assert.equal(ownerProductionConstraints.productionSignoff, "not_granted");
   assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+});
+
+test("13 individually sourced Apple authentication, menu, navigation, cloud and map HIG decisions remain unshipped", () => {
+  const names = ["Sign in with Apple", "Pop-up buttons", "Pull-down buttons",
+    "Presentation", "Controls", "The menu bar", "Patterns", "Technologies",
+    "Sliders", "Page controls", "iCloud", "Maps", "Gauges"];
+  const indexes = new Set(["Presentation", "Patterns", "Technologies"]);
+  assert.equal(new Set(names).size, 13);
+  for (const name of names) {
+    const t = tracker.topics.find(x => x.title === name);
+    assert.ok(t, name);
+    assert.equal(t.guidelineReview, "reviewed", name);
+    assert.equal(t.sourceType === "Category", indexes.has(name), name);
+    assert.equal(t.guidelineReviewEvidence.length, 3, name);
+    assert.ok(t.guidelineReviewEvidence[0].includes(t.markdown), name);
+    assert.ok(t.guidelineReviewEvidence[0].includes("2026-11-20"), name);
+    for (const p of ["web", "ios", "android"]) {
+      const d = t.platformApplicability[p];
+      assert.ok(["applicable", "not_applicable"].includes(d.state), name+"/"+p);
+      assert.ok(d.rationale.length >= 110, name+"/"+p);
+      assert.deepEqual(t[p+"Evidence"], [], name+"/"+p);
+    }
+    assert.equal(t.implementation, "not_verified", name);
+    assert.deepEqual(t.releaseEvidence, [], name);
+  }
+  for (const name of ["Controls", "The menu bar", "iCloud"]) {
+    const t = tracker.topics.find(x => x.title === name);
+    assert.equal(t.platformApplicability.web.state, "not_applicable", name);
+    assert.equal(t.platformApplicability.ios.state, "applicable", name);
+    assert.equal(t.platformApplicability.android.state, "not_applicable", name);
+  }
+  for (const p of ["web", "ios", "android"])
+    assert.equal(tracker.topics.find(x => x.title === "Sign in with Apple")
+      .platformApplicability[p].state, "applicable",
+      "Apple Account sign-in is also offered on non-Apple platforms: "+p);
+  assert.ok(tracker.topics.find(x => x.title === "Technologies")
+    .guidelineReviewEvidence[0].includes("collectionGroup"));
+  assert.ok(tracker.topics.find(x => x.title === "Presentation")
+    .guidelineReviewEvidence[0].includes("collectionGroup"));
+  assert.equal(tracker.topics.filter(t => t.guidelineReview === "reviewed").length, 112);
+  assert.equal(tracker.meta.platformsAssessed, 336);
+  assert.equal(tracker.topics.filter(t => t.implementation === "verified").length, 0);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, false);
+  assert.equal(tracker.meta.allPlatformsProductionVerified, false);
+  assert.equal(ownerProductionConstraints.productionSignoff, "not_granted");
 });
