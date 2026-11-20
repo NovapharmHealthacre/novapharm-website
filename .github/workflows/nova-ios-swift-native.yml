@@ -79,6 +79,35 @@ jobs:
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
           xcrun simctl terminate "$device" com.example.NovaPharmNativePreview || true
+      - name: Run native UI navigation, country and SwiftData persistence tests on iPhone Simulator
+        run: |
+          set -euo pipefail
+          device="$(sed -n 's/^Simulator UDID: //p' "$RUNNER_TEMP/novapharm-ios-simulator-device.txt")"
+          test -n "$device"
+          cd native/novapharm-intelligence-ios
+          xcodebuild test \
+            -project NovaPharmNative.xcodeproj \
+            -scheme NovaPharmNative \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$device" \
+            -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
+            -resultBundlePath "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
+            -parallel-testing-enabled NO \
+            -only-testing:NovaPharmNativeUITests \
+            CODE_SIGNING_ALLOWED=NO
+          xcrun xcresulttool get test-results summary \
+            --path "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
+            --format json > "$RUNNER_TEMP/novapharm-native-uitest-summary.json"
+      - name: Upload native UI test evidence even if interactive tests fail
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-swift-native-uitest-evidence-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/NovaPharmNative-UITests.xcresult
+            ${{ runner.temp }}/novapharm-native-uitest-summary.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload non-distributable iOS Simulator artifact for private review
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
