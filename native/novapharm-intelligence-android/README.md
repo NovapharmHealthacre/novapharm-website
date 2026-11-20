@@ -22,6 +22,8 @@ gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 
 The Android build uses Android Gradle Plugin 8.7.3 and Kotlin 2.0.21 as explicitly versioned compatibility baselines. A trusted developer must run physical device and accessibility tests and review the toolchain before distribution. Do not publish this demonstration package under the production app's identity.
 
+The PR's pinned GitHub Actions workflow now requires a nonempty **debug-only** `app-debug.apk`, computes its SHA-256 checksum in `SHA256SUMS.txt`, and uploads both as a short-lived (`7`-day) private-QA artifact named `novapharm-android-research-debug-<commit SHA>`. The artifact is retrievable through the associated Actions run by an authorized repository user. Check the checksum before controlled test-device installation, and do not put the prototype in public stores. This is an ordinary Android debug-key build, **not** a release-signed distribution, actual TalkBack acceptance, an independent reviewer signoff, or an authorized customer app. No paid infrastructure is provisioned by this packaging step.
+
 ## Future production integration
 
 A signed NovaPharm Intelligence Android app must provide independently authenticated, revocable, server-owned tenant and source permissions; it must verify a versioned service response over TLS, supply explicitly authorised research summaries to the view, and support user correction and abandonment without storing private research records. This prototype intentionally does none of those operations. JSON fields are **not authorisation** and a structurally valid summary is **not causal verification**. There is no built-in model weight access or inference.
