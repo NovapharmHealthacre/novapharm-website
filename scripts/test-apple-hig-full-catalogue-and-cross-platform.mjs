@@ -810,10 +810,11 @@ test("optional read-only public website HTML sample (not HIG compliance)",
   { skip: process.env.HIG_SAMPLE_PUBLIC_ORIGIN !== "1", timeout: 150000 }, async () => {
   const { mkdirSync, writeFileSync } = await import("node:fs");
   // This survey does not call AWS, authenticate, submit forms, send email,
-  // deploy assets or visit untrusted URLs. Limit navigation to four fixed
+  // deploy assets or visit untrusted URLs. Limit navigation to six fixed
   // public pages and do not store any response bodies or private content.
   const origin = "https://novapharmhealthcare.com";
-  const routes = ["/", "/legal/accessibility/", "/contact/", "/products/"];
+  const routes = ["/", "/legal/accessibility/", "/contact/", "/products/",
+    "/capabilities/", "/oncology/"];
   const results = [];
   for (const route of routes) {
     const row = {route, httpStatus:null, contentType:null, lang:null,
@@ -908,8 +909,13 @@ test("optional read-only rendered public HIG evidence sampling",
   const { mkdirSync, writeFileSync } = await import("node:fs");
   const path = await import("node:path");
   const origin = "https://novapharmhealthcare.com";
-  const routes = ["/", "/contact/", "/legal/accessibility/"];
-  const widths = [{name:"mobile",width:390,height:844},{name:"desktop",width:1440,height:900}];
+  const routes = ["/", "/contact/", "/legal/accessibility/",
+    "/capabilities/", "/oncology/", "/products/"];
+  const widths = [
+    {name:"compact-320",width:320,height:720},
+    {name:"mobile-390",width:390,height:844},
+    {name:"desktop-1440",width:1440,height:900}
+  ];
   const folder = "artifacts/apple-hig-production-audit/rendered-public";
   mkdirSync(folder, {recursive:true});
   const rows = [];
@@ -979,7 +985,7 @@ test("optional read-only rendered public HIG evidence sampling",
               });
               if (!row.firstKeyboardFocusVisible)
                 row.errors.push("First Tab did not reach a visible focus target");
-              if (engine === "chromium" && viewport.name === "mobile") {
+              if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
                 row.seriousAxeViolations = audit.violations
@@ -1021,7 +1027,7 @@ test("optional read-only rendered public HIG evidence sampling",
     generatedAt:new Date().toISOString(),
     origin,sourceCommit:process.env.GITHUB_SHA || null,
     methodology:"Read-only published public Chromium/WebKit, keyboard tab and axe on mobile Chromium only",
-    scope:"Three public routes, two screen widths and two engines; screenshots private to CI",
+    scope:"Six public routes, three screen widths (320, 390, 1440) and two engines; screenshots private to CI",
     cautions:["No authenticated roles, account submissions, billing or patient data",
       "Only first keyboard focus probed; not a complete WCAG audit",
       "No independent manual VoiceOver, TalkBack, NVDA, zoom, RTL or signed native app proof",
@@ -1030,11 +1036,21 @@ test("optional read-only rendered public HIG evidence sampling",
       "Passed observations do not automatically promote any HIG topic to verified"],
     total:rows.length,failed:rows.filter(r=>r.errors.length).length,rows
   };
+  const observedShas = [...new Set(rows.map(r => r.publishedSourceSha).filter(Boolean))];
+  result.uniquePublishedSourceShas = observedShas;
+  result.singlePublicReleaseObserved = observedShas.length === 1 &&
+    rows.every(r => r.publishedSourceSha === observedShas[0]);
+  if (!result.singlePublicReleaseObserved) {
+    console.warn("Public route release SHA mismatch or missing: do not treat mixed public builds as one deployed version.");
+  }
   writeFileSync(path.join(folder,"results.json"),JSON.stringify(result,null,2)+"\n");
   console.log("Read-only rendered public HIG sampling: " + result.total +
     " observations, " + result.failed + " gaps. This is NOT a production conformance certificate.");
-  assert.equal(result.total,12);
+  assert.equal(result.total, routes.length * widths.length * 2);
+   assert.equal(result.total, 36, "Read-only production scope must not silently shrink");
   assert.equal(result.failed,0,"Observed public browser/accessibility gaps: see screenshot and JSON artifact");
+   assert.equal(result.singlePublicReleaseObserved, true,
+     "Every public rendered HIG observation must share the same exact published source SHA");
 });
 
 test("four further Apple official HIG critical topics are source-specific, not production assertions", () => {
