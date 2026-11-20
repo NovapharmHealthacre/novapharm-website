@@ -75,13 +75,15 @@ async function audit() {
               ? currentCorporateNavigationAriaValue(route, expectedActiveNavigation)
               : undefined;
             if (expectedActiveNavigation && expectedAriaState) {
-              await page.waitForFunction(({ href, state }: { href: string; state: string }) => {
-                const matches = (selector: string) =>
-                  [...document.querySelectorAll<HTMLAnchorElement>(selector)]
-                    .some(link => link.getAttribute("href") === href &&
-                      link.getAttribute("aria-current") === state);
-                return matches(".desktop-nav a") && matches(".mobile-menu nav a");
-              }, { href: expectedActiveNavigation, state: expectedAriaState }, { timeout: 10000 });
+              // Locator polling runs in Playwright, not in an esbuild-transformed
+              // nested browser callback (which can reference an absent __name helper).
+              // Both navigation variants must actually expose the hydrated state.
+              for (const selector of [".desktop-nav", ".mobile-menu nav"]) {
+                await page.locator(selector + ' a[href="' + expectedActiveNavigation +
+                  '"][aria-current="' + expectedAriaState + '"]').waitFor({
+                  state: "attached", timeout: 10000
+                });
+              }
             }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);
