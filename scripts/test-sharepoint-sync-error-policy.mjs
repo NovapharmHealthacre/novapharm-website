@@ -49,3 +49,14 @@ test("separate folder-creation operation remains present", () => {
   assert.match(source, /payload\.operation === "ensure_entity_folder"/);
   assert.match(source, /graph\.ensureFolder\(/);
 });
+
+test("credential denials use the audited terminal-failure path and record attempt counts", () => {
+  const source = readFileSync(new URL("../src/integrations/sharepoint/sync-engine.mjs", import.meta.url), "utf8");
+  assert.match(source,
+    /if \(!hasSharePointCredentials\(config\)\) \{[\s\S]*?recordFailure\(event, \{ code: "sharepoint_credentials_missing" \}, result\)/);
+  assert.match(source,
+    /async function markBlocked\(eventId, code, attemptCount\)/);
+  assert.match(source,
+    /status = 'blocked', attempt_count = \?, last_error_code/);
+  assert.match(source, /await audit\(\{/);
+});

@@ -4,8 +4,8 @@ import { sharePointFolderPath, sharePointFolderPlan as mappedSharePointFolderPla
 import { GraphClient, hasSharePointCredentials, sharePointConfigFromEnv } from "./graph-client.mjs";
 import { classifySharePointSyncFailure } from "./sync-error-policy.mjs";
 
-async function markBlocked(eventId, code) {
-  await run("UPDATE integration_events SET status = 'blocked', last_error_code = ?, next_attempt_at = ? WHERE id = ?", code, new Date(Date.now() + 15 * 60_000).toISOString(), eventId);
+async function markBlocked(eventId, code, attemptCount) {
+  await run("UPDATE integration_events SET status = 'blocked', attempt_count = ?, last_error_code = ?, next_attempt_at = ? WHERE id = ?", attemptCount, code, new Date(Date.now() + 15 * 60_000).toISOString(), eventId);
 }
 
 async function markRetry(eventId, code, attemptCount) {
@@ -18,7 +18,7 @@ async function recordFailure(event, error, result) {
   const disposition = classifySharePointSyncFailure(error?.code);
   const attempts = (event.attempt_count || 0) + 1;
   if (disposition.action === "block") {
-    await markBlocked(event.id, disposition.code);
+    await markBlocked(event.id, disposition.code, attempts);
     result.blocked += 1;
   } else {
     await markRetry(event.id, disposition.code, attempts);
@@ -39,8 +39,12 @@ export async function processSharePointEvents({ limit = 20 } = {}) {
 
   if (!events.length) return { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
   if (!hasSharePointCredentials(config)) {
-    for (const event of events) await markBlocked(event.id, "sharepoint_credentials_missing");
-    return { processed: events.length, succeeded: 0, blocked: events.length, failed: 0 };
+    const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+    for (const event of events) {
+      result.processed += 1;
+      await recordFailure(event, { code: "sharepoint_credentials_missing" }, result);
+    }
+    return result;
   }
 
   const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
