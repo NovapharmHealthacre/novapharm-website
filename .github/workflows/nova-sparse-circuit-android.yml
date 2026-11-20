@@ -84,8 +84,12 @@ jobs:
           "$aapt" dump badging "$apk" > "$RUNNER_TEMP/novapharm-apk-badging.txt"
           grep -F "package: name='com.novapharm.intelligence.research'" "$RUNNER_TEMP/novapharm-apk-badging.txt"
           "$aapt" dump permissions "$apk" > "$RUNNER_TEMP/novapharm-apk-permissions.txt"
-          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-apk-permissions.txt"; then
-            echo "::error::Unexpected sensitive permission in compiled research APK"
+          # This read-only offline research shell intentionally declares NO
+          # Android permissions, not merely none from a sensitive shortlist.
+          # Inspect the compiled APK, since manifest-merging can add permissions
+          # even when the source AndroidManifest.xml declares none.
+          if grep -E 'uses-permission' "$RUNNER_TEMP/novapharm-apk-permissions.txt"; then
+            echo "::error::Unexpected permission in compiled offline research APK"
             exit 1
           fi
           sha256sum "$apk" > "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
