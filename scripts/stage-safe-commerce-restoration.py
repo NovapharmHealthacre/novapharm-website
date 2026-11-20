@@ -7,6 +7,7 @@ assert (src/"CNAME").read_text().strip()=="novapharmhealthcare.com"
 assert (dst/"CNAME").read_text().strip()=="novapharmhealthcare.com"
 home=(dst/"index.html").read_text()
 if "earth-reference-1400.jpg" not in home or "Better access begins with better decisions." not in home:raise RuntimeError("Must retain approved home")
+if not (dst/"assets/css/products-editorial.css").is_file():raise RuntimeError("Approved November Products stylesheet must be published before staging derived Commerce pages")
 for path in ("products/esco/index.html","products/esco/bag/index.html","products/nutraxin/index.html"):
  if not (dst/path).is_file():raise RuntimeError("Existing approved catalogue missing: "+path)
 index=json.loads((src/"assets/data/commerce-marketplace.json").read_text())
