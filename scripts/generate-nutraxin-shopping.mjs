@@ -72,7 +72,7 @@ const relatedProductsMarkup = (p, ref) => {
 };
 // Preserve verified brand, exact formulation name and sellable pack in the feed.
 const feedTitle = (p) => {
-  const packFirstWord = p.pack.replace(/^\\d+\\s+/, "").split(" ")[0].toLowerCase();
+  const packFirstWord = p.pack.replace(/^\d+\s+/, "").split(" ")[0].toLowerCase();
   const repeatedEnding = " " + packFirstWord;
   const name = p.name.toLowerCase().endsWith(repeatedEnding)
     ? p.name.slice(0, -repeatedEnding.length) : p.name;
