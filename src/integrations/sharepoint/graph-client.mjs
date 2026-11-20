@@ -25,6 +25,7 @@ function assertSafeSharePointSegment(segment) {
 function safeSharePointPathSegments(path, { allowRoot = false } = {}) {
   if (typeof path !== "string" ||
       (path.length === 0 && !allowRoot) ||
+      path.length > 400 ||
       path.startsWith("/") || path.endsWith("/") || path.includes("//")) {
     throw Object.assign(new TypeError("Invalid SharePoint folder path."), {
       code: "sharepoint_invalid_path"
