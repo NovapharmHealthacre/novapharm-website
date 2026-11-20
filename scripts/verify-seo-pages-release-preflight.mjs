@@ -55,7 +55,21 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
   if (!guide.includes("# NovaPharm Healthcare") ||
       !guide.includes(HOST + "/products/nutraxin/") ||
       !guide.includes(HOST + "/sitemap.xml")) issues.push("Public AI source guide incomplete");
-  if (/https:\/\/novapharmhealthcare\.com\/(?:admin|portal|employee|api)\//i.test(guide)) issues.push("AI source guide exposes a protected route");
+  // Match complete HTTPS URLs, not a hostname substring that may occur inside an attacker-controlled URL.
+  for (const token of guide.split(/[\\s<>()\\[\\]"']+/)) {
+    if (!token.startsWith("https://") && !token.startsWith("http://")) continue;
+    let url;
+    try { url = new URL(token.replace(/[.,;]+$/, "")); }
+    catch { issues.push("AI source guide includes an invalid URL"); break; }
+    if (url.origin !== HOST) {
+      issues.push("AI source guide links to an unverified external host");
+      break;
+    }
+    if (/^\\/(?:admin|portal|employee|api)(?:\\/|$)/i.test(url.pathname)) {
+      issues.push("AI source guide exposes a protected route");
+      break;
+    }
+  }
   if (!get(files, "portal/index.html").includes("This public website never asks for a portal username, password or confidential company record")) {
     issues.push("Public portal access boundary missing");
   }
