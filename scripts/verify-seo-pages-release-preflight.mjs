@@ -65,7 +65,24 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
       issues.push("AI source guide links to an unverified external host");
       break;
     }
-    if (/^\/(?:admin|portal|employee|api)(?:\/|$)/i.test(url.pathname)) {
+    // Reject credentialed URLs and decode escaped path segments before protected-route checks.
+    if (url.username || url.password) {
+      issues.push("AI source guide includes URL credentials");
+      break;
+    }
+    let pathname = url.pathname;
+    try {
+      // Catch single and repeatedly encoded protected paths; malformed encoding fails closed.
+      while (pathname.includes("%")) {
+        const decoded = decodeURIComponent(pathname);
+        if (decoded === pathname) break;
+        pathname = decoded;
+      }
+    } catch {
+      issues.push("AI source guide includes an invalid encoded path");
+      break;
+    }
+    if (/^\/(?:admin|portal|employee|api)(?:\/|$)/i.test(pathname)) {
       issues.push("AI source guide exposes a protected route");
       break;
     }
