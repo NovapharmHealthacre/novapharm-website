@@ -211,6 +211,62 @@ for (const requiredPath of requiredPublicPaths) {
   if (!existsSync(target)) throw new Error(`Pages artifact is missing required public path: ${requiredPath}`);
 }
 
+// Fail closed if an older Next.js or root-static build would overwrite the
+// owner-approved Earth homepage and the 19 restored, sellable-by-policy-only
+// Nutraxin public pages. A git merge alone is not proof of an approved Pages build.
+const restoredHomeHtml = readFileSync(join(output, "index.html"), "utf8");
+for (const approvedMarker of [
+  "/assets/media/home/earth-reference-1400.jpg",
+  "Medicine. Where it needs to be.",
+  "Better access begins with better decisions.",
+  "Specialist medicines.",
+  "Thoughtfully selected.",
+  "Understand the medicine.",
+  "Built for trust."
+]) {
+  if (!restoredHomeHtml.includes(approvedMarker)) {
+    throw new Error("Refusing pre-restoration corporate homepage publishing: " + approvedMarker);
+  }
+}
+const reviewedGtinRegister = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-gtin-uk.json"), "utf8"));
+if (!Array.isArray(reviewedGtinRegister.products) || reviewedGtinRegister.products.length !== 19) {
+  throw new Error("Reviewed Nutraxin GTIN register must contain exactly 19 products");
+}
+const seenGtinProductSlugs = new Set();
+for (const { slug, gtin13 } of reviewedGtinRegister.products) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !/^\d{13}$/.test(gtin13) || seenGtinProductSlugs.has(slug)) {
+    throw new Error("Unsafe or duplicate reviewed Nutraxin product slug or GTIN");
+  }
+  seenGtinProductSlugs.add(slug);
+  const productFile = join(output, "products", "nutraxin", slug, "index.html");
+  if (!existsSync(productFile)) throw new Error("Restored Nutraxin product missing: " + slug);
+  const product = readFileSync(productFile, "utf8");
+  for (const required of [
+    '"gtin13":"' + gtin13 + '"',
+    '"@type":"Product"',
+    'data-nutraxin-answers="true"',
+    'https://novapharmhealthcare.com/products/nutraxin/' + slug + '/',
+    '/assets/js/nutraxin-retail-store.js'
+  ]) {
+    if (!product.includes(required)) throw new Error("Refusing outdated or partial Nutraxin release: " + slug + " missing " + required);
+  }
+}
+for (const path of [
+  "assets/data/nutraxin-retail-catalogue.json",
+  "assets/data/nutraxin-consumer-auth.json",
+  "assets/js/nutraxin-retail-store.js",
+  "assets/js/nutraxin-consumer-account.js",
+  "assets/css/nutraxin-retail-store.css",
+  "assets/css/nutraxin-consumer-account.css",
+  "assets/css/nutraxin-merchant.css",
+  "products/nutraxin/bag/index.html",
+  "products/nutraxin/account/index.html"
+]) {
+  if (!existsSync(join(output, path))) {
+    throw new Error("Restored Nutraxin storefront dependency missing: " + path);
+  }
+}
+
 for (const forbiddenPath of ["admin", "employee", "entra-complete", "_secure", "portal/change-password", "portal/dashboard", "portal/executive-platform"]) {
   if (existsSync(join(output, forbiddenPath))) {
     throw new Error(`Secure or server-dependent path entered the Pages artifact: ${forbiddenPath}`);
