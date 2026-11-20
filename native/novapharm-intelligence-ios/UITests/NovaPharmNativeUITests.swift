@@ -35,6 +35,26 @@ final class NovaPharmNativeUITests: XCTestCase {
     }
 
     @MainActor
+    func testModuleChartExposesAccessibleSourceAlignedSummary() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.navigationBars["Intelligence"].waitForExistence(timeout: 15))
+
+        let chart = app.descendants(matching: .any)["novapharm.intelligence.modules-chart"]
+        for _ in 0..<5 where !chart.isHittable { app.swipeUp() }
+        XCTAssertTrue(chart.waitForExistence(timeout: 10),
+            "Native Charts must expose an accessible, independently locatable chart element")
+        XCTAssertTrue(chart.label.contains("Intelligence 22"),
+            "Spoken chart summary must include the 22 source-catalogued Intelligence workspaces")
+        XCTAssertTrue(chart.label.contains("Customer Portal 10"),
+            "Spoken chart summary must include ten source-catalogued Portal workspaces")
+        XCTAssertTrue(chart.label.contains("Distribution 9"),
+            "Spoken chart summary must include nine source-catalogued Distribution workspaces")
+        XCTAssertTrue(app.staticTexts["These are source catalogue counts, not live operational KPIs."].exists,
+            "The research-only context must remain visible beside the chart")
+    }
+
+    @MainActor
     func testCountryDirectoryAndOfflineRights() throws {
         let app = XCUIApplication()
         app.launch()
