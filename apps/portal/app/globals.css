@@ -28,6 +28,33 @@ button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+/* A keyboard-first route bypass for login, MFA and all protected workspaces.
+   The target is a focusable region, not a second <main> landmark. */
+.portal-skip-link {
+  position: fixed;
+  z-index: 10000;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  transform: translateY(calc(-100% - 24px));
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--focus);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.portal-skip-link:focus,
+.portal-skip-link:focus-visible {
+  transform: none;
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+
 .sr-only {
   position: absolute;
   width: 1px;
