@@ -1,0 +1,145 @@
+{
+  "version": "2026-11-20-uk-owner-confirmed",
+  "market": "GB",
+  "sourceWorkbook": "NovaPharm_Nutraxin_19_GTIN_Register_2026-11-20(1).xlsx",
+  "evidence": "Owner confirmed 20 November 2026 that these entries refer to the UK 19-SKU assortment; public retailer references are included; independent Biota/GS1 certificate and actual UK pack photographs not supplied.",
+  "manufacturerVerified": false,
+  "products": [
+    {
+      "sku": "NUT-UK-VD3-T120",
+      "slug": "vitamin-d3-120-tablets",
+      "pack": "120 tablets",
+      "gtin13": "8680512613152",
+      "sourceUrl": "https://www.niller.com/nutraxin-vitamin-d3-120-tablet-1016"
+    },
+    {
+      "sku": "NUT-UK-VD3-S30",
+      "slug": "vitamin-d3-spray-30ml",
+      "pack": "30 ml",
+      "gtin13": "8680512633167",
+      "sourceUrl": "https://www.hakanitriyat.com/nutraxin-vitals-vitamin-d3-spray-30-ml-7000"
+    },
+    {
+      "sku": "NUT-UK-VD3K2-T120",
+      "slug": "vitamin-d3-k2-120-tablets",
+      "pack": "120 tablets",
+      "gtin13": "8680512635345",
+      "sourceUrl": "https://www.niller.com/nutraxin-d3k2-vitamin-120-tablet-2618"
+    },
+    {
+      "sku": "NUT-UK-VD3K2-S30",
+      "slug": "vitamin-d3-k2-spray-30ml",
+      "pack": "30 ml",
+      "gtin13": "8680512631590",
+      "sourceUrl": "https://kozmovital.com/nutraxin-vitamin-d3k2-sprey-30-ml"
+    },
+    {
+      "sku": "NUT-UK-VC1000-T30",
+      "slug": "vitamin-c-1000mg-30-tablets",
+      "pack": "30 tablets",
+      "gtin13": "8680512629566",
+      "sourceUrl": "https://eczanemveben.com/nutraxin-vitamin-c-1000-mg-30-tablet"
+    },
+    {
+      "sku": "NUT-UK-VC500-C30",
+      "slug": "vitamin-c-500mg-chewable-30-tablets",
+      "pack": "30 chewable tablets",
+      "gtin13": "8680512600084",
+      "sourceUrl": "https://www.recete.com/nutraxin-vitamin-c-500mg-mandalina-aromali-30-cigneme-tableti-takviye-edici-gida"
+    },
+    {
+      "sku": "NUT-UK-VMAX-T60",
+      "slug": "vitamin-max-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512629849",
+      "sourceUrl": "https://www.onbsaglik.com.tr/urun/nutraxin-vitamin-max-c-d-zinc-60-tablet-1000-mg-c-vitamini-1000-iu-d3-10-mg-cink"
+    },
+    {
+      "sku": "NUT-UK-VMAX-E15",
+      "slug": "vitamin-max-15-effervescent-tablets",
+      "pack": "15 effervescent tablets",
+      "gtin13": "8680512630708",
+      "sourceUrl": "https://www.eczahouse.com/nutraxin-efervesan-vitamin-c-d-zinc-15-tablet-1038",
+      "variantNote": "Standard 15-tablet unit only; exclude 1+1 promotion GTIN 8680512634140"
+    },
+    {
+      "sku": "NUT-UK-MGCX-T60",
+      "slug": "magnesium-complex-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512632108",
+      "sourceUrl": "https://eczanemveben.com/nutraxin-magnesium-complex-60-tablet"
+    },
+    {
+      "sku": "NUT-UK-MGDL-T60",
+      "slug": "magnesium-daily-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512636113",
+      "sourceUrl": "https://kozmovital.com/nutraxin-magnesium-daily-250-mg-60-tablet-8680512636113"
+    },
+    {
+      "sku": "NUT-UK-MVE-T60",
+      "slug": "multivitamin-mineral-energy-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512633181",
+      "sourceUrl": "https://dermomedic.com.tr/nutraxin-multivitamin-mineral-energy-60-tablet"
+    },
+    {
+      "sku": "NUT-UK-MVW-T60",
+      "slug": "womens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512628385",
+      "sourceUrl": "https://www.bazaarica.com/en/product/nutraxin-womens-multi-vitamin-complex-60-tablets"
+    },
+    {
+      "sku": "NUT-UK-MVM-T60",
+      "slug": "mens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8680512628392",
+      "sourceUrl": "https://www.markafarma.com/nutraxin-mens-multi-vitamin-complex-60-tablet"
+    },
+    {
+      "sku": "NUT-UK-CG-T30",
+      "slug": "collagen-gold-30-tablets",
+      "pack": "30 tablets",
+      "gtin13": "8680512630357",
+      "sourceUrl": "https://www.niller.com/nutraxin-beauty-gold-collagen-30-tablet-1197",
+      "variantNote": "Standard 30-tablet unit only; exclude 3-for-2 promotion GTIN 8680512631392"
+    },
+    {
+      "sku": "NUT-UK-CG-S30",
+      "slug": "collagen-gold-30-sachets",
+      "pack": "30 sachets",
+      "gtin13": "8680512630814",
+      "sourceUrl": "https://dermoderm.com/collections/kolajen/products/nutraxin-collagen-gold-quality-hidrolize-kolajen-30-sase"
+    },
+    {
+      "sku": "NUT-UK-CCX-T90",
+      "slug": "collagen-complex-90-tablets",
+      "pack": "90 tablets",
+      "gtin13": "8680512634706",
+      "sourceUrl": "https://www.niller.com/nutraxin-collagen-complex-90-tablet-2612"
+    },
+    {
+      "sku": "NUT-UK-ART-T90",
+      "slug": "artoflex-90-tablets",
+      "pack": "90 tablets",
+      "gtin13": "8680512607649",
+      "sourceUrl": "https://bazaarica.com/en/product/nutraxin-artroflex-90-tablet",
+      "variantNote": "Artoflex/Artroflex 90-tablet unit; not Artoflex Plus or HYA-C-II"
+    },
+    {
+      "sku": "NUT-UK-LCAR-T60",
+      "slug": "l-carnitine-60-tablets",
+      "pack": "60 tablets",
+      "gtin13": "8697432095616",
+      "sourceUrl": "https://www.narecza.com/nutraxin-l-carnitine-700mg-60-tablet"
+    },
+    {
+      "sku": "NUT-UK-B12-SL60",
+      "slug": "vitamin-b12-60-sublingual-tablets",
+      "pack": "60 sublingual tablets",
+      "gtin13": "8680512627364",
+      "sourceUrl": "https://bazaarica.com/en/product/nutraxin-vitals-b12-vitamin-1000-mcg-60-tablets"
+    }
+  ]
+}

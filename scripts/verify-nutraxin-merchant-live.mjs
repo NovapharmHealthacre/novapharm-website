@@ -14,7 +14,8 @@ const expectedFeed = readFileSync(join(root, "shopping/nutraxin-uk.tsv"), "utf8"
 const catalogue = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
 const header = expectedFeed.split("\n")[0].split("\t");
 const expectedHeader = ["id", "title", "description", "link", "image_link",
-  "availability", "price", "condition", "brand", "product_type", "shipping(country:price)"];
+  "availability", "price", "condition", "brand", "gtin", "product_type",
+  "google_product_category", "shipping(country:price)"];
 assert.deepEqual(header, expectedHeader);
 const rows = expectedFeed.replace(/\n$/, "").split("\n").slice(1).map((line) => {
   const cells = line.split("\t");
@@ -24,6 +25,8 @@ const rows = expectedFeed.replace(/\n$/, "").split("\n").slice(1).map((line) => 
 assert.equal(rows.length, 19);
 assert.equal(new Set(rows.map((row) => row.id)).size, 19);
 assert.equal(catalogue.products.length, 19);
+const ukGtins = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-gtin-uk.json"), "utf8"));
+const gtinMap = new Map(ukGtins.products.map(item => [item.sku, item]));
 const retail = new Map(catalogue.products.map((item) => [item.sku, item]));
 assert.equal(retail.size, 19);
 for (const row of rows) {
@@ -34,6 +37,8 @@ for (const row of rows) {
     p.ordering_enabled === true && p.available_to_sell === true;
   assert.equal(row.link, origin + "/products/nutraxin/" + p.slug + "/");
   assert.equal(row.price, (p.retail_price_pence / 100).toFixed(2) + " GBP");
+  assert.equal(row.gtin, gtinMap.get(row.id)?.gtin13, "Exact UK GTIN mismatch");
+  assert.equal(row.google_product_category, "525", "Category must represent vitamins and supplements");
   assert.equal(row.availability, ready ? "in_stock" : "out_of_stock");
   assert.equal(row["shipping(country:price)"], "GB:" +
     (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
@@ -87,6 +92,9 @@ if (process.argv.includes("--local")) {
       assert(offer, p.sku + ": Product Offer missing");
       assert.equal(offer.price, (p.retail_price_pence / 100).toFixed(2));
       assert.equal(offer.priceCurrency, "GBP");
+      const product = candidates.find((item) => item["@type"] === "Product" && item.sku === p.sku);
+      assert.equal(product.gtin13, row.gtin, p.sku + ": live GTIN missing/mismatched");
+      assert.equal(product.image, row.image_link, p.sku + ": live image mismatch");
       assert.equal(offer.url, row.link);
       assert.equal(offer.availability, "https://schema.org/" +
         (row.availability === "in_stock" ? "InStock" : "OutOfStock"));
