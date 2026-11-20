@@ -1,0 +1,47 @@
+# Read-only Apple Developer source drift audit.
+# 172 primary HIG Markdown articles + 30 owner-provided anchors +
+# 5 Apple resource links + 3 MapKit/IMDF references = 210 targets.
+# Not an implementation test, vendor license approval or production receipt.
+name: Apple HIG 210-link official source health
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/apple-hig-210-link-health.yml'
+      - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-apple-hig-link-health-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-sources:
+    name: Verify 210 Apple URLs and preserved historical anchors
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout exact evaluated revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Use pinned Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Read-only URL status and Markdown heading check
+        env:
+          HIG_VERIFY_LIVE_LINKS: '1'
+        run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Preserve all source outcomes, including failures
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-210-source-health-${{ github.sha }}
+          path: artifacts/apple-hig-link-health/report.json
+          if-no-files-found: warn
+          retention-days: 30
