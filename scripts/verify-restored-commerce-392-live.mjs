@@ -28,6 +28,43 @@ async function check(path,mime,validate){
   checks.push(row);
 }
 function assert(ok,why){if(!ok)throw Error(why);}
+
+function isExactCorporateUrl(value,path){
+  try {
+    const u=new URL(value);
+    return u.protocol==="https:" && u.hostname==="novapharmhealthcare.com" &&
+      u.host==="novapharmhealthcare.com" && u.username==="" && u.password==="" &&
+      u.pathname===path && u.search==="" && u.hash==="";
+  } catch { return false; }
+}
+function canonicalTagMatches(html,path){
+  for(const tag of html.match(/<link\b[^>]*>/gi)||[]){
+    const rel=tag.match(/\brel\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const href=tag.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
+    if(rel?.toLowerCase().split(/\s+/).includes("canonical") &&
+      href && isExactCorporateUrl(href,path)) return true;
+  }
+  return false;
+}
+function openGraphTagMatches(html,path){
+  for(const tag of html.match(/<meta\b[^>]*>/gi)||[]){
+    const property=tag.match(/\bproperty\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const content=tag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i)?.[2];
+    if(property?.toLowerCase()==="og:url" &&
+      content && isExactCorporateUrl(content,path)) return true;
+  }
+  return false;
+}
+// Guard against subdomains, injected prefixes, query strings and unrelated
+// occurrences of a URL elsewhere in the HTML.
+if(!canonicalTagMatches('<link rel="canonical" href="https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
+   canonicalTagMatches('<a href="https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
+   canonicalTagMatches('<link rel="canonical" href="https://attacker.example/https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
+   openGraphTagMatches('<meta property="og:url" content="https://novapharmhealthcare.com/products/track/?ref=private">',"/products/track/") ||
+   !openGraphTagMatches('<meta property="og:url" content="https://novapharmhealthcare.com/products/track/">',"/products/track/")){
+  throw Error("Public canonical/social URL validation regression");
+}
+
 await Promise.all([
   check("/", "text/html", html=>{
     assert(html.includes("Medicine. Where it needs to be.")&&html.includes("Better access begins with better decisions."),"Approved Earth homepage rolled back");
@@ -45,17 +82,17 @@ await Promise.all([
   check("/products/marketplace/","text/html",html=>{
     assert(html.includes('data-commerce-marketplace')&&html.includes("Everything, together."),"New marketplace template missing");
     assert((html.match(/class="mp-source-index-link"/g)||[]).length===392,"392 product search links not published");
-    assert(html.includes('https://novapharmhealthcare.com/products/marketplace/'),"Marketplace canonical missing");
+    assert(canonicalTagMatches(html,"/products/marketplace/"),"Marketplace canonical missing");
     assert(html.includes("/assets/js/commerce-marketplace.js"),"Marketplace JS missing");
     assert(html.includes("/products/esco/")&&html.includes("/products/nutraxin/"),"Portfolio routes missing");
     assert(!html.includes('"@type":"Product"'),"Public marketplace must not invent Product/Offer authorities");
   }),
   check("/products/track/","text/html",html=>{
     assert(html.includes("Follow your order.")&&html.includes("data-np-order-lookup"),"New status-only tracker missing");
-    assert(html.includes("https://novapharmhealthcare.com/products/track/"),"Tracking canonical missing");
+    assert(canonicalTagMatches(html,"/products/track/"),"Tracking canonical missing");
     assert(html.includes("/assets/js/commerce-order-track.js"),"Tracking script missing");
     assert(html.includes('<meta name="robots" content="noindex, follow">'),"Order lookup must remain noindex after release");
-    assert(html.includes('property="og:url" content="https://novapharmhealthcare.com/products/track/"'),"Order lookup inherited wrong social URL");
+    assert(openGraphTagMatches(html,"/products/track/"),"Order lookup inherited wrong social URL");
     assert(!html.includes("data-order-payment-card")&&!html.includes("data-customer-address"),"Customer data must not be embedded");
   }),
   check("/sitemap.xml","xml",xml=>{
