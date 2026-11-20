@@ -158,3 +158,72 @@ test("malformed page response cannot trigger a folder creation", async () => {
   await assert.rejects(() => client.ensureFolder("driveA", "Missing"),
     error => error.code === "sharepoint_pagination_invalid");
 });
+
+
+test("secure-content child listing collects all pages before returning", async () => {
+  const client = new GraphClient({});
+  const requests = [];
+  client.request = async (path, options) => {
+    assert.notEqual(options?.method, "POST");
+    requests.push(path);
+    if (path.includes("?$select=")) {
+      return {
+        value: Array.from({length: 200}, (_, i) => ({
+          id: "item-" + i, name: "Document " + i + ".pdf", file: {}
+        })),
+        "@odata.nextLink": "https://graph.microsoft.com/v1.0/drives/driveA/root:/NovaPharm%20Digital%20Ecosystem:/children?$skiptoken=page2"
+      };
+    }
+    if (path.endsWith("?$skiptoken=page2")) {
+      return {value: [{id: "item-201", name: "Final.pdf", file: {}}]};
+    }
+    throw new Error("Unexpected request " + path);
+  };
+  const result = await client.listFolderChildren("driveA", "NovaPharm Digital Ecosystem");
+  assert.equal(result.value.length, 201);
+  assert.equal(result.value[200].name, "Final.pdf");
+  assert.equal(requests.length, 2);
+});
+
+test("secure-content listing rejects foreign, repeated and malformed continuation", async () => {
+  const invalid = [
+    "https://attacker.test/v1.0/drives/driveA/root/children?$skiptoken=1",
+    "https://graph.microsoft.com/v1.0/drives/other/root/children?$skiptoken=1",
+    "", 12
+  ];
+  for (const link of invalid) {
+    const client = new GraphClient({});
+    let count = 0;
+    client.request = async (_path, options) => {
+      assert.notEqual(options?.method, "POST");
+      count += 1;
+      return {value: [], "@odata.nextLink": link};
+    };
+    await assert.rejects(() => client.listFolderChildren("driveA", ""),
+      err => err.code === "sharepoint_pagination_invalid");
+    assert.equal(count, 1);
+  }
+  const cyclic = new GraphClient({});
+  let count = 0;
+  cyclic.request = async () => {
+    count += 1;
+    return {value: [], "@odata.nextLink":
+      "https://graph.microsoft.com/v1.0/drives/driveA/root/children?$skiptoken=again"};
+  };
+  await assert.rejects(() => cyclic.listFolderChildren("driveA", ""),
+    err => err.code === "sharepoint_pagination_invalid");
+  assert.equal(count, 2);
+});
+
+test("secure-content listing rejects page overrun rather than silently returning partial data", async () => {
+  const client = new GraphClient({});
+  let count = 0;
+  client.request = async () => {
+    count += 1;
+    return {value: [], "@odata.nextLink":
+      "https://graph.microsoft.com/v1.0/drives/driveA/root/children?$skiptoken=" + count};
+  };
+  await assert.rejects(() => client.listFolderChildren("driveA", ""),
+    err => err.code === "sharepoint_pagination_limit");
+  assert.equal(count, 25);
+});

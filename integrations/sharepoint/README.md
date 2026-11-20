@@ -51,3 +51,12 @@ excessive continuations fail closed; five offline tests exercise synthetic
 201-item pages, malicious links and limits without live Graph requests.
 Folder-creation races and effective group permissions remain separate
 provider-side release gates tracked in issue #898.
+
+### Complete metadata enumeration for secure-content reads
+
+`listFolderChildren` now collects bounded Graph continuation pages before
+returning metadata to the protected-content synchronization caller. Repeated,
+foreign, malformed or excessive pages fail closed rather than silently
+publishing an incomplete local file manifest. Offline tests cover 201-item
+folders, hostile cursors, repeated links and page limits. This does not
+prove live provider compatibility or atomicity across nested folders.

@@ -213,9 +213,8 @@ export class GraphClient {
           typeof child?.name === "string" &&
           child.name.toLowerCase() === segment.toLowerCase() && child.folder);
         if (item) break;
-        cursor = children["@odata.nextLink"]
-          ? safeSharePointNextPagePath(children["@odata.nextLink"], base)
-          : null;
+        const nextLink = children["@odata.nextLink"];
+        cursor = nextLink == null ? null : safeSharePointNextPagePath(nextLink, base);
       }
       if (!item && cursor) {
         throw Object.assign(new Error("SharePoint children page limit reached."), {
@@ -252,10 +251,41 @@ export class GraphClient {
 
   async listFolderChildren(driveId, folderPath) {
     const path = encodeSafeSharePointPath(folderPath, { allowRoot: true });
-    const endpoint = path
-      ? `/drives/${driveId}/root:/${path}:/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`
-      : `/drives/${driveId}/root/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`;
-    return this.request(endpoint);
+    const base = path
+      ? "/drives/" + encodeURIComponent(driveId) + "/root:/" + path + ":/children"
+      : "/drives/" + encodeURIComponent(driveId) + "/root/children";
+    let cursor = base + "?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl";
+    const seen = new Set();
+    const children = [];
+    // Complete the metadata list before the secure-content caller writes files.
+    for (let page = 0; cursor && page < MAX_FOLDER_CHILD_PAGES; page += 1) {
+      if (seen.has(cursor)) {
+        throw Object.assign(new Error("Repeated SharePoint continuation."), {
+          code: "sharepoint_pagination_invalid"
+        });
+      }
+      seen.add(cursor);
+      const response = await this.request(cursor);
+      if (!Array.isArray(response?.value)) {
+        throw Object.assign(new Error("Invalid SharePoint children response."), {
+          code: "sharepoint_pagination_invalid"
+        });
+      }
+      children.push(...response.value);
+      if (children.length > 5000) {
+        throw Object.assign(new Error("SharePoint children item limit reached."), {
+          code: "sharepoint_pagination_limit"
+        });
+      }
+      const nextLink = response["@odata.nextLink"];
+      cursor = nextLink == null ? null : safeSharePointNextPagePath(nextLink, base);
+    }
+    if (cursor) {
+      throw Object.assign(new Error("SharePoint children page limit reached."), {
+        code: "sharepoint_pagination_limit"
+      });
+    }
+    return { value: children };
   }
 
   async downloadFile(driveId, itemId) {
