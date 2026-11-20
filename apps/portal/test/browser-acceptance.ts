@@ -143,6 +143,28 @@ async function login(browser: Browser, area: PortalArea): Promise<StoredBrowserS
   }
 }
 
+/**
+ * Real Chromium/WebKit keyboard bypass, not a source-only assumption.
+ * Anchor focus must transfer to the route's content region without
+ * triggering credentials, navigation to a protected route or API mutations.
+ */
+async function verifyKeyboardBypass(page: Page, label: string, firstTab: boolean): Promise<void> {
+  const bypass = page.getByRole("link", { name: "Skip to portal content" });
+  assert.equal(await bypass.count(), 1, `${label}: one global skip link required`);
+  if (firstTab) await page.keyboard.press("Tab");
+  else await bypass.focus();
+  assert.equal(await bypass.evaluate((el) => el === document.activeElement), true,
+    `${label}: keyboard focus must reach the skip link`);
+  const location = await bypass.boundingBox();
+  assert.ok(location && location.y >= 0 && location.x >= 0,
+    `${label}: skip link must be visibly onscreen when focused`);
+  await page.keyboard.press("Enter");
+  assert.equal(await page.evaluate(() => document.activeElement?.id), "portal-content",
+    `${label}: Enter must move keyboard focus to the content region`);
+  assert.equal(await page.locator("main").count(), 1,
+    `${label}: preserve one semantic main landmark after skip navigation`);
+}
+
 async function verifyAuthenticationBoundaries(browser: Browser, engine: string): Promise<void> {
   const rejected = await fetch(`${portalOrigin}/admin/dashboard/`, { redirect: "manual" });
   assert.ok([307, 308].includes(rejected.status), `${engine}: protected route was not rejected before authentication`);
@@ -154,6 +176,7 @@ async function verifyAuthenticationBoundaries(browser: Browser, engine: string):
   try {
     const page = await context.newPage();
     await page.goto(portalOrigin, { waitUntil: "domcontentloaded" });
+    await verifyKeyboardBypass(page, `${engine} anonymous sign-in`, true);
     await page.getByLabel("Username or business email").fill(credentials.username as string);
     await page.getByLabel("Password", { exact: true }).fill("Synthetic-invalid-password-9!zQ");
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
@@ -312,6 +335,9 @@ async function inspectModule(
         assert.equal(await disclosure.getAttribute("open"), "", "Keyboard Enter did not open account guidance");
         await page.getByText("Optional tips for your current workspace.", { exact: false }).waitFor({ state: "visible" });
       }
+    }
+    if (module.code === "customer.dashboard" && (viewport.name === "desktop-1440" || viewport.name === "mobile-390")) {
+      await verifyKeyboardBypass(page, `${engine} ${viewport.name} authenticated customer dashboard`, true);
     }
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
