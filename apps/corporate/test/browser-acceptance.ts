@@ -194,6 +194,21 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.match(response.headers()["x-robots-tag"] ?? "", /noindex/, `${engine} ${route}: validation response is indexable`);
 
   await page.locator("main").waitFor({ state: "visible" });
+  if (route === "/" && (viewport.name === "desktop-1440" || viewport.name === "mobile-390")) {
+    // Real keyboard bypass: verify first Tab, visible focus and a focusable
+    // main landmark in Chromium/WebKit without claiming live production proof.
+    const bypass = page.getByRole("link", { name: "Skip to main content" });
+    assert.equal(await bypass.count(), 1, `${engine} ${viewport.name}: missing corporate skip link`);
+    await page.keyboard.press("Tab");
+    assert.equal(await bypass.evaluate((el) => el === document.activeElement), true,
+      `${engine} ${viewport.name}: first Tab must reach the skip link`);
+    const box = await bypass.boundingBox();
+    assert.ok(box && box.y >= 0 && box.x >= 0,
+      `${engine} ${viewport.name}: focused skip link must be onscreen`);
+    await page.keyboard.press("Enter");
+    assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content",
+      `${engine} ${viewport.name}: Enter must move focus to main content`);
+  }
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
