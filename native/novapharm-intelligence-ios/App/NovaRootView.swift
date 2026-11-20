@@ -61,6 +61,9 @@ private struct IntelligenceHomeView: View {
                 }
             }
             Section("Intelligence") {
+                NavigationLink("Explore 101 country research scopes") {
+                    NovaCountryDirectoryView()
+                }
                 NavigationLink("Explore 22 research workspaces") {
                     WorkspaceListView(area: .intelligence)
                 }
