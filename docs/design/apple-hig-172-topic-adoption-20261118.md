@@ -277,3 +277,133 @@ This is a **source-only dependent branch**, following the complete Critical-sour
 **Proposed cumulative audit:** **80/172 (46.5%) documented topic reviews**, **240/516 (46.5%) applicability decisions**, leaving **92 source reviews and 276 platform decisions**. All 172 production implementation statuses remain `not_verified`; there are still only 6 bounded partial public topic/platform observations from four real first-party live workflow runs. Production owner signoff remains `not_granted`. Source reviews, CI and a screenshot artifact cannot certify authenticated Portal/Intelligence, sitewide accessibility or signed native app distribution.
 
 **Dependency:** The current branch must merge **after** PR #880 and exact-head CI/reviewer approval; the original PR #880 stays unchanged until its checks and independent Quality/Security approval are complete. This branch makes no AWS, release, licensed data, medicine, customer or signing changes.
+
+## 19 November — ten more Apple platform, commerce and productivity sources
+
+This is a **source-only dependent HIG review candidate**, stacked on PR #881, which itself depends on PR #880. The following original Apple Markdown guideline content was read individually (not scraped from a category list). Each row has distinct public/protected-web, iOS and Android applicability reasoning in the register; native-only technologies are not silently treated as available on other platforms.
+
+| Official Apple HIG article | What was read and the concrete acceptance boundary |
+| --- | --- |
+| [Designing for iPadOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados.md) | Larger displays, changing window size and orientation, combined touch/keyboard/trackpad/Pencil inputs; Apple iPadOS platform implementation is iOS-app scope, while iPad browser responsiveness is separate and Android tablets use Android standards |
+| [Multitasking](https://developer.apple.com/design/human-interface-guidelines/multitasking.md) | Persist/restore working context during switching and interruptions; native iPad windows must adapt without taking over OS multitasking; a web page or signed app needs its own actual lifecycle tests |
+| [Keyboards](https://developer.apple.com/design/human-interface-guidelines/keyboards.md) | Standard shortcuts, Full Keyboard Access, visual focus and safe native activation; must not override OS keyboard shortcuts or claim single-Tab tests constitute end-to-end keyboard accessibility |
+| [Drag and drop](https://developer.apple.com/design/human-interface-guidelines/drag-and-drop.md) | Copy vs move, accessible alternative commands, reversible operations and clear destination feedback; never rely exclusively on gestures to move protected warehouse/order records |
+| [Widgets](https://developer.apple.com/design/human-interface-guidelines/widgets.md) | WidgetKit system-sized, glanceable OS surfaces with adaptive appearance and data minimization; **not** a website dashboard card or an Android App Widget implementation |
+| [Apple Pay](https://developer.apple.com/design/human-interface-guidelines/apple-pay.md) | Actual compatible browser/PassKit capability, legitimate payment button/brand marks, physical-goods shopping, merchant/shipping/total display and genuine failed/successful transaction handling; a source test alone cannot certify payment or delivery |
+| [Apple In-App Purchase](https://developer.apple.com/design/human-interface-guidelines/apple-in-app-purchase.md) | Native digital premium goods and subscriptions: StoreKit, localized pricing and trial terms, restore/refund help, system confirmation, product classification and current App Review Rules; **not** the same as Apple Pay or an arbitrary Stripe web link |
+| [Content](https://developer.apple.com/design/human-interface-guidelines/content.md) | Category **collectionGroup** for Charts, Image views, Text views and Web views; each child source needs separately accepted route-specific behavior and licensed data |
+| [Status](https://developer.apple.com/design/human-interface-guidelines/status.md) | Category **collectionGroup** for Activity rings, Gauges, Progress indicators and Rating indicators; an activity ring is not a pharmacy inventory KPI mandate |
+| [Inputs](https://developer.apple.com/design/human-interface-guidelines/inputs.md) | Category **collectionGroup** of Apple hardware/input modalities including Watch Crown/TV Remote/Pencil/Camera Control; unsupported device hardware must never be marked as implemented on web or Android |
+
+**Highest-risk classification:** The existing Nutraxin physical-goods website payment flow and a future native Intelligence *digital subscription* are different use cases. Before any iOS digital subscription checkout is activated, a qualified owner reviewer must resolve the actual App Review category, jurisdiction/entitlement, StoreKit products, trial disclosures and payment/restoration evidence. Existing web checkout/Stripe is not proof that Apple has approved in-app digital subscription payment. No price, API, payment provider, credentials, billing, app-store offering or live native integration was modified.
+
+**Cumulative proposed source-readiness after PRs #880 → #881 → this candidate:** **90/172 (52.3%)** documented primary source reviews and **270/516 (52.3%)** platform decisions. Remaining: **82 official topic reviews**, **246 three-platform decisions**. The evidence audit retains **6 partial public topic-platform observations from 4 independent first-party live runs**, and **0/172 full production-verified implementations**. Browser screenshots and GitHub status are not native/tenant/complete HIG release receipts. Production signoff remains `not_granted`.
+
+**Safe workflow:** Merge #880 only after its current-head CI and independent reviewer approval; then reconcile #881 against merged `main` and independently approve; then reconcile this stacked source-only candidate against the new `main` with its own exact-head CI and Quality/Security review. No AWS, public deployment, paid infrastructure, customer activation or clinical content rights changed in this batch.
+
+### Programme completion metric — confirmed implementation versus approved not-applicable
+
+It is inaccurate to require **172 deployed platform-native implementations** when several of Apple's 172 indexed topics describe watchOS/tvOS/visionOS/macOS-only features that cannot exist as native web, iOS or Android APIs. It is also inaccurate to count a proposed `not_applicable` rationale as independent release approval.
+
+The durable gap report now separates:
+1. **Production-verified implementations:** topic-level `implementation: verified` only after real scoped releases, live/physical-device evidence and independent approvals for every applicable platform.
+2. **Independently accepted out-of-scope topics:** `implementation: not_applicable` only when all three platform decisions are justified as not applicable and an authorized independent reviewer accepts that scope disposition (not yet recorded for any topic).
+3. **Candidate out-of-scope topics:** all platforms assessed `not_applicable` but implementation still `not_verified`. These are **pending** reviewer disposition, not delivered/verified features.
+4. **Unresolved topics:** missing source reviews, unresolved platform decisions, platform implementation proofs or acceptance receipts.
+
+The Apple tvOS-only [Digit entry views](https://developer.apple.com/design/human-interface-guidelines/digit-entry-views.md) example is a candidate out-of-scope topic for NovaPharm web/iOS/Android, **not** a verified Apple TV component; native iPhone OTP/MFA is a distinct feature with separate security and accessible input acceptance. Once the user explicitly authorizes the relevant scope and a genuinely independent reviewer records acceptance, it can receive a `not_applicable` topic disposition without ever increasing the `production-verified implementations` count. The programme-wide final signoff must require every topic to be independently dispositioned, all in-scope implementations live-verified, appropriate platform-level evidence and `productionSignoff: granted` from the owner. None of these conditions is met simply by merging source-review PRs.
+
+At this source-only checkpoint: **0/172 production-verified**, **0/172 independently accepted out-of-scope dispositions**, and programme certification **false**. No native code or production authorization was changed.
+
+## 19 November — nine more directly inspected Apple media/native-system topics
+
+This extra review is included in the **existing PR #883** instead of introducing a fourth dependent pull request. All nine original official Apple HIG Markdown articles were read individually on 19 November 2026 and assigned distinct web/iOS/Android acceptance decisions. Review documentation does **not** establish that a native system feature, web app, customer transaction or protected app has been released.
+
+| Official Apple source | Distinct finding / production boundary |
+| --- | --- |
+| [Printing](https://developer.apple.com/design/human-interface-guidelines/printing.md) | Discoverable Print when possible; use actual system print options and sensible page controls, no visible action where printing is unavailable. Browser print or Android PrintManager are analogous but different native APIs; protect confidential orders/invoices. |
+| [Web views](https://developer.apple.com/design/human-interface-guidelines/web-views.md) | WKWebView is an embedded native web presentation, with explicit forward/back where needed and no pointless second full browser. The corporate site is **not** WKWebView; Android's WebView is a different implementation. |
+| [Image views](https://developer.apple.com/design/human-interface-guidelines/image-views.md) | Primarily noninteractive image containers. Interactive images should be buttons, text overlays need contrast, and visual images need proper crop and accessibility alternatives. |
+| [App Shortcuts](https://developer.apple.com/design/human-interface-guidelines/app-shortcuts.md) | App Intents can expose up to **10** important actions in Siri/Spotlight/Shortcuts; short activation phrases, clear parameters and audio descriptions. Native Apple App Shortcuts are **not** HTML links or Android assistant intents. |
+| [Live Activities](https://developer.apple.com/design/human-interface-guidelines/live-activities.md) | In-progress, bounded tasks, minimal/small/expanded/Lock Screen design, preferably short-medium duration; do not show promotions or sensitive details. A public live delivery status widget is not an ActivityKit extension. |
+| [Status bars](https://developer.apple.com/design/human-interface-guidelines/status-bars.md) | System-owned iPhone/iPad time/connectivity/battery must not be obscured by interactive content; hiding it is temporary for immersive media, not a default app appearance. Browser progress bars are not Apple status bars. |
+| [Home Screen quick actions](https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions.md) | Up to **four** high-value app-icon actions, concise predictable localized labels and appropriate monochrome iconography; iOS/iPadOS app-icon shortcuts, not PWA menus or Android launcher actions. |
+| [Going full screen](https://developer.apple.com/design/human-interface-guidelines/going-full-screen.md) | Optional task-appropriate immersion, keep essential controls/exit accessible, preserve working context and respect system UI/gestures; browser Fullscreen API and Android immersive mode require separate testing. |
+| [Playing video](https://developer.apple.com/design/human-interface-guidelines/playing-video.md) | Prefer system media controls and original aspect ratio, avoid baked-in letterbox bars, preserve familiar keyboard/transport behaviour. Apply captions/transcript accessibility and approved medical content rights separately before any user-facing video. |
+
+**Scope exclusions are explicit:** native Apple Web views, App Shortcuts, Live Activities, iOS/iPadOS system status bars and Home Screen quick actions are not web or Android-native Apple APIs; analogous web/Android experiences are separate and need their own acceptance. A source entry labelled `applicable` means review obligations are relevant; it does not assert a shipped implementation.
+
+**Updated proposed cumulative register:** **99/172 official source reviews (57.6%)**, **297/516 platform applicability decisions (57.6%)**, **73 remaining review topics and 219 remaining platform decisions**. Six partial public observations from four genuine GitHub-origin live workflows remain unchanged; 0/172 fully production-verified implementations and 0 independently approved out-of-scope topic dispositions. The owner release signoff remains `not_granted`.
+
+PR #883 remains dependent on #881 and #880. Merge/reconcile in order with exact-head CI, a genuine independent Quality/Security approval and all external production release gates. No AWS, paid infrastructure, app-store, data rights, payment account, customer transaction or native signing was changed.
+
+## 19 November — native iOS/Android source audit versus signed release evidence
+
+This review inspects **actual files on merged `main`**, not an inferred native-device deployment. All are legitimate source candidates, but **none supplies an independently signed and installed production NovaPharm Intelligence iOS/Android app receipt**.
+
+| Source tree | What exists in GitHub | What cannot be claimed |
+| --- | --- | --- |
+| `native/novapharm-intelligence-apple/` | Swift 6 `Package.swift` exposes a **library** `NovaMLApple` with macOS 14 and iOS 17 minimums. Files cover gated Core ML, Create ML, Apple Foundation Models assistance, Vision, Language, Speech, App Intents and MapKit research plus separate Swift tests. The package README expressly states it is **not a signed iOS/macOS app**. | An iPhone app bundle, authenticated workspace, provisioning/signing, TestFlight distribution, Apple Store approval, real-device VoiceOver/Dynamic Type or approved model/data rights |
+| `native/novapharm-intelligence-android/` | Android research `com.novapharm.intelligence.research`, version `0.1.0-research`, with offline bounded sparse-circuit research UI and unit tests. The manifest denies backup and cleartext traffic and declares **no INTERNET permission**; a debug APK build target may exist. | Signed Play Store AAB, production tenant sign-in/API, medical/pharma data, physical TalkBack/keyboard verification, permitted model inference or distribution to real customers |
+| `native/novapharm-intelligence-mobile/` | Independent private Expo/React Native scaffold, currently version 0.1.0, `expo.start`/typecheck/source contract tests, tablet and system appearance settings, and 22 research workspace metadata. The app configuration has no recorded iOS production bundle identifier or Android package ID, and README expressly denies released IPA/APK/AAB. | Production iOS and Android app builds, native signing, protected user onboarding, real-time connected source licences, App Store/Google Play review, device-level HIG validation or customer go-live |
+
+A static source inspection can prove **the current repository is a prototype**, but cannot prove an app was never independently signed or released outside this GitHub repository; that would require platform/developer account evidence and a verified installed binary. No such accepted external platform receipt is part of the current 172-topic register. The Android and Apple CI workflows are useful **compilation/source-test evidence**, not proof of native commercial deployment.
+
+The HIG contract test now checks the true package types, Android research package/manifest and Expo configuration and refuses to equate these source candidates with 172 verified production HIG implementations. It changes neither the app's actual logic nor the owner's source-rights, AWS and production-signoff hold. **Production signoff remains `not_granted`; 0/172 independently production-verified**.
+
+Remaining signed mobile acceptance: known authorized Apple and Google developer identities, actual distributable app artifacts and their signatures/digests, Apple/Play review or controlled internal distribution evidence, device matrix (phone/tablet/RTL/text scaling/dark mode/keyboard/VoiceOver/TalkBack), authenticated tenant and permission boundary tests, crash/upgrade/offline diagnostics, data rights and independent Quality/Security approval. Every topic must be approved as applicable-and-verified or independently accepted as out of scope; do not count unsupported Apple APIs as shipped Android features.
+
+## 20 November 2026 — 11 remaining High-priority primary-source reviews
+
+This continuation documents the last 11 previously unreviewed **High** priority HIG entries. Apple's original Markdown source for every entry was read on 20 November 2026; the complete source-specific findings and three independent platform rationales are stored under the matching topic in `apple-hig-172-topic-acceptance-register.json`.
+
+| Official Apple HIG source | Actual primary-source finding | NovaPharm applicability boundary |
+| --- | --- | --- |
+| [Getting started](https://developer.apple.com/design/human-interface-guidelines/getting-started.md) | Collection-group index for platform design | Taxonomy only, not an implemented control |
+| [Designing for macOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md) | Multiwindow, precise input, shortcuts and Mac touch considerations; source changed 28 Oct 2026 | Desktop browser analogues separately; no AppKit or shipped macOS native app |
+| [Patterns](https://developer.apple.com/design/human-interface-guidelines/patterns.md) | Index of distinct user-task patterns | Track articles individually across web, iOS and Android; index itself isn't code |
+| [Pop-up buttons](https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md) | Exclusive choices and a visible current/default selection | Accessible web/native equivalent; not an action-menu claim |
+| [Pull-down buttons](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md) | Contextual commands, primary action visibility, destructive confirmation | Role-safe menus, keyboard/touch and VoiceOver/TalkBack evidence outstanding |
+| [The menu bar](https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md) | Native Mac and iPad menu bar with standard command and shortcut ordering | Only iPadOS native candidates in scope; not web/Android system chrome |
+| [Presentation](https://developer.apple.com/design/human-interface-guidelines/presentation.md) | Collection index for sheets, windows, popovers, alerts and more | Each real component requires separate delivered-flow acceptance |
+| [System experiences](https://developer.apple.com/design/human-interface-guidelines/system-experiences.md) | Apple platform features/index such as shortcuts, widgets and controls | Native iOS catalogue, not web/Android Apple integration |
+| [Controls](https://developer.apple.com/design/human-interface-guidelines/controls.md) | Control Center/Lock Screen/Action button state, privacy and authentication | iOS-native conditional only; no native ControlWidget released |
+| [Technologies](https://developer.apple.com/design/human-interface-guidelines/technologies.md) | Collection index of Apple platform services and APIs | Service feasibility ≠ configured entitlement, data rights or live release |
+| [Sign in with Apple](https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md) | Cross-platform optional authentication, private relay and safe account linking | Identity provider login ≠ approved business account, tenancy or medicine rights |
+
+**Candidate cumulative (only after independent review and ancestor merges):** 110/172 source reviews (63.95%), 330/516 decisions (63.95%), 62 unreviewed articles and 186 decisions outstanding. The 42 Critical and 61 High source topics are now reviewed on this dependent branch. **0/172 independent production-verified implementations**, 0 accepted out-of-scope dispositions, no release authorization. Existing six bounded partial public observations remain partial. Do not treat this candidate as merged `main` or a signed mobile release.
+
+**Sequence:** #883 → #891 → this 11-High review proposal. Exact-head source/CI plus independent Security/Quality APPROVED reviews are required for each dependent change. No AWS, mobile signing, protected tenant deployment, real medicine data admission, payment, external identity provider or production-owner signoff changed.
+
+## 20 November continuation — all 18 Medium-priority official sources inspected
+
+Reviewed the current original Markdown pages for **Playing haptics; Column views; Lockups; Activity views; Path controls; Page controls; Panels; Sliders; Gauges; Action button; App Clips; iCloud; Mac Catalyst; Maps; NFC; Siri; Tap to Pay on iPhone; Wallet**. The full per-topic official source note and independent three-platform rationales are in the JSON register. Key distinctions:
+
+- Apple TV-only `Lockups` and Mac Catalyst (not a current NovaPharm release target) remain candidates for independently approved out-of-scope disposition, **not deployed features**.
+- Apple Mac-specific `Column views`, `Path controls` and `Panels` may inform web analogues but do not create AppKit controls on iOS or Android.
+- `Activity views`, `Page controls`, `Sliders` and `Gauges` have browser and native UX implications; access rights, accurate metric provenance, VoiceOver/TalkBack and actual release receipts remain unproven.
+- `Action button`, `App Clips`, `iCloud`, `Siri`, `NFC`, `Tap to Pay on iPhone`, and `Wallet` are not configured merely by adding guideline notes. Respect native entitlements, provider agreements, signed builds and explicit feature releases.
+- `Maps` has relevant cross-platform design implications but neither Apple MapKit nor another map provider has been provisioned or deployed through this change.
+
+**Candidate cumulative after the full dependent chain (#883 → #891 → this branch): 128/172 = 74.42% independently documented HIG source reviews; 384/516 = 74.42% separately reasoned web/iOS/Android decisions.** All 42 Critical, 61 High and 24 Medium guideline articles now have original-source review records on this candidate branch. **44 Later-priority articles and 132 platform decisions remain unassessed.** All 172 production implementation statuses remain `not_verified` (0/172). The 3 wholly out-of-scope candidates are pending independent approval, not accepted N/A and not shipped.
+
+This is review and scoping documentation only, with no production, tenant, payment, app signing, AWS or licensed medicine data mutation.
+
+## 20 November completion of the original 172-topic source-review and applicability register
+
+**The dependent candidate source register now contains 172/172 individually documented official Apple HIG topic reviews and 516/516 web/iOS/Android applicability decisions** (42 Critical, 61 High, 24 Medium, 45 Later). This is a source-reading and scoped decision milestone, **not** an independent Quality/Security approval, shipped feature audit, signed native application, or an Apple-endorsed certification.
+
+The final 44 Later-priority sources were reviewed in two batches, with original source URLs and topic-specific observations retained in the JSON register:
+
+- **Platforms / patterns:** Designing for tvOS, Designing for visionOS, Designing for watchOS, Designing for games, Designing for iPhone Duo, Immersive experiences, Spatial layout, Live-viewing apps, Playing audio, Ratings and reviews, Workouts.
+- **Apple controls / status:** Dock menus, Ornaments, Color wells, Image wells, Activity rings, Rating indicators, Complications, Snippets, Top Shelf, Watch faces.
+- **Device inputs:** Apple Pencil and Scribble, Camera Control, Digital Crown, Eyes, Game controls, Gyroscope and accelerometer, Nearby interactions, Remotes.
+- **Apple technologies:** AirPlay, Always On, Augmented reality, CareKit, CarPlay, Game Center, HealthKit, HomeKit, ID Verifier, iMessage apps and stickers, Live Photos, Photo editing, ResearchKit, SharePlay, ShazamKit.
+
+Source provenance example: [Apple HIG Gyroscope and accelerometer](https://developer.apple.com/design/human-interface-guidelines/gyro-and-accelerometer.md) requires a tangible reason for accessing motion sensors, purpose copy before permission and non-motion alternatives to direct UI manipulation. Apple [iMessage apps and stickers](https://developer.apple.com/design/human-interface-guidelines/imessage-apps-and-stickers.md) requires compact conversation interaction and localized sticker descriptions; [ShazamKit](https://developer.apple.com/design/human-interface-guidelines/shazamkit.md) requires clear microphone purpose, short recordings and opt-in iCloud storage. None is an authorized live NovaPharm capability.
+
+The per-platform `not_applicable` decisions are **unapproved scope rationales**, not accepted programme dispositions. The source register currently has **28 topics whose three decisions are each not applicable** to the presently scoped web/iOS/Android product; these remain `implementation: "not_verified"` and must be independently approved for formal out-of-scope disposition. Topics assessed `applicable` require actual route/device, security/accessibility and exact-production-release receipts; some are conditional prospective capabilities and must be independently confirmed as true product requirements versus not-in-scope.
+
+**Release state unchanged: 0/172 production-verified implementations, zero independently accepted N/A dispositions, existing six bounded public live observations, `productionSignoff: not_granted`, zero new infrastructure budget.** Source review completion cannot activate a signed mobile app, clinical rights, payments, external identity providers or protected customers. Production certification remains false until #890 acceptance gates are satisfied.
+
+**Merge order:** #883 → #891 → #892, after passing exact-current-head CI, independent authorized Quality/Security `APPROVED` events, and reconciliation of changes from main. The latest merged-main register may still show earlier lower review totals; never present a candidate branch as deployed source.
