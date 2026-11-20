@@ -64,9 +64,11 @@ private struct IntelligenceHomeView: View {
                 NavigationLink("Explore 101 country research scopes") {
                     NovaCountryDirectoryView()
                 }
+                .accessibilityIdentifier("novapharm.intelligence.countries")
                 NavigationLink("Explore 22 research workspaces") {
                     WorkspaceListView(area: .intelligence)
                 }
+                .accessibilityIdentifier("novapharm.intelligence.workspaces")
                 Text("Existing read-only website foundations are not mobile services. Source rights and tenant authentication remain blocked.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -116,6 +118,7 @@ private struct WorkspaceListView: View {
                             .padding(.vertical, 6)
                             .accessibilityElement(children: .combine)
                         }
+                        .accessibilityIdentifier("novapharm.workspace.\(module.id)")
                     }
                 }
             }
@@ -132,6 +135,7 @@ private struct ModuleDetailView: View {
     let module: NovaWorkspace
     @Environment(\.modelContext) private var context
     @Query private var saved: [OfflineBookmark]
+    @State private var bookmarkError = false
 
     private var existingBookmark: OfflineBookmark? {
         saved.first { $0.workspaceID == module.id }
@@ -159,8 +163,19 @@ private struct ModuleDetailView: View {
                     } else {
                         context.insert(OfflineBookmark(workspaceID: module.id))
                     }
+                    do {
+                        try context.save()
+                    } catch {
+                        bookmarkError = true
+                    }
                 }
+                .accessibilityIdentifier("novapharm.bookmark.toggle")
                 .frame(minHeight: 44)
+                .alert("Local shortcut unavailable", isPresented: $bookmarkError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text("Unable to save this module shortcut on this device.")
+                }
                 Text("Only this public module identifier is stored locally using SwiftData. No customer content is cached.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -183,6 +198,7 @@ private struct SavedModulesView: View {
             ForEach(saved, id: \.workspaceID) { bookmark in
                 if let module = NovaCatalog.lookup(id: bookmark.workspaceID) {
                     NavigationLink(module.title) { ModuleDetailView(module: module) }
+                        .accessibilityIdentifier("novapharm.saved.\(module.id)")
                 }
             }
             if saved.isEmpty {
