@@ -100,9 +100,18 @@ final class NovaPharmNativeUITests: XCTestCase {
 
         app.buttons["novapharm.country.DZ"].tap()
         XCTAssertTrue(app.navigationBars["Algeria"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["Not reviewed"].exists,
+        let rights = app.descendants(matching: .any)["novapharm.country.rights-status"]
+        XCTAssertTrue(rights.waitForExistence(timeout: 10),
+            "Rights must be exposed to assistive technology")
+        XCTAssertTrue(rights.label.contains("Not reviewed")
+            || (rights.value as? String)?.contains("Not reviewed") == true,
             "Publisher rights must remain unapproved in the native candidate")
-        XCTAssertTrue(app.staticTexts["Disabled"].exists,
+
+        let publication = app.descendants(matching: .any)["novapharm.country.live-status"]
+        XCTAssertTrue(publication.waitForExistence(timeout: 10),
+            "Customer publication status must be accessible")
+        XCTAssertTrue(publication.label.contains("Disabled")
+            || (publication.value as? String)?.contains("Disabled") == true,
             "Offline candidate must not imply customer release")
     }
 
