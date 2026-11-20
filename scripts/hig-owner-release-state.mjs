@@ -42,13 +42,41 @@ export function validateHigOwnerReleaseState(owner) {
     assert.ok(isoDate(owner.productionSignoffGrantedAt),
       "Owner signoff requires a real timestamp");
   }
-  for (const [permission, proofKey] of [
-    ["activatePublicCustomerAccess", "customerAccessReleaseEvidenceUrl"],
-    ["enableCustomerBilling", "customerBillingAuthorizationEvidenceUrl"]
-  ]) {
-    if (owner.productionPermissions?.[permission] !== true) continue;
+  const permissions = owner.productionPermissions;
+  assert.ok(permissions && typeof permissions === "object",
+    "Owner production-permissions register missing");
+  // A valid owner signoff alone is insufficient for customer or vendor actions.
+  // Require a distinct, reviewable authorization receipt for each explicit
+  // permission that a future controlled release may enable.
+  const permissionReceipts = {
+    activatePublicCustomerAccess: "customerAccessReleaseEvidenceUrl",
+    enableCustomerSubscriptions: "subscriptionsAuthorizationEvidenceUrl",
+    enableCustomerBilling: "customerBillingAuthorizationEvidenceUrl",
+    sendExternalEmail: "externalEmailReleaseEvidenceUrl",
+    cutOverPortalDnsOrApiMapping: "portalCutoverReleaseEvidenceUrl",
+    purchaseVendorLicenses: "vendorLicenseAuthorizationEvidenceUrl",
+    activateNativePalantir: "palantirIntegrationAuthorizationEvidenceUrl",
+    activateNativePrisma: "prismaIntegrationAuthorizationEvidenceUrl",
+    activateNativeBloomberg: "bloombergIntegrationAuthorizationEvidenceUrl"
+  };
+  const unsafeWhileZeroSpend = new Set([
+    "provisionNewPaidInfrastructure", "purchaseVendorLicenses",
+    "activateNativePalantir", "activateNativePrisma", "activateNativeBloomberg"
+  ]);
+  for (const [permission, enabled] of Object.entries(permissions)) {
+    assert.equal(typeof enabled, "boolean",
+      "Owner permission must remain an explicit Boolean: " + permission);
+    if (!enabled) continue;
+    assert.notEqual(permission, "admitUnapprovedMedicineData",
+      "Unapproved medicine data must never be admitted as a shortcut to release");
+    assert.ok(permission in permissionReceipts ||
+      permission === "provisionNewPaidInfrastructure",
+      "Unknown newly enabled production permission needs a reviewed schema: " + permission);
     assert.equal(granted, true,
       "Cannot activate " + permission + " without explicit owner signoff");
+    assert.ok(!unsafeWhileZeroSpend.has(permission),
+      permission + ": zero-spend/vendor-neutral scope cannot authorize paid infrastructure or native vendor accounts");
+    const proofKey = permissionReceipts[permission];
     assert.ok(evidenceUrl(owner[proofKey]),
       "Cannot activate " + permission + " without its own release/authorization receipt");
   }
