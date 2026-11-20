@@ -78,3 +78,20 @@ The protected Science Research web workspace and shared Expo iOS/Android candida
 - https://quantumai.google/openfermion
 - https://quantumai.google/qualtran
 - https://quantumai.google/qsim
+
+
+## Static Pages delivery candidate — not deployed
+The Next.js `/quantum-research/` source does not automatically appear in the
+allowlisted public GitHub Pages artifact. A separate source-only static,
+noindex, no-form, no-API methodological page is proposed at
+`quantum-research/index.html`. Its text mirrors this versioned programme,
+the public artifact allowlist and RTL validator explicitly include the page,
+and the build stamps it with the exact Git source SHA without adding it to the
+indexable SEO register. Offline tests check the absence of hardware,
+customer forms and third-party runtime.
+
+**A green source test or merge does not publish this page.** Public release
+still requires the existing independently authorised publication process,
+proof of artifact SHA and successful external route verification. No change
+to owner production sign-off, paid infrastructure or regulated access rights
+is implied by this candidate.

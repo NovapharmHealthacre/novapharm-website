@@ -660,6 +660,14 @@ function materialize(relative, route, main, metadata = null, template = null) {
       '<link rel="preload" as="image" href="/assets/media/oncology/hope-tomorrow-portrait.jpg" type="image/jpeg" fetchpriority="high">'
     );
   }
+  // The existing client-side Nutraxin bag and checkout must actually load on every
+  // consumer shopping route. Never enable it on the separate B2B order-request page.
+  if (route.startsWith("/products/nutraxin/") &&
+      route !== "/products/nutraxin/order-request/" &&
+      !html.includes('src="/assets/js/nutraxin-retail-store.js"')) {
+    html = html.replace("</body>",
+      '  <script type="module" src="/assets/js/nutraxin-retail-store.js"></script>\n</body>');
+  }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
     html = html.replace("</body>", '  <script type="module" src="/assets/js/nutraxin-order-request.js"></script></body>');
@@ -740,8 +748,8 @@ materialize("account-application/index.html", "/account-application/", accountMa
 });
 
 function nutraxinSearchTitle(product) {
-  // Preserve supplier identity and pack size without repeating Nutraxin in the title.
-  // 60 characters is an editorial target, not a Google indexing/ranking rule.
+  // Preserve Nutraxin identity and pack size without duplicating brand in the suffix.
+  // This editorial length target is not a Google indexing or ranking requirement.
   let name = product.name
     .replace("Vitamin MAX C + D + Zinc", "Vitamin MAX C+D+Zinc")
     .replace("Vitamin B12 Methylcobalamin", "B12 Methylcobalamin")
@@ -759,7 +767,7 @@ function nutraxinSearchTitle(product) {
     title = `${name} ${pack} | NovaPharm`;
   }
   if (title.length > 60 || !title.startsWith("Nutraxin ")) {
-    throw new Error("Nutraxin title requires editorial review: " + product.sku);
+    throw new Error("Nutraxin search title requires editorial review: " + product.sku);
   }
   return title;
 }
