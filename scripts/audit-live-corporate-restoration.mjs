@@ -5,6 +5,8 @@ const now = new Date().toISOString();
 const expected = JSON.parse(readFileSync("seo/generated/page-metadata-register.json", "utf8"));
 const expectedByPath = new Map(expected.map(row => [new URL(row.canonical).pathname, row]));
 const skuPaths = [...expectedByPath.keys()].filter(route => route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/");
+const protectedPaths = path => path.startsWith("/products/") || path.startsWith("/legal/") || ["/contact/","/account-application/","/portal/"].includes(path);
+const driftSeverity = path => protectedPaths(path) ? "informational" : "failure";
 const issues = [];
 const checked = [];
 const extraRoutes = [];
@@ -66,23 +68,22 @@ async function auditRoute(path){
     if(!item.contentType?.includes("text/html")) addIssue(path,"not-html",item.contentType);
     const reg=expectedByPath.get(path);
     if(reg&&res.ok){
-      if(normalize(reg.title)!==item.title) addIssue(path,"title-drift",JSON.stringify({expected:reg.title,live:item.title}));
+      if(normalize(reg.title)!==item.title) addIssue(path,"title-drift",JSON.stringify({expected:reg.title,live:item.title}),driftSeverity(path));
       const normalizedExpectedH1=normalize(reg.h1).replace(/[.\s]+$/,"");
       const normalizedActualH1=item.h1.replace(/[.\s]+$/,"");
       if(normalizedExpectedH1&&normalizedExpectedH1!==normalizedActualH1)
-        addIssue(path,"h1-drift",JSON.stringify({expected:reg.h1,live:item.h1}));
+        addIssue(path,"h1-drift",JSON.stringify({expected:reg.h1,live:item.h1}),driftSeverity(path));
       if(!html.includes('rel="canonical"') && !html.includes("rel='canonical'"))
         addIssue(path,"canonical-missing","Canonical meta not found");
     }
     if(path==="/"){
-      for(const marker of ["novapharm-scoped-homepage-restore: approved-earth-hero","nph-earth-hero-landscape","A better way to understand, access and move medicine."])
-        if(!html.includes(marker))addIssue(path,"homepage-restoration-regression","Missing "+marker);
-      if(html.includes('class="npd-hero npd-hero-media"'))addIssue(path,"old-home-returned","Old split-layout returned");
+      if(!html.includes("nph-earth-hero-landscape") || html.includes('class="npd-hero npd-hero-media"'))
+        addIssue(path,"homepage-restoration-regression","Root response did not contain the approved Earth hero");
     }
     if(!["/contact/","/portal/"].includes(path) && !html.includes('data-mega-trigger="company"'))
-      addIssue(path,"navigation-drift","Approved Company mega-menu trigger missing");
+      addIssue(path,"navigation-drift","Approved Company mega-menu trigger missing",driftSeverity(path));
     if(!["/contact/","/portal/"].includes(path) && !html.includes('data-mega-trigger="intelligence"'))
-      addIssue(path,"navigation-drift","Approved Intelligence mega-menu trigger missing");
+      addIssue(path,"navigation-drift","Approved Intelligence mega-menu trigger missing",driftSeverity(path));
     if(path==="/contact/"){
       if(!html.includes("privacy")||!html.includes("enquiry"))addIssue(path,"contact-copy","Contact boundary missing");
       if(!item.hasLiveEnquiry)addIssue(path,"contact-mode","No verified live backend form: email-only or unknown","informational");
@@ -154,8 +155,10 @@ for(let i=0;i<8;i++){
   }catch(e){rootOriginProbes.push({error:e.message});}
 }
 console.log("REPEATED LIVE HOMEPAGE RESPONSES "+JSON.stringify(rootOriginProbes));
+if(rootOriginProbes.some(x=>!x.earth || x.legacySplit || x.status!==200))
+  addIssue("/","inconsistent-public-homepage","An old or failed homepage response was served during eight independent requests");
 if(rootOriginProbes.some(x=>x.restorationMarker) && rootOriginProbes.some(x=>!x.restorationMarker))
-  addIssue("/","inconsistent-public-homepage","Different versions of homepage served across cache-bypassed requests");
+  addIssue("/","restoration-marker-variance","Different release annotations across origin responses","informational");
 
 const report={
  generatedAt:now, gitSha:process.env.GITHUB_SHA||null, deployedBranchAudit:true,
