@@ -70,6 +70,8 @@ jobs:
   public-html-sample:
     name: Read-only public HTML and rendered sampling (not HIG compliance)
     if: github.event_name == 'pull_request'
+    env:
+      HIG_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     # The PR may be source-only while an unrelated public deployment is stale,
     # unavailable or still awaiting signoff. Observe without turning this
     # evidence-only job into a publishing or implementation acceptance gate.
