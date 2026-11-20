@@ -12,7 +12,7 @@
 
 ## Three-client parity
 - Protected web: `apps/portal/components/country-source-coverage.tsx` shows each country's supplied research requirements and the 86 reference links with an explicit **not verified / API not connected** disclosure.
-- iOS and Android: `native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx` imports the **same** JSON artifact and displays owner-supplied needs/source names in the offline country directory. No direct upstream API calls or credentials are introduced.
+- iOS and Android: `native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx` imports the **same** JSON artifact and displays needs and 86 external reference links. Links open only after a deliberate user tap through `Linking.openURL`, with an external-site disclosure, HTTPS guard and failure message. No programmatic upstream API calls or credentials are introduced.
 - Regression contract: `scripts/test-intelligence-country-client-catalog.mjs` checks exact 77/86 coverage, canonical ISO parity, HTTPS-only reference formatting, no source rights or live API claims, and shared web/mobile imports.
 
 ## Data and runtime authority boundary
