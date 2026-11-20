@@ -24,7 +24,7 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.equal(org["@id"], origin + "/#organization");
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
   assert.equal(org.identifier.value, "16716501");
-  assert.deepEqual(org.sameAs, [companiesHouse, linkedIn]);
+  assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
   const approvedLogoAsset = ["assets", "brand", "novapharm-healthcare-logo.png"].join("/");
   assert.equal(org.logo.url, origin + "/" + approvedLogoAsset);
   assert(existsSync(join(root, approvedLogoAsset)));
