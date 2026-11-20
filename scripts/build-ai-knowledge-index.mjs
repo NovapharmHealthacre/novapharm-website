@@ -12,7 +12,7 @@ const siteUrl = "https://novapharmhealthcare.com";
 const releaseDate = process.env.AI_INDEX_DATE || new Date().toISOString().slice(0, 10);
 // AI retrieval excludes forms, private-intent journeys, and legal policy pages.
 // Legal notices must be read directly, not represented as machine-vetted advice.
-const excludedRoutes = new Set(["contact", "account-application", "investor-information", "careers"]);
+const excludedRoutes = new Set(["contact", "account-application", "investor-information", "careers", "search", "technology/ai-governance"]);
 const excludedPublicRoute = (slug) => excludedRoutes.has(slug) || slug === "legal" || slug.startsWith("legal/");
 
 function sha256(value) {

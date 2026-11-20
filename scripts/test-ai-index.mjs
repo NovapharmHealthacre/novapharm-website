@@ -16,8 +16,11 @@ assert.equal(manifest.chunkCount, knowledge.chunks.length);
 assert.equal(manifest.corpusHash, knowledge.corpusHash);
 assert.ok(knowledge.chunks.length >= 300);
 assert.ok(Object.keys(knowledge.keywordIndex.postings).length > 500);
-for (const required of ["page-home", "page-cro", "page-oncology", "page-technology-ai-governance", "leader-vishal-chakravarty"]) {
+for (const required of ["page-home", "page-cro", "page-oncology", "page-products", "leader-vishal-chakravarty"]) {
   assert.ok(manifest.sources.some((source) => source.id === required), required);
+}
+for (const retired of ["page-technology-ai-governance", "page-search"]) {
+  assert.ok(!manifest.sources.some((source) => source.id === retired), `Retired public AI route must not enter research: ${retired}`);
 }
 const blockedSegments = new Set(["portal", "employee", "admin", "board", "docs", "api", "contact", "account-application", "legal"]);
 for (const source of manifest.sources) {

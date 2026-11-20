@@ -41,7 +41,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Produce research-only public evidence fixtures without publishing
         run: |
-          PLATFORM_MODE=PUBLIC_ONLY node scripts/build-pages.mjs
+          npm run build:public-only
+          node scripts/test-owner-corrections.mjs
           node scripts/build-ai-knowledge-index.mjs
           node scripts/test-ai-index.mjs
           node scripts/test-ai-privacy.mjs

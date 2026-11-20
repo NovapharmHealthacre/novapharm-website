@@ -5,6 +5,7 @@ import test from "node:test";
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 const site = read("../scripts/build-site.mjs");
 const builder = read("../scripts/build-ai-knowledge-index.mjs");
+const workflow = read("../.github/workflows/apple-ai-public-artifact.yml");
 const owner = read("../scripts/apply-owner-corrections.mjs");
 const ownerTest = read("../scripts/test-owner-corrections.mjs");
 const bootstrap = read("../src/ai/search-bootstrap.mjs");
@@ -24,6 +25,8 @@ test("offline AI index has a strict public-only and source-identity contract", (
     assert.ok(builder.includes('"' + path + '"'));
   }
   assert.ok(builder.includes('slug.startsWith("legal/")'));
+  assert.ok(builder.includes('"technology/ai-governance"'));
+  assert.ok(builder.includes('"search"'));
   assert.ok(builder.includes("html.matchAll(/<meta"));
   assert.ok(builder.includes("excludedNoindexPublicPages.push(source.file)"));
   assert.match(builder, /source\.file\), "utf8"/);
@@ -33,6 +36,12 @@ test("offline AI index has a strict public-only and source-identity contract", (
   for (const boundary of ["portal and private routes", "customer and supplier records", "uploaded documents"]) {
     assert.ok(builder.includes(boundary));
   }
+});
+
+test("offline research job builds the final approved public fixture, not an incomplete shell", () => {
+  assert.match(workflow, /Produce research-only public evidence fixtures without publishing[\s\S]*?npm run build:public-only/);
+  assert.match(workflow, /node scripts\/test-owner-corrections\.mjs/);
+  assert.doesNotMatch(workflow, /PLATFORM_MODE=PUBLIC_ONLY node scripts\/build-pages\.mjs/);
 });
 
 test("research bootstrap stays user-initiated and is not part of released public website", () => {
