@@ -39,8 +39,8 @@ function isExactCorporateUrl(value,path){
 }
 function canonicalTagMatches(html,path){
   for(const tag of html.match(/<link\b[^>]*>/gi)||[]){
-    const rel=tag.match(/\brel\s*=\s*(["'])(.*?)\1/i)?.[2];
-    const href=tag.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const rel=tag.match(/\srel\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const href=tag.match(/\shref\s*=\s*(["'])(.*?)\1/i)?.[2];
     if(rel?.toLowerCase().split(/\s+/).includes("canonical") &&
       href && isExactCorporateUrl(href,path)) return true;
   }
@@ -48,8 +48,8 @@ function canonicalTagMatches(html,path){
 }
 function openGraphTagMatches(html,path){
   for(const tag of html.match(/<meta\b[^>]*>/gi)||[]){
-    const property=tag.match(/\bproperty\s*=\s*(["'])(.*?)\1/i)?.[2];
-    const content=tag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const property=tag.match(/\sproperty\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const content=tag.match(/\scontent\s*=\s*(["'])(.*?)\1/i)?.[2];
     if(property?.toLowerCase()==="og:url" &&
       content && isExactCorporateUrl(content,path)) return true;
   }
@@ -60,6 +60,8 @@ function openGraphTagMatches(html,path){
 if(!canonicalTagMatches('<link rel="canonical" href="https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
    canonicalTagMatches('<a href="https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
    canonicalTagMatches('<link rel="canonical" href="https://attacker.example/https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
+   canonicalTagMatches('<link data-rel="canonical" data-href="https://novapharmhealthcare.com/products/marketplace/">',"/products/marketplace/") ||
+   openGraphTagMatches('<meta data-property="og:url" data-content="https://novapharmhealthcare.com/products/track/">',"/products/track/") ||
    openGraphTagMatches('<meta property="og:url" content="https://novapharmhealthcare.com/products/track/?ref=private">',"/products/track/") ||
    !openGraphTagMatches('<meta property="og:url" content="https://novapharmhealthcare.com/products/track/">',"/products/track/")){
   throw Error("Public canonical/social URL validation regression");
