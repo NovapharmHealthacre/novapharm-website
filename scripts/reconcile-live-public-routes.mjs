@@ -1,4 +1,18 @@
 /**
+ * Source-driven route universe prevents a damaged sitemap from hiding pages
+ * that are still linked in the owner-approved Corporate catalogue.
+ */
+export function corporateRoutesFromSource(source) {
+  if (typeof source !== "string") throw new TypeError("Corporate page catalogue source required");
+  const slugs = [...source.matchAll(/\bpage\(\s*"([^"]*)"\s*,\s*"([^"]+)"/g)].map(match => match[1]);
+  if (slugs.length !== 32) throw new Error("Expected the 32 reviewed corporate page definitions");
+  if (new Set(slugs).size !== slugs.length) throw new Error("Duplicate corporate page slug");
+  if (slugs.some(slug => slug && !/^[a-z0-9]+(?:[-a-z0-9]*)(?:\/[a-z0-9]+(?:[-a-z0-9]*))*$/.test(slug)))
+    throw new Error("Unsafe corporate page slug");
+  return slugs.map(slug => slug ? "/" + slug + "/" : "/");
+}
+
+/**
  * Exact public sitemap reconciliation. A successful HTTP 200 across a reduced
  * sitemap is not proof that owner-approved products and routes survived.
  * This source-only contract does not publish, submit forms or access private APIs.
