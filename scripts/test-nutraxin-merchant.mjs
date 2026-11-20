@@ -146,3 +146,39 @@ test("UK 19-pack GTIN evidence, uniqueness and promotional variant exclusions", 
   assert(!codes.includes("8680512631392"), "Never use 3-for-2 promo GTIN for single pack");
   assert.equal(parsed.length, gtinBySku.size);
 });
+
+test("All 19 products have source-qualified answer-first content, UK-only sale terms and brand authority", () => {
+  for (const p of registered.products) {
+    const data = catalogue.products.find(item => item.sku === p.sku);
+    const file = read("products/nutraxin/" + p.slug + "/index.html");
+    const entry = parsed.find(item => item.id === p.sku);
+    assert(data && entry);
+    assert(entry.description.includes(p.packSize));
+    assert(entry.description.includes(p.dosageForm));
+    assert(entry.description.includes(p.servingText.toLowerCase()));
+    assert(entry.description.length >= 350,
+      "Description lacks sufficient source-based shopping detail: " + p.sku);
+    assert(file.includes('data-nutraxin-answers="true"'),
+      "No visible questions and answers for " + p.sku);
+    assert(file.includes("Is worldwide shipping available?"));
+    assert(file.includes("International retail availability has not been confirmed."));
+    assert(file.includes("How should I use this supplement?"));
+    assert(file.includes("What does the catalogue list for"));
+    assert(file.includes("nutraxin.uk.com/products/"));
+    assert(!file.includes('"@type":"FAQPage"'),
+      "Avoid adding unsupported FAQ rich-result promises");
+    const schemas = [...file.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+      .map(m => JSON.parse(m[1]));
+    const product = schemas.find(node => node["@type"] === "Product");
+    assert.equal(product.brand.name, "Nutraxin");
+    assert.equal(product.brand.url, "https://nutraxin.uk.com/");
+    assert.equal(product.description, entry.description);
+  }
+});
+test("Collection has crawlable direct links to every exact product landing page", () => {
+  const collection = read("products/nutraxin/index.html");
+  for (const product of registered.products) {
+    assert(collection.includes('href="/products/nutraxin/' + product.slug + '/"'),
+      "Collection missing a direct product link: " + product.sku);
+  }
+});
