@@ -5942,8 +5942,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 21,
+      "usageCount": 9,
+      "referenceCount": 22,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5952,6 +5952,7 @@
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs",
+        "scripts/audit-restored-public-routes.mjs",
         "scripts/programme/validate-post-pr53-candidate.mjs"
       ],
       "exactDuplicateGroup": null,
