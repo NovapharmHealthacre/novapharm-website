@@ -9,6 +9,8 @@ on:
     paths:
       - .github/workflows/verify-restored-homepage-live.yml
   workflow_dispatch:
+  # Read-only rollback checks after successful GitHub Pages publications.
+  deployment_status:
   # Detect an accidental return to the old homepage after later publishing events.
   schedule:
     - cron: "37 2 * * *"
@@ -18,6 +20,7 @@ permissions:
 
 jobs:
   live-origin-acceptance:
+    if: ${{ github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages') }}
     runs-on: ubuntu-latest
     timeout-minutes: 9
     steps:
