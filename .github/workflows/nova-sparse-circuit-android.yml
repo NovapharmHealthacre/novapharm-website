@@ -48,7 +48,15 @@ jobs:
           apk="native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$apk"
           unzip -Z1 "$apk" | grep -Fx "AndroidManifest.xml"
-          unzip -Z1 "$apk" | grep -Eq '^classes[0-9]*\.dex        run: echo "CI debug APK is not a signed production NovaPharm app, commercial release or connected model service."
+          unzip -Z1 "$apk" | grep -Eq '^classes[0-9]*\.dex$'
+          aapt="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          test -x "$aapt"
+          "$aapt" dump badging "$apk" | grep -F "package: name='com.novapharm.intelligence.research'"
+          "$aapt" dump permissions "$apk" | tee "$RUNNER_TEMP/novapharm-android-research-permissions.txt"
+          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-android-research-permissions.txt"; then
+            echo "::error::Restricted Android permission appeared in compiled research APK"
+            exit 1
+          fi
 
           sha256sum "$apk" | tee "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
           echo "Debug APK only. Uses ephemeral Android debug signing; no store or production identity."
