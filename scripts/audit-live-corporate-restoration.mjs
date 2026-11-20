@@ -47,8 +47,8 @@ function anchors(html) {
   return out;
 }
 function navText(html) {
-  const nav = capture(html,/<nav\b[^>]*(?:id="primary-navigation"|aria-label="Primary navigation"|class="[^"]*global-nav[^"]*")[^>]*>([\s\S]*?)<\/nav>/i);
-  return normalize(nav||capture(html,/<header\b[^>]*>([\s\S]*?)<\/header>/i));
+  const header = capture(html,/<header\b[^>]*>([\s\S]*?)<\/header>/i);
+  return normalize(header);
 }
 const sitemap = await timeoutFetch(ORIGIN+"/sitemap.xml?site-restore="+Date.now());
 const publishedPaths = [...sitemap.text.matchAll(/<loc>\s*(https:\/\/novapharmhealthcare\.com\/[^<]*)\s*<\/loc>/g)].map(m=>new URL(m[1]).pathname);
@@ -136,10 +136,31 @@ for(const origin of ["https://portal.novapharmhealthcare.com/","https://intellig
  }catch(e){addIssue(origin,"protected-entry-unreachable",e.message,"informational");}
 }
 const uniqueUnresolved = [...new Map(unresolvedLinks.map(x=>[x.source+"|"+x.href,x])).values()];
+const rootOriginProbes = [];
+for(let i=0;i<8;i++){
+  try{
+    const response=await timeoutFetch(ORIGIN+"/?repeat-origin-audit="+Date.now()+"-"+i,1);
+    const html=response.text;
+    rootOriginProbes.push({
+      status:response.res.status,
+      earth:html.includes("nph-earth-hero-landscape"),
+      restorationMarker:html.includes("novapharm-scoped-homepage-restore"),
+      legacySplit:html.includes("npd-apple-hero-art"),
+      etag:response.res.headers.get("etag"),
+      age:response.res.headers.get("age"),
+      lastModified:response.res.headers.get("last-modified"),
+      server:response.res.headers.get("server")
+    });
+  }catch(e){rootOriginProbes.push({error:e.message});}
+}
+console.log("REPEATED LIVE HOMEPAGE RESPONSES "+JSON.stringify(rootOriginProbes));
+if(rootOriginProbes.some(x=>x.restorationMarker) && rootOriginProbes.some(x=>!x.restorationMarker))
+  addIssue("/","inconsistent-public-homepage","Different versions of homepage served across cache-bypassed requests");
+
 const report={
  generatedAt:now, gitSha:process.env.GITHUB_SHA||null, deployedBranchAudit:true,
  summary:{registeredCanonicalPaths:expectedByPath.size,publishedSitemapRoutes:publishedPaths.length,totalRoutesChecked:routes.length,nutraxinProductRoutes:skuPaths.length, extraRoutes, failures:issues.filter(x=>x.severity==="failure").length,informational:issues.filter(x=>x.severity==="informational").length,unresolvedInternalLinks:uniqueUnresolved.length},
- issues,assetChecks:checkedAssetUrls,unresolvedInternalLinks:uniqueUnresolved,results:checked
+ issues,assetChecks:checkedAssetUrls,rootOriginProbes,unresolvedInternalLinks:uniqueUnresolved,results:checked
 };
 mkdirSync("artifacts/site-restoration",{recursive:true});
 writeFileSync("artifacts/site-restoration/live-restoration-audit.json",JSON.stringify(report,null,2));
