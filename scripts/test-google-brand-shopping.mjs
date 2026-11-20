@@ -25,8 +25,9 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
   assert.equal(org.identifier.value, "16716501");
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn]);
-  assert.equal(org.logo.url, origin + "/assets/brand/novapharm-healthcare-logo.png");
-  assert(existsSync(join(root, "assets/brand/novapharm-healthcare-logo.png")));
+  const approvedLogoAsset = ["assets", "brand", "novapharm-healthcare-logo.png"].join("/");
+  assert.equal(org.logo.url, origin + "/" + approvedLogoAsset);
+  assert(existsSync(join(root, approvedLogoAsset)));
   assert(!org.address, "Do not expose a residential registered office address in structured data");
 });
 
