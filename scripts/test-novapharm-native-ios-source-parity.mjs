@@ -179,3 +179,23 @@ test("NovaPharm preserves corporate red while both semantic control tints exceed
   assert.ok(contrast([227,18,11], groupedLight) < 4.5,
     "Never use the unadapted corporate red as light grouped-background small text");
 });
+
+
+test("public GitHub must not publish private Swift Simulator or accessibility artifacts", () => {
+  const workflow = read(".github/workflows/nova-ios-swift-native.yml");
+  const protectedUploads = [
+    "Upload Apple accessibility and iPad evidence in private repositories only",
+    "Upload native UI test evidence in private repositories only",
+    "Upload non-distributable iOS Simulator artifact in private repositories only"
+  ];
+  for (const name of protectedUploads) {
+    const start = workflow.indexOf("      - name: " + name);
+    assert.ok(start >= 0, "Missing privacy guarded CI step: " + name);
+    const body = workflow.slice(start, workflow.indexOf("\n      - name:", start + 1) < 0
+      ? undefined : workflow.indexOf("\n      - name:", start + 1));
+    assert.match(body, /if: \$\{\{ (?:always\(\) && )?github\.event\.repository\.private \}\}/);
+    assert.match(body, /uses: actions\/upload-artifact@/);
+  }
+  assert.match(workflow, /if: \$\{\{ !github\.event\.repository\.private \}\}/);
+  assert.match(workflow, /private Simulator binaries, screenshots, and XCResult uploads are suppressed/);
+});
