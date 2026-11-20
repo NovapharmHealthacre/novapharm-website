@@ -374,3 +374,17 @@ This continuation documents the last 11 previously unreviewed **High** priority 
 **Candidate cumulative (only after independent review and ancestor merges):** 110/172 source reviews (63.95%), 330/516 decisions (63.95%), 62 unreviewed articles and 186 decisions outstanding. The 42 Critical and 61 High source topics are now reviewed on this dependent branch. **0/172 independent production-verified implementations**, 0 accepted out-of-scope dispositions, no release authorization. Existing six bounded partial public observations remain partial. Do not treat this candidate as merged `main` or a signed mobile release.
 
 **Sequence:** #883 → #891 → this 11-High review proposal. Exact-head source/CI plus independent Security/Quality APPROVED reviews are required for each dependent change. No AWS, mobile signing, protected tenant deployment, real medicine data admission, payment, external identity provider or production-owner signoff changed.
+
+## 20 November continuation — all 18 Medium-priority official sources inspected
+
+Reviewed the current original Markdown pages for **Playing haptics; Column views; Lockups; Activity views; Path controls; Page controls; Panels; Sliders; Gauges; Action button; App Clips; iCloud; Mac Catalyst; Maps; NFC; Siri; Tap to Pay on iPhone; Wallet**. The full per-topic official source note and independent three-platform rationales are in the JSON register. Key distinctions:
+
+- Apple TV-only `Lockups` and Mac Catalyst (not a current NovaPharm release target) remain candidates for independently approved out-of-scope disposition, **not deployed features**.
+- Apple Mac-specific `Column views`, `Path controls` and `Panels` may inform web analogues but do not create AppKit controls on iOS or Android.
+- `Activity views`, `Page controls`, `Sliders` and `Gauges` have browser and native UX implications; access rights, accurate metric provenance, VoiceOver/TalkBack and actual release receipts remain unproven.
+- `Action button`, `App Clips`, `iCloud`, `Siri`, `NFC`, `Tap to Pay on iPhone`, and `Wallet` are not configured merely by adding guideline notes. Respect native entitlements, provider agreements, signed builds and explicit feature releases.
+- `Maps` has relevant cross-platform design implications but neither Apple MapKit nor another map provider has been provisioned or deployed through this change.
+
+**Candidate cumulative after the full dependent chain (#883 → #891 → this branch): 128/172 = 74.42% independently documented HIG source reviews; 384/516 = 74.42% separately reasoned web/iOS/Android decisions.** All 42 Critical, 61 High and 24 Medium guideline articles now have original-source review records on this candidate branch. **44 Later-priority articles and 132 platform decisions remain unassessed.** All 172 production implementation statuses remain `not_verified` (0/172). The 3 wholly out-of-scope candidates are pending independent approval, not accepted N/A and not shipped.
+
+This is review and scoping documentation only, with no production, tenant, payment, app signing, AWS or licensed medicine data mutation.
