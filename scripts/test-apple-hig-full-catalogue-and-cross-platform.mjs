@@ -1045,6 +1045,8 @@ test("optional read-only rendered public HIG evidence sampling",
                 await page.keyboard.press("Tab");
                 row.keyboardFocusSequence.push(await observeFocusedElement());
               }
+              if (row.keyboardFocusSequence.length !== 5)
+                row.errors.push("Incomplete five-stop keyboard navigation evidence");
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1094,7 +1096,9 @@ test("optional read-only rendered public HIG evidence sampling",
       "Source PR SHA is not assumed identical to published origin SHA",
       "Blocked off-domain resources may affect rendering",
       "Passed observations do not automatically promote any HIG topic to verified"],
-    total:rows.length,failed:rows.filter(r=>r.errors.length).length,rows
+    total:rows.length,failed:rows.filter(r=>r.errors.length).length,
+    keyboardFocusObservations:rows.reduce((sum,r) => sum + r.keyboardFocusSequence.length,0),
+    rows
   };
   const observedShas = [...new Set(rows.map(r => r.publishedSourceSha).filter(Boolean))];
   result.uniquePublishedSourceShas = observedShas;
@@ -1108,6 +1112,8 @@ test("optional read-only rendered public HIG evidence sampling",
     " observations, " + result.failed + " gaps. This is NOT a production conformance certificate.");
   assert.equal(result.total, routes.length * widths.length * 2);
    assert.equal(result.total, 36, "Read-only production scope must not silently shrink");
+  assert.equal(result.keyboardFocusObservations, result.total * 5,
+    "Five bounded keyboard Tab observations per public browser/viewport/page case are required");
   assert.equal(result.failed,0,"Observed public browser/accessibility gaps: see screenshot and JSON artifact");
    assert.equal(result.singlePublicReleaseObserved, true,
      "Every public rendered HIG observation must share the same exact published source SHA");
