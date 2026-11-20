@@ -70,6 +70,18 @@ The tests use stable `accessibilityIdentifier` values and system accessibility e
 
 **Acceptance discipline:** successful source checks, installation and screenshots are not enough to mark interaction journeys passed. Only count them if the corresponding `xcodebuild test` stage completes successfully and its `.xcresult` confirms the tests. A blocked macOS runner or failing UI selector is an actionable failure, not a production-verification receipt.
 
+## Dynamic Type, accessibility and iPad acceptance extension — 20 November 2026
+
+This new **native SwiftUI**, non-production candidate adds Apple XCTest accessibility audits and iPad Simulator launch verification on top of the 3 completed base XCUITest interaction journeys:
+
+- `UITests/NovaPharmAccessibilityUITests.swift` runs Apple's `XCUIApplication.performAccessibilityAudit` for contrast, clipped text, hit region and sufficient element descriptions on Intelligence and Customer Portal screens. These are automated checks on visible screens only, **not manual VoiceOver testing**.
+- The macOS workflow uses `xcrun simctl ui <device> content_size accessibility-extra-extra-extra-large` before running the large-text navigation test, and captures the configured size, screenshot and `.xcresult`. A failure fails the exact-head CI job; there is no silent `|| true` or baseline suppression for audit findings.
+- The Intelligence Swift Chart gains additional vertical space at accessibility Dynamic Type sizes. The country-reference filter changes from compact segmented controls to a menu at these sizes to avoid truncating the three category labels.
+- A separate iPad Simulator is booted, the unsigned native app installed and launched, and a screenshot/launch receipt captured. Missing iPad Simulator capacity is a **failed verification**, not a fabricated iPad pass. This test checks *launch*, not all iPad workspaces or responsive details.
+- No customer/patient/employee information, live source data, payments, network calls, model execution or signed IPA are involved. The owner production-denial register and £0 incremental infrastructure cap remain enforced.
+
+Run results must be inspected before claiming any accessibility or iPad coverage. Manual VoiceOver focus/reading order, Switch Control, RTL, landscape/Stage Manager, physical iPhone/iPad and independent production approval remain outside these automated checks.
+
 ## Next engineering gates
 
 1. Verify the new SwiftUI app builds under the actual Xcode/iOS Simulator SDK and inspect compiled artifacts.
