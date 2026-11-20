@@ -97,3 +97,35 @@ test("native prototypes are not certified installed iOS or Android releases", ()
   assert.equal(manifest.production.signedNativeDistributionReceiptsAccepted, false);
   assert.equal(manifest.production.exactLiveProtectedDeploymentReceiptsAccepted, false);
 });
+
+
+test("expanded route-candidate ledger stays source-only across 138 distinct cases", async () => {
+  const { execFileSync } = await import("node:child_process");
+  execFileSync(process.execPath, ["scripts/render-apple-hig-route-acceptance-candidates.mjs"],
+    {stdio:"pipe",timeout:20000});
+  const ledger = JSON.parse(read("artifacts/apple-hig-production-audit/source-route-candidates.json"));
+  assert.equal(ledger.schema,"novapharm.hig-route-acceptance-candidates.v1");
+  assert.equal(ledger.sourceOnly,true);
+  assert.equal(ledger.fullUrlUniverseProven,false);
+  assert.equal(ledger.deployedOriginOrArtifactAccepted,false);
+  assert.equal(ledger.productionSignoff,"not_granted");
+  assert.equal(ledger.sourceBaselineSha,manifest.sourceSnapshotSha);
+  assert.deepEqual(ledger.counts,{
+    corporatePages:32,articles:6,nutraxinProducts:19,portalModules:54,
+    intelligenceWorkspaces:22,novaMLResearch:5,totalCandidates:138
+  });
+  assert.equal(ledger.candidates.length,138);
+  assert.equal(new Set(ledger.candidates.map(x=>x.route)).size,138);
+  assert.equal(ledger.candidates.filter(x=>x.kind==="portal_module"
+    && x.access==="protected_candidate").length,54);
+  assert.equal(ledger.candidates.filter(x=>x.kind==="intelligence_workspace"
+    && x.access==="protected_candidate").length,22);
+  assert.equal(ledger.candidates.filter(x=>x.kind==="nova_ml_research"
+    && x.access==="protected_candidate").length,5);
+  assert.ok(ledger.candidates.every(x=>x.status==="source_candidate_not_production_verified"
+    && x.productionReceipt===null && x.independentApproval===null
+    && x.accessibilityAcceptance===null));
+  assert.ok(ledger.candidates.some(x=>x.route==="/"));
+  assert.ok(ledger.candidates.some(x=>x.route==="/portal/dashboard/"));
+  assert.ok(ledger.candidates.some(x=>x.route==="/products/nutraxin/vitamin-d3-120-tablets/"));
+});
