@@ -131,3 +131,41 @@ test("Expo recognizes shared first-party mjs reference in both platform bundles"
   assert.match(metro, /"mjs"/);
   assert.match(metro, /watchFolders/);
 });
+
+const mobileWorkflow = read(".github/workflows/intelligence-global-mobile-contracts.yml");
+const mobileCandidate = mobileWorkflow.split("  mobile-bundle-preflight:\n")[1];
+const mobilePackage = JSON.parse(read("native/novapharm-intelligence-mobile/package.json"));
+
+test("mobile CI prepares a reviewable dependency lockfile without claiming store readiness", () => {
+  assert.ok(mobileCandidate, "Isolated Expo mobile preflight job must exist");
+  assert.match(mobileCandidate, /working-directory: native\/novapharm-intelligence-mobile/);
+  assert.match(mobileCandidate, /npm install --package-lock-only --ignore-scripts --no-audit --no-fund/);
+  assert.match(mobileCandidate, /npm ci --ignore-scripts --no-audit --no-fund/);
+  assert.doesNotMatch(mobileCandidate, /--no-package-lock|npm install --ignore-scripts --no-package-lock/);
+  assert.match(mobileCandidate, /l\.lockfileVersion !== 3/);
+  assert.match(mobileCandidate, /l\.packages\?\.\[""\]\?\.name !== p\.name/);
+  assert.match(mobileCandidate, /actions\/upload-artifact@[a-f0-9]{40}/);
+  assert.match(mobileCandidate, /if-no-files-found: error/);
+  assert.match(mobileCandidate, /retention-days: 7/);
+  assert.match(mobileCandidate, /path: native\/novapharm-intelligence-mobile\/package-lock\.json/);
+  const stages = [
+    "npm install --package-lock-only",
+    "actions/upload-artifact@",
+    "npm ci --ignore-scripts",
+    "npm run typecheck",
+    "npx expo export --platform ios",
+    "npx expo export --platform android"
+  ];
+  const indices = stages.map((stage) => mobileCandidate.indexOf(stage));
+  assert.ok(indices.every((index) => index >= 0), "Every preflight and artifact handoff stage is required");
+  assert.deepEqual([...indices].sort((a, b) => a - b), indices, "Source stages must execute in the defined order");
+});
+
+test("lockfile handoff cannot manufacture credentials or production mobile builds", () => {
+  const app = JSON.parse(read("native/novapharm-intelligence-mobile/app.json")).expo;
+  assert.equal(mobilePackage.private, true);
+  assert.equal(app.ios.bundleIdentifier, undefined);
+  assert.equal(app.android.package, undefined);
+  assert.doesNotMatch(mobileCandidate, /eas build|xcodebuild archive|gradle .*bundleRelease|app-store|play-store|AWS_ACCESS_KEY_ID|client_secret|access_token/i);
+  assert.match(read("native/novapharm-intelligence-mobile/README.md"), /This does not yet make mobile builds reproducible/);
+});
