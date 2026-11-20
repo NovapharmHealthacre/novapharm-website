@@ -1,0 +1,40 @@
+name: Apple StoreKit read-only catalogue candidate
+on:
+  pull_request:
+    paths:
+      - "native/novapharm-intelligence-storekit/**"
+      - ".github/workflows/nova-storekit-readonly.yml"
+  push:
+    branches: [main]
+    paths:
+      - "native/novapharm-intelligence-storekit/**"
+      - ".github/workflows/nova-storekit-readonly.yml"
+
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  read-only-storekit:
+    name: macOS Swift StoreKit metadata preflight and denial tests
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Display supported Swift and Xcode versions
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Compile and test isolated read-only package
+        run: swift test --package-path native/novapharm-intelligence-storekit
+      - name: Ensure no purchase or transaction authorizations are in the source candidate
+        run: |
+          if grep -R -nE '\.purchase\(|Transaction\.(currentEntitlements|updates)|beginRefundRequest\(' native/novapharm-intelligence-storekit/Sources; then
+            echo "::error::StoreKit purchase/entitlement/refund activation requires a separate reviewed PR"
+            exit 1
+          fi
+      - name: Explain non-release result
+        run: echo "SwiftPM compilation is not a signed iOS app, store product, purchase verification, Apple approval or production acceptance."
