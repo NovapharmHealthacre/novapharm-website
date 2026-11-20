@@ -74,6 +74,20 @@ await boundedMap([...pagePaths],6,async path=>{
   try {
     const html=await get(path);
     if(!/<html\b/i.test(html))throw Error("HTML document missing");
+    if(path==="/products/esco/"){
+      if(!html.includes("data-esco-catalogue") || (html.match(/data-esco-entry/g)||[]).length<373)
+        throw Error("ESCO 373-product catalogue body is missing or incomplete");
+      if(!html.includes('https://novapharmhealthcare.com/products/esco/'))
+        throw Error("ESCO canonical route mismatch");
+      if(!html.includes("/assets/js/esco-catalogue.js"))
+        throw Error("ESCO public catalogue script is not loaded");
+    }
+    if(path==="/products/esco/bag/"){
+      if(!html.includes("data-esco-bag-items") || !html.includes("esco-bag.js"))
+        throw Error("ESCO 373-reference bag experience missing");
+      if(!/<meta\s+name=["']robots["']\s+content=["']noindex,\s*follow["']/i.test(html))
+        throw Error("ESCO customer bag must not be indexed by search engines");
+    }
     const references=pathsFromHTML(html,path);
     for(const target of references) {
       if(!outbound.has(target))outbound.set(target,new Set());
