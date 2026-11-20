@@ -67,7 +67,8 @@ jobs:
           test -s app/build/outputs/apk/debug/app-debug.apk
           sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/outputs/apk/debug/SHA256SUMS.txt
           test -s app/build/outputs/apk/debug/SHA256SUMS.txt
-      - name: Upload non-production Android debug APK and SHA-256
+      - name: Upload non-production Android debug APK and SHA-256 (private repositories only)
+        if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-android-research-debug-${{ github.event.pull_request.head.sha || github.sha }}
@@ -77,5 +78,8 @@ jobs:
             ${{ runner.temp }}/novapharm-android-test-provenance.txt
           if-no-files-found: error
           retention-days: 7
+      - name: Never expose private-QA APK artifacts from a public repository
+        if: ${{ !github.event.repository.private }}
+        run: echo "::notice::Repository is public; debug APK artifact upload suppressed. Use a separately approved private QA destination."
       - name: Reaffirm release boundary
         run: echo "CI debug APK is not a release-signed production NovaPharm app, commercial release or connected model service."
