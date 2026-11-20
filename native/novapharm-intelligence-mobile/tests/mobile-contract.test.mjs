@@ -169,3 +169,14 @@ test("lockfile handoff cannot manufacture credentials or production mobile build
   assert.doesNotMatch(mobileCandidate, /eas build|xcodebuild archive|gradle .*bundleRelease|app-store|play-store|AWS_ACCESS_KEY_ID|client_secret|access_token/i);
   assert.match(read("native/novapharm-intelligence-mobile/README.md"), /This does not yet make mobile builds reproducible/);
 });
+
+
+test("mobile CI avoids re-resolving reviewed mobile dependencies and checks registry integrity", () => {
+  assert.match(mobileCandidate, /if \[ -f package-lock\.json \]; then/);
+  assert.match(mobileCandidate, /Using committed mobile package-lock\.json; refusing to regenerate dependencies/);
+  assert.match(mobileCandidate, /npm install --package-lock-only --ignore-scripts --no-audit --no-fund/);
+  assert.match(mobileCandidate, /https:\/\/registry\.npmjs\.org\//);
+  assert.match(mobileCandidate, /sha512-/);
+  assert.match(mobileCandidate, /Unapproved resolver URL or missing SHA-512/);
+  assert.match(mobileCandidate, /npm ci --ignore-scripts --no-audit --no-fund/);
+});
