@@ -67,6 +67,9 @@ try {
         await route.abort("blockedbyclient");
       });
       const page=await context.newPage();
+      const consoleProblems=[];
+      page.on("pageerror",err=>consoleProblems.push("PAGEERROR "+String(err).slice(0,160)));
+      page.on("console",msg=>{ if(msg.type()==="error")consoleProblems.push("CONSOLE "+msg.text().slice(0,160)); });
       await page.goto(local+"/contact/",{waitUntil:"domcontentloaded"});
       await page.locator('[data-live-b2b-enquiry-form]').waitFor({timeout:10000});
       const form=page.locator('[data-live-b2b-enquiry-form]');
@@ -83,7 +86,11 @@ try {
       }
       await fill();
       await form.locator('button[type=submit]').click();
-      await page.waitForFunction(id=>document.querySelector("[data-live-contact-status]")?.textContent?.includes("Reference: "+id),receipt,{timeout:10000});
+      try { await page.waitForFunction(id=>document.querySelector("[data-live-contact-status]")?.textContent?.includes("Reference: "+id),receipt,{timeout:10000}); }
+      catch(error) {
+        const state=await page.locator("[data-live-contact-status]").textContent().catch(()=>"<missing>");
+        throw new Error(label+" receipt timeout; status="+JSON.stringify(state)+"; fakePostCount="+result.attempts+"; blockedExternal="+result.realExternalRequests+"; browserErrors="+JSON.stringify(consoleProblems)+"; underlying="+String(error));
+      }
       result.valid=true;
       failMode=true;
       await fill();
