@@ -53,7 +53,16 @@ await Promise.all([
     assert(html.includes("Follow your order.")&&html.includes("data-np-order-lookup"),"New status-only tracker missing");
     assert(html.includes("https://novapharmhealthcare.com/products/track/"),"Tracking canonical missing");
     assert(html.includes("/assets/js/commerce-order-track.js"),"Tracking script missing");
+    assert(html.includes('<meta name="robots" content="noindex, follow">'),"Order lookup must remain noindex after release");
+    assert(html.includes('property="og:url" content="https://novapharmhealthcare.com/products/track/"'),"Order lookup inherited wrong social URL");
     assert(!html.includes("data-order-payment-card")&&!html.includes("data-customer-address"),"Customer data must not be embedded");
+  }),
+  check("/sitemap.xml","xml",xml=>{
+    assert((xml.match(/<loc>/g)||[]).length===61,"Published sitemap must contain 61 indexable routes");
+    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'),"392-product Marketplace missing from sitemap");
+    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/esco/</loc>'),"373-reference ESCO collection missing from sitemap");
+    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>'),"Private-reference tracking must not be in sitemap");
+    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>'),"Customer bag must not be in sitemap");
   }),
   check("/assets/data/commerce-marketplace.json","application/json",body=>{
     const j=JSON.parse(body);
