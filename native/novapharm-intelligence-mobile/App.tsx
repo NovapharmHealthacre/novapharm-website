@@ -3,44 +3,44 @@
  * No HTTP, credentials, customer records or source facts are included.
  * Existing web workspace states and global source candidates remain non-live.
  */
-import React, { useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import {
   FlatList,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   useWindowDimensions,
   View
 } from "react-native";
+import { inspectSyntheticFeature } from "../../src/core/ai/model-microscope-synthetic-reference.mjs";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
 import sourceRegister from "../../docs/intelligence/global-pharma-sources-20261117.json";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
+import { CLIP_MOBILE_RELEASE } from "./clip-research";
+import { MapsResearchScreen } from "./MapsResearchScreen";
+import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
+import { ScienceResearchMobile } from "./ScienceResearchMobile";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
+import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
-const palette = Object.freeze({
-  canvas: "#FFFFFF",
-  grouped: "#F5F5F7",
-  raised: "#E8E8ED",
-  border: "#D2D2D7",
-  primary: "#1D1D1F",
-  secondary: "#424245",
-  tertiary: "#595961",
-  accent: "#E3120B"
-});
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
 const tabs: ReadonlyArray<{ screen: Screen; label: string }> = [
   { screen: "overview", label: "Overview" },
   { screen: "workspaces", label: "Workspaces" },
   { screen: "sources", label: "Sources" },
-  { screen: "account", label: "Account" }
+  { screen: "more", label: "More" }
 ];
 const pilotSlugs = new Set([
   "medicine-search", "medicine-overview", "identity",
@@ -48,6 +48,7 @@ const pilotSlugs = new Set([
 ]);
 
 function SectionHeading({ title, detail }: { title: string; detail?: string }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View style={styles.sectionHeading}>
       <Text style={styles.sectionTitle} accessibilityRole="header">{title}</Text>
@@ -57,6 +58,7 @@ function SectionHeading({ title, detail }: { title: string; detail?: string }) {
 }
 
 function Metric({ number, label }: { number: string; label: string }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View style={styles.metric} accessible accessibilityLabel={number + ". " + label}>
       <Text style={styles.metricNumber}>{number}</Text>
@@ -66,6 +68,7 @@ function Metric({ number, label }: { number: string; label: string }) {
 }
 
 function WorkspaceCard({ item, onPress }: { item: Workspace; onPress: () => void }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <Pressable
       accessibilityRole="button"
@@ -86,6 +89,7 @@ function WorkspaceCard({ item, onPress }: { item: Workspace; onPress: () => void
 }
 
 function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean }) {
+  const { styles } = useContext(ThemeContext);
   return (
     <View
       accessible
@@ -101,18 +105,19 @@ function SourceCard({ item, twoColumns }: { item: Source; twoColumns: boolean })
   );
 }
 
-function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (screen: Screen) => void }) {
+function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSelect: (screen: Screen) => void; largeText: boolean }) {
+  const { styles } = useContext(ThemeContext);
   return (
-    <View style={styles.navigation} accessibilityRole="tablist">
+    <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen;
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account"));
         return (
           <Pressable
             key={tab.screen}
             accessibilityRole="tab"
             accessibilityLabel={tab.label}
             accessibilityState={{ selected: active }}
-            style={[styles.navItem, active && styles.navItemActive]}
+            style={[styles.navItem, largeText && styles.navItemLarge, active && styles.navItemActive]}
             onPress={() => onSelect(tab.screen)}
           >
             <Text style={[styles.navLabel, active && styles.navLabelActive]}>{tab.label}</Text>
@@ -124,10 +129,15 @@ function Navigation({ selected, onSelect }: { selected: Screen; onSelect: (scree
 }
 
 export default function App() {
-  const { width } = useWindowDimensions();
-  const twoColumns = width >= 760;
+  const darkMode = useColorScheme() === "dark";
+  const styles = darkMode ? darkStyles : lightStyles;
+  const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
+  const { width, fontScale } = useWindowDimensions();
+  const largeText = fontScale >= 1.4;
+  const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
 
@@ -188,15 +198,19 @@ export default function App() {
   );
 
   return (
-    <SafeAreaView style={styles.root}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaProvider>
+      <ThemeContext.Provider value={{ styles, palette }}>
+        <SafeAreaView style={styles.root} edges={["top", "right", "bottom", "left"]}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} />
       <View style={styles.appHeader}>
         <Text style={styles.brand}>NOVAPHARM</Text>
         <Text style={styles.appTitle} accessibilityRole="header">Intelligence</Text>
         <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
 
-      {screen === "sources" ? (
+      {screen === "countries" ? (
+        <CountryDirectoryScreen />
+      ) : screen === "sources" ? (
         <FlatList
           key={twoColumns ? "sources-wide" : "sources-narrow"}
           style={styles.list}
@@ -264,7 +278,180 @@ export default function App() {
               <Text style={styles.meta}>Unavailable on mobile. A separately verified session and accepted evidence are required.</Text>
             </>
           )}
-          {screen === "account" && (
+          {screen === "more" && (
+            <>
+              <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
+              {([
+                { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
+                { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
+                { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
+                { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
+                { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
+                { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
+                { screen: "science", label: "Science research", detail: "Offline evidence and scientific-method review; no live model or medicine data" },
+                { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
+              ] as const).map((item) => (
+                <Pressable
+                  key={item.screen}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label + ". " + item.detail}
+                  style={[styles.card, styles.moreAction]}
+                  onPress={() => changeScreen(item.screen)}
+                >
+                  <Text style={styles.cardTitle}>{item.label}</Text>
+                  <Text style={styles.description}>{item.detail}</Text>
+                </Pressable>
+              ))}
+            </>
+          )}
+          {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
+          {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
+          {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
+            const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
+            if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
+          }} />}
+
+          {screen === "research" && (
+            <>
+              <SectionHeading
+                title={novaMlSparseCircuitAssurance.title}
+                detail="Research-only candidate. No live model inference, clinical decision or production activation."
+              />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Unverified research candidate</Text>
+                <Text style={styles.description}>{novaMlSparseCircuitAssurance.offlineExperiment.description}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.sample}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.isolatedAccuracy}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.ablatedAccuracy}</Text>
+                <Text style={styles.description}>{novaMlSparseCircuitAssurance.offlineExperiment.limitation}</Text>
+                <Text style={styles.meta}>{novaMlSparseCircuitAssurance.offlineExperiment.status}</Text>
+              </View>
+              <SectionHeading title="Independent release requirements" detail={novaMlSparseCircuitAssurance.releasePolicy} />
+              {novaMlSparseCircuitAssurance.methodGates.map((gate) => (
+                <View key={gate.name} style={styles.requirement}>
+                  <Text style={styles.cardTitle}>{gate.name}</Text>
+                  <Text style={styles.description}>{gate.detail}</Text>
+                </View>
+              ))}
+              <Text style={styles.meta}>
+                This screen reads bundled, non-sensitive governance metadata only.
+                No model weights, pharmaceutical data, patient imagery, external requests or verification receipts are loaded.
+              </Text>
+              <View style={styles.rule} />
+              <SectionHeading
+                title="Nova ML research"
+                detail="One shared method catalogue for web, iOS and Android. This is an offline educational preview, not model inference."
+              />
+              <View style={styles.card} accessible>
+                <Text style={styles.cardTitle}>Research only · Not production approved</Text>
+                <Text style={styles.description}>
+                  L₀ sparsity, reward overoptimisation, critiques, instruction evaluation and long-horizon simulation
+                  are unverified research foundations. No model weights, clinical predictions, independent ground truth,
+                  source-rights grants, customer session or network service is available here.
+                </Text>
+              </View>
+              {[novaMlSparseResearchMethod, ...novaMlAlignmentResearchMethods].map((method) => (
+                <View key={method.id} style={styles.card} accessible accessibilityLabel={method.title + ". " + method.researchStatus + ". " + method.approval}>
+                  <Text style={styles.cardTitle}>{method.title}</Text>
+                  <Text style={styles.description}>{method.summary}</Text>
+                  <Text style={styles.meta}>{method.researchStatus}</Text>
+                  <Text style={styles.description}>{method.approval}</Text>
+                </View>
+              ))}
+              <View style={styles.rule} />
+              <SectionHeading
+                title="Native model programme"
+                detail="The four original native ML extensions and separately gated Model Microscope candidate require independent identity, licensing, review and device approval."
+              />
+              {novaMlWorkspaceCatalogue.map((item) => (
+                <View key={item.slug} style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Text style={styles.description}>{item.summary}</Text>
+                  <Text style={styles.meta}>{item.platform} · Not enabled in this preview</Text>
+                </View>
+              ))}
+            </>
+          )}
+          {screen === "inspect" && (
+            <>
+              <SectionHeading title="Model Microscope" detail="Read-only neural-network inspection research. No live models or approved inspection artifacts are installed." />
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>No approved model inspections</Text>
+                <Text style={styles.description}>The future inspector will select a governed model and version, layer, feature and provenance-linked hypothesis. The OpenAI research does not provide NovaPharm with an inference or microscopy API.</Text>
+                <Text style={styles.meta}>Private source-only preview · Zero production inference · Zero network requests · No patient data</Text>
+              </View>
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Synthetic model reference</Text>
+                <Text style={styles.description}>Run a locally defined 4 × 4 neural-network feature demonstration. It is not an approved medicine model, clinical explanation or live AI service.</Text>
+                <Pressable accessibilityRole="button" accessibilityLabel="Run synthetic neuron feature reference" style={styles.syntheticButton} onPress={() => setSyntheticExample(inspectSyntheticFeature({ layerId: "features", featureId: "center-columns" }))}>
+                  <Text style={styles.syntheticButtonLabel}>Run synthetic reference</Text>
+                </Pressable>
+                {syntheticExample ? <View accessible accessibilityLabel="Synthetic four by four feature grid, no medical data" style={styles.syntheticGrid}>
+                  {syntheticExample.optimizedGrid.map((line, row) => <View key={row} style={styles.syntheticRow}>
+                    {line.map((value, column) => <View key={column} style={[styles.syntheticPixel, { backgroundColor: "rgba(29,29,31," + value + ")" }]} />)}
+                  </View>)}
+                  <Text style={styles.meta}>Initial activation {syntheticExample.initialActivation} · Maximized {syntheticExample.finalActivation}. Synthetic only.</Text>
+                </View> : null}
+              </View>
+              <SectionHeading title="Interpretability research lifecycle" />
+              {modelMicroscopeInspectionStages.map((stage) => (
+                <View key={stage.id} style={styles.card}>
+                  <Text style={styles.cardTitle}>{stage.title}</Text>
+                  <Text style={styles.description}>{stage.summary}</Text>
+                  <Text style={styles.meta}>Not operational · Requires: {stage.requiredEvidence}</Text>
+                </View>
+              ))}
+              <SectionHeading title="Research requirements" />
+              {novaMlWorkspaceCatalogue.find((module) => module.slug === "nova-model-microscope")?.requirements.map((requirement) => (
+                <View style={styles.requirement} key={requirement}><Text style={styles.description}>{requirement}</Text></View>
+              ))}
+              <Text style={styles.meta}>Visualizations may suggest hypotheses but cannot establish model causality, clinical safety or regulatory validity. Use accepted source records and human review.</Text>
+            </>
+          )}
+          {screen === "visual" && (
+            <>
+              <SectionHeading
+                title="Visual catalogue research"
+                detail="OpenAI CLIP research candidate. English text-to-approved-public-image retrieval is not enabled in the unsigned mobile preview."
+              />
+              <View style={styles.card} accessible accessibilityLabel="CLIP visual research disabled. Authentication and licensed private inference unavailable.">
+                <Text style={styles.cardTitle}>Research candidate · not connected</Text>
+                <Text style={styles.description}>
+                  No model weights, image catalogue, external visual API or uploaded images are included.
+                  A signed board-only session, protected gateway, licensed artwork, independent
+                  quality evaluation and verified private model runtime are required.
+                </Text>
+                <Text style={styles.meta}>
+                  Contract: {CLIP_MOBILE_RELEASE.contract} · Runtime: {CLIP_MOBILE_RELEASE.state}
+                </Text>
+              </View>
+              <TextInput
+                accessibilityLabel="Public-image CLIP query unavailable before signed app and board-only gateway approval"
+                editable={false}
+                placeholder="Describe approved public artwork"
+                placeholderTextColor={palette.tertiary}
+                style={styles.input}
+                value=""
+              />
+              <Text style={styles.meta}>
+                Search disabled until independent mobile identity, CSRF, source-rights and
+                model-service release evidence is accepted. Similarity cannot establish
+                medicine identity, strength, authenticity, safety or regulatory status.
+              </Text>
+              <View style={styles.rule} />
+              <SectionHeading title="Enterprise activation gates" />
+              {[
+                "Signed iOS/Android app with secure board session, MFA and revocation",
+                "Licensed public-image index and audited source-rights expiry",
+                "Independent CLIP lookalike, strength and out-of-domain evaluation",
+                "Approved private runtime, exact-host gateway and fail-closed rollback",
+                "Protected device and accessibility acceptance before distribution"
+              ].map((item) => (
+                <View key={item} style={styles.requirement}><Text style={styles.description}>{item}</Text></View>
+              ))}
+            </>
+          )}
+                    {screen === "account" && (
             <>
               <SectionHeading title="Enterprise access" detail="Identity and data availability are independent permission decisions." />
               <View style={styles.card}>
@@ -281,59 +468,75 @@ export default function App() {
           <View style={styles.endSpacing} />
         </ScrollView>
       )}
-      <Navigation selected={screen} onSelect={changeScreen} />
-    </SafeAreaView>
+      <Navigation selected={screen} onSelect={changeScreen} largeText={largeText} />
+        </SafeAreaView>
+      </ThemeContext.Provider>
+    </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(palette: MobilePalette) {
+  return StyleSheet.create({
   root: { flex: 1, backgroundColor: palette.canvas },
   appHeader: { paddingHorizontal: 24, paddingTop: 18, paddingBottom: 16, borderBottomWidth: 1, borderColor: palette.border },
   brand: { fontSize: 11, fontWeight: "700", letterSpacing: 1.8, color: palette.accent, marginBottom: 7 },
   appTitle: { fontSize: 29, lineHeight: 36, fontWeight: "700", letterSpacing: -0.7, color: palette.primary },
-  appSubtitle: { fontSize: 13, lineHeight: 19, color: palette.secondary, marginTop: 2 },
+  appSubtitle: { fontSize: 15, lineHeight: 22, color: palette.secondary, marginTop: 2 },
   list: { flex: 1 },
   content: { paddingHorizontal: 22, paddingBottom: 28 },
   contentLimit: { alignSelf: "center", width: "100%", maxWidth: 960 },
   notice: { marginTop: 20, marginBottom: 24, padding: 16, borderRadius: 13, backgroundColor: palette.grouped },
   noticeTitle: { color: palette.primary, fontSize: 14, fontWeight: "700", lineHeight: 20 },
-  noticeText: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
+  noticeText: { color: palette.secondary, fontSize: 17, lineHeight: 25, marginTop: 6 },
   sectionHeading: { marginBottom: 12 },
   sectionTitle: { fontSize: 23, lineHeight: 30, fontWeight: "700", color: palette.primary, letterSpacing: -0.4 },
-  sectionIntro: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 5 },
-  count: { color: palette.secondary, fontSize: 12, marginBottom: 12 },
+  sectionIntro: { fontSize: 17, color: palette.secondary, lineHeight: 26, marginTop: 5 },
+  count: { color: palette.secondary, fontSize: 14, marginBottom: 12 },
   metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 10 },
   metric: { flexGrow: 1, minWidth: 100, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15 },
   metricNumber: { fontSize: 26, fontWeight: "700", color: palette.primary, fontVariant: ["tabular-nums"] },
-  metricLabel: { fontSize: 12, color: palette.secondary, lineHeight: 18, marginTop: 4 },
+  metricLabel: { fontSize: 14, color: palette.secondary, lineHeight: 21, marginTop: 4 },
   rule: { height: 1, backgroundColor: palette.border, marginVertical: 22 },
-  groupTitle: { fontSize: 12, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
+  groupTitle: { fontSize: 14, color: palette.secondary, fontWeight: "700", marginTop: 17, marginBottom: 11, letterSpacing: 0.4 },
   card: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 16, marginBottom: 10 },
+  moreAction: { minHeight: 56, justifyContent: "center" },
   sourceCard: { backgroundColor: palette.canvas, borderWidth: 1, borderColor: palette.border, borderRadius: 12, padding: 15, marginBottom: 10 },
   sourceHalf: { flex: 1, minWidth: 0 },
   sourceRow: { gap: 10 },
-  sourceCountry: { color: palette.secondary, fontSize: 12, marginTop: 4, lineHeight: 19 },
+  sourceCountry: { color: palette.secondary, fontSize: 14, marginTop: 4, lineHeight: 21 },
   sourceDivider: { marginTop: 12, backgroundColor: palette.border, height: 1 },
   rowBetween: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  cardTitle: { color: palette.primary, fontSize: 15, fontWeight: "600", lineHeight: 22, flexShrink: 1 },
-  cardAction: { color: palette.secondary, fontSize: 12, marginLeft: 10 },
-  description: { color: palette.secondary, fontSize: 13, lineHeight: 20, marginTop: 6 },
-  meta: { color: palette.tertiary, fontSize: 12, lineHeight: 18, marginTop: 10 },
-  input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, minHeight: 48, padding: 13, borderRadius: 10 },
+  cardTitle: { color: palette.primary, fontSize: 17, fontWeight: "600", lineHeight: 25, flexShrink: 1 },
+  cardAction: { color: palette.secondary, fontSize: 14, marginLeft: 10 },
+  description: { color: palette.secondary, fontSize: 17, lineHeight: 26, marginTop: 6 },
+  meta: { color: palette.tertiary, fontSize: 14, lineHeight: 21, marginTop: 10 },
+  input: { borderWidth: 1, borderColor: palette.border, backgroundColor: palette.canvas, color: palette.primary, fontSize: 17, minHeight: 48, padding: 13, borderRadius: 10 },
   regionScroller: { flexGrow: 0, marginBottom: 15, marginTop: 12 },
   regionRow: { gap: 8, paddingBottom: 2 },
   regionOption: { minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderWidth: 1, borderColor: palette.border, borderRadius: 22 },
   regionSelected: { backgroundColor: palette.primary, borderColor: palette.primary },
-  regionLabel: { color: palette.primary, fontSize: 12, fontWeight: "600" },
+  regionLabel: { color: palette.primary, fontSize: 14, fontWeight: "600" },
   regionLabelSelected: { color: palette.canvas },
   noResults: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 16 },
   back: { minHeight: 44, alignSelf: "flex-start", justifyContent: "center", marginBottom: 15 },
-  backText: { color: palette.primary, fontSize: 14, fontWeight: "600" },
+  backText: { color: palette.primary, fontSize: 16, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
+  syntheticButton: { backgroundColor: palette.primary, minHeight: 46, borderRadius: 10, paddingHorizontal: 14, alignItems: "center", justifyContent: "center", alignSelf: "flex-start", marginTop: 14 },
+  syntheticButtonLabel: { color: palette.canvas, fontSize: 13, fontWeight: "600" },
+  syntheticGrid: { marginTop: 14, alignSelf: "flex-start", gap: 5 },
+  syntheticRow: { flexDirection: "row", gap: 5 },
+  syntheticPixel: { width: 40, height: 40, borderColor: palette.border, borderWidth: 1, borderRadius: 4 },
   navigation: { flexDirection: "row", borderTopWidth: 1, borderColor: palette.border, backgroundColor: palette.grouped, paddingHorizontal: 10, paddingTop: 6, paddingBottom: 6 },
+  navigationLarge: { flexWrap: "wrap" },
   navItem: { flex: 1, minHeight: 52, alignItems: "center", justifyContent: "center", borderRadius: 10, marginHorizontal: 2 },
+  navItemLarge: { flex: 0, flexBasis: "46%", minHeight: 56, minWidth: 0 },
   navItemActive: { backgroundColor: palette.primary },
-  navLabel: { fontSize: 11, fontWeight: "600", color: palette.secondary, textAlign: "center" },
+  navLabel: { fontSize: 14, fontWeight: "600", color: palette.secondary, textAlign: "center" },
   navLabelActive: { color: palette.canvas }
-});
+  });
+}
+
+const lightStyles = createStyles(mobileLightPalette);
+const darkStyles = createStyles(mobileDarkPalette);
+const ThemeContext = createContext<{ styles: ReturnType<typeof createStyles>; palette: MobilePalette }>({ styles: lightStyles, palette: mobileLightPalette });
