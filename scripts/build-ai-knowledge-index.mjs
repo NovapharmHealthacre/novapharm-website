@@ -9,8 +9,11 @@ import { extractVisibleBlocks } from "./lib/html-text.mjs";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
-const releaseDate = process.env.AI_INDEX_DATE || "2026-07-22";
-const excludedRoutes = new Set(["contact", "investor-information", "careers", "legal/privacy", "legal/cookies", "legal/terms"]);
+const releaseDate = process.env.AI_INDEX_DATE || new Date().toISOString().slice(0, 10);
+// AI retrieval excludes forms, private-intent journeys, and legal policy pages.
+// Legal notices must be read directly, not represented as machine-vetted advice.
+const excludedRoutes = new Set(["contact", "account-application", "investor-information", "careers", "search", "technology/ai-governance"]);
+const excludedPublicRoute = (slug) => excludedRoutes.has(slug) || slug === "legal" || slug.startsWith("legal/");
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -31,13 +34,13 @@ function fileForSlug(slug) {
 }
 
 const pageSources = Object.entries(pageMeta)
-  .filter(([slug]) => !excludedRoutes.has(slug))
+  .filter(([slug]) => !excludedPublicRoute(slug))
   .map(([slug, meta]) => ({
     id: `page-${slug || "home"}`.replace(/[^a-z0-9-]+/g, "-"),
     file: fileForSlug(slug),
     url: `${siteUrl}${routePath(slug)}`,
     title: meta.title,
-    date: releaseDate,
+    date: null,
     evidenceStatus: "approved public canonical page",
     capabilityBoundary: slug === "oncology"
       ? "Strategic B2B oncology focus; no product approval, stock, availability, treatment or authorisation claim."
@@ -49,7 +52,7 @@ const leadershipSources = leadership.map((person) => ({
   file: `leadership/${person.slug}/index.html`,
   url: `${siteUrl}/leadership/${person.slug}/`,
   title: `${person.displayName} | NovaPharm Healthcare leadership`,
-  date: releaseDate,
+  date: null,
   evidenceStatus: "approved public leadership profile",
   capabilityBoundary: "Public professional and governance information only; private CV, contact and personal information are excluded."
 }));
@@ -69,14 +72,22 @@ const articleSources = articles.map((article) => ({
 }));
 
 const sourceDefinitions = [...pageSources, ...leadershipSources, ...articleSources];
-const sources = sourceDefinitions.map((source) => {
+// Respect the final published robots directive. A public URL with noindex is
+// intentionally omitted, not an index-build failure or an excuse to reindex it.
+const excludedNoindexPublicPages = [];
+const sources = sourceDefinitions.flatMap((source) => {
   const html = readFileSync(join(root, source.file), "utf8");
-  if (/noindex/i.test(html.match(/<meta name="robots" content="([^"]+)"/i)?.[1] || "")) {
-    throw new Error(`AI source ${source.file} is noindex.`);
+  const robotTags = [...html.matchAll(/<meta\b[^>]*>/gi)].map((match) => match[0]);
+  const noindex = robotTags.some((tag) =>
+    /\bname\s*=\s*["']robots["']/i.test(tag) &&
+    /\bcontent\s*=\s*["'][^"']*\bnoindex\b/i.test(tag));
+  if (noindex) {
+    excludedNoindexPublicPages.push(source.file);
+    return [];
   }
   const blocks = extractVisibleBlocks(html);
   if (!blocks.length) throw new Error(`AI source ${source.file} produced no approved blocks.`);
-  return { ...source, blocks, sourceHash: sha256(blocks.map((block) => `${block.type}:${block.text}`).join("\n")) };
+  return [{ ...source, blocks, sourceHash: sha256(blocks.map((block) => `${block.type}:${block.text}`).join("\n")) }];
 });
 
 const chunks = chunkPublicSources(sources);
@@ -114,6 +125,7 @@ const manifest = {
   corpusHash,
   approvedSourceCount: sources.length,
   chunkCount: chunks.length,
+  excludedNoindexPublicPages,
   excludedContent: [
     "portal and private routes",
     "customer and supplier records",
@@ -146,5 +158,7 @@ const browserRuntimeFiles = [
 ];
 mkdirSync(join(root, "assets", "ai", "runtime"), { recursive: true });
 for (const file of browserRuntimeFiles) copyFileSync(join(root, "src", "ai", file), join(root, "assets", "ai", "runtime", file));
+// The public page shell references this lightweight, user-initiated entrypoint.
+copyFileSync(join(root, "src", "ai", "search-bootstrap.mjs"), join(root, "assets", "js", "ai-search.js"));
 
 console.log(`Built AI knowledge index from ${sources.length} approved sources into ${chunks.length} deterministic chunks.`);
