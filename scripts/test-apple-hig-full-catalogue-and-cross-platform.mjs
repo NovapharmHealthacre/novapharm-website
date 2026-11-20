@@ -270,6 +270,32 @@ test("manual remote Apple link reachability audit (not article review)", { skip:
 });
 
 
+test("the complete 172-article and 516-platform source review cannot silently regress", () => {
+  assert.equal(tracker.topics.length, 172);
+  assert.equal(new Set(tracker.topics.map(t => t.url)).size, 172);
+  assert.equal(new Set(tracker.topics.map(t => t.sourceRowIndex)).size, 172);
+  assert.equal(tracker.meta.allGuidelinePagesFullyReviewed, true,
+    "The source-review baseline is complete; deployment is independently gated");
+  for (const topic of tracker.topics) {
+    assert.equal(topic.guidelineReview, "reviewed",
+      "Source review cannot regress without a new, explicitly reviewed audit: " + topic.title);
+    assert.ok(Array.isArray(topic.guidelineReviewEvidence) &&
+      topic.guidelineReviewEvidence.some(e => typeof e === "string" && e.includes(topic.markdown)),
+      "Original Apple source must be cited in the review evidence: " + topic.title);
+    for (const p of ["web", "ios", "android"]) {
+      const decision = topic.platformApplicability[p];
+      assert.ok(["applicable", "not_applicable"].includes(decision?.state),
+        "No scoped decision may return to unassessed: " + topic.title + "/" + p);
+      assert.ok(typeof decision.rationale === "string" && decision.rationale.length >= 70,
+        "Each platform decision needs a source-specific reason: " + topic.title + "/" + p);
+    }
+  }
+  assert.equal(tracker.meta.platformsAssessed, 516);
+  assert.equal(tracker.meta.productionEvidenceAudit.verifiedImplementationCount,
+    tracker.topics.filter(t => t.implementation === "verified").length,
+    "Source review must not invent production verification");
+});
+
 test("all 516 topic/platform applicability decisions fail closed until source-specific review", () => {
   const states = [];
   for (const topic of tracker.topics) {
