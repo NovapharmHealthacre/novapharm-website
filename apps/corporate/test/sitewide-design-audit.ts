@@ -5,7 +5,7 @@ import { articles } from "../data/articles";
 import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { corporatePages } from "../data/pages";
 import { leadership, navigation } from "../data/site";
-import { isCurrentCorporateNavigation } from "../lib/navigation-current";
+import { currentCorporateNavigationAriaValue, isCurrentCorporateNavigation } from "../lib/navigation-current";
 
 const origin = process.env.SITEWIDE_BASE_URL ?? "http://127.0.0.1:3178";
 const artifactDir = "../../artifacts/corporate-design-system";
@@ -71,14 +71,17 @@ async function audit() {
               isCurrentCorporateNavigation(route, href))?.[1] ?? null;
             // Wait for hydrated Next.js navigation semantics before reading the
             // rendered client components; never infer state from source alone.
-            if (expectedActiveNavigation) {
-              await page.waitForFunction((href) => {
+            const expectedAriaState = expectedActiveNavigation
+              ? currentCorporateNavigationAriaValue(route, expectedActiveNavigation)
+              : undefined;
+            if (expectedActiveNavigation && expectedAriaState) {
+              await page.waitForFunction(({ href, state }: { href: string; state: string }) => {
                 const matches = (selector: string) =>
                   [...document.querySelectorAll<HTMLAnchorElement>(selector)]
                     .some(link => link.getAttribute("href") === href &&
-                      link.getAttribute("aria-current") === "page");
+                      link.getAttribute("aria-current") === state);
                 return matches(".desktop-nav a") && matches(".mobile-menu nav a");
-              }, expectedActiveNavigation, { timeout: 10000 });
+              }, { href: expectedActiveNavigation, state: expectedAriaState }, { timeout: 10000 });
             }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);
@@ -91,10 +94,10 @@ async function audit() {
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
                 currentNavigation: {
-                  desktop: [...document.querySelectorAll('.desktop-nav a[aria-current="page"]')]
-                    .map(link => link.getAttribute("href")),
-                  mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current="page"]')]
-                    .map(link => link.getAttribute("href"))
+                  desktop: [...document.querySelectorAll('.desktop-nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") })),
+                  mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") }))
                 },
                 homeNavLabel:(()=>{
                   const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
@@ -148,7 +151,9 @@ async function audit() {
             if(data.h1s!==1)faults.push(`H1 count: ${data.h1s}`);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
-            const expectedCurrent = expectedActiveNavigation ? [expectedActiveNavigation] : [];
+            const expectedCurrent = expectedActiveNavigation && expectedAriaState
+              ? [{ href: expectedActiveNavigation, state: expectedAriaState }]
+              : [];
             if (JSON.stringify(data.currentNavigation.desktop) !== JSON.stringify(expectedCurrent) ||
                 JSON.stringify(data.currentNavigation.mobile) !== JSON.stringify(expectedCurrent)) {
               faults.push(`Current navigation accessibility state does not match ${expectedActiveNavigation ?? "no active section"}: ${JSON.stringify(data.currentNavigation)}`);
