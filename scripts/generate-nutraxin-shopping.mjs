@@ -13,7 +13,7 @@ const ukGtins = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-gtin-uk
 assert.equal(ukGtins.market, "GB", "Only UK-assigned GTINs can be used in the GB Merchant feed");
 assert.equal(ukGtins.products.length, 19, "One GTIN evidence record required per UK Nutraxin SKU");
 const validEan13 = value => {
-  if (!/^\\d{13}$/.test(value)) return false;
+  if (!/^\d{13}$/.test(value)) return false;
   const digits = Array.from(value, Number);
   const sum = digits.slice(0, 12).reduce((total, n, index) => total + n * (index % 2 ? 3 : 1), 0);
   return (10 - (sum % 10)) % 10 === digits[12];
