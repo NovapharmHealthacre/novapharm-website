@@ -11,18 +11,17 @@ const eas = json(path.join(mobileRoot, "eas.json"));
 const app = json(path.join(mobileRoot, "app.json")).expo;
 const owner = json(path.join(repoRoot, "config/intelligence/owner-production-constraints.json"));
 
-test("pre-store builds are restricted to installable Android APK and unsigned iOS Simulator", () => {
-  assert.deepEqual(Object.keys(eas.build).sort(),
-    ["android-private-apk", "ios-simulator"]);
+test("pre-store EAS builds are Android APK only; SwiftUI owns the iOS release path", () => {
+  assert.deepEqual(Object.keys(eas.build), ["android-private-apk"]);
   assert.equal(eas.cli.appVersionSource, "local");
   assert.equal(eas.build["android-private-apk"].distribution, "internal");
   assert.equal(eas.build["android-private-apk"].android.buildType, "apk");
-  assert.equal(eas.build["ios-simulator"].ios.simulator, true);
-  assert.equal(eas.build["ios-simulator"].distribution, undefined);
+  assert.equal(eas.build["ios-simulator"], undefined);
+  assert.equal(eas.build.ios, undefined);
   assert.equal(eas.build.production, undefined);
   assert.equal(eas.submit, undefined);
   assert.equal(eas.build["android-private-apk"].android.gradleCommand, undefined);
-  assert.equal(eas.build["ios-simulator"].ios.enterpriseProvisioning, undefined);
+  assert.equal(eas.build["android-private-apk"].ios, undefined);
 });
 
 test("preview builds have no invented store identities or production authorization", () => {
