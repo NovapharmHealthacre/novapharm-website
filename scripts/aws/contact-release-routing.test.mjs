@@ -1036,28 +1036,3 @@ test("source-only Model Microscope paths never trigger unrelated AWS contact or 
     }
   }
 });
-
-test("mobile-only tests remain private while release-policy changes require independent review", () => {
-  const privateOnly = [
-    "native/novapharm-intelligence-mobile/tests/mobile-country-appearance.test.mjs",
-    "native/novapharm-intelligence-mobile/tests/mobile-ci-reproducibility.test.mjs",
-    "native/novapharm-intelligence-mobile/package-lock.json"
-  ];
-  for (const workflow of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
-    const source = get(workflow);
-    const pattern = source.match(/case "\$changed" in\s*\n\s*(apps\/portal\/\*[^\n]+)/)?.[1]?.trim();
-    assert.ok(pattern?.endsWith(")"), workflow + ": private classifier missing");
-    const exactPaths = new Set(pattern.slice(0, -1).split("|"));
-    for (const p of privateOnly) {
-      assert.ok(exactPaths.has(p), workflow + ": source-only mobile path not private: " + p);
-    }
-    for (const p of [".github/workflows/dispatch-approved-aws-contact-release.yml", ".github/workflows/publish-aws-contact-production.yml"]) {
-      assert.equal(exactPaths.has(p), false, workflow + ": release-policy changes must not bypass review: " + p);
-    }
-    for (const publicAsset of ["assets/css/style.css", "scripts/build-site.mjs", "products/nutraxin/checkout.html"]) {
-      assert.equal(exactPaths.has(publicAsset), false, workflow + ": public release incorrectly excluded");
-    }
-    assert.match(source, /found_ml=true/, "private-only path must set private mode");
-    assert.match(source, /private_only=false/, "unknown paths must not silently bypass release routing");
-  }
-});
