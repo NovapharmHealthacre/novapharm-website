@@ -352,3 +352,25 @@ A static source inspection can prove **the current repository is a prototype**, 
 The HIG contract test now checks the true package types, Android research package/manifest and Expo configuration and refuses to equate these source candidates with 172 verified production HIG implementations. It changes neither the app's actual logic nor the owner's source-rights, AWS and production-signoff hold. **Production signoff remains `not_granted`; 0/172 independently production-verified**.
 
 Remaining signed mobile acceptance: known authorized Apple and Google developer identities, actual distributable app artifacts and their signatures/digests, Apple/Play review or controlled internal distribution evidence, device matrix (phone/tablet/RTL/text scaling/dark mode/keyboard/VoiceOver/TalkBack), authenticated tenant and permission boundary tests, crash/upgrade/offline diagnostics, data rights and independent Quality/Security approval. Every topic must be approved as applicable-and-verified or independently accepted as out of scope; do not count unsupported Apple APIs as shipped Android features.
+
+## 20 November 2026 — 11 remaining High-priority primary-source reviews
+
+This continuation documents the last 11 previously unreviewed **High** priority HIG entries. Apple's original Markdown source for every entry was read on 20 November 2026; the complete source-specific findings and three independent platform rationales are stored under the matching topic in `apple-hig-172-topic-acceptance-register.json`.
+
+| Official Apple HIG source | Actual primary-source finding | NovaPharm applicability boundary |
+| --- | --- | --- |
+| [Getting started](https://developer.apple.com/design/human-interface-guidelines/getting-started.md) | Collection-group index for platform design | Taxonomy only, not an implemented control |
+| [Designing for macOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-macos.md) | Multiwindow, precise input, shortcuts and Mac touch considerations; source changed 28 Oct 2026 | Desktop browser analogues separately; no AppKit or shipped macOS native app |
+| [Patterns](https://developer.apple.com/design/human-interface-guidelines/patterns.md) | Index of distinct user-task patterns | Track articles individually across web, iOS and Android; index itself isn't code |
+| [Pop-up buttons](https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons.md) | Exclusive choices and a visible current/default selection | Accessible web/native equivalent; not an action-menu claim |
+| [Pull-down buttons](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons.md) | Contextual commands, primary action visibility, destructive confirmation | Role-safe menus, keyboard/touch and VoiceOver/TalkBack evidence outstanding |
+| [The menu bar](https://developer.apple.com/design/human-interface-guidelines/the-menu-bar.md) | Native Mac and iPad menu bar with standard command and shortcut ordering | Only iPadOS native candidates in scope; not web/Android system chrome |
+| [Presentation](https://developer.apple.com/design/human-interface-guidelines/presentation.md) | Collection index for sheets, windows, popovers, alerts and more | Each real component requires separate delivered-flow acceptance |
+| [System experiences](https://developer.apple.com/design/human-interface-guidelines/system-experiences.md) | Apple platform features/index such as shortcuts, widgets and controls | Native iOS catalogue, not web/Android Apple integration |
+| [Controls](https://developer.apple.com/design/human-interface-guidelines/controls.md) | Control Center/Lock Screen/Action button state, privacy and authentication | iOS-native conditional only; no native ControlWidget released |
+| [Technologies](https://developer.apple.com/design/human-interface-guidelines/technologies.md) | Collection index of Apple platform services and APIs | Service feasibility ≠ configured entitlement, data rights or live release |
+| [Sign in with Apple](https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple.md) | Cross-platform optional authentication, private relay and safe account linking | Identity provider login ≠ approved business account, tenancy or medicine rights |
+
+**Candidate cumulative (only after independent review and ancestor merges):** 110/172 source reviews (63.95%), 330/516 decisions (63.95%), 62 unreviewed articles and 186 decisions outstanding. The 42 Critical and 61 High source topics are now reviewed on this dependent branch. **0/172 independent production-verified implementations**, 0 accepted out-of-scope dispositions, no release authorization. Existing six bounded partial public observations remain partial. Do not treat this candidate as merged `main` or a signed mobile release.
+
+**Sequence:** #883 → #891 → this 11-High review proposal. Exact-head source/CI plus independent Security/Quality APPROVED reviews are required for each dependent change. No AWS, mobile signing, protected tenant deployment, real medicine data admission, payment, external identity provider or production-owner signoff changed.
