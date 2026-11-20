@@ -58,7 +58,7 @@ jobs:
                 server_sha=$(printf '%s\n' "$server_delta" | sha256sum | cut -d' ' -f1)
                 original_blob=$(git rev-parse "$GITHUB_SHA^1:$changed" 2>/dev/null || true)
                 candidate_blob=$(git hash-object "$changed" 2>/dev/null || true)
-                if [ "$server_sha" = '56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2' ] || { [ "$original_blob" = '4e8c233d1dbf085545763de4bd4de093ea95ec11' ] && [ "$candidate_blob" = '12dd72527ae561d6506d9573d418959d6f337189' ]; }; then
+                if [ "$server_sha" = '56617895bd590517223bbc08888c81c6d035209e34f4d1add574864109c39fa2' ] || { [ "$original_blob" = '4e8c233d1dbf085545763de4bd4de093ea95ec11' ] && [ "$candidate_blob" = '12dd72527ae561d6506d9573d418959d6f337189' ]; } || { [ "$original_blob" = '4c7afb1c4b46f241cdfcaa722d0123a8d6becb2b' ] && [ "$candidate_blob" = '98a874fd012599583401b01724acf22f0d73da51' ]; then
                   found_ml=true
                 else
                   private_only=false
