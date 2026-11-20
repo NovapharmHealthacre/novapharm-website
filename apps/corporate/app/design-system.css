@@ -654,3 +654,12 @@ main [id] { scroll-margin-top: calc(var(--header) + 24px); }
 /* Attribution is shown only when a verified native App Store listing is advertised. */
 .np-app-store-availability{display:grid;gap:.4rem;margin-block:1rem}
 .np-app-store-availability__legal{display:block;font-size:.75rem;line-height:1.5;color:var(--nph-muted);max-width:58ch}
+
+/* np-hig-breadcrumb-target-v1: keep every linked crumb at least 44px tall.
+   The previous 19px link failed axe target-size at 390px on Insights.
+   Preserve native link semantics, text zoom and keyboard focus. */
+.breadcrumbs span > a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+}

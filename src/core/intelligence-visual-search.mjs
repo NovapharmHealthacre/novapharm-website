@@ -1,0 +1,153 @@
+import { isIP } from "node:net";
+
+/**
+ * Private, human-review-only CLIP retrieval adapter. Disabled without owner activation.
+ * Browser/mobile clients must use their existing authenticated API/BFF, never this service.
+ */
+const CONTRACT = "novapharm.intelligence.visual-search.v1";
+const MAX_QUERY_LENGTH = 240;
+
+function unavailable(message = "Visual retrieval is not enabled for this workspace.") {
+  return Object.assign(new Error(message), { statusCode: 503, code: "visual_search_unavailable" });
+}
+export function visualSearchReadiness(environment = process.env) {
+  const enabled = environment.NPI_CLIP_ENABLED === "true";
+  return Object.freeze({
+    contract: CONTRACT,
+    enabled,
+    state: enabled ? "configured_candidate_not_verified" : "disabled",
+    modelFamily: "OpenAI CLIP",
+    clinicalDecisionAllowed: false,
+    automaticRegulatoryDecisionAllowed: false,
+    sourceRightsRequired: true,
+    humanReviewRequired: true
+  });
+}
+function validateConfiguration(environment) {
+  if (environment.NPI_CLIP_ENABLED !== "true") throw unavailable();
+  const secret = String(environment.NPI_CLIP_SERVICE_TOKEN ?? "");
+  if (secret.length < 32 || /\s/.test(secret)) throw unavailable();
+  const origin = String(environment.NPI_CLIP_SERVICE_ORIGIN ?? "");
+  let url;
+  try { url = new URL(origin); } catch { throw unavailable(); }
+  // Default pilot is local-only. No browser supplied host and no remote model endpoint.
+  if (url.protocol !== "http:" || !["127.0.0.1", "localhost"].includes(url.hostname) ||
+      url.pathname !== "/" || url.search || url.hash || url.username || url.password) throw unavailable();
+  return { origin: url.origin, secret };
+}
+/**
+ * Probe real private inference readiness, rather than advertising that an
+ * environment flag alone proves model deployment. No patient or query content.
+ */
+export async function probeVisualSearchReadiness(
+  environment = process.env, fetchImpl = globalThis.fetch
+) {
+  const declared = visualSearchReadiness(environment);
+  if (!declared.enabled) return declared;
+  try {
+    const { origin, secret } = validateConfiguration(environment);
+    const response = await fetchImpl(new URL("/healthz", origin), {
+      method: "GET",
+      headers: { Authorization: `Bearer ${secret}` },
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(1500)
+    });
+    if (!response.ok) throw unavailable();
+    const status = await response.json();
+    if (status?.status !== "ready") throw unavailable();
+    return Object.freeze({ ...declared, state: "private_runtime_ready" });
+  } catch {
+    return Object.freeze({ ...declared, enabled: false, state: "unavailable" });
+  }
+}
+
+function normaliseQuery(query) {
+  if (typeof query !== "string") throw Object.assign(new Error("A text query is required."), { statusCode: 400 });
+  const clean = query.trim();
+  if (clean.length < 3 || clean.length > MAX_QUERY_LENGTH || /[\x00-\x1f\x7f]/u.test(clean)) {
+    throw Object.assign(new Error("Use a query of 3 to 240 printable characters."), { statusCode: 400 });
+  }
+  return clean;
+}
+export async function searchApprovedVisualCatalogue(
+  input = {}, environment = process.env, fetchImpl = globalThis.fetch
+) {
+  const { origin, secret } = validateConfiguration(environment);
+  if (!input || typeof input !== "object" || Array.isArray(input) ||
+      Object.keys(input).some(key => !["query", "limit"].includes(key))) {
+    throw Object.assign(new Error("Unexpected visual search request fields."), { statusCode: 400 });
+  }
+  const { query, limit = 5 } = input;
+  const clean = normaliseQuery(query);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 10) {
+    throw Object.assign(new Error("Limit must be between 1 and 10."), { statusCode: 400 });
+  }
+  let response;
+  try {
+    response = await fetchImpl(new URL("/v1/search", origin), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${secret}` },
+      body: JSON.stringify({ query: clean, limit }),
+      redirect: "error",
+      cache: "no-store",
+      signal: AbortSignal.timeout(5000)
+    });
+  } catch { throw unavailable("Visual retrieval service is unavailable."); }
+  if (!response.ok) throw unavailable("Visual retrieval service is unavailable.");
+  const declaredLength = Number(response.headers?.get?.("content-length") ?? 0);
+  if (!Number.isFinite(declaredLength) || declaredLength < 0 || declaredLength > 32_768) throw unavailable();
+  let payload;
+  try {
+    const stream = response.body;
+    let raw;
+    if (stream && typeof stream.getReader === "function") {
+      const reader = stream.getReader();
+      const chunks = [];
+      let count = 0;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (!(value instanceof Uint8Array)) throw unavailable();
+          count += value.byteLength;
+          if (count > 32_768) throw unavailable();
+          chunks.push(value);
+        }
+        raw = Buffer.concat(chunks).toString("utf8");
+      } finally {
+        await reader.cancel().catch(() => {});
+        reader.releaseLock();
+      }
+    } else {
+      // Only simple in-process test doubles take this branch. Real fetch responses
+      // always provide a byte stream so they are interrupted at the size limit.
+      raw = await response.text();
+      if (Buffer.byteLength(raw, "utf8") > 32_768) throw unavailable();
+    }
+    payload = JSON.parse(raw);
+  } catch { throw unavailable(); }
+  if (payload?.contract !== CONTRACT || !Array.isArray(payload.results) || payload.results.length > limit) throw unavailable();
+  const seen = new Set();
+  const results = payload.results.map((item, index) => {
+    if (!item || !/^[a-zA-Z0-9._:-]{1,120}$/.test(item.assetId) ||
+        typeof item.title !== "string" || !item.title.trim() || item.title.length > 200 ||
+        typeof item.rightsReference !== "string" || !item.rightsReference.trim() ||
+        typeof item.sourceUrl !== "string" || item.rightsReference.length > 240 ||
+        seen.has(item.assetId)) throw unavailable();
+    seen.add(item.assetId);
+    let source;
+    try { source = new URL(item.sourceUrl); } catch { throw unavailable(); }
+    const host = source.hostname.replace(/^\[|\]$/g, "").replace(/\.$/, "").toLowerCase();
+    if (source.protocol !== "https:" || !host.includes(".") || isIP(host) !== 0 ||
+        host === "localhost" || /\.(?:localhost|local|internal)$/u.test(host) ||
+        source.username || source.password || (source.port !== "" && source.port !== "443") ||
+        source.hash) throw unavailable();
+    return { rank: index + 1, assetId: item.assetId, title: item.title, rightsReference: item.rightsReference, sourceUrl: source.href, status: "unverified_visual_match" };
+  });
+  return {
+    contract: CONTRACT, query: clean, results, sourceClass: "rights_approved_public_images",
+    similarityIsNotEvidence: true, humanReviewRequired: true, clinicalDecisionAllowed: false,
+    regulatoryStatusVerified: false, productIdentityVerified: false
+  };
+}
