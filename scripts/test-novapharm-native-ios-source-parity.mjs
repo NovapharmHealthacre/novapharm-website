@@ -47,6 +47,21 @@ test("native iOS is a SwiftUI app, not an Expo wrapper, with SwiftData and Chart
   assert.doesNotMatch(view, /WKWebView|ReactNative|Expo|URLSession|fetch\(/);
 });
 
+test("Swift Charts VoiceOver text stays source-derived and respects Dynamic Type", () => {
+  assert.match(view, /@ScaledMetric\(relativeTo: \.body\) private var moduleChartHeight: CGFloat = 180/);
+  assert.match(view, /\.frame\(height: moduleChartHeight\)/);
+  assert.match(view, /\.accessibilityLabel\(moduleChartAccessibilitySummary\)/);
+  assert.match(view, /\.accessibilityIdentifier\("novapharm\.intelligence\.modules-chart"\)/);
+  assert.ok(view.includes('"Module catalogue sizes: " + NovaArea.allCases.map'),
+    "Chart accessibility labels must enumerate the same areas as rendered bars");
+  assert.ok(view.includes('"\\(area.title) \\(NovaCatalog.modules(in: area).count)"'),
+    "VoiceOver values must derive from the actual NovaCatalog per area");
+  assert.doesNotMatch(view, /\.accessibilityLabel\("Module catalogue sizes:/,
+    "Fixed visible or spoken figures become misleading when counts change");
+  assert.ok(view.includes('NavigationLink("Explore \\(NovaCatalog.modules(in: .intelligence).count) research workspaces")'),
+    "The workspace shortcut label must reflect the same source count");
+});
+
 test("source preview never circumvents release or sensitive-data gates", () => {
   assert.equal(constraints.productionSignoff, "not_granted");
   assert.equal(constraints.initialInfrastructureBudget.monthlyCapGbp, 0);
