@@ -156,4 +156,5 @@ jobs:
           retention-days: 7
       - name: Protect private app previews in a public repository
         if: ${{ !github.event.repository.private }}
-        run: echo "::notice::Public repository: Simulator app, UI screenshots and xcresult artifact uploads suppressed. Use approved private QA storage."
+        run: |
+          echo "::notice::Public repository: Simulator app, UI screenshots and xcresult artifact uploads suppressed. Use approved private QA storage."
