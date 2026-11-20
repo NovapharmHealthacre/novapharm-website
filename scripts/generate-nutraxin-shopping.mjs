@@ -70,6 +70,14 @@ const relatedProductsMarkup = (p, ref) => {
     '<h2>Explore more Nutraxin ' + htmlAttribute(ref.range) + ' products</h2>' +
     '<ul>' + links + '</ul></div></section>';
 };
+// Preserve verified brand, exact formulation name and sellable pack in the feed.
+const feedTitle = (p) => {
+  const packFirstWord = p.pack.replace(/^\\d+\\s+/, "").split(" ")[0].toLowerCase();
+  const repeatedEnding = " " + packFirstWord;
+  const name = p.name.toLowerCase().endsWith(repeatedEnding)
+    ? p.name.slice(0, -repeatedEnding.length) : p.name;
+  return name + " " + p.pack;
+};
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const header = ["id","title","description","link","image_link","availability","price","condition","brand","product_type","shipping(country:price)"];
@@ -94,7 +102,7 @@ for (const product of registered.products) {
     "Merchant feed requires the approved UK shipping charge");
   const ship = "GB:" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP";
   lines.push([
-    p.sku, p.name + " - " + p.pack,
+    p.sku, feedTitle(p),
     description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
     "new", "Nutraxin", "Food Supplements > " + product.range, ship
