@@ -45,6 +45,22 @@ final class NovaPharmAccessibilityUITests: XCTestCase {
         directory.tap()
         XCTAssertTrue(app.navigationBars["Countries"].waitForExistence(timeout: 12))
         XCTAssertTrue(app.descendants(matching: .any)["novapharm.countries.readonly-notice"].exists)
-        XCTAssertTrue(app.descendants(matching: .any)["novapharm.countries.coverage-filter"].exists)
+        let inlineSearch = app.textFields["novapharm.countries.inline-search"]
+        for _ in 0..<12 {
+            if inlineSearch.isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(inlineSearch.isHittable,
+            "Country search must remain operable at accessibility text sizes")
+
+        // Lazy SwiftUI List sections can be absent from the accessibility tree
+        // until scrolled into view; do not assume off-screen rows are materialized.
+        let coverageFilter = app.descendants(matching: .any)["novapharm.countries.coverage-filter"]
+        for _ in 0..<12 {
+            if coverageFilter.isHittable { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(coverageFilter.isHittable,
+            "Country coverage filter must remain reachable at accessibility text sizes")
     }
 }
