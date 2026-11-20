@@ -124,6 +124,7 @@ a { text-underline-offset: .24em; }
   padding-block: 14px;
 }
 .desktop-nav a::after { height: 1px; bottom: 7px; background: var(--nph-accent); }
+.desktop-nav a[aria-current="page"]::after { right: 0; }
 .mobile-menu summary {
   border-radius: 999px;
   border-color: var(--nph-line);
@@ -144,6 +145,7 @@ a { text-underline-offset: .24em; }
 }
 .mobile-menu nav a:hover { color: var(--nph-link); }
 .mobile-menu nav a:focus-visible { background: var(--nph-silver); }
+.mobile-menu nav a[aria-current="page"] { background: var(--nph-silver); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
 
 .button,
 .button-primary,
