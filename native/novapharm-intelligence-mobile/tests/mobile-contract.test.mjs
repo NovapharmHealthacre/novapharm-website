@@ -162,6 +162,7 @@ test("mobile CI requires checked-in lockfile before deterministic npm ci and bot
   assert.match(mobileCandidate, /l\.lockfileVersion !== 3/);
   assert.match(mobileCandidate, /l\.packages\?\.\[""\]\?\.name !== p\.name/);
   assert.match(mobileCandidate, /Unapproved resolver URL or missing SHA-512/);
+  assert.match(mobileCandidate, /npm audit --omit=dev --audit-level=high --no-fund/);
   assert.doesNotMatch(mobileCandidate, /npm install|--package-lock-only|--no-package-lock|npm update/);
   assert.match(mobileCandidate, /actions\/upload-artifact@[a-f0-9]{40}/);
   assert.match(mobileCandidate, /if-no-files-found: error/);
@@ -172,6 +173,7 @@ test("mobile CI requires checked-in lockfile before deterministic npm ci and bot
     "Verify lockfile registry and integrity",
     "actions/upload-artifact@",
     "npm ci --ignore-scripts",
+    "npm audit --omit=dev --audit-level=high --no-fund",
     "npm run typecheck",
     "npx expo export --platform ios",
     "npx expo export --platform android"
