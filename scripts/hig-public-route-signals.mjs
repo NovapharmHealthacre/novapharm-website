@@ -6,7 +6,7 @@
  */
 function attribute(tag, name) {
   if (!tag) return null;
-  const pattern = new RegExp("\\b" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", "i");
+  const pattern = new RegExp("(?:^|\\s)" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", "i");
   const match = tag.match(pattern);
   return match ? (match[1] ?? match[2]) : null;
 }
@@ -26,10 +26,10 @@ export function inspectPublicHigSignals(html) {
     return /^#[A-Za-z][A-Za-z0-9_-]*$/.test(href) &&
       /skip|bypass/i.test(label);
   });
+  const tagsWithId = [...html.matchAll(/<[^>]+>/g)].map(match => match[0]);
   const skipTargetPresent = skipLinks.some(link => {
     const target = (attribute(link, "href") ?? "").slice(1);
-    return [...html.matchAll(/<[^>]+\bid\s*=\s*(?:\"([^\"]+)\"|'([^']+)')[^>]*>/gi)]
-      .some(match => (match[1] ?? match[2]) === target);
+    return tagsWithId.some(tag => attribute(tag, "id") === target);
   });
   const signals = {
     language,
