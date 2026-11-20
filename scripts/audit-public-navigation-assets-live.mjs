@@ -12,10 +12,10 @@ function clean(input, basePath="/") {
   return link.pathname;
 }
 function hasExactCanonical(html, expectedPath) {
-  for (const tag of html.match(/<link\\b[^>]*>/gi) || []) {
-    const rel = tag.match(/\\brel\\s*=\\s*(["'])(.*?)\\1/i)?.[2];
-    const href = tag.match(/\\bhref\\s*=\\s*(["'])(.*?)\\1/i)?.[2];
-    if (!rel?.toLowerCase().split(/\\s+/).includes("canonical") || !href) continue;
+  for (const tag of html.match(/<link\b[^>]*>/gi) || []) {
+    const rel = tag.match(/\brel\s*=\s*(["'])(.*?)\1/i)?.[2];
+    const href = tag.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
+    if (!rel?.toLowerCase().split(/\s+/).includes("canonical") || !href) continue;
     try {
       const u = new URL(href);
       if (u.protocol === "https:" &&
@@ -25,6 +25,14 @@ function hasExactCanonical(html, expectedPath) {
     } catch { /* Refuse malformed canonical URLs. */ }
   }
   return false;
+}
+// Fail immediately if a future edit breaks canonical parsing. The previous
+// double-escaped regex caused a false failure on a correctly canonical ESCO page.
+const canonicalFixture = '<link rel="canonical" href="https://novapharmhealthcare.com/products/esco/">';
+if (!hasExactCanonical(canonicalFixture, "/products/esco/") ||
+    hasExactCanonical(canonicalFixture, "/products/") ||
+    hasExactCanonical('<link rel="canonical" href="https://example.com/products/esco/">', "/products/esco/")) {
+  throw new Error("Canonical parser positive/negative self-test failed");
 }
 function pathsFromHTML(html, basePath) {
   const result = new Set();
