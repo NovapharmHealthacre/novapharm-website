@@ -38,7 +38,7 @@ function pathsFromHTML(html, basePath) {
   const result = new Set();
   for (const tag of html.match(/<(?:a|link|script|img|source)\b[^>]*>/gi) || []) {
     for (const attr of ["href","src"]) {
-      const m = tag.match(new RegExp("(?:^|\s)" + attr + "\s*=\s*([\"'])(.*?)\\1", "i"));
+      const m = tag.match(new RegExp("(?:^|\\s)" + attr + "\\s*=\\s*([\"'])(.*?)\\1", "i"));
       if (m) { const p = clean(m[2], basePath); if(p) result.add(p); }
     }
     const set = tag.match(/(?:^|\s)srcset\s*=\s*(["'])(.*?)\1/i);
@@ -49,6 +49,14 @@ function pathsFromHTML(html, basePath) {
   }
   return result;
 }
+// Regression check: source link/asset extraction must never drop navigation.
+const parserFixture = '<a href="/about/">About</a><img src="/assets/site.png"><link href="/assets/site.css">';
+const parserTargets = pathsFromHTML(parserFixture, "/");
+if (!parserTargets.has("/about/") || !parserTargets.has("/assets/site.png") ||
+    !parserTargets.has("/assets/site.css")) {
+  throw new Error("Public navigation/asset parser is incorrectly escaped or incomplete");
+}
+
 async function get(url, method="GET") {
   const reqUrl = new URL(url,origin);
   reqUrl.searchParams.set("restoration_audit",token);
