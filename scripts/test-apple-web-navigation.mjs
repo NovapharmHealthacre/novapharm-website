@@ -58,7 +58,7 @@ test("Next.js corporate imports the same stylesheet and preserves the original a
   assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
   assert.match(corporateHeader, /<DesktopNavigation items=\{navigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
   assert.match(corporateDesktopNav, /<nav className="desktop-nav"/);
-  assert.match(corporateDesktopNav, /aria-current=\{!isPortal && isCurrentCorporateNavigation\(pathname, href\)/);
+  assert.match(corporateDesktopNav, /aria-current=\{!isPortal \? currentCorporateNavigationAriaValue\(pathname, href\) : undefined\}/);
   assert.match(corporateDesktopNav, /const isPortal = href === "\/portal\/";/);
   assert.match(corporateHeader, /<MobileNavigation/);
 });
