@@ -2,7 +2,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
-import { reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
+import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
 
 const origin = "https://novapharmhealthcare.com";
 const output = "artifacts/site-restoration/live-route-audit.json";
@@ -38,7 +38,13 @@ const routeReconciliation = reconcilePublicRouteUniverse({
   productSlugs: approvedProductRegister.products.map(product => product.slug)
 });
 issues.push(...routeReconciliation.issues);
-const allPaths = [...new Set([...expectedPaths, ...livePaths])];
+// Include source-declared Corporate pages even when *both* source and live
+// sitemaps accidentally omit them. Public HTTP is checked read-only below.
+const registeredCorporateRoutes = corporateRoutesFromSource(
+  readFileSync("apps/corporate/data/pages.ts", "utf8"));
+const routesMissingFromBothSitemaps = registeredCorporateRoutes.filter(path =>
+  !expectedPaths.includes(path) && !livePaths.includes(path));
+const allPaths = [...new Set([...expectedPaths, ...livePaths, ...registeredCorporateRoutes])];
 if (allPaths.length < 59) issues.push("Expected at least 59 public routes; found " + allPaths.length);
 
 let position = 0;
@@ -123,6 +129,12 @@ const result = {
   expectedPaths: expectedPaths.length, liveSitemapPaths: livePaths.length,
   checked: routes.length, failures: failed.length,
   productGtinNotPublished: incompleteProductSEO.length,
+  corporateSourceCoverage: {
+    declaredRoutes: registeredCorporateRoutes.length,
+    routesMissingFromBothSitemaps,
+    independentDirectHttpProbes: routesMissingFromBothSitemaps.length,
+    interpretation: "Missing sitemap entry is a discovery gap; direct read-only route probes establish whether it is reachable, not whether Google indexed it"
+  },
   routeReconciliation,
   publisherProvenance,
   higScreening: {
@@ -146,6 +158,7 @@ writeFileSync(output, JSON.stringify(result, null, 2) + "\n");
 console.log(JSON.stringify({ expected: expectedPaths.length, live: livePaths.length, checked: routes.length,
   failed: failed.length, productGtinNotPublished: incompleteProductSEO.length,
   higScreened: screened.length, sourceShaMissing: result.higScreening.missingSourceSha,
-  htmlSnapshotDigests: result.higScreening.routesWithHtmlSnapshotDigest, issues }));
+  htmlSnapshotDigests: result.higScreening.routesWithHtmlSnapshotDigest,
+  omittedRegisteredCorporateRoutes: result.corporateSourceCoverage.routesMissingFromBothSitemaps, issues }));
 if (failed.length) console.error("Route failures: " + JSON.stringify(failed.map(r => ({ path: r.path, errors: r.errors })).slice(0, 70)));
 if (failed.length || issues.length) process.exitCode = 1;
