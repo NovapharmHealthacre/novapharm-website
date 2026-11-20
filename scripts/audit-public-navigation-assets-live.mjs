@@ -1,0 +1,103 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+const origin = "https://novapharmhealthcare.com";
+const evidencePath = "artifacts/site-restoration/live-navigation-assets.json";
+const token = "nav-assets-" + Date.now();
+const failures = [];
+function clean(input) {
+  if (!input || /^(?:#|mailto:|tel:|javascript:|data:|blob:)/i.test(input)) return null;
+  let link;
+  try { link = new URL(input.replace(/&amp;/g,"&"), origin + "/"); } catch { return null; }
+  if (link.origin !== origin) return null;
+  if (!["http:", "https:"].includes(link.protocol)) return null;
+  return link.pathname;
+}
+function pathsFromHTML(html) {
+  const result = new Set();
+  for (const tag of html.match(/<(?:a|link|script|img|source)\b[^>]*>/gi) || []) {
+    for (const attr of ["href","src"]) {
+      const m = tag.match(new RegExp("(?:^|\\s)" + attr + "\\s*=\\s*([\"'])(.*?)\\1", "i"));
+      if (m) { const p = clean(m[2]); if(p) result.add(p); }
+    }
+    const set = tag.match(/(?:^|\s)srcset\s*=\s*(["'])(.*?)\1/i);
+    if(set) for(const part of set[2].split(",")) {
+      const p = clean(part.trim().split(/\s+/)[0]);
+      if (p) result.add(p);
+    }
+  }
+  return result;
+}
+async function get(url, method="GET") {
+  const reqUrl = new URL(url,origin);
+  reqUrl.searchParams.set("restoration_audit",token);
+  const response = await fetch(reqUrl,{
+    method, redirect:"follow", signal:AbortSignal.timeout(18000),
+    headers:{ "Cache-Control":"no-cache,no-store,max-age=0", "Pragma":"no-cache",
+      "User-Agent":"NovaPharm-Public-ReadOnly-Asset-Integrity/1.0" }
+  });
+  if(response.url && new URL(response.url).origin!==origin) throw Error("Cross-origin redirect");
+  if(!response.ok)throw Error("HTTP "+response.status);
+  return method==="HEAD" ? response : response.text();
+}
+function sitemapPaths(xml) {
+  const paths = new Set();
+  for(const match of xml.matchAll(/<loc>\s*(https:\/\/novapharmhealthcare\.com\/[^<]*)<\/loc>/g)) {
+    const link = clean(match[1]);
+    if(link) paths.add(link);
+  }
+  return paths;
+}
+async function boundedMap(items, workers, check) {
+  let index=0;
+  await Promise.all(Array.from({length:workers},async()=>{
+    while(index<items.length) {
+      const next=items[index++];
+      await check(next);
+    }
+  }));
+}
+const pagePaths = new Set(["/","/quantum-research/","/products/nutraxin/bag/","/products/nutraxin/account/"]);
+const outbound = new Map();
+const checkedPages = [];
+try {
+  const xml = await get("/sitemap.xml");
+  for (const p of sitemapPaths(xml)) pagePaths.add(p);
+} catch(error){failures.push({path:"/sitemap.xml",issue:String(error).slice(0,150)});}
+if(pagePaths.size<62) failures.push({path:"/sitemap.xml",issue:"Missing public sitemap route coverage: "+pagePaths.size});
+await boundedMap([...pagePaths],6,async path=>{
+  try {
+    const html=await get(path);
+    if(!/<html\b/i.test(html))throw Error("HTML document missing");
+    const references=pathsFromHTML(html);
+    for(const target of references) {
+      if(!outbound.has(target))outbound.set(target,new Set());
+      outbound.get(target).add(path);
+    }
+    checkedPages.push({path,links:references.size});
+  } catch(error) {failures.push({path,issue:"Page source "+String(error).slice(0,150)});}
+});
+const targets=[...outbound.keys()].filter(x=>x!=='/');
+if(targets.length>800) failures.push({path:"/",issue:"Unexpected internal link/asset expansion: "+targets.length});
+const inspected=targets.slice(0,800);
+let assets=0,links=0;
+await boundedMap(inspected,12,async target=>{
+  try {
+    const response=await get(target,"HEAD");
+    const type=response.headers.get("content-type")||"";
+    if(/\.(?:js|mjs|css|png|svg|webp|avif|jpg|jpeg|gif|ico|json|webmanifest)$/i.test(target)) {
+      assets++;
+      if(type.startsWith("text/html")) throw Error("Resource incorrectly serves HTML");
+    } else links++;
+  } catch(error) {
+    const parent=[...(outbound.get(target)||[])].slice(0,4);
+    failures.push({path:target,linkedFrom:parent,issue:String(error).slice(0,140)});
+  }
+});
+const summary={timestamp:new Date().toISOString(),origin,
+  scope:"Read-only cache-bypassed GET/HEAD of public sitemap, noindex quantum reference and two Nutraxin customer-facing public routes; no authentication, form submission or payment",
+  pagesExpected:pagePaths.size,pagesLoaded:checkedPages.length,
+  uniqueInternalTargets:targets.length,assetsChecked:assets,linksChecked:links,
+  failures:failures.length,errors:failures.slice(0,100)};
+mkdirSync("artifacts/site-restoration",{recursive:true});
+writeFileSync(evidencePath,JSON.stringify(summary,null,2)+"\n");
+console.log(JSON.stringify({pagesExpected:summary.pagesExpected,pagesLoaded:summary.pagesLoaded,uniqueTargets:summary.uniqueInternalTargets,assets:summary.assetsChecked,links:summary.linksChecked,failures:summary.failures,firstErrors:summary.errors.slice(0,15)}));
+if(failures.length) process.exitCode=1;
