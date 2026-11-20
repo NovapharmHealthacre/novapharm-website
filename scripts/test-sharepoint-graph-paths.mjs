@@ -60,7 +60,7 @@ test("valid file upload keeps the established Graph path and does not access cre
   const client = new GraphClient({});
   client.request = async (path, options) => {
     requests.push({ path, method: options?.method });
-    return { id: "new-item" };
+    return options?.method === "PUT" ? { id: "new-item" } : { value: [] };
   };
   await client.uploadSmallFile("driveA", "NovaPharm Digital Ecosystem/Engineering Verification",
     "audit v1.txt", new Uint8Array([97]), "text/plain");
