@@ -77,10 +77,10 @@ const sourceDefinitions = [...pageSources, ...leadershipSources, ...articleSourc
 const excludedNoindexPublicPages = [];
 const sources = sourceDefinitions.flatMap((source) => {
   const html = readFileSync(join(root, source.file), "utf8");
-  const robotTags = [...html.matchAll(/<meta\\b[^>]*>/gi)].map((match) => match[0]);
+  const robotTags = [...html.matchAll(/<meta\b[^>]*>/gi)].map((match) => match[0]);
   const noindex = robotTags.some((tag) =>
-    /\\bname\\s*=\\s*["']robots["']/i.test(tag) &&
-    /\\bcontent\\s*=\\s*["'][^"']*\\bnoindex\\b/i.test(tag));
+    /\bname\s*=\s*["']robots["']/i.test(tag) &&
+    /\bcontent\s*=\s*["'][^"']*\bnoindex\b/i.test(tag));
   if (noindex) {
     excludedNoindexPublicPages.push(source.file);
     return [];
