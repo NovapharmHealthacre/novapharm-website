@@ -29,14 +29,21 @@ function pathsFromHTML(html, basePath) {
 async function get(url, method="GET") {
   const reqUrl = new URL(url,origin);
   reqUrl.searchParams.set("restoration_audit",token);
-  const response = await fetch(reqUrl,{
-    method, redirect:"follow", signal:AbortSignal.timeout(18000),
-    headers:{ "Cache-Control":"no-cache,no-store,max-age=0", "Pragma":"no-cache",
-      "User-Agent":"NovaPharm-Public-ReadOnly-Asset-Integrity/1.0" }
-  });
-  if(response.url && new URL(response.url).origin!==origin) throw Error("Cross-origin redirect");
-  if(!response.ok)throw Error("HTTP "+response.status);
-  return method==="HEAD" ? response : response.text();
+  // CDN/transient HEAD failures are not necessarily a broken asset; retry
+  // with bounded backoff, but never hide permanent 404 or unsafe redirects.
+  for (let attempt=0;attempt<3;attempt++) {
+    const response = await fetch(reqUrl,{
+      method, redirect:"follow", signal:AbortSignal.timeout(18000),
+      headers:{ "Cache-Control":"no-cache,no-store,max-age=0", "Pragma":"no-cache",
+        "User-Agent":"NovaPharm-Public-ReadOnly-Asset-Integrity/1.0" }
+    });
+    if(response.url && new URL(response.url).origin!==origin) throw Error("Cross-origin redirect");
+    if(response.ok) return method==="HEAD" ? response : response.text();
+    if(![429,500,502,503,504].includes(response.status) || attempt===2)
+      throw Error("HTTP "+response.status);
+    await new Promise(resolve=>setTimeout(resolve,200*(attempt+1)));
+  }
+  throw Error("Resource retry exhausted");
 }
 function sitemapPaths(xml) {
   const paths = new Set();
@@ -79,7 +86,7 @@ const targets=[...outbound.keys()].filter(x=>x!=='/');
 if(targets.length>800) failures.push({path:"/",issue:"Unexpected internal link/asset expansion: "+targets.length});
 const inspected=targets.slice(0,800);
 let assets=0,links=0;
-await boundedMap(inspected,12,async target=>{
+await boundedMap(inspected,8,async target=>{
   try {
     const response=await get(target,"HEAD");
     const type=response.headers.get("content-type")||"";
