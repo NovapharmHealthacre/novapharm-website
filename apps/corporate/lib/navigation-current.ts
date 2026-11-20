@@ -15,3 +15,17 @@ export function isCurrentCorporateNavigation(pathname: string | null, href: stri
   const target = canonical(href);
   return current === target || (target !== "/" && current.startsWith(target + "/"));
 }
+
+/**
+ * A parent section is the current location, but it is not the actual page
+ * being viewed. Do not announce a child URL as the parent's current *page*.
+ * See WAI-ARIA 1.2 aria-current and WAI APG breadcrumb guidance.
+ */
+export function currentCorporateNavigationAriaValue(
+  pathname: string | null,
+  href: string
+): "page" | "location" | undefined {
+  if (!isCurrentCorporateNavigation(pathname, href)) return undefined;
+  const canonical = (value: string) => value.split(/[?#]/, 1)[0]?.replace(/\/+$/, "") || "/";
+  return canonical(pathname ?? "") === canonical(href) ? "page" : "location";
+}
