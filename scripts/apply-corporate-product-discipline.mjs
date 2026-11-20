@@ -739,9 +739,34 @@ materialize("account-application/index.html", "/account-application/", accountMa
   robots: "noindex, follow"
 });
 
+function nutraxinSearchTitle(product) {
+  // Preserve supplier identity and pack size without repeating Nutraxin in the title.
+  // 60 characters is an editorial target, not a Google indexing/ranking rule.
+  let name = product.name
+    .replace("Vitamin MAX C + D + Zinc", "Vitamin MAX C+D+Zinc")
+    .replace("Vitamin B12 Methylcobalamin", "B12 Methylcobalamin")
+    .replace("Vitamin B6", "B6");
+  let pack = product.packSize;
+  if (/ sachets$/i.test(name) && /sachets/i.test(pack)) name = name.replace(/ sachets$/i, "");
+  if (/ effervescent$/i.test(name) && /effervescent/i.test(pack)) name = name.replace(/ effervescent$/i, "");
+  if (/ chewable$/i.test(name) && /chewable/i.test(pack)) name = name.replace(/ chewable$/i, "");
+  let title = `${name} ${pack} | NovaPharm`;
+  if (title.length > 60) {
+    pack = pack.replace(/effervescent tablets/i, "effervescent")
+      .replace(/chewable tablets/i, "chewables")
+      .replace(/sublingual tablets/i, "sublingual")
+      .replace(/tablets/i, "tabs");
+    title = `${name} ${pack} | NovaPharm`;
+  }
+  if (title.length > 60 || !title.startsWith("Nutraxin ")) {
+    throw new Error("Nutraxin title requires editorial review: " + product.sku);
+  }
+  return title;
+}
+
 for (const product of products) {
   const route = `/products/nutraxin/${product.slug}/`;
-  const title = `${product.name} ${product.packSize} | Nutraxin | NovaPharm`;
+  const title = nutraxinSearchTitle(product);
   const description = `${product.name}, ${product.packSize}, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.`;
   const productSchema = {
     "@context": "https://schema.org", "@id": `${siteUrl}${route}#product`, "@type": "Product",
