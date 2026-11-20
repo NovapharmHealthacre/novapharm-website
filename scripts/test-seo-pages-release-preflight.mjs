@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { auditSeoCandidate } from "./verify-seo-pages-release-preflight.mjs";
 
@@ -87,4 +88,19 @@ test("AI source guide rejects deceptive lookalike hosts instead of matching a ho
   const r=auditSeoCandidate(x);
   assert.equal(r.sourceReady,false);
   assert(r.issues.some(issue=>issue.includes("unverified external host")));
+});
+
+
+test("read-only preflight CI covers contact changes and owner approval controls", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/nutraxin-seo-pages-preflight.yml", import.meta.url), "utf8");
+  for (const path of [
+    "contact/**",
+    "assets/js/contact-production.js",
+    "scripts/activate-contact-intake.mjs",
+    "config/intelligence/owner-production-constraints.json"
+  ]) {
+    assert(workflow.includes('      - "' + path + '"'), "Preflight must run on changes to " + path);
+  }
+  assert.match(workflow, /permissions:\\s*\\n\\s*contents:\\s*read/);
+  assert.doesNotMatch(workflow, /^\\s*(?:pages|deployments|id-token):\\s*write/m);
 });
