@@ -127,10 +127,10 @@ test("owner-supplied 77-country source requirements remain provenance-labelled a
   }
   const web = read("apps/portal/components/country-source-coverage.tsx");
   const native = read("native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx");
-  assert.match(web, /owner-national-pharma-source-brief-20261120\\.json/);
-  assert.match(native, /owner-national-pharma-source-brief-20261120\\.json/);
+  assert.match(web, /owner-national-pharma-source-brief-20261120\.json/);
+  assert.match(native, /owner-national-pharma-source-brief-20261120\.json/);
   assert.match(web, /Owner-supplied pharmaceutical research brief/);
   assert.match(native, /Owner-supplied national research requirements/);
-  assert.doesNotMatch(native, /\\bfetch\\s*\\(|XMLHttpRequest|Authorization:|client_secret|access_token/i);
-  assert.doesNotMatch(web, /\\bfetch\\s*\\(|gatewayJson\\s*\\(|Authorization:|client_secret|access_token/i);
+  assert.doesNotMatch(native, /\bfetch\s*\(|XMLHttpRequest|Authorization:|client_secret|access_token/i);
+  assert.doesNotMatch(web, /\bfetch\s*\(|gatewayJson\s*\(|Authorization:|client_secret|access_token/i);
 });
