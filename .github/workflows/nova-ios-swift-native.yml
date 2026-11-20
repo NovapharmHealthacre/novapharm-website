@@ -98,6 +98,60 @@ jobs:
           xcrun xcresulttool get test-results summary \
             --path "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
             --format json > "$RUNNER_TEMP/novapharm-native-uitest-summary.json"
+      - name: Run Apple accessibility audits and largest Dynamic Type UI tests
+        run: |
+          set -euo pipefail
+          device="$(sed -n 's/^Simulator UDID: //p' "$RUNNER_TEMP/novapharm-ios-simulator-device.txt")"
+          test -n "$device"
+          xcrun simctl ui "$device" content_size accessibility-extra-extra-extra-large
+          xcrun simctl ui "$device" content_size | tee "$RUNNER_TEMP/novapharm-ios-accessibility-text-size.txt"
+          xcrun simctl launch "$device" com.example.NovaPharmNativePreview
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-accessibility-large-text.png"
+          xcrun simctl terminate "$device" com.example.NovaPharmNativePreview
+          cd native/novapharm-intelligence-ios
+          xcodebuild test \
+            -project NovaPharmNative.xcodeproj \
+            -scheme NovaPharmNative \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$device" \
+            -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
+            -resultBundlePath "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
+            -parallel-testing-enabled NO \
+            -only-testing:NovaPharmNativeUITests/NovaPharmAccessibilityUITests \
+            CODE_SIGNING_ALLOWED=NO
+          xcrun xcresulttool get test-results summary \
+            --path "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
+            --format json > "$RUNNER_TEMP/novapharm-native-accessibility-summary.json"
+      - name: Independently boot and launch an iPad Simulator
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
+          ipad="$(xcrun simctl list -j devices available | python3 -c 'import json,sys; d=json.load(sys.stdin)["devices"]; a=[i for devices in d.values() for i in devices if i.get("isAvailable") and i.get("name","").startswith("iPad")]; print(a[0]["udid"] if a else "")')"
+          test -n "$ipad" || { echo "::error::No iPad Simulator available; iPad acceptance remains blocked"; exit 1; }
+          xcrun simctl boot "$ipad" || true
+          xcrun simctl bootstatus "$ipad" -b
+          xcrun simctl install "$ipad" "$app"
+          xcrun simctl ui "$ipad" appearance light
+          xcrun simctl launch "$ipad" com.example.NovaPharmNativePreview | tee "$RUNNER_TEMP/novapharm-ipad-launch-receipt.txt"
+          sleep 3
+          xcrun simctl io "$ipad" screenshot "$RUNNER_TEMP/novapharm-ipad-simulator.png"
+          test -s "$RUNNER_TEMP/novapharm-ipad-launch-receipt.txt"
+          test -s "$RUNNER_TEMP/novapharm-ipad-simulator.png"
+          xcrun simctl terminate "$ipad" com.example.NovaPharmNativePreview || true
+      - name: Upload Apple accessibility and iPad evidence even if tests fail
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-swift-accessibility-ipad-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/NovaPharmNative-Accessibility.xcresult
+            ${{ runner.temp }}/novapharm-native-accessibility-summary.json
+            ${{ runner.temp }}/novapharm-ios-accessibility-text-size.txt
+            ${{ runner.temp }}/novapharm-ios-accessibility-large-text.png
+            ${{ runner.temp }}/novapharm-ipad-launch-receipt.txt
+            ${{ runner.temp }}/novapharm-ipad-simulator.png
+          if-no-files-found: warn
+          retention-days: 7
       - name: Upload native UI test evidence even if interactive tests fail
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
