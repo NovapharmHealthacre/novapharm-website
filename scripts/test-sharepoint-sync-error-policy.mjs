@@ -6,6 +6,7 @@ import { classifySharePointSyncFailure } from "../src/integrations/sharepoint/sy
 test("authority, conflict, version and data safety failures are terminal", () => {
   for (const code of ["graph_400", "graph_401", "graph_403", "graph_404",
     "graph_409", "graph_410", "graph_412", "graph_422",
+    "graph_auth_400", "graph_auth_401", "graph_auth_403", "graph_auth_404",
     "sharepoint_credentials_missing", "sharepoint_upload_conflict_gate",
     "sharepoint_invalid_path", "sharepoint_invalid_event_payload",
     "document_missing", "document_not_cleared", "unsupported_operation"]) {
@@ -15,7 +16,8 @@ test("authority, conflict, version and data safety failures are terminal", () =>
 
 test("transient network and provider failures are retryable", () => {
   for (const code of ["graph_408", "graph_429", "graph_500", "graph_502", "graph_503",
-    "graph_504", "sharepoint_sync_failed", "graph_retry_exhausted"]) {
+    "graph_504", "graph_auth_408", "graph_auth_429",
+    "graph_auth_500", "graph_auth_503", "sharepoint_sync_failed", "graph_retry_exhausted"]) {
     assert.deepEqual(classifySharePointSyncFailure(code), { code, action: "retry" }, code);
   }
 });

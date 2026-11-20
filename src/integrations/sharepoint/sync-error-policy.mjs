@@ -18,7 +18,9 @@ const BLOCKED = new Set([
 export function classifySharePointSyncFailure(errorCode) {
   const code = typeof errorCode === "string" && /^[a-z0-9_]{1,80}$/.test(errorCode)
     ? errorCode : "sharepoint_sync_failed";
-  const graphHttpStatus = /^graph_(\d{3})$/.exec(code);
+  // GraphClient emits graph_AUTH_STATUS for token-endpoint failures and
+  // graph_STATUS for resource requests. Both must apply the same stop gate.
+  const graphHttpStatus = /^graph_(?:auth_)?(\d{3})$/.exec(code);
   const isPermanentGraphError = graphHttpStatus
     && Number(graphHttpStatus[1]) >= 400
     && Number(graphHttpStatus[1]) < 500
