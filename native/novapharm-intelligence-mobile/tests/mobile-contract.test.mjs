@@ -191,3 +191,21 @@ test("committed lockfile does not bypass auth, signing, data rights or release a
   assert.doesNotMatch(mobileCandidate, /eas build|xcodebuild archive|gradle .*bundleRelease|app-store|play-store|AWS_ACCESS_KEY_ID|client_secret|access_token/i);
   assert.match(read("native/novapharm-intelligence-mobile/README.md"), /Reproducibility and security are still pending independent acceptance/);
 });
+
+test("mobile enterprise access stays blocked until independently verified", () => {
+  const app = read("native/novapharm-intelligence-mobile/App.tsx");
+  assert.match(app, /const mobileAuthReadiness = Object\.freeze\(\{/);
+  assert.match(app, /status: "blocked" as const/);
+  assert.match(app, /canSignIn: false as const/);
+  assert.match(app, /customerDataEnabled: false as const/);
+  const gatesSection = app.split("const gates: ReadonlyArray<MobileAuthGate> = Object.freeze([")[1]?.split("].map((gate) => Object.freeze(gate))")[0];
+  assert.ok(gatesSection, "Missing immutable release-gate catalogue");
+  const ids = [...gatesSection.matchAll(/id: "([^"]+)"/g)].map(x => x[1]);
+  assert.equal(ids.length, 8);
+  assert.equal(new Set(ids).size, 8);
+  assert.equal((gatesSection.match(/state: "not_verified"/g) ?? []).length, 8);
+  assert.match(app, /mobileAuthReadiness\.gates\.map/);
+  assert.match(app, /No login SDK, credential capture, permissions or customer access is enabled/);
+  assert.match(app, /Authentication not enabled/);
+  assert.doesNotMatch(app, /fetch\(|WebView|expo-auth-session|access_token|client_secret|AsyncStorage|SecureStore/);
+});
