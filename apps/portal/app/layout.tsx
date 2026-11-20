@@ -34,7 +34,9 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
   return <html lang={locale} dir={directionForLocale(locale)} data-np-estate="portal"><body>
-    <div lang="en-GB" data-np-untranslated>{children}</div>
+    <a className="portal-skip-link" href="#portal-content">Skip to portal content</a>
+    <div id="portal-content" role="region" aria-label="Portal content" tabIndex={-1}
+      lang="en-GB" data-np-untranslated>{children}</div>
     <InterfaceLocaleSwitcher locale={locale} />
   </body></html>;
 }
