@@ -43,3 +43,13 @@ test("unconsented local samples cannot initiate the simulated review", () => {
   assert.doesNotMatch(review, /\bfetch\(|XMLHttpRequest|navigator\.mediaDevices|requestCameraPermissionsAsync/);
   assert.match(review, /Research-only, offline conflict screening/);
 });
+
+test("native Science source links keep approved-origin validation and accessible browser error handling", () => {
+  assert.match(science, /const approvedReference =/);
+  assert.match(science, /if \(!approvedReference\)/);
+  assert.match(science, /AccessibilityInfo\.announceForAccessibility\(message\)/);
+  assert.match(science, /accessibilityRole="alert" accessibilityLiveRegion="polite"/);
+  assert.match(science, /void openResearchReference\(entry\.id, entry\.sourceUrl\)/);
+  assert.doesNotMatch(science, /void Linking\.openURL\(entry\.sourceUrl\)/,
+    "Research link navigation must not bypass source validation or error handling");
+});
