@@ -5942,8 +5942,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 9,
-      "referenceCount": 22,
+      "usageCount": 10,
+      "referenceCount": 23,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5953,7 +5953,8 @@
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs",
         "scripts/audit-restored-public-routes.mjs",
-        "scripts/programme/validate-post-pr53-candidate.mjs"
+        "scripts/programme/validate-post-pr53-candidate.mjs",
+        "scripts/stage-pages-artifact.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
