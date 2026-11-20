@@ -5,6 +5,8 @@ on:
       - 'src/integrations/sharepoint/sync-engine.mjs'
       - 'src/integrations/sharepoint/sync-error-policy.mjs'
       - 'scripts/test-sharepoint-sync-error-policy.mjs'
+      - 'src/integrations/sharepoint/graph-client.mjs'
+      - 'scripts/test-sharepoint-graph-paths.mjs'
       - 'integrations/sharepoint/README.md'
       - '.github/workflows/sharepoint-sync-fail-closed.yml'
   workflow_dispatch:
@@ -21,4 +23,5 @@ jobs:
           node-version: '24'
       - run: node --check src/integrations/sharepoint/sync-engine.mjs
       - run: node --check src/integrations/sharepoint/sync-error-policy.mjs
-      - run: node --test scripts/test-sharepoint-sync-error-policy.mjs
+      - run: node --check src/integrations/sharepoint/graph-client.mjs
+      - run: node --test scripts/test-sharepoint-sync-error-policy.mjs scripts/test-sharepoint-graph-paths.mjs

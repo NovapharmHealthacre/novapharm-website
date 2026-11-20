@@ -28,6 +28,20 @@ The Executive Platform source contains 18 modules, one hub, two PDFs and one loc
 
 No credentials are stored in the repository or browser JavaScript.
 
+## File path safety (source-only verification, pending review)
+
+The existing Graph client validates each folder/file path segment before any request,
+rejecting dot traversal, separator injection, percent-encoded ambiguity, control
+characters, reserved delimiter characters and invalid trailing dots/spaces.
+Ordinary spaces and Unicode file names are percent-encoded per segment.
+`scripts/test-sharepoint-graph-paths.mjs` uses an offline Graph request stub;
+it does not authenticate, read documents, change permissions or upload files.
+
+This code-level safeguard does **not** prove site-specific Entra consent,
+Board-only effective permissions, tenant-scoped rights, conflict-safe file
+versioning, malware screening or successful live synchronization. Those gates
+must be verified separately before enabling the existing outbox worker.
+
 ## Fail-closed outbox boundary (source-only; pending deployment review)
 
 The legacy Microsoft Graph small-file PUT helper remains in the repository but is **not an approved document synchronization method**. The event processor now explicitly rejects `upload_document` events with `sharepoint_upload_conflict_gate` before folder creation, object download, upload or metadata PATCH. This is a deliberate safe stop: existing content must not be implicitly replaced, especially after an ambiguous partial-success retry.
