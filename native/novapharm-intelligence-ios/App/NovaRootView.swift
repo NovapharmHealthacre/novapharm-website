@@ -37,6 +37,16 @@ private struct PreviewNotice: View {
 }
 
 private struct IntelligenceHomeView: View {
+    // SwiftUI adapts this chart's height to larger accessibility text sizes.
+    @ScaledMetric(relativeTo: .body) private var moduleChartHeight: CGFloat = 180
+
+    // VoiceOver must receive the same current catalogue counts as the chart.
+    private var moduleChartAccessibilitySummary: String {
+        "Module catalogue sizes: " + NovaArea.allCases.map { area in
+            "\(area.title) \(NovaCatalog.modules(in: area).count)"
+        }.joined(separator: ", ")
+    }
+
     var body: some View {
         List {
             Section {
@@ -53,8 +63,9 @@ private struct IntelligenceHomeView: View {
                     )
                     .foregroundStyle(NovaTheme.accent)
                 }
-                .frame(height: 180)
-                .accessibilityLabel("Module catalogue sizes: Intelligence 22, Customer Portal 10, Distribution 9")
+                .frame(height: moduleChartHeight)
+                .accessibilityLabel(moduleChartAccessibilitySummary)
+                .accessibilityIdentifier("novapharm.intelligence.modules-chart")
                 ForEach(NovaArea.allCases, id: \.rawValue) { area in
                     LabeledContent(area.title, value: "\(NovaCatalog.modules(in: area).count) documented modules")
                         .font(.subheadline)
@@ -64,9 +75,11 @@ private struct IntelligenceHomeView: View {
                 NavigationLink("Explore 101 country research scopes") {
                     NovaCountryDirectoryView()
                 }
-                NavigationLink("Explore 22 research workspaces") {
+                .accessibilityIdentifier("novapharm.intelligence.countries")
+                NavigationLink("Explore \(NovaCatalog.modules(in: .intelligence).count) research workspaces") {
                     WorkspaceListView(area: .intelligence)
                 }
+                .accessibilityIdentifier("novapharm.intelligence.workspaces")
                 Text("Existing read-only website foundations are not mobile services. Source rights and tenant authentication remain blocked.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -116,6 +129,7 @@ private struct WorkspaceListView: View {
                             .padding(.vertical, 6)
                             .accessibilityElement(children: .combine)
                         }
+                        .accessibilityIdentifier("novapharm.workspace.\(module.id)")
                     }
                 }
             }
@@ -132,6 +146,7 @@ private struct ModuleDetailView: View {
     let module: NovaWorkspace
     @Environment(\.modelContext) private var context
     @Query private var saved: [OfflineBookmark]
+    @State private var bookmarkError = false
 
     private var existingBookmark: OfflineBookmark? {
         saved.first { $0.workspaceID == module.id }
@@ -159,8 +174,19 @@ private struct ModuleDetailView: View {
                     } else {
                         context.insert(OfflineBookmark(workspaceID: module.id))
                     }
+                    do {
+                        try context.save()
+                    } catch {
+                        bookmarkError = true
+                    }
                 }
+                .accessibilityIdentifier("novapharm.bookmark.toggle")
                 .frame(minHeight: 44)
+                .alert("Local shortcut unavailable", isPresented: $bookmarkError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text("Unable to save this module shortcut on this device.")
+                }
                 Text("Only this public module identifier is stored locally using SwiftData. No customer content is cached.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -183,6 +209,7 @@ private struct SavedModulesView: View {
             ForEach(saved, id: \.workspaceID) { bookmark in
                 if let module = NovaCatalog.lookup(id: bookmark.workspaceID) {
                     NavigationLink(module.title) { ModuleDetailView(module: module) }
+                        .accessibilityIdentifier("novapharm.saved.\(module.id)")
                 }
             }
             if saved.isEmpty {
