@@ -47,7 +47,7 @@ test("document upload remains fail-closed even when Graph credentials exist", ()
 
 test("separate folder-creation operation remains present", () => {
   const source = readFileSync(new URL("../src/integrations/sharepoint/sync-engine.mjs", import.meta.url), "utf8");
-  assert.match(source, /payload\.operation === "ensure_entity_folder"/);
+  assert.match(source, /for \(const \{ event, payload \} of candidates\)/);
   assert.match(source, /graph\.ensureFolder\(/);
 });
 
