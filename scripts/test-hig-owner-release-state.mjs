@@ -6,11 +6,12 @@ import { validateHigOwnerReleaseState } from "./hig-owner-release-state.mjs";
 const actual = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json","utf8"));
 const copy = value => structuredClone(value);
 
-test("current unapproved owner constraints remain zero-spend and non-releasing", () => {
+test("current owner constraints are validated without hard-coding a permanent denial", () => {
   const checked = validateHigOwnerReleaseState(actual);
   assert.equal(checked.productionAcceptedByThisValidation, false);
   assert.equal(checked.sourceOnly, true);
-  assert.equal(checked.granted, false);
+  assert.equal(checked.granted, actual.productionSignoff === "granted",
+    "The source-only tests must not freeze a future valid owner decision at denial");
 });
 
 test("source-only test permits a future documented release without self-certifying it", () => {
