@@ -99,6 +99,8 @@ jobs:
       - name: Verify pinned Playwright image and bundled browsers
         run: |
           node -e "const fs=require('node:fs'); const p=require('playwright/package.json'); const b=require('playwright'); if(p.version!=='1.61.1') process.exit(1); for(const engine of [b.chromium,b.webkit]) { const file=engine.executablePath(); if(!fs.existsSync(file)) {console.error('Missing browser '+file); process.exit(1);} }"
+      - name: Confirm protected Portal browser artifacts require private repository access
+        run: node --test scripts/test-protected-portal-artifact-privacy.mjs
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
