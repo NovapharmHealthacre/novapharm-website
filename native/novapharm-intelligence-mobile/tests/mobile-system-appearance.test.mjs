@@ -155,3 +155,17 @@ test("country cards use shared semantic colours with no light-only surfaces or n
   assert.match(countryScreen, /keyExtractor=\{\(country\) => country\.iso2\}/);
 });
 
+
+test("large accessibility text reflows the 101-country list into one column without clipping filter labels", () => {
+  assert.match(countryScreen, /const \{ width, fontScale \} = useWindowDimensions\(\)/);
+  assert.match(countryScreen, /const largeText = fontScale >= 1\.4/);
+  assert.match(countryScreen, /const twoColumns = width >= 760 && !largeText/);
+  assert.match(countryScreen, /key=\{twoColumns \? "country-wide" : "country-narrow"\}/);
+  assert.match(countryScreen, /numColumns=\{twoColumns \? 2 : 1\}/);
+  assert.match(countryScreen, /filters: \{ flexDirection: "row", flexWrap: "wrap"/);
+  assert.match(countryScreen, /filter: \{ flexGrow: 1, minWidth: 92/);
+  assert.match(countryScreen, /minHeight: 48, borderRadius: 9/);
+  assert.match(countryScreen, /search: \{[^}]*fontSize: 17/);
+  assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
+  assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|access_token|client_secret/i);
+});
