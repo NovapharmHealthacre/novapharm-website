@@ -324,6 +324,31 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   }
 }
 
+async function verifyKeyboardSkip(page: Page, engine: string, viewport: string): Promise<void> {
+  // Exercise the real keyboard journey, not just source markup. This is local
+  // standalone-build evidence; it does not certify the published origin.
+  const skip = page.locator('a.skip-link[href="#main-content"]');
+  assert.equal(await skip.count(), 1, `${engine} ${viewport}: missing keyboard bypass`);
+  await page.keyboard.press("Tab");
+  assert.equal(await skip.evaluate((element) => element === document.activeElement), true,
+    `${engine} ${viewport}: skip link must be the first keyboard target`);
+  const bounds = await skip.boundingBox();
+  const height = page.viewportSize()?.height ?? 0;
+  assert.ok(bounds && bounds.y >= 0 && bounds.y < height,
+    `${engine} ${viewport}: focused skip control is outside the viewport`);
+
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => document.activeElement?.id === "main-content",
+    undefined, { timeout: 5_000 });
+  assert.equal(await page.locator("#main-content").getAttribute("tabindex"), "-1",
+    `${engine} ${viewport}: skip destination must accept programmatic focus without adding a Tab stop`);
+  await page.keyboard.press("Tab");
+  assert.equal(await page.evaluate(() => {
+    const focused = document.activeElement;
+    return Boolean(focused?.closest("#main-content, footer"));
+  }), true, `${engine} ${viewport}: keyboard must continue into content, not return to header navigation`);
+}
+
 async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
@@ -349,6 +374,9 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await dialog.getByRole("button", { name: "Close cookie settings" }).click();
   await dialog.waitFor({ state: "hidden" });
   await expectHidden(banner, `${engine}: saved consent incorrectly reopened the banner`);
+
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+  await verifyKeyboardSkip(page, engine, "mobile-390");
 
   const menu = page.locator("details.mobile-menu summary");
   assert.equal(await menu.getAttribute("aria-label"), "Open navigation", `${engine}: mobile menu is not labelled`);
@@ -387,6 +415,10 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
     assert.match(await page.locator(".np-contact-reference-status").innerText(), /does not collect or transmit enquiry details/i, "public non-collection notice missing");
     assert.equal(await page.locator("input[name=role]").count(), 0, "public form must not imply managed submission");
   }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${baseUrl}/about/`, { waitUntil: "domcontentloaded" });
+  await verifyKeyboardSkip(page, engine, "desktop-1440");
 }
 
 async function expectHidden(locator: ReturnType<Page["locator"]>, message: string): Promise<void> {
