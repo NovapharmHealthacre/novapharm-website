@@ -21,6 +21,7 @@ on:
       - 'apps/portal/app/globals.css'
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - 'scripts/test-hig-independent-review-authenticity.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
   workflow_dispatch:
     inputs:
@@ -38,6 +39,9 @@ jobs:
   source-contracts:
     name: HIG 172 topics, portal target sizes and mobile readable forms
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -46,6 +50,10 @@ jobs:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Independently verify any claimed GitHub HIG approvals
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --test scripts/test-hig-independent-review-authenticity.mjs
       - name: Check native iOS/Android readable controls and consent state
         run: node --test native/novapharm-intelligence-mobile/tests/hig-native-readable-controls.test.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs
