@@ -9,6 +9,21 @@ const site = "https://novapharmhealthcare.com";
 const check = process.argv.includes("--check");
 const retail = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
 const registered = JSON.parse(readFileSync(join(root, "docs/nutraxin-product-register.json"), "utf8"));
+const ukGtins = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-gtin-uk.json"), "utf8"));
+assert.equal(ukGtins.market, "GB", "Only UK-assigned GTINs can be used in the GB Merchant feed");
+assert.equal(ukGtins.products.length, 19, "One GTIN evidence record required per UK Nutraxin SKU");
+const validEan13 = value => {
+  if (!/^\\d{13}$/.test(value)) return false;
+  const digits = Array.from(value, Number);
+  const sum = digits.slice(0, 12).reduce((total, n, index) => total + n * (index % 2 ? 3 : 1), 0);
+  return (10 - (sum % 10)) % 10 === digits[12];
+};
+const gtinsBySku = new Map(ukGtins.products.map(record => [record.sku, record]));
+assert.equal(gtinsBySku.size, 19, "Duplicate SKU in UK GTIN register");
+assert.equal(new Set(ukGtins.products.map(record => record.gtin13)).size, 19,
+  "Different Nutraxin sellable packs must not share an EAN-13");
+assert(ukGtins.products.every(record => validEan13(record.gtin13) &&
+  /^https:\/\//.test(record.sourceUrl)), "GTIN must have valid EAN-13 and retailer source URL");
 assert.equal(retail.currency, "GBP");
 assert.equal(retail.price_authority, "approved_consumer_retail");
 assert.equal(registered.products.length, 19);
@@ -81,7 +96,7 @@ const feedTitle = (p) => {
 };
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const header = ["id","title","description","link","image_link","availability","price","condition","brand","product_type","shipping(country:price)"];
+const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","shipping(country:price)"];
 const lines = [header.join("\t")];
 let saleReady = 0;
 
@@ -89,6 +104,9 @@ for (const product of registered.products) {
   const p = indexed.get(product.sku);
   assert(p && p.slug === product.slug && p.name === product.name && p.pack === product.packSize,
     "Identity mismatch: " + product.sku);
+  const gtin = gtinsBySku.get(p.sku);
+  assert(gtin && gtin.slug === p.slug && gtin.pack === p.pack,
+    "GTIN UK SKU/pack mismatch: " + p.sku);
   const url = site + "/products/nutraxin/" + product.slug + "/";
   const image = site + "/assets/media/products/nutraxin/" + product.imageBase + ".png";
   assert(existsSync(join(root, "assets/media/products/nutraxin", product.imageBase + ".png")));
@@ -106,7 +124,7 @@ for (const product of registered.products) {
     p.sku, feedTitle(p),
     description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
-    "new", "Nutraxin", "Food Supplements > " + product.range, ship
+    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, ship
   ].map(clean).join("\t"));
 
   const path = join(root, "products/nutraxin", p.slug, "index.html");
@@ -124,6 +142,7 @@ for (const product of registered.products) {
     if (json["@type"] !== "Product") return tag;
     assert.equal(json.sku, p.sku);
     schemaCount++;
+    json.gtin13 = gtin.gtin13;
     json.description = description;
     json.offers = {
       "@type": "Offer", url, priceCurrency: "GBP",
