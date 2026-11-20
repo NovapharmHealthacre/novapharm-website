@@ -5,6 +5,8 @@
 import React, { useState } from "react";
 import { AccessibilityInfo, Linking, Pressable, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { intelligenceWorkspaceCatalogue } from "../../apps/portal/data/intelligence-workspaces";
+import { assessQuantumResourcePlan } from "../../src/core/intelligence-quantum-resource-estimate.mjs";
+import quantumProgram from "../../docs/intelligence/quantum-research-program-v1.json";
 import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json";
 import catalog from "../../docs/intelligence/science-research-capabilities-20261118.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
@@ -13,6 +15,19 @@ type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 
 export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (workspaceSlug: string) => void }) {
   const styles = useColorScheme() === "dark" ? darkStyles : lightStyles;
+  const [selectedQubits, setSelectedQubits] = React.useState(20);
+  const resourceReview = assessQuantumResourcePlan({
+    schemaVersion: "npi.quantum-simulator-preflight.v1",
+    backend: "classical-state-vector-only",
+    qubits: selectedQubits,
+    shots: 512,
+    circuitGates: 500,
+    memoryBudgetMiB: 64,
+    hardwareExecutionRequested: false,
+    paidComputeRequested: false,
+    protectedDataRequested: false,
+    productionApproved: false
+  });
   const [sourceOpenFeedback, setSourceOpenFeedback] = useState<{ id: string; message: string } | null>(null);
 
   async function openResearchReference(id: string, sourceUrl: string) {
@@ -34,7 +49,7 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
     }
   }
 
-  return <View style={styles.container}>
+  return <View accessibilityLabel="Scientific research, offline planning preview" style={styles.container}>
     <Text style={styles.breadcrumb}>NOVAPHARM INTELLIGENCE / SCIENCE</Text>
     <Text style={styles.title} accessibilityRole="header">Science, grounded in evidence.</Text>
     <Text style={styles.lead}>Research across literature, data, modelling, connected tools and experiment planning, with accountable scientific review.</Text>
@@ -42,6 +57,37 @@ export function ScienceResearchMobile({ onOpenWorkspace }: { onOpenWorkspace: (w
       <Text style={styles.statusTitle}>Design preview only</Text>
       <Text style={styles.description}>No model connected. No new scientific data ingested. No experiments, medical decisions or AI responses are enabled.</Text>
     </View>
+    <Text style={styles.sectionTitle} accessibilityRole="header">Quantum and computational science</Text>
+    <Text style={styles.description}>Offline source catalogue only. Cirq, OpenFermion, Qualtran and qsim are research references; no packages, model, processor, cloud jobs or private data are connected to this app.</Text>
+    {quantumProgram.modules.map((module) =>
+      <View style={styles.card} key={module.id}>
+        <Text style={styles.methodTag}>{module.status.replaceAll("-", " ").toUpperCase()}</Text>
+        <Text style={styles.cardTitle} accessibilityRole="header">{module.title}</Text>
+        <Text style={styles.description}>{module.description}</Text>
+      </View>
+    )}
+    <View style={styles.card} accessibilityLabel="Classical state vector capacity preflight; no quantum execution">
+      <Text style={styles.cardTitle} accessibilityRole="header">State-vector RAM preflight</Text>
+      <Text style={styles.description}>Illustrative complex128 vector only; 64 MiB declared limit. This tool does not execute models, reserve memory, contact servers or approve research.</Text>
+      {([10, 20, 25, 30] as const).map((count) =>
+        <Pressable key={count} accessibilityRole="button" accessibilityLabel={count + " qubits, preview theoretical memory only"} accessibilityState={{ selected: count === selectedQubits }} style={styles.relatedButton} onPress={() => setSelectedQubits(count)}>
+          <Text style={styles.relatedText}>{count} qubits{count === selectedQubits ? " · selected" : ""}</Text>
+        </Pressable>
+      )}
+      <Text style={styles.state} accessibilityLiveRegion="polite">{selectedQubits} qubits · {resourceReview.stateVectorMemoryMiB.toLocaleString("en-GB")} MiB theoretical storage · {resourceReview.conservativeResearchCandidate ? "Review-only candidate" : "Exceeds conservative advisory"}</Text>
+      <Text style={styles.description}>This is not a RAM availability, runtime, price, fault tolerance or production approval. No compute job is started.</Text>
+    </View>
+    <Text style={styles.smallHeading} accessibilityRole="header">Verification DNA</Text>
+    {quantumProgram.principles.map((item) =>
+      <View style={styles.reviewStage} key={item.title}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.description}>{item.detail}</Text>
+      </View>
+    )}
+    <Text style={styles.footer}>No H₂ or drug computation has been validated. Simulations are not physical quantum measurements. Source checks, clinical safety, licences, human review and deployment remain separately gated.</Text>
+    <Pressable accessibilityRole="link" accessibilityLabel="Read Google Quantum AI software documentation in external browser" style={styles.sourceLink} onPress={() => { void Linking.openURL("https://quantumai.google/software"); }}>
+      <Text style={styles.sourceLinkLabel}>Google Quantum AI — official software documentation</Text>
+    </Pressable>
     <Text style={styles.sectionTitle} accessibilityRole="header">Six research workflows</Text>
     {catalog.workflows.map((workflow, index) =>
       <View style={styles.card} key={workflow.id}>
