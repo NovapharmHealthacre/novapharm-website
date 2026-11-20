@@ -108,37 +108,28 @@ test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP asse
   assert.match(generator,/Original product concept/);
 });
 
-test("owner-declared 10000 per catalogue reference is planning stock, not verified fulfillment or a buy button",async()=>{
+test("ESCO public guides preserve 373 prices without internal cost or margin disclosure",async()=>{
   const {guideFor}=await import("./esco-merchandising.mjs");
-  const all=data.categories.flatMap(category=>category.entries.map(item=>({...item, category:category.name})));
+  const all=data.categories.flatMap(category=>category.entries.map(item=>({...item,category:category.name})));
   assert.equal(all.length,373);
-  const declaredUnits=all.reduce((sum,item)=>{
+  assert.equal(Object.hasOwn(data,"targetGrossMargin"),false);
+  let declaredUnits=0;
+  for(const item of all){
     const price=guideFor(item);
+    assert.ok(Number.isFinite(price.guidePriceExVatGbp)&&price.guidePriceExVatGbp>0);
     assert.equal(price.ownerDeclaredStockUnits,10000);
     assert.equal(price.stockVerified,false);
     assert.equal(price.availableToPromiseUnits,null);
-    assert.equal(price.inventoryEvidence,'OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED');
+    assert.equal(price.inventoryEvidence,"OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED");
     assert.equal(price.checkoutEligible,false);
     assert.equal(price.priceApprovedForCheckout,false);
-    assert.equal(price.unitEconomics.grossMarginTarget,0.25);
-    assert.equal(price.unitEconomics.assumptionsOnly,true);
-    assert.equal(price.unitEconomics.grossProfitProven,false);
-    assert.equal(price.unitEconomics.actualSupplierCostKnown,false);
-    assert.equal(price.unitEconomics.actualFreightKnown,false);
-    assert.equal(price.unitEconomics.actualPaymentFeesKnown,false);
-    assert.equal(price.unitEconomics.actualStorageChargesKnown,false);
-    assert.ok(price.unitEconomics.maximumSupplierAndInboundCostGbp>=0);
-    const cap=Math.round(price.guidePriceExVatGbp*0.75*100)/100;
-    assert.ok(Math.abs(price.unitEconomics.maximumTotalVariableCostGbp-cap)<=0.01);
-    const modeled=price.unitEconomics;
-    const remaining=Math.round((modeled.maximumTotalVariableCostGbp-
-      modeled.illustrativeOutboundDeliveryAllocationGbp-
-      modeled.illustrativeCardFeeAllocationGbp-
-      modeled.illustrativeThreeMonthStorageReserveGbp)*100)/100;
-    assert.equal(modeled.maximumSupplierAndInboundCostGbp,Math.max(0,remaining));
-    return sum + price.ownerDeclaredStockUnits;
-  },0);
+    for(const privateKey of ["unitEconomics","maximumFullyLandedCostFor25PercentMarginGbp","supplierCost","targetGrossMargin"])
+      assert.equal(Object.hasOwn(price,privateKey),false,"Private key in public guide: "+privateKey);
+    declaredUnits+=price.ownerDeclaredStockUnits;
+  }
   assert.equal(declaredUnits,3730000);
+  const generator=readFileSync("scripts/esco-merchandising.mjs","utf8");
+  assert.doesNotMatch(generator,/costEnvelopeForIllustration|unitEconomicsAssumptions|TARGET_GROSS_MARGIN_FRACTION|maximumSupplierAndInboundCostGbp/);
   const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   assert.match(builder,/10,000 units per catalogue reference/);
   assert.match(builder,/warehouse-verified available stock/);
