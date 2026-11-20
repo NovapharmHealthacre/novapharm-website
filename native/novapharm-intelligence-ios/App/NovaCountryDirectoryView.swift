@@ -8,6 +8,7 @@ struct NovaCountryDirectoryView: View {
         case research = "Research"
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var searchText = ""
     @State private var filter: CoverageFilter = .all
 
@@ -47,14 +48,39 @@ struct NovaCountryDirectoryView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("novapharm.countries.readonly-notice")
             }
-            Section {
-                Picker("Reference coverage", selection: $filter) {
-                    ForEach(CoverageFilter.allCases, id: \.self) { value in
-                        Text(value.rawValue).tag(value)
+            if dynamicTypeSize.isAccessibilitySize {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Search national scopes")
+                            .font(.headline)
+                        TextField("Search", text: $searchText)
+                            .font(.body)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .accessibilityLabel("Search national scopes")
+                            .accessibilityIdentifier("novapharm.countries.inline-search")
                     }
+                    .padding(.vertical, 4)
                 }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("novapharm.countries.coverage-filter")
+            }
+            Section {
+                if dynamicTypeSize.isAccessibilitySize {
+                    Picker("Reference coverage", selection: $filter) {
+                        ForEach(CoverageFilter.allCases, id: \.self) { value in
+                            Text(value.rawValue).tag(value)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityIdentifier("novapharm.countries.coverage-filter")
+                } else {
+                    Picker("Reference coverage", selection: $filter) {
+                        ForEach(CoverageFilter.allCases, id: \.self) { value in
+                            Text(value.rawValue).tag(value)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("novapharm.countries.coverage-filter")
+                }
                 LabeledContent("Matching countries", value: "\(visibleCountries.count)")
                     .accessibilityIdentifier("novapharm.countries.count")
             }
@@ -86,7 +112,7 @@ struct NovaCountryDirectoryView: View {
                 ContentUnavailableView.search(text: searchText)
             }
         }
-        .searchable(text: $searchText, prompt: "Country, ISO code or region")
+        .modifier(NovaAdaptiveSearchModifier(searchText: $searchText, prompt: "Country, ISO code or region"))
         .navigationTitle("Countries")
     }
 }
