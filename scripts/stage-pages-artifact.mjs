@@ -256,6 +256,63 @@ try {
   rmSync(escoTmpPath, { force: true });
 }
 
+// ESCO category-level price research is for public guide figures only;
+// never publish supplier landed-cost ceilings, margin assumptions, or
+// owner-declared inventory planning quantities from the generated model.
+const escoGuidePath = join(output, "assets/data/esco-uk-guide-prices.json");
+if (!existsSync(escoGuidePath)) throw new Error("ESCO guide price artifact missing");
+const escoGuide = JSON.parse(readFileSync(escoGuidePath, "utf8"));
+if (escoGuide.entriesTotal !== 373 ||
+    escoGuide.checkoutEnabled !== false ||
+    escoGuide.paymentCollectionEnabled !== false ||
+    escoGuide.requestQuoteOnly !== true ||
+    Object.keys(escoGuide.guidePrices ?? {}).length !== 373 ||
+    Object.keys(escoGuide.visualPreviews ?? {}).length !== 373) {
+  throw new Error("Cannot publish unverified ESCO guide count, status, or product previews");
+}
+const safeGuidePrices = Object.fromEntries(
+  Object.entries(escoGuide.guidePrices).map(([id, item]) => {
+    if (!/^ESCO-CAT-\d{4}$/.test(id) || item.catalogueReference !== id ||
+        !Number.isFinite(item.guidePriceExVatGbp) || item.guidePriceExVatGbp <= 0 ||
+        item.priceApprovedForCheckout !== false ||
+        item.checkoutEligible !== false || item.publicGuideOnly !== true) {
+      throw new Error("ESCO guide row is not public-safe or owner-reviewed: " + id);
+    }
+    return [id, {
+      catalogueReference: id,
+      category: item.category,
+      guidePriceExVatGbp: item.guidePriceExVatGbp,
+      currency: item.currency,
+      taxDisplay: item.taxDisplay,
+      sourceType: item.sourceType,
+      deliveryIncluded: false,
+      priceApprovedForCheckout: false,
+      checkoutEligible: false,
+      publicGuideOnly: true
+    }];
+  })
+);
+const publicEscoGuide = {
+  version: escoGuide.version.replace(/-public-safe$/, "") + "-public-safe",
+  source: escoGuide.source,
+  taxPolicy: escoGuide.taxPolicy,
+  checkoutEnabled: false,
+  paymentCollectionEnabled: false,
+  requestQuoteOnly: true,
+  currency: escoGuide.currency,
+  inventoryEvidence: escoGuide.inventoryEvidence,
+  stockVerified: false,
+  availableToPromiseVerified: false,
+  entriesTotal: 373,
+  guidePrices: safeGuidePrices,
+  visualPreviews: escoGuide.visualPreviews
+};
+const safeEscoGuideJson = JSON.stringify(publicEscoGuide, null, 2) + "\n";
+if (/targetGrossMargin|unitEconomics|maximumSupplier|grossMargin|marginPolicy|maximumFullyLandedCost|ownerDeclared|totalOwnerDeclared|supplierCost|modelFeasible/i.test(safeEscoGuideJson)) {
+  throw new Error("Confidential ESCO economics leaked into public guide");
+}
+writeFileSync(escoGuidePath, safeEscoGuideJson, "utf8");
+
 // Fail closed if an older Next.js or root-static build would overwrite the
 // owner-approved Earth homepage and the 19 restored, sellable-by-policy-only
 // Nutraxin public pages. A git merge alone is not proof of an approved Pages build.
