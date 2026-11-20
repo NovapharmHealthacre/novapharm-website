@@ -8,8 +8,8 @@ let package = Package(
     targets: [
         .target(name: "NovaPharmNativeCore", path: "App",
                 exclude: ["NovaRootView.swift", "NovaPharmNativeApp.swift",
-                          "NovaTheme.swift", "OfflineBookmark.swift"],
-                sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift"]),
+                          "NovaTheme.swift", "OfflineBookmark.swift", "NovaCountryDirectoryView.swift"],
+                sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift", "CountryCatalog.swift"]),
         .testTarget(name: "NovaPharmNativeCoreTests",
                     dependencies: ["NovaPharmNativeCore"], path: "CoreTests")
     ]

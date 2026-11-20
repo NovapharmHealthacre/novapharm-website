@@ -16,6 +16,17 @@
 
 Apple SwiftData is supported on iOS 17+, so this prototype targets iOS 17. Our `project.yml` is an XcodeGen project specification, not a precompiled binary. The required `com.example.NovaPharmNativePreview` is **a build-only placeholder**, not NovaPharm's approved bundle ID or a production identity. Signing is disabled.
 
+## Native offline 101-country directory
+
+The iOS app now includes `NovaCountryCatalog` and `NovaCountryDirectoryView` as an additional **Swift-only**, read-only research screen linked from Intelligence. The source is the existing canonical `docs/intelligence/country-101-client-catalog-20261118.json`, not scraped or inferred national medicine facts.
+
+- **101 national geography scopes** by country and region, with search and a filter for source candidates versus further research.
+- **77 scopes** with publisher source candidates; **24 geography-only research scopes**.
+- **0** licensed/accepted national sources and **0** customer-live countries.
+- The app shows only country/ISO/region, candidate reference counts and explicit access-rights warnings; no remote URLs are requested, no licensed datasets or regulator data are loaded, and no country can grant production rights.
+
+`scripts/test-novapharm-native-ios-source-parity.mjs` compares **every country record, in order** against the canonical JSON, protecting against hidden omissions or made-up acceptance. `CoreTests/NovaCountryCatalogTests.swift` verifies all country counts and fail-closed rights using Swift Testing. These additional preview records do not update the 172-topic production HIG acceptance register.
+
 ## Build with Xcode, with no paid developer account
 
 On a developer-owned Mac with Xcode and XcodeGen:

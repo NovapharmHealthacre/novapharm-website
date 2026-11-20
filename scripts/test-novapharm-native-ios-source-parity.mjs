@@ -61,3 +61,37 @@ test("source preview never circumvents release or sensitive-data gates", () => {
   assert.match(policy, /canOpenProtectedWorkspace/);
   assert.match(policy, /false\s*\n\s*}/);
 });
+
+
+test("all 101 native Swift country references precisely match the canonical source, with zero approvals", () => {
+  const source = JSON.parse(read("docs/intelligence/country-101-client-catalog-20261118.json"));
+  const swiftSource = read("native/novapharm-intelligence-ios/App/CountryCatalog.swift");
+  const view = read("native/novapharm-intelligence-ios/App/NovaCountryDirectoryView.swift");
+  const literal = String.raw`"(?:\\.|[^"\\])*"`;
+  const re = new RegExp(
+    "\\.init\\(iso2: (" + literal + "), country: (" + literal +
+    "), region: (" + literal + "), coverage: \\.(sourceCandidatesOnly|geographyResearchOnly), candidateSourceCount: (\\d+)\\)",
+    "g"
+  );
+  const swiftCountries = [...swiftSource.matchAll(re)].map(m => ({
+    iso2: JSON.parse(m[1]),
+    country: JSON.parse(m[2]),
+    region: JSON.parse(m[3]),
+    coverage: m[4] === "sourceCandidatesOnly" ? "source-candidates-only" : "research-geography-only",
+    candidateSourceCount: Number(m[5])
+  }));
+  const expected = source.countries.map(c => ({
+    iso2: c.iso2, country: c.country, region: c.region,
+    coverage: c.coverage, candidateSourceCount: c.candidateSourceCount
+  }));
+  assert.equal(source.summary.distinctNationalCountries, 101);
+  assert.equal(source.summary.registeredNationalCountries, 77);
+  assert.equal(source.summary.addedResearchOnlyNationalCountries, 24);
+  assert.equal(source.summary.verifiedLicensedNationalSources, 0);
+  assert.equal(source.summary.customerLiveNationalCountries, 0);
+  assert.equal(source.liveMedicineRowsIncluded, false);
+  assert.deepEqual(swiftCountries, expected);
+  assert.match(view, /searchable\(text: \$searchText/);
+  assert.match(view, /No medicine facts or private information are loaded/);
+  assert.doesNotMatch(view, /\bURLSession\b|\bfetch\s*\(|\bWKWebView\b|\bASWebAuthenticationSession\b/);
+});
