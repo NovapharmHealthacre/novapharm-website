@@ -17,9 +17,21 @@ const report={
   sources:[]
 };
 for(const sourceId of sources){
-  const receipt=await probeOfficialPublicPharmaSource(sourceId);
-  report.sources.push(receipt);
+  try {
+    const receipt=await probeOfficialPublicPharmaSource(sourceId);
+    report.sources.push(receipt);
+  } catch (error) {
+    // Diagnostic metadata only: fixed source ID + safe bounded probe category.
+    // No publisher bodies, raw medicine records, headers or tokens.
+    const raw = typeof error?.message === "string" ? error.message : "";
+    const safe = /^Official live source probe rejected: [A-Za-z0-9 ()-]{1,110}$/u.test(raw)
+      ? raw : "Official live source probe rejected: unavailable";
+    console.error(sourceId + ": " + safe);
+    process.exitCode=1;
+    break;
+  }
 }
+if (process.exitCode) process.exit();
 if(report.sources.length!==sources.length ||
    report.sources.some(x=>x.schemaBoundRecordCount!==1 ||
      x.customerCountryLive || x.canPublish || x.actualProductionApiConnected)){
