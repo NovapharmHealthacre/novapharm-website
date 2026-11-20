@@ -79,10 +79,10 @@ async function auditRoute(path){
         if(!html.includes(marker))addIssue(path,"homepage-restoration-regression","Missing "+marker);
       if(html.includes('class="npd-hero npd-hero-media"'))addIssue(path,"old-home-returned","Old split-layout returned");
     }
-    if(!["/contact/","/portal/"].includes(path)&&!navText(html).includes("Distribution"))
-      addIssue(path,"navigation-drift","Missing Distribution in global menu");
-    if(!["/contact/","/portal/"].includes(path)&&!navText(html).includes("NovaPharm Intelligence"))
-      addIssue(path,"navigation-drift","Missing NovaPharm Intelligence in global menu");
+    if(!["/contact/","/portal/"].includes(path) && !html.includes('data-mega-trigger="company"'))
+      addIssue(path,"navigation-drift","Approved Company mega-menu trigger missing");
+    if(!["/contact/","/portal/"].includes(path) && !html.includes('data-mega-trigger="intelligence"'))
+      addIssue(path,"navigation-drift","Approved Intelligence mega-menu trigger missing");
     if(path==="/contact/"){
       if(!html.includes("privacy")||!html.includes("enquiry"))addIssue(path,"contact-copy","Contact boundary missing");
       if(!item.hasLiveEnquiry)addIssue(path,"contact-mode","No verified live backend form: email-only or unknown","informational");
