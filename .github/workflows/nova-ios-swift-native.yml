@@ -70,6 +70,7 @@ jobs:
           xcodegen generate
           xcodebuild -list -project NovaPharmNative.xcodeproj
       - name: Build unsigned native SwiftUI iOS simulator app
+        id: native_build
         run: |
           set -eu
           cd native/novapharm-intelligence-ios
@@ -153,7 +154,7 @@ jobs:
             --path "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
             --format json > "$RUNNER_TEMP/novapharm-native-accessibility-summary.json"
       - name: Independently boot and launch an iPad Simulator
-        if: always() # iPad evidence must still be captured when preceding accessibility tests fail
+        if: ${{ always() && steps.native_build.outcome == 'success' }} # run after audit failures, not when the app was never built
         run: |
           set -euo pipefail
           app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
