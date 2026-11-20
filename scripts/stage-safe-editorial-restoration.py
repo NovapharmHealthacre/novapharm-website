@@ -44,7 +44,7 @@ for p in pages:
     rel=p.relative_to(source).as_posix()
     bits=rel.split("/")
     if bits[0] not in EDITORIAL_ROOTS:continue
-    if rel.startswith("technology/workspaces/"):continue
+    if rel.startswith("technology/") and rel!="technology/index.html":continue
     text=p.read_text(errors="replace")
     if 'name="novapharm-source-sha"' not in text:
         raise RuntimeError("Unstamped source provenance: "+rel)
