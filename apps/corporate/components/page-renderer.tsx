@@ -5,7 +5,7 @@ import { croContent } from "@/data/cro";
 import nutraxinRegister from "@/data/nutraxin-product-register.json";
 import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
-import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
+import { company, leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactExperience } from "./contact-experience";
 import { CookieSettingsButton } from "./cookie-controls";
 import { IntelligencePricing } from "./intelligence-pricing";
@@ -99,7 +99,7 @@ function HomePage() {
 }
 
 function NarrativePage({ page }: { readonly page: CorporatePage }) {
-  return <><PageHero eyebrow={page.slug === "about/company" ? "Company" : page.slug === "about/governance" ? "Governance" : page.slug === "investor-information" ? "Investor information" : page.slug === "careers" ? "Careers" : page.slug === "capabilities" ? "Capabilities" : "About NovaPharm"} title={page.heroTitle} intro={page.intro} image={page.heroImage} alt={page.heroAlt} />{page.sections?.map((section, index) => <NarrativeBlock section={section} index={index} key={section.title} />)}<FinalCta title={page.slug === "careers" ? "Bring specialist judgement to a controlled growth programme." : undefined} /></>;
+  return <><PageHero eyebrow={page.slug === "about/company" ? "Company" : page.slug === "about/governance" ? "Governance" : page.slug === "investor-information" ? "Investor information" : page.slug === "careers" ? "Careers" : page.slug === "capabilities" ? "Capabilities" : "About NovaPharm"} title={page.heroTitle} intro={page.intro} image={page.heroImage} alt={page.heroAlt} />{page.sections?.map((section, index) => <NarrativeBlock section={section} index={index} key={section.title} />)}{page.slug === "about/company" ? <section className="section" aria-label="Corporate identity references" data-company-identity-links><div className="shell"><p className="source-note">Verify NovaPharm's UK identity through <a href={company.companiesHouseUrl}>Companies House</a>, its <a href="https://www.linkedin.com/company/novapharm-healthcare/">official LinkedIn profile</a>, and its <a href="https://www.wikidata.org/wiki/Q137660644">community-maintained Wikidata record</a>. Company incorporation does not itself authorise regulated pharmaceutical wholesale supply.</p></div></section> : null}<FinalCta title={page.slug === "careers" ? "Bring specialist judgement to a controlled growth programme." : undefined} /></>;
 }
 
 function NarrativeBlock({ section, index }: { readonly section: NarrativeSection; readonly index: number }) {
