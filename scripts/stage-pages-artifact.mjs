@@ -260,8 +260,14 @@ try {
 // never publish supplier landed-cost ceilings, margin assumptions, or
 // owner-declared inventory planning quantities from the generated model.
 const escoGuidePath = join(output, "assets/data/esco-uk-guide-prices.json");
-if (!existsSync(escoGuidePath)) throw new Error("ESCO guide price artifact missing");
-const escoGuide = JSON.parse(readFileSync(escoGuidePath, "utf8"));
+const escoGuideReadFd = openSync(escoGuidePath, constants.O_RDONLY | constants.O_NOFOLLOW);
+let escoGuide;
+try {
+  if (!fstatSync(escoGuideReadFd).isFile()) throw new Error("ESCO guide is not a regular file");
+  escoGuide = JSON.parse(readFileSync(escoGuideReadFd, "utf8"));
+} finally {
+  closeSync(escoGuideReadFd);
+}
 if (escoGuide.entriesTotal !== 373 ||
     escoGuide.checkoutEnabled !== false ||
     escoGuide.paymentCollectionEnabled !== false ||
@@ -311,7 +317,22 @@ const safeEscoGuideJson = JSON.stringify(publicEscoGuide, null, 2) + "\n";
 if (/targetGrossMargin|unitEconomics|maximumSupplier|grossMargin|marginPolicy|maximumFullyLandedCost|ownerDeclared|totalOwnerDeclared|supplierCost|modelFeasible/i.test(safeEscoGuideJson)) {
   throw new Error("Confidential ESCO economics leaked into public guide");
 }
-writeFileSync(escoGuidePath, safeEscoGuideJson, "utf8");
+// Write a new regular file exclusively and swap into the private build tree
+// atomically. Never reopen a validated output pathname for writing.
+const escoGuideTmpPath = escoGuidePath + ".sanitized-" + process.pid;
+const escoGuideWriteFd = openSync(escoGuideTmpPath,
+  constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+try {
+  writeFileSync(escoGuideWriteFd, safeEscoGuideJson, "utf8");
+  fsyncSync(escoGuideWriteFd);
+} finally {
+  closeSync(escoGuideWriteFd);
+}
+try {
+  renameSync(escoGuideTmpPath, escoGuidePath);
+} finally {
+  rmSync(escoGuideTmpPath, { force: true });
+}
 
 // Fail closed if an older Next.js or root-static build would overwrite the
 // owner-approved Earth homepage and the 19 restored, sellable-by-policy-only
