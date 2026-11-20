@@ -147,7 +147,7 @@ const answerSection = (p, ref, inStock) => {
 };
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","shipping(country:price)"];
+const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","google_product_category","shipping(country:price)"];
 const lines = [header.join("\t")];
 let saleReady = 0;
 
@@ -175,7 +175,7 @@ for (const product of registered.products) {
     p.sku, feedTitle(p),
     description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
-    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, ship
+    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, "525", ship
   ].map(clean).join("\t"));
 
   const path = join(root, "products/nutraxin", p.slug, "index.html");
@@ -195,6 +195,11 @@ for (const product of registered.products) {
     schemaCount++;
     json.gtin13 = gtin.gtin13;
     json.brand = { "@type": "Brand", name: "Nutraxin", url: "https://nutraxin.uk.com/" };
+    json.category = "Vitamins & Supplements";
+    // The legacy B2B catalogue warning contradicts the truthful UK retail Offer.
+    // Availability is represented once in Offer, sourced from the retail inventory gate.
+    json.additionalProperty = (json.additionalProperty || [])
+      .filter(property => property.name !== "Public status");
     json.description = description;
     json.offers = {
       "@type": "Offer", url, priceCurrency: "GBP",
@@ -225,6 +230,8 @@ for (const product of registered.products) {
   html = html.replace(/(<meta name="description" content=")[^"]*(">)/,
     (_, before, after) => before + htmlAttribute(metaDescription) + after);
   html = html.replace(/(<meta property="og:description" content=")[^"]*(">)/,
+    (_, before, after) => before + htmlAttribute(metaDescription) + after);
+  html = html.replace(/(<meta name="twitter:description" content=")[^"]*(">)/,
     (_, before, after) => before + htmlAttribute(metaDescription) + after);
   const offer = '<div class="nx-merchant-offer" data-merchant-sku="' + p.sku + '">' +
     '<p class="nx-merchant-price">£' + money(p.retail_price_pence) +
