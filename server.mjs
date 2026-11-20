@@ -54,6 +54,7 @@ import {
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
 import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
+import { probeOfficialPublicPharmaSource, OFFICIAL_LIVE_PROBE_PLANS } from "./src/core/intelligence-official-live-pharma-probes.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
 import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
@@ -999,6 +1000,32 @@ export async function handleRequest(request, response) {
       if (!session) return;
       json(response, 200, await searchClinicalTrialsStudies(url.searchParams.get("intervention") || "", enterpriseContext(session)));
       return;
+    }
+
+    if (pathname === "/api/v1/intelligence/sources/official/public-live-probe" && request.method === "GET") {
+      // Real official upstream HTTP is BOARD-ONLY, rate limited, and default-OFF.
+      // The result contains only a hash/time/schema receipt, never medicine rows.
+      // Reject unauthenticated/disabled requests BEFORE consuming the scarce
+      // publisher-call quota; unauthenticated traffic must not throttle board review.
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      if (process.env.NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED !== "true") {
+        return json(response, 503, { error: "Official source live review has not been activated." });
+      }
+      const sourceId = url.searchParams.get("sourceId");
+      if (!sourceId || !Object.hasOwn(OFFICIAL_LIVE_PROBE_PLANS, sourceId)) {
+        return json(response, 400, { error: "Unsupported official pharmaceutical source." });
+      }
+      // Authorised requests remain bounded BEFORE any publisher transport.
+      if (!await rateLimit(request, "official-public-live-source-probe", 2, 60 * 1000)) {
+        return json(response, 429, { error: "Official source probe rate limit reached." });
+      }
+      try {
+        const receipt = await probeOfficialPublicPharmaSource(sourceId);
+        return json(response, 200, receipt);
+      } catch {
+        return json(response, 503, { error: "Official publisher is not available for bounded live review." });
+      }
     }
 
     if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe" && request.method === "GET") {
