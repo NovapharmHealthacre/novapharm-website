@@ -24,6 +24,36 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2 # validate PR synthetic merge's exact second-parent head
+      - name: Record tested commit and pull-request-head provenance
+        env:
+          NOVAPHARM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          checkout_sha="$(git rev-parse HEAD)"
+          test "$checkout_sha" = "$GITHUB_SHA"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            # PR Actions check out an auto-merge commit. Its second parent SHA
+            # identifies the exact tested PR head even in a shallow clone.
+            parent_shas="$(git show -s --format=%P HEAD)"
+            set -- $parent_shas
+            if [ "$#" -ne 2 ] || [ "$2" != "$NOVAPHARM_PR_HEAD_SHA" ]; then
+              echo "::error::Tested PR merge head differs from the event head"
+              exit 1
+            fi
+          else
+            test "$checkout_sha" = "$NOVAPHARM_PR_HEAD_SHA"
+          fi
+          {
+            printf 'repository=%s\n' "$GITHUB_REPOSITORY"
+            printf 'event=%s\n' "$GITHUB_EVENT_NAME"
+            printf 'pr_head_sha=%s\n' "$NOVAPHARM_PR_HEAD_SHA"
+            printf 'tested_checkout_sha=%s\n' "$checkout_sha"
+            printf 'tested_tree_sha=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'release_signoff=not_granted\n'
+            printf 'artifact_class=unsigned-ios-simulator-only\n'
+          } > "$RUNNER_TEMP/novapharm-ios-test-provenance.txt"
       - name: Verify catalogue parity and fail-closed production controls
         run: node --test scripts/test-novapharm-native-ios-source-parity.mjs
       - name: Record toolchain
@@ -153,8 +183,9 @@ jobs:
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: novapharm-swift-accessibility-ipad-${{ github.sha }}
+          name: novapharm-swift-accessibility-ipad-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/NovaPharmNative-Accessibility.xcresult
             ${{ runner.temp }}/novapharm-native-accessibility-summary.json
             ${{ runner.temp }}/novapharm-ios-accessibility-text-size.txt
@@ -167,8 +198,9 @@ jobs:
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: novapharm-swift-native-uitest-evidence-${{ github.sha }}
+          name: novapharm-swift-native-uitest-evidence-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/NovaPharmNative-UITests.xcresult
             ${{ runner.temp }}/novapharm-native-uitest-summary.json
           if-no-files-found: ignore
@@ -177,8 +209,9 @@ jobs:
         if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: novapharm-swift-ios-simulator-${{ github.sha }}
+          name: novapharm-swift-ios-simulator-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.zip
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.sha256
             ${{ runner.temp }}/novapharm-ios-simulator-device.txt
