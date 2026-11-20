@@ -118,3 +118,22 @@ test("native UI acceptance uses an actual XCTest UI target and stable accessible
   assert.match(workflow, /CODE_SIGNING_ALLOWED=NO/);
   assert.doesNotMatch(appTest, /URLSession|http[s]?:\/\/|WKWebView|Cognito|client_secret|access_token/);
 });
+
+
+test("iOS accessibility and iPad smoke tests have explicit, non-skippable evidence gates", () => {
+  const ui = read("native/novapharm-intelligence-ios/UITests/NovaPharmAccessibilityUITests.swift");
+  const countryView = read("native/novapharm-intelligence-ios/App/NovaCountryDirectoryView.swift");
+  const workflow = read(".github/workflows/nova-ios-swift-native.yml");
+  assert.match(view, /dynamicTypeSize\.isAccessibilitySize \? 320 : 180/);
+  assert.match(countryView, /if dynamicTypeSize\.isAccessibilitySize/);
+  assert.match(countryView, /\.pickerStyle\(\.menu\)/);
+  assert.match(ui, /performAccessibilityAudit\(for:/);
+  assert.match(ui, /\.contrast, \.textClipped, \.hitRegion, \.sufficientElementDescription/);
+  assert.match(ui, /testLargestDynamicTypeMaintainsResearchNavigation/);
+  assert.match(workflow, /content_size accessibility-extra-extra-extra-large/);
+  assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmAccessibilityUITests/);
+  assert.match(workflow, /No iPad Simulator available; iPad acceptance remains blocked/);
+  assert.match(workflow, /novapharm-ipad-simulator\.png/);
+  assert.match(workflow, /NovaPharmNative-Accessibility\.xcresult/);
+  assert.doesNotMatch(ui, /URLSession|WKWebView|client_secret|access_token/);
+});
