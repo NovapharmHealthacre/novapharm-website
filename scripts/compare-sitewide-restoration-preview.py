@@ -55,7 +55,8 @@ preserved=("contact/index.html","portal/index.html","account-application/index.h
 for path in preserved:
     assert (live/path).is_file(), "Missing live protected/commerce surface: "+path
     assert (source/path).is_file(), "Missing candidate surface: "+path
-assert len([x for x in approved if x.get("route","").startswith("/products/nutraxin/") and x.get("route")!="/products/nutraxin/"])==19
+sku_pages = sorted((source/"products/nutraxin").glob("*/index.html"))
+assert len(sku_pages)==19, f"Approved public build must stage exactly 19 distinct Nutraxin SKU pages; found {len(sku_pages)}"
 
 home=text(source/"index.html")
 for marker in ['nph-earth-hero-landscape','earth-reference-1400.jpg','A better way to understand, access and move medicine.','data-mega-trigger="intelligence"']:
