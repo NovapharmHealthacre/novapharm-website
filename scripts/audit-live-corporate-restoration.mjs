@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 const ORIGIN = "https://novapharmhealthcare.com";
 const now = new Date().toISOString();
@@ -6,7 +6,7 @@ const expected = JSON.parse(readFileSync("seo/generated/page-metadata-register.j
 const expectedByPath = new Map(expected.map(row => [new URL(row.canonical).pathname, row]));
 const skuPaths = [...expectedByPath.keys()].filter(route => route.startsWith("/products/nutraxin/") && !["/products/nutraxin/","/products/nutraxin/bag/","/products/nutraxin/account/","/products/nutraxin/order-request/"].includes(route));
 const protectedPaths = path => path.startsWith("/products/") || path.startsWith("/legal/") || ["/contact/","/account-application/","/portal/"].includes(path);
-const driftSeverity = path => protectedPaths(path) ? "informational" : "failure";
+const driftSeverity = path => protectedPaths(path) || !expectedByPath.has(path) ? "informational" : "failure";
 const issues = [];
 const checked = [];
 const extraRoutes = [];
@@ -56,7 +56,7 @@ const sitemap = await timeoutFetch(ORIGIN+"/sitemap.xml?site-restore="+Date.now(
 const publishedPaths = [...sitemap.text.matchAll(/<loc>\s*(https:\/\/novapharmhealthcare\.com\/[^<]*)\s*<\/loc>/g)].map(m=>new URL(m[1]).pathname);
 if(!sitemap.res.ok || publishedPaths.length < 50) addIssue("/sitemap.xml","sitemap-missing-or-too-small","Status "+sitemap.res.status+" routes "+publishedPaths.length);
 for(const p of publishedPaths) if(!expectedByPath.has(p)) extraRoutes.push(p);
-const routes = [...new Set([...expectedByPath.keys(),...publishedPaths])];
+const routes = [...new Set([...expectedByPath.keys(),...publishedPaths,"/technology/experience/","/product-portfolio/"])];
 const results=new Array(routes.length);
 async function auditRoute(path){
   const key=process.env.GITHUB_SHA?.slice(0,12)||"local";
@@ -68,11 +68,15 @@ async function auditRoute(path){
     if(!item.contentType?.includes("text/html")) addIssue(path,"not-html",item.contentType);
     const reg=expectedByPath.get(path);
     if(reg&&res.ok){
-      if(normalize(reg.title)!==item.title) addIssue(path,"title-drift",JSON.stringify({expected:reg.title,live:item.title}),driftSeverity(path));
-      const normalizedExpectedH1=normalize(reg.h1).replace(/[.\s]+$/,"");
+      const builtPath = path==="/" ? "index.html" : path.replace(/^\//,"")+"index.html";
+      const builtHtml = existsSync(builtPath) ? readFileSync(builtPath,"utf8") : null;
+      const expectedTitle = builtHtml ? title(builtHtml) : reg.title;
+      const expectedH1 = builtHtml ? taglessH1(builtHtml) : reg.h1;
+      if(normalize(expectedTitle)!==item.title) addIssue(path,"title-drift",JSON.stringify({expected:expectedTitle,live:item.title}),driftSeverity(path));
+      const normalizedExpectedH1=normalize(expectedH1).replace(/[.\s]+$/,"");
       const normalizedActualH1=item.h1.replace(/[.\s]+$/,"");
       if(normalizedExpectedH1&&normalizedExpectedH1!==normalizedActualH1)
-        addIssue(path,"h1-drift",JSON.stringify({expected:reg.h1,live:item.h1}),driftSeverity(path));
+        addIssue(path,"h1-drift",JSON.stringify({expected:expectedH1,live:item.h1}),driftSeverity(path));
       if(!html.includes('rel="canonical"') && !html.includes("rel='canonical'"))
         addIssue(path,"canonical-missing","Canonical meta not found");
     }
@@ -92,7 +96,7 @@ async function auditRoute(path){
       if(!/application\/ld\+json/.test(html)||!/Product/.test(html)) addIssue(path,"product-schema","No visible Product structured data");
     }
     const links=anchors(html).filter(href=>href.startsWith("/")&&!href.startsWith("//"));
-    const allowed=new Set([...expectedByPath.keys(),...publishedPaths,"/portal/","/account-application/","/technology/workspaces/","/products/esco/","/products/marketplace/","/products/track/","/products/nutraxin/bag/"]);
+    const allowed=new Set([...expectedByPath.keys(),...publishedPaths,"/portal/","/account-application/","/technology/workspaces/","/technology/experience/","/product-portfolio/","/products/esco/","/products/marketplace/","/products/track/","/products/nutraxin/bag/"]);
     for (const href of links){
       const pathname=href.split("#")[0].split("?")[0];
       if(pathname&&pathname.endsWith("/")&&!allowed.has(pathname)&&!pathname.startsWith("/assets/"))
