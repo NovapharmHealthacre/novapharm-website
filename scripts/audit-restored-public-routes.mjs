@@ -2,6 +2,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
+import { reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
 
 const origin = "https://novapharmhealthcare.com";
 const output = "artifacts/site-restoration/live-route-audit.json";
@@ -31,6 +32,12 @@ try {
 } catch (error) {
   issues.push("Live sitemap read failed: " + String(error).slice(0, 170));
 }
+const approvedProductRegister = JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json", "utf8"));
+const routeReconciliation = reconcilePublicRouteUniverse({
+  expectedPaths, livePaths,
+  productSlugs: approvedProductRegister.products.map(product => product.slug)
+});
+issues.push(...routeReconciliation.issues);
 const allPaths = [...new Set([...expectedPaths, ...livePaths])];
 if (allPaths.length < 59) issues.push("Expected at least 59 public routes; found " + allPaths.length);
 
@@ -108,12 +115,16 @@ routes.sort((a, b) => a.path.localeCompare(b.path));
 const failed = routes.filter(r => r.errors.length);
 const incompleteProductSEO = routes.filter(r => /^\/products\/nutraxin\/[a-z0-9-]+\/$/.test(r.path) && !r.gtin13);
 const screened = routes.filter(route => route.higSignals);
+const publisherProvenance = summarizeObservedPublisherShas(screened);
+issues.push(...publisherProvenance.issues);
 const result = {
   timestamp: new Date().toISOString(), origin,
   methodology: "Read-only unauthenticated HTTPS cache-bypassed requests, no customer/medical data, no form submits or checkout, source and live sitemap union",
   expectedPaths: expectedPaths.length, liveSitemapPaths: livePaths.length,
   checked: routes.length, failures: failed.length,
   productGtinNotPublished: incompleteProductSEO.length,
+  routeReconciliation,
+  publisherProvenance,
   higScreening: {
     meaning: "Public SSR HTML signals only; not rendered keyboard/VoiceOver/WCAG or independently accepted Apple HIG",
     sourceReadOnly: true,
