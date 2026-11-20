@@ -4,8 +4,9 @@
  * No HTTP, customer authentication, medicine records or source-use rights.
  */
 import React, { useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
 import catalogue from "../../docs/intelligence/country-101-client-catalog-20261118.json";
+import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 
 type Country = (typeof catalogue.countries)[number];
 type Filter = "all" | "with-sources" | "research-only";
@@ -14,10 +15,10 @@ const filters: ReadonlyArray<{ key: Filter; label: string }> = [
   { key: "with-sources", label: "Candidates" },
   { key: "research-only", label: "Research" }
 ];
-const ink = "#1D1D1F";
-const muted = "#515154";
+type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
+type CountryStyles = ReturnType<typeof createStyles>;
 
-function CountryCard({ country, wide }: { country: Country; wide: boolean }) {
+function CountryCard({ country, wide, styles }: { country: Country; wide: boolean; styles: CountryStyles }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <View style={[styles.card, wide && styles.cardWide]}>
@@ -56,6 +57,9 @@ function CountryCard({ country, wide }: { country: Country; wide: boolean }) {
 }
 
 export function CountryDirectoryScreen() {
+  const darkMode = useColorScheme() === "dark";
+  const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
+  const styles = useMemo(() => createStyles(palette), [darkMode]);
   const { width } = useWindowDimensions();
   const twoColumns = width >= 760;
   const [query, setQuery] = useState("");
@@ -91,7 +95,7 @@ export function CountryDirectoryScreen() {
         <Text style={styles.noticeBody}>No live medicine records, approved source rights, clinical decisions, product availability or authenticated upstream access. Official regulator APIs must be connected only through a separately approved backend.</Text>
       </View>
       <TextInput style={styles.search} accessibilityLabel="Search countries or source candidates"
-        placeholder="Country, code or publisher" placeholderTextColor="#69696F" autoCapitalize="none"
+        placeholder="Country, code or publisher" placeholderTextColor={palette.tertiary} autoCapitalize="none"
         value={query} onChangeText={setQuery} maxLength={120} returnKeyType="search" />
       <View style={styles.filters} accessibilityLabel="Country source state filter">
         {filters.map((option) => (
@@ -115,7 +119,7 @@ export function CountryDirectoryScreen() {
       numColumns={twoColumns ? 2 : 1}
       columnWrapperStyle={twoColumns ? styles.columns : undefined}
       keyExtractor={(country) => country.iso2}
-      renderItem={({ item }) => <CountryCard country={item} wide={twoColumns} />}
+      renderItem={({ item }) => <CountryCard country={item} wide={twoColumns} styles={styles} />}
       ListHeaderComponent={header}
       ListEmptyComponent={<Text style={styles.empty}>No matching countries. No data is inferred.</Text>}
       contentContainerStyle={styles.container}
@@ -127,38 +131,40 @@ export function CountryDirectoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  list: { flex: 1, backgroundColor: "#FFFFFF" },
+function createStyles(palette: MobilePalette) {
+  return StyleSheet.create({
+  list: { flex: 1, backgroundColor: palette.canvas },
   container: { paddingHorizontal: 20, paddingBottom: 26, maxWidth: 1000, width: "100%", alignSelf: "center" },
   header: { paddingTop: 22, paddingBottom: 14 },
-  eyebrow: { color: muted, fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
-  title: { color: ink, fontSize: 29, fontWeight: "700", marginTop: 5 },
-  explanation: { fontSize: 13, color: muted, lineHeight: 20, marginTop: 8 },
+  eyebrow: { color: palette.secondary, fontSize: 11, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
+  title: { color: palette.primary, fontSize: 29, fontWeight: "700", marginTop: 5 },
+  explanation: { fontSize: 13, color: palette.secondary, lineHeight: 20, marginTop: 8 },
   metrics: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 19 },
-  metric: { flexGrow: 1, minWidth: 130, padding: 14, backgroundColor: "#F5F5F7", borderRadius: 12 },
-  number: { fontSize: 26, fontWeight: "700", color: ink },
-  metricLabel: { color: muted, marginTop: 4, fontSize: 11 },
-  notice: { backgroundColor: "#F5F5F7", borderRadius: 12, padding: 15, marginTop: 17 },
-  noticeTitle: { fontSize: 13, color: ink, fontWeight: "700" },
-  noticeBody: { fontSize: 12, lineHeight: 18, color: muted, marginTop: 5 },
-  search: { backgroundColor: "#FFFFFF", borderColor: "#BDBDC4", borderWidth: 1, borderRadius: 10, color: ink, minHeight: 48, paddingHorizontal: 12, marginTop: 18, fontSize: 14 },
+  metric: { flexGrow: 1, minWidth: 130, padding: 14, backgroundColor: palette.grouped, borderRadius: 12 },
+  number: { fontSize: 26, fontWeight: "700", color: palette.primary },
+  metricLabel: { color: palette.secondary, marginTop: 4, fontSize: 11 },
+  notice: { backgroundColor: palette.grouped, borderRadius: 12, padding: 15, marginTop: 17 },
+  noticeTitle: { fontSize: 13, color: palette.primary, fontWeight: "700" },
+  noticeBody: { fontSize: 12, lineHeight: 18, color: palette.secondary, marginTop: 5 },
+  search: { backgroundColor: palette.canvas, borderColor: palette.border, borderWidth: 1, borderRadius: 10, color: palette.primary, minHeight: 48, paddingHorizontal: 12, marginTop: 18, fontSize: 14 },
   filters: { flexDirection: "row", gap: 8, marginTop: 13 },
-  filter: { flexGrow: 1, alignItems: "center", justifyContent: "center", minHeight: 44, borderRadius: 9, backgroundColor: "#F5F5F7", paddingHorizontal: 6 },
-  selected: { backgroundColor: ink },
-  filterText: { fontSize: 12, color: ink, fontWeight: "600" },
-  selectedText: { color: "#FFFFFF" },
-  counter: { fontSize: 12, color: muted, marginTop: 14, marginBottom: 12 },
+  filter: { flexGrow: 1, alignItems: "center", justifyContent: "center", minHeight: 44, borderRadius: 9, backgroundColor: palette.grouped, paddingHorizontal: 6 },
+  selected: { backgroundColor: palette.primary },
+  filterText: { fontSize: 12, color: palette.primary, fontWeight: "600" },
+  selectedText: { color: palette.canvas },
+  counter: { fontSize: 12, color: palette.secondary, marginTop: 14, marginBottom: 12 },
   columns: { gap: 10 },
-  card: { borderColor: "#E2E2E5", borderWidth: 1, borderRadius: 15, padding: 16, marginBottom: 11, backgroundColor: "#FFFFFF" },
+  card: { borderColor: palette.border, borderWidth: 1, borderRadius: 15, padding: 16, marginBottom: 11, backgroundColor: palette.canvas },
   cardWide: { flex: 1, minWidth: 0 },
-  name: { fontSize: 16, fontWeight: "700", color: ink },
-  context: { fontSize: 12, marginTop: 5, color: muted },
-  state: { fontSize: 11, marginTop: 10, fontWeight: "700", color: "#5F5F65" },
-  description: { fontSize: 12, marginTop: 7, lineHeight: 19, color: muted },
+  name: { fontSize: 16, fontWeight: "700", color: palette.primary },
+  context: { fontSize: 12, marginTop: 5, color: palette.secondary },
+  state: { fontSize: 11, marginTop: 10, fontWeight: "700", color: palette.tertiary },
+  description: { fontSize: 12, marginTop: 7, lineHeight: 19, color: palette.secondary },
   action: { minHeight: 44, alignItems: "flex-start", justifyContent: "center", marginTop: 10 },
-  actionText: { fontSize: 12, color: "#0066CC", fontWeight: "600" },
-  source: { marginTop: 7, borderTopWidth: 1, borderColor: "#E2E2E5", paddingTop: 9 },
-  publisher: { fontSize: 12, color: ink, fontWeight: "600" },
-  sourceText: { fontSize: 11, lineHeight: 16, color: muted, marginTop: 4 },
-  empty: { color: muted, fontSize: 13, paddingTop: 24 }
-});
+  actionText: { fontSize: 12, color: palette.accent, fontWeight: "600" },
+  source: { marginTop: 7, borderTopWidth: 1, borderColor: palette.border, paddingTop: 9 },
+  publisher: { fontSize: 12, color: palette.primary, fontWeight: "600" },
+  sourceText: { fontSize: 11, lineHeight: 16, color: palette.secondary, marginTop: 4 },
+  empty: { color: palette.secondary, fontSize: 13, paddingTop: 24 }
+  });
+}
