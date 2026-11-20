@@ -69,7 +69,7 @@ object NovaSparseCircuitResearchScreen {
         }
         line("NovaPharm Intelligence", 14f, secondary = true)
         line("Sparse-circuit research", 27f, true)
-        line("Research only · Not a clinical or production AI feature", 16f, true)
+        line("Research only · Not a clinical or production AI feature", 16f)
         line("Internal neural circuits are not medicine source evidence or regulatory authorisations.", 15f, secondary = true)
         if (summary == null) {
             line("No independently verified circuit experiment is connected.", 15f)
@@ -85,7 +85,7 @@ object NovaSparseCircuitResearchScreen {
         line("A trained synthetic attention experiment exists offline, but no model is downloaded, run or connected to this Android research view.", 14f, secondary = true)
         line("A qualified reviewer must confirm licences, held-out evaluation, ablations and provenance before release.", 14f)
         line("Quantum and computational science", 24f, true)
-        line("Offline source-only research • no hardware or clinical activation", 15f, true)
+        line("Offline source-only research • no hardware or clinical activation", 15f)
         line("Quantum Experiment Workspace: optional two-qubit Cirq research script; no experiment is connected.", 15f)
         line("Molecular Simulation Lab: OpenFermion and independent chemistry benchmarks are planned, not validated.", 15f)
         line("Resource Estimator: Qualtran assumptions require independent review. qsim is a future local benchmark.", 15f)
