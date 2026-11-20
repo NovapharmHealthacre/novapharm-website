@@ -1,0 +1,206 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Non-deployed migration candidate: isolated NovaPharm commerce evidence S3 bucket with deny-by-default unapproved object writes. Does not change occupied Intelligence evidence bucket or any producer.",
+  "Parameters": {
+    "CommerceEvidenceWriterRoleArn": {
+      "Type": "String",
+      "Description": "Security-reviewed exact ARN of the dedicated commerce evidence export writer; this template grants no IAM permission.",
+      "AllowedPattern": "^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9+=,.@_/-]+$",
+      "Default": "arn:aws:iam::250675045172:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+    }
+  },
+  "Resources": {
+    "IsolatedCommerceEvidenceBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": "novapharm-commerce-evidence-250675045172-eu-north-1",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "AbortIncompleteMultipartAfter7Days",
+              "Status": "Enabled",
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 7
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "NovaPharmCommerce"
+          },
+          {
+            "Key": "Environment",
+            "Value": "production-migration-candidate"
+          },
+          {
+            "Key": "DataClassification",
+            "Value": "internal-commerce-evidence"
+          },
+          {
+            "Key": "Publication",
+            "Value": "denied"
+          },
+          {
+            "Key": "TrafficCutover",
+            "Value": "disabled"
+          }
+        ]
+      }
+    },
+    "IsolatedCommerceEvidenceBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "IsolatedCommerceEvidenceBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyInsecureTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "IsolatedCommerceEvidenceBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "IsolatedCommerceEvidenceBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            },
+            {
+              "Sid": "DenyUnapprovedPrincipalObjectMutations",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectAcl",
+                "s3:PutObjectTagging",
+                "s3:DeleteObjectTagging",
+                "s3:AbortMultipartUpload",
+                "s3:RestoreObject",
+                "s3:ReplicateObject"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "IsolatedCommerceEvidenceBucket",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              },
+              "Condition": {
+                "ArnNotEquals": {
+                  "aws:PrincipalArn": {
+                    "Ref": "CommerceEvidenceWriterRoleArn"
+                  }
+                }
+              }
+            },
+            {
+              "Sid": "DenyMissingPrincipalIdentityObjectMutations",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectAcl",
+                "s3:PutObjectTagging",
+                "s3:DeleteObjectTagging",
+                "s3:AbortMultipartUpload",
+                "s3:RestoreObject",
+                "s3:ReplicateObject"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "IsolatedCommerceEvidenceBucket",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              },
+              "Condition": {
+                "Null": {
+                  "aws:PrincipalArn": "true"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "CandidateCommerceEvidenceBucket": {
+      "Description": "New isolated candidate only; not a live producer sink or data-migration completion.",
+      "Value": {
+        "Ref": "IsolatedCommerceEvidenceBucket"
+      }
+    }
+  }
+}
