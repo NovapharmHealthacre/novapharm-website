@@ -32,60 +32,37 @@ jobs:
       - uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
         with:
           gradle-version: "8.9"
-      - name: Check Android SDK availability
+      - name: Check Android SDK and build-tool availability
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
+          set -euo pipefail
           test -d "$ANDROID_HOME"
           if [ ! -d "$ANDROID_HOME/platforms/android-35" ]; then
-            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35" "build-tools;35.0.0"
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35"
           fi
           if [ ! -x "$ANDROID_HOME/build-tools/35.0.0/aapt" ]; then
             "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;35.0.0"
           fi
-      - name: Build debug-only research shell and run security denial unit tests
+      - name: Build research shell and run denial unit tests
         working-directory: native/novapharm-intelligence-android
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
-      - name: Verify and checksum offline Android research debug APK
+      - name: Inspect and checksum private debug APK
         run: |
           set -euo pipefail
           apk="native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$apk"
-          unzip -Z1 "$apk" > "$RUNNER_TEMP/novapharm-android-apk-entries.txt"
-          grep -Fx "AndroidManifest.xml" "$RUNNER_TEMP/novapharm-android-apk-entries.txt"
-          grep -E '^classes[0-9]*\.dex
-          "$aapt" dump permissions "$apk" | tee "$RUNNER_TEMP/novapharm-android-research-permissions.txt"
-          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-android-research-permissions.txt"; then
-            echo "::error::Restricted Android permission appeared in compiled research APK"
-            exit 1
-          fi
-
-          sha256sum "$apk" | tee "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
-          echo "Debug APK only. Uses ephemeral Android debug signing; no store or production identity."
-      - name: Retain private debug APK and checksum for authorized device testing
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: novapharm-android-research-debug-${{ github.sha }}
-          path: |
-            native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.apk
-            native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256
-          if-no-files-found: error
-          retention-days: 7
-      - name: Reaffirm release boundary
-        run: echo "CI debug APK is not a signed production NovaPharm app, commercial release or connected model service."
- "$RUNNER_TEMP/novapharm-android-apk-entries.txt"
+          unzip -Z1 "$apk" > "$RUNNER_TEMP/novapharm-apk-entries.txt"
+          grep -Fx "AndroidManifest.xml" "$RUNNER_TEMP/novapharm-apk-entries.txt"
+          grep -Fx "classes.dex" "$RUNNER_TEMP/novapharm-apk-entries.txt"
           aapt="$ANDROID_HOME/build-tools/35.0.0/aapt"
-          test -x "$aapt"
-          "$aapt" dump badging "$apk" > "$RUNNER_TEMP/novapharm-android-apk-badging.txt"
-          grep -F "package: name='com.novapharm.intelligence.research'" "$RUNNER_TEMP/novapharm-android-apk-badging.txt"
-          "$aapt" dump permissions "$apk" | tee "$RUNNER_TEMP/novapharm-android-research-permissions.txt"
-          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-android-research-permissions.txt"; then
-            echo "::error::Restricted Android permission appeared in compiled research APK"
+          "$aapt" dump badging "$apk" > "$RUNNER_TEMP/novapharm-apk-badging.txt"
+          grep -F "package: name='com.novapharm.intelligence.research'" "$RUNNER_TEMP/novapharm-apk-badging.txt"
+          "$aapt" dump permissions "$apk" > "$RUNNER_TEMP/novapharm-apk-permissions.txt"
+          if grep -E 'android.permission.(INTERNET|CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)' "$RUNNER_TEMP/novapharm-apk-permissions.txt"; then
+            echo "::error::Unexpected sensitive permission in compiled research APK"
             exit 1
           fi
-
-          sha256sum "$apk" | tee "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
-          echo "Debug APK only. Uses ephemeral Android debug signing; no store or production identity."
-      - name: Retain private debug APK and checksum for authorized device testing
+          sha256sum "$apk" > "native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256"
+      - name: Upload private APK and SHA-256 checksum
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-android-research-debug-${{ github.sha }}
@@ -94,5 +71,5 @@ jobs:
             native/novapharm-intelligence-android/app/build/outputs/apk/debug/app-debug.sha256
           if-no-files-found: error
           retention-days: 7
-      - name: Reaffirm release boundary
-        run: echo "CI debug APK is not a signed production NovaPharm app, commercial release or connected model service."
+      - name: Reaffirm debug release boundary
+        run: echo "Research debug APK only. Not a signed production app, Play Store release or connected medicine service."
