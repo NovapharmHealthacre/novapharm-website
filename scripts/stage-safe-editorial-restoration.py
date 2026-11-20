@@ -15,6 +15,7 @@ EDITORIAL_ROOTS={
 PROTECTED_PREFIXES=("contact/","portal/","account-application/","products/","shopping/","legal/","_next/")
 SHARED_SAFE_UPDATES={
 "assets/css/novapharm.bundle.css",
+"assets/css/technology-intelligence.css",
 "assets/js/novapharm.js",
 "assets/js/cookie-consent.js",
 "assets/js/visual-refinement.js",
