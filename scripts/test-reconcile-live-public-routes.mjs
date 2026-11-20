@@ -1,6 +1,19 @@
+
+test("all thirty-two source-defined Corporate routes are screened even if sitemap forgets three", () => {
+  const source=readFileSync("apps/corporate/data/pages.ts","utf8");
+  const routes=corporateRoutesFromSource(source);
+  assert.equal(routes.length,32);
+  for (const path of ["/distribution/","/market-access/","/markets/"]) assert.ok(routes.includes(path));
+  assert.equal(new Set(routes).size,32);
+  assert.throws(() => corporateRoutesFromSource(source.replace(
+    'page("distribution", "narrative"', 'page("about", "narrative"')), /Duplicate corporate page slug/);
+  assert.throws(() => corporateRoutesFromSource("page(\"\", \"home\""), /Expected the 32/);
+});
+
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
-import { reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
+import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
 
 const slugs = Array.from({length:19}, (_, i) => "product-" + (i + 1));
 const core = ["/", "/about/", "/capabilities/", "/contact/", "/legal/privacy/", "/products/",
