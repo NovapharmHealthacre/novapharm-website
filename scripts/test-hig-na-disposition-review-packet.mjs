@@ -51,10 +51,18 @@ test("the packet retains the exact three platform rationales for each proposal",
   }
 });
 
-test("source packet must not turn proposed N/A into approval or production verification", () => {
-  assert.equal(register.topics.filter(t => t.implementation === "not_applicable").length, 0);
-  assert.equal(register.topics.filter(t => t.implementation === "verified").length, 0);
-  assert.ok(packet.includes("0 accepted N/A; 0/172 fully production verified"));
+test("a pending N/A packet must not silently conceal a newly accepted disposition", () => {
+  // The packet is an explicitly dated snapshot. If one of its 28 proposals
+  // becomes accepted, reconcile its pending row and receipt with the register.
+  // Other topics may legitimately advance to production-verified without
+  // forcing unrelated historical reviewer packets to fail CI.
+  for (const topic of proposed) {
+    assert.equal(topic.implementation, "not_verified",
+      topic.title + ": update the disposition packet after independent acceptance");
+    assert.equal(topic.notApplicableApproval, undefined,
+      topic.title + ": review packet cannot omit an independent N/A approval receipt");
+  }
+  assert.ok(packet.includes("0 accepted N/A"));
   assert.ok(packet.includes("not an approval"));
   assert.ok(packet.includes("other than the PR author"));
 });
