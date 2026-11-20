@@ -99,7 +99,7 @@ assert.match(source, /"consent", "update"/);
 assert.match(source, /analytics_storage: "denied"/);
 assert.match(source, /analytics_storage: "granted"/);
 assert.match(source, /cookie_expires: 90 \* 24 \* 60 \* 60/);
-assert.match(source, /page_referrer: safeAnalyticsReferrer\\(document\\.referrer, location\\.origin\\)/);
+assert.match(source, /page_referrer: safeAnalyticsReferrer\(document\.referrer, location\.origin\)/);
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
 assert.match(generator, /publicAnalyticsRoute\(route\)/, "Publisher must use same exact route allowlist as browser");
 assert.match(generator, /html = html\.replace\(\/<meta name=/, "Rebuild must strip stale GA metadata from private routes");
