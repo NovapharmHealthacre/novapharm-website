@@ -11,6 +11,7 @@ const pkg = JSON.parse(read("native/novapharm-intelligence-mobile/package.json")
 const app = read("native/novapharm-intelligence-mobile/App.tsx");
 const form = read("native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx");
 const maps = read("native/novapharm-intelligence-mobile/MapsResearchScreen.tsx");
+const countryScreen = read("native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx");
 const tokens = read("native/novapharm-intelligence-mobile/appearance.ts");
 
 function paletteOf(name) {
@@ -126,3 +127,31 @@ test("Science offline research honours iOS/Android system light and dark appeara
   assert.match(science, /color: color\.secondary/);
   assert.doesNotMatch(science, /fetch\(|client_secret|access_token|AsyncStorage|SecureStore/);
 });
+
+
+test("101-country iOS/Android directory tracks system light and dark appearance", () => {
+  assert.match(app, /<CountryDirectoryScreen\s*\/>/);
+  assert.match(countryScreen, /useColorScheme\(\) === "dark"/);
+  assert.match(countryScreen, /darkMode \? mobileDarkPalette : mobileLightPalette/);
+  assert.match(countryScreen, /useMemo\(\(\) => createStyles\(palette\), \[darkMode\]\)/);
+  assert.match(countryScreen, /function createStyles\(palette: MobilePalette\)/);
+  assert.match(countryScreen, /<CountryCard country=\{item\} wide=\{twoColumns\} styles=\{styles\} \/>/);
+  assert.match(countryScreen, /placeholderTextColor=\{palette\.tertiary\}/);
+  assert.match(countryScreen, /selectedText: \{ color: palette\.canvas \}/);
+  assert.match(countryScreen, /actionText: \{[^}]*color: palette\.accent/);
+  assert.match(tokens, /mobileLightPalette/);
+  assert.match(tokens, /mobileDarkPalette/);
+});
+
+test("country cards use shared semantic colours with no light-only surfaces or network activation", () => {
+  for (const role of ["canvas", "grouped", "border", "primary", "secondary", "tertiary", "accent"]) {
+    assert.ok(countryScreen.includes("palette." + role), "Missing shared role " + role);
+  }
+  assert.doesNotMatch(countryScreen, /#[A-Fa-f0-9]{6}\b/, "Do not hardcode light-only country colours");
+  assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|SecureStore|AsyncStorage|access_token|client_secret|Authorization:/i);
+  assert.match(countryScreen, /country-101-client-catalog-20261118\.json/);
+  assert.match(countryScreen, /No live medicine records/);
+  assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
+  assert.match(countryScreen, /keyExtractor=\{\(country\) => country\.iso2\}/);
+});
+
