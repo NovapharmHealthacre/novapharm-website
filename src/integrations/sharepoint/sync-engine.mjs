@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { all, audit, nowIso, one, run, transaction, upsert } from "../../data/database.mjs";
 import { sharePointFolderPath, sharePointFolderPlan as mappedSharePointFolderPlan } from "../../core/sharepoint-mapping.mjs";
 import { GraphClient, hasSharePointCredentials, sharePointConfigFromEnv } from "./graph-client.mjs";
-import { classifySharePointSyncFailure } from "./sync-error-policy.mjs";
+import { classifySharePointSyncFailure, preflightSharePointSyncPayload } from "./sync-error-policy.mjs";
 
 async function markBlocked(eventId, code, attemptCount) {
   await run("UPDATE integration_events SET status = 'blocked', attempt_count = ?, last_error_code = ?, next_attempt_at = ? WHERE id = ?", attemptCount, code, new Date(Date.now() + 15 * 60_000).toISOString(), eventId);
@@ -38,16 +38,30 @@ export async function processSharePointEvents({ limit = 20 } = {}) {
     ORDER BY created_at LIMIT ?`, nowIso(), limit);
 
   if (!events.length) return { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+
+  const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+  const candidates = [];
+  for (const event of events) {
+    const verdict = preflightSharePointSyncPayload(event.payload_json);
+    if (verdict.code) {
+      result.processed += 1;
+      await recordFailure(event, { code: verdict.code }, result);
+    } else {
+      candidates.push({ event, payload: verdict.payload });
+    }
+  }
+
+  // A batch consisting only of denied uploads or malformed events never
+  // authenticates to Microsoft Graph, discovers the site or reads files.
+  if (!candidates.length) return result;
   if (!hasSharePointCredentials(config)) {
-    const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
-    for (const event of events) {
+    for (const { event } of candidates) {
       result.processed += 1;
       await recordFailure(event, { code: "sharepoint_credentials_missing" }, result);
     }
     return result;
   }
 
-  const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
   const graph = new GraphClient(config);
   let site;
   let drive;
@@ -55,42 +69,17 @@ export async function processSharePointEvents({ limit = 20 } = {}) {
     site = await graph.site();
     drive = await graph.drive(site.id);
   } catch (error) {
-    // A denied tenant/site/library lookup must not lead to an unbounded retry.
-    for (const event of events) {
+    for (const { event } of candidates) {
       result.processed += 1;
       await recordFailure(event, error, result);
     }
     return result;
   }
 
-  for (const event of events) {
+  for (const { event, payload } of candidates) {
     result.processed += 1;
     try {
-      let payload;
-      try {
-        payload = JSON.parse(event.payload_json);
-        if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-          throw new TypeError("Event payload must be an object.");
-        }
-      } catch {
-        throw Object.assign(new Error("Malformed SharePoint event payload."), {
-          code: "sharepoint_invalid_event_payload"
-        });
-      }
-      let item;
-      if (payload.operation === "ensure_entity_folder") {
-        item = await graph.ensureFolder(drive.id, sharePointFolderPath(payload));
-      } else if (payload.operation === "upload_document") {
-        // Fail closed: legacy Graph PUT /content may replace an existing file,
-        // and the outbox cannot yet recover ambiguous two-step upload/metadata writes.
-        // A conflict-safe, version-aware adapter and permission review are required
-        // before an owner-authorised code change may reactivate document uploads.
-        throw Object.assign(new Error("Conflict-safe SharePoint upload is not approved."), {
-          code: "sharepoint_upload_conflict_gate"
-        });
-      } else {
-        throw Object.assign(new Error("Unsupported SharePoint operation."), { code: "unsupported_operation" });
-      }
+      const item = await graph.ensureFolder(drive.id, sharePointFolderPath(payload));
 
       await transaction(async () => {
         const existing = await one("SELECT id, created_at FROM sharepoint_links WHERE site_id = ? AND drive_id = ? AND item_id = ?", site.id, drive.id, item.id);

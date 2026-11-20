@@ -36,3 +36,9 @@ The legacy Microsoft Graph small-file PUT helper remains in the repository but i
 
 **Not a permission certification or activation:** Board-only effective site access, tenant identity consent, conflict-safe create/revise with eTag validation, malware and retention controls, provider concurrency tests, and owner release approval remain open in GitHub Issue #898. The Graph helper’s existence is not evidence that uploads are available.
 
+
+The worker also validates and rejects disallowed operations **before any Microsoft Graph
+authentication or site/drive discovery**. An upload-only batch is blocked and
+audited without issuing Graph calls. The separate, supported folder-creation
+operation remains eligible for site/drive discovery after preflight. This is
+enforced by offline preflight and source-order checks, not a live production test.

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { classifySharePointSyncFailure } from "../src/integrations/sharepoint/sync-error-policy.mjs";
+import { classifySharePointSyncFailure, preflightSharePointSyncPayload } from "../src/integrations/sharepoint/sync-error-policy.mjs";
 
 test("authority, conflict, version and data safety failures are terminal", () => {
   for (const code of ["graph_400", "graph_401", "graph_403", "graph_404",
@@ -38,10 +38,11 @@ test("blocked integration events are never automatically selected for retries", 
 
 test("document upload remains fail-closed even when Graph credentials exist", () => {
   const source = readFileSync(new URL("../src/integrations/sharepoint/sync-engine.mjs", import.meta.url), "utf8");
-  assert.match(source, /payload\.operation === "upload_document"[\s\S]*?sharepoint_upload_conflict_gate/);
+  assert.match(source, /preflightSharePointSyncPayload\(event\.payload_json\)/);
   assert.doesNotMatch(source, /graph\.uploadSmallFile\(/);
   assert.doesNotMatch(source, /graph\.updateListItemFields\(/);
-  assert.match(source, /code: "sharepoint_invalid_event_payload"/);
+  const verdict = preflightSharePointSyncPayload('{"operation":"upload_document","documentId":"test-only"}');
+  assert.deepEqual(verdict, { code: "sharepoint_upload_conflict_gate" });
 });
 
 test("separate folder-creation operation remains present", () => {
@@ -59,4 +60,30 @@ test("credential denials use the audited terminal-failure path and record attemp
   assert.match(source,
     /status = 'blocked', attempt_count = \?, last_error_code/);
   assert.match(source, /await audit\(\{/);
+});
+
+test("preflight rejects document upload, malformed payload and unknown actions without Graph", () => {
+  for (const raw of ['{"operation":"upload_document"}',
+    '{"operation":"upload_document","documentId":"synthetic"}']) {
+    assert.deepEqual(preflightSharePointSyncPayload(raw),
+      { code: "sharepoint_upload_conflict_gate" });
+  }
+  for (const raw of ["{", "null", "42", "[]", "false", "not-json"]) {
+    assert.deepEqual(preflightSharePointSyncPayload(raw),
+      { code: "sharepoint_invalid_event_payload" });
+  }
+  assert.deepEqual(preflightSharePointSyncPayload('{"operation":"unapproved"}'),
+    { code: "unsupported_operation" });
+  const payload = { operation: "ensure_entity_folder", entityType: "product", entityId: "test" };
+  assert.deepEqual(preflightSharePointSyncPayload(JSON.stringify(payload)), { payload });
+});
+
+test("preflight is completed before Graph client construction, including upload-only batches", () => {
+  const source = readFileSync(new URL("../src/integrations/sharepoint/sync-engine.mjs", import.meta.url), "utf8");
+  const preflight = source.indexOf("const verdict = preflightSharePointSyncPayload(event.payload_json)");
+  const shortcut = source.indexOf("if (!candidates.length) return result;");
+  const graph = source.indexOf("new GraphClient(config)");
+  assert.ok(preflight > 0 && shortcut > preflight && graph > shortcut);
+  assert.match(source, /for \(const \{ event, payload \} of candidates\)/);
+  assert.doesNotMatch(source, /graph\.uploadSmallFile\(/);
 });

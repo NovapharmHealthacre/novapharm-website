@@ -30,3 +30,27 @@ export function classifySharePointSyncFailure(errorCode) {
     action: BLOCKED.has(code) || isPermanentGraphError ? "block" : "retry"
   });
 }
+
+/**
+ * Validate event authority before discovering any Graph site or drive.
+ * Keeps legacy upload events terminal even when credentials are missing.
+ * Only the legacy folder operation is eligible for the Graph worker.
+ */
+export function preflightSharePointSyncPayload(rawPayload) {
+  let payload;
+  try {
+    payload = JSON.parse(rawPayload);
+  } catch {
+    return { code: "sharepoint_invalid_event_payload" };
+  }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return { code: "sharepoint_invalid_event_payload" };
+  }
+  if (payload.operation === "upload_document") {
+    return { code: "sharepoint_upload_conflict_gate" };
+  }
+  if (payload.operation !== "ensure_entity_folder") {
+    return { code: "unsupported_operation" };
+  }
+  return { payload };
+}
