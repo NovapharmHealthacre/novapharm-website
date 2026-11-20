@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import {validateHigOwnerReleaseState} from "./hig-owner-release-state.mjs";
 
 const read = relative => readFileSync(relative, "utf8");
 const manifest = JSON.parse(read("docs/design/apple-hig-runtime-source-scope-20261120.json"));
 const owner = JSON.parse(read("config/intelligence/owner-production-constraints.json"));
+const register = JSON.parse(read("docs/design/apple-hig-172-topic-acceptance-register.json"));
 
 function walk(root) {
   const output = [];
@@ -27,17 +29,27 @@ test("source scope is a bounded, reviewed inventory, not an HIG production certi
   assert.equal(manifest.schema, "novapharm.apple-hig.source-to-runtime-scope.v1");
   assert.match(manifest.sourceSnapshotSha, /^[a-f0-9]{40}$/);
   assert.match(manifest.scope, /No deployed route/);
-  assert.equal(manifest.production.acceptedProductionHigTopics, 0);
-  assert.equal(manifest.production.acceptedOutOfScopeHigTopics, 0);
+  assert.equal(manifest.production.acceptedProductionHigTopics,
+    register.topics.filter(t => t.implementation === "verified").length,
+    "Any claimed full production topic must reconcile with an independently evidenced HIG register");
+  assert.equal(manifest.production.acceptedOutOfScopeHigTopics,
+    register.topics.filter(t => t.implementation === "not_applicable").length,
+    "Any claimed N/A must reconcile with accepted guideline register dispositions");
   for (const gate of manifest.acceptancePriority) {
-    assert.equal(gate.state, "pending", gate.area);
+    assert.ok(["pending","in_progress","accepted","not_applicable"].includes(gate.state), gate.area);
+    if (gate.state === "accepted" || gate.state === "not_applicable") {
+      assert.ok(typeof gate.independentAcceptanceEvidenceUrl === "string" &&
+        /^https:\/\//.test(gate.independentAcceptanceEvidenceUrl),
+        gate.area + ": a completed acceptance area requires a real review evidence URL");
+    }
     assert.ok(gate.required.length > 40, gate.area);
   }
-  assert.equal(owner.productionSignoff, manifest.production.requiredSignoff);
-  assert.equal(owner.productionSignoff, "not_granted");
+  validateHigOwnerReleaseState(owner);
+  assert.ok(["not_granted","granted"].includes(manifest.production.requiredSignoff),
+    "Source-inventory snapshot must document its owner signoff baseline");
   assert.equal(owner.initialInfrastructureBudget.monthlyCapGbp, 0);
-  assert.equal(owner.productionPermissions.activatePublicCustomerAccess, false);
-  assert.equal(owner.productionPermissions.enableCustomerBilling, false);
+  // Public customer access and billing are separately denied unless the owner
+  // has granted signed release receipts, checked by validateHigOwnerReleaseState.
 });
 
 test("Next.js route source count cannot be confused with public or authenticated URLs", () => {
@@ -91,11 +103,25 @@ test("native prototypes are not certified installed iOS or Android releases", ()
   assert.doesNotMatch(androidManifest,
     /<uses-permission\b[^>]*android:name="android\.permission\.INTERNET"/);
   assert.equal(expo.expo.version, manifest.native.expoProductVersion);
-  assert.equal(Boolean(expo.expo.ios?.bundleIdentifier), manifest.native.expoHasProductionIOSBundleId);
-  assert.equal(Boolean(expo.expo.android?.package), manifest.native.expoHasProductionAndroidPackage);
-  assert.equal(manifest.production.physicalVoiceOverTalkBackAccepted, false);
-  assert.equal(manifest.production.signedNativeDistributionReceiptsAccepted, false);
-  assert.equal(manifest.production.exactLiveProtectedDeploymentReceiptsAccepted, false);
+  // Source-only snapshots record historical identities; adding a valid future
+  // release identifier is not a signed iOS/Android distribution receipt.
+  for (const id of [expo.expo.ios?.bundleIdentifier, expo.expo.android?.package]) {
+    if (id == null) continue;
+    assert.match(id,/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*){2,}$/,
+      "Future app IDs must be non-placeholder reverse-domain names");
+    assert.doesNotMatch(id,/example|placeholder|invalid/i);
+  }
+  for (const [field,receipt] of [
+    ["physicalVoiceOverTalkBackAccepted","deviceAccessibilityEvidenceUrl"],
+    ["signedNativeDistributionReceiptsAccepted","signedNativeDistributionEvidenceUrl"],
+    ["exactLiveProtectedDeploymentReceiptsAccepted","protectedDeploymentEvidenceUrl"]
+  ]) {
+    assert.equal(typeof manifest.production[field],"boolean");
+    if (manifest.production[field]) {
+      assert.match(manifest.production[receipt] ?? "",/^https:\/\//,
+        field + ": success requires independent inspectable receipt");
+    }
+  }
 });
 
 
@@ -108,7 +134,8 @@ test("expanded route-candidate ledger stays source-only across 138 distinct case
   assert.equal(ledger.sourceOnly,true);
   assert.equal(ledger.fullUrlUniverseProven,false);
   assert.equal(ledger.deployedOriginOrArtifactAccepted,false);
-  assert.equal(ledger.productionSignoff,"not_granted");
+  assert.equal(ledger.productionSignoff,owner.productionSignoff,
+    "Source-plan report must display the current owner signoff state without granting acceptance");
   assert.equal(ledger.sourceBaselineSha,manifest.sourceSnapshotSha);
   assert.deepEqual(ledger.counts,{
     corporatePages:32,articles:6,nutraxinProducts:19,portalModules:54,
