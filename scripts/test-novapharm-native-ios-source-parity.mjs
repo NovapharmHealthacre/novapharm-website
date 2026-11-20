@@ -139,3 +139,33 @@ test("iOS accessibility and iPad smoke tests have explicit, non-skippable eviden
   assert.match(workflow, /NovaPharmNative-Accessibility\.xcresult/);
   assert.doesNotMatch(ui, /URLSession|WKWebView|client_secret|access_token/);
 });
+
+
+test("NovaPharm preserves corporate red while both semantic control tints exceed 4.5:1", () => {
+  const theme = read("native/novapharm-intelligence-ios/App/NovaTheme.swift");
+  assert.match(theme, /static let brandRed = Color\(red: 227\.0 \/ 255, green: 18\.0 \/ 255, blue: 11\.0 \/ 255\)/);
+  assert.match(theme, /traits\.userInterfaceStyle == \.dark/);
+  const tintLight = [217, 19, 13];
+  const tintDark = [255, 105, 97];
+  const groupedLight = [242, 242, 247];
+  const groupedDark = [44, 44, 46];
+  const linear = value => {
+    const normalized = value / 255;
+    return normalized <= 0.04045 ? normalized / 12.92
+      : Math.pow((normalized + 0.055) / 1.055, 2.4);
+  };
+  const luminance = rgb => rgb.map(linear).reduce((a, x, i) =>
+    a + x * [0.2126, 0.7152, 0.0722][i], 0);
+  const contrast = (a, b) => {
+    const la = luminance(a), lb = luminance(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  };
+  assert.match(theme, /red: 217\.0 \/ 255, green: 19\.0 \/ 255, blue: 13\.0 \/ 255/);
+  assert.match(theme, /red: 255\.0 \/ 255, green: 105\.0 \/ 255, blue: 97\.0 \/ 255/);
+  assert.ok(contrast(tintLight, groupedLight) >= 4.5);
+  assert.ok(contrast(tintLight, [255,255,255]) >= 4.5);
+  assert.ok(contrast(tintDark, groupedDark) >= 4.5);
+  assert.ok(contrast(tintDark, [28,28,30]) >= 4.5);
+  assert.ok(contrast([227,18,11], groupedLight) < 4.5,
+    "Never use the unadapted corporate red as light grouped-background small text");
+});
