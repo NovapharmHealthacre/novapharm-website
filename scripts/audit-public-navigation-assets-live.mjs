@@ -11,6 +11,21 @@ function clean(input, basePath="/") {
   if (!["http:", "https:"].includes(link.protocol)) return null;
   return link.pathname;
 }
+function hasExactCanonical(html, expectedPath) {
+  for (const tag of html.match(/<link\\b[^>]*>/gi) || []) {
+    const rel = tag.match(/\\brel\\s*=\\s*(["'])(.*?)\\1/i)?.[2];
+    const href = tag.match(/\\bhref\\s*=\\s*(["'])(.*?)\\1/i)?.[2];
+    if (!rel?.toLowerCase().split(/\\s+/).includes("canonical") || !href) continue;
+    try {
+      const u = new URL(href);
+      if (u.protocol === "https:" &&
+          u.hostname === "novapharmhealthcare.com" &&
+          !u.port && !u.username && !u.password &&
+          u.pathname === expectedPath && !u.search && !u.hash) return true;
+    } catch { /* Refuse malformed canonical URLs. */ }
+  }
+  return false;
+}
 function pathsFromHTML(html, basePath) {
   const result = new Set();
   for (const tag of html.match(/<(?:a|link|script|img|source)\b[^>]*>/gi) || []) {
@@ -86,7 +101,7 @@ await boundedMap([...pagePaths],6,async path=>{
     if(path==="/products/esco/"){
       if(!html.includes("data-esco-catalogue") || (html.match(/data-esco-entry/g)||[]).length<373)
         throw Error("ESCO 373-product catalogue body is missing or incomplete");
-      if(!html.includes('https://novapharmhealthcare.com/products/esco/'))
+      if (!hasExactCanonical(html, "/products/esco/"))
         throw Error("ESCO canonical route mismatch");
       if(!html.includes("/assets/js/esco-catalogue.js"))
         throw Error("ESCO public catalogue script is not loaded");
