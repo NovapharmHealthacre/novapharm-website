@@ -4,8 +4,10 @@ on:
   pull_request:
     paths:
       - 'src/core/uk-national-source-archive-preflight.mjs'
+      - 'src/core/uk-devolved-csv-quality.mjs'
       - 'scripts/data/verify-uk-national-source-archive.mjs'
       - 'scripts/test-uk-national-source-archive-preflight.mjs'
+      - 'scripts/test-uk-devolved-csv-quality.mjs'
       - 'docs/data/uk-national-source-archive-preflight.md'
       - '.github/workflows/uk-national-source-archive-preflight.yml'
   workflow_dispatch:
@@ -32,7 +34,9 @@ jobs:
       - name: Check source and CLI syntax
         run: |
           node --check src/core/uk-national-source-archive-preflight.mjs
+          node --check src/core/uk-devolved-csv-quality.mjs
           node --check scripts/data/verify-uk-national-source-archive.mjs
           node --check scripts/test-uk-national-source-archive-preflight.mjs
+          node --check scripts/test-uk-devolved-csv-quality.mjs
       - name: Run strictly offline negative and positive integrity tests
-        run: node --test scripts/test-uk-national-source-archive-preflight.mjs
+        run: node --test scripts/test-uk-national-source-archive-preflight.mjs scripts/test-uk-devolved-csv-quality.mjs
