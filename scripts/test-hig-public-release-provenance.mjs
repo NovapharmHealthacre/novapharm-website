@@ -103,3 +103,20 @@ test("source and publisher census must cover the actual observed route universe"
   audit.checked=64;
   assert.equal(verify(audit,expected).passed,false);
 });
+
+
+test("a fabricated aggregate cannot conceal an individually mixed Corporate publisher",()=>{
+  const audit=fixture();
+  audit.routes.find(x=>x.path==="/about/").higSignals.deployedSourceSha="f".repeat(40);
+  const verdict=verify(audit,expected);
+  assert.equal(verdict.passed,false);
+  assert.ok(verdict.problems.some(x=>x.includes("summary disagrees with individually observed routes")));
+});
+test("fake green SHA and HTML digest totals are rejected against the route observations",()=>{
+  const audit=fixture();
+  audit.higScreening.withSourceSha=63;
+  audit.higScreening.routesWithHtmlSnapshotDigest=64;
+  const verdict=verify(audit,expected);
+  assert.equal(verdict.passed,false);
+  assert.ok(verdict.problems.some(x=>x.includes("census")));
+});
