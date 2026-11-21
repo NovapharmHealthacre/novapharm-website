@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 2 # include PR merge parents for exact PR-head ancestry verification
+          fetch-depth: 2 # validate PR synthetic merge's exact second-parent head
       - name: Record tested commit and pull-request-head provenance
         env:
           NOVAPHARM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -70,6 +70,7 @@ jobs:
           xcodegen generate
           xcodebuild -list -project NovaPharmNative.xcodeproj
       - name: Build unsigned native SwiftUI iOS simulator app
+        id: native_build
         run: |
           set -eu
           cd native/novapharm-intelligence-ios
@@ -123,20 +124,86 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
             -resultBundlePath "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
             -parallel-testing-enabled NO \
-            -only-testing:NovaPharmNativeUITests \
+            -only-testing:NovaPharmNativeUITests/NovaPharmNativeUITests \
             CODE_SIGNING_ALLOWED=NO
           xcrun xcresulttool get test-results summary \
             --path "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
             --format json > "$RUNNER_TEMP/novapharm-native-uitest-summary.json"
-      - name: Upload native UI test evidence if repository is private
+      - name: Run Apple accessibility audits and largest Dynamic Type UI tests
+        run: |
+          set -euo pipefail
+          device="$(sed -n 's/^Simulator UDID: //p' "$RUNNER_TEMP/novapharm-ios-simulator-device.txt")"
+          test -n "$device"
+          xcrun simctl ui "$device" content_size accessibility-extra-extra-extra-large
+          xcrun simctl ui "$device" content_size | tee "$RUNNER_TEMP/novapharm-ios-accessibility-text-size.txt"
+          xcrun simctl launch "$device" com.example.NovaPharmNativePreview
+          xcrun simctl io "$device" screenshot "$RUNNER_TEMP/novapharm-ios-accessibility-large-text.png"
+          xcrun simctl terminate "$device" com.example.NovaPharmNativePreview
+          cd native/novapharm-intelligence-ios
+          xcodebuild test \
+            -project NovaPharmNative.xcodeproj \
+            -scheme NovaPharmNative \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$device" \
+            -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
+            -resultBundlePath "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
+            -parallel-testing-enabled NO \
+            -only-testing:NovaPharmNativeUITests/NovaPharmAccessibilityUITests \
+            CODE_SIGNING_ALLOWED=NO
+          xcrun xcresulttool get test-results summary \
+            --path "$RUNNER_TEMP/NovaPharmNative-Accessibility.xcresult" \
+            --format json > "$RUNNER_TEMP/novapharm-native-accessibility-summary.json"
+      - name: Independently boot and launch an iPad Simulator
+        if: ${{ always() && steps.native_build.outcome == 'success' }} # run after audit failures, not when the app was never built
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/novapharm-swift-derived/Build/Products/Debug-iphonesimulator/NovaPharmNative.app"
+          ipad="$(xcrun simctl list -j devices available | python3 -c 'import json,sys; d=json.load(sys.stdin)["devices"]; a=[i for devices in d.values() for i in devices if i.get("isAvailable") and i.get("name","").startswith("iPad")]; print(a[0]["udid"] if a else "")')"
+          test -n "$ipad" || { echo "::error::No iPad Simulator available; iPad acceptance remains blocked"; exit 1; }
+          xcrun simctl boot "$ipad" || true
+          xcrun simctl bootstatus "$ipad" -b
+          xcrun simctl install "$ipad" "$app"
+          xcrun simctl ui "$ipad" appearance light
+          xcrun simctl launch "$ipad" com.example.NovaPharmNativePreview | tee "$RUNNER_TEMP/novapharm-ipad-launch-receipt.txt"
+          sleep 3
+          xcrun simctl io "$ipad" screenshot "$RUNNER_TEMP/novapharm-ipad-simulator.png"
+          test -s "$RUNNER_TEMP/novapharm-ipad-launch-receipt.txt"
+          test -s "$RUNNER_TEMP/novapharm-ipad-simulator.png"
+          xcrun simctl terminate "$ipad" com.example.NovaPharmNativePreview || true
+      - name: Collect native XCTest summaries on success or failure
+        if: always()
+        run: |
+          for entry in "NovaPharmNative-UITests.xcresult:novapharm-native-uitest-summary.json" "NovaPharmNative-Accessibility.xcresult:novapharm-native-accessibility-summary.json"; do
+            bundle="${entry%%:*}"
+            output="${entry#*:}"
+            if [ -d "$RUNNER_TEMP/$bundle" ]; then
+              xcrun xcresulttool get test-results summary --path "$RUNNER_TEMP/$bundle" --format json | tee "$RUNNER_TEMP/$output" || true
+            fi
+          done
+      - name: Upload Apple accessibility and iPad evidence in private repositories only
+        if: ${{ always() && github.event.repository.private }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-swift-accessibility-ipad-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
+            ${{ runner.temp }}/NovaPharmNative-Accessibility.xcresult
+            ${{ runner.temp }}/novapharm-native-accessibility-summary.json
+            ${{ runner.temp }}/novapharm-ios-accessibility-text-size.txt
+            ${{ runner.temp }}/novapharm-ios-accessibility-large-text.png
+            ${{ runner.temp }}/novapharm-ipad-launch-receipt.txt
+            ${{ runner.temp }}/novapharm-ipad-simulator.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Upload native UI test evidence in private repositories only
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-swift-native-uitest-evidence-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/NovaPharmNative-UITests.xcresult
             ${{ runner.temp }}/novapharm-native-uitest-summary.json
-            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
           if-no-files-found: ignore
           retention-days: 7
       - name: Upload non-distributable iOS Simulator artifact in private repositories only
@@ -145,16 +212,16 @@ jobs:
         with:
           name: novapharm-swift-ios-simulator-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.zip
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.sha256
-            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/novapharm-ios-simulator-device.txt
             ${{ runner.temp }}/novapharm-ios-launch-receipt.txt
             ${{ runner.temp }}/novapharm-ios-simulator-light.png
             ${{ runner.temp }}/novapharm-ios-simulator-dark.png
           if-no-files-found: error
           retention-days: 7
-      - name: Protect private app previews in a public repository
+      - name: Protect private app previews on public GitHub
         if: ${{ !github.event.repository.private }}
         run: |
-          echo "::notice::Public repository: Simulator app, UI screenshots and xcresult artifact uploads suppressed. Use approved private QA storage."
+          echo "::notice::Public repository: private Simulator binaries, screenshots, and XCResult uploads are suppressed. Functional test status remains in CI logs."

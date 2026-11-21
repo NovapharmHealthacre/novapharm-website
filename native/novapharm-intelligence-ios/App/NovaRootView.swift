@@ -92,6 +92,7 @@ private struct IntelligenceHomeView: View {
 
 private struct WorkspaceListView: View {
     let area: NovaArea
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var searchText = ""
 
     private var filtered: [NovaWorkspace] {
@@ -113,6 +114,21 @@ private struct WorkspaceListView: View {
     var body: some View {
         List {
             Section { PreviewNotice() }
+            if dynamicTypeSize.isAccessibilitySize {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Search planned workspaces")
+                            .font(.headline)
+                        TextField("Search", text: $searchText)
+                            .font(.body)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .accessibilityLabel("Search planned workspaces")
+                            .accessibilityIdentifier("novapharm.workspaces.inline-search")
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
             ForEach(groups, id: \.self) { group in
                 Section(group) {
                     ForEach(filtered.filter { $0.group == group }) { module in
@@ -137,7 +153,7 @@ private struct WorkspaceListView: View {
                 ContentUnavailableView.search(text: searchText)
             }
         }
-        .searchable(text: $searchText, prompt: "Search planned workspaces")
+        .modifier(NovaAdaptiveSearchModifier(searchText: $searchText, prompt: "Search planned workspaces"))
         .navigationTitle(area.title)
     }
 }
@@ -217,5 +233,20 @@ private struct SavedModulesView: View {
             }
         }
         .navigationTitle("Saved")
+    }
+}
+
+struct NovaAdaptiveSearchModifier: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Binding var searchText: String
+    let prompt: String
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            content
+        } else {
+            content.searchable(text: $searchText, prompt: prompt)
+        }
     }
 }

@@ -34,6 +34,18 @@ public enum NovaCountryCatalog {
     public static let licensedSources = 0
     public static let liveNationalCountries = 0
 
+    /// Keep displayed research coverage aligned with the bundled directory.
+    /// Publisher candidates never grant source rights or customer publication.
+    public static var candidateSourceCountries: Int {
+        all.filter { $0.coverage == .sourceCandidatesOnly }.count
+    }
+    public static var geographyResearchCountries: Int {
+        all.filter { $0.coverage == .geographyResearchOnly }.count
+    }
+    public static var coverageStatement: String {
+        "\(all.count) national scopes. \(candidateSourceCountries) have candidate source references; \(geographyResearchCountries) need further publisher research."
+    }
+
     // Synchronized to the shared source with the native country parity test.
     public static let all: [NovaCountryReference] = [
         .init(iso2: "DZ", country: "Algeria", region: "Africa", coverage: .sourceCandidatesOnly, candidateSourceCount: 1),
