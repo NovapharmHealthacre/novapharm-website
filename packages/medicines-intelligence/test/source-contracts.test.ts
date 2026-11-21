@@ -55,10 +55,28 @@ test("official NHSBSA BNF/SNOMED mapping is discoverable without medicine-row sa
 
 test("reporting-period discovery handles monthly, quarterly and named resources", () => {
   assert.equal(parseReportingPeriod("EPD_SNOMED_202606")?.key, "2026-06");
+  assert.equal(parseReportingPeriod("Prescribed & Dispensed Jan - Mar 2026")?.key, "2026-Q1");
+  assert.equal(parseReportingPeriod("prescribed-dispensed-apr-jun-2026.csv")?.precision, "quarter");
+  assert.equal(parseReportingPeriod("Prescribed & Dispensed April – June 2026")?.key, "2026-Q2");
+  assert.equal(parseReportingPeriod("Prescribed & Dispensed Jul - Sep 2026")?.key, "2026-Q3");
+  assert.equal(parseReportingPeriod("Prescribed & Dispensed Oct - Dec 2026")?.key, "2026-Q4");
+  assert.equal(parseReportingPeriod("Dispensed Items by GP and Pharmacy, September 2026")?.key, "2026-09");
   assert.equal(parseReportingPeriod("CONSOL_PHARMACY_LIST_202606Q1")?.key, "2026/06-Q1");
   assert.equal(parseReportingPeriod("Dispensed Items by GP and Pharmacy, June 2026")?.key, "2026-06");
   assert.equal(parseReportingPeriod("Historic release 2025")?.key, "2025");
   assert.equal(parseReportingPeriod("No period"), null);
+});
+
+test("Scottish publisher quarter spans cannot become monthly data", () => {
+  const items = discoverResources([
+    { id: "scotland-1", name: "Prescribed & Dispensed Jan - Mar 2026", url: "https://www.opendata.nhs.scot/file1.csv", format: "CSV" },
+    { id: "scotland-2", name: "Prescribed & Dispensed Apr - Jun 2026", url: "https://www.opendata.nhs.scot/file2.csv", format: "CSV" },
+  ]);
+  assert.deepEqual(items.map(item => item.period.key), ["2026-Q1", "2026-Q2"]);
+  assert.ok(items.every(item => item.period.precision === "quarter"));
+  assert.equal(shouldProbeCkanDatastore(registryEntry("phs.prescribed-dispensed")), false);
+  assert.equal(shouldProbeCkanDatastore(registryEntry("bso.dispensing-contractor")), false);
+  assert.equal(registryEntry("nwssp.practice-pharmacy-flow").accessMethod, "file_download");
 });
 
 test("resource discovery sorts periods and detects a revised resource", () => {

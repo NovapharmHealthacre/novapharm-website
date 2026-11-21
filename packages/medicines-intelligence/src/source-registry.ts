@@ -132,7 +132,11 @@ export const sourceRegistry = Object.freeze([
  */
 export function shouldProbeCkanDatastore(entry: Pick<SourceRegistryEntry, "sourceId" | "accessMethod">): boolean {
   if (entry.accessMethod !== "ckan_action_api") return false;
-  return entry.sourceId !== "nhsbsa.bnf-snomed-map";
+  return !new Set([
+    "nhsbsa.bnf-snomed-map",
+    "phs.prescribed-dispensed",
+    "bso.dispensing-contractor",
+  ]).has(entry.sourceId);
 }
 
 export function registryEntry(sourceId: string): SourceRegistryEntry {

@@ -16,6 +16,18 @@ export function parseReportingPeriod(value: string): ReportingPeriod | null {
     const quarter = Number(financialQuarter[3]);
     return Object.freeze({ key: `${startYear}/${String(endYear).padStart(2, "0")}-Q${quarter}`, precision: "quarter", sortKey: startYear * 100 + quarter * 3, sourceText: financialQuarter[0] });
   }
+  // Scotland publishes Jan–Mar, Apr–Jun, Jul–Sep and Oct–Dec spans as QUARTERS.
+  // Interpret a dated span as one quarter, never as a single month's activity.
+  const quarterSpan = text.match(/\b(jan(?:uary)?|apr(?:il)?|jul(?:y)?|oct(?:ober)?)\s*(?:-|–|to)\s*(mar(?:ch)?|jun(?:e)?|sep(?:t(?:ember)?|t)?|dec(?:ember)?)\s*[, _-]*\s*((?:19|20)\d{2})\b/i);
+  if (quarterSpan) {
+    const first = monthNames[quarterSpan[1].toLowerCase()];
+    const last = monthNames[quarterSpan[2].toLowerCase()];
+    const year = Number(quarterSpan[3]);
+    if (first && last === first + 2) {
+      const value = Math.floor((first - 1) / 3) + 1;
+      return Object.freeze({ key: `${year}-Q${value}`, precision: "quarter", sortKey: year * 100 + value * 3, sourceText: quarterSpan[0] });
+    }
+  }
   const compactMonth = [...text.matchAll(/((?:19|20)\d{2})(0[1-9]|1[0-2])(?!\d)/g)].at(-1);
   if (compactMonth) {
     const year = Number(compactMonth[1]);
