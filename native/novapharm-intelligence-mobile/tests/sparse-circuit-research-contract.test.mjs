@@ -39,7 +39,7 @@ test("mobile sparse-circuit candidate is static, nonclinical, unconnected and un
   assert.match(app, /if \(Platform\.OS !== "android"\) return;/);
   assert.match(app, /BackHandler\.addEventListener\("hardwareBackPress"/);
   assert.match(app, /return \(\) => subscription\.remove\(\);/);
-  assert.match(app, /}, \[screen, selectedWorkspace\]\);/);
+  assert.match(app, /}, \[screen, selectedWorkspace, selectedOperationsModule\]\);/);
 });
 
 test("release remains separately denied in the canonical governance source",()=>{
