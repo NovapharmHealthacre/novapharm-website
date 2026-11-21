@@ -112,6 +112,10 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Fail closed if public GitHub branches have no enforced minimum protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release-branch-protection.mjs
       - name: Mark publication pending
         env:
           GH_TOKEN: ${{ github.token }}
