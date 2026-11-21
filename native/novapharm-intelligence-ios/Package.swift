@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "NovaPharmNativeCore",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v17), .macOS(.v12)],
     products: [.library(name: "NovaPharmNativeCore", targets: ["NovaPharmNativeCore"])],
     targets: [
         .target(name: "NovaPharmNativeCore", path: "App",
