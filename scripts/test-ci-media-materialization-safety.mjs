@@ -12,5 +12,5 @@ test("licensed media CI cannot write branches or publish, even when manually dis
   assert.match(body, /Enforce media-only mutation boundary/);
   assert.match(body, /npm run products:validate/);
   assert.match(body, /npm run security:scan/);
-  assert.match(body, /No git commit, push, PR mutation, release, or public image artifact upload is permitted/);
+  assert.match(body, /No source commits, branch pushes, PR mutation, release, or public image artifact upload is permitted/);
 });
