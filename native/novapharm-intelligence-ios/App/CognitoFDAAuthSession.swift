@@ -124,7 +124,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
                 URLQueryItem(name:"client_id",value:config.clientID),
                 URLQueryItem(name:"redirect_uri",value:config.redirectURL.absoluteString),
                 URLQueryItem(name:"response_type",value:"code"),
-                URLQueryItem(name:"scope",value:"openid profile"),
+                URLQueryItem(name:"scope",value:"openid profile novapharm/fda.read"),
                 URLQueryItem(name:"state",value:state),
                 URLQueryItem(name:"code_challenge_method",value:"S256"),
                 URLQueryItem(name:"code_challenge",value:challenge)
