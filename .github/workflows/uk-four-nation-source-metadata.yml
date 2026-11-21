@@ -1,0 +1,84 @@
+name: UK four-nation publisher metadata and reporting period integrity
+
+on:
+  pull_request:
+    paths:
+      - 'packages/medicines-intelligence/src/resource-discovery.ts'
+      - 'packages/medicines-intelligence/src/source-registry.ts'
+      - 'packages/medicines-intelligence/test/source-contracts.test.ts'
+      - 'src/core/uk-four-nation-source-metadata.mjs'
+      - 'scripts/run-uk-four-nation-source-metadata.mjs'
+      - 'scripts/test-uk-four-nation-source-metadata.mjs'
+      - 'docs/data/uk-four-nation-source-acceptance-20261121.md'
+      - '.github/workflows/uk-four-nation-source-metadata.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-four-nation-contract:
+    runs-on: ubuntu-24.04
+    name: UK four-nation official metadata and source period safety
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Check official metadata-only reader syntax
+        run: |
+          node --check src/core/uk-four-nation-source-metadata.mjs
+          node --check scripts/run-uk-four-nation-source-metadata.mjs
+          node --check scripts/test-uk-four-nation-source-metadata.mjs
+      - name: Enforce country precision, rights boundaries and deny-list negative tests
+        run: |
+          node --experimental-transform-types --test packages/medicines-intelligence/test/source-contracts.test.ts scripts/test-uk-four-nation-source-metadata.mjs
+
+  official-source-metadata:
+    runs-on: ubuntu-24.04
+    name: England Scotland Wales Northern Ireland official publisher metadata
+    timeout-minutes: 8
+    needs: offline-four-nation-contract
+    env:
+      NODE_USE_ENV_PROXY: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Verify four pinned official publishers without reading medicine rows
+        run: |
+          mkdir -p artifacts/uk-four-nation
+          node --experimental-transform-types scripts/run-uk-four-nation-source-metadata.mjs > artifacts/uk-four-nation/receipt.json
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const rows=JSON.parse(readFileSync('artifacts/uk-four-nation/receipt.json','utf8'));
+          assert.deepEqual(rows.map(x=>x.jurisdiction), ['GB-ENG','GB-SCT','GB-WLS','GB-NIR']);
+          for(const item of rows) {
+            assert.equal(item.rawMedicineRowsRead,0);
+            assert.equal(item.medicineDataAdmitted,false);
+            assert.equal(item.customerCountryLive,false);
+            assert.equal(item.sourceRightsIndependentlyApproved,false);
+            assert.equal(item.canPublish,false);
+          }
+          assert.equal(rows[1].latestReportingPeriod?.includes('-Q'),true);
+          assert.equal(rows[2].latestReportingPeriod,null);
+          console.log('Four official publisher metadata endpoints verified. Zero medicine records or publication rights admitted.');
+          NODE
+      - name: Save bounded, nonpublishable source receipt for review
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
+        with:
+          name: uk-four-nation-official-metadata-receipt
+          path: artifacts/uk-four-nation/receipt.json
+          if-no-files-found: error
+          retention-days: 7
