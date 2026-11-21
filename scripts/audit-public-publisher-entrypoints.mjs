@@ -25,8 +25,8 @@ export function sourceCommands(yaml) {
 export function classifyWorkflow(name, yaml) {
   assert.match(name, /^[a-z0-9._-]+\.ya?ml$/i);
   const source=sourceCommands(yaml);
-  const deployPages=/^\s*uses:\s*actions\/deploy-pages@/m.test(source);
-  const uploadPages=/^\s*uses:\s*actions\/upload-pages-artifact@/m.test(source);
+  const deployPages=/^\s*(?:-\s*)?uses:\s*actions\/deploy-pages@/m.test(source);
+  const uploadPages=/^\s*(?:-\s*)?uses:\s*actions\/upload-pages-artifact@/m.test(source);
   const pagesWrite=/^\s*pages:\s*write\s*$/m.test(source);
   const directRefPush=/\bgit\s+push\b[^\n]*(?:gh-pages|refs\/heads\/gh-pages)/i.test(source);
   const ghRefMutation=/\bgh\s+api\b[^\n]*(?:--method\s+(?:POST|PUT|PATCH)|-X\s+(?:POST|PUT|PATCH))[^\n]*(?:\/git\/refs|\/git\/ref\/heads\/gh-pages|\/contents\/)/i.test(source);
