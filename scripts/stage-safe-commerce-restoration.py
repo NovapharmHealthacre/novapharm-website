@@ -43,7 +43,11 @@ for relative in sorted(allowedFiles):
  changed.append(relative)
 after={p.relative_to(dst).as_posix():sha(p) for p in dst.rglob("*") if p.is_file() and ".git" not in p.parts}
 if any(after.get(p)!=v for p,v in before.items()):raise RuntimeError("An existing public website file was overwritten")
-if not changed:raise RuntimeError("No new commerce public files staged")
+# A read-only PR verification may find the approved seven-file public namespace
+# already present and byte-identical. Publishing/staging push jobs still fail closed
+# on an empty release: they never set the PR-only opt-in.
+if not changed and not (os.environ.get("NOVAPHARM_CI_ALLOW_NOOP") == "true" and os.environ.get("GITHUB_EVENT_NAME") == "pull_request"):
+ raise RuntimeError("No new commerce public files staged")
 if any(p not in allowedFiles for p in changed):raise RuntimeError("Stage escaped approved commerce paths")
 for relative in ("products/marketplace/index.html","products/track/index.html"):
  content=(dst/relative).read_text()
