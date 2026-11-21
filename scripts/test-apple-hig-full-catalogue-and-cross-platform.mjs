@@ -1,3 +1,4 @@
+import { summarizeHigPublicSampleGaps } from "./hig-public-sample-gap-summary.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
@@ -926,6 +927,12 @@ test("optional read-only public website HTML sample (not HIG compliance)",
   console.log("Public HIG HTML evidence " + report.passedRoutes +
     "/" + routes.length + " sampled routes passed narrow HTTP/landmark checks; " +
     "NOT production HIG acceptance.");
+  if (report.passedRoutes !== routes.length) {
+    // Fixed-route, allowlisted flags only; never log full response HTML or
+    // untrusted exception messages. Source-only CI must not conceal live gaps.
+    console.error("Public HIG sampled-route gaps (redacted): " +
+      JSON.stringify(summarizeHigPublicSampleGaps(results)));
+  }
   assert.equal(report.passedRoutes, routes.length,
     "Read-only live HTML sample gaps: see public-origin-sample.json");
 });
