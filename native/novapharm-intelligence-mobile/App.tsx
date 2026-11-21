@@ -25,13 +25,14 @@ import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
+import { USFdaSourcePreviewScreen } from "./USFdaSourcePreviewScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
 import { PrivateOperationsPreviewScreen } from "./PrivateOperationsPreviewScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account" | "customer-portal-preview" | "distribution-preview";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "fda" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account" | "customer-portal-preview" | "distribution-preview";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
 
@@ -177,7 +178,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account" || selected === "customer-portal-preview" || selected === "distribution-preview"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "fda" || selected === "account" || selected === "customer-portal-preview" || selected === "distribution-preview"));
         return (
           <Pressable
             key={tab.screen}
@@ -350,6 +351,7 @@ export default function App() {
               <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
               {([
                 { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
+                { screen: "fda", label: "US FDA sources", detail: "Five offline source types; no mobile API access" },
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
@@ -373,6 +375,7 @@ export default function App() {
               ))}
             </>
           )}
+          {screen === "fda" && <USFdaSourcePreviewScreen darkMode={darkMode} />}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
           {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} />}
