@@ -44,7 +44,7 @@ jobs:
           assert.equal(source.latestResourceId, null);
           assert.equal(source.lastSuccessfullyIngestedAt, null);
           assert.equal(shouldProbeCkanDatastore(source), false);
-          assert.match(discovery, /if \\(advertised && latest && mayProbeRows\\) \\{/u);
+          assert.ok(discovery.includes('if (advertised && latest && mayProbeRows) {'));
           assert.match(discovery, /not_probed_rights_pending/u);
           console.log('Official CKAN metadata-only source; no publisher rows, Atlas, AWS or customer publication.');
           NODE
