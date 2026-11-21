@@ -28,6 +28,23 @@ test("all three approved Pages publication workflows require current branch prot
   }
 });
 
+test("pull request validation never inherits Pages, OIDC or status-write privileges",()=>{
+  for(const p of policies.slice(0,2)){
+    const yaml=readFileSync(p.file,"utf8");
+    const begin=yaml.indexOf("  validate-release:\n");
+    const end=yaml.indexOf("  build:\n",begin);
+    assert.ok(begin>=0 && end>begin, "Cannot isolate PR validation job: "+p.file);
+    const validateJob=yaml.slice(begin,end);
+    assert.match(validateJob,/^\s{4}permissions:\n\s{6}contents: read$/m);
+    for(const privileged of [/^\s{6}pages: write$/m,/^\s{6}id-token: write$/m,/^\s{6}statuses: write$/m])
+      assert.equal(privileged.test(validateJob),false, "Unexpected PR write permission: "+p.file);
+    // Deploy stays intact: no global removal that would silently break Pages release.
+    const global=yaml.slice(yaml.indexOf("\npermissions:\n"),yaml.indexOf("\nconcurrency:\n"));
+    assert.match(global,/\bpages: write\b/);
+    assert.match(global,/\bid-token: write\b/);
+  }
+});
+
 test("manual publishing and AWS-backed contact release retain their prior safety checks",()=>{
   const live=readFileSync(policies[0].file,"utf8");
   const recovery=readFileSync(policies[1].file,"utf8");
