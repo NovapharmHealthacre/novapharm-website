@@ -33,6 +33,27 @@ export const FOUR_NATION_SOURCES = Object.freeze([
   }),
 ]);
 
+export const UK_MEDICINE_PRESENTATION_SOURCES = Object.freeze([
+  Object.freeze({
+    sourceId: "phs.prescriptions-community", nation: "Scotland", jurisdiction: "GB-SCT",
+    kind: "ckan", expectedPeriodPrecision: "month",
+    url: "https://www.opendata.nhs.scot/api/3/action/package_show?id=prescriptions-in-the-community",
+    packageName: "prescriptions-in-the-community",
+  }),
+  Object.freeze({
+    sourceId: "nwssp.gp-prescribing", nation: "Wales", jurisdiction: "GB-WLS",
+    kind: "publisher_page", expectedPeriodPrecision: null,
+    url: "https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/general-practice-prescribing-data-extract/",
+    packageName: null,
+  }),
+  Object.freeze({
+    sourceId: "bso.gp-prescribing", nation: "Northern Ireland", jurisdiction: "GB-NIR",
+    kind: "ckan", expectedPeriodPrecision: "month",
+    url: "https://admin.opendatani.gov.uk/api/3/action/package_show?id=gp-prescribing-data",
+    packageName: "gp-prescribing-data",
+  }),
+]);
+
 const MAX_METADATA_BYTES = 2 * 1024 * 1024;
 const MAX_RESOURCES = 256;
 const resourceIdPattern = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
@@ -68,7 +89,7 @@ export async function probeUkNationPublisherMetadata(sourceId, {
   fetchImplementation = fetch,
   now = () => new Date(),
 } = {}) {
-  const source = FOUR_NATION_SOURCES.find(entry => entry.sourceId === sourceId);
+  const source = [...FOUR_NATION_SOURCES, ...UK_MEDICINE_PRESENTATION_SOURCES].find(entry => entry.sourceId === sourceId);
   if (!source) deny("unrecognised source");
   if (typeof fetchImplementation !== "function" || typeof now !== "function") deny("invalid dependencies");
   const date = now();
@@ -145,5 +166,14 @@ export async function probeAllFourUkPublishers(options = {}) {
   }
   if (results.length !== 4 || new Set(results.map(x => x.nation)).size !== 4)
     deny("four-nation coverage invariant");
+  return Object.freeze(results);
+}
+
+export async function probeThreeUkMedicinePresentationPublishers(options = {}) {
+  const results = [];
+  for(const source of UK_MEDICINE_PRESENTATION_SOURCES)
+    results.push(await probeUkNationPublisherMetadata(source.sourceId, options));
+  if(results.length!==3 || new Set(results.map(x=>x.nation)).size!==3)
+    deny("three devolved medicine-presentation coverage invariant");
   return Object.freeze(results);
 }

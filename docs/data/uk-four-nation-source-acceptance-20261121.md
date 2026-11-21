@@ -35,3 +35,21 @@ Official publisher references:
 - https://admin.opendatani.gov.uk/dataset/dispensing-by-contractor
 
 Related: [UK implementation tracker #1027](https://github.com/NovapharmHealthacre/novapharm-website/issues/1027), PR #1026.
+
+## 21 November 2026 — essential medicine-presentation data additions
+
+The original devolved source list was incomplete for medicine-level analyses.
+These **distinct, official sources** were added to the registry as unapproved adapter candidates:
+
+| Nation | Source ID | Official source | Data meaning | Stage |
+| --- | --- | --- | --- | --- |
+| Scotland | `phs.prescriptions-community` | Public Health Scotland Prescriptions in the Community | Monthly BNF/dm+d medicine/prescriber, dispenser or health-board presentation records | Metadata only; no rows imported |
+| Wales | `nwssp.gp-prescribing` | NWSSP General Practice Prescribing Data Extract | Monthly ZIP with GPDataFileCCYYMM, ChemSubstance and practice addresses | Page reference only; no bulk API or rows |
+| Northern Ireland | `bso.gp-prescribing` | BSO GP Prescribing Data / OpenDataNI | Monthly medicine presentation items, quantity, gross and actual costs | Metadata only; no rows imported |
+
+PHS quarterly **Prescribed and Dispensed** (location flow) must never be conflated with monthly **Prescriptions in the Community** (medicine presentation). BSO monthly **Dispensing by Contractor** must never be conflated with **GP Prescribing Data**. The Wales GP data extract differs from the monthly **Pharmacy / Practice Dispensing** movement tables. Each has its own source ID, data grain and provenance.
+
+Publisher references:
+- https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community
+- https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/general-practice-prescribing-data-extract/
+- https://www.opendatani.gov.uk/dataset/gp-prescribing-data

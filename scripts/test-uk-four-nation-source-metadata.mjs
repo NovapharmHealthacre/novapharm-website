@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { FOUR_NATION_SOURCES, probeUkNationPublisherMetadata, probeAllFourUkPublishers } from "../src/core/uk-four-nation-source-metadata.mjs";
+import { FOUR_NATION_SOURCES, UK_MEDICINE_PRESENTATION_SOURCES, probeThreeUkMedicinePresentationPublishers, probeUkNationPublisherMetadata, probeAllFourUkPublishers } from "../src/core/uk-four-nation-source-metadata.mjs";
 
 const id1 = "bafa30b6-4426-4578-a128-935d13b228e5";
 const id2 = "35b93e03-6330-4a7e-9be0-1f07c1495cc5";
@@ -82,4 +82,30 @@ test("Welsh publisher webpage cannot be represented as machine-readable clinical
   assert.equal(result.latestReportingPeriod,null);
   assert.equal("latestResourceId" in result,false);
   assert.equal(result.canPublish,false);
+});
+
+test("three additional medicine-presentation publisher sources remain separate from dispensing-flow data", async()=>{
+  assert.equal(UK_MEDICINE_PRESENTATION_SOURCES.length,3);
+  const queries=[];
+  const responses={
+    "phs.prescriptions-community":{ name:"prescriptions-in-the-community", resources:[
+      {id:id1,format:"CSV",name:"Prescriptions in the Community - Data by Prescriber Location – August 2026"},
+      {id:id2,format:"CSV",name:"Prescriptions in the Community - Data by Dispenser Location – July 2026"},
+    ]},
+    "bso.gp-prescribing":{name:"gp-prescribing-data",resources:[
+      {id:id1,format:"CSV",name:"GP Prescribing Northern Ireland, August 2026"},
+      {id:id2,format:"CSV",name:"GP Prescribing Northern Ireland, September 2026"},
+    ]},
+  };
+  const rows=await probeThreeUkMedicinePresentationPublishers({fetchImplementation:async(url)=>{
+    queries.push(String(url));
+    const source=UK_MEDICINE_PRESENTATION_SOURCES.find(s=>s.url===String(url));
+    assert.ok(source);
+    if(source.kind==="publisher_page")
+      return new Response("<html>GPDataFileCCYYMM</html>",{headers:{"content-type":"text/html"}});
+    return new Response(JSON.stringify({success:true,result:responses[source.sourceId]}),{headers:{"content-type":"application/json"}});
+  }});
+  assert.equal(queries.length,3);
+  assert.deepEqual(rows.map(x=>x.latestReportingPeriod),["2026-08",null,"2026-09"]);
+  assert.ok(rows.every(x=>x.rawMedicineRowsRead===0 && x.medicineDataAdmitted===false && x.canPublish===false));
 });

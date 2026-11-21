@@ -59,6 +59,12 @@ jobs:
         run: |
           mkdir -p artifacts/uk-four-nation
           node --experimental-transform-types scripts/run-uk-four-nation-source-metadata.mjs > artifacts/uk-four-nation/receipt.json
+          node --experimental-transform-types --input-type=module <<'NODE' > artifacts/uk-four-nation/medicine-presentation-receipt.json
+          import { probeThreeUkMedicinePresentationPublishers } from './src/core/uk-four-nation-source-metadata.mjs';
+          const rows = await probeThreeUkMedicinePresentationPublishers();
+          if(rows.length!==3 || rows.some(x=>x.medicineDataAdmitted!==false || x.rawMedicineRowsRead!==0 || x.canPublish!==false)) process.exit(1);
+          process.stdout.write(JSON.stringify(rows,null,2)+'\\n');
+          NODE
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import { readFileSync } from 'node:fs';
@@ -79,6 +85,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
         with:
           name: uk-four-nation-official-metadata-receipt
-          path: artifacts/uk-four-nation/receipt.json
+          path: artifacts/uk-four-nation/*.json
           if-no-files-found: error
           retention-days: 7

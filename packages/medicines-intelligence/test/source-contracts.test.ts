@@ -77,6 +77,14 @@ test("Scottish publisher quarter spans cannot become monthly data", () => {
   assert.equal(shouldProbeCkanDatastore(registryEntry("phs.prescribed-dispensed")), false);
   assert.equal(shouldProbeCkanDatastore(registryEntry("bso.dispensing-contractor")), false);
   assert.equal(registryEntry("nwssp.practice-pharmacy-flow").accessMethod, "file_download");
+  assert.equal(registryEntry("phs.prescriptions-community").accessMethod, "ckan_action_api");
+  assert.equal(registryEntry("nwssp.gp-prescribing").accessMethod, "file_download");
+  assert.equal(registryEntry("bso.gp-prescribing").accessMethod, "ckan_action_api");
+  assert.equal(shouldProbeCkanDatastore(registryEntry("phs.prescriptions-community")), false);
+  assert.equal(shouldProbeCkanDatastore(registryEntry("bso.gp-prescribing")), false);
+  for (const key of ["phs.prescriptions-community", "nwssp.gp-prescribing", "bso.gp-prescribing"]) {
+    assert.equal(registryEntry(key).lastSuccessfullyIngestedAt, null);
+  }
 });
 
 test("resource discovery sorts periods and detects a revised resource", () => {

@@ -120,6 +120,56 @@ export const sourceRegistry = Object.freeze([
   Object.freeze({
     sourceId: "bso.dispensing-contractor", publisher: "Business Services Organisation Northern Ireland", datasetName: "Dispensing by Contractor", datasetSlugOrIdentifier: "dispensing-by-contractor", jurisdiction: "Northern Ireland", coverage: "Northern Ireland GP-practice to dispensing-contractor paid items", purpose: "Northern Ireland dispensing flows and contractor activity.", accessMethod: "ckan_action_api", apiOrDownload: "https://admin.opendatani.gov.uk/api/3/action", baseEndpointOrDiscoveryMethod: "package_show for dispensing-by-contractor", licence: "Open Government Licence v3.0", publicationFrequency: "Monthly", typicalReportingLag: "Approximately two months", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "discovery_implemented", knownCaveats: Object.freeze(["Paid claims are not NovaPharm sales.", "No patient-level data is required or permitted."]), provenanceNotes: "Official OpenDataNI dataset published by BSO." }),
   Object.freeze({
+    sourceId: "phs.prescriptions-community", publisher: "Public Health Scotland",
+    datasetName: "Prescriptions in the Community",
+    datasetSlugOrIdentifier: "prescriptions-in-the-community", jurisdiction: "Scotland",
+    coverage: "Community prescriptions dispensed and claimed for payment by prescriber, dispenser or NHS Health Board, BNF/dm+d item level where supplied",
+    purpose: "Scotland medicine presentation, item, quantity and cost intelligence distinct from prescribed-to-dispensed location flow.",
+    accessMethod: "ckan_action_api", apiOrDownload: "https://www.opendata.nhs.scot/api/3/action",
+    baseEndpointOrDiscoveryMethod: "CKAN package_show of prescriptions-in-the-community; metadata-only candidate",
+    licence: "Official PHS publisher terms; attribution and third-party medicine terminology rights require independent review",
+    publicationFrequency: "Monthly", typicalReportingLag: "Publisher-dependent; releases may be delayed",
+    latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null,
+    resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null,
+    firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null,
+    authorityRank: 1, status: "documented_adapter_pending",
+    knownCaveats: Object.freeze(["This is distinct from quarterly Prescribed and Dispensed locations data.", "Community dispensed-and-paid is not all prescribed medicines or NovaPharm sales.", "Prescriber-level, dispenser-level and board-level files have different grains and must not be summed together.", "BNF item codes and dm+d references need time-valid terminology rights and crosswalk validation."]),
+    provenanceNotes: "Official PHS Prescriptions in the Community page describes monthly presentation-level BNF/dm+d resources and a quantities mapping change from May 2023."
+  }),
+  Object.freeze({
+    sourceId: "nwssp.gp-prescribing", publisher: "NHS Wales Shared Services Partnership",
+    datasetName: "General Practice Prescribing Data Extract", datasetSlugOrIdentifier: "general-practice-prescribing-data-extract",
+    jurisdiction: "Wales", coverage: "GP and practice-based nonmedical prescriptions dispensed in the community in Wales or England",
+    purpose: "Wales medicine-presentation GP prescribing data, chemical substance mappings and time-valid practice geography.",
+    accessMethod: "file_download",
+    apiOrDownload: "https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/general-practice-prescribing-data-extract/",
+    baseEndpointOrDiscoveryMethod: "Official publisher page linking compressed monthly GPDataFileCCYYMM, ChemSubstance and Address files; no public REST feed established",
+    licence: "Publisher describes OGL for dataset; exact downstream and third-party BNF/dm+d rights require independent review",
+    publicationFrequency: "Monthly", typicalReportingLag: "First working day of each month",
+    latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null,
+    resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null,
+    firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null,
+    authorityRank: 1, status: "documented_adapter_pending",
+    knownCaveats: Object.freeze(["The official page retains current and two complete financial years; older backfill requires a separate lawful archival source.", "One ZIP contains three different files with separate entity/identity grains.", "Only medicines actually dispensed are counted; private prescriptions excluded.", "Do not treat NHS Wales API portal sandboxes as live prescribing data."]),
+    provenanceNotes: "Official NWSSP General Practice Prescribing Data Extract is presentation-level and monthly; source page is not itself a data API."
+  }),
+  Object.freeze({
+    sourceId: "bso.gp-prescribing", publisher: "Business Services Organisation Northern Ireland",
+    datasetName: "GP Prescribing Data", datasetSlugOrIdentifier: "gp-prescribing-data",
+    jurisdiction: "Northern Ireland", coverage: "Medicine presentation level GP prescribed and subsequently dispensed item counts, quantity, gross and actual cost",
+    purpose: "Northern Ireland medicine-level monthly prescribing intelligence distinct from contractor-level dispensing flows.",
+    accessMethod: "ckan_action_api", apiOrDownload: "https://admin.opendatani.gov.uk/api/3/action",
+    baseEndpointOrDiscoveryMethod: "Official OpenDataNI CKAN package_show for gp-prescribing-data; metadata only until rights and schema acceptance",
+    licence: "Official OpenDataNI source terms and separate BNF rights must be independently reviewed",
+    publicationFrequency: "Monthly", typicalReportingLag: "Publisher reports on or before the 10th of each month, payment-process dependent",
+    latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null,
+    resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null,
+    firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null,
+    authorityRank: 1, status: "documented_adapter_pending",
+    knownCaveats: Object.freeze(["GP Prescribing and Dispensing by Contractor are separate measures and must not be summed.", "Items, quantity, gross and actual cost are distinct metrics.", "Historic BNF classification corrections and quantity-system changes require period-aware caveats.", "No private, patient-level or individual clinical data may be inferred."]),
+    provenanceNotes: "BSO official GP Prescribing Data publisher references OpenDataNI presentation-level monthly CSV files."
+  }),
+  Object.freeze({
     sourceId: "gphc.premises", publisher: "General Pharmaceutical Council", datasetName: "Registered pharmacy premises", datasetSlugOrIdentifier: "gphc-data-subscription", jurisdiction: "United Kingdom", coverage: "Registered premises in England, Scotland and Wales", purpose: "Regulator-level premises identity and status cross-check.", accessMethod: "licensed_subscription", apiOrDownload: "https://www.pharmacyregulation.org/about-us/what-we-do/data-subscription-service", baseEndpointOrDiscoveryMethod: "GPhC subscription service", licence: "Paid annual GPhC data subscription licence", publicationFrequency: "Daily extracts; weekly changes", typicalReportingLag: "Publisher update cycle", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: reviewDate, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "licence_required", knownCaveats: Object.freeze(["No subscription credentials or reuse licence are present.", "The public search register is not permission to scrape or bulk reuse."]), provenanceNotes: "Integration remains blocked until the owner obtains and approves the subscription licence." }),
   Object.freeze({
     sourceId: "psni.premises", publisher: "Pharmaceutical Society of Northern Ireland", datasetName: "Registered pharmacy premises", datasetSlugOrIdentifier: "psni-live-and-monthly-register", jurisdiction: "Northern Ireland", coverage: "Registered premises in Northern Ireland", purpose: "Regulator-level premises identity and status cross-check.", accessMethod: "file_download", apiOrDownload: "https://psni.org.uk/pharmacies-monthly-premises-register-upload/", baseEndpointOrDiscoveryMethod: "Monthly list plus live public register", licence: "PSNI website terms", publicationFrequency: "Monthly snapshot with live register cross-check", typicalReportingLag: "Publisher update cycle", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: reviewDate, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "documented_adapter_pending", knownCaveats: Object.freeze(["Monthly list is a snapshot and does not replace the live register."]), provenanceNotes: "Premises identifiers must not be inferred from name or postcode alone." }),
@@ -136,6 +186,8 @@ export function shouldProbeCkanDatastore(entry: Pick<SourceRegistryEntry, "sourc
     "nhsbsa.bnf-snomed-map",
     "phs.prescribed-dispensed",
     "bso.dispensing-contractor",
+    "phs.prescriptions-community",
+    "bso.gp-prescribing",
   ]).has(entry.sourceId);
 }
 
