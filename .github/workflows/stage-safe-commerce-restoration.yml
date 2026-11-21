@@ -49,6 +49,19 @@ jobs:
         env:
           NOVAPHARM_CI_ALLOW_NOOP: "true"
         run: python3 scripts/stage-safe-commerce-restoration.py
+      - name: Verify simulated main-push no-op never stages or writes
+        env:
+          GITHUB_EVENT_NAME: push
+          GITHUB_REF: refs/heads/main
+          NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH: "true"
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="$(git -C published status --porcelain)"
+          python3 scripts/stage-safe-commerce-restoration.py
+          after="$(git -C published status --porcelain)"
+          test "$before" = "$after"
+          python3 -c 'import json; p=json.load(open("artifacts/commerce-restoration/manifest.json")); assert p["alreadyPublishedIdentical"] is True and p["addedFiles"] == 0 and p["changedPaths"] == []'
       - name: Archive sanitized staging audit
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
