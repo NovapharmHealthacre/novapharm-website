@@ -329,8 +329,13 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
       });
       screenshotCaptured = true;
     } catch (error) {
-      if (attempt === 3 || !/captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
-      console.warn(`${engine} ${viewport.name} ${route}: transient screenshot failure on attempt ${attempt}; retrying the same capture`);
+      // Screenshot timeouts are also transient on overloaded CI renderers.
+      // Retry only the capture, never an accessibility/layout/security assertion.
+      // Exhausting the three bounded attempts still fails the entire job.
+      const reason = error instanceof Error ? error.message : String(error);
+      const retriableCaptureFailure = /captureScreenshot|Unable to capture screenshot|page\.screenshot:\s*Timeout \d+ms exceeded/i.test(reason);
+      if (attempt === 3 || !retriableCaptureFailure) throw error;
+      console.warn(`${engine} ${viewport.name} ${route}: screenshot capture attempt ${attempt} failed (${reason.split("\n")[0]}); retrying the same capture`);
       await page.waitForTimeout(500 * attempt);
     }
   }
