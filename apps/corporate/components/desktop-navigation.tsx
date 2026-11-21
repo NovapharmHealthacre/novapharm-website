@@ -186,6 +186,21 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
     setActiveCategory(category?.id ?? null);
   }
 
+  function activatePanel(categoryId: string) {
+    focusFirstLink.current = true;
+    setActiveCategory(categoryId);
+    // Already-hovered / focused triggers may open the same panel twice,
+    // so a state-dependent effect alone cannot guarantee focus transfer.
+    window.requestAnimationFrame(() => {
+      const panel = document.getElementById(`npd-mega-${categoryId}`);
+      const first = panel?.querySelector<HTMLAnchorElement>("a");
+      if (first?.getClientRects().length) {
+        focusFirstLink.current = false;
+        first.focus({ preventScroll: true });
+      }
+    });
+  }
+
   return <>
     <nav className="desktop-nav npd-global-nav site-nav" aria-label={interfaceLabel(locale, "Primary navigation")} ref={navRef}
       onBlur={(event) => {
@@ -214,14 +229,12 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
             if (!category || !isDesktop() || event.button !== 0 ||
                 event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
             event.preventDefault();
-            focusFirstLink.current = true;
-            setActiveCategory(category.id);
+            activatePanel(category.id);
           }}
           onKeyDown={(event) => {
             if (event.key !== "ArrowDown" || !category || !isDesktop()) return;
             event.preventDefault();
-            focusFirstLink.current = true;
-            setActiveCategory(category.id);
+            activatePanel(category.id);
           }}
         >{interfaceLabel(locale, label)}</a>;
       })}
@@ -236,7 +249,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
             <div className="npd-mega-column" key={column.title}>
               <p>{column.title}</p>
               {column.links.map((link, index) => (
-                <a key={link.href} className={index === 0 ? "npd-mega-feature" : undefined}
+                <a key={`${link.href}-${index}`} className={index === 0 ? "npd-mega-feature" : undefined}
                   href={link.href} onClick={() => setActiveCategory(null)}>{link.label}</a>
               ))}
             </div>
