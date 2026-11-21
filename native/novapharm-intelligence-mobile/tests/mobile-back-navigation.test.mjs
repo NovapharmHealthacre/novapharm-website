@@ -18,7 +18,7 @@ test("all ten More research previews return to More, not an accidental app exit"
 test("More menu routes stay in sync with the Back policy as new previews are added", () => {
   const menu = app.split('{screen === "more" && (')[1]?.split('] as const).map')[0];
   assert.ok(menu, "Could not find the More preview menu");
-  const entries = [...menu.matchAll(/\\{ screen: "([^"]+)", label: "[^"]+"/g)]
+  const entries = [...menu.matchAll(/\{ screen: "([^"]+)", label: "[^"]+"/g)]
     .map((match) => match[1]);
   assert.equal(entries.length, new Set(entries).size, "Duplicate preview route");
   assert.deepEqual([...entries].sort(), [...moreDetailScreens].sort());
