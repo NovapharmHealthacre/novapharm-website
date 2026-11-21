@@ -703,6 +703,58 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByText("A source label record is not proof of marketing approval.", { exact: true }).waitFor();
     await inspectLayout(page, engine + " medicines-intelligence us-regulatory-labels");
     await page.unroute("**/gateway/v1/intelligence/regulatory/us/fda-labels**");
+    // The extended FDA explorer must function within the same board-only portal
+    // without direct browser calls, patient-level FAERS records, or approval inferences.
+    await page.route("**/gateway/v1/intelligence/regulatory/us/fda-evidence**", async (route) => {
+      const kind = new URL(route.request().url()).searchParams.get("kind");
+      if (kind === "recalls") {
+        await route.fulfill({
+          status: 503,
+          contentType: "application/json",
+          body: JSON.stringify({ error: "FDA extended evidence research has not been activated." }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          sourceId: "us.fda.openfda." + kind,
+          publisher: "US Food and Drug Administration",
+          jurisdiction: "US",
+          query: "apixaban",
+          retrievedAt: "2026-11-21T12:00:00.000Z",
+          dataState: "public_source_observations",
+          matchedCountReported: 9,
+          records: kind === "adverse-events" ? [] : [{
+            productNdc: "12345-678",
+            genericName: "APIXABAN",
+            labelerName: "Example labeler",
+            packageNdcs: ["12345-678-90"]
+          }],
+          limitations: [
+            "Research-only public source observation. No commercial, clinical or production data admission.",
+            "NDC listing is not FDA approval; FAERS reports do not establish causality."
+          ],
+          sourceDocumentation: "https://open.fda.gov/apis/drug/ndc/"
+        })
+      });
+    });
+    await page.getByLabel("FDA dataset").selectOption("ndc");
+    await page.getByLabel("Medicine name for additional FDA datasets").fill("apixaban");
+    await page.getByRole("button", { name: "Search FDA evidence" }).click();
+    await page.getByText("12345-678", { exact: true }).waitFor();
+    await page.getByText("Example labeler", { exact: true }).waitFor();
+    await page.getByLabel("FDA dataset").selectOption("adverse-events");
+    await page.getByRole("button", { name: "Search FDA evidence" }).click();
+    await page.getByText(/Source matching records: 9\. Displayed: 0\./).waitFor();
+    await page.getByText(/FAERS totals represent reports, not event rates or causation/).waitFor();
+    await page.getByLabel("FDA dataset").selectOption("recalls");
+    await page.getByRole("button", { name: "Search FDA evidence" }).click();
+    await page.getByText("FDA extended evidence research has not been activated.", { exact: true }).waitFor();
+    await inspectLayout(page, engine + " medicines-intelligence us-fda-extended-evidence");
+    await page.unroute("**/gateway/v1/intelligence/regulatory/us/fda-evidence**");
+
 
     const rejectedSubview = await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/unapproved-view/`, { waitUntil: "domcontentloaded" });
     assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
