@@ -10,9 +10,9 @@ import {
 const bytes = text => Buffer.from(text, "utf8");
 
 test("only allow image paths under approved public brand and media trees", () => {
-  for (const path of ["assets/brand/favicon.svg",
-    "assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
-    "assets/media/home/earth-reference-1400.jpg"])
+  for (const path of ["assets/brand/synthetic-mark.svg",
+    "assets/media/products/nutraxin/synthetic-tablets.png",
+    "assets/media/home/synthetic-scene.jpg"])
     assert.equal(safePublishedImagePath(path), path);
   for (const path of ["../secret.txt", "assets/private/customer.png",
     "assets/media/../../../secrets.png", "assets/media/logo.svg?token=x",
@@ -24,8 +24,8 @@ test("only allow image paths under approved public brand and media trees", () =>
 test("manifest recursively discovers all public image formats, excludes symlinks and nonimages, and fails if the baseline shrinks", () => {
   const tree = mkdtempSync(join(tmpdir(), "novapharm-images-"));
   try {
-    const paths = ["assets/brand/favicon.svg",
-      "assets/media/products/nutraxin/artoflex-90-tablets.png",
+    const paths = ["assets/brand/synthetic-mark.svg",
+      "assets/media/products/nutraxin/synthetic-bottle.png",
       "assets/media/about/photograph.avif",
       "assets/media/about/icon.webp",
       "assets/media/about/photo.JPG",
@@ -46,7 +46,7 @@ test("manifest recursively discovers all public image formats, excludes symlinks
 });
 
 test("exact SHA-256 byte equality with HTTP 200 and image response is mandatory", () => {
-  const args = { path: "assets/brand/favicon.svg", sourceBytes: bytes("<svg>approved</svg>"),
+  const args = { path: "assets/brand/synthetic-mark.svg", sourceBytes: bytes("<svg>approved</svg>"),
     fetchedBytes: bytes("<svg>approved</svg>"), status: 200, mime: "image/svg+xml" };
   const good = comparePublishedImage(args);
   assert.equal(good.exactByteMatch, true);
