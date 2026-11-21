@@ -6,10 +6,12 @@ on:
       - scripts/check-release-branch-protection.mjs
       - scripts/test-release-branch-protection.mjs
       - scripts/test-release-publisher-guard-wiring.mjs
+      - scripts/audit-public-publisher-entrypoints.mjs
+      - scripts/test-public-publisher-entrypoints.mjs
       - .github/workflows/pages-live-publish.yml
       - .github/workflows/pages-public-release-recovery.yml
       - .github/workflows/publish-aws-contact-production.yml
-      - .github/workflows/release-branch-protection.yml
+      - .github/workflows/**
   workflow_dispatch:
   schedule:
     # Only after source PR is merged: weekly fail-closed governance readback.
@@ -35,7 +37,9 @@ jobs:
         with:
           node-version: "24"
       - name: Test falsified, missing and unprotected branches plus workflow gate wiring
-        run: node --test scripts/test-release-branch-protection.mjs scripts/test-release-publisher-guard-wiring.mjs
+        run: |
+          node --test scripts/test-release-branch-protection.mjs scripts/test-release-publisher-guard-wiring.mjs scripts/test-public-publisher-entrypoints.mjs
+          node scripts/audit-public-publisher-entrypoints.mjs
 
   read-only-real-branch-gate:
     name: Fail visibly unless main and gh-pages are actually protected
