@@ -12,6 +12,13 @@
 - `docs/design/apple-hig-runtime-source-scope-20261120.json`: 32 corporate page definitions, 19 Nutraxin products, 54 portal modules (48 visible / 6 dependency-hidden), 22 Intelligence workspaces (5 source-labeled read-only / 17 gated), 27 Next source page files including catch-all renderers. These are **source counts**, not 132 independently operational URLs.
 - Source imports share the HIG color, layout, material, motion and RTL styles in the Next.js corporate and portal applications; design-system and accessibility packages and scoped GitHub CI exist. Test evidence must be matched to the exact deployed origin and revision, not inferred from imports.
 
+## Subsequent production reconciliation — 21 November 2026
+
+- Independent anonymous retrieval now finds a live B2B form on `https://novapharmhealthcare.com/contact/`, whereas the earlier 20 November capture showed the email-draft fallback. The earlier observation remains dated history, **not the current release state**.
+- GitHub reports [#961](https://github.com/NovapharmHealthacre/novapharm-website/pull/961) merged into `gh-pages` on 20 Nov at 22:46:50 UTC, with **no recorded GitHub review submissions**, while its PR body still carries a DO NOT MERGE release-hold warning. This does not establish whether the owner separately approved the merge.
+- Read-only AWS `GetApi`, `GetRoutes` and `GetStages` confirm the published Contact HTTP API `h4dc1e4u57` has execute endpoint enabled, `$default` auto-deployed stage and unauthenticated `POST /contact` routing; CORS permits the two designated public domains. No actual enquiry was submitted and no durable persistence/notifications/abuse protection was tested in this audit.
+- Public homepage/Products navigation differs from Contact markup. Investigate desired template-family parity before editing the restored live site. Track independent release acceptance in [#955](https://github.com/NovapharmHealthacre/novapharm-website/issues/955); preserve owner `productionSignoff: not_granted` and [#984](https://github.com/NovapharmHealthacre/novapharm-website/issues/984) branch-protection blocker.
+
 ## Directly observed public pages
 
 | Surface | Observation | Acceptance boundary |
@@ -20,7 +27,7 @@
 | `/products/` | Public overview links Nutraxin, ESCO, strategic portfolio and a unified 392-product search. | Catalogue link presence is not checkout/order proof. |
 | `/products/nutraxin/` | Public collection presents 19 Nutraxin references and shopping entry. | Product rights, stock, purchase/payment, indexed coverage and end-to-end receipt unverified. |
 | `/products/esco/` | Public catalogue presents 373 references across 12 ranges. | Per-model eligibility, exact prices, bag, confirmation, delivery and receipt unverified. |
-| `/contact/` | **Live page explicitly says no enquiry is transmitted; primary action opens email draft.** | Real durable backend Contact submission not live-accepted. PR #961 is an unmerged draft and explicitly release-held. Do not merge or substitute without negative/positive E2E browser testing and owner signoff. |
+| `/contact/` | **Updated 21 Nov:** public HTML now presents a secure B2B enquiry form, with client JS requiring HTTP 201, `persisted: true` and receipt UUID before success. PR #961 was merged into `gh-pages`. | AWS API route/stage existence is verified read-only, but no actual safe synthetic POST, durable inbox read-back, notification failure, full assistive-technology or independent release approval is evidenced. The original mail-draft observation was historical and is superseded. |
 | `/technology/` | Live public research/editorial information, medicine search entry and invitations to protected Intelligence. | Demo visuals and official-source links are not validated protected analytics. |
 | `https://portal.novapharmhealthcare.com/`, `https://intelligence.novapharmhealthcare.com/` | The independent public web retrieval used in this checkpoint did not resolve these origins. | **Inconclusive availability**, not evidence of outage or successful authentication. Require trusted browser, MFA/role test accounts and deployment receipt. |
 
@@ -28,7 +35,7 @@
 
 | Service | Verified observation | Risk / next evidence |
 | --- | --- | --- |
-| GitHub | Both `main` and `gh-pages` report `protected: false` in branch metadata; existing P0 issue #984 records missing effective branch rules. At inspection, 16 PRs were open, including draft Contact #961. | P0 configure tested branch rules, exact-head status requirements, reviewed publishing actor and no-force-push; verify no unintended publisher breakage. |
+| GitHub | Both `main` and `gh-pages` report `protected: false` in branch metadata; existing P0 issue #984 records missing effective branch rules. At the original source inspection, 16 PRs were open. Subsequent GitHub read-back confirms Contact PR #961 merged, with zero recorded review submissions; #991 remains draft. Treat these as distinct dated observations. | P0 configure tested branch rules, exact-head status requirements, reviewed publishing actor and no-force-push; verify no unintended publisher breakage. |
 | AWS (eu-north-1 and relevant global read APIs) | 20 Lambda functions, 42 CloudFormation stacks, two ECS clusters, 10 HTTP APIs, five Cognito user pools, nine S3 buckets, two Glue databases and two Athena workgroups. No CloudFront distributions or Route53 hosted zones returned under the connected account. | Resource presence does not establish real sessions, permitted regulated features, content validity, customer orders, or deployment of Pages. Do not infer any resources outside accessible scope are absent. |
 | AWS ECS | Production-named Intelligence ECS cluster contains zero services. Staging portal ECS service is ACTIVE but desired/running/pending = 0/0/0. No load balancers returned under the connected eu-north-1 account. | No working ECS protected web runtime evidenced. Separate hosting arrangements have not been ruled out. Do not scale services or incur spend without approval. |
 | MongoDB Atlas | Two AWS eu-north-1 clusters, production-labelled `npi-bootstrap` and `novapharm-staging`, are IDLE, not paused, and Free-tier. | Cluster health is not query correctness, least privilege, private networking, backups, workload readiness or integration proof. No data rows or secrets inspected. |
@@ -61,7 +68,7 @@ Official reference examples:
 | --- | --- | --- |
 | P0 | Protect `main` and `gh-pages`, verify policy enforcement and protected publisher still works. | #984 / #947 |
 | P0 | Preserve recovered corporate home / products / Nutraxin / ESCO; compare exact deployed DOM/assets/source SHAs to approved release manifest and perform end-to-end browser smoke. | #955 |
-| P0 | Restore Contact server delivery **only** through independently accepted, fail-closed, tested production route; keep draft held until signoff. | #944 / #961 |
+| P0 | Independently validate the **already published** Contact form and backend (synthetic durable receipt, errors, privacy, anti-abuse, keyboard/AT, approved rollback); PR #961 merged despite an explicit release-hold description, so no signoff can be inferred. | #955 / #961 |
 | P0 | Verify actual protected Portal/Intelligence/Distribution deployment and role/MFA/tenant journeys, not static route/module counts; maintain zero-new-spend and rights restrictions. | #955 / #689 / #809 |
 | P1 | Obtain independently reviewed HIG applicable/not-applicable evidence, per-topic acceptance, real multi-device and accessible journeys, and documented rollback/test receipts. | #890 / #911 / #713 |
 | P1 | Verify current public Search Console ownership, indexing and Merchant results via an authorized accessible data source; GSC Wizard subscription currently blocks connected measurements. | #929 |
