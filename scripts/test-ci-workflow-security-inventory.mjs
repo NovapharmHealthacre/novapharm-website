@@ -73,7 +73,13 @@ test("commerce no-change acceptance is read-only PR-scoped, never a publishing b
   const publisher = workflow.split("\n  stage-commerce:\n")[1] ?? "";
   assert.match(pr, /NOVAPHARM_CI_ALLOW_NOOP:\s*"true"/);
   assert.doesNotMatch(publisher, /NOVAPHARM_CI_ALLOW_NOOP/);
+  assert.match(publisher, /NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH:\s*"true"/,
+    "Only exact-byte-identical main release candidates may return success without staging");
+  assert.match(publisher, /COMMERCE_ALREADY_PUBLISHED_IDENTICAL/);
+  assert.match(publisher, /git -C published status --porcelain/);
   const source = readFileSync("scripts/stage-safe-commerce-restoration.py", "utf8");
+  assert.match(source, /NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH/);
+  assert.match(source, /GITHUB_REF.*refs\/heads\/main/);
   assert.match(source, /os\.environ\.get\("NOVAPHARM_CI_ALLOW_NOOP"\) == "true"/);
   assert.match(source, /os\.environ\.get\("GITHUB_EVENT_NAME"\) == "pull_request"/);
   assert.match(source, /An existing public website file was overwritten/);
