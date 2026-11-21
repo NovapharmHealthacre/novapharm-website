@@ -146,3 +146,79 @@ test("every accepted HIG receipt has a real independent APPROVED GitHub review o
       c.topic + "/" + c.origin + ": PR head changed since independent approval; re-review required");
   }
 });
+
+
+const syntheticReviewUrl =
+  "https://github.com/NovapharmHealthacre/novapharm-website/pull/883#pullrequestreview-123456";
+const syntheticSha = "a".repeat(40);
+const observedSha = "b".repeat(40);
+const syntheticTopic = () => ({
+  title: "Synthetic HIG receipt — not a real acceptance",
+  implementation: "verified",
+  platformApplicability: {
+    web: {state:"applicable"}, ios:{state:"not_applicable"}, android:{state:"not_applicable"}
+  },
+  webEvidence: [{
+    platform:"web", verificationLevel:"full", observedLiveSourceSha:observedSha,
+    independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha
+  }],
+  iosEvidence:[], androidEvidence:[],
+  releaseEvidence: [{
+    platform:"web", reviewDecision:"approved", observedLiveSourceSha:observedSha,
+    independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha
+  }]
+});
+const collectFixture = topic => acceptedClaims({topics:[topic]});
+
+test("source-only synthetic receipts create review LOOKUP claims, not evidence of real GitHub approval", () => {
+  const claims=collectFixture(syntheticTopic());
+  assert.equal(claims.length,2);
+  assert.deepEqual(claims.map(x=>x.origin),["web/live","web/release"]);
+  assert.ok(claims.every(x=>x.reviewedSourceSha===syntheticSha));
+});
+test("a whole-topic N/A cannot waive applicable web, iOS or Android implementations", () => {
+  const t=syntheticTopic();
+  t.implementation="not_applicable";
+  t.notApplicableApproval={independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha};
+  assert.throws(()=>collectFixture(t),/whole-topic not_applicable cannot exclude/);
+  for(const x of Object.values(t.platformApplicability)) x.state="not_applicable";
+  assert.equal(collectFixture(t).length,1);
+});
+test("verified with zero applicable platforms is NOT an accepted implemented topic", () => {
+  const t=syntheticTopic();
+  for(const x of Object.values(t.platformApplicability)) x.state="not_applicable";
+  assert.throws(()=>collectFixture(t),/verified implementation requires at least one applicable/);
+});
+test("verified evidence must identify an observed real 40-hex deployed commit", () => {
+  const t=syntheticTopic();
+  delete t.webEvidence[0].observedLiveSourceSha;
+  assert.throws(()=>collectFixture(t),/observed deployed source commit/);
+});
+test("release evidence must match the EXACT observed deployed commit and platform", () => {
+  const t=syntheticTopic();
+  t.releaseEvidence[0].observedLiveSourceSha="c".repeat(40);
+  assert.throws(()=>collectFixture(t),/matching approved production release/);
+  t.releaseEvidence[0].observedLiveSourceSha=observedSha;
+  t.releaseEvidence[0].platform="ios";
+  assert.throws(()=>collectFixture(t),/matching approved production release/);
+});
+test("duplicate current full receipts or release approvals cannot inflate one platform acceptance", () => {
+  const t=syntheticTopic();
+  t.webEvidence.push({...t.webEvidence[0]});
+  assert.throws(()=>collectFixture(t),/exactly one current full production evidence receipt/);
+  t.webEvidence.pop();
+  t.releaseEvidence.push({...t.releaseEvidence[0]});
+  assert.throws(()=>collectFixture(t),/exactly one matching approved production release/);
+});
+test("unknown states, unassessed applicable platforms and malformed review URLs fail closed", () => {
+  const t=syntheticTopic();
+  t.platformApplicability.ios.state="unassessed";
+  assert.throws(()=>collectFixture(t),/reviewed applicability decision/);
+  t.platformApplicability.ios.state="not_applicable";
+  t.implementation="released";
+  assert.throws(()=>collectFixture(t),/unexpected implementation state/);
+  t.implementation="verified";
+  t.webEvidence[0].independentReviewUrl=
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890";
+  assert.throws(()=>collectFixture(t),/concrete GitHub pullrequestreview/);
+});
