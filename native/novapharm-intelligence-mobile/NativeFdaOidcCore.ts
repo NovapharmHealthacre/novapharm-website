@@ -102,7 +102,7 @@ export async function authenticateNativeFdaWithPkce(
   if(![verifierBytes,stateBytes,nonceBytes].every(v=>v instanceof Uint8Array && v.length===32))
     throw Error("OS crypto entropy is unavailable.");
   const verifier=base64url(verifierBytes),state=base64url(stateBytes),nonce=base64url(nonceBytes);
-  const asciiVerifier=Uint8Array.from(verifier,ch=>ch.charCodeAt(0));
+  const asciiVerifier=new Uint8Array(verifier.split("").map(ch=>ch.charCodeAt(0)));
   const hash=await platform.sha256(asciiVerifier);
   if(!(hash instanceof Uint8Array) || hash.length!==32)throw Error("OS SHA-256 unavailable.");
   const authorization=new URL("/oauth2/authorize",config.cognitoDomain);
@@ -135,14 +135,17 @@ export async function authenticateNativeFdaWithPkce(
     redirect_uri:config.redirectUri,code,code_verifier:verifier
   });
   // Do not include bearer tokens, authorization codes, state or verifier in logs.
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),10000);
   let response:Response;
   try {
     response=await platform.fetchImpl(tokenUrl.toString(),{
       method:"POST",redirect:"error",cache:"no-store",credentials:"omit",
       headers:{"content-type":"application/x-www-form-urlencoded","accept":"application/json"},
-      body:params.toString(),signal:AbortSignal.timeout(10000)
+      body:params.toString(),signal:controller.signal
     });
   } catch {throw Error("Cognito token exchange unavailable.");}
+  finally { clearTimeout(timeout); }
   if(response.status!==200 || response.redirected ||
     (response.url && response.url!==tokenUrl.toString()) ||
     !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
@@ -155,8 +158,8 @@ export async function authenticateNativeFdaWithPkce(
   const json=payload as {access_token?:unknown;token_type?:unknown;expires_in?:unknown};
   if(typeof json.access_token!=="string" || !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(json.access_token) ||
      json.token_type!=="Bearer" ||
-     !Number.isInteger(json.expires_in) ||
-     (json.expires_in as number)<60 || (json.expires_in as number)>3600)
+     typeof json.expires_in!=="number" || !Number.isInteger(json.expires_in) ||
+     json.expires_in<60 || json.expires_in>3600)
     throw Error("Invalid Cognito access-token contract.");
   // Store ONLY a short-lived access token via Keystore adapter; no refresh tokens.
   await platform.secureStore.save({
