@@ -45,7 +45,9 @@ jobs:
           ref: gh-pages
           path: published
           persist-credentials: false
-      - name: Reject private/order data and prevent all existing public file replacements
+      - name: Reject private/order data and verify idempotent public Commerce
+        env:
+          NOVAPHARM_CI_ALLOW_NOOP: "true"
         run: python3 scripts/stage-safe-commerce-restoration.py
       - name: Archive sanitized staging audit
         if: always()
