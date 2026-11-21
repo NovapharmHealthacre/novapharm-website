@@ -59,7 +59,37 @@ export const sourceRegistry = Object.freeze([
   nhsbsa("nhsbsa.pharmacy-open-close", "Pharmacy Openings and Closures", "pharmacy-openings-and-closures", "National pharmacy estate movement aggregates.", ["This aggregate source does not identify individual premises changes."]),
   nhsbsa("nhsbsa.consolidated-pharmacy", "Consolidated Pharmaceutical List", "consolidated-pharmaceutical-list", "England pharmacy premise, ownership and opening-hours cross-check."),
   Object.freeze({
-    sourceId: "nhsbsa.bnf-snomed-map", publisher: "NHS Business Services Authority", datasetName: "BNF / SNOMED mapping", datasetSlugOrIdentifier: "bnf-snomed-mapping", jurisdiction: "England", coverage: "All published VMP, AMP, VMPP and AMPP mappings for the release", purpose: "Temporal BNF-to-SNOMED medicine identity mapping.", accessMethod: "file_download", apiOrDownload: "https://www.nhsbsa.nhs.uk/prescription-data/understanding-our-data/bnf-snomed-mapping", baseEndpointOrDiscoveryMethod: "Publisher release page; migration to CKAN announced for September 2026", licence: "Publisher terms and Open Government Licence where stated", publicationFrequency: "Monthly", typicalReportingLag: "Approximately two months", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "documented_adapter_pending", knownCaveats: Object.freeze(["Current delivery is a ZIP containing an Excel workbook.", "Historic mapping corrections and code changes must be retained."]), provenanceNotes: "NHSBSA announced a phased move to its Open Data Portal; discovery must change only after the new source is verified." }),
+    sourceId: "nhsbsa.bnf-snomed-map",
+    publisher: "NHS Business Services Authority",
+    datasetName: "BNF / SNOMED mapping",
+    datasetSlugOrIdentifier: "bnf-snomed-mapping",
+    jurisdiction: "England",
+    coverage: "Published VMP and AMP mappings; source-release semantics apply",
+    purpose: "Dated BNF-to-SNOMED medicine identity crosswalk, never an activity or demand source.",
+    accessMethod: "ckan_action_api",
+    apiOrDownload: nhsbsaApi,
+    baseEndpointOrDiscoveryMethod: "Official CKAN package_show for bnf-snomed-mapping; metadata-only until independent rights review",
+    licence: "NHSBSA OGL 3.0 attribution for its own rights; third-party SNOMED/dm+d/BNF reuse separately reviewed",
+    publicationFrequency: "Monthly",
+    typicalReportingLag: "Approximately two months",
+    latestDiscoveredPeriod: null,
+    latestResourceId: null,
+    resourceUrl: null,
+    resourceHashOrChecksum: null,
+    schemaVersion: null,
+    schemaFingerprint: null,
+    firstSeenAt: reviewDate,
+    lastCheckedAt: null,
+    lastSuccessfullyIngestedAt: null,
+    authorityRank: 1,
+    status: "documented_adapter_pending",
+    knownCaveats: Object.freeze([
+      "Official ODP CSV resources are discoverable but have not been admitted into the NovaPharm database.",
+      "Never issue a DataStore record query or bulk download through metadata-only discovery.",
+      "The BNF-SNOMED mapping does not itself establish prescriptions, authorisation, current stock or demand.",
+      "Third-party terminology rights, ambiguity, temporal corrections and one-to-many relationships require separate approval."
+    ]),
+    provenanceNotes: "Official publisher confirms ODP migration on 27 October 2026; dataset lists September 2026 mapping on 21 November 2026. No rows or licenses are admitted by the registry."
   Object.freeze({
     sourceId: "nhse.dmd", publisher: "NHS England and NHS Business Services Authority", datasetName: "NHS dictionary of medicines and devices (dm+d)", datasetSlugOrIdentifier: "SCCI0052", jurisdiction: "United Kingdom", coverage: "NHS medicine and device terminology; release scope applies", purpose: "Canonical VTM, VMP, AMP, VMPP and AMPP identity and history.", accessMethod: "fhir_api", apiOrDownload: "https://digital.nhs.uk/developer/api-catalogue/terminology-server-fhir", baseEndpointOrDiscoveryMethod: "NHS England Terminology Server or licensed TRUD release", licence: "Open Government Licence; TRUD account and licence acceptance required for raw release files", publicationFrequency: "Weekly", typicalReportingLag: "Publisher release schedule", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: null, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "credentials_required", knownCaveats: Object.freeze(["Terminology Server onboarding or TRUD access is required.", "dm+d and SNOMED UK Drug Extension timing can differ."]), provenanceNotes: "No production terminology credentials are present in the repository." }),
   Object.freeze({
@@ -93,6 +123,16 @@ export const sourceRegistry = Object.freeze([
   Object.freeze({
     sourceId: "psni.premises", publisher: "Pharmaceutical Society of Northern Ireland", datasetName: "Registered pharmacy premises", datasetSlugOrIdentifier: "psni-live-and-monthly-register", jurisdiction: "Northern Ireland", coverage: "Registered premises in Northern Ireland", purpose: "Regulator-level premises identity and status cross-check.", accessMethod: "file_download", apiOrDownload: "https://psni.org.uk/pharmacies-monthly-premises-register-upload/", baseEndpointOrDiscoveryMethod: "Monthly list plus live public register", licence: "PSNI website terms", publicationFrequency: "Monthly snapshot with live register cross-check", typicalReportingLag: "Publisher update cycle", latestDiscoveredPeriod: null, latestResourceId: null, resourceUrl: null, resourceHashOrChecksum: null, schemaVersion: null, schemaFingerprint: null, firstSeenAt: reviewDate, lastCheckedAt: reviewDate, lastSuccessfullyIngestedAt: null, authorityRank: 1, status: "documented_adapter_pending", knownCaveats: Object.freeze(["Monthly list is a snapshot and does not replace the live register."]), provenanceNotes: "Premises identifiers must not be inferred from name or postcode alone." }),
 ] satisfies readonly SourceRegistryEntry[]);
+
+/**
+ * Public CKAN dataset metadata discovery is not permission to request terminology rows.
+ * Explicit metadata-only sources stay unsampled until source-specific, independent
+ * rights and schema approval changes this policy in a reviewed release.
+ */
+export function shouldProbeCkanDatastore(entry: Pick<SourceRegistryEntry, "sourceId" | "accessMethod">): boolean {
+  if (entry.accessMethod !== "ckan_action_api") return false;
+  return entry.sourceId !== "nhsbsa.bnf-snomed-map";
+}
 
 export function registryEntry(sourceId: string): SourceRegistryEntry {
   const entry = sourceRegistry.find((candidate) => candidate.sourceId === sourceId);

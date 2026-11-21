@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CkanActionError, CkanClient, applyCkanDiscovery, discoverResources, extractCkanSchemaColumns, parseReportingPeriod, registryEntry, revisedPeriods, schemaContracts, sourceRegistry, validateSchema } from "../src/index.ts";
+import { CkanActionError, CkanClient, applyCkanDiscovery, discoverResources, extractCkanSchemaColumns, parseReportingPeriod, registryEntry, revisedPeriods, schemaContracts, sourceRegistry, shouldProbeCkanDatastore, validateSchema } from "../src/index.ts";
 
 test("governed source registry has unique complete identities", () => {
   assert.ok(sourceRegistry.length >= 32);
@@ -22,6 +22,35 @@ test("governed source registry has unique complete identities", () => {
   assert.equal(registryEntry("ons.small-area-population").status, "documented_adapter_pending");
   assert.equal(registryEntry("mhclg.imd2025").schemaVersion, "IoD25-v2");
   assert.equal(registryEntry("ons.rural-urban-2021").schemaVersion, "RUC21");
+});
+
+
+test("official NHSBSA BNF/SNOMED mapping is discoverable without medicine-row sampling or a production licence", () => {
+  const mapping = registryEntry("nhsbsa.bnf-snomed-map");
+  assert.equal(mapping.accessMethod, "ckan_action_api");
+  assert.equal(mapping.datasetSlugOrIdentifier, "bnf-snomed-mapping");
+  assert.equal(mapping.apiOrDownload, "https://opendata.nhsbsa.net/api/3/action");
+  assert.equal(mapping.status, "documented_adapter_pending");
+  assert.equal(mapping.lastSuccessfullyIngestedAt, null);
+  assert.equal(shouldProbeCkanDatastore(mapping), false);
+  assert.equal(shouldProbeCkanDatastore(registryEntry("nhsbsa.epd")), true);
+  assert.equal(shouldProbeCkanDatastore(registryEntry("nhse.dmd")), false);
+
+  const publisher = {
+    id: "published-mapping-dataset",
+    name: "bnf-snomed-mapping",
+    title: "BNF SNOMED Mapping",
+    license_id: "OGL-UK-3.0",
+    resources: [
+      { id: "jul-resource", name: "BNF_SNOMED_MAPPING_DATA_202607", url: "https://opendata.nhsbsa.net/mapping-202607.csv", format: "CSV" },
+      { id: "sep-resource", name: "BNF_SNOMED_MAPPING_DATA_202609", url: "https://opendata.nhsbsa.net/mapping-202609.csv", format: "CSV", datastore_active: true }
+    ]
+  };
+  const found = applyCkanDiscovery(mapping, publisher, "2026-11-21T00:00:00.000Z");
+  assert.equal(found.latestDiscoveredPeriod, "2026-09");
+  assert.equal(found.latestResourceId, "sep-resource");
+  assert.equal(found.lastSuccessfullyIngestedAt, null);
+  assert.equal(found.status, "discovery_implemented");
 });
 
 test("reporting-period discovery handles monthly, quarterly and named resources", () => {
