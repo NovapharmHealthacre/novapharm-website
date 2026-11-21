@@ -6,6 +6,7 @@
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,6 +16,12 @@ import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
 export const origin = "https://novapharmhealthcare.com";
 const output = "artifacts/site-restoration/gh-pages-live-byte-parity.json";
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
+const exactGitSha = tree => {
+  const sha = execFileSync("git", ["-C", tree, "rev-parse", "HEAD"],
+    { encoding: "utf8", timeout: 5000 }).trim();
+  if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error("Cannot establish actual checked-out Git commit");
+  return sha;
+};
 
 export function sitemapRoutes(xml) {
   assert.equal(typeof xml, "string");
@@ -63,6 +70,8 @@ export async function audit({ sourceTree, publishedTree, fetchPage = fetch, nonc
   const separatelyNoindex = "/quantum-research/";
   const routes = [...new Set([...sitemapPaths, ...corporate, separatelyNoindex])].sort();
   const missingFromSitemap = corporate.filter(route => !sitemapPaths.includes(route));
+  const checkedOutPublisherCommitSha = exactGitSha(publishedTree);
+  const checkedOutAuditCommitSha = exactGitSha(sourceTree);
   const rows = new Array(routes.length);
   let pos = 0;
   async function visit() {
@@ -94,15 +103,19 @@ export async function audit({ sourceTree, publishedTree, fetchPage = fetch, nonc
     }
   }
   await Promise.all(Array.from({ length: 5 }, visit));
+  const ordinaryPublicRows = rows.filter(row => row.route !== separatelyNoindex);
   return {
     schema: "novapharm.read-only-published-html-byte-parity.v1",
     inspectedAt: new Date().toISOString(), origin,
     level: "public-static-html-source-to-live-check-only; not Apple HIG, accessibility, identity or production signoff",
-    sourceTree, publishedTree, sitemapRoutes: sitemapPaths.length,
+    sourceTree, publishedTree, checkedOutPublisherCommitSha, checkedOutAuditCommitSha,
+    sitemapRoutes: sitemapPaths.length, ordinaryPublicRoutes: ordinaryPublicRows.length,
     inspectedRoutes: routes.length, missingFromSitemap,
     exactByteMatches: rows.filter(row => row.exactByteMatch && !row.errors.length).length,
     bytesMismatched: rows.filter(row => row.errors.some(error => error.includes("differ"))).length,
     sourceRevisionMetadataMissing: rows.filter(row => row.verifiedRevisionMetadata === false).length,
+    sourceRevisionMetadataMissingOrdinary: ordinaryPublicRows.filter(row => row.verifiedRevisionMetadata === false).length,
+    researchRevisionMetadataMissing: rows.find(row => row.route === separatelyNoindex)?.verifiedRevisionMetadata === false,
     failures: rows.filter(row => row.errors.length).length,
     routes: rows
   };
@@ -120,6 +133,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
     sitemapRoutes: report.sitemapRoutes, checked: report.inspectedRoutes,
     exactMatches: report.exactByteMatches, failures: report.failures,
     shaMetadataMissing: report.sourceRevisionMetadataMissing,
+    shaMetadataMissingOrdinary: report.sourceRevisionMetadataMissingOrdinary,
+    publisherGitSha: report.checkedOutPublisherCommitSha,
     missingFromSitemap: report.missingFromSitemap
   }));
   if (report.failures) {
