@@ -118,6 +118,7 @@ if (form instanceof HTMLFormElement) {
       const controller = new AbortController();
       const deadline = setTimeout(() => controller.abort(), 15000);
       if (submit) submit.disabled = true;
+      form.setAttribute("aria-busy", "true");
       if (status) status.textContent = "Submitting your business enquiry securely…";
       try {
         const response = await fetch(origin + "/contact", {
@@ -136,7 +137,7 @@ if (form instanceof HTMLFormElement) {
       } catch {
         if (status) {
           status.replaceChildren();
-          status.append(document.createTextNode("We could not confirm that your enquiry was received. Please try again or email "));
+          status.append(document.createTextNode("We could not confirm whether your enquiry was recorded. To avoid a duplicate, please do not resubmit immediately. To check its status, email "));
           const link = document.createElement("a");
           link.href = "mailto:vishal@novapharmhealthcare.com";
           link.textContent = "vishal@novapharmhealthcare.com";
@@ -144,7 +145,9 @@ if (form instanceof HTMLFormElement) {
         }
       } finally {
         clearTimeout(deadline);
+        form.removeAttribute("aria-busy");
         if (submit) submit.disabled = false;
+        if (status instanceof HTMLElement) status.focus({ preventScroll: true });
       }
     });
   }
