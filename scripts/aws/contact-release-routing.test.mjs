@@ -1225,6 +1225,8 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
     "src/core/regulatory/fda-data-admission.mjs",
     "scripts/test-fda-governance-admission.mjs",
     "native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts",
+    "native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts",
+    "scripts/test-fda-native-oidc-core.mjs",
     "scripts/test-fda-native-gateway.mjs",
     "native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift",
     "native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift",
