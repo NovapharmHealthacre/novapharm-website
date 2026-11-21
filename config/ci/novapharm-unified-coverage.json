@@ -47,8 +47,13 @@
     "corporate-website-and-seo": {
       "sources": [
         "apps/corporate",
-        "sitemap.xml",
+        "apps/founder",
+        "apps/status",
+        "apps/technology",
+        "packages/content",
+        "packages/seo",
         "robots.txt",
+        "sitemap.xml",
         "src/seo/authority-config.mjs"
       ],
       "tests": [
@@ -58,9 +63,15 @@
     },
     "customer-employee-portal-and-security": {
       "sources": [
-        "apps/portal",
         "apps/api",
+        "apps/portal",
+        "packages/accessibility",
         "packages/auth",
+        "packages/claims",
+        "packages/config",
+        "packages/forms",
+        "packages/platform-mode",
+        "packages/portal-contracts",
         "packages/security"
       ],
       "tests": [
@@ -83,9 +94,10 @@
     },
     "distribution-wms-and-supply-chain": {
       "sources": [
+        "apps/portal/components/wms-prototype-workspace-map.tsx",
+        "integrations/polar-speed",
         "src/core/wms-control-tower.mjs",
-        "src/core/wms-five-layer-readiness.mjs",
-        "apps/portal/components/wms-prototype-workspace-map.tsx"
+        "src/core/wms-five-layer-readiness.mjs"
       ],
       "tests": [
         "scripts/test-wms-five-layer-control-plane.mjs",
@@ -97,8 +109,9 @@
     },
     "native-ios-swiftui": {
       "sources": [
+        "native/novapharm-intelligence-apple",
         "native/novapharm-intelligence-ios",
-        "native/novapharm-intelligence-apple"
+        "native/novapharm-intelligence-storekit"
       ],
       "tests": [
         "scripts/test-novapharm-native-ios-source-parity.mjs"
@@ -140,7 +153,7 @@
         "scripts/test-nova-openai-zdr.mjs",
         "scripts/test-internal-ai-gateway.mjs",
         "scripts/test-ai-policy.mjs",
-        "scripts/test-ai-privacy.mjs",
+        "scripts/test-ci-public-ai-source-privacy.mjs",
         "scripts/test-ai-prompt-injection.mjs",
         "scripts/test-ai-evaluation.mjs",
         "scripts/test-ai-citations.mjs"
@@ -173,8 +186,12 @@
     },
     "commerce-stripe-nutraxin-esco": {
       "sources": [
-        "apps/nutraxin-payments",
+        "apps/commerce-stock-api",
         "apps/esco-checkout",
+        "apps/nutraxin-customer-api",
+        "apps/nutraxin-payment-notifications",
+        "apps/nutraxin-payments",
+        "apps/nutraxin-products-checkout",
         "assets/data/esco-catalogue.json",
         "assets/data/nutraxin-retail-catalogue.json"
       ],
