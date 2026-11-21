@@ -7,6 +7,12 @@ struct NovaCountryCatalogTests {
         #expect(NovaCountryCatalog.all.count == 101)
         #expect(NovaCountryCatalog.all.filter { $0.coverage == .sourceCandidatesOnly }.count == 77)
         #expect(NovaCountryCatalog.all.filter { $0.coverage == .geographyResearchOnly }.count == 24)
+        #expect(NovaCountryCatalog.candidateSourceCountries == 77)
+        #expect(NovaCountryCatalog.geographyResearchCountries == 24)
+        #expect(NovaCountryCatalog.candidateSourceCountries +
+                NovaCountryCatalog.geographyResearchCountries == NovaCountryCatalog.all.count)
+        #expect(NovaCountryCatalog.coverageStatement ==
+                "101 national scopes. 77 have candidate source references; 24 need further publisher research.")
         #expect(Set(NovaCountryCatalog.all.map(\.iso2)).count == 101)
         #expect(NovaCountryCatalog.licensedSources == 0)
         #expect(NovaCountryCatalog.liveNationalCountries == 0)
