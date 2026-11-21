@@ -9,6 +9,7 @@ on:
       - docs/design/apple-hig-runtime-source-scope-20261120.json
       - packages/portal-contracts/src/module-catalog.json
       - apps/portal/data/intelligence-workspaces.ts
+      - apps/portal/components/wms-prototype-workspace-map.tsx
       - docs/design/apple-hig-six-surface-acceptance-plan-20261121.md
       - config/intelligence/owner-production-constraints.json
       - .github/workflows/apple-hig-six-surface-acceptance.yml
