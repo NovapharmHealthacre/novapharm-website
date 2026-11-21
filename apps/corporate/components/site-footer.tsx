@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { AppStoreAvailability } from "./app-store-availability";
 import { AppleFooterNavigation } from "./apple-footer-navigation";
 import { Brand } from "./brand";
