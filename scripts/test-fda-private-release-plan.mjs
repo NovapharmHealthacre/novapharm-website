@@ -41,7 +41,7 @@ test("native transport cannot provide direct public-source browser calls",()=>{
  assert.match(auth,/SHA256\.hash/);
  assert.match(auth,/openid profile novapharm\/fda\.read/);
  assert.match(auth,/kSecAttrAccessibleWhenUnlockedThisDeviceOnly/);
- for(const source of [android,ios,auth]) assert.doesNotMatch(source,/https:\/\/api\.fda\.gov\/drug/);
+ for(const source of [android,ios,auth]) assert.equal(source.includes("https://api.fda.gov/drug/"), false, "Native source must not contact public FDA hosts directly");
 });
 
 test("conditional CloudFormation route cannot activate without six independent signoffs",()=>{
