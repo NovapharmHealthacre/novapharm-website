@@ -11,7 +11,7 @@ let package = Package(
                           "NovaTheme.swift", "OfflineBookmark.swift", "NovaCountryDirectoryView.swift",
                           "USFdaSourcePreviewView.swift"],
                 sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift", "CountryCatalog.swift",
-                          "USFdaSourceCatalog.swift"]),
+                          "USFdaSourceCatalog.swift", "ProtectedFdaGateway.swift"]),
         .testTarget(name: "NovaPharmNativeCoreTests",
                     dependencies: ["NovaPharmNativeCore"], path: "CoreTests")
     ]
