@@ -20,7 +20,8 @@ function parseReviewUrl(value) {
   const match = reviewPattern.exec(value);
   return match ? { pullNumber: Number(match[1]), reviewId: Number(match[2]) } : null;
 }
-function acceptedClaims() {
+function acceptedClaims(candidate = register) {
+  assert.ok(Array.isArray(candidate?.topics), "HIG source must contain topic records");
   const claims = [];
   const claim = (topic, origin, record) => {
     assert.ok(record && typeof record === "object",
@@ -32,27 +33,54 @@ function acceptedClaims() {
       topic + "/" + origin + ": the exact reviewed PR head SHA is required");
     claims.push({ ...ref, reviewedSourceSha: record.reviewedSourceSha, topic, origin });
   };
-  for (const topic of register.topics) {
+  for (const topic of candidate.topics) {
+    assert.ok(typeof topic.title === "string" && topic.title.length > 0, "HIG topic title is missing");
+    assert.ok(["not_verified", "verified", "not_applicable"].includes(topic.implementation),
+      topic.title + ": unexpected implementation state cannot be silently ignored");
+    if (topic.implementation === "not_verified") continue;
+
+    // Whole-topic N/A and verified claims are two DIFFERENT dispositions.
+    // Neither may silently bypass missing platform decisions or a platform
+    // still requiring implementation. Source proposals alone are not approvals.
+    const platforms = ["web", "ios", "android"];
+    const states = Object.fromEntries(platforms.map(platform => {
+      const state = topic.platformApplicability?.[platform]?.state;
+      assert.ok(["applicable", "not_applicable"].includes(state),
+        topic.title + "/" + platform + ": an accepted topic requires a reviewed applicability decision");
+      return [platform, state];
+    }));
+    const applicable = platforms.filter(platform => states[platform] === "applicable");
+
     if (topic.implementation === "not_applicable") {
+      assert.equal(applicable.length, 0,
+        topic.title + ": whole-topic not_applicable cannot exclude any applicable platform");
       claim(topic.title, "approved-N/A", topic.notApplicableApproval);
-    } else if (topic.implementation === "verified") {
-      const relevant = ["web", "ios", "android"].filter(p =>
-        topic.platformApplicability[p]?.state === "applicable");
-      for (const platform of relevant) {
-        const full = (topic[platform + "Evidence"] || []).find(r =>
-          r?.platform === platform && r.verificationLevel === "full");
-        assert.ok(full, topic.title + "/" + platform + ": no full production evidence");
-        claim(topic.title, platform + "/live", full);
-        const release = (topic.releaseEvidence || []).find(r =>
-          r?.platform === platform && r.reviewDecision === "approved" &&
-          r.observedLiveSourceSha === full.observedLiveSourceSha);
-        assert.ok(release, topic.title + "/" + platform + ": no matching approved release");
-        claim(topic.title, platform + "/release", release);
-      }
+      continue;
+    }
+
+    assert.ok(applicable.length > 0,
+      topic.title + ": verified implementation requires at least one applicable platform");
+    for (const platform of applicable) {
+      const fullReceipts = (topic[platform + "Evidence"] || []).filter(r =>
+        r?.platform === platform && r.verificationLevel === "full");
+      assert.equal(fullReceipts.length, 1,
+        topic.title + "/" + platform + ": expected exactly one current full production evidence receipt");
+      const full = fullReceipts[0];
+      assert.match(full.observedLiveSourceSha ?? "", shaPattern,
+        topic.title + "/" + platform + ": full evidence must identify an actual observed deployed source commit");
+      claim(topic.title, platform + "/live", full);
+
+      const releases = (topic.releaseEvidence || []).filter(r =>
+        r?.platform === platform && r.reviewDecision === "approved" &&
+        r.observedLiveSourceSha === full.observedLiveSourceSha);
+      assert.equal(releases.length, 1,
+        topic.title + "/" + platform + ": expected exactly one matching approved production release");
+      claim(topic.title, platform + "/release", releases[0]);
     }
   }
   return claims;
 }
+
 async function githubGet(path, token) {
   const response = await fetch("https://api.github.com" + path, {
     headers: {
@@ -117,4 +145,80 @@ test("every accepted HIG receipt has a real independent APPROVED GitHub review o
     assert.equal(pull.head?.sha, c.reviewedSourceSha,
       c.topic + "/" + c.origin + ": PR head changed since independent approval; re-review required");
   }
+});
+
+
+const syntheticReviewUrl =
+  "https://github.com/NovapharmHealthacre/novapharm-website/pull/883#pullrequestreview-123456";
+const syntheticSha = "a".repeat(40);
+const observedSha = "b".repeat(40);
+const syntheticTopic = () => ({
+  title: "Synthetic HIG receipt — not a real acceptance",
+  implementation: "verified",
+  platformApplicability: {
+    web: {state:"applicable"}, ios:{state:"not_applicable"}, android:{state:"not_applicable"}
+  },
+  webEvidence: [{
+    platform:"web", verificationLevel:"full", observedLiveSourceSha:observedSha,
+    independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha
+  }],
+  iosEvidence:[], androidEvidence:[],
+  releaseEvidence: [{
+    platform:"web", reviewDecision:"approved", observedLiveSourceSha:observedSha,
+    independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha
+  }]
+});
+const collectFixture = topic => acceptedClaims({topics:[topic]});
+
+test("source-only synthetic receipts create review LOOKUP claims, not evidence of real GitHub approval", () => {
+  const claims=collectFixture(syntheticTopic());
+  assert.equal(claims.length,2);
+  assert.deepEqual(claims.map(x=>x.origin),["web/live","web/release"]);
+  assert.ok(claims.every(x=>x.reviewedSourceSha===syntheticSha));
+});
+test("a whole-topic N/A cannot waive applicable web, iOS or Android implementations", () => {
+  const t=syntheticTopic();
+  t.implementation="not_applicable";
+  t.notApplicableApproval={independentReviewUrl:syntheticReviewUrl, reviewedSourceSha:syntheticSha};
+  assert.throws(()=>collectFixture(t),/whole-topic not_applicable cannot exclude/);
+  for(const x of Object.values(t.platformApplicability)) x.state="not_applicable";
+  assert.equal(collectFixture(t).length,1);
+});
+test("verified with zero applicable platforms is NOT an accepted implemented topic", () => {
+  const t=syntheticTopic();
+  for(const x of Object.values(t.platformApplicability)) x.state="not_applicable";
+  assert.throws(()=>collectFixture(t),/verified implementation requires at least one applicable/);
+});
+test("verified evidence must identify an observed real 40-hex deployed commit", () => {
+  const t=syntheticTopic();
+  delete t.webEvidence[0].observedLiveSourceSha;
+  assert.throws(()=>collectFixture(t),/observed deployed source commit/);
+});
+test("release evidence must match the EXACT observed deployed commit and platform", () => {
+  const t=syntheticTopic();
+  t.releaseEvidence[0].observedLiveSourceSha="c".repeat(40);
+  assert.throws(()=>collectFixture(t),/matching approved production release/);
+  t.releaseEvidence[0].observedLiveSourceSha=observedSha;
+  t.releaseEvidence[0].platform="ios";
+  assert.throws(()=>collectFixture(t),/matching approved production release/);
+});
+test("duplicate current full receipts or release approvals cannot inflate one platform acceptance", () => {
+  const t=syntheticTopic();
+  t.webEvidence.push({...t.webEvidence[0]});
+  assert.throws(()=>collectFixture(t),/exactly one current full production evidence receipt/);
+  t.webEvidence.pop();
+  t.releaseEvidence.push({...t.releaseEvidence[0]});
+  assert.throws(()=>collectFixture(t),/exactly one matching approved production release/);
+});
+test("unknown states, unassessed applicable platforms and malformed review URLs fail closed", () => {
+  const t=syntheticTopic();
+  t.platformApplicability.ios.state="unassessed";
+  assert.throws(()=>collectFixture(t),/reviewed applicability decision/);
+  t.platformApplicability.ios.state="not_applicable";
+  t.implementation="released";
+  assert.throws(()=>collectFixture(t),/unexpected implementation state/);
+  t.implementation="verified";
+  t.webEvidence[0].independentReviewUrl=
+    "https://github.com/NovapharmHealthacre/novapharm-website/issues/890";
+  assert.throws(()=>collectFixture(t),/concrete GitHub pullrequestreview/);
 });
