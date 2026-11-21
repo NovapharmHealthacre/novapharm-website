@@ -27,13 +27,13 @@
 .ref-full{margin-top:18px}
 .ref-message{min-height:132px;justify-content:flex-start}
 .ref-message textarea{min-height:86px;resize:vertical}
-.ref-actions{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:22px}
+.ref-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px 24px;margin-top:22px}
 .ref-explain{flex:1 1 auto;min-width:0;color:#62646a;font-size:14px;line-height:1.55}
 .ref-explain p{margin:0 0 5px;line-height:1.55}
 .ref-explain a,.ref-safety a{color:#345778;text-decoration:underline;text-underline-offset:.12em}
 .ref-button{background:var(--ref-blue);color:white;border:0;border-radius:999px;padding:11px 18px;min-width:160px;min-height:48px;font-family:inherit;font-size:15px;font-weight:650;line-height:1.5;cursor:pointer;text-align:center}
 .ref-button:hover{background:#005cbd}
-.ref-button:focus-visible{outline:3px solid #005cbd;outline-offset:3px}
+.ref-button:focus-visible{outline:3px solid #005cbd;outline-offset:3px}.ref-actions [data-live-contact-status]{grid-column:1/-1;min-height:1.5em;color:#1d1d1f;font-size:14px;line-height:1.6}.ref-actions [data-live-contact-status]:focus-visible{outline:3px solid #005cbd;outline-offset:3px;border-radius:4px}
 .ref-safety{font-size:14px;line-height:1.6;color:#62646a;padding:0 0 30px}
 .ref-footer{background:#f5f5f7;padding:35px 0 38px}
 .ref-footer-inner{display:flex;justify-content:space-between;gap:36px;align-items:flex-start}
@@ -43,7 +43,7 @@
 .ref-footer nav{display:flex;gap:16px;flex-wrap:wrap;padding-top:10px}
 .ref-footer nav a{display:inline-flex;align-items:center;min-height:44px;color:#595c63;font-size:14px;text-decoration:none}
 .ref-footer nav a:hover{text-decoration:underline;color:#1d1d1f}
-@media(max-width:900px){.site-header{height:56px}.ref-hero{padding:69px 0 55px}.ref-shell{width:calc(100% - 36px)}.ref-hero .ref-lead{font-size:18px}.ref-content{padding-bottom:38px}.ref-grid{grid-template-columns:1fr;gap:12px}.ref-full{margin-top:12px}.ref-actions{align-items:stretch;flex-direction:column;gap:14px}.ref-button{min-width:100%;min-height:46px}.ref-footer-inner{flex-direction:column;gap:22px}.ref-footer nav{padding-top:0}}
+@media(max-width:900px){.site-header{height:56px}.ref-hero{padding:69px 0 55px}.ref-shell{width:calc(100% - 36px)}.ref-hero .ref-lead{font-size:18px}.ref-content{padding-bottom:38px}.ref-grid{grid-template-columns:1fr;gap:12px}.ref-full{margin-top:12px}.ref-actions{grid-template-columns:1fr;align-items:stretch;gap:14px}.ref-button{min-width:100%;min-height:46px}.ref-footer-inner{flex-direction:column;gap:22px}.ref-footer nav{padding-top:0}}
 @media(prefers-reduced-motion:reduce){.ref-button{transition:none}}
 @media(forced-colors:active){.ref-field{border-color:CanvasText}.ref-button{border:1px solid ButtonText}}
 </style><link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07"></head><body><a href="#main" class="skip">Skip to content</a><header class="site-header"><div class="header"><a class="logo" href="/" aria-label="NovaPharm Healthcare home"><img src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="196" height="32"></a><nav class="nav" aria-label="Primary navigation"><a href="/about/">Company</a><a href="/capabilities/">Capabilities</a><a href="/oncology/">Oncology</a><a href="/products/">Products</a><a href="/news-insights/">Insights</a><a href="/contact/" aria-current="page">Contact</a><a href="/portal/">Secure Portal</a></nav><details class="mobile-menu"><summary>Menu</summary><nav class="mobile-nav" aria-label="Mobile navigation"><a href="/about/">Company</a><a href="/capabilities/">Capabilities</a><a href="/oncology/">Oncology</a><a href="/products/">Products</a><a href="/news-insights/">Insights</a><a href="/contact/" aria-current="page">Contact</a><a href="/portal/">Secure Portal</a></nav></details></div></header><main id="main"><section class="ref-hero" aria-labelledby="contact-heading"><div class="ref-shell"><span class="ref-kicker">Contact NovaPharm</span><h1 id="contact-heading">Let's talk.</h1><p class="ref-lead">Big ideas begin with a conversation.<br>Tell us what you're working on.</p></div></section>
