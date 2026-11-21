@@ -5,7 +5,7 @@ import { checkpoint, gitBlobIdentity, checkRecoverySnapshot } from "./check-rest
 test("the recovered publisher checkpoint has distinct verifiable critical file pins", () => {
   assert.match(checkpoint.publisherCommit, /^[a-f0-9]{40}$/);
   assert.equal(Object.keys(checkpoint.files).length,31,"12 core files plus all 19 Nutraxin detail pages");
-  const products=Object.keys(checkpoint.files).filter(path=>path.startsWith("products/nutraxin/") && path.endsWith("/index.html"));
+  const products=Object.keys(checkpoint.files).filter(path=>/^products\\/nutraxin\\/[^/]+\\/index\\.html$/.test(path));
   assert.equal(products.length,19);
   assert.equal(new Set(products).size,19);
   assert.ok(Object.keys(checkpoint.files).includes("index.html"));
