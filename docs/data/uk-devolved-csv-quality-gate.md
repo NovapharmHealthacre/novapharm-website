@@ -27,3 +27,16 @@ The schema tests are included in the protected, source-only offline GitHub workf
 - [NovaPharm full UK programme issue #1027](https://github.com/NovapharmHealthacre/novapharm-website/issues/1027)
 
 **Next:** independently verify raw official source files, schema versions and permitted commercial/AI/terminology reuse; build private complete partition ingestion and row-level Quality reconciliation; only then admit records into tenant-isolated accepted production views and prove web/iOS/Android parity.
+
+## 21 November 2026 — historical comparability breakpoints
+
+The pure `src/core/uk-medicine-metric-comparability.mjs` contract tests **candidate** historical comparisons. It never reads clinical/medical data, changes the web/native UI, writes Atlas/AWS, or declares approved source rights. Its output always has `crossNationSumAllowed:false` and `productionApproved:false` even when a same-source pair is *potentially comparable*.
+
+- **Northern Ireland BSO GP Prescribing**: code coverage differs before and after **September 2018**; some inhaler/spray/solution quantity meanings changed from **August 2021**; BNF chapters were reclassified around **October 2021**; late concessionary costs are included from **May 2024**. Historical comparisons crossing one of these boundaries are explicitly blocked pending independent normalization.
+- **Scotland PHS**: the standardised PaidQuantity mapping was introduced from **May 2023**. `board`, `prescriber` and `dispenser` views are overlapping, not additive.
+- **England**: EPD prescribed-in-community and PCA paid/reimbursement records are separate grains; same-named metrics are never assumed additive.
+- Across any nations, cross-country summation is blocked until an independent harmonisation and denominator review establishes the right aggregation.
+
+Source references: [BSO official dataset explanation](https://www.opendatani.gov.uk/dataset/gp-prescribing-data) and [PHS dataset and quantities mapping guidance](https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community). Eight additional synthetic tests cover boundary and negative cases.
+
+**Not yet connected to live analytics:** This is a source contract for future accepted evidence, not a declaration that production time-series are fixed or quality-accepted.
