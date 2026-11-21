@@ -333,9 +333,9 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
       // Retry only the capture, never an accessibility/layout/security assertion.
       // Exhausting the three bounded attempts still fails the entire job.
       const reason = error instanceof Error ? error.message : String(error);
-      const retriableCaptureFailure = /captureScreenshot|Unable to capture screenshot|page\\.screenshot:\\s*Timeout \\d+ms exceeded/i.test(reason);
+      const retriableCaptureFailure = /captureScreenshot|Unable to capture screenshot|page\.screenshot:\s*Timeout \d+ms exceeded/i.test(reason);
       if (attempt === 3 || !retriableCaptureFailure) throw error;
-      console.warn(`${engine} ${viewport.name} ${route}: screenshot capture attempt ${attempt} failed (${reason.split("\\n")[0]}); retrying the same capture`);
+      console.warn(`${engine} ${viewport.name} ${route}: screenshot capture attempt ${attempt} failed (${reason.split("\n")[0]}); retrying the same capture`);
       await page.waitForTimeout(500 * attempt);
     }
   }
