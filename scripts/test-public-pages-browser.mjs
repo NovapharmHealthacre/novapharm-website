@@ -253,6 +253,28 @@ async function assertFooterHeadings(page, label) {
 for (const [engineName, browserType] of engines) {
   const browser = await browserType.launch({ headless: true });
   try {
+    // The native fragment navigation must move focus without any page scripts.
+    for (const width of [320, 390, 1440]) {
+      const page = await browser.newPage({
+        baseURL: baseUrl, viewport: { width, height: 844 }, javaScriptEnabled: false
+      });
+      try {
+        const label = `${engineName} ${width}px Accessibility Statement`;
+        assert.equal((await page.goto("/legal/accessibility/"))?.status(), 200, label);
+        const skip = page.getByRole("link", { name: "Skip to content", exact: true });
+        await page.keyboard.press("Tab");
+        assert.equal(await skip.evaluate(link => link === document.activeElement), true,
+          `${label}: first Tab must focus the skip link`);
+        const rect = await skip.boundingBox();
+        assert.ok(rect && rect.x >= 0 && rect.y >= 0 && rect.x + rect.width <= width &&
+          rect.width > 0 && rect.height > 0, `${label}: the focused skip link must be in view`);
+        await page.keyboard.press("Enter");
+        assert.equal(await page.locator("main#main").evaluate(main => main === document.activeElement),
+          true, `${label}: Enter must move focus to main`);
+      } finally {
+        await page.close();
+      }
+    }
     for (const viewport of routeViewports) {
       const context = await browser.newContext({
         baseURL: baseUrl,

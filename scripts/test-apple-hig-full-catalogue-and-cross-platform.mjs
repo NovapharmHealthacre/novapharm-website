@@ -640,6 +640,7 @@ function validateApprovedOutOfScopeTopic(topic) {
   const a = topic.notApplicableApproval;
   assert.ok(a && a.reviewDecision === "approved" &&
     isIndependentReviewReceipt(a.independentReviewUrl) &&
+    isSha(a.reviewedSourceSha) &&
     typeof a.approvedAt === "string" && !Number.isNaN(Date.parse(a.approvedAt)) &&
     typeof a.reason === "string" && a.reason.length >= 40,
     topic.title + ": independent reviewer-approved N/A disposition required");
@@ -709,16 +710,28 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 test("a platform-exclusive N/A decision cannot be self-approved or counted as deployment", () => {
   const tv = structuredClone(tracker.topics.find(t => t.title === "Digit entry views"));
   tv.implementation = "not_applicable";
+  delete tv.notApplicableApproval;
   assert.throws(() => validateApprovedOutOfScopeTopic(tv),
     /independent reviewer-approved N\/A disposition required/);
   tv.notApplicableApproval = {
     reviewDecision: "approved",
     independentReviewUrl: "https://example.com/self-approval",
+    reviewedSourceSha: "a".repeat(40),
     approvedAt: "2026-11-19T00:00:00Z",
     reason: "Apple tvOS-only digit entry is not native to web, iOS, or Android."
   };
   assert.throws(() => validateApprovedOutOfScopeTopic(tv),
     /independent reviewer-approved N\/A disposition required/);
+  // Shape fixture only. The independent review suite reads real GitHub events.
+  tv.notApplicableApproval.independentReviewUrl =
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/99999999#pullrequestreview-99999999";
+  assert.doesNotThrow(() => validateApprovedOutOfScopeTopic(tv));
+  delete tv.notApplicableApproval.reviewedSourceSha;
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv),
+    /independent reviewer-approved N\/A disposition required/);
+  tv.notApplicableApproval.reviewedSourceSha = "a".repeat(40);
+  tv.releaseEvidence = [{ platform: "web", reviewDecision: "approved" }];
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv), /N\/A approval is not deployment proof/);
   validateOwnerSignoff();
 });
 
@@ -739,17 +752,18 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   const decisions = tracker.topics.flatMap(t => Object.values(t.platformApplicability))
     .filter(d => d.state !== "unassessed").length;
   const verified = tracker.topics.filter(t => t.implementation === "verified").length;
+  const platforms = ["web", "ios", "android"];
   const priorities = {Critical:0,High:1,Medium:2,Later:3};
   const topics = tracker.topics.map((t, index) => {
-    const unassessedPlatforms = ["web","ios","android"].filter(p =>
+    const unassessedPlatforms = platforms.filter(p =>
       t.platformApplicability[p]?.state === "unassessed");
-    const applicablePlatforms = ["web","ios","android"].filter(p =>
+    const applicablePlatforms = platforms.filter(p =>
       t.platformApplicability[p]?.state === "applicable");
     // A conceptually out-of-scope Apple API is only a CANDIDATE. It still
     // requires real independent approval before "not_applicable" is accepted.
-    const candidateOutOfScope = unassessedPlatforms.length === 0 &&
-      applicablePlatforms.length === 0;
-    const platformEvidence = Object.fromEntries(["web","ios","android"].map(p => {
+    const candidateOutOfScope = platforms.every(p =>
+      t.platformApplicability[p]?.state === "not_applicable");
+    const platformEvidence = Object.fromEntries(platforms.map(p => {
       const list = t[p + "Evidence"];
       return [p, {
         applicability: t.platformApplicability[p]?.state,
@@ -783,6 +797,7 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     };
   }).sort((a,b) => (priorities[a.priority] ?? 99) - (priorities[b.priority] ?? 99)
     || a.sourceRowIndex - b.sourceRowIndex);
+  const notApplicable = topics.filter(t => t.implementation === "not_applicable").length;
   const report = {
     schema: "novapharm.hig-production-acceptance-gap.v1",
     generatedAt: new Date().toISOString(),
@@ -793,8 +808,17 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     independentlyDocumentedArticleReviews: reviewed,
     totalPlatformDecisions: tracker.topics.length * 3,
     assessedPlatformDecisions: decisions,
+    platformDecisionBreakdown: Object.fromEntries(platforms.map(platform => [platform, {
+      applicable: topics.filter(t => t.applicablePlatforms.includes(platform)).length,
+      notApplicable: topics.filter(t => t.platformEvidence[platform].applicability === "not_applicable").length,
+      criticalApplicable: topics.filter(t =>
+        t.priority === "Critical" && t.applicablePlatforms.includes(platform)).length,
+      registeredProductionAccepted: topics.filter(t => t.platformEvidence[platform].fullReleaseAccepted).length
+    }])),
+    topicsWithApplicablePlatforms: topics.filter(t => t.applicablePlatforms.length > 0).length,
     registeredProductionVerifiedTopics: verified,
-    registeredNotApplicableTopics: tracker.topics.filter(t => t.implementation === "not_applicable").length,
+    registeredNotApplicableTopics: notApplicable,
+    registeredAcceptedTopicDispositions: verified + notApplicable,
     candidateOutOfScopeTopicsPendingIndependentApproval: topics
       .filter(t => t.candidateOutOfScope && t.implementation !== "not_applicable")
       .map(t => ({title:t.title,sourceRowIndex:t.sourceRowIndex})),
@@ -823,9 +847,11 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.ok(report.recordedPartialLiveObservations >= 6);
   assert.equal(report.allTopicsIndependentlyDispositioned,
     tracker.topics.every(t => ["verified", "not_applicable"].includes(t.implementation)));
-  assert.ok(report.candidateOutOfScopeTopicsPendingIndependentApproval
-    .some(t => t.title === "Digit entry views"),
-    "Apple tvOS-only Digit entry is a pending N/A candidate, not a shipped web/iOS/Android component");
+  assert.equal(report.candidateOutOfScopeTopicsPendingIndependentApproval.length + notApplicable,
+    topics.filter(t => t.candidateOutOfScope).length,
+    "Every all-platform exclusion must be tracked as pending or approved, never as a deployment");
+  assert.equal(Object.values(report.platformDecisionBreakdown)
+    .reduce((sum, p) => sum + p.applicable + p.notApplicable, 0), decisions);
   const indexedProofs = tracker.meta.productionEvidenceAudit.scopedPublicEvidence;
   const sourceProofs = tracker.topics.flatMap(t =>
     ["web","ios","android"].flatMap(platform =>
@@ -1076,6 +1102,17 @@ test("optional read-only rendered public HIG evidence sampling",
                 };
               });
               row.keyboardFocusSequence.push(await observeFocusedElement());
+              if (pathname === "/legal/accessibility/") {
+                row.keyboardBypass = await page.evaluate(() => {
+                  const link = document.activeElement;
+                  const main = document.querySelector("main");
+                  return {
+                    firstTabReachedBypass: Boolean(main?.id && link?.matches("a.skip-link") &&
+                      link.getAttribute("href") === "#" + main.id),
+                    mainFocusReceived: false
+                  };
+                });
+              }
               for (let tabIndex = 1; tabIndex < 5; tabIndex += 1) {
                 await page.keyboard.press("Tab");
                 row.keyboardFocusSequence.push(await observeFocusedElement());
@@ -1095,6 +1132,23 @@ test("optional read-only rendered public HIG evidence sampling",
                 .filter(stop => stop.inViewport).length;
               row.keyboardFocusCueHeuristicCount = row.keyboardFocusSequence
                 .filter(stop => stop.cssFocusCueHeuristic).length;
+              if (row.keyboardBypass) {
+                if (!row.keyboardBypass.firstTabReachedBypass) {
+                  row.errors.push("Accessibility Statement first Tab did not reach its main-content bypass");
+                } else {
+                  // Only activate the inspected local fragment, never a form or external URL.
+                  const bypass = page.locator("a.skip-link").filter({ hasText: /skip to (main )?content/i });
+                  if (await bypass.count() === 1 && await bypass.evaluate(link =>
+                    link.getAttribute("href") === "#" + document.querySelector("main")?.id)) {
+                    await bypass.press("Enter");
+                    row.keyboardBypass.mainFocusReceived = await page.evaluate(() =>
+                      document.activeElement === document.querySelector("main"));
+                  }
+                  if (!row.keyboardBypass.mainFocusReceived) {
+                    row.errors.push("Accessibility Statement skip link did not move keyboard focus to main");
+                  }
+                }
+              }
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1138,7 +1192,7 @@ test("optional read-only rendered public HIG evidence sampling",
     origin,sourceCommit:process.env.GITHUB_SHA || null,
     pullRequestHeadSha:process.env.HIG_PR_HEAD_SHA || null,
     sourceCommitMeaning:"GitHub Actions checkout SHA (often a synthetic PR merge commit); not the PR head and not the observed live origin SHA",
-    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
+    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations, Accessibility Statement skip-link activation and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
     scope:"Six public routes, three screen widths (320, 390, 1440) and two engines; screenshots private to CI",
     cautions:["No authenticated roles, account submissions, billing or patient data",
       "Only five sampled Tab stops per case; no full keyboard, focus-visible, assistive-technology or WCAG audit",
