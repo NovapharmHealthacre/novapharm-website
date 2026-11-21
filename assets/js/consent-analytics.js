@@ -64,6 +64,30 @@ export function analyticsPagePath(pathname) {
   if (/^\/products\/nutraxin\/(?!bag\/|order-request\/|checkout\/)[a-z0-9-]+\/$/.test(path)) return "/products/nutraxin/product/";
   return path;
 }
+// Use origin-only, allowlisted referrals on public pages after analytics consent.
+// Never forward a third-party path, search term, fragment, query string or arbitrary
+// healthcare/customer website to Google Analytics.
+const APPROVED_REFERRER_HOSTS = new Set([
+  "bing.com", "www.bing.com", "duckduckgo.com", "www.duckduckgo.com",
+  "search.yahoo.com", "uk.search.yahoo.com", "www.ecosia.org",
+  "search.brave.com", "chatgpt.com", "www.chatgpt.com", "chat.openai.com",
+  "perplexity.ai", "www.perplexity.ai", "claude.ai", "www.claude.ai",
+  "gemini.google.com", "copilot.microsoft.com"
+]);
+const GOOGLE_SEARCH_HOST = /^(?:www\.|search\.)?google\.(?:com|co\.uk|co\.in|com\.au|ca|de|fr|es|it|nl|ae)$/;
+
+export function safeAnalyticsReferrer(rawReferrer, pageOrigin) {
+  if (typeof rawReferrer !== "string" || rawReferrer.length > 2048) return "";
+  try {
+    const source = new URL(rawReferrer);
+    if (source.protocol !== "https:" || source.username || source.password || source.port) return "";
+    if (source.origin === pageOrigin) return ""; // Internal navigation is not a new acquisition source.
+    const host = source.hostname.toLowerCase();
+    if (!APPROVED_REFERRER_HOSTS.has(host) && !GOOGLE_SEARCH_HOST.test(host)) return "";
+    return "https://" + host + "/"; // Strip path, query, fragment and any user-provided context.
+  } catch { return ""; }
+}
+
 const EVENT_NAMES = new Set(["cta_click", "view_item", "add_to_cart", "begin_checkout"]);
 
 export function sanitiseMarketingEvent(detail, pathname) {
@@ -133,7 +157,7 @@ function initialiseAnalytics() {
         allow_ad_personalization_signals: false,
         cookie_expires: 90 * 24 * 60 * 60,
         page_location: pageLocation,
-        page_referrer: ""
+        page_referrer: safeAnalyticsReferrer(document.referrer, location.origin)
       });
       const script = document.createElement("script");
       script.async = true;
