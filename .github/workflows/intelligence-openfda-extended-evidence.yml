@@ -1,0 +1,51 @@
+name: FDA extended evidence source-only acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/regulatory/openfda-evidence.mjs'
+      - 'scripts/test-openfda-evidence.mjs'
+      - 'scripts/test-openfda-evidence-wiring.mjs'
+      - 'server.mjs'
+      - 'apps/portal/app/gateway/**'
+      - 'apps/portal/components/us-fda-evidence*'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - '.github/workflows/intelligence-openfda-extended-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-evidence:
+    name: FDA evidence negative tests and release gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate synthetic publisher records, auth, response bounds and frontend wiring
+        run: |
+          node --check src/core/regulatory/openfda-evidence.mjs
+          node --check server.mjs
+          node --test scripts/test-openfda-evidence.mjs scripts/test-openfda-evidence-wiring.mjs
+      - name: Verify legacy label route remains intact
+        run: node --test scripts/test-openfda-labels.mjs
+      - name: Never publish raw FDA medicine source records
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const source = readFileSync('src/core/regulatory/openfda-evidence.mjs','utf8');
+          const policy = JSON.parse(readFileSync('config/intelligence/owner-production-constraints.json','utf8'));
+          if (!source.includes('kind === "adverse-events" ? []') ||
+              policy.productionSignoff !== 'not_granted' ||
+              policy.productionPermissions.admitUnapprovedMedicineData !== false ||
+              policy.productionPermissions.activatePublicCustomerAccess !== false) {
+            throw new Error('Restricted FDA evidence release boundaries were lost');
+          }
+          console.log('Source-only evaluation. No publication, billing or production activation.');
+          NODE
