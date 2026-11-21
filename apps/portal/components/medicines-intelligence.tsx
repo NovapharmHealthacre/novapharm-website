@@ -16,6 +16,7 @@ import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
 import { ScienceResearchWorkspace } from "./science-research-workspace";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
+import { UsFdaEvidence } from "./us-fda-evidence";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
 type Column = readonly [string, string, string?];
@@ -1035,7 +1036,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "medicine-tape" || current === "market-structure" || current === "pricing-reimbursement") {
     central = <ObservedMedicineWorkspace kind={current} detail={detail} analytics={analytics} />;
   }
-  else if (current === "regulatory-intelligence") central = <><ProfessionalWorkspace kind="regulatory-intelligence" detail={detail} analytics={analytics} /><UsFdaLabelDiscovery /></>;
+  else if (current === "regulatory-intelligence") central = <><ProfessionalWorkspace kind="regulatory-intelligence" detail={detail} analytics={analytics} /><UsFdaLabelDiscovery /><UsFdaEvidence /></>;
   else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
     central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
   }
