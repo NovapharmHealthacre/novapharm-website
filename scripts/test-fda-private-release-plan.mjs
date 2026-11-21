@@ -39,6 +39,7 @@ test("native transport cannot provide direct public-source browser calls",()=>{
  assert.match(auth,/ASWebAuthenticationSession/);
  assert.match(auth,/SecRandomCopyBytes/);
  assert.match(auth,/SHA256\.hash/);
+ assert.match(auth,/openid profile novapharm\/fda\.read/);
  assert.match(auth,/kSecAttrAccessibleWhenUnlockedThisDeviceOnly/);
  for(const source of [android,ios,auth]) assert.doesNotMatch(source,/https:\/\/api\.fda\.gov\/drug/);
 });
