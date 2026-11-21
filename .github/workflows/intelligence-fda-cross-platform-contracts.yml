@@ -16,6 +16,7 @@ on:
       - 'native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift'
       - 'native/novapharm-intelligence-ios/Package.swift'
       - 'infra/aws/fda-private-api-release-plan-20261121.json'
+      - 'infra/aws/fda-private-jwt-route.cfn.json'
       - '.github/workflows/intelligence-fda-cross-platform-contracts.yml'
   workflow_dispatch:
 
