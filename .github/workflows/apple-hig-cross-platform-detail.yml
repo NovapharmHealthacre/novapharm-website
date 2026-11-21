@@ -23,6 +23,8 @@ on:
       - 'apps/portal/app/globals.css'
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - 'scripts/hig-public-sample-gap-summary.mjs'
+      - 'scripts/test-hig-public-sample-gap-summary.mjs'
       - 'scripts/test-hig-independent-review-authenticity.mjs'
       - 'scripts/test-portal-keyboard-bypass.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
@@ -48,9 +50,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
+      - name: Verify redacted public evidence reporting
+        run: node --test scripts/test-hig-public-sample-gap-summary.mjs
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Verify Portal keyboard bypass source and browser regression contracts
@@ -69,7 +76,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: apple-hig-production-audit-${{ github.sha }}
+          name: apple-hig-production-audit-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/apple-hig-production-audit/172-topic-gap-ledger.json
           if-no-files-found: warn
           retention-days: 30
@@ -89,6 +96,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
@@ -108,7 +118,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: apple-hig-public-html-sample-${{ github.sha }}
+          name: apple-hig-public-html-sample-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/apple-hig-production-audit/public-origin-sample.json
           if-no-files-found: warn
           retention-days: 30
@@ -117,7 +127,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: apple-hig-public-rendered-${{ github.sha }}
+          name: apple-hig-public-rendered-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/apple-hig-production-audit/rendered-public/
           if-no-files-found: warn
           retention-days: 30
@@ -131,6 +141,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
