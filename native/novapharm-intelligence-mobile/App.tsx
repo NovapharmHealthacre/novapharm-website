@@ -206,6 +206,7 @@ export default function App() {
   const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [selectedOperationsModule, setSelectedOperationsModule] = useState<string | null>(null);
   const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
@@ -222,6 +223,7 @@ export default function App() {
 
   const changeScreen = (value: Screen) => {
     setSelectedWorkspace(null);
+    setSelectedOperationsModule(null);
     setScreen(value);
   };
 
@@ -230,14 +232,21 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
-      const destination = mobileBackDestination(screen, selectedWorkspace !== null);
+      const destination = mobileBackDestination(
+        screen, selectedWorkspace !== null, selectedOperationsModule !== null
+      );
       if (destination === null) return false;
+      if (destination === "operations-module-list") {
+        setSelectedOperationsModule(null);
+        return true;
+      }
       setSelectedWorkspace(null);
+      setSelectedOperationsModule(null);
       setScreen(destination);
       return true;
     });
     return () => subscription.remove();
-  }, [screen, selectedWorkspace]);
+  }, [screen, selectedWorkspace, selectedOperationsModule]);
 
   const notice = (
     <View style={styles.notice}>
@@ -402,8 +411,8 @@ export default function App() {
           )}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
-          {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} />}
-          {screen === "distribution-preview" && <PrivateOperationsPreviewScreen area="distribution" darkMode={darkMode} />}
+          {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} selectedId={selectedOperationsModule} onSelectedIdChange={setSelectedOperationsModule} />}
+          {screen === "distribution-preview" && <PrivateOperationsPreviewScreen area="distribution" darkMode={darkMode} selectedId={selectedOperationsModule} onSelectedIdChange={setSelectedOperationsModule} />}
           {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
             const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
             if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
