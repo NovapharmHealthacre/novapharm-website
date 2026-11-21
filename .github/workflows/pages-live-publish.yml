@@ -63,6 +63,9 @@ env:
 jobs:
   validate-release:
     if: github.event_name == 'pull_request'
+    # This job runs untrusted PR source and must never receive Pages or OIDC write permissions.
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
