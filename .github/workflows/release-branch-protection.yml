@@ -1,0 +1,58 @@
+name: Enforce minimum GitHub branch protection before Pages release
+
+on:
+  pull_request:
+    paths:
+      - scripts/check-release-branch-protection.mjs
+      - scripts/test-release-branch-protection.mjs
+      - scripts/test-release-publisher-guard-wiring.mjs
+      - .github/workflows/pages-live-publish.yml
+      - .github/workflows/pages-public-release-recovery.yml
+      - .github/workflows/publish-aws-contact-production.yml
+      - .github/workflows/release-branch-protection.yml
+  workflow_dispatch:
+  schedule:
+    # Only after source PR is merged: weekly fail-closed governance readback.
+    # This monitoring cannot replace repository-admin enforced rules.
+    - cron: "19 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  guard-source-contract:
+    name: Verify all public publishers invoke the same minimum release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Test falsified, missing and unprotected branches plus workflow gate wiring
+        run: node --test scripts/test-release-branch-protection.mjs scripts/test-release-publisher-guard-wiring.mjs
+
+  read-only-real-branch-gate:
+    name: Fail visibly unless main and gh-pages are actually protected
+    if: github.event_name != 'pull_request'
+    needs: guard-source-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout policy without write credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Verify current GitHub branch protection metadata only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release-branch-protection.mjs
