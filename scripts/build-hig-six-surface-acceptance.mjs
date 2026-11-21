@@ -41,9 +41,9 @@ const intelligenceWorkspacePath = "apps/portal/data/intelligence-workspaces.ts";
 // Parse only the catalog literal's first four required fields; reject unexpected
 // syntax/count changes rather than silently dropping a regulated workspace.
 export function readIntelligenceWorkspaceTargets(sourceText) {
-  const section = /export const intelligenceWorkspaceCatalogue = Object\\.freeze\\(\\[([\\s\\S]*?)\\]\\s+as const satisfies readonly IntelligenceWorkspace\\[\\]\\);/m.exec(sourceText);
+  const section = /export const intelligenceWorkspaceCatalogue = Object\.freeze\(\[([\s\S]*?)\]\s+as const satisfies readonly IntelligenceWorkspace\[\]\);/m.exec(sourceText);
   assert.ok(section, "Intelligence workspace catalogue boundary unavailable");
-  const re = /^\\s*\\{\\s*slug:\\s*"([a-z0-9-]+)",\\s*title:\\s*"([^"]+)",\\s*group:\\s*"([^"]+)",\\s*state:\\s*"(existing-read-only|gated)"/gm;
+  const re = /^\s*\{\s*slug:\s*"([a-z0-9-]+)",\s*title:\s*"([^"]+)",\s*group:\s*"([^"]+)",\s*state:\s*"(existing-read-only|gated)"/gm;
   const rows = [...section[1].matchAll(re)].map(match => ({
     slug: match[1], title: match[2], group: match[3], sourceState: match[4]
   }));
@@ -74,7 +74,7 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
   for (const module of portalModules) {
     assert.ok(Object.hasOwn(inventory.portal.areas, module.area), "Unclassified Portal module");
     assert.ok(typeof module.code === "string" && module.code.length > 0, "Missing Portal module code");
-    assert.ok(/^\\/(?:portal|employee|admin)\\//.test(module.route), "Unscoped Portal module route");
+    assert.ok(/^\/(?:portal|employee|admin)\//.test(module.route), "Unscoped Portal module route");
     assert.ok(typeof module.title === "string" && module.title.length > 0, "Missing Portal module title");
     assert.ok(Array.isArray(module.authorisedRoles) && module.authorisedRoles.length > 0,
       "Missing Portal module role inventory");
