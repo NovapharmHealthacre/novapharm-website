@@ -1137,6 +1137,7 @@ test("four-country receipt router is an exact-blob private change, never blanket
     ".github/workflows/intelligence-openfda-extended-evidence.yml",
     "src/core/regulatory/openfda-evidence.mjs",
     "scripts/test-openfda-evidence.mjs",
+    "scripts/run-openfda-four-source-smoke.mjs",
     "scripts/test-openfda-evidence-wiring.mjs",
     "docs/intelligence/us-openfda-extended-evidence-20261121.md",
     "apps/portal/components/us-fda-evidence.tsx",
