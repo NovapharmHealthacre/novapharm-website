@@ -1,1 +1,2 @@
-declare const styles: { readonly [key: string]: string };\nexport default styles;\n
+declare const styles: { readonly [key: string]: string };
+export default styles;
