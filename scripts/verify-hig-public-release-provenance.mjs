@@ -5,6 +5,7 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
 
 export const FAMILIES = Object.freeze(["corporate-editorial", "static-public", "nutraxin", "esco"]);
 const sha40 = /^[a-f0-9]{40}$/i;
@@ -29,6 +30,19 @@ export function verifyPublicReleaseProvenance(audit, expectedShas) {
   check(array(audit.corporateSourceCoverage?.routesMissingFromBothSitemaps)?.length === 0,
     "Corporate source routes absent from both checked-in and live sitemap");
   const routes = audit.routes || [];
+  const screenedRoutes = Array.isArray(routes) ? routes.filter(item => item?.higSignals) : [];
+  check(screenedRoutes.length === audit.higScreening?.routesScreened,
+    "SSR route census does not match actual individual screen observations");
+  check(screenedRoutes.filter(item => sha40.test(item.higSignals?.deployedSourceSha || "")).length ===
+    audit.higScreening?.withSourceSha, "Source SHA census disagrees with individual public pages");
+  check((Array.isArray(routes) ? routes.filter(item => sha64.test(item?.htmlSnapshotSha256 || "")).length : 0) ===
+    audit.higScreening?.routesWithHtmlSnapshotDigest, "HTML snapshot digest census was not independently reproduced");
+  let independentlyObserved = null;
+  try {
+    independentlyObserved = summarizeObservedPublisherShas(screenedRoutes);
+  } catch {
+    problems.push("Individual public page source SHA records cannot be reconciled");
+  }
   const paths = new Set();
   for (const route of Array.isArray(routes) ? routes : []) {
     check(typeof route.path === "string" && route.path.startsWith("/") && !paths.has(route.path),
@@ -71,6 +85,16 @@ export function verifyPublicReleaseProvenance(audit, expectedShas) {
     check(sha40.test(expected || ""), "Invalid or absent expected source revision for " + family);
     const record = families?.[family];
     if (!record) continue;
+    const recomputed = independentlyObserved?.families?.[family];
+    check(Boolean(recomputed), "Publisher family absent from individual route observations: " + family);
+    const normalized = entry => JSON.stringify({
+      routes: entry?.routes, missing: entry?.missingSourceSha,
+      conflicting: entry?.conflictingShas,
+      shas: Object.entries(entry?.observedShaRoutes || {}).sort(([a],[b]) => a.localeCompare(b))
+        .map(([sha, paths]) => [sha, Array.isArray(paths) ? [...paths].sort() : null])
+    });
+    check(normalized(record) === normalized(recomputed),
+      "Publisher family summary disagrees with individually observed routes: " + family);
     check(Number.isInteger(record.routes) && record.routes > 0, "Invalid observed route count for " + family);
     check(record.missingSourceSha === 0, "Missing source SHA within " + family);
     check(record.conflictingShas === false, "Multiple published revisions within " + family);
