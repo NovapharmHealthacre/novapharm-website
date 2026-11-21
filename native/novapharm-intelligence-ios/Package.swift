@@ -9,7 +9,7 @@ let package = Package(
         .target(name: "NovaPharmNativeCore", path: "App",
                 exclude: ["NovaRootView.swift", "NovaPharmNativeApp.swift",
                           "NovaTheme.swift", "OfflineBookmark.swift", "NovaCountryDirectoryView.swift",
-                          "USFdaSourcePreviewView.swift"],
+                          "USFdaSourcePreviewView.swift", "CognitoFDAAuthSession.swift"],
                 sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift", "CountryCatalog.swift",
                           "USFdaSourceCatalog.swift", "ProtectedFdaGateway.swift"]),
         .testTarget(name: "NovaPharmNativeCoreTests",
