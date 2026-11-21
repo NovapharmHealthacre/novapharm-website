@@ -5942,8 +5942,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 10,
-      "referenceCount": 23,
+      "usageCount": 12,
+      "referenceCount": 26,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5952,9 +5952,11 @@
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs",
+        "scripts/audit-published-critical-assets-parity.mjs",
         "scripts/audit-restored-public-routes.mjs",
         "scripts/programme/validate-post-pr53-candidate.mjs",
-        "scripts/stage-pages-artifact.mjs"
+        "scripts/stage-pages-artifact.mjs",
+        "scripts/test-published-critical-assets-parity.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -6092,8 +6094,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 19,
-      "referenceCount": 30,
+      "usageCount": 20,
+      "referenceCount": 31,
       "usageFiles": [
         "apps/corporate/lib/seo.ts",
         "creative-assets/8k-master-register.json",
@@ -6110,6 +6112,7 @@
         "scripts/build-public-pages.mjs",
         "scripts/finalise-social-cards.mjs",
         "scripts/optimise-images.mjs",
+        "scripts/test-published-critical-assets-parity.mjs",
         "scripts/test-visual-contracts.mjs",
         "scripts/validate-site.mjs",
         "seo/generated/social-image-register.json",
