@@ -2,6 +2,15 @@
 
 **Scope confirmed:** 21 November 2026. **Document type:** reviewer and evidence-preparation packet; not a certification or production release. Existing constraints remain in force: **no additional paid AWS resources, no public customer activation, no unapproved medicines data or billing, owner production signoff not granted**.
 
+## Follow-on engineering checkpoint — 21 November 2026
+
+- GitHub read-back confirms **#900, #902, #993, #996 and #1000 merged** into `main`. Their engineering/test outcomes do **not** certify deployment or any Apple HIG topic.
+- Draft PR **#991** previously passed all eight exact-head workflows at `cc4c1fce0d07396b74803b776a51d37208e92022` and preserved a generated ledger artifact. Subsequent source/evidence hardening commits require their **own new exact-head validation**; do not carry forward an earlier green check.
+- Its generator now rejects discrepancies between every parsed source input and its exact hashed bytes (HIG register, source inventory and owner constraints). The report includes SHA-256 for all three input files, while the inventory's historical sourceSnapshotSha stays separately labelled.
+- The workflow now requires a real generated ledger artifact (`if-no-files-found: error`), preventing an empty artifact handoff from appearing successful.
+- Fresh read-only AWS ECS check in `eu-north-1`: Portal staging desired/running **0/0** and production-named Intelligence ECS cluster has no services. ECS inventory in the other 16 enabled regions is **SCP-denied**; blocked visibility is not proof those regions are empty.
+- No independent GitHub review was recorded on #991 at this checkpoint; branch protections, authorized staging roles, actual physical-device receipts and owner signoff remain unresolved. **Accepted: 0/172**, including zero independently approved whole-topic N/A decisions.
+
 ## Exact scope and baselines
 
 - Corporate public website, protected Portal, protected NovaPharm Intelligence, Distribution/WMS, **native Swift/SwiftUI iOS**, and **native Android** are all within the owner-selected target.
@@ -16,7 +25,7 @@
 | Surface | Real source evidence | Required independent acceptance observations | Current release status |
 | --- | --- | --- | --- |
 | **Corporate website** | Next.js and public static source; existing read-only browser checks | Enumerate true public URLs; match public HTML/assets to approved deployed SHA; chromium/WebKit; 320px–400% zoom; keyboard/VoiceOver; privacy/legal, product rights, contact, checkout and site navigation | Bounded sample receipts only; live-source and complete route evidence pending |
-| **Portal** | 54 source-declared modules, role routes, 14 exact-head passing workflows for draft #993 | Actual authenticated synthetic customer/employee/executive/admin accounts, MFA, tenant isolation, consent, expiry, errors and accessible journeys with screenshots | Not independently accepted; safe private staging unavailable at last AWS inventory |
+| **Portal** | 54 source-declared modules, role routes, merged keyboard accessibility fix #993 (source-level) | Actual authenticated synthetic customer/employee/executive/admin accounts, MFA, tenant isolation, consent, expiry, errors and accessible journeys with screenshots | Not independently accepted; safe private staging unavailable at last AWS inventory |
 | **Intelligence** | 22 candidate workspaces, five labeled existing read-only in source | Each permissioned real workspace, source provenance/rights, AI disclosure, safe empty/unavailable states, role scope, accessible charts and interaction | Gated/read-only source states cannot establish authenticated production |
 | **Distribution/WMS** | WMS/QA/FEFO/pick-pack-dispatch/POD source concepts | Actual available role-bound stock/batch/quality transaction journeys, safe synthetic data, idempotency, audit logs, responsive and accessible workflows | No full end-to-end operational receipt |
 | **Native iOS** | Real SwiftUI/XcodeGen app; native Swift Package; unsigned Simulator CI workflow | Approved real bundle ID, signed controlled device build, Xcode UI test, VoiceOver on physical iPhone/iPad, Dynamic Type, orientation, light/dark, keyboard, accessibility inspector, permissions, identity and release provenance | Native source exists; placeholder ID, signing disabled; no physical VoiceOver signoff |
