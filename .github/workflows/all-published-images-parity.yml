@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/audit-published-images-parity.mjs
       - scripts/test-published-images-parity.mjs
+      - scripts/audit-public-image-alt-presence.mjs
+      - scripts/test-public-image-alt-presence.mjs
       - .github/workflows/all-published-images-parity.yml
   workflow_dispatch:
 
@@ -35,15 +37,24 @@ jobs:
           node-version: "24"
       - name: Validate exact-match, scope, and failure-boundary regression tests
         run: node --test source-tree/scripts/test-published-images-parity.mjs
+      - name: Validate public HTML image-alt presence semantics
+        run: node --test source-tree/scripts/test-public-image-alt-presence.mjs
       - name: Compare every published brand/media image (no writes or POST)
         run: node source-tree/scripts/audit-published-images-parity.mjs
         env:
+          PUBLISHED_TREE: published-tree
+      - name: Screen every public HTML page for missing image alt attributes
+        run: node source-tree/scripts/audit-public-image-alt-presence.mjs
+        env:
+          SOURCE_TREE: source-tree
           PUBLISHED_TREE: published-tree
       - name: Preserve per-image SHA and mismatch evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: all-published-images-parity-${{ github.event.pull_request.head.sha || github.sha }}
-          path: artifacts/site-restoration/gh-pages-live-image-parity.json
+          path: |
+            artifacts/site-restoration/gh-pages-live-image-parity.json
+            artifacts/site-restoration/public-image-alt-presence.json
           if-no-files-found: warn
           retention-days: 14
