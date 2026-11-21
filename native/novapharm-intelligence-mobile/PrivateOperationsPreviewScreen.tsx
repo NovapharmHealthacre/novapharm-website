@@ -74,12 +74,21 @@ const areaText = Object.freeze({
 });
 
 export function PrivateOperationsPreviewScreen({
-  area, darkMode = false
-}: { area: PreviewArea; darkMode?: boolean }) {
+  area, darkMode = false, selectedId: controlledSelectedId, onSelectedIdChange
+}: {
+  area: PreviewArea;
+  darkMode?: boolean;
+  selectedId?: string | null;
+  onSelectedIdChange?: (id: string | null) => void;
+}) {
   const palette = darkMode ? mobileDarkPalette : mobileLightPalette;
   const styles = useMemo(() => createStyles(palette), [darkMode]);
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Parent-controlled selection lets Android Back close this detail before leaving the preview.
+  // Standalone research previews retain their existing local state behavior.
+  const [localSelectedId, setLocalSelectedId] = useState<string | null>(null);
+  const selectedId = controlledSelectedId === undefined ? localSelectedId : controlledSelectedId;
+  const setSelectedId = onSelectedIdChange ?? setLocalSelectedId;
 
   const modules = PRIVATE_PREVIEW_MODULES[area];
   const selected = modules.find(item => item.id === selectedId) || null;
