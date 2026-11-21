@@ -7,6 +7,8 @@ on:
       - scripts/test-published-gh-pages-parity.mjs
       - scripts/audit-published-critical-assets-parity.mjs
       - scripts/test-published-critical-assets-parity.mjs
+      - scripts/check-restored-pages-content-baseline.mjs
+      - scripts/test-restored-pages-content-baseline.mjs
       - .github/workflows/public-pages-byte-parity.yml
   workflow_dispatch:
   # Ongoing read-only rollback monitoring; runs from the default branch only
@@ -43,6 +45,8 @@ jobs:
         run: node --test source-tree/scripts/test-published-gh-pages-parity.mjs
       - name: Validate critical-asset manifest and negative byte-parity tests
         run: node --test source-tree/scripts/test-published-critical-assets-parity.mjs
+      - name: Test the pinned restored-content invariant and fail-closed regression cases
+        run: node --test source-tree/scripts/test-restored-pages-content-baseline.mjs
       - name: Read-only compare all registered public URLs to published files
         run: node source-tree/scripts/audit-published-gh-pages-parity.mjs
         env:
@@ -50,6 +54,10 @@ jobs:
           PUBLISHED_TREE: published-tree
       - name: Read-only compare all 22 JS, 23 CSS, hero image, Merchant feed and sitemap bytes
         run: node source-tree/scripts/audit-published-critical-assets-parity.mjs
+        env:
+          PUBLISHED_TREE: published-tree
+      - name: Ensure the verified recovered homepage, Contact and commerce files have not changed silently
+        run: node source-tree/scripts/check-restored-pages-content-baseline.mjs
         env:
           PUBLISHED_TREE: published-tree
       - name: Save per-route and per-asset hashes and bounded diagnostic failures
@@ -60,5 +68,6 @@ jobs:
           path: |
             artifacts/site-restoration/gh-pages-live-byte-parity.json
             artifacts/site-restoration/gh-pages-live-critical-asset-parity.json
+            artifacts/site-restoration/restored-public-content-baseline.json
           if-no-files-found: warn
           retention-days: 14
