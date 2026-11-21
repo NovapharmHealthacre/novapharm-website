@@ -29,7 +29,11 @@ test("explicitly accepted endpoint creates real contact with declared privacy, c
   assert.match(html, /Submit enquiry/);
   assert.match(html, /data-live-contact-status/);
   assert.match(html, /30 days/);
-  assert.match(html, /action="mailto:vishal@novapharmhealthcare\.com"/);
+  const form = html.match(/<form\b[^>]*>/)?.[0];
+  assert.match(form, /action="\/contact\/"\s+method="post"/,
+    "Managed Contact must preserve the live same-origin form action");
+  assert.doesNotMatch(form, /mailto:|enctype="text\/plain"/,
+    "Managed Contact must not retain the email-draft form action");
   assert.doesNotMatch(html, /This public information release does not collect or transmit enquiry details/);
 });
 test("refuses arbitrary, non-EU or insecure contact endpoints", () => {
@@ -40,6 +44,9 @@ test("refuses arbitrary, non-EU or insecure contact endpoints", () => {
 test("requires release source invariants instead of silently rendering a dead form", () => {
   assert.throws(() => activateContactHtml(fixture.replace("data-email-enquiry-form","data-nothing"), origin), /marker missing/);
   assert.throws(() => activateContactHtml(fixture.replace("contact-email-draft.js","unverified.js"), origin), /marker missing/);
+  assert.throws(() => activateContactHtml(
+    fixture.replace('method="post" enctype="text/plain"', 'method="get"'), origin
+  ), /marker missing/);
 });
 test("updates the business-enquiry privacy text only when the expected section exists", () => {
   const source = '<section id="business-enquiries"><h2>3. Business enquiries</h2><p>Existing controller notice.</p></section>';
