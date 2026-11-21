@@ -202,7 +202,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
   }
 
   return <>
-    <nav className="desktop-nav npd-global-nav site-nav" aria-label={interfaceLabel(locale, "Primary navigation")} ref={navRef}
+    <nav className="desktop-nav" aria-label={interfaceLabel(locale, "Primary navigation")} ref={navRef}
       onBlur={(event) => {
         const next = event.relatedTarget;
         if (!(next instanceof Element) || !next.closest(".site-header")) setActiveCategory(null);
