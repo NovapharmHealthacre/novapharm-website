@@ -7,6 +7,7 @@
   },
   "include": [
     "App.tsx",
+    "ProtectedFdaGateway.ts",
     "index.ts",
     "../../apps/portal/data/intelligence-workspaces.ts",
     "../../apps/portal/data/nova-ml-modules.ts",
