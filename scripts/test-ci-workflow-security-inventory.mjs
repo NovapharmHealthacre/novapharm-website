@@ -65,3 +65,17 @@ test("PR validators are read-only; source-write jobs only stage nonlive branches
   assert.deepEqual(found.sort(), [...allowedCandidateWriters].sort(),
     "Any newly privileged workflow must pass independent release governance");
 });
+
+
+test("commerce no-change acceptance is read-only PR-scoped, never a publishing bypass", () => {
+  const workflow = readFileSync(join(root, "stage-safe-commerce-restoration.yml"), "utf8");
+  const pr = workflow.split("\n  validate-pr:\n")[1]?.split("\n  stage-commerce:\n")[0] ?? "";
+  const publisher = workflow.split("\n  stage-commerce:\n")[1] ?? "";
+  assert.match(pr, /NOVAPHARM_CI_ALLOW_NOOP:\s*"true"/);
+  assert.doesNotMatch(publisher, /NOVAPHARM_CI_ALLOW_NOOP/);
+  const source = readFileSync("scripts/stage-safe-commerce-restoration.py", "utf8");
+  assert.match(source, /os\.environ\.get\("NOVAPHARM_CI_ALLOW_NOOP"\) == "true"/);
+  assert.match(source, /os\.environ\.get\("GITHUB_EVENT_NAME"\) == "pull_request"/);
+  assert.match(source, /An existing public website file was overwritten/);
+  assert.match(source, /No new commerce public files staged/);
+});
