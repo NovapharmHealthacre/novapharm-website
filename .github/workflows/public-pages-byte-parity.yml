@@ -1,0 +1,73 @@
+name: Audit live public HTML against exact gh-pages bytes
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit-published-gh-pages-parity.mjs
+      - scripts/test-published-gh-pages-parity.mjs
+      - scripts/audit-published-critical-assets-parity.mjs
+      - scripts/test-published-critical-assets-parity.mjs
+      - scripts/check-restored-pages-content-baseline.mjs
+      - scripts/test-restored-pages-content-baseline.mjs
+      - .github/workflows/public-pages-byte-parity.yml
+  workflow_dispatch:
+  # Ongoing read-only rollback monitoring; runs from the default branch only
+  # after this independently reviewed audit is merged. Never publishes.
+  schedule:
+    - cron: "23 4 * * 6"
+
+permissions:
+  contents: read
+
+jobs:
+  source-to-live:
+    name: Read-only 65-route gh-pages HTML SHA-256 comparison
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout exact audit PR head (never publishes)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: source-tree
+          persist-credentials: false
+      - name: Checkout current production publishing branch read-only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: gh-pages
+          path: published-tree
+          persist-credentials: false
+      - name: Use pinned Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Validate deterministic HTML comparison and URL safety
+        run: node --test source-tree/scripts/test-published-gh-pages-parity.mjs
+      - name: Validate critical-asset manifest and negative byte-parity tests
+        run: node --test source-tree/scripts/test-published-critical-assets-parity.mjs
+      - name: Test the pinned restored-content invariant and fail-closed regression cases
+        run: node --test source-tree/scripts/test-restored-pages-content-baseline.mjs
+      - name: Read-only compare all registered public URLs to published files
+        run: node source-tree/scripts/audit-published-gh-pages-parity.mjs
+        env:
+          SOURCE_TREE: source-tree
+          PUBLISHED_TREE: published-tree
+      - name: Read-only compare all 22 JS, 23 CSS, hero image, Merchant feed and sitemap bytes
+        run: node source-tree/scripts/audit-published-critical-assets-parity.mjs
+        env:
+          PUBLISHED_TREE: published-tree
+      - name: Ensure the verified recovered homepage, Contact and commerce files have not changed silently
+        run: node source-tree/scripts/check-restored-pages-content-baseline.mjs
+        env:
+          PUBLISHED_TREE: published-tree
+      - name: Save per-route and per-asset hashes and bounded diagnostic failures
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: public-pages-byte-parity-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            artifacts/site-restoration/gh-pages-live-byte-parity.json
+            artifacts/site-restoration/gh-pages-live-critical-asset-parity.json
+            artifacts/site-restoration/restored-public-content-baseline.json
+          if-no-files-found: warn
+          retention-days: 14
