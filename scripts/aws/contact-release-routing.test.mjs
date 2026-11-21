@@ -1230,6 +1230,7 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
     "native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift",
     "native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift",
     "infra/aws/fda-private-api-release-plan-20261121.json",
+    "docs/intelligence/fda-six-gate-production-acceptance-20261121.md",
     "scripts/test-fda-private-release-plan.mjs",
     ".github/workflows/intelligence-fda-cross-platform-contracts.yml"
   ];
