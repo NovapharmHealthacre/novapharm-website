@@ -34,7 +34,8 @@ test("current owner source state still blocks ALL public manual recoveries",()=>
 test("unprotected main or public publishing branch denies recovery",()=>{
   for(const name of ["main","gh-pages"]){
     const x=approved();
-    x[name]=branch(name,false);
+    const field=name==="gh-pages" ? "pages" : "main";
+    x[field]=branch(name,false);
     assert.equal(check(x).allowed,false,name);
     assert.ok(check(x).issues.some(k=>k.includes(name+" branch")));
   }
