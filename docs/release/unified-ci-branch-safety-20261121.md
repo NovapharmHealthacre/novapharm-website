@@ -31,3 +31,6 @@ Do not make all ~209 path-filtered workflows mandatory: many skip intentionally.
 ## Validation
 
 Run `node --test scripts/test-unified-ci-policy.mjs`, then `node scripts/ci/verify-unified-ci-contract.mjs`, then `npm ci --ignore-scripts && node scripts/ci/verify-unified-ci-contract.mjs --run`. Inspect the **current PR head**, its actual GitHub check conclusions, and the deployment source SHA before merging or releasing. If a status is skipped, failed, queued or stale, do not count it as successful acceptance.
+
+## Current-source AI versus legacy generated assets
+The tracked public-AI safety test validates source modules directly and refuses to infer a deployed browser assistant from a missing legacy `assets/js/ai-search.js`. Citation/evaluation fixtures are freshly generated from approved local public-source material before test execution. These tests must not be interpreted as production OpenAI connectivity, user consent, protected medicine advice or independent model approval.
