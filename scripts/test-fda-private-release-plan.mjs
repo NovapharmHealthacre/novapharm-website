@@ -42,3 +42,24 @@ test("native transport cannot provide direct public-source browser calls",()=>{
  assert.match(auth,/kSecAttrAccessibleWhenUnlockedThisDeviceOnly/);
  for(const source of [android,ios,auth]) assert.doesNotMatch(source,/https:\/\/api\.fda\.gov\/drug/);
 });
+
+test("conditional CloudFormation route cannot activate without six independent signoffs",()=>{
+ const template=JSON.parse(read("infra/aws/fda-private-jwt-route.cfn.json"));
+ const required=["OwnerProductionSignoff","SourceRightsSignoff","NativeIdentitySignoff",
+   "DistributedQuotaVerified","PrivateImageVerified","IndependentReleaseAcceptance"];
+ for(const key of required){
+   assert.equal(template.Parameters[key].Default,"false",key);
+   assert.deepEqual(template.Parameters[key].AllowedValues,["false","true"]);
+ }
+ assert.equal(template.Conditions.AllowRoute["Fn::And"].length,required.length);
+ for(const key of required)
+   assert.ok(template.Conditions.AllowRoute["Fn::And"].some(item=>
+     item["Fn::Equals"]?.[0]?.Ref===key && item["Fn::Equals"]?.[1]==="true"),key);
+ for(const r of Object.values(template.Resources))assert.equal(r.Condition,"AllowRoute");
+ const route=template.Resources.BoardOnlyFdaRoute.Properties;
+ assert.equal(route.RouteKey,"GET /v1/intelligence/regulatory/us/fda-research");
+ assert.equal(route.AuthorizationType,"JWT");
+ assert.deepEqual(route.AuthorizationScopes,["novapharm/fda.read"]);
+ assert.equal(route.AuthorizerId.Ref,"VerifiedJWTAuthorizerId");
+ assert.equal(template.Resources.PrivateFdaInvokePermission.Properties.Principal,"apigateway.amazonaws.com");
+});
