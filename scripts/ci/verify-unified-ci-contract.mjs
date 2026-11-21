@@ -37,6 +37,14 @@ export function auditPolicy(root = REPO_ROOT, suppliedPolicy = null) {
     }
     coverage += record.tests.length;
   }
+  const trackedSourcePaths = Object.values(policy.domains).flatMap(record => record.sources);
+  for (const type of requiredProjects) {
+    for (const project of policy.projects[type]) {
+      const path = type + "/" + project;
+      assert.ok(trackedSourcePaths.some(source => source === path || source.startsWith(path + "/")),
+        "Project is registered but no source+test domain actually covers it: " + path);
+    }
+  }
   assert.ok(allTests.size >= 40, "Cross-estate policy has fewer than 40 independent test entries");
   const workflowsRoot = join(root, ".github", "workflows");
   for (const name of policy.criticalWorkflows) {
