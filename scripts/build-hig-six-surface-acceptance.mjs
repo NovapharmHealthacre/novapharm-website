@@ -34,14 +34,59 @@ export const SURFACES = Object.freeze([
 const registerPath = "docs/design/apple-hig-172-topic-acceptance-register.json";
 const inventoryPath = "docs/design/apple-hig-runtime-source-scope-20261120.json";
 const ownerPath = "config/intelligence/owner-production-constraints.json";
+const portalModulePath = "packages/portal-contracts/src/module-catalog.json";
+const intelligenceWorkspacePath = "apps/portal/data/intelligence-workspaces.ts";
 
-export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes, inventoryBytes, ownerBytes }) {
+// The authoritative workspace register is TypeScript rather than JSON.
+// Parse only the catalog literal's first four required fields; reject unexpected
+// syntax/count changes rather than silently dropping a regulated workspace.
+export function readIntelligenceWorkspaceTargets(sourceText) {
+  const section = /export const intelligenceWorkspaceCatalogue = Object\\.freeze\\(\\[([\\s\\S]*?)\\]\\s+as const satisfies readonly IntelligenceWorkspace\\[\\]\\);/m.exec(sourceText);
+  assert.ok(section, "Intelligence workspace catalogue boundary unavailable");
+  const re = /^\\s*\\{\\s*slug:\\s*"([a-z0-9-]+)",\\s*title:\\s*"([^"]+)",\\s*group:\\s*"([^"]+)",\\s*state:\\s*"(existing-read-only|gated)"/gm;
+  const rows = [...section[1].matchAll(re)].map(match => ({
+    slug: match[1], title: match[2], group: match[3], sourceState: match[4]
+  }));
+  assert.equal(new Set(rows.map(row => row.slug)).size, rows.length, "Duplicate Intelligence workspace slug");
+  return rows;
+}
+
+export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes }) {
   // A digest only proves provenance when its bytes actually describe the data
   // being scored. Reject stale/mismatched objects rather than mislabel evidence.
-  assert.ok(registerBytes && inventoryBytes && ownerBytes, "All source input bytes are required");
+  assert.ok(registerBytes && inventoryBytes && ownerBytes && portalModuleBytes && intelligenceWorkspaceBytes,
+    "All source input bytes are required");
   assert.deepEqual(register, JSON.parse(registerBytes), "Register object must match hashed register bytes");
   assert.deepEqual(inventory, JSON.parse(inventoryBytes), "Inventory object must match hashed inventory bytes");
   assert.deepEqual(owner, JSON.parse(ownerBytes), "Owner constraints must match hashed owner bytes");
+  const portalModules = JSON.parse(portalModuleBytes);
+  assert.ok(Array.isArray(portalModules), "Portal module catalogue must be an array");
+  assert.equal(portalModules.length, inventory.portal.declaredModules, "Portal module count drift");
+  assert.equal(new Set(portalModules.map(x => x.code)).size, portalModules.length, "Duplicate Portal module code");
+  assert.equal(new Set(portalModules.map(x => x.route)).size, portalModules.length, "Duplicate Portal module route");
+  assert.equal(portalModules.filter(x => x.visibleInNavigation).length,
+    inventory.portal.visibleInNavigation, "Portal navigation visibility drift");
+  assert.equal(portalModules.filter(x => !x.visibleInNavigation).length,
+    inventory.portal.hiddenUntilDependencies, "Portal gated navigation drift");
+  for (const [area, expected] of Object.entries(inventory.portal.areas)) {
+    assert.equal(portalModules.filter(x => x.area === area).length, expected, "Portal module area drift: " + area);
+  }
+  for (const module of portalModules) {
+    assert.ok(Object.hasOwn(inventory.portal.areas, module.area), "Unclassified Portal module");
+    assert.ok(typeof module.code === "string" && module.code.length > 0, "Missing Portal module code");
+    assert.ok(/^\\/(?:portal|employee|admin)\\//.test(module.route), "Unscoped Portal module route");
+    assert.ok(typeof module.title === "string" && module.title.length > 0, "Missing Portal module title");
+    assert.ok(Array.isArray(module.authorisedRoles) && module.authorisedRoles.length > 0,
+      "Missing Portal module role inventory");
+    assert.ok(typeof module.productionStatus === "string", "Missing Portal production status");
+  }
+  const intelligenceWorkspaces = readIntelligenceWorkspaceTargets(String(intelligenceWorkspaceBytes));
+  assert.equal(intelligenceWorkspaces.length, inventory.portal.intelligenceWorkspaces,
+    "Intelligence workspace count drift");
+  assert.equal(intelligenceWorkspaces.filter(x => x.sourceState === "existing-read-only").length,
+    inventory.portal.sourceLabeledReadOnly, "Intelligence read-only inventory drift");
+  assert.equal(intelligenceWorkspaces.filter(x => x.sourceState === "gated").length,
+    inventory.portal.sourceLabeledGated, "Intelligence gated inventory drift");
   assert.equal(register.topics.length, 172, "Expected owner-provided 172-topic index");
   assert.equal(new Set(register.topics.map(x => x.url)).size, 172, "Duplicate HIG source URL");
   assert.equal(SURFACES.length, 6);
@@ -52,7 +97,11 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
     platformDecisions: 0, surfaceCells: 0, applicableProposals: 0,
     notApplicableProposals: 0, independentlyAcceptedSurfaceCells: 0,
     fullyAcceptedTopics: 0, acceptedWholeTopicNotApplicable: 0,
-    sourceClaimedVerifiedTopics: 0, sourceClaimedNotApplicableTopics: 0 };
+    sourceClaimedVerifiedTopics: 0, sourceClaimedNotApplicableTopics: 0,
+    portalModuleReviewTargets: portalModules.length,
+    intelligenceWorkspaceReviewTargets: intelligenceWorkspaces.length,
+    independentlyAcceptedPortalModules: 0,
+    independentlyAcceptedIntelligenceWorkspaces: 0 };
   for (const topic of register.topics) {
     assert.ok(topic.title && topic.url.startsWith("https://developer.apple.com/"));
     if (topic.guidelineReview === "reviewed") counts.reviewRecorded++;
@@ -104,8 +153,34 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
       inventoryJsonSha256: createHash("sha256").update(inventoryBytes).digest("hex"),
       inventorySnapshotSha: inventory.sourceSnapshotSha,
       ownerConstraints: ownerPath,
-      ownerConstraintsJsonSha256: createHash("sha256").update(ownerBytes).digest("hex") },
+      ownerConstraintsJsonSha256: createHash("sha256").update(ownerBytes).digest("hex"),
+      portalModuleCatalogue: portalModulePath,
+      portalModuleCatalogueSha256: createHash("sha256").update(portalModuleBytes).digest("hex"),
+      intelligenceWorkspaceCatalogue: intelligenceWorkspacePath,
+      intelligenceWorkspaceCatalogueSha256: createHash("sha256").update(intelligenceWorkspaceBytes).digest("hex") },
     selectedScope: SURFACES,
+    // These are extra source-derived review targets, NOT deployed modules or
+    // verified HIG implementation receipts. Their acceptance is separately gated.
+    moduleEvidenceTargets: {
+      portal: portalModules.map(module => ({
+        code: module.code, title: module.title, area: module.area,
+        sourceRoute: module.route,
+        declaredAuthorisedRoles: module.authorisedRoles,
+        sourceVisibleInNavigation: module.visibleInNavigation,
+        sourceWriteCapability: module.writeCapability,
+        sourceProductionStatus: module.productionStatus,
+        deployedSourceShaReceipt: null, protectedRoleTenantMfaReceipt: null,
+        accessibleJourneyReceipt: null, independentApprovalReceipt: null,
+        independentAcceptance: false
+      })),
+      intelligence: intelligenceWorkspaces.map(workspace => ({
+        ...workspace,
+        sourceCatalogue: intelligenceWorkspacePath,
+        deployedSourceShaReceipt: null, sourceDataRightsReceipt: null,
+        protectedRoleTenantMfaReceipt: null, accessibleJourneyReceipt: null,
+        independentApprovalReceipt: null, independentAcceptance: false
+      }))
+    },
     completion: counts,
     gates: {
       branchProtectionMainAndGhPages: "independently_verify",
@@ -125,10 +200,13 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   const registerBytes = readFileSync(registerPath);
   const inventoryBytes = readFileSync(inventoryPath);
   const ownerBytes = readFileSync(ownerPath);
+  const portalModuleBytes = readFileSync(portalModulePath);
+  const intelligenceWorkspaceBytes = readFileSync(intelligenceWorkspacePath);
   const matrix = buildSixSurfaceMatrix({
     register: JSON.parse(registerBytes), registerBytes,
     inventory: JSON.parse(inventoryBytes), inventoryBytes,
-    owner: JSON.parse(ownerBytes), ownerBytes
+    owner: JSON.parse(ownerBytes), ownerBytes,
+    portalModuleBytes, intelligenceWorkspaceBytes
   });
   const dest = "artifacts/apple-hig-production-audit/six-surface-evidence-matrix.json";
   mkdirSync(dirname(dest), { recursive: true });
