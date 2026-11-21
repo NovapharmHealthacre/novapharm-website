@@ -1,4 +1,5 @@
-import { readFile, stat } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { open } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { verifyUkNationalArchiveBytes } from '../../src/core/uk-national-source-archive-preflight.mjs';
 
@@ -18,9 +19,16 @@ function argumentsFrom(values) {
 try {
   const options = argumentsFrom(process.argv.slice(2));
   const file = options.get('--manifest');
-  const status = await stat(file);
-  if (!status.isFile() || status.size <= 0 || status.size > 20_000) throw new Error('Manifest size/format is invalid.');
-  const manifest = JSON.parse(await readFile(file,'utf8'));
+  // Read/validate through the same NOFOLLOW descriptor to avoid stat-to-open races.
+  const manifestHandle = await open(file, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+  let source;
+  try {
+    const status = await manifestHandle.stat();
+    if (!status.isFile() || status.size <= 0 || status.size > 20_000)
+      throw new Error('Manifest size/format is invalid.');
+    source = await manifestHandle.readFile({encoding: 'utf8'});
+  } finally { await manifestHandle.close(); }
+  const manifest = JSON.parse(source);
   const receipt = await verifyUkNationalArchiveBytes(manifest, {
     archivePath: options.get('--archive'),
     quarantineRoot: options.get('--root'),

@@ -91,3 +91,20 @@ test('CLI validates quarantined publisher fixture without disclosing source path
     assert.equal(output.includes('1,2'),false);
   }finally{await rm(root,{recursive:true,force:true});}
 });
+
+
+test('CLI refuses symlinked manifests instead of stat-then-reopen races',async()=>{
+  const {spawnSync}=await import('node:child_process');
+  const root=await mkdtemp(join(tmpdir(),'uk-cli-link-'));
+  try{
+    const archive=join(root,'source.csv');const manifest=join(root,'source.json');
+    const link=join(root,'linked.json');
+    await writeFile(archive,'a,b\n1,2\n');
+    await writeFile(manifest,JSON.stringify(fixture('nhsbsa.epd')));
+    await symlink(manifest,link);
+    const result=spawnSync(process.execPath,[new URL('./data/verify-uk-national-source-archive.mjs',import.meta.url).pathname,'--manifest',link,'--archive',archive,'--root',root],{encoding:'utf8'});
+    assert.equal(result.status,1);
+    assert.match(result.stderr,/preflight refused/);
+    assert.equal(result.stdout,'');
+  }finally{await rm(root,{recursive:true,force:true});}
+});
