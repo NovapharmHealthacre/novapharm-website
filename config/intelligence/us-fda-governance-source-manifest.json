@@ -1,0 +1,100 @@
+{
+  "manifestVersion": "2026-11-21.1",
+  "publisher": "US Food and Drug Administration",
+  "jurisdiction": "US",
+  "classification": "official_public_regulatory_research",
+  "policy": "quarantined_research_only",
+  "admissionPermitted": false,
+  "independentRegulatorySignoff": "not_granted",
+  "independentLegalRightsSignoff": "not_granted",
+  "sourceTypes": [
+    {
+      "kind": "labels",
+      "sourceId": "us.fda.openfda-labels",
+      "documentation": "https://open.fda.gov/apis/drug/label/",
+      "endpoint": "https://api.fda.gov/drug/label.json",
+      "identityKeys": [
+        "setId",
+        "effectiveDate"
+      ],
+      "version": "source_observed",
+      "rightsStatus": "pre_screen_only",
+      "thirdPartyExceptionReview": "pending",
+      "refresh": "on_demand_readonly",
+      "rawPatientDataAllowed": false,
+      "acceptForCommercialUse": false
+    },
+    {
+      "kind": "approvals",
+      "sourceId": "us.fda.openfda.approvals",
+      "documentation": "https://open.fda.gov/apis/drug/drugsfda/",
+      "endpoint": "https://api.fda.gov/drug/drugsfda.json",
+      "identityKeys": [
+        "applicationNumber"
+      ],
+      "version": "source_observed",
+      "rightsStatus": "pre_screen_only",
+      "thirdPartyExceptionReview": "pending",
+      "refresh": "on_demand_readonly",
+      "rawPatientDataAllowed": false,
+      "acceptForCommercialUse": false
+    },
+    {
+      "kind": "ndc",
+      "sourceId": "us.fda.openfda.ndc",
+      "documentation": "https://open.fda.gov/apis/drug/ndc/",
+      "endpoint": "https://api.fda.gov/drug/ndc.json",
+      "identityKeys": [
+        "productNdc"
+      ],
+      "version": "source_observed",
+      "rightsStatus": "pre_screen_only",
+      "thirdPartyExceptionReview": "pending",
+      "refresh": "on_demand_readonly",
+      "rawPatientDataAllowed": false,
+      "acceptForCommercialUse": false
+    },
+    {
+      "kind": "adverse-events",
+      "sourceId": "us.fda.openfda.adverse-events",
+      "documentation": "https://open.fda.gov/apis/drug/event/",
+      "endpoint": "https://api.fda.gov/drug/event.json",
+      "identityKeys": [
+        "query",
+        "retrievedAt"
+      ],
+      "version": "source_observed_count_only",
+      "rightsStatus": "pre_screen_only",
+      "thirdPartyExceptionReview": "pending",
+      "refresh": "on_demand_readonly",
+      "rawPatientDataAllowed": false,
+      "acceptForCommercialUse": false
+    },
+    {
+      "kind": "recalls",
+      "sourceId": "us.fda.openfda.recalls",
+      "documentation": "https://open.fda.gov/apis/drug/enforcement/",
+      "endpoint": "https://api.fda.gov/drug/enforcement.json",
+      "identityKeys": [
+        "recallNumber"
+      ],
+      "version": "source_observed",
+      "rightsStatus": "pre_screen_only",
+      "thirdPartyExceptionReview": "pending",
+      "refresh": "on_demand_readonly",
+      "rawPatientDataAllowed": false,
+      "acceptForCommercialUse": false
+    }
+  ],
+  "evidenceLinks": [
+    "https://open.fda.gov/terms/",
+    "https://open.fda.gov/license/"
+  ],
+  "usageLimitations": [
+    "An NDC is not FDA marketing approval",
+    "FAERS is spontaneous reporting, not causality or incidence",
+    "Regulatory status, safety, supply and license must be checked against original competent authority records",
+    "openFDA datasets and third-party content exceptions require individual review",
+    "This manifest is not a data-license, clinical acceptance or customer publication approval"
+  ]
+}
