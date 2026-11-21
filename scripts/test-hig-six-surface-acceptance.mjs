@@ -10,12 +10,15 @@ const inventoryBytes = readFileSync("docs/design/apple-hig-runtime-source-scope-
 const ownerBytes = readFileSync("config/intelligence/owner-production-constraints.json");
 const inventory = JSON.parse(inventoryBytes);
 const owner = JSON.parse(ownerBytes);
+const portalModuleBytes = readFileSync("packages/portal-contracts/src/module-catalog.json");
+const intelligenceWorkspaceBytes = readFileSync("apps/portal/data/intelligence-workspaces.ts");
 const create = (r = register, o = owner) =>
   buildSixSurfaceMatrix({
     register: r, inventory, owner: o,
     registerBytes: r === register ? registerBytes : Buffer.from(JSON.stringify(r)),
     inventoryBytes,
-    ownerBytes: o === owner ? ownerBytes : Buffer.from(JSON.stringify(o))
+    ownerBytes: o === owner ? ownerBytes : Buffer.from(JSON.stringify(o)),
+    portalModuleBytes, intelligenceWorkspaceBytes
   });
 
 test("owner-selected six distinct surfaces produce a traceable 172-by-six evidence matrix", () => {
@@ -31,6 +34,10 @@ test("owner-selected six distinct surfaces produce a traceable 172-by-six eviden
   assert.equal(matrix.completion.surfaceCells, 1032);
   assert.equal(matrix.completion.applicableProposals, 684);
   assert.equal(matrix.completion.notApplicableProposals, 348);
+  assert.equal(matrix.completion.portalModuleReviewTargets, 54);
+  assert.equal(matrix.completion.intelligenceWorkspaceReviewTargets, 22);
+  assert.equal(matrix.completion.independentlyAcceptedPortalModules, 0);
+  assert.equal(matrix.completion.independentlyAcceptedIntelligenceWorkspaces, 0);
   assert.equal(matrix.completion.fullyAcceptedTopics, 0);
   assert.equal(matrix.completion.acceptedWholeTopicNotApplicable, 0);
   assert.equal(matrix.completion.independentlyAcceptedSurfaceCells, 0);
@@ -88,6 +95,8 @@ test("all three evidence input digests match the exact parsed source files", () 
   assert.equal(matrix.source.sha256, sha256(registerBytes));
   assert.equal(matrix.source.inventoryJsonSha256, sha256(inventoryBytes));
   assert.equal(matrix.source.ownerConstraintsJsonSha256, sha256(ownerBytes));
+  assert.equal(matrix.source.portalModuleCatalogueSha256, sha256(portalModuleBytes));
+  assert.equal(matrix.source.intelligenceWorkspaceCatalogueSha256, sha256(intelligenceWorkspaceBytes));
 });
 
 test("reject mismatched source objects and bytes before generating evidence", () => {
@@ -108,4 +117,72 @@ test("reject mismatched source objects and bytes before generating evidence", ()
   assert.throws(() => buildSixSurfaceMatrix({
     register, inventory, owner: changedOwner, registerBytes, inventoryBytes, ownerBytes
   }), /Owner constraints must match hashed owner bytes/);
+});
+
+test("54 Portal modules preserve exact role-scoped source routes, but earn no production acceptance", () => {
+  const matrix = create();
+  const modules = matrix.moduleEvidenceTargets.portal;
+  assert.equal(modules.length, 54);
+  assert.equal(new Set(modules.map(x => x.code)).size, 54);
+  assert.equal(new Set(modules.map(x => x.sourceRoute)).size, 54);
+  assert.equal(modules.filter(x => x.sourceVisibleInNavigation).length, 48);
+  assert.equal(modules.filter(x => !x.sourceVisibleInNavigation).length, 6);
+  for (const module of modules) {
+    assert.ok(module.declaredAuthorisedRoles.length > 0);
+    assert.equal(module.independentAcceptance, false);
+    assert.equal(module.deployedSourceShaReceipt, null);
+    assert.equal(module.protectedRoleTenantMfaReceipt, null);
+    assert.equal(module.accessibleJourneyReceipt, null);
+    assert.equal(module.independentApprovalReceipt, null);
+  }
+});
+
+test("22 Intelligence workspace candidates are individually scoped but not deployed or accepted", () => {
+  const matrix = create();
+  const ws = matrix.moduleEvidenceTargets.intelligence;
+  assert.equal(ws.length, 22);
+  assert.equal(new Set(ws.map(x => x.slug)).size, 22);
+  assert.equal(ws.filter(x => x.sourceState === "existing-read-only").length, 5);
+  assert.equal(ws.filter(x => x.sourceState === "gated").length, 17);
+  for (const workspace of ws) {
+    assert.equal(workspace.independentAcceptance, false);
+    assert.equal(workspace.deployedSourceShaReceipt, null);
+    assert.equal(workspace.sourceDataRightsReceipt, null);
+    assert.equal(workspace.protectedRoleTenantMfaReceipt, null);
+    assert.equal(workspace.accessibleJourneyReceipt, null);
+    assert.equal(workspace.independentApprovalReceipt, null);
+  }
+});
+
+test("module inventory drift fails closed rather than silently losing routes", () => {
+  const incomplete = JSON.parse(portalModuleBytes);
+  incomplete.pop();
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes: Buffer.from(JSON.stringify(incomplete)), intelligenceWorkspaceBytes
+  }), /Portal module count drift/);
+
+  const repeated = JSON.parse(portalModuleBytes);
+  repeated[1].route = repeated[0].route;
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes: Buffer.from(JSON.stringify(repeated)), intelligenceWorkspaceBytes
+  }), /Duplicate Portal module route/);
+});
+
+test("Intelligence catalogue drift rejects missing and duplicate workspaces", () => {
+  const content = String(intelligenceWorkspaceBytes);
+  const missing = content.replace('slug: "medicine-search"', 'key: "medicine-search"');
+  assert.notEqual(missing, content);
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(missing)
+  }), /Intelligence workspace count drift/);
+
+  const duplicate = content.replace('slug: "medicine-overview"', 'slug: "medicine-search"');
+  assert.notEqual(duplicate, content);
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(duplicate)
+  }), /Duplicate Intelligence workspace slug/);
 });
