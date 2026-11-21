@@ -49,6 +49,14 @@ function pathsFromHTML(html, basePath) {
   }
   return result;
 }
+// Regression check: source link/asset extraction must never drop navigation.
+const parserFixture = '<a href="/about/">About</a><img src="/assets/site.png"><link href="/assets/site.css">';
+const parserTargets = pathsFromHTML(parserFixture, "/");
+if (!parserTargets.has("/about/") || !parserTargets.has("/assets/site.png") ||
+    !parserTargets.has("/assets/site.css")) {
+  throw new Error("Public navigation/asset parser is incorrectly escaped or incomplete");
+}
+
 async function get(url, method="GET") {
   const reqUrl = new URL(url,origin);
   reqUrl.searchParams.set("restoration_audit",token);
@@ -85,14 +93,18 @@ async function boundedMap(items, workers, check) {
     }
   }));
 }
-const pagePaths = new Set(["/","/quantum-research/","/products/nutraxin/bag/","/products/nutraxin/account/","/products/esco/","/products/esco/bag/"]);
+const pagePaths = new Set(["/","/quantum-research/","/products/nutraxin/bag/","/products/nutraxin/account/","/products/esco/","/products/esco/bag/","/products/marketplace/","/products/track/"]);
 const outbound = new Map();
 const checkedPages = [];
 try {
   const xml = await get("/sitemap.xml");
-  for (const p of sitemapPaths(xml)) pagePaths.add(p);
+  const indexable = sitemapPaths(xml);
+  for (const p of indexable) pagePaths.add(p);
+  if (!indexable.has("/products/marketplace/")) failures.push({path:"/sitemap.xml",issue:"392-product Marketplace must be indexable"});
+  if (indexable.has("/products/track/")) failures.push({path:"/sitemap.xml",issue:"Private-reference order tracking must not be indexable"});
+  if (indexable.has("/products/esco/bag/") || indexable.has("/quantum-research/")) failures.push({path:"/sitemap.xml",issue:"Private bag/research included in public sitemap"});
 } catch(error){failures.push({path:"/sitemap.xml",issue:String(error).slice(0,150)});}
-if(pagePaths.size<64) failures.push({path:"/sitemap.xml",issue:"Missing public sitemap plus protected-visibility catalogue/Bag route coverage: "+pagePaths.size});
+if(pagePaths.size<66) failures.push({path:"/sitemap.xml",issue:"Missing restored Marketplace, order tracking or public sitemap route coverage: "+pagePaths.size});
 await boundedMap([...pagePaths],6,async path=>{
   try {
     const html=await get(path);
@@ -105,6 +117,24 @@ await boundedMap([...pagePaths],6,async path=>{
          !html.includes("/products/nutraxin/") ||
          !html.includes("/assets/css/products-editorial.css"))
         throw Error("Outdated pre-restoration Products overview is still published");
+    }
+    if(path==="/products/marketplace/"){
+      if(!html.includes('data-commerce-marketplace') ||
+         (html.match(/class="mp-source-index-link"/g)||[]).length!==392 ||
+         !html.includes('/assets/js/commerce-marketplace.js') ||
+         !hasExactCanonical(html, "/products/marketplace/"))
+        throw Error("Governed 392-product Marketplace or canonical is absent");
+      if(/<meta\s+name=["']robots["']\s+content=["']noindex/i.test(html))
+        throw Error("Public Marketplace should be indexable");
+    }
+    if(path==="/products/track/"){
+      if(!html.includes('data-np-order-lookup') ||
+         !html.includes('/assets/js/commerce-order-track.js') ||
+         !html.includes('name="order_ref"') ||
+         !hasExactCanonical(html, "/products/track/"))
+        throw Error("Secure-reference order tracking UI or canonical missing");
+      if(!/<meta\s+name=["']robots["']\s+content=["']noindex,\s*follow["']/i.test(html))
+        throw Error("Customer order references must remain noindex");
     }
     if(path==="/products/esco/"){
       if(!html.includes("data-esco-catalogue") || (html.match(/data-esco-entry/g)||[]).length<373)
@@ -128,6 +158,16 @@ await boundedMap([...pagePaths],6,async path=>{
     checkedPages.push({path,links:references.size});
   } catch(error) {failures.push({path,issue:"Page source "+String(error).slice(0,150)});}
 });
+try {
+  const commerce = JSON.parse(await get("/assets/data/commerce-marketplace.json"));
+  if(commerce.schema !== "novapharm-public-merchant-discovery-v1" ||
+     commerce.sourceProductCount !== 392 || commerce.notPaymentAuthority !== true ||
+     !Array.isArray(commerce.products) || commerce.products.length !== 392 ||
+     commerce.products.filter(x=>x.brand==="Nutraxin").length !== 19 ||
+     commerce.products.filter(x=>x.brand==="ESCO").length !== 373 ||
+     commerce.products.some(x=>x.cardCheckoutAuthority!==false || x.availabilityQuantity!==null))
+    throw Error("392-SKU public Commerce data contract violated");
+} catch(error) { failures.push({path:"/assets/data/commerce-marketplace.json",issue:String(error).slice(0,150)}); }
 const targets=[...outbound.keys()].filter(x=>x!=='/');
 if(targets.length>800) failures.push({path:"/",issue:"Unexpected internal link/asset expansion: "+targets.length});
 const inspected=targets.slice(0,800);
@@ -146,7 +186,7 @@ await boundedMap(inspected,8,async target=>{
   }
 });
 const summary={timestamp:new Date().toISOString(),origin,
-  scope:"Read-only cache-bypassed GET/HEAD of public sitemap, noindex quantum reference and two Nutraxin customer-facing public routes; no authentication, form submission or payment",
+  scope:"Read-only cache-bypassed GET/HEAD of public sitemap, Nutraxin/ESCO bags, 392-item Marketplace and noindex order-status page; no authentication, order lookup, form submission or payment",
   pagesExpected:pagePaths.size,pagesLoaded:checkedPages.length,
   uniqueInternalTargets:targets.length,assetsChecked:assets,linksChecked:links,
   failures:failures.length,errors:failures.slice(0,100)};

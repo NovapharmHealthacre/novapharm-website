@@ -81,6 +81,17 @@ await Promise.all([
   check("/products/esco/","text/html",html=>{
     assert(html.includes("data-esco-catalogue")&&(html.match(/data-esco-entry/g)||[]).length===373,"373-product ESCO missing");
   }),
+  check("/products/esco/bag/","text/html",html=>{
+    assert(html.includes("data-esco-bag-items")&&html.includes("Your ESCO Bag"),"ESCO Bag markup missing");
+    assert(canonicalTagMatches(html,"/products/esco/bag/"),"ESCO Bag canonical missing or wrong");
+    assert(openGraphTagMatches(html,"/products/esco/bag/"),"ESCO Bag social URL inherited from Products");
+    const robots=html.match(/<meta\b[^>]*\sname=["']robots["'][^>]*>/gi)||[];
+    assert(robots.length===1,"ESCO Bag must have exactly one robots directive");
+    assert(/\scontent=["']noindex,\s*follow["']/.test(robots[0]),"ESCO Bag must be noindex, follow");
+    assert(!/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i.test(html),"ESCO Bag inherited Products WebPage structured data");
+    assert(html.includes('<meta property="og:title" content="Your ESCO Bag | NovaPharm">'),"ESCO Bag inherited public Products social title");
+    assert(!html.includes('data-order-payment-card')&&!html.includes('data-customer-address'),"ESCO Bag must not embed private customer details");
+  }),
   check("/products/marketplace/","text/html",html=>{
     assert(html.includes('data-commerce-marketplace')&&html.includes("Everything, together."),"New marketplace template missing");
     assert((html.match(/class="mp-source-index-link"/g)||[]).length===392,"392 product search links not published");
