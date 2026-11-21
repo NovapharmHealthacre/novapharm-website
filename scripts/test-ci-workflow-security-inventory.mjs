@@ -25,7 +25,7 @@ test("complete workflow inventory forbids unpinned Actions and privileged PR-tar
   }
 });
 
-test("PR workflows with write grants only stage nonlive restoration branches after protected main merges", () => {
+test("PR validators are read-only; source-write jobs only stage nonlive branches after a main push", () => {
   const found = [];
   for (const file of workflows) {
     const body = readFileSync(join(root, file), "utf8");
@@ -33,6 +33,28 @@ test("PR workflows with write grants only stage nonlive restoration branches aft
     found.push(file);
     assert.ok(allowedCandidateWriters.has(file),
       "Unexpected PR workflow with repository source write grants: " + file);
+    assert.match(body, /^permissions:\s*\n\s*contents: read\s*$/m,
+      "Globally restrict all PR workflow credentials to read-only: " + file);
+    const writer = ({
+      "stage-safe-commerce-restoration.yml": "stage-commerce",
+      "stage-safe-editorial-restoration.yml": "prepare-candidate",
+      "stage-safe-esco-restoration.yml": "stage-esco",
+    })[file];
+    const prIndex = body.indexOf("\n  validate-pr:\n");
+    const writerIndex = body.indexOf("\n  " + writer + ":\n");
+    assert.ok(prIndex >= 0 && writerIndex > prIndex,
+      "PR and write jobs must be structurally isolated: " + file);
+    const prJob = body.slice(prIndex, writerIndex);
+    const writerJob = body.slice(writerIndex);
+    assert.match(prJob, /^\s{4}if:\s*github.event_name == 'pull_request'\s*$/m);
+    assert.match(prJob, /^\s{4}permissions:\s*\n\s{6}contents: read\s*$/m);
+    assert.match(prJob, /github.event.pull_request.head.sha/,
+      "PR tests must check out immutable source head: " + file);
+    assert.doesNotMatch(prJob, /\bcontents:\s*write\b|\bgit\s+-C\s+published\s+push\b/,
+      "Read-only PR job must not have any GitHub write path: " + file);
+    assert.match(writerJob, /^\s{4}if:\s*github.event_name == 'push'\s*$/m);
+    assert.match(writerJob, /^\s{4}permissions:\s*\n\s{6}contents: write\s*$/m);
+
     assert.match(body, /if:\s*github\.event_name == 'push'/,
       "Candidate branch mutations must never run during PR validation: " + file);
     assert.match(body, /git -C published push origin/,
