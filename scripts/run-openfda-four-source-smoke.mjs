@@ -31,7 +31,7 @@ for (const kind of FDA_EVIDENCE_KINDS) {
     await response.body?.cancel();
     continue;
   }
-  if (!/\\bapplication\\/json\\b/i.test(response.headers.get("content-type") || "")) {
+  if (!/\bapplication\/json\b/i.test(response.headers.get("content-type") || "")) {
     throw new Error(kind + " publisher returned an unexpected content type");
   }
   const claim = Number(response.headers.get("content-length") || 0);
