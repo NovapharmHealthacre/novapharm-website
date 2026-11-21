@@ -5942,8 +5942,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 12,
-      "referenceCount": 26,
+      "usageCount": 13,
+      "referenceCount": 27,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5954,6 +5954,7 @@
         "scripts/apply-corporate-product-discipline.mjs",
         "scripts/audit-published-critical-assets-parity.mjs",
         "scripts/audit-restored-public-routes.mjs",
+        "scripts/check-restored-pages-content-baseline.mjs",
         "scripts/programme/validate-post-pr53-candidate.mjs",
         "scripts/stage-pages-artifact.mjs",
         "scripts/test-published-critical-assets-parity.mjs"
