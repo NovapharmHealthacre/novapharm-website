@@ -27,3 +27,17 @@ The independent read-only GitHub Actions run [44830167681](https://github.com/No
 The protected Portal keyboard-search remediation is separately proposed in [PR #993](https://github.com/NovapharmHealthacre/novapharm-website/pull/993) and must pass latest exact-head browser and security checks and later authenticated deployment review.
 
 **Production HIG acceptance remains 0/172** until the canonical source ledger is individually updated with platform-appropriate real-world release receipts and genuinely independent approval. Source archive checks, link checks, candidate PRs, browser tests against synthetic tenants and upstream GitHub green checks cannot alone change that number.
+
+
+## Continuation — additional independently read original Apple disk-image bytes
+
+A subsequent direct Library-byte inspection on 21 November 2026 successfully rechecked two of the eight previously outstanding files. Both entire files were streamed through SHA-256; the final 512-byte trailer begins with the UDIF \`koly\` signature, and the recorded UDIF footer version is 4.
+
+| Additional original file | Size (bytes) | Complete-file SHA-256 | Container check |
+| --- | ---: | --- | --- |
+| \`Icon_Composer_27.3_beta(1).dmg\` | 20,005,376 | \`11ba21a40d028ea1c49cf81bb410c8acba361272fbd9e1816a8aaad628572939\` | UDIF v4, \`koly\` footer present |
+| \`Bezel-MacBook-Air-M5.dmg\` | 46,121,412 | \`b6d7949b35b8bd407e23676a272c096731200418f291d11593d09f3b4ada9222\` | UDIF v4, \`koly\` footer present |
+
+**Revised raw-byte recheck coverage: 26/32 original owner attachments** (24 in the earlier checkpoint above, plus these two). The other six were located and materialized, but a processing-runtime failure occurred before their independent complete-file hashes, UDIF footer or ZIP archive-structure/CRC tests could be finished. They therefore **remain explicitly unverified**: \`SF-Symbols-27(1).dmg\`, \`SF-Pro(1).dmg\`, \`SF-Compact(1).dmg\`, \`Core_AI_Debugger(1).dmg\`, \`Download-on-the-App-Store(1).zip\`, \`Download-on-the-Mac-App-Store(1).zip\`.
+
+**Limitations:** A valid disk-image footer and whole-file SHA-256 establish limited container/file integrity, not Apple signature trust, licensing rights, installer execution, font deployment, native app behavior, webpage conformance, or independent approval. No proprietary contents, fonts or installer binaries were copied into this public source repository. HIG independently production-accepted topics remain **0/172**.
