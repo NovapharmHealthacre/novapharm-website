@@ -1235,7 +1235,6 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
     "infra/aws/fda-private-jwt-route.cfn.json",
     "docs/intelligence/fda-six-gate-production-acceptance-20261121.md",
     "scripts/test-fda-private-release-plan.mjs",
-    "scripts/aws/contact-release-routing.test.mjs",
     ".github/workflows/intelligence-fda-cross-platform-contracts.yml"
   ];
   for (const workflowName of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
@@ -1245,6 +1244,11 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
     const entries = line.trim().replace(/\)$/, "").split("|");
     for (const path of protectedFiles)
       assert.ok(entries.includes(path), workflowName + " must exclude exact source-only path " + path);
+    assert.equal(entries.includes("scripts/aws/contact-release-routing.test.mjs"), false,
+      "Publisher policy/test changes must remain neutral, never automatically private");
+    assert.ok(workflow.includes("scripts/aws/contact-release-routing.test.mjs|") ||
+      workflow.includes("|scripts/aws/contact-release-routing.test.mjs)"),
+      "Publisher policy file must retain its neutral classification");
     for (const path of [
       "server.mjs",
       "apps/portal/app/gateway/[...path]/route.ts",
