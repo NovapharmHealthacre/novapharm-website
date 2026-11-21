@@ -14,12 +14,18 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "17 3 * * 2"
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
 
 permissions:
   contents: read
 
 jobs:
   audit-public-routes:
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -36,9 +42,11 @@ jobs:
           node --check scripts/audit-restored-public-routes.mjs
           node --test scripts/test-hig-public-route-signals.mjs scripts/test-reconcile-live-public-routes.mjs
       - name: Audit every public route against live custom domain
+        # A review change must not be blocked by the production drift it detects.
+        if: github.event_name != 'pull_request'
         run: node scripts/audit-restored-public-routes.mjs
       - name: Preserve report even when production drift is detected
-        if: always()
+        if: ${{ always() && github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: novapharm-live-route-audit

@@ -11,6 +11,42 @@ function attribute(tag, name) {
   return match ? (match[1] ?? match[2]) : null;
 }
 
+export const MANAGED_CONTACT_ORIGIN = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+
+// This detects a lost or substituted production form. It cannot accept intake or delivery.
+export function inspectManagedContactMarkup(html) {
+  if (typeof html !== "string") throw new TypeError("Public Contact markup must be a string");
+  const markup = html.replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<template\b[^>]*>[\s\S]*?<\/template\s*>/gi, "")
+    .replace(/(<script\b[^>]*>)[\s\S]*?<\/script\s*>/gi, "$1</script>");
+  const forms = [...markup.matchAll(/<form\b[^>]*>[\s\S]*?<\/form\s*>/gi)].map(match => match[0]);
+  const open = form => form.slice(0, form.indexOf(">") + 1);
+  const flagged = (tag, flag) => new RegExp("\\s" + flag + "(?=\\s|=|/?>)", "i").test(tag);
+  const managed = forms.filter(form => flagged(open(form), "data-live-b2b-enquiry-form"));
+  const emailDraftOnly = forms.some(form => flagged(open(form), "data-email-enquiry-form") ||
+    /^mailto:/i.test(attribute(open(form), "action") ?? ""));
+  const issues = [];
+  if (managed.length !== 1) issues.push("Expected exactly one managed business enquiry form");
+  if (emailDraftOnly) issues.push("Email-draft form present on managed Contact");
+  for (const form of managed) {
+    if (attribute(open(form), "data-api-origin") !== MANAGED_CONTACT_ORIGIN) {
+      issues.push("Managed Contact is not pinned to the approved receiver");
+    }
+    const fields = [...form.matchAll(/<input\b[^>]*>/gi)].map(match => match[0]);
+    for (const name of ["privacyAcknowledgement", "safetyConfirmation"]) {
+      if (!fields.some(field => attribute(field, "name") === name &&
+          attribute(field, "type") === "checkbox" && flagged(field, "required"))) {
+        issues.push("Required Contact confirmation missing: " + name);
+      }
+    }
+  }
+  if (![...markup.matchAll(/<script\b[^>]*>/gi)].some(match =>
+    attribute(match[0], "src") === "/assets/js/contact-production.js")) {
+    issues.push("Managed Contact production client missing");
+  }
+  return { emailDraftOnly, issues };
+}
+
 export function inspectPublicHigSignals(html) {
   if (typeof html !== "string") throw new TypeError("Public markup must be a string");
   const htmlTag = html.match(/<html\b[^>]*>/i)?.[0] ?? "";
