@@ -15,8 +15,8 @@ import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
 import { ScienceResearchWorkspace } from "./science-research-workspace";
-import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 import { UsFdaEvidence } from "./us-fda-evidence";
+import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
 type Column = readonly [string, string, string?];
