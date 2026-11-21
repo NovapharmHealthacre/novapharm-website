@@ -59,7 +59,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node --test scripts/test-hig-independent-review-authenticity.mjs
-      - name: Check all 28 proposed N/A rationales and pending dispositions
+      - name: Check the dated packet's 28 N/A proposals and rationales
         run: node --test scripts/test-hig-na-disposition-review-packet.mjs
       - name: Check native iOS/Android readable controls and consent state
         run: node --test native/novapharm-intelligence-mobile/tests/hig-native-readable-controls.test.mjs
@@ -93,14 +93,19 @@ jobs:
         with:
           node-version: 24
       - name: Sample six fixed public routes via read-only HTML GET
+        id: html_sample
         env:
           HIG_SAMPLE_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Install locked browser-audit tools, no cloud accounts
+        # An HTML evidence failure must not suppress the separate browser audit.
+        id: browser_tools
+        if: ${{ !cancelled() && (steps.html_sample.outcome == 'success' || steps.html_sample.outcome == 'failure') }}
         run: |
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit
       - name: Inspect six fixed public routes in Chromium/WebKit; no form submission
+        if: ${{ !cancelled() && steps.browser_tools.outcome == 'success' }}
         env:
           HIG_RENDER_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs

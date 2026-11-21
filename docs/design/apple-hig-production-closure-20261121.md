@@ -60,3 +60,9 @@ a later independent approval. The generated ledger counts approved exclusions
 separately from production-verified topics. The live review readback remains
 unchanged: exact GitHub review event, approval state, independent reviewer, and
 matching PR head. No synthetic receipt is part of the canonical register.
+
+The first PR run's public HTML check failed on provenance and skipped browser
+sampling. The workflow now permits browser sampling after an HTML result of
+success or failure, but not on cancellation or when browser setup fails.
+Both evidence streams retain their own outcomes. This does not waive the
+provenance requirement or make browser output production acceptance.
