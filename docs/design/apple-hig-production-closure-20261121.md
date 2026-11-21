@@ -66,3 +66,13 @@ sampling. The workflow now permits browser sampling after an HTML result of
 success or failure, but not on cancellation or when browser setup fails.
 Both evidence streams retain their own outcomes. This does not waive the
 provenance requirement or make browser output production acceptance.
+
+## Accessibility Statement keyboard bypass
+
+The deployed page's link navigated to `#main-content` but did not give that
+landmark keyboard focus. The Next.js layout already supplies `tabIndex={-1}`;
+the managed static generator did not. The static Accessibility Statement now
+provides a focusable main landmark without adding a sequential Tab stop. The
+browser suites cover the candidate paths and the read-only production sample
+checks actual focus after activating the local skip link. The live result
+remains separate from the approved source and staged build.

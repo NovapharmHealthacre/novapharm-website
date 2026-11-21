@@ -1102,6 +1102,17 @@ test("optional read-only rendered public HIG evidence sampling",
                 };
               });
               row.keyboardFocusSequence.push(await observeFocusedElement());
+              if (pathname === "/legal/accessibility/") {
+                row.keyboardBypass = await page.evaluate(() => {
+                  const link = document.activeElement;
+                  const main = document.querySelector("main");
+                  return {
+                    firstTabReachedBypass: Boolean(main?.id && link?.matches("a.skip-link") &&
+                      link.getAttribute("href") === "#" + main.id),
+                    mainFocusReceived: false
+                  };
+                });
+              }
               for (let tabIndex = 1; tabIndex < 5; tabIndex += 1) {
                 await page.keyboard.press("Tab");
                 row.keyboardFocusSequence.push(await observeFocusedElement());
@@ -1121,6 +1132,23 @@ test("optional read-only rendered public HIG evidence sampling",
                 .filter(stop => stop.inViewport).length;
               row.keyboardFocusCueHeuristicCount = row.keyboardFocusSequence
                 .filter(stop => stop.cssFocusCueHeuristic).length;
+              if (row.keyboardBypass) {
+                if (!row.keyboardBypass.firstTabReachedBypass) {
+                  row.errors.push("Accessibility Statement first Tab did not reach its main-content bypass");
+                } else {
+                  // Only activate the inspected local fragment, never a form or external URL.
+                  const bypass = page.locator("a.skip-link").filter({ hasText: /skip to (main )?content/i });
+                  if (await bypass.count() === 1 && await bypass.evaluate(link =>
+                    link.getAttribute("href") === "#" + document.querySelector("main")?.id)) {
+                    await bypass.press("Enter");
+                    row.keyboardBypass.mainFocusReceived = await page.evaluate(() =>
+                      document.activeElement === document.querySelector("main"));
+                  }
+                  if (!row.keyboardBypass.mainFocusReceived) {
+                    row.errors.push("Accessibility Statement skip link did not move keyboard focus to main");
+                  }
+                }
+              }
               if (engine === "chromium" && viewport.name === "mobile-390") {
                 const audit = await new AxeBuilder({page})
                   .withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
@@ -1164,7 +1192,7 @@ test("optional read-only rendered public HIG evidence sampling",
     origin,sourceCommit:process.env.GITHUB_SHA || null,
     pullRequestHeadSha:process.env.HIG_PR_HEAD_SHA || null,
     sourceCommitMeaning:"GitHub Actions checkout SHA (often a synthetic PR merge commit); not the PR head and not the observed live origin SHA",
-    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
+    methodology:"Read-only published public Chromium/WebKit, five bounded sequential Tab focus observations, Accessibility Statement skip-link activation and axe on mobile Chromium only; CSS focus cue detection is heuristic, not a visual or assistive-technology audit",
     scope:"Six public routes, three screen widths (320, 390, 1440) and two engines; screenshots private to CI",
     cautions:["No authenticated roles, account submissions, billing or patient data",
       "Only five sampled Tab stops per case; no full keyboard, focus-visible, assistive-technology or WCAG audit",
