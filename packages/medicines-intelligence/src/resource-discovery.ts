@@ -20,8 +20,8 @@ export function parseReportingPeriod(value: string): ReportingPeriod | null {
   // Interpret a dated span as one quarter, never as a single month's activity.
   const quarterSpan = text.match(/\b(jan(?:uary)?|apr(?:il)?|jul(?:y)?|oct(?:ober)?)\s*(?:-|–|to)\s*(mar(?:ch)?|jun(?:e)?|sep(?:t(?:ember)?|t)?|dec(?:ember)?)\s*[, _-]*\s*((?:19|20)\d{2})\b/i);
   if (quarterSpan) {
-    const first = monthNames[quarterSpan[1].toLowerCase()];
-    const last = monthNames[quarterSpan[2].toLowerCase()];
+    const first = monthNames[(quarterSpan[1] ?? "").toLowerCase()];
+    const last = monthNames[(quarterSpan[2] ?? "").toLowerCase()];
     const year = Number(quarterSpan[3]);
     if (first && last === first + 2) {
       const value = Math.floor((first - 1) / 3) + 1;
