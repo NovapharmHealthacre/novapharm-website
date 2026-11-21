@@ -85,7 +85,7 @@ export function UsFdaEvidence() {
       }}>
         {kinds.map((entry) => <option key={entry.key} value={entry.key}>{entry.label}</option>)}
       </select>
-      <label htmlFor="npi-us-fda-term">Generic medicine name</label>
+      <label htmlFor="npi-us-fda-term">Medicine name for additional FDA datasets</label>
       <input id="npi-us-fda-term" value={drug} maxLength={64} autoComplete="off"
         onChange={(event) => { generation.current++; setDrug(event.target.value); setData(null); }}
         placeholder="e.g. apixaban" required />
