@@ -20,7 +20,7 @@ const expectedMinimumImages = 833;
 
 export function safePublishedImagePath(path) {
   if (typeof path !== "string" ||
-      !/^assets\/(?:brand|media)\/(?:[a-z0-9][a-z0-9._-]*\/)*[a-z0-9][a-z0-9._-]*\.(?:png|jpe?g|webp|avif|gif|svg|ico)$/i.test(path) ||
+      !/^assets\/(?:brand|media)\/(?:[a-z0-9][a-z0-9_-]*\/)*[a-z0-9][a-z0-9._-]*\.(?:png|jpe?g|webp|avif|gif|svg|ico)$/i.test(path) ||
       path.includes(".."))
     throw new Error("Unsafe or unapproved image path: " + String(path));
   return path;
