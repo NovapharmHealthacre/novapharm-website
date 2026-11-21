@@ -74,5 +74,5 @@ jobs:
         run: |
           set -euo pipefail
           echo "Validated licensed product media in the ephemeral CI runner."
-          echo "No git commit, push, PR mutation, release, or public image artifact upload is permitted."
+          echo "No source commits, branch pushes, PR mutation, release, or public image artifact upload is permitted."
           echo "Approved changes must be committed on a separately reviewed candidate branch."
