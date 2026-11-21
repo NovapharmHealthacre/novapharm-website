@@ -43,16 +43,20 @@ for relative in sorted(allowedFiles):
  changed.append(relative)
 after={p.relative_to(dst).as_posix():sha(p) for p in dst.rglob("*") if p.is_file() and ".git" not in p.parts}
 if any(after.get(p)!=v for p,v in before.items()):raise RuntimeError("An existing public website file was overwritten")
-# A read-only PR verification may find the approved seven-file public namespace
-# already present and byte-identical. Publishing/staging push jobs still fail closed
-# on an empty release: they never set the PR-only opt-in.
-if not changed and not (os.environ.get("NOVAPHARM_CI_ALLOW_NOOP") == "true" and os.environ.get("GITHUB_EVENT_NAME") == "pull_request"):
+# A no-change outcome is safe only after all seven approved Commerce files have
+# been validated as byte-identical to the published branch, and after the
+# homepage/CNAME/privacy/392-product invariants and overwrite guard pass.
+# PR checks are read-only. Reviewed main pushes may attest an identical release
+# but must not create another candidate branch or push any source.
+pr_identical=(os.environ.get("NOVAPHARM_CI_ALLOW_NOOP") == "true" and os.environ.get("GITHUB_EVENT_NAME") == "pull_request")
+main_identical=(os.environ.get("NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH") == "true" and os.environ.get("GITHUB_EVENT_NAME") == "push" and os.environ.get("GITHUB_REF") == "refs/heads/main")
+if not changed and not (pr_identical or main_identical):
  raise RuntimeError("No new commerce public files staged")
 if any(p not in allowedFiles for p in changed):raise RuntimeError("Stage escaped approved commerce paths")
 for relative in ("products/marketplace/index.html","products/track/index.html"):
  content=(dst/relative).read_text()
  for url in re.findall(r'(?:href|src)\s*=\s*["\'](/assets/[^"\'?#]+)',content,re.I):
   if not (dst/url.lstrip("/")).is_file():raise RuntimeError("Broken commerce asset "+url)
-out={"mode":"NON_LIVE_COMMERCE_RELEASE_CANDIDATE","parentPublicFileCount":len(before),"addedFiles":len(changed),"productCount":392,"nutraxinCount":19,"escoCount":373,"paymentAuthority":False,"customerData":False,"changedPaths":changed}
+out={"mode":"NON_LIVE_COMMERCE_RELEASE_CANDIDATE","parentPublicFileCount":len(before),"addedFiles":len(changed),"productCount":392,"nutraxinCount":19,"escoCount":373,"paymentAuthority":False,"customerData":False,"changedPaths":changed,"alreadyPublishedIdentical":not changed}
 report.parent.mkdir(parents=True,exist_ok=True);report.write_text(json.dumps(out,indent=2)+"\n")
 print("COMMERCE_SCOPED_STAGING_OK "+json.dumps({k:v for k,v in out.items() if k!="changedPaths"}))
