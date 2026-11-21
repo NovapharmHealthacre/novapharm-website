@@ -32,10 +32,11 @@ test("manual publishing and AWS-backed contact release retain their prior safety
   const live=readFileSync(policies[0].file,"utf8");
   const recovery=readFileSync(policies[1].file,"utf8");
   const aws=readFileSync(policies[2].file,"utf8");
-  for(const yaml of [live,recovery]){
+  for(const yaml of [live,recovery])
     assert.match(yaml,/github\.event_name != 'pull_request'/);
-    assert.match(yaml,/Prevent silent downgrade of a verified live contact service/);
-  }
+  assert.match(live,/Prevent silent downgrade of a verified live contact service/);
+  assert.match(recovery,/Stop recovery from downgrading an activated customer form/);
+  assert.match(recovery,/data-live-b2b-enquiry-form/);
   assert.match(aws,/Prove forward-only release ancestry and deploy evidence/);
   assert.match(aws,/check-pages-monotonic-release\.mjs/);
   assert.match(aws,/productionSignoff == "granted"/);
