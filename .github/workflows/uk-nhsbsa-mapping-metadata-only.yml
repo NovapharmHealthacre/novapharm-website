@@ -31,10 +31,10 @@ jobs:
           node-version: '24'
       - name: Verify NHSBSA source discovery and mapping period contracts without publisher requests
         run: |
-          node --experimental-strip-types --test packages/medicines-intelligence/test/source-contracts.test.ts
+          node --experimental-transform-types --test packages/medicines-intelligence/test/source-contracts.test.ts
       - name: Assert metadata-only source never issues a DataStore row probe
         run: |
-          node --input-type=module <<'NODE'
+          node --experimental-transform-types --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import { readFileSync } from 'node:fs';
           import { shouldProbeCkanDatastore, registryEntry } from './packages/medicines-intelligence/src/index.ts';
