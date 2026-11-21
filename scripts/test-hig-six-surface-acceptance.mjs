@@ -103,19 +103,19 @@ test("reject mismatched source objects and bytes before generating evidence", ()
   const changedRegister = structuredClone(register);
   changedRegister.topics[0].title += " (uncommitted change)";
   assert.throws(() => buildSixSurfaceMatrix({
-    register: changedRegister, inventory, owner, registerBytes, inventoryBytes, ownerBytes
+    register: changedRegister, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
   }), /Register object must match hashed register bytes/);
 
   const changedInventory = structuredClone(inventory);
   changedInventory.sourceSnapshotSha = "untracked-source";
   assert.throws(() => buildSixSurfaceMatrix({
-    register, inventory: changedInventory, owner, registerBytes, inventoryBytes, ownerBytes
+    register, inventory: changedInventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
   }), /Inventory object must match hashed inventory bytes/);
 
   const changedOwner = structuredClone(owner);
   changedOwner.productionSignoff = "granted";
   assert.throws(() => buildSixSurfaceMatrix({
-    register, inventory, owner: changedOwner, registerBytes, inventoryBytes, ownerBytes
+    register, inventory, owner: changedOwner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
   }), /Owner constraints must match hashed owner bytes/);
 });
 
