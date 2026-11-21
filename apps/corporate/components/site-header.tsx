@@ -8,8 +8,8 @@ const portalOrigin = process.env.PORTAL_ORIGIN ?? "https://portal.novapharmhealt
 
 export function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   return (
-    <header className="site-header">
-      <div className="shell header-inner">
+    <header className="site-header npd-header" data-site-header>
+      <div className="container shell header-inner npd-header-inner">
         <Brand />
         <DesktopNavigation items={navigation} portalOrigin={portalOrigin} locale={locale} />
         <MobileNavigation items={navigation} portalOrigin={portalOrigin} locale={locale} />
