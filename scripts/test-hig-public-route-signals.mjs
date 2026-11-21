@@ -54,6 +54,16 @@ test("a data-id attribute cannot impersonate a real skip-navigation target", () 
   assert.equal(inspectPublicHigSignals(html).skipLinkWithTarget, false);
 });
 
+test("inert content does not count as a server heading or a keyboard destination", () => {
+  const html = '<html lang=en><body><a class=skip-link href="#main">Skip</a>' +
+    '<template><main id="main"><h1>Template content</h1></main></template>' +
+    '<!-- <h1>Comment</h1> --><main><h1>Visible heading</h1></main></body></html>';
+  const result = inspectPublicHigSignals(html);
+  assert.equal(result.language, "en");
+  assert.equal(result.h1Elements, 1);
+  assert.equal(result.skipLinkWithTarget, false);
+});
+
 const contact = '<form data-live-b2b-enquiry-form data-api-origin="' + MANAGED_CONTACT_ORIGIN + '">' +
   '<input name="privacyAcknowledgement" type="checkbox" required>' +
   '<input type="checkbox" required name="safetyConfirmation"></form>' +

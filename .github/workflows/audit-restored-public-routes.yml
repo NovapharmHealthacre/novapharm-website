@@ -8,6 +8,8 @@ on:
       - scripts/test-hig-public-route-signals.mjs
       - scripts/reconcile-live-public-routes.mjs
       - scripts/test-reconcile-live-public-routes.mjs
+      - package.json
+      - package-lock.json
       - apps/corporate/data/nutraxin-product-register.json
       - sitemap.xml
       - .github/workflows/audit-restored-public-routes.yml
@@ -37,6 +39,9 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
+          cache: npm
+      - name: Install the locked HTML parser without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund --workspaces=false
       - name: Verify read-only HIG source-screening parser
         run: |
           node --check scripts/audit-restored-public-routes.mjs
