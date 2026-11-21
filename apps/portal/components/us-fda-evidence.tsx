@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { gatewayJson, professionalError } from "../lib/gateway";
 import styles from "./us-fda-evidence.module.css";
 
@@ -97,7 +97,7 @@ export function UsFdaEvidence() {
       <p>Source matching records: {data.matchedCountReported ?? "Not reported"}. Displayed: {data.records.length}.
         {kind === "adverse-events" ? " FAERS totals represent reports, not event rates or causation." : null}
       </p>
-      {data.records.map((record, i) => <article key={data.sourceId + i} className={styles.record}>
+      {data.records.map((record, i) => <article key={data.sourceId + JSON.stringify(record)} className={styles.record}>
         <h3>Source observation {i + 1}</h3>
         <dl>{Object.entries(record).map(([key, value]) =>
           <div key={key}><dt>{labelFor(key)}</dt><dd>{display(value)}</dd></div>)}</dl>
