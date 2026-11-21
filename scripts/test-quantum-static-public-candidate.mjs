@@ -47,10 +47,10 @@ test("standalone public candidate has no inline code, paid SDK or external runti
   // Source HTML is script-free. The approved public builder may inject one
   // exact, local RTL accessibility bootstrap; arbitrary/inline code remains forbidden.
   const approvedRtl = '<script src="/assets/js/rtl-localization.js"></script>';
-  const scripts = html.match(/<script\\b[\\s\\S]*?<\\/script>/gi) ?? [];
+  const scripts = html.match(/<script\b[\s\S]*?<\/script>/gi) ?? [];
   assert.ok(scripts.length <= 1, "At most one reviewed RTL bootstrap may be present");
   for (const script of scripts) assert.equal(script, approvedRtl, "Unexpected inline/external quantum script");
-  assert.doesNotMatch(html.replace(approvedRtl, ""), /<script\\b/i, "Unknown quantum script tag");
+  assert.doesNotMatch(html.replace(approvedRtl, ""), /<script\b/i, "Unknown quantum script tag");
   assert.doesNotMatch(html,/\/assets\/brand\/favicon\.svg/, "Existing root favicon fallback needs no duplicate inventory reference");
   assert.doesNotMatch(html, /https:\/\/(?!quantumai\.google\/|novapharmhealthcare\.com\/)/);
 });
