@@ -1,0 +1,47 @@
+name: Apple HIG six-surface independent-acceptance preparation
+
+on:
+  pull_request:
+    paths:
+      - scripts/build-hig-six-surface-acceptance.mjs
+      - scripts/test-hig-six-surface-acceptance.mjs
+      - docs/design/apple-hig-172-topic-acceptance-register.json
+      - docs/design/apple-hig-runtime-source-scope-20261120.json
+      - packages/portal-contracts/src/module-catalog.json
+      - apps/portal/data/intelligence-workspaces.ts
+      - apps/portal/components/wms-prototype-workspace-map.tsx
+      - docs/design/apple-hig-six-surface-acceptance-plan-20261121.md
+      - config/intelligence/owner-production-constraints.json
+      - .github/workflows/apple-hig-six-surface-acceptance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-matrix:
+    name: Generate 172-topic x 6-surface evidence gap ledger
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Assert source evidence and no invented approvals
+        run: node --test scripts/test-hig-six-surface-acceptance.mjs
+      - name: Build source-only independent-review evidence matrix
+        run: node scripts/build-hig-six-surface-acceptance.mjs
+      - name: Preserve proposed six-surface cells for reviewer
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-six-surface-review-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/apple-hig-production-audit/six-surface-evidence-matrix.json
+          if-no-files-found: error
+          retention-days: 30
