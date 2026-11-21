@@ -3,8 +3,9 @@
  * No HTTP, credentials, customer records or source facts are included.
  * Existing web workspace states and global source candidates remain non-live.
  */
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
+  BackHandler,
   FlatList,
   Platform,
   Pressable,
@@ -28,6 +29,7 @@ import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
 import { PrivateOperationsPreviewScreen } from "./PrivateOperationsPreviewScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+import { mobileBackDestination, moreDetailScreens } from "./preview-navigation";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
@@ -223,6 +225,20 @@ export default function App() {
     setScreen(value);
   };
 
+  // Android Back returns from a preview detail before it can exit the app.
+  // On top-level tabs the system retains normal Back behavior.
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      const destination = mobileBackDestination(screen, selectedWorkspace !== null);
+      if (destination === null) return false;
+      setSelectedWorkspace(null);
+      setScreen(destination);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [screen, selectedWorkspace]);
+
   const notice = (
     <View style={styles.notice}>
       <Text style={styles.noticeTitle}>Research preview · private and unconnected</Text>
@@ -274,6 +290,17 @@ export default function App() {
         <Text style={styles.appTitle} accessibilityRole="header">Intelligence</Text>
         <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
+
+      {moreDetailScreens.has(screen) && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back to More"
+          style={styles.backToMore}
+          onPress={() => changeScreen("more")}
+        >
+          <Text style={styles.backText}>Back to More</Text>
+        </Pressable>
+      )}
 
       {screen === "countries" ? (
         <CountryDirectoryScreen />
@@ -599,6 +626,7 @@ function createStyles(palette: MobilePalette) {
   regionLabelSelected: { color: palette.canvas },
   noResults: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 16 },
   back: { minHeight: 44, alignSelf: "flex-start", justifyContent: "center", marginBottom: 15 },
+  backToMore: { minHeight: 48, paddingHorizontal: 24, justifyContent: "center", alignItems: "flex-start", borderBottomWidth: 1, borderColor: palette.border },
   backText: { color: palette.primary, fontSize: 16, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },
