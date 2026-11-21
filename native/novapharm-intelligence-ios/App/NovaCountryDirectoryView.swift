@@ -38,9 +38,9 @@ struct NovaCountryDirectoryView: View {
                 VStack(alignment: .leading, spacing: 7) {
                     Text("COUNTRY RESEARCH DIRECTORY")
                         .font(.caption.weight(.semibold))
-                    Text("101 national scopes. 77 have candidate source references; 24 need further publisher research.")
+                    Text(NovaCountryCatalog.coverageStatement)
                         .font(.subheadline)
-                    Text("0 independently approved national sources. 0 customer-live countries. No medicine facts or private information are loaded.")
+                    Text("\(NovaCountryCatalog.licensedSources) independently approved national sources. \(NovaCountryCatalog.liveNationalCountries) customer-live countries. No medicine facts or private information are loaded.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
