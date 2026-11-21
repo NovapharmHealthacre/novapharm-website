@@ -54,5 +54,7 @@ jobs:
           cache: npm
       - name: Install reproducible checked-in dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
+      - name: Generate full and public-only local build fixtures without publishing
+        run: npm run build && npm run build:public-only
       - name: Run all registered cross-estate regression contracts
         run: node scripts/ci/verify-unified-ci-contract.mjs --run
