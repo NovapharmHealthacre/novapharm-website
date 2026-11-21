@@ -740,16 +740,16 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         })
       });
     });
-    await page.getByLabel("FDA dataset").selectOption("ndc");
+    await page.getByLabel("FDA dataset", { exact: true }).selectOption("ndc");
     await page.getByLabel("Medicine name for additional FDA datasets").fill("apixaban");
     await page.getByRole("button", { name: "Search FDA evidence" }).click();
     await page.getByText("12345-678", { exact: true }).waitFor();
     await page.getByText("Example labeler", { exact: true }).waitFor();
-    await page.getByLabel("FDA dataset").selectOption("adverse-events");
+    await page.getByLabel("FDA dataset", { exact: true }).selectOption("adverse-events");
     await page.getByRole("button", { name: "Search FDA evidence" }).click();
     await page.getByText(/Source matching records: 9\. Displayed: 0\./).waitFor();
     await page.getByText(/FAERS totals represent reports, not event rates or causation/).waitFor();
-    await page.getByLabel("FDA dataset").selectOption("recalls");
+    await page.getByLabel("FDA dataset", { exact: true }).selectOption("recalls");
     await page.getByRole("button", { name: "Search FDA evidence" }).click();
     await page.getByText("FDA extended evidence research has not been activated.", { exact: true }).waitFor();
     await inspectLayout(page, engine + " medicines-intelligence us-fda-extended-evidence");
