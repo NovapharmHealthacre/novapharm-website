@@ -1,6 +1,6 @@
 # GitHub ruleset activation — source-controlled import proposals
 
-**State: not installed.** These files are inert, version-controlled import proposals. A GitHub repository administrator must apply them through **Settings → Rules → Rulesets** after verifying the repository plan and exact required checks. A passing test or a merged PR does not alter GitHub protection or production access.
+**State: not installed.** Repository owner verification is mandatory. These files are inert, version-controlled import proposals. A GitHub repository administrator must apply them through **Settings → Rules → Rulesets** after verifying the repository plan and exact required checks. A passing test or a merged PR does not alter GitHub protection or production access.
 
 | Repository / branch | File | What it actually enforces *after* admin activation |
 |---|---|---|
