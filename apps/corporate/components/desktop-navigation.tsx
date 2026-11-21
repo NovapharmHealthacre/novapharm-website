@@ -128,6 +128,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const focusFirstLink = useRef(false);
+  const restoringEscapeFocus = useRef(false);
   const triggerRefs = useRef(new Map<string, HTMLAnchorElement>());
 
   useEffect(() => {
@@ -152,8 +153,13 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
       if (event.key !== "Escape" || !activeCategory) return;
       const trigger = triggerRefs.current.get(activeCategory);
       const inPanel = !!(event.target instanceof Element && event.target.closest(".npd-mega"));
+      if (inPanel) {
+        // Focus restoration must not reactivate the menu in onFocus.
+        restoringEscapeFocus.current = true;
+        trigger?.focus({ preventScroll: true });
+        window.requestAnimationFrame(() => { restoringEscapeFocus.current = false; });
+      }
       setActiveCategory(null);
-      if (inPanel) trigger?.focus({ preventScroll: true });
       event.preventDefault();
     };
     const closeAtBreakpoint = () => setActiveCategory(null);
@@ -224,7 +230,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
             else triggerRefs.current.delete(category.id);
           } : undefined}
           onPointerEnter={() => openFor(label)}
-          onFocus={() => openFor(label)}
+          onFocus={() => { if (!restoringEscapeFocus.current) openFor(label); }}
           onClick={(event) => {
             if (!category || !isDesktop() || event.button !== 0 ||
                 event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
