@@ -29,6 +29,14 @@ export function parseReportingPeriod(value: string): ReportingPeriod | null {
       return Object.freeze({ key: `${year}-Q${value}`, precision: "quarter", sortKey: year * 100 + value * 3, sourceText: quarterSpan[0] });
     }
   }
+  // Publisher resources can combine two months into one archive (for example,
+  // Scotland's board-level July–August 2026 file). Never report such an archive
+  // as a single accepted YYYY-MM partition. It requires a separate versioned
+  // date-range contract and explicit Quality reconciliation before ingestion.
+  const compactMonthRange = text.match(/(?:^|[^0-9])((?:19|20)\d{2})[_/-](0[1-9]|1[0-2])[_/-](0[1-9]|1[0-2])(?:[^0-9]|$)/i);
+  if (compactMonthRange && compactMonthRange[2] !== compactMonthRange[3]) return null;
+  const namedMonthRange = text.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[ \t]{0,12}(?:-|–|to)[ \t]{0,12}(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[ \t,_-]{0,12}((?:19|20)\d{2})\b/i);
+  if (namedMonthRange && monthNames[namedMonthRange[1]?.toLowerCase() ?? ""] !== monthNames[namedMonthRange[2]?.toLowerCase() ?? ""]) return null;
   const compactMonth = [...text.matchAll(/((?:19|20)\d{2})(0[1-9]|1[0-2])(?!\d)/g)].at(-1);
   if (compactMonth) {
     const year = Number(compactMonth[1]);

@@ -61,6 +61,11 @@ test("reporting-period discovery handles monthly, quarterly and named resources"
   assert.equal(parseReportingPeriod("Prescribed & Dispensed Jul - Sep 2026")?.key, "2026-Q3");
   assert.equal(parseReportingPeriod("Prescribed & Dispensed Apr \t-\t Jun \t2026")?.key, "2026-Q2");
   assert.equal(parseReportingPeriod("Prescribed & Dispensed Jul–Sep 2026")?.key, "2026-Q3");
+  // Scottish board data may combine July and August into one file; not a monthly partition.
+  assert.equal(parseReportingPeriod("Prescriptions in the Community Data by Board July - August 2026"), null);
+  assert.equal(parseReportingPeriod("hb_pitc2026_07_08.csv"), null);
+  assert.equal(parseReportingPeriod("Prescriptions in the Community Data by Board July 2026")?.key, "2026-07");
+
   // Regression: 100k tabs used to cause polynomial backtracking in the quarter-span regex.
   assert.equal(parseReportingPeriod("Prescribed Apr - Jun" + "\t".repeat(100_000) + "2026")?.key, "2026");
   assert.equal(parseReportingPeriod("Prescribed & Dispensed Oct - Dec 2026")?.key, "2026-Q4");
