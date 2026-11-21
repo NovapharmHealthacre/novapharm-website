@@ -155,8 +155,8 @@
         "scripts/test-ai-policy.mjs",
         "scripts/test-ci-public-ai-source-privacy.mjs",
         "scripts/test-ai-prompt-injection.mjs",
-        "scripts/test-ai-evaluation.mjs",
-        "scripts/test-ai-citations.mjs"
+        "scripts/test-nova-research-evaluation.mjs",
+        "scripts/test-nova-governed-medicine-answer.mjs"
       ]
     },
     "agi-alignment-ml-and-quantum-research": {
