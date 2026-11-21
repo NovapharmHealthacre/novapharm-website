@@ -9,6 +9,10 @@ on:
       - scripts/test-published-critical-assets-parity.mjs
       - .github/workflows/public-pages-byte-parity.yml
   workflow_dispatch:
+  # Ongoing read-only rollback monitoring; runs from the default branch only
+  # after this independently reviewed audit is merged. Never publishes.
+  schedule:
+    - cron: "23 4 * * 6"
 
 permissions:
   contents: read
