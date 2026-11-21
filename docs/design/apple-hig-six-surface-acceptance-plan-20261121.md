@@ -20,6 +20,14 @@
 - **Native iOS correction:** `native/novapharm-intelligence-ios/project.yml` and its SwiftUI app/Swift Testing/XCTest sources are present, alongside the separate `native/novapharm-intelligence-apple/Package.swift` library. The SwiftUI app uses development bundle `com.example.NovaPharmNativePreview` and `CODE_SIGNING_ALLOWED=NO`. Recognise this existing native engineering work. Neither an unsigned Simulator app nor the SwiftPM library is a signed iPhone/iPad production release.
 - Native Android `native/novapharm-intelligence-android/app/build.gradle.kts` builds `com.novapharm.intelligence.research` as an offline research/debug shell; Expo `native/novapharm-intelligence-mobile/app.json` remains a separate unsigned preview. Neither proves a signed customer-ready Android release.
 
+## Module-level traceability — new source-only targets
+
+The six-surface generator also extracts and validates the **54 actual entries** in `packages/portal-contracts/src/module-catalog.json` and the **22 authoritative definitions** in `apps/portal/data/intelligence-workspaces.ts`. It checks unique module codes/routes, 18 customer + 13 employee + 18 executive + five admin group counts, 48 navigation-visible versus six dependency-hidden entries, and five source-labelled read-only versus 17 gated Intelligence workspaces. The source file SHA-256 values are included to make catalogue changes and audit drift detectable.
+
+Each Portal target separately records its source route, declared authorised roles, navigation flag, write-capability declaration and source production status. Each Intelligence target records its slug/group/source state. **All 76 source-derived module/workspace targets have no production acceptance credit**: deployed image/URL, real signed-in synthetic role and MFA, tenant-isolation, source-rights, assistive technology and independent reviewer receipts are still blank. A visible source module does not prove a runtime route, and these 76 targets are **additional traceability inventory, not 76 more HIG topics or independent acceptances**. Distribution/WMS execution remains a separate end-to-end workflow acceptance scope, not inferred from warehouse-related Portal links.
+
+The module and Intelligence source inventories are now CI trigger paths; removal, route collision, source count drift and parsed-workspace duplication must fail closed until the inventory is deliberately reconciled and reviewed.
+
 ## Release & validation evidence per surface
 
 | Surface | Real source evidence | Required independent acceptance observations | Current release status |
