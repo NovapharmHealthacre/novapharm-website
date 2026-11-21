@@ -7,6 +7,9 @@ on:
       - 'packages/medicines-intelligence/src/resource-discovery.ts'
       - 'packages/medicines-intelligence/test/source-contracts.test.ts'
       - 'scripts/data/discover-medicines-sources.ts'
+      - 'src/core/intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs'
+      - 'scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs'
+      - 'scripts/test-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs'
       - '.github/workflows/uk-nhsbsa-mapping-metadata-only.yml'
   workflow_dispatch:
 
@@ -32,6 +35,36 @@ jobs:
       - name: Verify NHSBSA source discovery and mapping period contracts without publisher requests
         run: |
           node --experimental-transform-types --test packages/medicines-intelligence/test/source-contracts.test.ts
+      - name: Test bounded live publisher metadata reader without downloads
+        run: |
+          node --check src/core/intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs
+          node --check scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs
+          node --test scripts/test-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs
+      - name: Check one official NHSBSA CKAN package metadata response (no medicine rows)
+        env:
+          NODE_USE_ENV_PROXY: '1'
+        run: |
+          mkdir -p artifacts/uk-bnf-snomed-metadata
+          node scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs > artifacts/uk-bnf-snomed-metadata/receipt.json
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const x = JSON.parse(readFileSync('artifacts/uk-bnf-snomed-metadata/receipt.json', 'utf8'));
+          assert.equal(x.contract, 'novapharm.uk.nhsbsa.bnf-snomed.metadata-only.v1');
+          assert.equal(x.officialPublisherMetadataVerified, true);
+          assert.equal(x.publisherRowsRead, 0);
+          assert.equal(x.canPublish, false);
+          assert.equal(x.medicineDataAdmitted, false);
+          assert.equal(x.independentTerminologyRightsApproved, false);
+          console.log('Official NHSBSA publisher metadata checked; zero medicine rows or publication rights.');
+          NODE
+      - name: Retain a short-lived source metadata receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
+        with:
+          name: uk-bnf-snomed-publisher-metadata-receipt
+          path: artifacts/uk-bnf-snomed-metadata/receipt.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Assert metadata-only source never issues a DataStore row probe
         run: |
           node --experimental-transform-types --input-type=module <<'NODE'
