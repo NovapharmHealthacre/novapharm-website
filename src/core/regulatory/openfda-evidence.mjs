@@ -18,7 +18,10 @@ function reject(statusCode, message) {
   throw Object.assign(new Error(message), { statusCode });
 }
 function sanitizeTerm(value) {
-  const normalized = String(value ?? "").normalize("NFKC").trim().replace(/\s+/gu, " ");
+  const untrusted = String(value ?? "");
+  // Reject raw control characters before any whitespace normalization.
+  if (/[\p{Cc}\p{Cf}\p{Cs}]/u.test(untrusted)) reject(400, "Invalid control character in medicine name.");
+  const normalized = untrusted.normalize("NFKC").trim().replace(/\s+/gu, " ");
   if (!/^[A-Za-z][A-Za-z0-9 -]{1,63}$/u.test(normalized)) reject(400, "Enter a generic medicine name using 2–64 permitted characters.");
   return normalized;
 }
