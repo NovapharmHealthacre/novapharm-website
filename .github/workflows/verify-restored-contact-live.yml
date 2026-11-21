@@ -1,0 +1,43 @@
+name: Verify managed Contact form on actual public domain
+
+on:
+  pull_request:
+    paths:
+      - scripts/verify-restored-contact-live.mjs
+      - .github/workflows/verify-restored-contact-live.yml
+  workflow_dispatch:
+  # Deliberately no real contact POST; read-only production smoke check only.
+  schedule:
+    - cron: "43 4 * * *"
+  deployment_status:
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-contact:
+    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check live Contact, privacy notice, CSP, client and AWS health with no enquiry POST
+        run: node scripts/verify-restored-contact-live.mjs
+      - name: Retain redacted, read-only Contact acceptance receipts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-managed-contact-live-read-only
+          path: artifacts/site-restoration/live-contact-acceptance.json
+          if-no-files-found: warn
+          retention-days: 14
