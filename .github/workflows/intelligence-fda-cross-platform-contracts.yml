@@ -9,8 +9,10 @@ on:
       - 'scripts/test-fda-private-http-handler.mjs'
       - 'scripts/test-fda-governance-admission.mjs'
       - 'scripts/test-fda-native-gateway.mjs'
+      - 'scripts/test-fda-native-oidc-core.mjs'
       - 'scripts/test-fda-private-release-plan.mjs'
       - 'native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts'
+      - 'native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts'
       - 'native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift'
       - 'native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift'
       - 'native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift'
@@ -41,7 +43,7 @@ jobs:
           node --check src/core/regulatory/fda-data-admission.mjs
       - name: Run exhaustive negative authentication, data and mobile transport tests
         run: |
-          node --experimental-strip-types --test scripts/test-fda-private-http-handler.mjs scripts/test-fda-governance-admission.mjs scripts/test-fda-native-gateway.mjs scripts/test-fda-private-release-plan.mjs
+          node --experimental-strip-types --test scripts/test-fda-private-http-handler.mjs scripts/test-fda-governance-admission.mjs scripts/test-fda-native-gateway.mjs scripts/test-fda-native-oidc-core.mjs scripts/test-fda-private-release-plan.mjs
           node --test scripts/test-openfda-evidence.mjs scripts/test-openfda-evidence-wiring.mjs
       - name: Verify existing browser and customer publication remain denied
         run: |
