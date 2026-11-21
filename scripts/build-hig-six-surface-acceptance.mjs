@@ -35,7 +35,13 @@ const registerPath = "docs/design/apple-hig-172-topic-acceptance-register.json";
 const inventoryPath = "docs/design/apple-hig-runtime-source-scope-20261120.json";
 const ownerPath = "config/intelligence/owner-production-constraints.json";
 
-export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes }) {
+export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes, inventoryBytes, ownerBytes }) {
+  // A digest only proves provenance when its bytes actually describe the data
+  // being scored. Reject stale/mismatched objects rather than mislabel evidence.
+  assert.ok(registerBytes && inventoryBytes && ownerBytes, "All source input bytes are required");
+  assert.deepEqual(register, JSON.parse(registerBytes), "Register object must match hashed register bytes");
+  assert.deepEqual(inventory, JSON.parse(inventoryBytes), "Inventory object must match hashed inventory bytes");
+  assert.deepEqual(owner, JSON.parse(ownerBytes), "Owner constraints must match hashed owner bytes");
   assert.equal(register.topics.length, 172, "Expected owner-provided 172-topic index");
   assert.equal(new Set(register.topics.map(x => x.url)).size, 172, "Duplicate HIG source URL");
   assert.equal(SURFACES.length, 6);
@@ -94,8 +100,11 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
     schema: "novapharm.hig-six-surface-independent-acceptance-preparation.v1",
     meaning: "Generated acceptance checklist only; zero independent production verification and zero N/A approvals",
     source: { register: registerPath, sha256: createHash("sha256").update(registerBytes).digest("hex"),
-      sourceInventory: inventoryPath, inventorySnapshotSha: inventory.sourceSnapshotSha,
-      ownerConstraints: ownerPath },
+      sourceInventory: inventoryPath,
+      inventoryJsonSha256: createHash("sha256").update(inventoryBytes).digest("hex"),
+      inventorySnapshotSha: inventory.sourceSnapshotSha,
+      ownerConstraints: ownerPath,
+      ownerConstraintsJsonSha256: createHash("sha256").update(ownerBytes).digest("hex") },
     selectedScope: SURFACES,
     completion: counts,
     gates: {
@@ -114,10 +123,12 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const registerBytes = readFileSync(registerPath);
+  const inventoryBytes = readFileSync(inventoryPath);
+  const ownerBytes = readFileSync(ownerPath);
   const matrix = buildSixSurfaceMatrix({
     register: JSON.parse(registerBytes), registerBytes,
-    inventory: JSON.parse(readFileSync(inventoryPath)),
-    owner: JSON.parse(readFileSync(ownerPath))
+    inventory: JSON.parse(inventoryBytes), inventoryBytes,
+    owner: JSON.parse(ownerBytes), ownerBytes
   });
   const dest = "artifacts/apple-hig-production-audit/six-surface-evidence-matrix.json";
   mkdirSync(dirname(dest), { recursive: true });
