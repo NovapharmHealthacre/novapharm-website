@@ -1235,6 +1235,7 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
     "infra/aws/fda-private-jwt-route.cfn.json",
     "docs/intelligence/fda-six-gate-production-acceptance-20261121.md",
     "scripts/test-fda-private-release-plan.mjs",
+    "scripts/aws/contact-release-routing.test.mjs",
     ".github/workflows/intelligence-fda-cross-platform-contracts.yml"
   ];
   for (const workflowName of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
