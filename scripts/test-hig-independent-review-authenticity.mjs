@@ -20,7 +20,8 @@ function parseReviewUrl(value) {
   const match = reviewPattern.exec(value);
   return match ? { pullNumber: Number(match[1]), reviewId: Number(match[2]) } : null;
 }
-function acceptedClaims() {
+function acceptedClaims(candidate = register) {
+  assert.ok(Array.isArray(candidate?.topics), "HIG source must contain topic records");
   const claims = [];
   const claim = (topic, origin, record) => {
     assert.ok(record && typeof record === "object",
@@ -32,27 +33,54 @@ function acceptedClaims() {
       topic + "/" + origin + ": the exact reviewed PR head SHA is required");
     claims.push({ ...ref, reviewedSourceSha: record.reviewedSourceSha, topic, origin });
   };
-  for (const topic of register.topics) {
+  for (const topic of candidate.topics) {
+    assert.ok(typeof topic.title === "string" && topic.title.length > 0, "HIG topic title is missing");
+    assert.ok(["not_verified", "verified", "not_applicable"].includes(topic.implementation),
+      topic.title + ": unexpected implementation state cannot be silently ignored");
+    if (topic.implementation === "not_verified") continue;
+
+    // Whole-topic N/A and verified claims are two DIFFERENT dispositions.
+    // Neither may silently bypass missing platform decisions or a platform
+    // still requiring implementation. Source proposals alone are not approvals.
+    const platforms = ["web", "ios", "android"];
+    const states = Object.fromEntries(platforms.map(platform => {
+      const state = topic.platformApplicability?.[platform]?.state;
+      assert.ok(["applicable", "not_applicable"].includes(state),
+        topic.title + "/" + platform + ": an accepted topic requires a reviewed applicability decision");
+      return [platform, state];
+    }));
+    const applicable = platforms.filter(platform => states[platform] === "applicable");
+
     if (topic.implementation === "not_applicable") {
+      assert.equal(applicable.length, 0,
+        topic.title + ": whole-topic not_applicable cannot exclude any applicable platform");
       claim(topic.title, "approved-N/A", topic.notApplicableApproval);
-    } else if (topic.implementation === "verified") {
-      const relevant = ["web", "ios", "android"].filter(p =>
-        topic.platformApplicability[p]?.state === "applicable");
-      for (const platform of relevant) {
-        const full = (topic[platform + "Evidence"] || []).find(r =>
-          r?.platform === platform && r.verificationLevel === "full");
-        assert.ok(full, topic.title + "/" + platform + ": no full production evidence");
-        claim(topic.title, platform + "/live", full);
-        const release = (topic.releaseEvidence || []).find(r =>
-          r?.platform === platform && r.reviewDecision === "approved" &&
-          r.observedLiveSourceSha === full.observedLiveSourceSha);
-        assert.ok(release, topic.title + "/" + platform + ": no matching approved release");
-        claim(topic.title, platform + "/release", release);
-      }
+      continue;
+    }
+
+    assert.ok(applicable.length > 0,
+      topic.title + ": verified implementation requires at least one applicable platform");
+    for (const platform of applicable) {
+      const fullReceipts = (topic[platform + "Evidence"] || []).filter(r =>
+        r?.platform === platform && r.verificationLevel === "full");
+      assert.equal(fullReceipts.length, 1,
+        topic.title + "/" + platform + ": expected exactly one current full production evidence receipt");
+      const full = fullReceipts[0];
+      assert.match(full.observedLiveSourceSha ?? "", shaPattern,
+        topic.title + "/" + platform + ": full evidence must identify an actual observed deployed source commit");
+      claim(topic.title, platform + "/live", full);
+
+      const releases = (topic.releaseEvidence || []).filter(r =>
+        r?.platform === platform && r.reviewDecision === "approved" &&
+        r.observedLiveSourceSha === full.observedLiveSourceSha);
+      assert.equal(releases.length, 1,
+        topic.title + "/" + platform + ": expected exactly one matching approved production release");
+      claim(topic.title, platform + "/release", releases[0]);
     }
   }
   return claims;
 }
+
 async function githubGet(path, token) {
   const response = await fetch("https://api.github.com" + path, {
     headers: {
