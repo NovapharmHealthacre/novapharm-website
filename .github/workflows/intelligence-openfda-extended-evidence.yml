@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/core/regulatory/openfda-evidence.mjs'
       - 'scripts/test-openfda-evidence.mjs'
+      - 'scripts/run-openfda-four-source-smoke.mjs'
       - 'scripts/test-openfda-evidence-wiring.mjs'
       - 'server.mjs'
       - 'apps/portal/app/gateway/**'
@@ -33,6 +34,10 @@ jobs:
           node --check src/core/regulatory/openfda-evidence.mjs
           node --check server.mjs
           node --test scripts/test-openfda-evidence.mjs scripts/test-openfda-evidence-wiring.mjs
+      - name: Verify four publisher endpoints live without storing source rows
+        run: |
+          node --check scripts/run-openfda-four-source-smoke.mjs
+          node scripts/run-openfda-four-source-smoke.mjs
       - name: Verify legacy label route remains intact
         run: node --test scripts/test-openfda-labels.mjs
       - name: Never publish raw FDA medicine source records
