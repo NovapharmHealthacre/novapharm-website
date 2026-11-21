@@ -358,10 +358,11 @@ ${schemaMarkup}</head>`;
 }
 
 function documentShell({ meta, slug = "", body, options = {} }) {
+  const mainFocus = slug === "legal/accessibility" ? ' tabindex="-1"' : "";
   return `${head(meta, slug, options)}
 <body data-page="${slug || "home"}">
 ${header(slug)}
-<main id="main" lang="en-GB" data-np-untranslated>${body}</main>
+<main id="main"${mainFocus} lang="en-GB" data-np-untranslated>${body}</main>
 ${footer()}
 ${aiSearchDialog()}
 ${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}

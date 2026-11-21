@@ -504,13 +504,14 @@ for (const file of stagedFiles) {
 const releaseSha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
 const canonicalPages = JSON.parse(readFileSync(join(root, "seo/generated/page-metadata-register.json"), "utf8"));
 if (canonicalPages.length < 60) throw new Error("Missing canonical pages in release provenance register");
-for (const page of canonicalPages) {
-  const target = join(output, page.file);
-  if (!existsSync(target)) throw new Error(`Canonical release page not staged: ${page.file}`);
+const stampedReleasePages = new Set([...canonicalPages.map(page => page.file), "products/marketplace/index.html"]);
+for (const path of stampedReleasePages) {
+  const target = join(output, path);
+  if (!existsSync(target)) throw new Error(`Canonical release page not staged: ${path}`);
   const html = readFileSync(target, "utf8");
   const markers = [...html.matchAll(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g)];
   if (markers.length !== 1 || markers[0][1] !== releaseSha) {
-    throw new Error(`Canonical release provenance mismatch: ${page.file}`);
+    throw new Error(`Canonical release provenance mismatch: ${path}`);
   }
 }
 

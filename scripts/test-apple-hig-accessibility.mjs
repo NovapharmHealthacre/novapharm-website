@@ -39,6 +39,8 @@ for (const path of ["index.html", "legal/accessibility/index.html"]) {
   assert.match(html, /class="skip-link"\s+href="#main"/, `${path}: skip to content missing`);
   assert.match(html, /<main\s+id="main"/, `${path}: accessible main landmark missing`);
 }
+assert.match(read("legal/accessibility/index.html"), /<main\s+id="main"\s+tabindex="-1"/,
+  "The static Accessibility Statement skip link must move actual focus to main");
 // Prevent a regression in authentication announcements and the public 22-workspace preview.
 // These are additive source contracts; real browser/assistive-technology testing is separate.
 const login = read("assets/js/portal-login.js");

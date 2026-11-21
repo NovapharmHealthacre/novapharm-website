@@ -77,3 +77,21 @@ test("reviewed Marketplace and Nutraxin preservation survives build",()=>{
     assert.ok(xml.includes("<loc>"+origin+"/products/nutraxin/"+product.slug+"/</loc>"),
       "Nutraxin product disappeared from final build "+product.slug);
 });
+
+test("every final sitemap page exposes the same exact build revision", () => {
+  const marker = /<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g;
+  const homeStamps = [...readFileSync("index.html", "utf8").matchAll(marker)];
+  assert.equal(homeStamps.length, 1, "Missing or duplicate root revision stamp");
+  const xml = readFileSync("sitemap.xml", "utf8");
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => new URL(match[1]));
+  assert.ok(urls.length >= 60, "Release sitemap scope unexpectedly limited");
+  assert.equal(new Set(urls.map(url => url.href)).size, urls.length, "Duplicate release sitemap URL");
+  for (const url of urls) {
+    assert.equal(url.origin, origin, "Sitemap must reference only the corporate origin");
+    assert.match(url.pathname, /^\/(?:[a-z0-9-]+\/)*$/);
+    const file = url.pathname.slice(1) + "index.html";
+    const stamps = [...readFileSync(file, "utf8").matchAll(marker)];
+    assert.deepEqual(stamps.map(match => match[1]), [homeStamps[0][1]],
+      "Missing, duplicate or incorrect build revision on " + url.pathname);
+  }
+});
