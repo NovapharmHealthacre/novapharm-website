@@ -72,6 +72,10 @@ private struct IntelligenceHomeView: View {
                 }
             }
             Section("Intelligence") {
+                NavigationLink("US FDA regulatory sources (offline preview)") {
+                    NovaFDASourcePreviewView()
+                }
+                .accessibilityIdentifier("novapharm.intelligence.fda")
                 NavigationLink("Explore 101 country research scopes") {
                     NovaCountryDirectoryView()
                 }

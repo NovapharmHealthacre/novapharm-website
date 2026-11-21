@@ -1189,3 +1189,30 @@ test("four-country receipt router is an exact-blob private change, never blanket
     }
   }
 });
+
+test("only exact native FDA preview paths can skip corporate AWS and Pages publication", () => {
+  const native = [
+    ".github/workflows/native-fda-offline-contracts.yml",
+    "native/novapharm-intelligence-ios/App/NovaRootView.swift",
+    "native/novapharm-intelligence-ios/App/USFdaSourceCatalog.swift",
+    "native/novapharm-intelligence-ios/App/USFdaSourcePreviewView.swift",
+    "native/novapharm-intelligence-ios/CoreTests/NovaFDASourceContractTests.swift",
+    "native/novapharm-intelligence-ios/Package.swift",
+    "native/novapharm-intelligence-mobile/USFdaSourcePreviewScreen.tsx",
+    "scripts/test-native-fda-source-parity.mjs"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const content = get(file);
+    const line = content.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line, "private-only classifier is missing");
+    const patterns = line.trim().replace(/\)$/, "").split("|");
+    const classified = path => patterns.some(pattern =>
+      path === pattern || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0,-1))));
+    for (const path of native) assert.equal(classified(path), true, "native FDA only: " + path);
+    for (const path of ["server.mjs", "assets/js/contact-production.js",
+      "native/novapharm-intelligence-ios/App/UnreviewedNetworkClient.swift",
+      "native/novapharm-intelligence-mobile/UnreviewedNetworkClient.tsx"]) {
+      assert.equal(classified(path), false, "must not exempt unreviewed public/network change: " + path);
+    }
+  }
+});
