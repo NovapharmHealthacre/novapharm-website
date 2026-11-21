@@ -2,7 +2,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
-import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
+import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas, classifyCandidateSitemapReadiness } from "./reconcile-live-public-routes.mjs";
 
 const origin = "https://novapharmhealthcare.com";
 const output = "artifacts/site-restoration/live-route-audit.json";
@@ -123,6 +123,11 @@ const incompleteProductSEO = routes.filter(r => /^\/products\/nutraxin\/[a-z0-9-
 const screened = routes.filter(route => route.higSignals);
 const publisherProvenance = summarizeObservedPublisherShas(screened);
 issues.push(...publisherProvenance.issues);
+const candidatePublication = classifyCandidateSitemapReadiness({
+  origin, eventName: process.env.GITHUB_EVENT_NAME,
+  candidateOnly: process.env.NOVAPHARM_SOURCE_CANDIDATE_ONLY === "1",
+  sourceNotLive: routeReconciliation.sourceNotLive, issues, routes
+});
 const result = {
   timestamp: new Date().toISOString(), origin,
   methodology: "Read-only unauthenticated HTTPS cache-bypassed requests, no customer/medical data, no form submits or checkout, source and live sitemap union",
@@ -137,6 +142,7 @@ const result = {
   },
   routeReconciliation,
   publisherProvenance,
+  candidatePublication,
   higScreening: {
     meaning: "Public SSR HTML signals only; not rendered keyboard/VoiceOver/WCAG or independently accepted Apple HIG",
     sourceReadOnly: true,
@@ -159,6 +165,10 @@ console.log(JSON.stringify({ expected: expectedPaths.length, live: livePaths.len
   failed: failed.length, productGtinNotPublished: incompleteProductSEO.length,
   higScreened: screened.length, sourceShaMissing: result.higScreening.missingSourceSha,
   htmlSnapshotDigests: result.higScreening.routesWithHtmlSnapshotDigest,
-  omittedRegisteredCorporateRoutes: result.corporateSourceCoverage.routesMissingFromBothSitemaps, issues }));
+  omittedRegisteredCorporateRoutes: result.corporateSourceCoverage.routesMissingFromBothSitemaps,
+  sourceDeltaPendingPublication: candidatePublication.sourceDeltaPending,
+  publicationGateMode: candidatePublication.mode,
+  strictLiveReleasePassed: candidatePublication.strictLiveReleasePassed,
+  blockingIssues: candidatePublication.blockingIssues, issues }));
 if (failed.length) console.error("Route failures: " + JSON.stringify(failed.map(r => ({ path: r.path, errors: r.errors })).slice(0, 70)));
-if (failed.length || issues.length) process.exitCode = 1;
+if (failed.length || candidatePublication.blockingIssues.length) process.exitCode = 1;

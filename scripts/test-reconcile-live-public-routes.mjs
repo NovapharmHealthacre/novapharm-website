@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
+import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas, classifyCandidateSitemapReadiness } from "./reconcile-live-public-routes.mjs";
 
 test("all thirty-two source-defined Corporate routes are screened even if sitemap forgets three", () => {
   const source=readFileSync("apps/corporate/data/pages.ts","utf8");
@@ -84,4 +84,67 @@ test("mixed published SHAs within the same estate flag investigation", () => {
   assert.equal(report.families["corporate-editorial"].conflictingShas,true);
   assert.equal(report.issues.length,1);
   assert.match(report.issues[0],/partial release\/rollback/);
+});
+
+
+const pendingPaths = ["/distribution/", "/market-access/", "/markets/"];
+const pendingIssues = pendingPaths.map(path =>
+  "Approved source sitemap route disappeared from live: " + path);
+const verifiedSourceProbe = path => ({
+  path, httpOk:true, errors:[], title:"NovaPharm", h1:"Verified public page",
+  canonical:"https://novapharmhealthcare.com" + path,
+  higSignals:{language:"en-GB", responsiveViewport:true, h1Elements:1,
+    skipLinkWithTarget:true, deployedSourceSha:"a".repeat(40)}
+});
+const candidate = (changes={}) => classifyCandidateSitemapReadiness({
+  origin:"https://novapharmhealthcare.com", eventName:"pull_request",
+  candidateOnly:true, sourceNotLive:pendingPaths, issues:pendingIssues,
+  routes:pendingPaths.map(verifiedSourceProbe),
+  ...changes
+});
+
+test("only three verified, already-live Corporate pages may be pending in a source-only PR", () => {
+  const out=candidate();
+  assert.equal(out.mode,"source-only-pr-candidate");
+  assert.equal(out.permittedCandidateDelta,true);
+  assert.deepEqual(out.blockingIssues,[]);
+  assert.equal(out.candidateCheckPassed,true);
+  assert.equal(out.strictLiveReleasePassed,false);
+  assert.match(out.warning,/never establishes live sitemap publication/);
+});
+test("manual and scheduled live audits cannot waive source-to-publication drift", () => {
+  for (const eventName of ["workflow_dispatch","schedule","push"]) {
+    const out=candidate({eventName});
+    assert.equal(out.mode,"strict-live-publication");
+    assert.equal(out.permittedCandidateDelta,false);
+    assert.deepEqual(out.blockingIssues,pendingIssues);
+  }
+  assert.equal(candidate({candidateOnly:false}).permittedCandidateDelta,false);
+});
+test("new unreviewed sitemap additions and failures cannot be called pending publication", () => {
+  const path="/private-portal/";
+  const out=candidate({sourceNotLive:[...pendingPaths,path],
+    issues:[...pendingIssues,"Approved source sitemap route disappeared from live: " + path],
+    routes:[...pendingPaths.map(verifiedSourceProbe),verifiedSourceProbe(path)]});
+  assert.equal(out.candidateCheckPassed,false);
+  assert.equal(out.permittedCandidateDelta,false);
+});
+test("candidate bypass refuses invalid direct response, canonical and SHA metadata", () => {
+  for (const broken of [
+    {httpOk:false}, {errors:["HTTP 404"]}, {canonical:"https://example.com/"},
+    {higSignals:{language:"en-GB",responsiveViewport:true,h1Elements:1,
+      skipLinkWithTarget:true,deployedSourceSha:null}},
+    {title:""}
+  ]) {
+    const paths=pendingPaths.map(verifiedSourceProbe);
+    paths[1]={...paths[1],...broken};
+    assert.equal(candidate({routes:paths}).permittedCandidateDelta,false,
+      "Unsafe route unexpectedly accepted: " + JSON.stringify(broken));
+  }
+});
+test("unrelated sitemap and security findings remain candidate-blocking", () => {
+  const x=candidate({issues:[...pendingIssues,"Private route exposed to public indexing: /admin/dashboard/"]});
+  assert.equal(x.permittedCandidateDelta,true);
+  assert.equal(x.candidateCheckPassed,false);
+  assert.deepEqual(x.blockingIssues,["Private route exposed to public indexing: /admin/dashboard/"]);
 });

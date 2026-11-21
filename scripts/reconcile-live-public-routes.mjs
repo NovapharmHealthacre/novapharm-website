@@ -122,3 +122,51 @@ export function summarizeObservedPublisherShas(routes) {
     families, issues
   };
 }
+
+
+/**
+ * Candidate source publication is NOT a live release acceptance.
+ * Three already-live Corporate routes were added to the reviewed source sitemap
+ * before the public XML has been published. Only a PR may classify that
+ * narrow, independently probed delta as pending; all other issues remain fatal.
+ * Manual/scheduled/post-release checks continue to fail on ANY source-live drift.
+ */
+const candidateSitemapDelta = Object.freeze([
+  "/distribution/", "/market-access/", "/markets/"
+]);
+export function classifyCandidateSitemapReadiness({
+  origin, eventName, candidateOnly, issues, sourceNotLive, routes
+}) {
+  const pending = Array.isArray(sourceNotLive) ? sourceNotLive : [];
+  const allIssues = Array.isArray(issues) ? issues : [];
+  const candidateMode = candidateOnly === true && eventName === "pull_request";
+  const eligiblePaths = pending.length > 0 &&
+    pending.every(path => candidateSitemapDelta.includes(path));
+  const directChecks = eligiblePaths && pending.every(path => {
+    const record = Array.isArray(routes) ? routes.find(item => item.path === path) : null;
+    return record?.httpOk === true &&
+      Array.isArray(record.errors) && record.errors.length === 0 &&
+      record.title?.length > 0 && record.h1?.length > 0 &&
+      record.canonical === origin + path &&
+      record.higSignals?.language &&
+      record.higSignals?.responsiveViewport === true &&
+      record.higSignals?.h1Elements === 1 &&
+      record.higSignals?.skipLinkWithTarget === true &&
+      /^[a-f0-9]{40}$/i.test(record.higSignals?.deployedSourceSha || "");
+  });
+  const pendingIssueMessages = new Set(pending.map(path =>
+    "Approved source sitemap route disappeared from live: " + path));
+  const permittedCandidateDelta = Boolean(candidateMode && eligiblePaths && directChecks);
+  const blockingIssues = permittedCandidateDelta
+    ? allIssues.filter(issue => !pendingIssueMessages.has(issue))
+    : [...allIssues];
+  return {
+    mode: candidateMode ? "source-only-pr-candidate" : "strict-live-publication",
+    sourceDeltaPending: pending,
+    permittedCandidateDelta,
+    blockingIssues,
+    candidateCheckPassed: blockingIssues.length === 0,
+    strictLiveReleasePassed: allIssues.length === 0,
+    warning: "Source-only PR success never establishes live sitemap publication, HIG acceptance or deployment authorization"
+  };
+}

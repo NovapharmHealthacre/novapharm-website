@@ -26,6 +26,7 @@ jobs:
       - name: Check out exact source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Setup Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -36,6 +37,10 @@ jobs:
           node --check scripts/audit-restored-public-routes.mjs
           node --test scripts/test-hig-public-route-signals.mjs scripts/test-reconcile-live-public-routes.mjs
       - name: Audit every public route against live custom domain
+        # Only this PR step may classify the three already-verified new sitemap
+        # entries as pending publication. Scheduled/manual production checks are strict.
+        env:
+          NOVAPHARM_SOURCE_CANDIDATE_ONLY: "1"
         run: node scripts/audit-restored-public-routes.mjs
       - name: Preserve report even when production drift is detected
         if: always()
