@@ -72,6 +72,7 @@ test("commerce no-change acceptance is read-only PR-scoped, never a publishing b
   const pr = workflow.split("\n  validate-pr:\n")[1]?.split("\n  stage-commerce:\n")[0] ?? "";
   const publisher = workflow.split("\n  stage-commerce:\n")[1] ?? "";
   assert.match(pr, /NOVAPHARM_CI_ALLOW_NOOP:\s*"true"/);
+  assert.match(pr, /Verify simulated main-push no-op never stages or writes/);
   assert.doesNotMatch(publisher, /NOVAPHARM_CI_ALLOW_NOOP/);
   assert.match(publisher, /NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH:\s*"true"/,
     "Only exact-byte-identical main release candidates may return success without staging");
