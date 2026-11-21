@@ -56,7 +56,5 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Generate full and public-only local build fixtures without publishing
         run: npm run build && npm run build:public-only
-      - name: Generate synthetic-free public AI index fixtures from approved local page sources
-        run: node scripts/build-ai-knowledge-index.mjs
       - name: Run all registered cross-estate regression contracts
         run: node scripts/ci/verify-unified-ci-contract.mjs --run
