@@ -640,6 +640,7 @@ function validateApprovedOutOfScopeTopic(topic) {
   const a = topic.notApplicableApproval;
   assert.ok(a && a.reviewDecision === "approved" &&
     isIndependentReviewReceipt(a.independentReviewUrl) &&
+    isSha(a.reviewedSourceSha) &&
     typeof a.approvedAt === "string" && !Number.isNaN(Date.parse(a.approvedAt)) &&
     typeof a.reason === "string" && a.reason.length >= 40,
     topic.title + ": independent reviewer-approved N/A disposition required");
@@ -709,16 +710,28 @@ test("production acceptance evidence rejects forged or scoped-only fixture", () 
 test("a platform-exclusive N/A decision cannot be self-approved or counted as deployment", () => {
   const tv = structuredClone(tracker.topics.find(t => t.title === "Digit entry views"));
   tv.implementation = "not_applicable";
+  delete tv.notApplicableApproval;
   assert.throws(() => validateApprovedOutOfScopeTopic(tv),
     /independent reviewer-approved N\/A disposition required/);
   tv.notApplicableApproval = {
     reviewDecision: "approved",
     independentReviewUrl: "https://example.com/self-approval",
+    reviewedSourceSha: "a".repeat(40),
     approvedAt: "2026-11-19T00:00:00Z",
     reason: "Apple tvOS-only digit entry is not native to web, iOS, or Android."
   };
   assert.throws(() => validateApprovedOutOfScopeTopic(tv),
     /independent reviewer-approved N\/A disposition required/);
+  // Shape fixture only. The independent review suite reads real GitHub events.
+  tv.notApplicableApproval.independentReviewUrl =
+    "https://github.com/NovapharmHealthacre/novapharm-website/pull/99999999#pullrequestreview-99999999";
+  assert.doesNotThrow(() => validateApprovedOutOfScopeTopic(tv));
+  delete tv.notApplicableApproval.reviewedSourceSha;
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv),
+    /independent reviewer-approved N\/A disposition required/);
+  tv.notApplicableApproval.reviewedSourceSha = "a".repeat(40);
+  tv.releaseEvidence = [{ platform: "web", reviewDecision: "approved" }];
+  assert.throws(() => validateApprovedOutOfScopeTopic(tv), /N\/A approval is not deployment proof/);
   validateOwnerSignoff();
 });
 
@@ -739,17 +752,18 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   const decisions = tracker.topics.flatMap(t => Object.values(t.platformApplicability))
     .filter(d => d.state !== "unassessed").length;
   const verified = tracker.topics.filter(t => t.implementation === "verified").length;
+  const platforms = ["web", "ios", "android"];
   const priorities = {Critical:0,High:1,Medium:2,Later:3};
   const topics = tracker.topics.map((t, index) => {
-    const unassessedPlatforms = ["web","ios","android"].filter(p =>
+    const unassessedPlatforms = platforms.filter(p =>
       t.platformApplicability[p]?.state === "unassessed");
-    const applicablePlatforms = ["web","ios","android"].filter(p =>
+    const applicablePlatforms = platforms.filter(p =>
       t.platformApplicability[p]?.state === "applicable");
     // A conceptually out-of-scope Apple API is only a CANDIDATE. It still
     // requires real independent approval before "not_applicable" is accepted.
-    const candidateOutOfScope = unassessedPlatforms.length === 0 &&
-      applicablePlatforms.length === 0;
-    const platformEvidence = Object.fromEntries(["web","ios","android"].map(p => {
+    const candidateOutOfScope = platforms.every(p =>
+      t.platformApplicability[p]?.state === "not_applicable");
+    const platformEvidence = Object.fromEntries(platforms.map(p => {
       const list = t[p + "Evidence"];
       return [p, {
         applicability: t.platformApplicability[p]?.state,
@@ -783,6 +797,7 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     };
   }).sort((a,b) => (priorities[a.priority] ?? 99) - (priorities[b.priority] ?? 99)
     || a.sourceRowIndex - b.sourceRowIndex);
+  const notApplicable = topics.filter(t => t.implementation === "not_applicable").length;
   const report = {
     schema: "novapharm.hig-production-acceptance-gap.v1",
     generatedAt: new Date().toISOString(),
@@ -793,8 +808,17 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
     independentlyDocumentedArticleReviews: reviewed,
     totalPlatformDecisions: tracker.topics.length * 3,
     assessedPlatformDecisions: decisions,
+    platformDecisionBreakdown: Object.fromEntries(platforms.map(platform => [platform, {
+      applicable: topics.filter(t => t.applicablePlatforms.includes(platform)).length,
+      notApplicable: topics.filter(t => t.platformEvidence[platform].applicability === "not_applicable").length,
+      criticalApplicable: topics.filter(t =>
+        t.priority === "Critical" && t.applicablePlatforms.includes(platform)).length,
+      registeredProductionAccepted: topics.filter(t => t.platformEvidence[platform].fullReleaseAccepted).length
+    }])),
+    topicsWithApplicablePlatforms: topics.filter(t => t.applicablePlatforms.length > 0).length,
     registeredProductionVerifiedTopics: verified,
-    registeredNotApplicableTopics: tracker.topics.filter(t => t.implementation === "not_applicable").length,
+    registeredNotApplicableTopics: notApplicable,
+    registeredAcceptedTopicDispositions: verified + notApplicable,
     candidateOutOfScopeTopicsPendingIndependentApproval: topics
       .filter(t => t.candidateOutOfScope && t.implementation !== "not_applicable")
       .map(t => ({title:t.title,sourceRowIndex:t.sourceRowIndex})),
@@ -823,9 +847,11 @@ test("write an inspectable 172-topic production acceptance gap ledger", async ()
   assert.ok(report.recordedPartialLiveObservations >= 6);
   assert.equal(report.allTopicsIndependentlyDispositioned,
     tracker.topics.every(t => ["verified", "not_applicable"].includes(t.implementation)));
-  assert.ok(report.candidateOutOfScopeTopicsPendingIndependentApproval
-    .some(t => t.title === "Digit entry views"),
-    "Apple tvOS-only Digit entry is a pending N/A candidate, not a shipped web/iOS/Android component");
+  assert.equal(report.candidateOutOfScopeTopicsPendingIndependentApproval.length + notApplicable,
+    topics.filter(t => t.candidateOutOfScope).length,
+    "Every all-platform exclusion must be tracked as pending or approved, never as a deployment");
+  assert.equal(Object.values(report.platformDecisionBreakdown)
+    .reduce((sum, p) => sum + p.applicable + p.notApplicable, 0), decisions);
   const indexedProofs = tracker.meta.productionEvidenceAudit.scopedPublicEvidence;
   const sourceProofs = tracker.topics.flatMap(t =>
     ["web","ios","android"].flatMap(platform =>
