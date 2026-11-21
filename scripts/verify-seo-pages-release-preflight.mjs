@@ -91,10 +91,14 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
     issues.push("Public portal access boundary missing");
   }
   const stagedContact = get(files, "contact/index.html");
-  const candidateLive = stagedContact.includes("data-live-b2b-enquiry-form") &&
+  const candidateForms = [...stagedContact.matchAll(/<form\b[^>]*\sdata-live-b2b-enquiry-form(?=[\s>])[^>]*>/gi)];
+  const candidateForm = candidateForms.length === 1 ? candidateForms[0][0] : "";
+  const candidateLive = Boolean(candidateForm) &&
     stagedContact.includes('src="/assets/js/contact-production.js"') &&
     stagedContact.includes('name="privacyAcknowledgement"') &&
     stagedContact.includes('name="safetyConfirmation"');
+  const candidateActionMatchesLive = candidateLive &&
+    /\saction="\/contact\/"/i.test(candidateForm) && /\smethod="post"/i.test(candidateForm);
   const liveActive = liveContactHttp === 200 && (liveContactHtml || "").includes("data-live-b2b-enquiry-form");
   const liveOrigin = metaValue(liveContactHtml || "", /data-api-origin="([^"]+)"/i);
   const candidateOrigin = metaValue(stagedContact, /data-api-origin="([^"]+)"/i);
@@ -102,6 +106,7 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
   else if (liveActive && !candidateLive) holds.push("WOULD_DOWNGRADE_LIVE_CONTACT");
   else if (!liveActive) holds.push("LIVE_CONTACT_NOT_VERIFIED");
   else if (candidateLive && (!liveOrigin || candidateOrigin !== liveOrigin)) holds.push("CONTACT_API_ORIGIN_DRIFT");
+  if (candidateLive && !candidateActionMatchesLive) holds.push("CONTACT_FORM_ACTION_DRIFT");
   if (owner?.productionSignoff !== "granted" ||
       owner?.productionPermissions?.activatePublicCustomerAccess !== true) holds.push("OWNER_APPROVAL_NOT_GRANTED");
   if (stagedContact.includes("data-login-form")) issues.push("Login form in contact artifact");
@@ -110,6 +115,7 @@ export function auditSeoCandidate({ files, owner, liveContactHtml, liveContactHt
     disposition: !sourceReady ? "SOURCE_INVALID" : holds.length ? "HELD_FOR_SAFETY_AND_OWNER_APPROVAL" : "PREVIEW_ELIGIBLE_FOR_OWNER_REVIEW",
     products, issues, holds, observed: { liveContactHttp, liveContactActive: liveActive,
       stagedContactActive: candidateLive, contactOriginMatched: Boolean(liveOrigin && candidateOrigin === liveOrigin),
+      stagedContactActionMatchesPublishedContract: candidateActionMatchesLive,
       ownerSignoff: owner?.productionSignoff || "unknown" },
     note: "Read-only: no GitHub Pages deployment, DNS change, customer activation or AWS modification." };
 }
