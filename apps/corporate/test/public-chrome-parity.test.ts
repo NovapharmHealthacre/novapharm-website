@@ -53,3 +53,22 @@ test("footer preserves regulated-company disclosures and accessible small-screen
   assert.ok(sharedStyle.includes(".npd-footer .npd-footer-legal"));
   assert.ok(sharedStyle.includes("focus-visible"));
 });
+
+test("desktop category overlays use six restored static directories and keyboard fallback", () => {
+  const desktop = read("../components/desktop-navigation.tsx");
+  const overlayCss = read("../app/corporate-mega-menu.css");
+  const layout = read("../app/layout.tsx");
+
+  assert.ok(layout.includes('import "./corporate-mega-menu.css";'));
+  for (const id of ["company", "capabilities", "oncology", "products", "intelligence", "insights"]) {
+    assert.ok(publicHome.includes(`data-mega-panel="${id}"`), `Static category ${id} missing`);
+    assert.ok(desktop.includes(`id: "${id}"`), `Managed category ${id} missing`);
+  }
+  for (const term of ["aria-expanded", "aria-controls", "ArrowDown", "Escape", "onPointerEnter", "aria-current", "focusFirstLink"]) {
+    assert.ok(desktop.includes(term), `Managed desktop menu is missing ${term}`);
+  }
+  assert.ok(overlayCss.includes("min-width: 1301px"));
+  assert.ok(overlayCss.includes(".npd-mega.is-open"));
+  assert.ok(overlayCss.includes("forced-colors: active"));
+  assert.ok(desktop.includes('href={isPortal ? portalOrigin : href}'));
+});
