@@ -83,6 +83,8 @@ jobs:
           path: published
           persist-credentials: ${{ github.event_name == 'push' }}
       - name: Reject private/order data and prevent all existing public file replacements
+        env:
+          NOVAPHARM_CI_ALLOW_IDENTICAL_PUSH: "true"
         run: python3 scripts/stage-safe-commerce-restoration.py
       - name: Archive sanitized staging audit
         if: always()
@@ -97,6 +99,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # All seven live Commerce files may already be byte-identical.
+          # A verified no-op must not create a branch or write the live site.
+          if test -z "$(git -C published status --porcelain)"; then
+            echo 'COMMERCE_ALREADY_PUBLISHED_IDENTICAL; no candidate branch or publication'
+            exit 0
+          fi
           name="release/staged-commerce-$(git rev-parse --short=12 HEAD)-$GITHUB_RUN_ID"
           test "$(git -C published branch --show-current)" = "gh-pages"
           git -C published switch -c "$name"
