@@ -36,6 +36,7 @@ const inventoryPath = "docs/design/apple-hig-runtime-source-scope-20261120.json"
 const ownerPath = "config/intelligence/owner-production-constraints.json";
 const portalModulePath = "packages/portal-contracts/src/module-catalog.json";
 const intelligenceWorkspacePath = "apps/portal/data/intelligence-workspaces.ts";
+const wmsPrototypePath = "apps/portal/components/wms-prototype-workspace-map.tsx";
 
 // The authoritative workspace register is TypeScript rather than JSON.
 // Parse only the catalog literal's first four required fields; reject unexpected
@@ -51,10 +52,25 @@ export function readIntelligenceWorkspaceTargets(sourceText) {
   return rows;
 }
 
-export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes }) {
+// Blueprint slots are prototypes, not activated 3PL systems.
+export function readWmsPrototypeTargets(sourceText) {
+  const section = /export const WMS_PROTOTYPE_WORKSPACE_MAP = \[([\s\S]*?)\]\s+as const;/m.exec(sourceText);
+  assert.ok(section, "WMS prototype workspace-map boundary unavailable");
+  const re = /^\s*\{\s*group:\s*"([^"]+)",\s*title:\s*"([^"]+)",\s*module:\s*("[^"]+"|null),\s*evidence:\s*"([^"]+)",\s*constraint:\s*"([^"]+)"\s*\},?/gm;
+  const rows = [...section[1].matchAll(re)].map(match => ({
+    group: match[1], title: match[2],
+    mappedPortalModuleCode: match[3] === "null" ? null : match[3].slice(1, -1),
+    sourceEvidenceLabel: match[4], statedConstraint: match[5]
+  }));
+  assert.equal(new Set(rows.map(row => row.title)).size, rows.length,
+    "Duplicate WMS prototype capability title");
+  return rows;
+}
+
+export function buildSixSurfaceMatrix({ register, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes }) {
   // A digest only proves provenance when its bytes actually describe the data
   // being scored. Reject stale/mismatched objects rather than mislabel evidence.
-  assert.ok(registerBytes && inventoryBytes && ownerBytes && portalModuleBytes && intelligenceWorkspaceBytes,
+  assert.ok(registerBytes && inventoryBytes && ownerBytes && portalModuleBytes && intelligenceWorkspaceBytes && wmsPrototypeBytes,
     "All source input bytes are required");
   assert.deepEqual(register, JSON.parse(registerBytes), "Register object must match hashed register bytes");
   assert.deepEqual(inventory, JSON.parse(inventoryBytes), "Inventory object must match hashed inventory bytes");
@@ -87,6 +103,16 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
     inventory.portal.sourceLabeledReadOnly, "Intelligence read-only inventory drift");
   assert.equal(intelligenceWorkspaces.filter(x => x.sourceState === "gated").length,
     inventory.portal.sourceLabeledGated, "Intelligence gated inventory drift");
+  const wmsPrototype = readWmsPrototypeTargets(String(wmsPrototypeBytes));
+  assert.equal(wmsPrototype.length, 16, "WMS prototype capability count drift");
+  const mappedCodes = new Set(portalModules.map(x => x.code));
+  for (const capability of wmsPrototype) {
+    assert.ok(capability.title && capability.statedConstraint, "Incomplete WMS capability statement");
+    assert.ok(capability.mappedPortalModuleCode === null ||
+      (capability.mappedPortalModuleCode.startsWith("employee.") &&
+      mappedCodes.has(capability.mappedPortalModuleCode)),
+      "WMS prototype mapping points to absent/nonemployee Portal module");
+  }
   assert.equal(register.topics.length, 172, "Expected owner-provided 172-topic index");
   assert.equal(new Set(register.topics.map(x => x.url)).size, 172, "Duplicate HIG source URL");
   assert.equal(SURFACES.length, 6);
@@ -100,8 +126,10 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
     sourceClaimedVerifiedTopics: 0, sourceClaimedNotApplicableTopics: 0,
     portalModuleReviewTargets: portalModules.length,
     intelligenceWorkspaceReviewTargets: intelligenceWorkspaces.length,
+    distributionPrototypeReviewTargets: wmsPrototype.length,
     independentlyAcceptedPortalModules: 0,
-    independentlyAcceptedIntelligenceWorkspaces: 0 };
+    independentlyAcceptedIntelligenceWorkspaces: 0,
+    independentlyAcceptedDistributionPrototypeCapabilities: 0 };
   for (const topic of register.topics) {
     assert.ok(topic.title && topic.url.startsWith("https://developer.apple.com/"));
     if (topic.guidelineReview === "reviewed") counts.reviewRecorded++;
@@ -157,7 +185,9 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
       portalModuleCatalogue: portalModulePath,
       portalModuleCatalogueSha256: createHash("sha256").update(portalModuleBytes).digest("hex"),
       intelligenceWorkspaceCatalogue: intelligenceWorkspacePath,
-      intelligenceWorkspaceCatalogueSha256: createHash("sha256").update(intelligenceWorkspaceBytes).digest("hex") },
+      intelligenceWorkspaceCatalogueSha256: createHash("sha256").update(intelligenceWorkspaceBytes).digest("hex"),
+      distributionPrototypeMap: wmsPrototypePath,
+      distributionPrototypeMapSha256: createHash("sha256").update(wmsPrototypeBytes).digest("hex") },
     selectedScope: SURFACES,
     // These are extra source-derived review targets, NOT deployed modules or
     // verified HIG implementation receipts. Their acceptance is separately gated.
@@ -179,6 +209,13 @@ export function buildSixSurfaceMatrix({ register, inventory, owner, registerByte
         deployedSourceShaReceipt: null, sourceDataRightsReceipt: null,
         protectedRoleTenantMfaReceipt: null, accessibleJourneyReceipt: null,
         independentApprovalReceipt: null, independentAcceptance: false
+      })),
+      distributionPrototype: wmsPrototype.map(capability => ({
+        ...capability, source: wmsPrototypePath, prototypeOnly: true,
+        verifiedPhysicalStockReceipt: null, authorisedThreePlReconciliationReceipt: null,
+        qualityFefoPickDispatchPodReceipt: null, realRoleAndTenantReceipt: null,
+        deviceAccessibilityReceipt: null, independentApprovalReceipt: null,
+        independentAcceptance: false
       }))
     },
     completion: counts,
@@ -202,11 +239,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   const ownerBytes = readFileSync(ownerPath);
   const portalModuleBytes = readFileSync(portalModulePath);
   const intelligenceWorkspaceBytes = readFileSync(intelligenceWorkspacePath);
+  const wmsPrototypeBytes = readFileSync(wmsPrototypePath);
   const matrix = buildSixSurfaceMatrix({
     register: JSON.parse(registerBytes), registerBytes,
     inventory: JSON.parse(inventoryBytes), inventoryBytes,
     owner: JSON.parse(ownerBytes), ownerBytes,
-    portalModuleBytes, intelligenceWorkspaceBytes
+    portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes
   });
   const dest = "artifacts/apple-hig-production-audit/six-surface-evidence-matrix.json";
   mkdirSync(dirname(dest), { recursive: true });
