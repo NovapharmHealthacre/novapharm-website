@@ -12,13 +12,14 @@ const inventory = JSON.parse(inventoryBytes);
 const owner = JSON.parse(ownerBytes);
 const portalModuleBytes = readFileSync("packages/portal-contracts/src/module-catalog.json");
 const intelligenceWorkspaceBytes = readFileSync("apps/portal/data/intelligence-workspaces.ts");
+const wmsPrototypeBytes = readFileSync("apps/portal/components/wms-prototype-workspace-map.tsx");
 const create = (r = register, o = owner) =>
   buildSixSurfaceMatrix({
     register: r, inventory, owner: o,
     registerBytes: r === register ? registerBytes : Buffer.from(JSON.stringify(r)),
     inventoryBytes,
     ownerBytes: o === owner ? ownerBytes : Buffer.from(JSON.stringify(o)),
-    portalModuleBytes, intelligenceWorkspaceBytes
+    portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes
   });
 
 test("owner-selected six distinct surfaces produce a traceable 172-by-six evidence matrix", () => {
@@ -36,6 +37,8 @@ test("owner-selected six distinct surfaces produce a traceable 172-by-six eviden
   assert.equal(matrix.completion.notApplicableProposals, 348);
   assert.equal(matrix.completion.portalModuleReviewTargets, 54);
   assert.equal(matrix.completion.intelligenceWorkspaceReviewTargets, 22);
+  assert.equal(matrix.completion.distributionPrototypeReviewTargets, 16);
+  assert.equal(matrix.completion.independentlyAcceptedDistributionPrototypeCapabilities, 0);
   assert.equal(matrix.completion.independentlyAcceptedPortalModules, 0);
   assert.equal(matrix.completion.independentlyAcceptedIntelligenceWorkspaces, 0);
   assert.equal(matrix.completion.fullyAcceptedTopics, 0);
@@ -89,7 +92,7 @@ test("reject missing platform decisions instead of silently assuming not-applica
   assert.throws(() => create(altered), /missing ios applicability decision/);
 });
 
-test("all three evidence input digests match the exact parsed source files", () => {
+test("all six evidence input digests match the exact parsed source files", () => {
   const matrix = create();
   const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
   assert.equal(matrix.source.sha256, sha256(registerBytes));
@@ -97,25 +100,26 @@ test("all three evidence input digests match the exact parsed source files", () 
   assert.equal(matrix.source.ownerConstraintsJsonSha256, sha256(ownerBytes));
   assert.equal(matrix.source.portalModuleCatalogueSha256, sha256(portalModuleBytes));
   assert.equal(matrix.source.intelligenceWorkspaceCatalogueSha256, sha256(intelligenceWorkspaceBytes));
+  assert.equal(matrix.source.distributionPrototypeMapSha256, sha256(wmsPrototypeBytes));
 });
 
 test("reject mismatched source objects and bytes before generating evidence", () => {
   const changedRegister = structuredClone(register);
   changedRegister.topics[0].title += " (uncommitted change)";
   assert.throws(() => buildSixSurfaceMatrix({
-    register: changedRegister, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
+    register: changedRegister, inventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes
   }), /Register object must match hashed register bytes/);
 
   const changedInventory = structuredClone(inventory);
   changedInventory.sourceSnapshotSha = "untracked-source";
   assert.throws(() => buildSixSurfaceMatrix({
-    register, inventory: changedInventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
+    register, inventory: changedInventory, owner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes
   }), /Inventory object must match hashed inventory bytes/);
 
   const changedOwner = structuredClone(owner);
   changedOwner.productionSignoff = "granted";
   assert.throws(() => buildSixSurfaceMatrix({
-    register, inventory, owner: changedOwner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes
+    register, inventory, owner: changedOwner, registerBytes, inventoryBytes, ownerBytes, portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes
   }), /Owner constraints must match hashed owner bytes/);
 });
 
@@ -159,14 +163,14 @@ test("module inventory drift fails closed rather than silently losing routes", (
   incomplete.pop();
   assert.throws(() => buildSixSurfaceMatrix({
     register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
-    portalModuleBytes: Buffer.from(JSON.stringify(incomplete)), intelligenceWorkspaceBytes
+    portalModuleBytes: Buffer.from(JSON.stringify(incomplete)), intelligenceWorkspaceBytes, wmsPrototypeBytes
   }), /Portal module count drift/);
 
   const repeated = JSON.parse(portalModuleBytes);
   repeated[1].route = repeated[0].route;
   assert.throws(() => buildSixSurfaceMatrix({
     register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
-    portalModuleBytes: Buffer.from(JSON.stringify(repeated)), intelligenceWorkspaceBytes
+    portalModuleBytes: Buffer.from(JSON.stringify(repeated)), intelligenceWorkspaceBytes, wmsPrototypeBytes
   }), /Duplicate Portal module route/);
 });
 
@@ -176,13 +180,49 @@ test("Intelligence catalogue drift rejects missing and duplicate workspaces", ()
   assert.notEqual(missing, content);
   assert.throws(() => buildSixSurfaceMatrix({
     register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
-    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(missing)
+    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(missing), wmsPrototypeBytes
   }), /Intelligence workspace count drift/);
 
   const duplicate = content.replace('slug: "medicine-overview"', 'slug: "medicine-search"');
   assert.notEqual(duplicate, content);
   assert.throws(() => buildSixSurfaceMatrix({
     register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
-    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(duplicate)
+    portalModuleBytes, intelligenceWorkspaceBytes: Buffer.from(duplicate), wmsPrototypeBytes
   }), /Duplicate Intelligence workspace slug/);
+});
+
+test("all 16 WMS blueprint capabilities are explicit non-operational evidence targets", () => {
+  const matrix = create();
+  const wms = matrix.moduleEvidenceTargets.distributionPrototype;
+  assert.equal(wms.length, 16);
+  assert.equal(new Set(wms.map(x => x.title)).size, 16);
+  assert.equal(wms.filter(x => x.mappedPortalModuleCode !== null).length, 12);
+  assert.equal(wms.filter(x => x.mappedPortalModuleCode === null).length, 4);
+  for (const capability of wms) {
+    assert.ok(capability.statedConstraint);
+    assert.equal(capability.prototypeOnly, true);
+    assert.equal(capability.independentAcceptance, false);
+    assert.equal(capability.verifiedPhysicalStockReceipt, null);
+    assert.equal(capability.authorisedThreePlReconciliationReceipt, null);
+    assert.equal(capability.qualityFefoPickDispatchPodReceipt, null);
+    assert.equal(capability.realRoleAndTenantReceipt, null);
+    assert.equal(capability.independentApprovalReceipt, null);
+  }
+});
+
+test("WMS blueprint omissions and unlicensed module remapping fail closed", () => {
+  const source = String(wmsPrototypeBytes);
+  const missing = source.replace('title: "Control tower"', 'name: "Control tower"');
+  assert.notEqual(missing, source);
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes: Buffer.from(missing)
+  }), /WMS prototype capability count drift/);
+
+  const unsafe = source.replace('module: "employee.dashboard"', 'module: "customer.dashboard"');
+  assert.notEqual(unsafe, source);
+  assert.throws(() => buildSixSurfaceMatrix({
+    register, inventory, owner, registerBytes, inventoryBytes, ownerBytes,
+    portalModuleBytes, intelligenceWorkspaceBytes, wmsPrototypeBytes: Buffer.from(unsafe)
+  }), /WMS prototype mapping points to absent\/nonemployee Portal module/);
 });
