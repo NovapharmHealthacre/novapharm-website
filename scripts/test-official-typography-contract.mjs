@@ -33,6 +33,10 @@ for (const path of [
   }
 }
 assert.match(read("apps/technology/styles/base-1.css"), /--sans:\s*-apple-system/);
+assert.match(read("apps/corporate/app/globals.css"), /body, button, input, select, textarea\s*\{\s*font-family:\s*var\(--np-type-ui/);
+assert.match(read("apps/corporate/app/globals.css"), /h1, h2, h3\s*\{[^}]*font-family:\s*var\(--np-type-ui/);
+assert.match(read("apps/portal/app/globals.css"), /font-family:\s*var\(--np-type-ui/);
+assert.match(read("packages/design-system/src/index.ts"), /editorialFamily:\s*"\x27New York\x27/);
 assert.match(read("apps/technology/styles/base-1.css"), /--serif:\s*"New York"/);
 assert.match(read("apps/portal/app/employee-distribution.css"), /font-variant-numeric:\s*tabular-nums/);
 assert.match(read("assets/css/corporate-product-discipline.css"), /font-variant-numeric:\s*tabular-nums/);

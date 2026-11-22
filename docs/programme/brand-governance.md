@@ -48,3 +48,14 @@ Evidence: `final-report/official-logo-register.md`, `creative-assets/asset-regis
 ## Superseding owner decision — 22 November 2026
 
 The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), with accessible deep hover shade `#68101F`. The separate NovaPharm Distribution primary logo uses Near-black Garnet `#3D0B13`. This decision supersedes August 2026 references to the former Economist Red. Approved reverse/monochrome variants retain their contrast-specific uses. Unrecoloured PNG, ICO, application-icon and social-card files in the earlier asset pack remain historical derivatives and require a separately verified re-render before they may be described as colour-current.
+
+## Owner-approved three-brand palette and Apple-inspired typography (22 November 2026)
+
+| Identity | Primary | Use |
+| --- | --- | --- |
+| NovaPharm Healthcare | `#9D1B32` | Corporate / customer-facing logo and controlled accent |
+| NovaPharm Distribution | `#3D0B13` | Operational and warehouse identity |
+| NovaPharm Intelligence | `#2546D8` | Research, intelligence sign-in, native Intelligence UI |
+| Shared Sovereign Black | `#0B0B0E` | Default light-mode text, labels and neutral actions across web properties |
+
+Typography hierarchy is OS-provided SF Pro/system interface; SF Compact-style tables; SF Mono-style IDs; New York editorial accents with platform-safe fallback. No Apple proprietary binaries are shipped. **Release boundary:** these source edits remain a draft PR; binary ZIP replacement, CI acceptance, native app icons, independent deployments and live asset verification are distinct gates.
