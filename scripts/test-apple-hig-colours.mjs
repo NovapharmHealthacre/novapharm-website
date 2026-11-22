@@ -191,6 +191,11 @@ assert.ok(contactCss.includes("border: 1px solid var(--np-contact-control-line)"
 assert.ok(read("assets/css/novapharm.bundle.css").includes("/* Source: contact-premium.css */\n" + contactCss.trim()),
   "Public CSS bundle must include the complete updated Contact stylesheet");
 
+// Royal Mineral and Porcelain are the visible Contact hero, footer and form surfaces.
+assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FBFAEF/);
+assert.match(contactCss, /\.np-contact-reference-footer\s*\{[^}]*background:\s*#F8F7F3/);
+assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\s*14px/);
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
