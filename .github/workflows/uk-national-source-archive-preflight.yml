@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'src/core/uk-national-source-archive-preflight.mjs'
+      - 'src/core/uk-four-nation-backfill-candidate.mjs'
       - 'src/core/uk-devolved-csv-quality.mjs'
       - 'src/core/uk-wales-gp-zip-inventory.mjs'
       - 'src/core/uk-medicine-metric-comparability.mjs'
       - 'scripts/data/verify-uk-national-source-archive.mjs'
       - 'scripts/test-uk-national-source-archive-preflight.mjs'
+      - 'scripts/test-uk-four-nation-backfill-candidate.mjs'
       - 'scripts/test-uk-devolved-csv-quality.mjs'
       - 'scripts/test-uk-wales-gp-zip-inventory.mjs'
       - 'scripts/test-uk-medicine-metric-comparability.mjs'
@@ -38,13 +40,15 @@ jobs:
       - name: Check source and CLI syntax
         run: |
           node --check src/core/uk-national-source-archive-preflight.mjs
+          node --check src/core/uk-four-nation-backfill-candidate.mjs
           node --check src/core/uk-devolved-csv-quality.mjs
           node --check src/core/uk-wales-gp-zip-inventory.mjs
           node --check src/core/uk-medicine-metric-comparability.mjs
           node --check scripts/data/verify-uk-national-source-archive.mjs
           node --check scripts/test-uk-national-source-archive-preflight.mjs
+          node --check scripts/test-uk-four-nation-backfill-candidate.mjs
           node --check scripts/test-uk-devolved-csv-quality.mjs
           node --check scripts/test-uk-wales-gp-zip-inventory.mjs
           node --check scripts/test-uk-medicine-metric-comparability.mjs
       - name: Run strictly offline negative and positive integrity tests
-        run: node --test scripts/test-uk-national-source-archive-preflight.mjs scripts/test-uk-devolved-csv-quality.mjs scripts/test-uk-medicine-metric-comparability.mjs scripts/test-uk-wales-gp-zip-inventory.mjs
+        run: node --test scripts/test-uk-national-source-archive-preflight.mjs scripts/test-uk-devolved-csv-quality.mjs scripts/test-uk-medicine-metric-comparability.mjs scripts/test-uk-wales-gp-zip-inventory.mjs scripts/test-uk-four-nation-backfill-candidate.mjs

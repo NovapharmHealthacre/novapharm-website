@@ -81,3 +81,14 @@ archive hash. They use synthetic ZIP fixtures only. Passing this guard does
 NOT establish that the expected hash originated from NHS Wales; publisher
 authenticity, file CRC, full row quality, terminology rights and full historical
 backfill remain separate gates.
+
+## 22 November — private historical partition candidate completeness
+
+The pure four-nation historical coverage validator identifies source-specific missing months/quarters,
+unverified quarantine receipts, duplicate/version conflicts and wrongly mixed national or source grains.
+It deliberately does not infer a historical start period from the existence of an official dataset.
+The caller must explicitly provide a period window and the applicable source id.
+Even full receipt coverage returns `canIngest:false`, `canPublish:false`,
+`sourceRightsIndependentlyApproved:false`, and zero clinical rows reconciled.
+This is a manifest completeness preflight for future independently verified backfills,
+not evidence that all historical archive files have been obtained or authenticated.
