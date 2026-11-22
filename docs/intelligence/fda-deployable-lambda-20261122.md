@@ -11,13 +11,14 @@ The current private Intelligence Lambda runs a Next.js standalone portal image, 
 Run in GitHub Actions or a local Node 22 environment:
 
 ```bash
-node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs
+node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs scripts/test-openfda-labels.mjs scripts/test-openfda-evidence.mjs
 node scripts/build-fda-private-lambda-zip.mjs /tmp/npi-fda-source-only.zip
 unzip -t /tmp/npi-fda-source-only.zip
 unzip -Z1 /tmp/npi-fda-source-only.zip
 ```
 
 The ZIP entrypoint is `index.handler`, intended runtime `nodejs22.x`, region `eu-north-1`. It contains only seven reviewed files: `index.mjs` plus six FDA handler/adapter files. There are no website assets, tokens, Lambda secrets, AWS credentials, Atlas data or PHI.
+The integrated source candidate now includes the reviewed API query parameter-pollution and response-size safeguards from draft PR #1042 and the bounded label JSON-streaming and redirect/content-type protections from draft PR #1043. These are the currently staged source changes in this branch; all older CI runs are superseded by its newest exact head. The ZIP still contains the same seven restricted files, and does not include the test files.
 
 AWS documents that supported Node.js runtimes include the AWS SDK for JavaScript v3, but the bundled minor version can change. The Lambda operator must **qualify and record the exact runtime/SDK version** before deployment, or produce an independently scanned artifact with an explicitly locked SDK dependency. A passing ZIP build alone is not a production release.
 
