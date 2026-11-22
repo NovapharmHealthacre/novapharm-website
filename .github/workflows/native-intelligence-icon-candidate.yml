@@ -9,6 +9,8 @@ on:
       - 'scripts/programme/rebuild-native-intelligence-app-icons.mjs'
       - 'scripts/test-native-intelligence-brand-icons.mjs'
       - 'config/brand-identities.json'
+      - 'assets/css/novapharm-hig-colours.css'
+      - 'assets/css/tokens.css'
       - 'native/novapharm-intelligence-ios/App/NovaTheme.swift'
       - 'native/novapharm-intelligence-ios/App/NovaRootView.swift'
       - 'native/novapharm-intelligence-android/app/src/main/res/values/colors.xml'
