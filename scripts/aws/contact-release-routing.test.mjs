@@ -1259,3 +1259,22 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
       "Reviewed server blob pin must be preserved");
   }
 });
+
+test("FDA Cognito native identity approval template stays source-only and is never an automatic website release", () => {
+  const paths = [
+    "infra/aws/fda-native-cognito-approval.cfn.json",
+    "scripts/test-fda-native-cognito-approval.mjs",
+    ".github/workflows/intelligence-fda-native-cognito-contract.yml",
+    "docs/intelligence/fda-native-cognito-approval-20261122.md"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const match = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/);
+    assert.ok(match, file + " must define approved exact-path exclusions");
+    const entries = match[1].trim().replace(/\)$/, "").split("|");
+    for (const path of paths) assert.equal(entries.filter(x => x === path).length,1,file + " missing exact " + path);
+    assert.equal(entries.includes("scripts/aws/contact-release-routing.test.mjs"),false,"release-policy test must remain neutral");
+    assert.equal(entries.includes("server.mjs"),false,"root web server remains governed");
+    assert.ok(workflow.includes("0a9cf537732113aacf3e444e9efefaa47fb2d9e2"),"reviewed source pin remains");
+  }
+});
