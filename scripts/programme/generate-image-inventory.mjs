@@ -423,6 +423,64 @@ for (const item of brandRasterEvidence.files) {
   });
 }
 
+// Native release candidates are not public or signed binaries. Register each
+// iOS/Android icon as a governed physical asset only after checking the exact
+// owner-approved Intelligence SVG and its SHA-256 generated-output manifest.
+// No filename-only, similarity-only, or inferred source-rights admissions.
+const nativeIconEvidence = await json("audit/generated/native-intelligence-icon-provenance.json");
+const nativeIconPaths = new Set([
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-1024x1024.png",
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024x1024.png",
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024x1024.png",
+  ...["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"].flatMap((density) => [
+    `native/novapharm-intelligence-android/app/src/main/res/mipmap-${density}/ic_launcher.png`,
+    `native/novapharm-intelligence-android/app/src/main/res/mipmap-${density}/ic_launcher_round.png`
+  ]),
+  "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png",
+  "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_monochrome.png"
+]);
+if (nativeIconEvidence.schemaVersion !== 1 ||
+    nativeIconEvidence.brand !== officialBrand.brands.intelligence.officialName ||
+    nativeIconEvidence.source !== normaliseAssetPath(officialBrand.brands.intelligence.favicon) ||
+    nativeIconEvidence.sourceSha256 !== officialBrand.brands.intelligence.browserIconZipSha256 ||
+    nativeIconEvidence.color !== officialBrand.brands.intelligence.hex ||
+    nativeIconEvidence.lightInk !== officialBrand.neutralPalette.defaultInk.hex ||
+    nativeIconEvidence.lightBackground !== officialBrand.neutralPalette.primaryWhite.hex ||
+    nativeIconEvidence.status !== "unsigned-source-assets-only" ||
+    !Array.isArray(nativeIconEvidence.outputs) ||
+    nativeIconEvidence.outputs.length !== nativeIconPaths.size ||
+    nativeIconPaths.size !== 15) {
+  throw new Error("Native Intelligence source/provenance contract changed without review");
+}
+const seenNativeIcons = new Set();
+for (const asset of nativeIconEvidence.outputs) {
+  const assetPath = asset.filename;
+  if (!nativeIconPaths.has(assetPath) || seenNativeIcons.has(assetPath) ||
+      !officialMedia.has(assetPath) || !/^[a-f0-9]{64}$/u.test(asset.sha256) ||
+      !Number.isInteger(asset.bytes) || asset.bytes <= 0) {
+    throw new Error("Unapproved or missing Intelligence native icon: " + String(assetPath));
+  }
+  seenNativeIcons.add(assetPath);
+  const bytes = await readFile(path.join(root, assetPath));
+  if (bytes.length !== asset.bytes ||
+      createHash("sha256").update(bytes).digest("hex") !== asset.sha256) {
+    throw new Error("Native icon bytes do not match source-derived manifest: " + assetPath);
+  }
+  addRegistryRecord(registry, assetPath, {
+    id: "intelligence-native-source-derived:" + assetPath,
+    source: "SHA-256 verified derivative of owner-approved NovaPharm Intelligence SVG (not an app-store receipt)",
+    licence: "Owner-authorised NovaPharm Intelligence identity artwork; unsigned prototype only",
+    semanticPurpose: "Governed native launch icon candidate for iOS/Android",
+    pageUsage: [],
+    reviewStatus: "source-verified-unsigned-native-candidate-awaiting-device-and-release-acceptance",
+    technicalStatus: "byte-exact-native-icon-manifest-validation",
+    provenanceRecord: "audit/generated/native-intelligence-icon-provenance.json#" + assetPath
+  });
+}
+if (seenNativeIcons.size !== nativeIconPaths.size) {
+  throw new Error("Native Intelligence icon provenance set is incomplete");
+}
+
 for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/oncology/") && value.endsWith(".svg"))) {
   const canonical = canonicalDeliveryPath(file);
   addRegistryRecord(registry, canonical, {
