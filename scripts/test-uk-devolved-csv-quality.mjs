@@ -89,7 +89,7 @@ test('PHS monthly rows must match PaidDateMonth for every board, prescriber or d
    assert.throws(()=>validateUkDevolvedCsvSample({...good,rows:[row,invalid]}),/quality gate refused/);
   }
   assert.throws(()=>validateUkDevolvedCsvSample({
-   ...good,headers:good.headers.filter(f=>f!=='PaidDateMonth'),rows:[]}),/missing publisher column/);
+   ...good,headers:good.headers.filter(f=>f!=='PaidDateMonth'),rows:[]}),/invalid CSV header/);
  }
 });
 test('PHS quarterly location flow row dates must be months inside declared quarter',()=>{
