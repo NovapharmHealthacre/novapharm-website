@@ -1259,3 +1259,28 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
       "Reviewed server blob pin must be preserved");
   }
 });
+
+test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
+  const paths = [
+    "src/core/regulatory/fda-aws-lambda-entry.mjs",
+    "deployment/aws/fda-private-lambda/index.mjs",
+    "scripts/build-fda-private-lambda-zip.mjs",
+    "scripts/test-fda-aws-lambda-entry.mjs",
+    ".github/workflows/intelligence-fda-zip-contract.yml",
+    "docs/intelligence/fda-deployable-lambda-20261122.md"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const value = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(value && value.endsWith(")"), file + " must keep exact release classifier");
+    const protectedPaths = value.slice(0, -1).split("|");
+    for (const path of paths)
+      assert.equal(protectedPaths.filter(value => value === path).length, 1, file + ": " + path);
+    for (const value of ["server.mjs", "apps/portal/app/gateway/[...path]/route.ts",
+      "scripts/aws/contact-release-routing.test.mjs"]) {
+      assert.equal(protectedPaths.includes(value), false, "release policy must not broadly bypass public changes");
+    }
+    assert.match(workflow, /0a9cf537732113aacf3e444e9efefaa47fb2d9e2/,
+      "reviewed root server version pin must remain in place");
+  }
+});
