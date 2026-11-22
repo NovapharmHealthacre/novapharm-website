@@ -126,6 +126,10 @@ try {
             submitHeight:submit.getBoundingClientRect().height,
             submitBg:getComputedStyle(submit).backgroundColor,
             submitColor:getComputedStyle(submit).color,
+            bodyInk:getComputedStyle(document.body).color,
+            headingInk:getComputedStyle(document.querySelector(".ref-hero h1")).color,
+            inputInk:getComputedStyle(input).color,
+            navInk:getComputedStyle(document.querySelector(".nav a")).color,
             firstTop:first?.top,firstBottom:first?.bottom,secondTop:second?.top
           };
         });
@@ -135,6 +139,9 @@ try {
         assert(view.submitHeight>=48,label+" undersized submit button at "+width);
         assert(view.submitBg==="rgb(157, 27, 50)",label+" Sovereign Crimson CTA absent at "+width);
         assert(view.submitColor==="rgb(255, 255, 255)",label+" submit label contrast colour incorrect");
+        for(const key of ["bodyInk","headingInk","inputInk","navInk"]){
+          assert(view[key]==="rgb(11, 11, 14)",label+" Sovereign Black default ink missing for "+key+" at "+width+"px: "+view[key]);
+        }
         if(width<=640)assert(view.secondTop>=view.firstBottom-2,label+" columns did not stack at "+width);
         result.viewports.push({width:width,overflow:false,fieldsReadable:true,buttonSize:true,brand:true});
       }
