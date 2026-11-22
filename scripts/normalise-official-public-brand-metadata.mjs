@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve, sep } from "node:path";
 
@@ -10,6 +11,39 @@ const hasThemeName = /\bname\s*=\s*["']theme-color["']/i;
 const hasMaskRel = /\brel\s*=\s*["']mask-icon["']/i;
 const contentAttribute = /\bcontent\s*=\s*(["'])[^"']*\1/i;
 const colorAttribute = /\bcolor\s*=\s*(["'])[^"']*\1/i;
+
+const inlineScriptTag = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+const nextFlightTheme = /(\\?"name\\?"\s*:\s*\\?"theme-color\\?"\s*,\s*\\?"content\\?"\s*:\s*\\?")(#[0-9a-f]{6})(\\?")/gi;
+
+// Next.js embeds viewport metadata in its Flight hydration payload as well as
+// the HTML <head>. Updating only <meta> creates a hydration inconsistency.
+// If CSP pins inline Flight scripts by SHA-256, change exactly that script's
+// CSP hash alongside the narrowly scoped theme value. Never weaken CSP.
+function normaliseNextFlightTheme(html, palette) {
+  const cspOriginal = html.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0] || null;
+  let cspUpdated = cspOriginal;
+  let alteredFlightScripts = 0;
+  const next = html.replace(inlineScriptTag, (whole, attributes, body) => {
+    if (/\bsrc\s*=/.test(attributes) || !body.includes("self.__next_f.push")) return whole;
+    const changedBody = body.replace(nextFlightTheme, (_found, start, _hex, end) =>
+      start + palette.background + end);
+    if (changedBody === body) return whole;
+    assert.ok(cspUpdated, "Refusing to change Next.js hydration without verifiable inline CSP");
+    const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
+    const originalToken = "'sha256-" + digest(body) + "'";
+    const updatedToken = "'sha256-" + digest(changedBody) + "'";
+    assert.equal(cspUpdated.split(originalToken).length, 2,
+      "Refusing Next.js hydration rewrite without exactly one matching original CSP hash");
+    cspUpdated = cspUpdated.replace(originalToken, updatedToken);
+    alteredFlightScripts++;
+    return whole.replace(body, changedBody);
+  });
+  const result = cspUpdated !== cspOriginal ? next.replace(cspOriginal, cspUpdated) : next;
+  if (alteredFlightScripts) {
+    assert.ok(result.includes(cspUpdated), "Updated CSP must remain in the output document");
+  }
+  return result;
+}
 
 function matchingTags(html, pattern, predicate) {
   return [...html.matchAll(pattern)].filter(([tag]) => predicate.test(tag)).map(x => x[0]);
@@ -27,6 +61,13 @@ export function assertOfficialPublicBrandMetadata(html, palette) {
     assert.match(masks[0], colorAttribute, "mask-icon requires an official colour");
     assert.equal(masks[0].match(colorAttribute)[0].match(/["']([^"']*)["']/)[1],
       palette.crimson, "Safari mask-icon must use Healthcare's approved crimson");
+  }
+  for (const [, , body] of html.matchAll(inlineScriptTag)) {
+    if (!body.includes("self.__next_f.push")) continue;
+    for (const match of body.matchAll(nextFlightTheme)) {
+      assert.equal(match[2], palette.background,
+        "Next.js hydrated theme differs from approved browser theme");
+    }
   }
   assert.doesNotMatch(themes.join(" ") + masks.join(" "), /#E3120B|#B30E09/i,
     "Retired Economist Red cannot survive in public browser metadata");
@@ -50,6 +91,7 @@ export function normaliseOfficialPublicBrandMetadata(html, palette) {
       : replacement.replace(/\s*\/>$|>$/, tail => ` color="${palette.crimson}"${tail}`);
     next = next.replace(masks[0], replacement);
   }
+  next = normaliseNextFlightTheme(next, palette);
   assertOfficialPublicBrandMetadata(next, palette);
   return next;
 }
