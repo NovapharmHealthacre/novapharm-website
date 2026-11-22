@@ -94,6 +94,9 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
     private let config: NovaFDAOIDCConfiguration
     private let store=NovaFDAKeychainAccessTokenStore()
     private var activeSession: ASWebAuthenticationSession?
+    // The current OAuth generation prevents in-flight token exchange from
+    // restoring a board token after sign-out or a newer account switch.
+    private var authGeneration: UInt64 = 0
 
     init(config: NovaFDAOIDCConfiguration) { self.config=config;super.init() }
 
@@ -105,7 +108,12 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
     }
 
     @discardableResult
-    func signOut() -> Bool { activeSession?.cancel();activeSession=nil;return store.clear() }
+    func signOut() -> Bool {
+        authGeneration &+= 1
+        activeSession?.cancel()
+        activeSession=nil
+        return store.clear()
+    }
     func cachedAccessToken() -> String? {
         guard NovaNativeReleasePolicy.productionApproved &&
               NovaNativeReleasePolicy.authenticatedMobileClientAvailable &&
@@ -129,6 +137,8 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         guard store.clear() else {
             completion(.failure(NovaFDAOIDCError.token));return
         }
+        authGeneration &+= 1
+        let attemptGeneration=authGeneration
         do {
             let verifier=fdaURLSafeBase64(try secureRandomData(length:32))
             let state=fdaURLSafeBase64(try secureRandomData(length:32))
@@ -151,6 +161,9 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
             let session=ASWebAuthenticationSession(url:url,callbackURLScheme:scheme) { [weak self] callback,error in
                 Task { @MainActor in
                     guard let self else {completion(.failure(NovaFDAOIDCError.callback));return}
+                    guard self.authGeneration == attemptGeneration else {
+                        completion(.failure(NovaFDAOIDCError.unapproved));return
+                    }
                     self.activeSession=nil
                     do {
                         guard error==nil,let callback,
@@ -168,19 +181,32 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
                               (1...2048).contains(code.utf8.count),
                               code.utf8.allSatisfy({$0>=0x21 && $0<=0x7E})
                               else {throw NovaFDAOIDCError.state}
-                        let token=try await self.exchange(code:code,verifier:verifier)
+                        let token=try await self.exchange(code:code,verifier:verifier,
+                                                            generation:attemptGeneration)
+                        guard self.authGeneration == attemptGeneration else {
+                            throw NovaFDAOIDCError.unapproved
+                        }
                         completion(.success(token))
-                    } catch {self.store.clear();completion(.failure(error))}
+                    } catch {
+                        // A stale callback must not clear credentials issued to
+                        // a newer, separately authorized sign-in.
+                        if self.authGeneration == attemptGeneration { _ = self.store.clear() }
+                        completion(.failure(error))
+                    }
                 }
             }
             session.prefersEphemeralWebBrowserSession=true
             session.presentationContextProvider=self
             activeSession=session
             guard session.start() else {throw NovaFDAOIDCError.unapproved}
-        } catch { activeSession=nil;store.clear();completion(.failure(error)) }
+        } catch {
+            activeSession=nil
+            if authGeneration == attemptGeneration { _ = store.clear() }
+            completion(.failure(error))
+        }
     }
 
-    private func exchange(code:String,verifier:String) async throws -> String {
+    private func exchange(code:String,verifier:String,generation:UInt64) async throws -> String {
         var req=URLRequest(url:config.tokenURL,cachePolicy:.reloadIgnoringLocalCacheData,timeoutInterval:10)
         req.httpMethod="POST"
         req.setValue("application/x-www-form-urlencoded",forHTTPHeaderField:"Content-Type")
@@ -201,6 +227,9 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
               let token=try? JSONDecoder().decode(NovaFDATokenResponse.self,from:data),
               token.token_type.lowercased()=="bearer",token.access_token.count>40
               else {throw NovaFDAOIDCError.token}
+        // URLSession.data(for:) suspends this actor. Do not save a token
+        // if signOut() or another sign-in superseded this in-flight request.
+        guard authGeneration == generation else { throw NovaFDAOIDCError.unapproved }
         try store.save(token.access_token,expiresIn:token.expires_in)
         return token.access_token
     }
