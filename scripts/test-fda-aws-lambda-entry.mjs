@@ -110,6 +110,32 @@ test("conditional quota exhaustion is 429; SDK failure and internal messages nev
  assert.equal(z.statusCode,503);
  assert.ok(!z.body.includes("SECRET"));
 });
+test("transient AWS SDK initialization failure recovers on next warm invocation",async()=>{
+ let loads=0,writes=0;
+ class UpdateItemCommand { constructor(input){this.input=input;} }
+ class DynamoDBClient {
+  constructor(options){assert.equal(options.region,"eu-north-1");}
+  async send(cmd){assert.equal(cmd.input.TableName,env.NPI_FDA_QUOTA_TABLE);writes++;return {};}
+ }
+ const sdkLoader=async()=>{
+  loads++;
+  if(loads===1)throw Error("PRIVATE-TRANSIENT-SDK-IMPORT");
+  return {DynamoDBClient,UpdateItemCommand};
+ };
+ const x=create({sdkLoader});
+ const denied=await x.handler(event("ndc"));
+ assert.equal(denied.statusCode,503);
+ assert.ok(!denied.body.includes("PRIVATE-TRANSIENT"));
+ assert.equal(writes,0);
+ const recovered=await x.handler(event("ndc"));
+ assert.equal(recovered.statusCode,200);
+ assert.equal(loads,2);
+ assert.equal(writes,1);
+ const reused=await x.handler(event("recalls"));
+ assert.equal(reused.statusCode,200);
+ assert.equal(loads,2,"successful SDK and client setup are reused in the warm instance");
+ assert.equal(writes,2);
+});
 test("direct Lambda event without API Gateway trusted JWT is rejected",async()=>{
  const x=create();
  const e=event();delete e.requestContext.authorizer;
