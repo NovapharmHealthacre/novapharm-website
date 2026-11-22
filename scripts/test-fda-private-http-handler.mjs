@@ -89,6 +89,33 @@ test("JWT claims are only accepted when gateway supplied access token, audience,
    assert.equal(calls.length,0);
  }
 });
+test("JWT NumericDate claims reject invalid coercions before quota or source egress",async()=>{
+  const baseline=event().requestContext.authorizer.jwt.claims;
+  const rejected=[
+    {exp:null},{exp:" "},{exp:true},{exp:"Infinity"},{exp:"1795261000.2"},
+    {nbf:null},{nbf:"invalid"},{nbf:" "},{nbf:NaN},{nbf:true},
+    {nbf:String(now+1)},{iat:null},{iat:"invalid"},{iat:false},
+    {iat:" "},{iat:String(now+31)}
+  ];
+  for(const overrides of rejected){
+    const {handler,calls}=create();
+    const e=event();
+    e.requestContext.authorizer.jwt.claims={...baseline,...overrides};
+    const v=await handler(e);
+    assert.equal(v.statusCode,403,JSON.stringify(overrides));
+    assert.deepEqual(calls,[],JSON.stringify(overrides));
+  }
+  // Real Cognito JWT NumericDate claims may arrive as numbers or strings.
+  for(const dateValues of [
+    {nbf:String(now-1),iat:String(now-1)},
+    {nbf:now-1,iat:now-1,exp:now+600}
+  ]){
+    const {handler}=create();
+    const e=event();
+    e.requestContext.authorizer.jwt.claims={...baseline,...dateValues};
+    assert.equal((await handler(e)).statusCode,200);
+  }
+});
 test("GET only, route exact, bounded kinds and drug input",async()=>{
  for(const change of [
    {rawPath:"/v1/intelligence/regulatory/us/fda-research/evil"},

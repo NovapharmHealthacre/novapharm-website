@@ -120,6 +120,15 @@ function safeSourceResult(kind,result){
   }
   return true;
 }
+function numericDateClaim(value) {
+  // API Gateway-supplied Cognito access-token NumericDate claims are integers
+  // (or decimal integer strings). Never coerce null, booleans, whitespace,
+  // non-finite, fractional or malformed dates into valid authorization times.
+  if (typeof value !== "number" &&
+      !(typeof value === "string" && /^[0-9]{1,16}$/u.test(value))) return null;
+  const numeric = Number(value);
+  return Number.isSafeInteger(numeric) && numeric > 0 ? numeric : null;
+}
 function authorized(event, env, nowSeconds) {
   const jwt = event?.requestContext?.authorizer?.jwt;
   const claims = jwt?.claims;
@@ -128,9 +137,16 @@ function authorized(event, env, nowSeconds) {
   if (!claims.sub || typeof claims.sub !== "string") return false;
   if (claims.iss !== env.NPI_FDA_EXPECTED_ISSUER) return false;
   if (!audienceSet(env.NPI_FDA_APPROVED_CLIENT_IDS).has(claims.client_id)) return false;
-  if (!Number.isSafeInteger(Number(claims.exp)) || Number(claims.exp) <= nowSeconds) return false;
-  if (claims.nbf && Number(claims.nbf) > nowSeconds) return false;
-  if (claims.iat && Number(claims.iat) > nowSeconds + 30) return false;
+  const exp = numericDateClaim(claims.exp);
+  if (exp === null || exp <= nowSeconds) return false;
+  if (claims.nbf !== undefined) {
+    const nbf = numericDateClaim(claims.nbf);
+    if (nbf === null || nbf > nowSeconds) return false;
+  }
+  if (claims.iat !== undefined) {
+    const iat = numericDateClaim(claims.iat);
+    if (iat === null || iat > nowSeconds + 30) return false;
+  }
   if (!validScope(claims, jwt, env.NPI_FDA_REQUIRED_SCOPE)) return false;
   const permitted = audienceSet(env.NPI_FDA_APPROVED_BOARD_GROUPS);
   if (!permitted.size) return false;
