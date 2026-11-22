@@ -105,3 +105,7 @@ Example batch plan (all filenames are flat basenames inside the private root):
     {"contract":"novapharm.uk.private-backfill-file-batch.v1","sourceId":"nhsbsa.epd","startPeriod":"2026-08","endPeriod":"2026-09","entries":[{"period":"2026-08","manifestFile":"aug.json","archiveFile":"aug.csv"}]}
 
 The program permits at most 24 files in a batch, refuses path traversal, symlinked manifests, wrong sources or periods, and tampered archive bytes. It invokes the Wales GP structural ZIP inspector through the same archive verification call. Results contain only sanitized source and period coverage counts, not file contents or private local paths. It does not independently authenticate the claimed publisher digest, check clinical completeness, acquire source licences, ingest records or enable any live API. All results remain canIngest=false and canPublish=false.
+
+### Two-pass private batch safety and bounded disk I/O
+
+The batch validates the source period window, every period and every manifest **before** reading any source archive payload. Total declared compressed/source file bytes are bounded at 16 GiB per invocation, in addition to the 24-file cap and per-file manifest cap. This prevents a later invalid manifest from causing earlier large files to be unnecessarily streamed. Independent publisher hash provenance and all clinical rights remain unapproved.

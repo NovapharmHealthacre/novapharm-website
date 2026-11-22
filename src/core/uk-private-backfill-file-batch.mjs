@@ -33,9 +33,22 @@ export async function verifyUkPrivateBackfillBatch({plan,quarantineRoot}={}){
     !Array.isArray(plan.entries)||plan.entries.length>24)deny('invalid bounded batch contract');
  if(typeof quarantineRoot!=='string'||!quarantineRoot)deny('private quarantine root required');
  const root=await realpath(resolve(quarantineRoot));
- const receipts=[];let verifiedBytes=0;
+ // Validate the entire requested window and manifest batch before
+ // streaming any potentially enormous official archive. This prevents
+ // malformed later entries from triggering avoidable earlier disk I/O.
+ const baseline=assessUkBackfillCandidateCoverage({
+  sourceId:plan.sourceId,startPeriod:plan.startPeriod,endPeriod:plan.endPeriod,receipts:[]});
+ const maxBatchBytes=16*1024**3;
+ const periodPattern=baseline.periodPrecision==='month' ?
+  /^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/ :
+  /^(?:19|20)\d{2}-Q[1-4]$/;
+ const prepared=[];
+ let expectedBytes=0;
  for(const entry of plan.entries){
   requireKeys(entry,['period','manifestFile','archiveFile']);
+  if(typeof entry.period!=='string'||!periodPattern.test(entry.period)||
+     entry.period<plan.startPeriod||entry.period>plan.endPeriod)
+   deny('source partition outside requested historical window');
   const manifestFile=safeName(entry.manifestFile,'.json');
   const archiveFile=safeName(entry.archiveFile);
   const ext=archiveFile.toLowerCase().split('.').at(-1);
@@ -50,6 +63,13 @@ export async function verifyUkPrivateBackfillBatch({plan,quarantineRoot}={}){
   const m=validateUkNationalArchiveManifest(manifest);
   if(m.sourceId!==plan.sourceId||m.reportingPeriod!==entry.period||m.fileFormat.toLowerCase()!==ext)
    deny('source, period or format mismatch');
+  if(m.expectedBytes>maxBatchBytes-expectedBytes)
+   deny('aggregate private batch byte budget exceeded');
+  expectedBytes+=m.expectedBytes;
+  prepared.push({manifest,archiveFile});
+ }
+ const receipts=[];let verifiedBytes=0;
+ for(const {manifest,archiveFile} of prepared){
   const receipt=await verifyUkNationalArchiveBytes(manifest,{
    archivePath:join(root,archiveFile),quarantineRoot:root});
   if(receipt.archiveIntegrityVerified!==true||receipt.canIngest!==false||

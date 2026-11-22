@@ -96,3 +96,26 @@ test('symlinked manifests refuse and offline CLI output excludes private paths',
  assert.equal(rejected.stdout,'');
  assert.match(rejected.stderr,/verification refused/);
 }));
+
+
+test('invalid historical bounds and out-of-range partitions are rejected before any archive read',async()=>fixture(async root=>{
+ const row=await add(root,'2026-09');
+ await assert.rejects(verifyUkPrivateBackfillBatch({
+  plan:plan([{period:'2026-10',manifestFile:'nonexistent.json',archiveFile:'missing.csv'}]),
+  quarantineRoot:root}),/outside requested historical window/);
+ await assert.rejects(verifyUkPrivateBackfillBatch({
+  plan:plan([row],{startPeriod:'2026-Q1'}),quarantineRoot:root}),/precision/);
+}));
+
+test('aggregate declared file size is bounded before streaming even the first archive',async()=>fixture(async root=>{
+ const first=await add(root,'2026-08','first');
+ const second=await add(root,'2026-09','second');
+ const huge=9*1024**3;
+ for(const record of [first,second]){
+  await writeFile(join(root,record.manifestFile),
+   JSON.stringify(manifest(record.period,{byteSize:huge})));
+ }
+ await assert.rejects(verifyUkPrivateBackfillBatch({
+  plan:plan([first,second],{startPeriod:'2026-08',endPeriod:'2026-09'}),
+  quarantineRoot:root}),/aggregate private batch byte budget exceeded/);
+}));
