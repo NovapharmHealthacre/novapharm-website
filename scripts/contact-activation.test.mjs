@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml } from "../scripts/activate-contact-intake.mjs";
 import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
@@ -94,4 +95,24 @@ test("owner-gated production activation remains disabled without explicit accept
   assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
   assert.ok(activationSource.includes('refusing managed replacement'));
   assert.ok(activationSource.includes('Reviewed managed Contact stylesheet missing from Pages artifact'));
+});
+
+
+test("Reviewed Contact and CSS Git blob parity is exact across release sources", () => {
+  // These reviewed bytes match PR #1016's Contact HTML/client and the existing
+  // protected gh-pages shared CSS. Any change needs a fresh reviewed candidate.
+  const assets = [
+    ["src/content/contact-managed-release.html", "7655359b3835cf766b7c734f71ad8260b0f436ba"],
+    ["assets/js/contact-production.js", "35e7476cbbeaf4db693c614f9109a9c382527764"],
+    ["assets/css/novapharm-unified-20261107.css", "9631537b380551b5dd3f8dbee81d93c3098bab54"]
+  ];
+  for (const [file, expectedGitBlobSha] of assets) {
+    assert.ok(existsSync(file), "Reviewed release asset missing: " + file);
+    const contents = readFileSync(file);
+    const digest = createHash("sha1")
+      .update("blob " + contents.length + "\0")
+      .update(contents)
+      .digest("hex");
+    assert.equal(digest, expectedGitBlobSha, "Reviewed release asset drift: " + file);
+  }
 });
