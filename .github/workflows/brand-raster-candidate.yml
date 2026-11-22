@@ -9,6 +9,7 @@ on:
       - '.github/workflows/brand-source-image-inventory-reconcile.yml'
       - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
       - 'scripts/test-official-brand-triad.mjs'
+      - 'scripts/programme/generate-image-inventory.mjs'
       - 'config/brand-identities.json'
       - 'assets/brand/novapharm-healthcare-logo.svg'
       - 'assets/brand/novapharm-healthcare-logo-reverse.svg'
