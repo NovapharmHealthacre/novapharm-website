@@ -268,6 +268,24 @@ for (const [path, tokens] of [
 }
 assert.match(read("assets/css/novapharm-hig-materials.css"), /:root\[data-np-color-scheme="dark"\]/);
 
+// The exact-release SHA must accompany late public shells too, not only SEO
+// canonicals. This is build provenance, not authenticated Portal access.
+const releaseStamper = read("scripts/stamp-public-release-provenance.mjs");
+assert.ok(releaseStamper.includes("for (const route of latePublicPages)"));
+for (const late of [
+  "products/marketplace/index.html",
+  "products/track/index.html",
+  "products/strategic-portfolio/index.html",
+  "products/esco/bag/index.html",
+  "portal/index.html",
+  "404.html"
+]) {
+  assert.ok(releaseStamper.includes('"' + late + '"'), late + " must be covered by post-build source stamping");
+}
+assert.ok(releaseStamper.includes("register.some((record) => record.file === route)"));
+assert.ok(releaseStamper.includes('Duplicate source proof') ||
+  releaseStamper.includes("Missing or duplicate late-page source provenance"));
+
 // Product pages can be sourced from prior generated HTML: SEO enhancement must
 // normalise exactly one Royal Mineral browser theme for every canonical route.
 const seoAuthority = read("scripts/enhance-seo-authority.mjs");
