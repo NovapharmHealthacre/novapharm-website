@@ -3,6 +3,7 @@
   "sourceDate": "2026-11-22",
   "method": "SVG source master rasterized by sharp",
   "count": 44,
+  "lightSocialBackground": "#FBFAEF",
   "limitation": "Generated PNG, JPEG and ICO are derived, not original ZIP binaries.",
   "files": [
     {
@@ -62,8 +63,8 @@
     },
     {
       "path": "assets/brand/novapharm-open-graph-1200x630-white.jpg",
-      "sha256": "c0852c941dfda3c7d341af9992fbbf7eb6422f7e0afa2cfdad4df3900f878ab6",
-      "bytes": 50992
+      "sha256": "9a80e77ecb15dcaaf26ba152a52f21c63614e5165daf83bdf17212e7292d62a9",
+      "bytes": 48929
     },
     {
       "path": "assets/brand/novapharm-open-graph-1200x630-red.jpg",
@@ -107,8 +108,8 @@
     },
     {
       "path": "assets/brand/novapharm-distribution-open-graph-1200x630-white.jpg",
-      "sha256": "e1cc3f6be95906448b95639fb768acb5ead7cec236716d43423703636fec8d82",
-      "bytes": 38288
+      "sha256": "403b3a31dab81c9d03e37549b151821c79a80ea90c7481c61441836b342ec6f4",
+      "bytes": 37197
     },
     {
       "path": "assets/brand/novapharm-distribution-open-graph-1200x630-garnet.jpg",
@@ -152,8 +153,8 @@
     },
     {
       "path": "assets/brand/novapharm-intelligence-open-graph-1200x630-light.jpg",
-      "sha256": "cf5ddc61d3fc617651ec3f28f34e1d24640093cac669a15f29ddcdd3a58de098",
-      "bytes": 52809
+      "sha256": "25874b9cc4a0f9f341f2e0e77edacaef24e91f96af0c74fc13c904c4d1a104b3",
+      "bytes": 53686
     },
     {
       "path": "assets/brand/novapharm-intelligence-open-graph-1200x630-night.jpg",
