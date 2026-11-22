@@ -4,9 +4,22 @@ Reference: [Apple Human Interface Guidelines — Color](https://developer.apple.
 
 ## Design decision
 
-Apple's guidance prioritises semantic meaning, judicious colour, distinct interactive and noninteractive uses, dynamic appearances, increased contrast, accessible status feedback, and testing with realistic content. The implementation deliberately keeps NovaPharm's approved red **#E3120B** as a *brand accent only*, not the universal colour of every link, error, selection, nav item or chart.
+Apple's guidance prioritises semantic meaning, judicious colour, distinct interactive and noninteractive uses, dynamic appearances, increased contrast, accessible status feedback, and testing with realistic content. The implementation deliberately keeps NovaPharm's owner-approved Healthcare crimson **#9D1B32** as a *brand accent only*, not the universal colour of every link, error, selection, nav item or chart.
 
 Default customer-facing appearance remains bright, white and quietly editorial. Black/charcoal is the neutral primary action; blue is the conventional text-link and focus colour; status colours communicate operational meaning and are never a substitute for visible status text.
+
+## Official Royal Neutral palette (owner-approved 22 November 2026)
+
+| Purpose | Name | HEX | Use |
+| --- | --- | --- | --- |
+| Primary | Royal Mineral White | `#FBFAEF` | Signature corporate canvas, editorial white, default browser theme |
+| Secondary | Royal Porcelain White | `#F8F7F3` | Supporting sections, grouped surfaces, form/panel backgrounds |
+| Typography | Sovereign Black | `#0B0B0E` | Main readable text, primary neutral actions |
+| Hairline | Porcelain Stone | `#DEDCD5` | Decorative dividers; never rely on it as a control boundary |
+
+These whites have deliberately very low mutual contrast. Preserve structural spacing, elevation and **stronger accessible boundaries** for controls and tables; `--np-color-separator-strong` remains independent of decorative Porcelain Stone. Do not recolour independent brand SVGs, semantic status colours, photographs or dark-mode-only components. The neutral tokens are registered in `assets/css/tokens.css` and `assets/css/novapharm-hig-colours.css` and enforced by `npm run design:colours:validate`. Native system-font fallbacks and responsive type roles remain in place; no proprietary Apple fonts are distributed.
+
+**Release boundary:** source branch stacked on unmerged brand PR #1037, which itself depends on draft PR #1035. Source implementation does not mean the GitHub Pages website, Portal or app stores have been deployed.
 
 ## The reusable palette
 
@@ -14,18 +27,18 @@ Defined in `assets/css/novapharm-hig-colours.css`:
 
 | Role | Light | Application |
 | --- | --- | --- |
-| Canvas | `#FFFFFF` | Page background |
-| Grouped surface | `#F5F5F7` | Panels, controls, supporting sections |
+| Canvas | `#FBFAEF` | Royal Mineral White, primary page canvas |
+| Grouped surface | `#F8F7F3` | Royal Porcelain White, secondary surface |
 | Recessed surface | `#E8E8ED` | Third-level grouping |
-| Primary label | `#1D1D1F` | Headings and essential text |
+| Primary label | `#0B0B0E` | Sovereign Black, default text |
 | Secondary label | `#424245` | Body text |
 | Tertiary label | `#595961` | Supporting captions |
-| Separator | `#D2D2D7` | Decorative dividers, not text |
+| Separator | `#DEDCD5` | Porcelain Stone, decorative dividers only |
 | Strong separator | `#86868B` | Visible form and control boundaries |
 | Link and focus | `#0066CC` | Navigation in content, keyboard focus |
-| Brand accent | `#E3120B` | One prominent brand action or key emphasis |
-| Brand text | `#B30E09` | Red emphasis on light grouped surfaces |
-| Neutral primary action | `#1D1D1F` | Standard primary UI button |
+| Brand accent | `#9D1B32` | Healthcare crimson brand action |
+| Brand text | `#68101F` | Accessible crimson hover/text on warm light surfaces |
+| Neutral primary action | `#0B0B0E` | Sovereign Black primary action |
 | Success | `#17745A` | Completed or operational |
 | Warning | `#965C0D` | Requires attention |
 | Destructive/error | `#9E1B47` | Failure; intentionally distinct from brand red |
