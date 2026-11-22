@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'infra/aws/fda-isolated-quota-approval.cfn.json'
+      - 'infra/aws/fda-quota-least-privilege-policy.example.json'
       - 'scripts/test-fda-isolated-quota-approval.mjs'
       - 'docs/intelligence/fda-quota-approval-20261122.md'
       - '.github/workflows/intelligence-fda-isolated-quota-contract.yml'
