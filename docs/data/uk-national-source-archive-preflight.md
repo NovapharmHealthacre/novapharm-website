@@ -155,3 +155,25 @@ The publisher reports that it is monthly retrospective data, usually with a two-
 Independently rechecked the official NHSBSA [September 2026 BNF–SNOMED mapping resource](https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/638b7dc9-1eac-4495-9fc5-423fc52483e2) alongside [August 2026](https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/624eadfc-5125-489d-b292-8bccbad6e657), [July 2026](https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/bafa30b6-4426-4578-a128-935d13b228e5), and [June 2026](https://opendata.nhsbsa.net/dataset/ba1799d5-fac1-4432-8f76-ab7dfbb3e2f8/resource/aa0b2fef-ea4e-4f8f-9df1-269cecc7e293). Although the 13 field **names** are consistent on these listed releases, the portal's declared field **types** vary: June and August/September declare `STRENGTH` and `PACK` as number, while July describes `STRENGTH` as integer and `PACK` as string. These metadata differences **are not evidence of full clinical file schema acceptance**.
 
 The private sample checker now accepts strictly bounded plain decimal text for `STRENGTH` and `PACK`, without floating-point coercion, exponent notation or silently converting SNOMED/VTM/BNF identifiers. It separately counts decimal-valued strength/pack sample rows, emits no actual values, and still returns `canIngest:false`, `canPublish:false`. Full archive acceptance must pin the **specific resource ID and reporting period** and reconcile the exact publisher file independently; this generic sample contract does not normalize source revisions or approve terminology rights. Additional synthetic tests protect decimal measures, malformed numerics and preserved identifier boundaries.
+
+
+### 22 November — exact monthly NHSBSA resource identity gate
+
+The local, non-admitting NHSBSA sample-quality validator now requires the **source-period-specific public CKAN resource UUID** (not just a monthly label or website). These official resource identities were verified on 22 November 2026:
+
+| Publisher period | Official CKAN resource | Declared STRENGTH | Declared PACK | Declared VTM |
+| --- | --- | --- | --- | --- |
+| 2026-06 | `aa0b2fef-ea4e-4f8f-9df1-269cecc7e293` | number | number | string |
+| 2026-07 | `bafa30b6-4426-4578-a128-935d13b228e5` | integer | string | integer |
+| 2026-08 | `624eadfc-5125-489d-b292-8bccbad6e657` | number | number | string |
+| 2026-09 | `638b7dc9-1eac-4495-9fc5-423fc52483e2` | number | number | string |
+
+The list is explicit and versioned in `BNF_SNOMED_PUBLIC_RESOURCE_RELEASES` and is not automatically expanded. Unknown months and claimed resource IDs from another period fail closed. July requires integer-valued strength and preserves `PACK` as **bounded text**, reporting nonnumeric lexical values as diagnostics without guessing what they represent. Other pinned months use bounded plain-decimal lexical values for strength and pack. Identifiers always remain strings.
+
+Original official public resource metadata:
+- https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/aa0b2fef-ea4e-4f8f-9df1-269cecc7e293
+- https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/bafa30b6-4426-4578-a128-935d13b228e5
+- https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/624eadfc-5125-489d-b292-8bccbad6e657
+- https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/638b7dc9-1eac-4495-9fc5-423fc52483e2
+
+**No source row was downloaded to derive these identities:** only official public release metadata was reviewed. A pinned resource ID is not a proof of bytes, archive authenticity, rights, source completeness, identity-level crosswalk acceptance or a permission for production. Even an accurate resource version still returns zero admissions with `canIngest=false` and `canPublish=false`; any new month requires independent publisher-metadata validation and code review before being added.
