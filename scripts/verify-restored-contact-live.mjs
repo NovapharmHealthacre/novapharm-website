@@ -32,6 +32,19 @@ await check("Public Contact form and exact API origin",async()=>{
   insist(page.includes('data-live-contact-status')&&page.includes("Submit enquiry securely"),"Accessible submit confirmation UI missing");
   insist(page.includes("privacyAcknowledgement")&&page.includes("safetyConfirmation"),"Required privacy and safety controls missing");
 });
+await check("Approved Contact visual identity and fail-closed controls",async()=>{
+  insist(!!page,"Live Contact HTML unavailable");
+  for(const marker of [
+    '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+    'class="ref-hero"', 'class="ref-form"',
+    'type="submit" disabled aria-describedby="contact-submission-status"',
+    '<noscript><style>.ref-form{display:none}</style>'
+  ]) insist(page.includes(marker),"Reviewed Contact design/safety marker missing: "+marker);
+  const link='href="/assets/css/novapharm-unified-20261107.css"';
+  insist(page.includes(link) && page.indexOf(link)<page.indexOf("<style>"),"Shared CSS not present ahead of scoped Contact styles");
+  const css=await read(website,"/assets/css/novapharm-unified-20261107.css","text/css");
+  insist(css.includes(".site-header") || css.includes(".nav"),"Reviewed Contact shared CSS missing expected layout rules");
+});
 await check("Contact CSP and public-only safety",async()=>{
   insist(!!page,"Live Contact HTML unavailable");
   const csp=page.match(/<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]+)"/i)?.[1]||"";
@@ -45,6 +58,9 @@ await check("Production Contact client enforces durable receipt",async()=>{
   insist(js.includes('result?.persisted !== true')&&js.includes('response.status !== 201'),"Durable server receipt enforcement missing");
   insist(js.includes('credentials: "omit"')&&js.includes('redirect: "error"'),"Unsafe API request credentials/redirect policy");
   insist(js.includes('new AbortController()')&&js.includes('status.replaceChildren()'),"Safe cancellation and status handling missing");
+  insist(js.includes('"X-Novapharm-Intake": "v1"'),"Approved intake header not present");
+  insist(js.lastIndexOf('if (submit) submit.disabled = false;')>js.indexOf('form.addEventListener("submit"'),
+    "Contact submission enabled before its managed handler was registered");
   insist(!/localStorage\s*\.\s*setItem|sessionStorage\s*\.\s*setItem/.test(js),"Contact client must not persist enquiry data in browser storage");
 });
 await check("Public privacy disclosures for actual intake",async()=>{
