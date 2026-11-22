@@ -296,6 +296,7 @@ jobs:
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           npm run validate
+          node scripts/verify-live-official-brand.mjs --source-only
           python3 scripts/validate-public-sitemaps.py
           node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only
@@ -898,6 +899,9 @@ jobs:
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
           echo 'The public origin serves the exact reviewed Git commit on all seven critical routes, including Markets and Accessibility.'
+
+      - name: Verify exact official brand vectors, raster checksums, manifest and CSS on public origin
+        run: node scripts/verify-live-official-brand.mjs
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
