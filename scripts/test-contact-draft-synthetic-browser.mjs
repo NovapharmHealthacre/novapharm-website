@@ -103,6 +103,43 @@ try {
       await form.locator('button[type=submit]').click();
       await page.waitForFunction(()=>document.querySelector("[data-live-contact-status]")?.textContent?.includes("We could not confirm"),null,{timeout:10000});
       result.invalid=true;
+      // Test real computed presentation in both browser engines, including
+      // a narrow mobile viewport and a 200%-zoom-equivalent 640px reflow.
+      result.viewports=[];
+      for(const width of [1280,640,390,320]){
+        await page.setViewportSize({width,height:900});
+        const view=await page.evaluate(()=>{
+          const field=document.querySelector(".ref-field");
+          const caption=field?.querySelector("span");
+          const input=field?.querySelector("input");
+          const submit=document.querySelector(".ref-button");
+          const first=document.querySelector('[name="name"]')?.getBoundingClientRect();
+          const second=document.querySelector('[name="email"]')?.getBoundingClientRect();
+          return {
+            width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+            captionPx:parseFloat(getComputedStyle(caption).fontSize),
+            inputPx:parseFloat(getComputedStyle(input).fontSize),
+            submitHeight:submit.getBoundingClientRect().height,
+            submitBg:getComputedStyle(submit).backgroundColor,
+            submitColor:getComputedStyle(submit).color,
+            firstTop:first?.top,firstBottom:first?.bottom,secondTop:second?.top
+          };
+        });
+        assert(view.scrollWidth<=view.width+3,label+" contact horizontal overflow at "+width+"px: "+JSON.stringify(view));
+        assert(view.captionPx>=14,label+" unreadable input label at "+width);
+        assert(view.inputPx>=16,label+" input smaller than 16px at "+width);
+        assert(view.submitHeight>=48,label+" undersized submit button at "+width);
+        assert(view.submitBg==="rgb(157, 27, 50)",label+" Sovereign Crimson CTA absent at "+width);
+        assert(view.submitColor==="rgb(255, 255, 255)",label+" submit label contrast colour incorrect");
+        if(width<=640)assert(view.secondTop>=view.firstBottom-2,label+" columns did not stack at "+width);
+        result.viewports.push({width:width,overflow:false,fieldsReadable:true,buttonSize:true,brand:true});
+      }
+      await page.locator('[name="name"]').focus();
+      const focus=await page.evaluate(()=>({
+        focused:document.activeElement?.getAttribute("name"),
+        outline:getComputedStyle(document.querySelector(".ref-field")).outlineStyle
+      }));
+      assert(focus.focused==="name"&&focus.outline!=="none",label+" keyboard input focus outline missing");
       assert(result.attempts===2,"Expected two intercepted fake submissions");
       assert(result.realExternalRequests===0,"Blocked unexpected external requests");
       await page.close();
