@@ -1,8 +1,24 @@
 import { activateAccountRequestHtml } from "./activate-account-request.mjs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 const approvedApi = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i;
+const approvedContactBlobs = Object.freeze({
+  "src/content/contact-managed-release.html": "7655359b3835cf766b7c734f71ad8260b0f436ba",
+  "assets/js/contact-production.js": "35e7476cbbeaf4db693c614f9109a9c382527764",
+  "assets/css/novapharm-unified-20261107.css": "9631537b380551b5dd3f8dbee81d93c3098bab54"
+});
+export function requireReviewedContactBlob(filePath, expectedGitBlobSha) {
+  const contents = readFileSync(filePath);
+  const actual = createHash("sha1")
+    .update("blob " + contents.length + "\0")
+    .update(contents)
+    .digest("hex");
+  if (actual !== expectedGitBlobSha) throw Error("Reviewed managed Contact asset differs from approved release source: " + filePath);
+  return contents;
+}
+
 export function activateContactHtml(html, origin) {
   if (!approvedApi.test(origin)) throw Error("Refusing unverified or non-AWS HTTPS contact origin");
   const required = [
@@ -110,7 +126,14 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   // HTML template whose required shared design stylesheet is missing.
   const sharedStyle = resolve(artifactRoot, "assets/css/novapharm-unified-20261107.css");
   if (!existsSync(sharedStyle)) throw Error("Reviewed managed Contact stylesheet missing from Pages artifact");
-  const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");
+  // Validate the exact reviewed source artifacts at release time, not solely
+  // during CI. No modified frontend is allowed to reach the live Pages branch.
+  requireReviewedContactBlob(sharedStyle, approvedContactBlobs["assets/css/novapharm-unified-20261107.css"]);
+  requireReviewedContactBlob(resolve(artifactRoot, "assets/js/contact-production.js"), approvedContactBlobs["assets/js/contact-production.js"]);
+  const reviewedTemplate = requireReviewedContactBlob(
+    resolve("src/content/contact-managed-release.html"),
+    approvedContactBlobs["src/content/contact-managed-release.html"]
+  ).toString("utf8");
   const nextContact = activateManagedContactReleaseHtml(reviewedTemplate, origin);
   const nextPrivacy = activatePrivacyHtml(notice);
   const nextAccount = activateAccountRequestHtml(account, origin);
