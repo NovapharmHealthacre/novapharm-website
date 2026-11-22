@@ -51,6 +51,9 @@ export function activateContactHtml(html, origin) {
 export function activateManagedContactReleaseHtml(template, origin) {
   if (!approvedApi.test(origin)) throw Error("Refusing unverified or non-AWS HTTPS contact origin");
   const sourceOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+  // Pin managed submissions to the deployed, audited endpoint, not merely any
+  // syntactically valid API Gateway hostname in the same AWS region.
+  if (origin !== sourceOrigin) throw Error("Refusing unapproved managed Contact API origin");
   const sourceMarker = 'data-live-b2b-enquiry-form data-api-origin="' + sourceOrigin + '"';
   const required = [
     '<!doctype html>', sourceMarker,
