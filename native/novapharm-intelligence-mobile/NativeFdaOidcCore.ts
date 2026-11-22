@@ -111,7 +111,7 @@ export function nativeFdaOidcConfigured(config:NovaFDAOidcConfig):boolean{
 // The Cognito token endpoint is untrusted I/O. Content-Length may be absent
 // or falsified: enforce a byte limit before buffering any response.
 const maxTokenResponseBytes=16*1024;
-async function readBoundedCognitoTokenResponse(response:Response):Promise<string>{
+async function readBoundedCognitoTokenResponse(response:Response,signal:AbortSignal):Promise<string>{
   const declared=response.headers.get("content-length");
   if(declared!==null && (!/^[0-9]+$/u.test(declared) ||
      !Number.isSafeInteger(Number(declared)) ||
@@ -123,9 +123,15 @@ async function readBoundedCognitoTokenResponse(response:Response):Promise<string
   const reader=stream.getReader();
   const chunks:Uint8Array[]=[];
   let total=0;
+  // Header completion is not the end of the request deadline.
+  let rejectAbort!: (reason:Error)=>void;
+  const aborted=new Promise<never>((_,reject)=>{rejectAbort=reject;});
+  const onAbort=()=>rejectAbort(Error("Cognito token response deadline exceeded."));
+  signal.addEventListener("abort",onAbort,{once:true});
+  if(signal.aborted)onAbort();
   try{
     while(true){
-      const {done,value}=await reader.read();
+      const {done,value}=await Promise.race([reader.read(),aborted]);
       if(done)break;
       if(!(value instanceof Uint8Array) ||
          (total+=value.byteLength)>maxTokenResponseBytes)
@@ -135,6 +141,7 @@ async function readBoundedCognitoTokenResponse(response:Response):Promise<string
   }catch{
     throw Error("Cognito token response unavailable or oversized.");
   }finally{
+    signal.removeEventListener("abort",onAbort);
     try{await reader.cancel();}catch{}
     try{reader.releaseLock();}catch{}
   }
@@ -210,13 +217,20 @@ export async function authenticateNativeFdaWithPkce(
       headers:{"content-type":"application/x-www-form-urlencoded","accept":"application/json"},
       body:params.toString(),signal:controller.signal
     });
-  } catch {throw Error("Cognito token exchange unavailable.");}
-  finally { clearTimeout(timeout); }
-  if(response.status!==200 || response.redirected ||
-    (response.url && response.url!==tokenUrl.toString()) ||
-    !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
-    throw Error("Cognito token exchange rejected.");
-  const body=await readBoundedCognitoTokenResponse(response);
+  } catch {
+    clearTimeout(timeout);
+    throw Error("Cognito token exchange unavailable.");
+  }
+  let body:string;
+  try{
+    if(response.status!==200 || response.redirected ||
+      (response.url && response.url!==tokenUrl.toString()) ||
+      !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
+      throw Error("Cognito token exchange rejected.");
+    body=await readBoundedCognitoTokenResponse(response,controller.signal);
+  }finally{
+    clearTimeout(timeout);
+  }
   let payload:unknown;
   try{payload=JSON.parse(body)}catch{throw Error("Invalid Cognito token response.");}
   if(!payload || typeof payload!=="object")throw Error("Invalid Cognito token response.");

@@ -283,3 +283,22 @@ test("valid Cognito token JSON uses bounded stream, not unbounded Response.text"
   await signOutNativeFda(adapter);
   assert.equal(stats().stored,null);
 });
+test("Stalled Cognito response body obeys total request deadline",async()=>{
+  const originalSetTimeout=globalThis.setTimeout;
+  let cancelled=0;
+  globalThis.setTimeout=(callback,ms,...args)=>
+    originalSetTimeout(callback,ms===10000?25:ms,...args);
+  try{
+    const stream=new ReadableStream({
+      start(){},
+      cancel(){cancelled++;}
+    });
+    const response=new Response(stream,{status:200,headers:{"content-type":"application/json"}});
+    const {adapter,stats}=platform({fetchImpl:async()=>response});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/unavailable|deadline/);
+    assert.equal(stats().stored,null);
+    assert.ok(cancelled>=1);
+  }finally{
+    globalThis.setTimeout=originalSetTimeout;
+  }
+});
