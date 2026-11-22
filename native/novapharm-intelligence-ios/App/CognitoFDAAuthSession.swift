@@ -56,14 +56,16 @@ private struct NovaFDATokenResponse: Decodable {
 /// Stores access token only. No refresh token, ID token, password or user profile.
 final class NovaFDAKeychainAccessTokenStore {
     private let service = "com.novapharm.intelligence.fda"
-    func clear() {
-        SecItemDelete([kSecClass:kSecClassGenericPassword,
+    @discardableResult
+    func clear() -> Bool {
+        let status=SecItemDelete([kSecClass:kSecClassGenericPassword,
             kSecAttrService:service,kSecAttrAccount:"access"] as CFDictionary)
+        return status == errSecSuccess || status == errSecItemNotFound
     }
     func save(_ token: String, expiresIn: Int) throws {
         guard expiresIn > 0 && expiresIn <= 3600 else { throw NovaFDAOIDCError.token }
         let payload = "\(Date().addingTimeInterval(TimeInterval(expiresIn-30)).timeIntervalSince1970)|\(token)"
-        clear()
+        guard clear() else { throw NovaFDAOIDCError.token }
         let status = SecItemAdd([
             kSecClass:kSecClassGenericPassword,kSecAttrService:service,kSecAttrAccount:"access",
             kSecValueData:Data(payload.utf8),
@@ -102,7 +104,8 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         return ASPresentationAnchor()
     }
 
-    func signOut() { activeSession?.cancel();activeSession=nil;store.clear() }
+    @discardableResult
+    func signOut() -> Bool { activeSession?.cancel();activeSession=nil;return store.clear() }
     func cachedAccessToken() -> String? {
         guard NovaNativeReleasePolicy.productionApproved &&
               NovaNativeReleasePolicy.authenticatedMobileClientAvailable &&
@@ -123,7 +126,9 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         guard activeSession == nil else {
             completion(.failure(NovaFDAOIDCError.unapproved));return
         }
-        store.clear()
+        guard store.clear() else {
+            completion(.failure(NovaFDAOIDCError.token));return
+        }
         do {
             let verifier=fdaURLSafeBase64(try secureRandomData(length:32))
             let state=fdaURLSafeBase64(try secureRandomData(length:32))
