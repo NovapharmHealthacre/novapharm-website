@@ -24,9 +24,24 @@ for (const route of ["/distribution/", "/market-access/", "/markets/"]) {
   assert.ok(registeredRoutes.has(route), "Required public commercial route absent from SEO register: " + route);
 }
 
+// Late commerce/basket routes and the reviewed public portal landing are added
+// outside the SEO canonical register. They still publish HTML and must conform.
+const latePublicPages = [
+  "products/marketplace/index.html",
+  "products/track/index.html",
+  "products/strategic-portfolio/index.html",
+  "products/esco/bag/index.html",
+  "portal/index.html",
+  "404.html"
+];
+const allPublicPages = [
+  ...register,
+  ...latePublicPages.filter((file) => !register.some((page) => page.file === file))
+    .map((file) => ({ file }))
+];
 const errors = [];
 let checked = 0;
-for (const page of register) {
+for (const page of allPublicPages) {
   assert.match(page.file, /^(?!\/)(?!.*\.\.\/)[a-zA-Z0-9/_-]+\.html$/,
     "Unsafe canonical page path");
   const html = read(page.file);
@@ -55,5 +70,5 @@ assert.equal(webManifest.theme_color?.toUpperCase(), identities.brands.healthcar
   "Healthcare PWA accent must retain Royal Cochineal Crimson");
 
 assert.deepEqual(errors, [], "Royal browser theme mismatches after all build-time transforms");
-assert.equal(checked, register.length);
-console.log("Verified " + checked + " canonical public pages and PWA metadata against Royal Mineral White.");
+assert.equal(checked, allPublicPages.length);
+console.log("Verified " + checked + " canonical and approved late public pages plus PWA metadata against Royal Mineral White.");

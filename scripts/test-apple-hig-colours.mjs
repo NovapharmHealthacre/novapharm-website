@@ -247,6 +247,12 @@ assert.ok(publicBuild.indexOf('await import("./apply-global-distribution-foundat
 
 assert.match(postBuildRoyal, /expected exactly one browser theme tag/);
 assert.match(postBuildRoyal, /webManifest\.background_color/);
+assert.match(postBuildRoyal, /products\/marketplace\/index\.html/);
+assert.match(postBuildRoyal, /products\/track\/index\.html/);
+assert.match(postBuildRoyal, /products\/esco\/bag\/index\.html/);
+assert.match(postBuildRoyal, /portal\/index\.html/);
+assert.match(postBuildRoyal, /404\.html/);
+
 
 // Page-specific home, corporate and navigation material roles may not override
 // the Royal light neutrals; preserve separate dark mode and inverse CTA text.
