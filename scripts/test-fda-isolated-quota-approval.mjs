@@ -7,14 +7,14 @@ const approvals=["OwnerProductionSignoff","QuotaProvisioningApproved","SecurityA
 const gate=template.Conditions.CreateApprovedQuota["Fn::And"];
 const quota=template.Resources.FDAIsolatedQuotaTable;
 function allowed(parameters={}) {
+  const value=node=>typeof node!=="object" ? node :
+    node.Ref==="AWS::Region" ? (parameters.__region??"eu-north-1") :
+    node.Ref==="AWS::AccountId" ? (parameters.__accountId??"000000000000") :
+    (parameters[node.Ref]??template.Parameters[node.Ref].Default);
   return gate.every(clause=>{
-    if(clause["Fn::Equals"]){
-      const [left,expected]=clause["Fn::Equals"];
-      return (parameters[left.Ref]??template.Parameters[left.Ref].Default)===expected;
-    }
-    const [inner]=clause["Fn::Not"];
-    const [left,forbidden]=inner["Fn::Equals"];
-    return (parameters[left.Ref]??template.Parameters[left.Ref].Default)!==forbidden;
+    const equality=clause["Fn::Equals"] ?? clause["Fn::Not"]?.[0]?.["Fn::Equals"];
+    const equal=value(equality[0])===value(equality[1]);
+    return clause["Fn::Not"] ? !equal : equal;
   });
 }
 test("source default creates ZERO DynamoDB resources and cannot grant identity or IAM",()=>{
@@ -27,18 +27,23 @@ test("source default creates ZERO DynamoDB resources and cannot grant identity o
   assert.equal(template.Parameters[key].Default,"false");
   assert.deepEqual(template.Parameters[key].AllowedValues,["false","true"]);
  }
- assert.equal(gate.length,approvals.length+1);
+ assert.equal(gate.length,approvals.length+4);
+ assert.equal(template.Parameters.ApprovedAwsAccountId.Default,"UNAPPROVED");
  assert.equal(template.Outputs.ApprovalResult.Value["Fn::If"][2],"disabled_zero_resources");
 });
 test("each independent approval AND explicit table identity is mandatory",()=>{
  const all=Object.fromEntries(approvals.map(k=>[k,"true"]));
- assert.equal(allowed(all),false,"No deployment without table name");
+ const accepted={...all,QuotaTableName:"novapharm-fda-quota-reviewed",
+   ApprovedAwsAccountId:"123456789012",__accountId:"123456789012",__region:"eu-north-1"};
+ assert.equal(allowed(all),false,"No deployment without approved account/table");
+ assert.equal(allowed({...accepted,QuotaTableName:"UNAPPROVED"}),false);
+ assert.equal(allowed({...accepted,ApprovedAwsAccountId:"UNAPPROVED"}),false);
+ assert.equal(allowed({...accepted,__accountId:"999999999999"}),false);
+ assert.equal(allowed({...accepted,__region:"us-east-1"}),false);
  for(const missing of approvals){
-  const params={...all,QuotaTableName:"novapharm-fda-quota-reviewed"};
-  params[missing]="false";
-  assert.equal(allowed(params),false,missing);
+  assert.equal(allowed({...accepted,[missing]:"false"}),false,missing);
  }
- assert.equal(allowed({...all,QuotaTableName:"novapharm-fda-quota-reviewed"}),true);
+ assert.equal(allowed(accepted),true);
 });
 test("single isolated DynamoDB table matches atomic quota PK/SK, TTL, encryption and retention",()=>{
  const p=quota.Properties;
