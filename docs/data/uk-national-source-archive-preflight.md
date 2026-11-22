@@ -64,3 +64,20 @@ A passed integrity receipt remains `canIngest: false`, `canPublish: false`, `cus
 5. Source-rights-signed Atlas staging acceptance, formal security/Quality review and verified protected web + iOS + Android user reads before any production declaration.
 
 References: `docs/data/uk-four-nation-source-acceptance-20261121.md` in draft PR #1026, GitHub issue #1027, and official NHSBSA/PHS/NWSSP/BSO publisher pages.
+
+
+## 22 November — Welsh GP ZIP structural gate is enforced by the archive verifier
+
+Following source-file hash and byte-size verification, the exact same open
+quarantine archive file handle is passed into the Welsh GP ZIP directory
+inspector. The archive command must refuse structurally invalid ZIP member
+sets even if a caller supplies a matching SHA-256 in their manifest. The
+receipt contains a sanitized walesGpZipDirectory field, with no extracted
+medicine observations or source-file paths.
+
+The additional offline regression tests exercise the real CLI and reject
+incorrect months, missing reference members, path traversal and wrong
+archive hash. They use synthetic ZIP fixtures only. Passing this guard does
+NOT establish that the expected hash originated from NHS Wales; publisher
+authenticity, file CRC, full row quality, terminology rights and full historical
+backfill remain separate gates.

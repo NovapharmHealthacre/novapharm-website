@@ -108,3 +108,89 @@ test('CLI refuses symlinked manifests instead of stat-then-reopen races',async()
     assert.equal(result.stdout,'');
   }finally{await rm(root,{recursive:true,force:true});}
 });
+
+
+function syntheticWalesGpZip(names) {
+  const locals = [], centers = [];
+  let cursor = 0;
+  for (const name of names) {
+    const label = Buffer.from(name, 'ascii');
+    const local = Buffer.alloc(31 + label.length);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt32LE(1, 18);
+    local.writeUInt32LE(1, 22);
+    local.writeUInt16LE(label.length, 26);
+    label.copy(local, 30);
+    const center = Buffer.alloc(46 + label.length);
+    center.writeUInt32LE(0x02014b50, 0);
+    center.writeUInt16LE(20, 4);
+    center.writeUInt16LE(20, 6);
+    center.writeUInt32LE(1, 20);
+    center.writeUInt32LE(1, 24);
+    center.writeUInt16LE(label.length, 28);
+    center.writeUInt32LE(cursor, 42);
+    label.copy(center, 46);
+    locals.push(local);
+    centers.push(center);
+    cursor += local.length;
+  }
+  const directory = Buffer.concat(centers);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(names.length, 8);
+  end.writeUInt16LE(names.length, 10);
+  end.writeUInt32LE(directory.length, 12);
+  end.writeUInt32LE(cursor, 16);
+  return Buffer.concat([...locals, directory, end]);
+}
+
+test('Wales ZIP integrated preflight verifies the exact same file as the archive hash', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'uk-wales-integrated-'));
+  try {
+    const archive = join(root, 'official.zip');
+    const bytes = syntheticWalesGpZip(['GPDataFile202609.txt','ChemSubstance.txt','Address.txt']);
+    await writeFile(archive, bytes);
+    const manifest = fixture('nwssp.gp-prescribing', {sha256:h(bytes), byteSize:bytes.length});
+    const receipt = await verifyUkNationalArchiveBytes(manifest, {archivePath:archive,quarantineRoot:root});
+    assert.equal(receipt.archiveIntegrityVerified,true);
+    assert.deepEqual(receipt.walesGpZipDirectory.memberRoles,
+      ['chemical_substance','gp_presentation','practice_address']);
+    assert.equal(receipt.walesGpZipDirectory.canExtract,false);
+    assert.equal(receipt.walesGpZipDirectory.sourceRowsRead,0);
+    assert.equal(receipt.canIngest,false);
+    const {spawnSync} = await import('node:child_process');
+    const manifestPath=join(root,'official.json');
+    await writeFile(manifestPath,JSON.stringify(manifest));
+    const run=spawnSync(process.execPath,[
+      new URL('./data/verify-uk-national-source-archive.mjs',import.meta.url).pathname,
+      '--manifest',manifestPath,'--archive',archive,'--root',root
+    ],{encoding:'utf8'});
+    assert.equal(run.status,0,run.stderr);
+    assert.equal(JSON.parse(run.stdout).walesGpZipDirectory.directoryEntries,3);
+    assert.equal(run.stdout.includes(root),false);
+  } finally {await rm(root,{recursive:true,force:true});}
+});
+
+test('Wales ZIP structural errors are rejected even if caller-provided SHA matches', async()=>{
+  const root=await mkdtemp(join(tmpdir(),'uk-wales-bad-'));
+  try{
+    const archive=join(root,'source.zip');
+    for(const names of [
+      ['GPDataFile202608.txt','ChemSubstance.txt','Address.txt'],
+      ['GPDataFile202609.txt','ChemSubstance.txt'],
+      ['GPDataFile202609.txt','ChemSubstance.txt','../Address.txt'],
+    ]){
+      const bytes=syntheticWalesGpZip(names);
+      await writeFile(archive,bytes);
+      await assert.rejects(verifyUkNationalArchiveBytes(fixture('nwssp.gp-prescribing',
+        {sha256:h(bytes),byteSize:bytes.length}),{archivePath:archive,quarantineRoot:root}),
+        /Wales GP ZIP inventory refused/);
+    }
+    const bytes=syntheticWalesGpZip(['GPDataFile202609.txt','ChemSubstance.txt','Address.txt']);
+    await writeFile(archive,bytes);
+    await assert.rejects(verifyUkNationalArchiveBytes(fixture('nwssp.gp-prescribing',
+      {sha256:'f'.repeat(64),byteSize:bytes.length}),{archivePath:archive,quarantineRoot:root}),
+      /hash or size mismatch/);
+  }finally{await rm(root,{recursive:true,force:true});}
+});
