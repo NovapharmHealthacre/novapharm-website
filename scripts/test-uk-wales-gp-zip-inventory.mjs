@@ -63,3 +63,21 @@ test('reject malformed/truncated ZIP central directory',async()=>{
  corrupted.writeUInt32LE(0,start);
  await assert.rejects(scan(corrupted),/inventory refused/);
 });
+
+
+test('reject forged central ZIP metadata, local filenames and overlapping payloads',async()=>{
+ const invalidLocalSignature=zip(memberNames);
+ invalidLocalSignature.writeUInt32LE(0,0);
+ await assert.rejects(scan(invalidLocalSignature),/inventory refused/);
+
+ const mismatchedLocalName=zip(memberNames);
+ mismatchedLocalName.write('X',30,'ascii');
+ await assert.rejects(scan(mismatchedLocalName),/inventory refused/);
+
+ const zipBytes=zip(memberNames);
+ const centralStart=memberNames.reduce((sum,name)=>sum+30+Buffer.byteLength(name)+1,0);
+ // Tamper with the first member's local offset so two entries overlap.
+ const secondCentral=centralStart+46+memberNames[0].length;
+ zipBytes.writeUInt32LE(0,secondCentral+42);
+ await assert.rejects(scan(zipBytes),/inventory refused/);
+});

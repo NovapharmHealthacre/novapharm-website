@@ -48,3 +48,12 @@ The [official NWSSP General Practice Prescribing Data Extract](https://nwssp.nhs
 `src/core/uk-wales-gp-zip-inventory.mjs` examines a bounded ZIP central directory through an already-open file handle, never expanding the archive or reading pharmaceutical records. It checks the monthly GP member name, the two reference members, 3 exact files, no duplicate roles, encryption, path traversal, zip bombs or unexpected methods. ZIP64, unexpected publisher naming and member count fail closed pending Quality review. It verifies only the reported ZIP directory metadata; it does **not** independently authenticate the publisher, validate local file headers/CRC, approve licence/BNF rights, ingest or publish any medicine data.
 
 The output is always `sourceRowsRead:0`, `admittedMedicineRows:0`, `canExtract:false`, `canIngest:false`, `canPublish:false`, `customerCountryLive:false`. Five additional synthetic tests are part of the protected source-only GitHub workflow. Passing these tests **is not proof that a real Wales ZIP archive has been obtained or accepted**.
+
+### Wales ZIP local-header consistency hardening — 22 November 2026
+
+The ZIP structural check now requires each central-directory entry to agree with
+its own local header (compression method, declared sizes, encryption/data-descriptor
+flags and exact member filename), bounds local payloads before the directory,
+and forbids overlapping local member intervals. The scanner reads bounded ZIP
+metadata only, not the medicine-file payloads. This still cannot replace CRC,
+publisher-issued hash authentication, clinical row validation or rights review.

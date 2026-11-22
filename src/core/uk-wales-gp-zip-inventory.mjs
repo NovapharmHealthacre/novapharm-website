@@ -36,7 +36,7 @@ export async function inspectWalesGpZipDirectory(handle,{sourceId,reportingPerio
   if(length<138||length>524288||length===0xffffffff||start===0xffffffff||
      start+length!==st.size-tail.length+end)refuse('unsafe central directory boundaries');
   const dir=await readExact(handle,length,start);
-  let pos=0;let packed=0;let unpacked=0;const roles=new Set();
+  let pos=0;let packed=0;let unpacked=0;const roles=new Set();const localRanges=[];
   for(let i=0;i<3;i++){
     if(pos+46>dir.length||dir.readUInt32LE(pos)!==0x02014b50)refuse('invalid entry signature');
     const flags=dir.readUInt16LE(pos+8),method=dir.readUInt16LE(pos+10);
@@ -47,7 +47,7 @@ export async function inspectWalesGpZipDirectory(handle,{sourceId,reportingPerio
     if(n<1||n>120||next>dir.length||dir.readUInt16LE(pos+34)!==0||
        ![0,8].includes(method)||(flags&0x61)!==0||
        compressed===0||plain===0||compressed===0xffffffff||plain===0xffffffff||
-       dir.readUInt32LE(pos+42)>=start||mode===0xa000)refuse('unsupported or unsafe member');
+       dir.readUInt32LE(pos+42)>=start||(mode!==0&&mode!==0x8000))refuse('unsupported or unsafe member');
     const label=dir.subarray(pos+46,pos+46+n);
     if(label.some(c=>c<0x21||c>0x7e))refuse('unsafe member encoding');
     const role=roleFor(label.toString('ascii'),reportingPeriod);
@@ -55,8 +55,27 @@ export async function inspectWalesGpZipDirectory(handle,{sourceId,reportingPerio
     roles.add(role);
     if(method===0&&plain!==compressed)refuse('stored member size mismatch');
     if(plain/compressed>250)refuse('unsafe expansion ratio');
+    // The central directory alone is untrusted: verify the corresponding
+    // bounded local header and member interval without reading source rows.
+    const localOffset=dir.readUInt32LE(pos+42);
+    const localHeader=await readExact(handle,30,localOffset);
+    const localNameLen=localHeader.readUInt16LE(26),localExtraLen=localHeader.readUInt16LE(28);
+    if(localHeader.readUInt32LE(0)!==0x04034b50 ||
+       localHeader.readUInt16LE(6)!==flags ||
+       localHeader.readUInt16LE(8)!==method ||
+       localHeader.readUInt32LE(18)!==compressed ||
+       localHeader.readUInt32LE(22)!==plain ||
+       localNameLen!==n || localExtraLen>2048 || (flags&0x08)!==0)
+      refuse('local and central ZIP headers disagree');
+    const localFilename=await readExact(handle,n,localOffset+30);
+    if(!localFilename.equals(label))refuse('local ZIP filename does not match central directory');
+    const localEnd=localOffset+30+n+localExtraLen+compressed;
+    if(localEnd>start)refuse('local ZIP payload extends into central directory');
+    localRanges.push({start:localOffset,end:localEnd});
     unpacked+=plain;packed+=compressed;pos=next;
   }
+  localRanges.sort((a,b)=>a.start-b.start);
+  if(localRanges.some((range,i)=>i>0&&range.start<localRanges[i-1].end))refuse('overlapping ZIP local entries');
   if(pos!==dir.length||roles.size!==3||unpacked>12*1024**3)refuse('unbounded or incomplete directory');
   return Object.freeze({
     contract:'novapharm.uk.wales-gp-zip-directory.v1',sourceId,jurisdiction:'GB-WLS',reportingPeriod,
