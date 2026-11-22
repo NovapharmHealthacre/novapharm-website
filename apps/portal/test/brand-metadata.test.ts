@@ -21,11 +21,13 @@ test("favicon and touch art remain exclusive to each licensed owner identity", (
     const metadata = portalBrandMetadata(brand);
     assert.deepEqual(metadata.robots, { index: false, follow: false, noarchive: true });
     const icons = metadata.icons as { icon: Array<{ url: string; type?: string }>; shortcut: string; apple: string };
-    assert.equal(icons.icon[0].url, "/assets/brand/" + prefix + "favicon.svg");
-    assert.equal(icons.icon[0].type, "image/svg+xml");
+    const primaryIcon = icons.icon[0];
+    assert.ok(primaryIcon, `${brand} must declare its primary SVG favicon`);
+    assert.equal(primaryIcon.url, "/assets/brand/" + prefix + "favicon.svg");
+    assert.equal(primaryIcon.type, "image/svg+xml");
     assert.equal(icons.shortcut, "/assets/brand/" + prefix + "favicon.ico");
     assert.equal(icons.apple, "/assets/brand/" + (brand === "healthcare" ? "apple-touch-icon.png" : prefix + "apple-touch-icon.png"));
-    assets.add(icons.icon[0].url);
+    assets.add(primaryIcon.url);
   }
   assert.equal(assets.size, 3);
 });
