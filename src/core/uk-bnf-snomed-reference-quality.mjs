@@ -39,11 +39,16 @@ export function validateUkBnfSnomedReferenceSample({
   if(!Array.isArray(rows)||rows.length>1000)refuse('sample exceeds read-only bound');
   let unresolvedBnf=0,unresolvedSnomed=0,unresolvedVtm=0;
   let presentationRows=0,packRows=0,packOnlyFieldOnPresentation=0;
+  let aggregateUtf8Bytes=0;
   const bnfToSnomed=new Map();
   for(const row of rows){
     if(!Array.isArray(row)||row.length!==headers.length)
       refuse('row and schema width mismatch');
-    for(const v of row)boundedString(v);
+    for(const v of row){
+      boundedString(v);
+      aggregateUtf8Bytes+=Buffer.byteLength(v,'utf8');
+      if(aggregateUtf8Bytes>1024*1024)refuse('sample payload exceeds 1 MiB');
+    }
     const get=name=>row[positions.get(name)].trim();
     const level=get('PRESENTATION_PACK_LEVEL').toLowerCase();
     const kind=get('VMP_VMPP_AMP_AMPP').toUpperCase();
