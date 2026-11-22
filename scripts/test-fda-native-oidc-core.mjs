@@ -223,3 +223,20 @@ test("Android secure-store deletion is serialized across concurrent sign-ins",as
  assert.deepEqual(results.map(x=>x.status),["rejected","fulfilled"]);
  assert.equal(stats().stored?.token,mockedToken);
 });
+
+test("Android Keystore deletion failure leaves session revoked instead of exposing stale board token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.equal(stats().stored?.token,mockedToken);
+ const failedStore={...adapter.secureStore,
+   clear:async()=>{throw Error("Keystore temporary failure");}};
+ // Reuse the same injected store identity throughout a session: swapping
+ // adapters would create a different synchronization domain.
+ const originalClear=adapter.secureStore.clear;
+ adapter.secureStore.clear=async()=>{throw Error("Keystore temporary failure");};
+ await assert.rejects(signOutNativeFda(adapter),/Keystore temporary failure/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/changed/);
+ adapter.secureStore.clear=originalClear;
+ await signOutNativeFda(adapter);
+ assert.equal(stats().stored,null);
+});
