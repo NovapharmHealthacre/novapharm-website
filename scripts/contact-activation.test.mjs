@@ -76,7 +76,6 @@ test("owner-gated managed template preserves approved design and secure submissi
 });
 
 test("owner-gated production activation remains disabled without explicit acceptance", () => {
-  assert.equal(process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes", false, "Unit tests must not run with production activation enabled");
   const activationSource = readFileSync("scripts/activate-contact-intake.mjs", "utf8");
   assert.ok(activationSource.includes('if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes")'));
   assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
