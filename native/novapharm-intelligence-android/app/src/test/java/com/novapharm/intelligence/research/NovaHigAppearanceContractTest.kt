@@ -41,8 +41,8 @@ class NovaHigAppearanceContractTest {
         val light = colors("values")
         val dark = colors("values-night")
         assertEquals(light.keys, dark.keys)
-        assertEquals("E3120B", light.getValue("nova_research_accent").uppercase())
-        assertEquals("FF6961", dark.getValue("nova_research_accent").uppercase())
+        assertEquals("2546D8", light.getValue("nova_research_accent").uppercase())
+        assertEquals("A8B8FF", dark.getValue("nova_research_accent").uppercase())
         for (palette in listOf(light, dark)) {
             val canvas = palette.getValue("nova_research_canvas")
             for (role in listOf("nova_research_primary", "nova_research_secondary", "nova_research_accent")) {
