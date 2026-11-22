@@ -1,0 +1,70 @@
+name: Reconcile Portal three-identity image inventory (draft branch only)
+
+on:
+  push:
+    branches:
+      - brand/portal-three-identity-metadata-20261122
+    paths:
+      - '.github/workflows/portal-brand-image-inventory-candidate.yml'
+      - '.github/workflows/brand-raster-candidate.yml'
+      - 'apps/portal/lib/brand-metadata.ts'
+      - 'apps/portal/components/distribution-brand.tsx'
+      - 'apps/portal/app/apple-pharma-portal.css'
+      - 'apps/portal/app/employee-distribution.css'
+      - 'apps/portal/test/brand-metadata.test.ts'
+      - 'assets/brand/**'
+      - 'config/brand-identities.json'
+      - 'audit/generated/three-brand-raster-provenance.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portal-three-identity-inventory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile-source-only:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact isolated Portal draft branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: brand/portal-three-identity-metadata-20261122
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Fail closed if queued run uses an obsolete branch head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/brand/portal-three-identity-metadata-20261122"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/portal-three-identity-metadata-20261122 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Rebuild governed image evidence from tracked source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          git add -- audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Portal image inventory is already current."
+            exit 0
+          fi
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/portal-three-identity-metadata-20261122 | cut -f1)" = "$GITHUB_SHA"
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(evidence): reconcile Portal brand image inventory at exact source head"
+          git push origin HEAD:refs/heads/brand/portal-three-identity-metadata-20261122
