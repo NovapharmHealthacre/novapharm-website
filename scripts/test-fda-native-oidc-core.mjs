@@ -228,8 +228,6 @@ test("Android Keystore deletion failure leaves session revoked instead of exposi
  const {adapter,stats}=platform();
  await authenticateNativeFdaWithPkce(config,adapter);
  assert.equal(stats().stored?.token,mockedToken);
- const failedStore={...adapter.secureStore,
-   clear:async()=>{throw Error("Keystore temporary failure");}};
  // Reuse the same injected store identity throughout a session: swapping
  // adapters would create a different synchronization domain.
  const originalClear=adapter.secureStore.clear;
