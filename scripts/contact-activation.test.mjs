@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob } from "../scripts/activate-contact-intake.mjs";
+import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob, stampManagedContactProvenance } from "../scripts/activate-contact-intake.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
@@ -32,7 +32,7 @@ test("explicitly accepted endpoint creates real contact with declared privacy, c
   assert.match(html, /Submit enquiry/);
   assert.match(html, /data-live-contact-status/);
   assert.match(html, /30 days/);
-  assert.match(html, /action="mailto:vishal@novapharmhealthcare\.com"/);
+  assert.match(html, /action="mailto:bd@novapharmhealthcare\.com"/);
   assert.doesNotMatch(html, /This public information release does not collect or transmit enquiry details/);
 });
 test("refuses arbitrary, non-EU or insecure contact endpoints", () => {
@@ -88,6 +88,25 @@ test("owner-gated managed template preserves approved design and secure submissi
   // A different EU-North AWS API Gateway hostname must not silently receive
   // regulated business enquiries, even though it matches the generic syntax.
   assert.throws(() => activateManagedContactReleaseHtml(template, "https://abcdefghij.execute-api.eu-north-1.amazonaws.com"), /Refusing unapproved managed Contact API origin/);
+});
+
+test("managed Contact retains exact reviewed source SHA after safe template activation", () => {
+  const sha = "a".repeat(40);
+  const tag = '<meta name="novapharm-source-sha" content="' + sha + '">';
+  const baseline = '<!doctype html><html><head>' + tag + '</head><body>email-only</body></html>';
+  const managed = activateManagedContactReleaseHtml(
+    readFileSync("src/content/contact-managed-release.html", "utf8"), managedOrigin
+  );
+  const published = stampManagedContactProvenance(managed, baseline, sha);
+  assert.equal(published.split(tag).length - 1, 1, "exactly one source SHA in managed Contact");
+  assert.ok(published.includes('data-live-b2b-enquiry-form'));
+  assert.ok(published.indexOf(tag) < published.indexOf("</head>"));
+  assert.throws(() => stampManagedContactProvenance(managed, baseline.replace(tag, ""), sha), /baseline lacks exact/);
+  assert.throws(() => stampManagedContactProvenance(managed, baseline + tag, sha), /baseline lacks exact/);
+  assert.throws(() => stampManagedContactProvenance(managed, baseline, "b".repeat(40)), /baseline lacks exact/);
+  assert.throws(() => stampManagedContactProvenance(managed, baseline, "invalid"), /source SHA is invalid/);
+  assert.throws(() => stampManagedContactProvenance(published, baseline, sha), /duplicate or invalid release provenance/);
+  assert.throws(() => stampManagedContactProvenance(managed.replace("</head>", ""), baseline, sha), /duplicate or invalid release provenance/);
 });
 
 test("owner-gated production activation remains disabled without explicit acceptance", () => {
