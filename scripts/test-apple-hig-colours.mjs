@@ -138,6 +138,20 @@ assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-surface:\s*#F8
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.primary) >= 7);
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.secondary) >= 7);
 assert.ok(contrast(officialNeutrals.primary, light["--np-color-accent"]) >= 4.5);
+// Apple HIG and WCAG non-text contrast: visible control edges are separate
+// from the official low-contrast Porcelain Stone divider.
+for (const [path, token, controlSelector] of [
+  ["apps/corporate/app/design-system.css", "--nph-control-line", ".mobile-menu summary"],
+  ["apps/portal/app/apple-pharma-portal.css", "--portal-control-line", ".access-selector label"],
+]) {
+  const style = read(path);
+  assert.ok(style.includes(token + ": var(--np-color-separator-strong, #86868B)"), path + " must define a strong control border");
+  assert.ok(style.includes(controlSelector), path + " must style the named control");
+  assert.ok(style.includes("border-color: var(" + token + ")"), path + " must apply its strong border");
+}
+assert.ok(contrast(light["--np-color-separator-strong"], officialNeutrals.secondary) >= 3,
+  "Control edge must achieve WCAG 2.2 non-text contrast against Porcelain White");
+
 // This low-contrast Stone hairline is decorative, not a form/control outline.
 assert.ok(contrast(officialNeutrals.divider, officialNeutrals.primary) < 3);
 check(light, "separator-strong", "surface", 3);
