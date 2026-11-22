@@ -13,17 +13,22 @@ const SOURCE_ID='nhsbsa.bnf-snomed-map';
 /**
  * Code-reviewed, public CKAN resource IDs; metadata identity ONLY.
  * Must never be interpreted as authenticated file bytes or source licence.
- * The July 2026 portal dictionary declares strength integer, pack string,
- * and VTM integer; the other listed months use numeric strength and pack.
+ * Live official resource pages checked 22 Nov 2026 show a consistent
+ * 13-field dictionary across June–September: numeric strength/pack, VTM string.
+ * Earlier indexed July field-type snippets were stale; do not accept them.
  */
 export const BNF_SNOMED_PUBLIC_RESOURCE_RELEASES=Object.freeze({
  '2026-06':Object.freeze({resourceId:'aa0b2fef-ea4e-4f8f-9df1-269cecc7e293',
+   sourceDataMonth:'2026-06',portalCreatedOn:'2026-09-18',
    strengthType:'number',packType:'number',vtmType:'string'}),
  '2026-07':Object.freeze({resourceId:'bafa30b6-4426-4578-a128-935d13b228e5',
-   strengthType:'integer',packType:'string',vtmType:'integer'}),
+   sourceDataMonth:'2026-07',portalCreatedOn:'2026-10-06',
+   strengthType:'number',packType:'number',vtmType:'string'}),
  '2026-08':Object.freeze({resourceId:'624eadfc-5125-489d-b292-8bccbad6e657',
+   sourceDataMonth:'2026-08',portalCreatedOn:'2026-10-19',
    strengthType:'number',packType:'number',vtmType:'string'}),
  '2026-09':Object.freeze({resourceId:'638b7dc9-1eac-4495-9fc5-423fc52483e2',
+   sourceDataMonth:'2026-09',portalCreatedOn:'2026-11-19',
    strengthType:'number',packType:'number',vtmType:'string'})
 });
 const types=Object.freeze(['VMP','VMPP','AMP','AMPP']);
@@ -38,7 +43,7 @@ function optionalNumericCode(v,label) {
   if(value!==''&&!/^\d{1,18}$/.test(value))refuse('non-decimal '+label+' identifier');
   return value;
 }
-// NHSBSA reports numeric STRENGTH/PACK in the August and September 2026
+// NHSBSA reports numeric STRENGTH/PACK in June–September 2026
 // reference dictionaries. Keep decimal quantities as lexical values and never
 // coerce them into the SNOMED/BNF/dm+d identifier namespace.
 function optionalDecimalMeasure(v,label) {
@@ -73,7 +78,6 @@ export function validateUkBnfSnomedReferenceSample({
   let unresolvedBnf=0,unresolvedSnomed=0,unresolvedVtm=0;
   let presentationRows=0,packRows=0,packOnlyFieldOnPresentation=0;
   let decimalStrengthRows=0,decimalPackRows=0;
-  let packLexicalExceptionRows=0;
   let aggregateUtf8Bytes=0;
   const bnfToSnomed=new Map();
   for(const row of rows){
@@ -102,19 +106,9 @@ export function validateUkBnfSnomedReferenceSample({
     const vtm=optionalNumericCode(get('VTM'),'VTM');
     if(!vtm)unresolvedVtm++;
     const strength=optionalDecimalMeasure(get('STRENGTH'),'strength');
-    if(release.strengthType==='integer' && strength.includes('.'))
-      refuse('invalid integer strength for resource version');
-    const rawPack=get('PACK');
-    // July's official CKAN dictionary calls PACK a string; do not invent a
-    // numeric contract for that specific file without inspecting actual data.
-    const pack=release.packType==='number'
-      ? optionalDecimalMeasure(rawPack,'pack')
-      : boundedString(rawPack);
-    if(release.packType==='string' && pack!=='' &&
-       !/^\d{1,15}(?:\.\d{1,8})?$/.test(pack))
-      packLexicalExceptionRows++;
+    const pack=optionalDecimalMeasure(get('PACK'),'pack');
     if(strength.includes('.'))decimalStrengthRows++;
-    if(release.packType==='number'&&pack.includes('.'))decimalPackRows++;
+    if(pack.includes('.'))decimalPackRows++;
     if(level==='presentation'&&
        ['UNIT_OF_MEASURE','DMD_PRODUCT_PACK_DESC','PACK','SUB_PACK']
          .some(field=>get(field)!==''))
@@ -127,6 +121,9 @@ export function validateUkBnfSnomedReferenceSample({
   return Object.freeze({
     contract:'novapharm.uk.bnf-snomed-reference-quarantine-quality.v1',
     sourceId:SOURCE_ID,reportingPeriod,publisherResourceId,
+    sourceDataMonth:release.sourceDataMonth,
+    portalResourceCreatedOn:release.portalCreatedOn,
+    sourceMonthAndPublicationDateKeptSeparate:true,
     metadataPinnedToPublishedResource:true,
     exactSourceFileHashIndependentlyVerified:false,
     selectedResourceDeclaredTypes:Object.freeze({
@@ -138,7 +135,7 @@ export function validateUkBnfSnomedReferenceSample({
     bnfCodesWithMultipleSnomedConceptsInSample:
       [...bnfToSnomed.values()].filter(s=>s.size>1).length,
     presentationRowsWithUnexpectedPackFields:packOnlyFieldOnPresentation,
-    decimalStrengthRows,decimalPackRows,packLexicalExceptionRows,
+    decimalStrengthRows,decimalPackRows,
     numericQuantitiesPreservedAsStrings:true,
     preservesMedicineCodesAsStrings:true,
     mappingOneToOneAssumed:false,
