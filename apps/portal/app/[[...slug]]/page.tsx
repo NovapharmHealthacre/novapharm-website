@@ -4,8 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
-import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
 import { portalBrandMetadata, resolvePortalBrand } from "../../lib/brand-metadata";
+import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
 
 export const dynamic = "force-dynamic";
 
