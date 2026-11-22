@@ -15,6 +15,12 @@ on:
       - 'scripts/programme/generate-image-inventory.mjs'
       - 'scripts/test-visual-contracts.mjs'
       - 'scripts/test-official-brand-triad.mjs'
+      # Reviewed managed Contact exact-source parity may add image references.
+      - 'src/content/contact-managed-release.html'
+      - 'assets/css/novapharm-unified-20261107.css'
+      - 'assets/js/contact-production.js'
+      - 'scripts/activate-contact-intake.mjs'
+      - 'scripts/contact-activation.test.mjs'
   workflow_dispatch:
 
 permissions:
@@ -60,6 +66,7 @@ jobs:
           npm run brand:validate
           npm run design:colours:validate
           npm run post-pr53:validate
+          node --test scripts/contact-activation.test.mjs
           git diff --check
       - name: Commit only source-derived media evidence into isolated draft
         shell: bash
