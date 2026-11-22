@@ -20,13 +20,13 @@ const flowScotland = Object.freeze([
   'PrescriberLocationType', 'PrescriberType', 'DispenserLocation',
   'DispenserLocationPostcode', 'DispenserLocationType', 'NumberOfPaidItems',
 ]);
-const pitcScotland = Object.freeze(['BNFItemCode', 'PaidQuantity', 'GrossIngredientCost']);
+const pitcScotland = Object.freeze(['BNFItemCode', 'PaidQuantity', 'GrossIngredientCost', 'PaidDateMonth']);
 
 export const UK_DEVOLVED_CSV_QUALITY_CONTRACTS = Object.freeze([
   Object.freeze({sourceId:'bso.gp-prescribing',jurisdiction:'GB-NIR',periodPrecision:'month',view:'gp-presentation',required:gpNI,metrics:Object.freeze([['Total Items','items'],['Total Quantity','quantity'],['Gross Cost (£)','gross_cost_gbp'],['Actual Cost (£)','actual_cost_gbp']]),monthFields:['Year','Month'],identityField:'BNF Code'}),
   Object.freeze({sourceId:'bso.dispensing-contractor',jurisdiction:'GB-NIR',periodPrecision:'month',view:'contractor-flow',required:flowNI,metrics:Object.freeze([['Number of Items','items']]),monthFields:['Year','Month'],identityField:null}),
-  ...['board','prescriber','dispenser'].map(view=>Object.freeze({sourceId:'phs.prescriptions-community',jurisdiction:'GB-SCT',periodPrecision:'month',view,required:pitcScotland,metrics:Object.freeze([['PaidQuantity','quantity'],['GrossIngredientCost','gross_ingredient_cost_gbp']]),monthFields:null,identityField:'BNFItemCode'})),
-  Object.freeze({sourceId:'phs.prescribed-dispensed',jurisdiction:'GB-SCT',periodPrecision:'quarter',view:'prescriber-to-dispenser-flow',required:flowScotland,metrics:Object.freeze([['NumberOfPaidItems','items']]),monthFields:null,identityField:null}),
+  ...['board','prescriber','dispenser'].map(view=>Object.freeze({sourceId:'phs.prescriptions-community',jurisdiction:'GB-SCT',periodPrecision:'month',view,required:pitcScotland,metrics:Object.freeze([['PaidQuantity','quantity'],['GrossIngredientCost','gross_ingredient_cost_gbp']]),monthFields:null,periodField:'PaidDateMonth',identityField:'BNFItemCode'})),
+  Object.freeze({sourceId:'phs.prescribed-dispensed',jurisdiction:'GB-SCT',periodPrecision:'quarter',view:'prescriber-to-dispenser-flow',required:flowScotland,metrics:Object.freeze([['NumberOfPaidItems','items']]),monthFields:null,periodField:'PaidDateMonth',identityField:null}),
 ]);
 
 function deny(cause){throw new Error('UK devolved CSV quality gate refused: '+cause);}
@@ -47,6 +47,18 @@ function requireMonth(year,month,period){
   if(!/^\d{4}$/.test(year) || !/^(?:[1-9]|0[1-9]|1[0-2])$/.test(month)) deny('invalid source date');
   if(`${year}-${String(Number(month)).padStart(2,'0')}`!==period) deny('source row outside declared month');
 }
+function requirePaidDateMonth(yyyymm,period,precision){
+  if(typeof yyyymm!=='string'||!/^(?:19|20)\d{2}(?:0[1-9]|1[0-2])$/.test(yyyymm))
+    deny('malformed Scottish publisher PaidDateMonth');
+  const year=yyyymm.slice(0,4),month=Number(yyyymm.slice(4));
+  if(precision==='month'){
+    if(yyyymm!==period.replace('-',''))deny('Scottish source row outside declared month');
+  }else{
+    const quarter=Number(period.slice(-1));
+    if(year!==period.slice(0,4)||Math.ceil(month/3)!==quarter)
+      deny('Scottish source row outside declared quarter');
+  }
+}
 export function validateUkDevolvedCsvSample({sourceId,view,reportingPeriod,headers,rows}){
   const contract=UK_DEVOLVED_CSV_QUALITY_CONTRACTS.find(p=>p.sourceId===sourceId&&p.view===view);
   if(!contract) deny('unregistered source or unqualified publisher view');
@@ -61,6 +73,7 @@ export function validateUkDevolvedCsvSample({sourceId,view,reportingPeriod,heade
     if(!Array.isArray(row)||row.length!==headers.length||row.some(v=>typeof v!=='string'||v.length>8_192))deny('row width or field bound exceeded');
     const get=field=>row[column.get(field)];
     if(contract.monthFields)requireMonth(get(contract.monthFields[0]),get(contract.monthFields[1]),reportingPeriod);
+    if(contract.periodField)requirePaidDateMonth(get(contract.periodField),reportingPeriod,contract.periodPrecision);
     if(contract.identityField){
       const id=get(contract.identityField).trim();
       if(!id || id==='-' )missingMedicineCodes++;
@@ -79,8 +92,9 @@ export function validateUkDevolvedCsvSample({sourceId,view,reportingPeriod,heade
     jurisdiction:contract.jurisdiction,reportingPeriod,periodPrecision:contract.periodPrecision,
     sourceDataGrain:`${sourceId}:${view}`,validatedSampleRows:rows.length,
     requiredColumnsVerified:contract.required.length,requiredColumnsPresent:true,
-    sourceRowPeriodVerified:!!contract.monthFields,
-    publisherDatePartitionReconciliationRequired:!contract.monthFields,
+    sourceRowPeriodVerified:!!(contract.monthFields||contract.periodField),
+    publisherDatePartitionReconciliationRequired:!(contract.monthFields||contract.periodField),
+    fullSourcePartitionDateReconciled:false,
     missingOrUnresolvedMedicineCodes:missingMedicineCodes,flaggedCorrectionRows,
     sourceFileAuthenticityIndependentlyVerified:false,
     officialPublisherRightsApproved:false,admittedMedicineRows:0,

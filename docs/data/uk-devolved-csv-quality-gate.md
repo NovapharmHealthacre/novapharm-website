@@ -57,3 +57,11 @@ flags and exact member filename), bounds local payloads before the directory,
 and forbids overlapping local member intervals. The scanner reads bounded ZIP
 metadata only, not the medicine-file payloads. This still cannot replace CRC,
 publisher-issued hash authentication, clinical row validation or rights review.
+
+## 22 November 2026 — Scottish PaidDateMonth row-level gate
+
+Official PHS Prescriptions in the Community monthly (board / prescriber / dispenser) releases expose `PaidDateMonth` as YYYYMM. The quarantine validator now requires it and refuses rows outside the explicitly requested month, malformed months and mixed-month source samples. For the Scotland quarterly Prescribed and Dispensed flow, the already-required `PaidDateMonth` must be one of the three months within the declared calendar quarter. This prevents a labelled quarterly or monthly batch containing data from other periods from passing sample QA.
+
+A validated bounded sample is **not** a complete publisher partition: every receipt explicitly reports `fullSourcePartitionDateReconciled:false` and remains `canIngest:false`, `canPublish:false`, with zero admitted rows. A publisher’s multi-month CSV must be partitioned and separately reconciled under approved rights; it must not be mislabeled as one month.
+
+Publisher references: https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community/resource/1b2916be-017c-4b23-81f0-75971599464e and https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community/resource/26370a04-07b2-4486-9fa2-c7225a3d6625 .

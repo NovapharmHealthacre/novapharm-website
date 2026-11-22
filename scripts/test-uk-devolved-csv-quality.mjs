@@ -44,13 +44,14 @@ test('duplicate headers, missing columns and unbounded fields fail closed',()=>{
 });
 test('Scottish three overlapping publication views cannot be summed',()=>{
   const c=UK_DEVOLVED_CSV_QUALITY_CONTRACTS.find(x=>x.sourceId==='phs.prescriptions-community');
-  const base={sourceId:c.sourceId,reportingPeriod:'2026-08',headers:[...c.required],rows:[['0201000B0AAAEAE','75','9']]};
+  const base={sourceId:c.sourceId,reportingPeriod:'2026-08',headers:[...c.required],rows:[['0201000B0AAAEAE','75','9','202608']]};
   const board=validateUkDevolvedCsvSample({...base,view:'board'});
   const prescriber=validateUkDevolvedCsvSample({...base,view:'prescriber'});
   const dispenser=validateUkDevolvedCsvSample({...base,view:'dispenser'});
   for(const receipt of [board,prescriber,dispenser]){
-    assert.equal(receipt.sourceRowPeriodVerified,false);
-    assert.equal(receipt.publisherDatePartitionReconciliationRequired,true);
+    assert.equal(receipt.sourceRowPeriodVerified,true);
+    assert.equal(receipt.publisherDatePartitionReconciliationRequired,false);
+    assert.equal(receipt.fullSourcePartitionDateReconciled,false);
     assert.equal(receipt.admittedMedicineRows,0);
   }
   assert.equal(assertUkPublisherViewsNotAdditive(board,dispenser).canSumMeasures,false);
@@ -59,7 +60,7 @@ test('Scottish three overlapping publication views cannot be summed',()=>{
 });
 test('Scotland quarterly location flow and NI contractor flow require separate schema and periods',()=>{
   const scot=UK_DEVOLVED_CSV_QUALITY_CONTRACTS.find(x=>x.sourceId==='phs.prescribed-dispensed');
-  const cols=Object.fromEntries(scot.required.map(c=>[c,'A']));cols.NumberOfPaidItems='2';
+  const cols=Object.fromEntries(scot.required.map(c=>[c,'A']));cols.NumberOfPaidItems='2';cols.PaidDateMonth='202605';
   const receipt=validateUkDevolvedCsvSample({sourceId:scot.sourceId,view:scot.view,reportingPeriod:'2026-Q2',headers:[...scot.required],rows:[scot.required.map(c=>cols[c])]});
   assert.equal(receipt.periodPrecision,'quarter');
   assert.throws(()=>validateUkDevolvedCsvSample({sourceId:scot.sourceId,view:scot.view,reportingPeriod:'2026-06',headers:[...scot.required],rows:[]}),/quality gate refused/);
@@ -72,4 +73,37 @@ test('Wales workbook or ZIP is not misrepresented as accepted CSV schema',()=>{
   for(const sourceId of ['nwssp.gp-prescribing','nwssp.practice-pharmacy-flow']){
     assert.throws(()=>validateUkDevolvedCsvSample({sourceId,view:'workbook',reportingPeriod:'2026-09',headers:[],rows:[]}),/quality gate refused/);
   }
+});
+
+
+test('PHS monthly rows must match PaidDateMonth for every board, prescriber or dispenser view',()=>{
+ const contracts=UK_DEVOLVED_CSV_QUALITY_CONTRACTS.filter(c=>c.sourceId==='phs.prescriptions-community');
+ for(const c of contracts){
+  const vals=Object.fromEntries(c.required.map(f=>[f,'X']));
+  Object.assign(vals,{BNFItemCode:'0201000B0AAAEAE',PaidQuantity:'75',GrossIngredientCost:'9',PaidDateMonth:'202608'});
+  const row=c.required.map(f=>vals[f]);
+  const good={sourceId:c.sourceId,view:c.view,reportingPeriod:'2026-08',headers:[...c.required],rows:[row]};
+  assert.equal(validateUkDevolvedCsvSample(good).sourceRowPeriodVerified,true);
+  for(const bad of ['202607','202609','202600','202613','2026-08','202608x','not-a-month']){
+   const invalid=c.required.map(f=>f==='PaidDateMonth'?bad:vals[f]);
+   assert.throws(()=>validateUkDevolvedCsvSample({...good,rows:[row,invalid]}),/quality gate refused/);
+  }
+  assert.throws(()=>validateUkDevolvedCsvSample({
+   ...good,headers:good.headers.filter(f=>f!=='PaidDateMonth'),rows:[]}),/missing publisher column/);
+ }
+});
+test('PHS quarterly location flow row dates must be months inside declared quarter',()=>{
+ const c=UK_DEVOLVED_CSV_QUALITY_CONTRACTS.find(c=>c.sourceId==='phs.prescribed-dispensed');
+ const rowFor=period=>{
+  const vals=Object.fromEntries(c.required.map(f=>[f,'A']));
+  vals.PaidDateMonth=period;vals.NumberOfPaidItems='2';
+  return c.required.map(f=>vals[f]);
+ };
+ const good={sourceId:c.sourceId,view:c.view,reportingPeriod:'2026-Q2',
+  headers:[...c.required],rows:['202604','202605','202606'].map(rowFor)};
+ assert.equal(validateUkDevolvedCsvSample(good).sourceRowPeriodVerified,true);
+ for(const bad of ['202603','202607','202600','202613','2026Q2','not-a-month']){
+  assert.throws(()=>validateUkDevolvedCsvSample({...good,rows:[rowFor('202604'),rowFor(bad)]}),/quality gate refused/);
+ }
+ assert.throws(()=>validateUkDevolvedCsvSample({...good,reportingPeriod:'2026-Q1'}),/quality gate refused/);
 });
