@@ -13,7 +13,7 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* v4: production-bound, zero-icon Apple-inspired workspace experience. */
-:root{--red:#e3120b;--mint:#24836e;--focus:#0066cc}
+:root{--red:#9D1B32;--mint:#24836e;--focus:#0066cc}
 .section{max-width:1700px;padding:48px 34px 48px}
 h1{font-size:clamp(41px,4vw,62px);letter-spacing:0;margin:13px 0 9px}
 .intro{font-size:17px}.toolbar{margin-top:8px;justify-content:flex-end;border:0;margin-bottom:26px;min-height:36px}
@@ -60,8 +60,8 @@ h1{font-size:clamp(41px,4vw,62px);letter-spacing:0;margin:13px 0 9px}
 .supply-panel{border:1px solid #e9e9ed;border-radius:12px;padding:14px 15px;min-width:0;background:#fff}
 .supply-panel .chart-card{padding:0;border:0}.supply-panel .bar-row{grid-template-columns:90px 1fr 34px}
 .supply-panel .section-label{margin:2px 0 12px}.supply-panels .bars{margin-top:12px;gap:18px}
-.supplier-overview{margin-top:12px}.supply-dashboard .chart-svg path[stroke="#3572dc"]{stroke:#e3120b}
-.supply-dashboard .chart-svg circle{fill:#e3120b}.supply-dashboard .bar-track i{background:#a6b8d7}
+.supplier-overview{margin-top:12px}.supply-dashboard .chart-svg path[stroke="#3572dc"]{stroke:#9D1B32}
+.supply-dashboard .chart-svg circle{fill:#9D1B32}.supply-dashboard .bar-track i{background:#a6b8d7}
 .stage-bottom{padding:14px 5px}.below{margin-top:34px}
 .stage-kicker,.stage-counter{font-size:10px}.status-note{font-size:10px}
 .embedded .section{padding:10px 0 20px;max-width:none}
