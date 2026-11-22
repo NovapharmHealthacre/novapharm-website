@@ -49,6 +49,8 @@ export function createFdaAwsLambdaHandler({
     if(!hasRequiredRelease(env))return unavailable();
     try {
       if(!runtimePromise){
+        // Concurrent invocations share one initializer. A transient loader
+        // failure must not poison all later warm Lambda invocations.
         runtimePromise=(async()=>{
           const sdk=await sdkLoader();
           if(typeof sdk?.DynamoDBClient!=="function" ||
@@ -63,7 +65,13 @@ export function createFdaAwsLambdaHandler({
             ...(searchLabels ? {searchLabels}:{}),
             ...(searchEvidence ? {searchEvidence}:{})
           });
-        })();
+        })().catch(error=>{
+          // Never retain a rejected cold-start dependency promise indefinitely.
+          // Report only the generic error to the client, and re-attempt the
+          // approved SDK setup on the next invocation (not a retry storm).
+          runtimePromise=undefined;
+          throw error;
+        });
       }
       const runtime=await runtimePromise;
       return await runtime(event);
