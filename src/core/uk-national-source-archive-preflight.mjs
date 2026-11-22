@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { inspectWalesGpZipDirectory, inspectWalesPublisherZipDirectory } from './uk-wales-gp-zip-inventory.mjs';
+import { BNF_SNOMED_PUBLIC_RESOURCE_RELEASES } from './uk-bnf-snomed-reference-quality.mjs';
 import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep, extname } from 'node:path';
@@ -68,6 +69,11 @@ export function validateUkNationalArchiveManifest(input) {
   const url = validHttpsPublisherUrl(input.publisherUrl, source.publisherHosts);
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,159}$/.test(input.publisherResourceId ?? ''))
     deny('invalid or missing publisher resource identifier');
+  // The monthly NHSBSA reference is a known publisher-resource mapping; a
+  // different month's UUID cannot stand in for these candidate source bytes.
+  if (input.sourceId === 'nhsbsa.bnf-snomed-map' &&
+      BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[input.reportingPeriod]?.resourceId !== input.publisherResourceId)
+    deny('BNF–SNOMED publisher resource does not match reporting month');
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,159}$/.test(input.publisherFileName ?? ''))
     deny('invalid or missing publisher file name');
   if (extname(input.publisherFileName).slice(1).toUpperCase() !== input.format)
