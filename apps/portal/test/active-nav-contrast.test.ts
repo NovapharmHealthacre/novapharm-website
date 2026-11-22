@@ -6,7 +6,6 @@ const stylesheet = readFileSync(new URL("../app/apple-pharma-portal.css", import
 const universal = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 
 function rule(selector: string): string {
-  const escaping = selector.replace(/[.*+?^$\\{\\}()|[\\]\\]/g, "\\\\$&");
   // Select only complete rule blocks, not commented examples.
   const start = stylesheet.indexOf(selector + " {");
   assert.ok(start >= 0, "Missing specific active navigation selector: " + selector);
@@ -55,8 +54,8 @@ test("Portal active style outranks the historical dark navigation selector witho
   assert.match(universal, /\.workspace-sidebar a\.active\s*\{/);
   const active = rule(".workspace-sidebar nav a.active");
   assert.doesNotMatch(active, /!important/i);
-  assert.ok((".workspace-sidebar nav a.active".match(/\./g) ?? []).length >
-    (".workspace-sidebar a.active".match(/\./g) ?? []).length - 1);
+  // The added nav element gives this selector higher specificity than the shared dark rule.
+  assert.match(stylesheet, /\.workspace-sidebar nav a\.active\s*\{/);
   assert.match(rule(".workspace-sidebar nav a.active > small"), /font-weight:\s*600/);
 });
 
