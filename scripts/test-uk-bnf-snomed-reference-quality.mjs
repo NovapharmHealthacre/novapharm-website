@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
- BNF_SNOMED_REFERENCE_HEADERS,validateUkBnfSnomedReferenceSample
+ BNF_SNOMED_REFERENCE_HEADERS,BNF_SNOMED_PUBLIC_RESOURCE_RELEASES,
+ validateUkBnfSnomedReferenceSample
 } from '../src/core/uk-bnf-snomed-reference-quality.mjs';
 const source='nhsbsa.bnf-snomed-map';
 const month='2026-09';
@@ -22,6 +23,7 @@ const make=(overrides={})=>{
 };
 const args=(rows,extra={})=>({
  sourceId:source,reportingPeriod:month,
+ publisherResourceId:BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[month].resourceId,
  headers:[...BNF_SNOMED_REFERENCE_HEADERS],rows,...extra
 });
 test('NHSBSA dictionary 13-column schema preserves all four distinct identity levels',()=>{
@@ -119,4 +121,51 @@ test('oversized or exponent-style numeric measures fail even with well-formed re
   {PACK:'1234567890123456'}, {PACK:'NaN'},
   {PACK:'Infinity'}, {PACK:'-1'}, {PACK:'1,000.5'}, {PACK:'1.2.3'}
  ]) assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make(change)])),/invalid.*numeric measure/);
+});
+
+test('publisher period and CKAN resource identity must be exactly pinned before sample quality checks',()=>{
+ assert.equal(Object.keys(BNF_SNOMED_PUBLIC_RESOURCE_RELEASES).length,4);
+ assert.deepEqual(Object.keys(BNF_SNOMED_PUBLIC_RESOURCE_RELEASES),
+  ['2026-06','2026-07','2026-08','2026-09']);
+ for(const [period,release] of Object.entries(BNF_SNOMED_PUBLIC_RESOURCE_RELEASES)){
+  const valid=validateUkBnfSnomedReferenceSample(args([make()],{
+   reportingPeriod:period,publisherResourceId:release.resourceId
+  }));
+  assert.equal(valid.publisherResourceId,release.resourceId);
+  assert.equal(valid.metadataPinnedToPublishedResource,true);
+  assert.equal(valid.exactSourceFileHashIndependentlyVerified,false);
+  assert.equal(valid.canIngest,false);
+  assert.equal(valid.canPublish,false);
+  assert.equal(valid.sourceRightsIndependentlyApproved,false);
+  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make()],{
+   reportingPeriod:period,publisherResourceId:'638b7dc9-1eac-4495-9fc5-423fc52483e2'===release.resourceId
+     ? 'aa0b2fef-ea4e-4f8f-9df1-269cecc7e293'
+     : '638b7dc9-1eac-4495-9fc5-423fc52483e2'
+  })),/unverified publisher resource/);
+ }
+ for(const period of ['2026-05','2026-10','2025-09']){
+  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make()],{
+   reportingPeriod:period
+  })),/unverified publisher resource/);
+ }
+});
+test('July 2026 source schema differs from September in declared numeric/string types',()=>{
+ const july=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-07'];
+ const julyResult=validateUkBnfSnomedReferenceSample(args([
+  make({PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',
+    PACK:'synthetic pack annotation',STRENGTH:'2',VTM:'000001234'})
+ ],{reportingPeriod:'2026-07',publisherResourceId:july.resourceId}));
+ assert.equal(julyResult.selectedResourceDeclaredTypes.strength,'integer');
+ assert.equal(julyResult.selectedResourceDeclaredTypes.pack,'string');
+ assert.equal(julyResult.selectedResourceDeclaredTypes.vtm,'integer');
+ assert.equal(julyResult.packLexicalExceptionRows,1);
+ assert.equal(julyResult.canIngest,false);
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make({STRENGTH:'2.5'})],{
+  reportingPeriod:'2026-07',publisherResourceId:july.resourceId
+ })),/invalid integer strength/);
+ const september=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'];
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make({
+  PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',PACK:'synthetic pack annotation'
+ })],{reportingPeriod:'2026-09',publisherResourceId:september.resourceId})),
+ /invalid pack numeric measure/);
 });
