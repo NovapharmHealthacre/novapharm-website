@@ -45,6 +45,38 @@ export function activateContactHtml(html, origin) {
   }
   return out;
 }
+// The managed Contact page is an explicit, reviewed release template.
+// It is never selected for the public source build unless the owner-gated
+// production workflow has already authorized the managed release.
+export function activateManagedContactReleaseHtml(template, origin) {
+  if (!approvedApi.test(origin)) throw Error("Refusing unverified or non-AWS HTTPS contact origin");
+  const sourceOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+  const sourceMarker = 'data-live-b2b-enquiry-form data-api-origin="' + sourceOrigin + '"';
+  const required = [
+    '<!doctype html>', sourceMarker,
+    'src="/assets/js/contact-production.js"',
+    '<noscript><style>.ref-form{display:none}</style>',
+    'type="submit" disabled aria-describedby="contact-submission-status"',
+    'id="contact-submission-status"',
+    'name="privacyAcknowledgement" value="yes" required',
+    'name="safetyConfirmation" value="yes" required',
+    "form-action 'none'",
+    '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+    'href="/legal/privacy/#business-enquiries"'
+  ];
+  for (const marker of required) if (!template.includes(marker)) throw Error("Reviewed managed Contact template marker missing: " + marker);
+  if (template.split(sourceMarker).length !== 2 ||
+      (template.match(/data-api-origin=/g) || []).length !== 1 ||
+      (template.match(/data-live-b2b-enquiry-form/g) || []).length !== 1 ||
+      template.includes('data-email-enquiry-form') ||
+      template.includes('novapharm-ga4-id')) {
+    throw Error("Reviewed managed Contact template must contain exactly one isolated secure enquiry form");
+  }
+  const result = template.replace(sourceMarker, 'data-live-b2b-enquiry-form data-api-origin="' + origin + '"');
+  if (result === template && origin !== sourceOrigin) throw Error("Reviewed managed Contact origin substitution failed");
+  return result;
+}
+
 export function activatePrivacyHtml(html) {
   const anchor = '<section id="business-enquiries"><h2>3. Business enquiries</h2>';
   if (!html.includes(anchor)) throw Error("Privacy notice business-enquiries section missing");
@@ -62,7 +94,13 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   const contact = readFileSync(contactPath, "utf8");
   const notice = readFileSync(privacyPath, "utf8");
   const account = readFileSync(accountPath, "utf8");
-  const nextContact = activateContactHtml(contact, origin);
+  // Preserve the validated public-only baseline as a fail-closed input gate.
+  // Never overwrite a pre-existing managed Contact artifact from another build.
+  if (!contact.includes('data-email-enquiry-form') || contact.includes('data-live-b2b-enquiry-form')) {
+    throw Error("Unexpected staged Contact baseline; refusing managed replacement");
+  }
+  const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");
+  const nextContact = activateManagedContactReleaseHtml(reviewedTemplate, origin);
   const nextPrivacy = activatePrivacyHtml(notice);
   const nextAccount = activateAccountRequestHtml(account, origin);
   writeFileSync(contactPath, nextContact);
