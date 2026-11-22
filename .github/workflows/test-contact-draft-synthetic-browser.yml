@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Pin the exact candidate tree; mutable draft branch advances must not silently change acceptance target.
-          ref: f760e883f633b14112908c9144e361d4c8c3e60c
+          ref: 733bca8e4889a5555b796aa24b8327c4e992da15
           path: contact-draft
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
