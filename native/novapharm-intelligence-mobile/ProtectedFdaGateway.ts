@@ -41,7 +41,7 @@ async function readBoundedFdaJson(response:Response):Promise<unknown>{
   // A content-length header alone is not a memory bound. A producer may omit
   // or falsify the header; reject large responses before buffering them.
   const declared=response.headers.get("content-length");
-  if(declared!==null && (!/^\\d+$/u.test(declared) ||
+  if(declared!==null && (!/^\d+$/u.test(declared) ||
       Number(declared)>maxBytes || !Number.isSafeInteger(Number(declared))))
     throw Error("FDA source response too large.");
   const stream=response.body;
