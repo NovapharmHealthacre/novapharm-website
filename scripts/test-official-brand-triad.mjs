@@ -122,6 +122,15 @@ test("public and protected page generators cannot restore retired pure-white bro
   assert.doesNotMatch(protectedBuild, /meta name="theme-color" content="#FFFFFF"/i);
 });
 
+test("generated Portal logo uses exact owner SVG and real PNG raster fallback", () => {
+  const builder = text("scripts/build-pages.mjs");
+  assert.ok(builder.includes('const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";'));
+  assert.ok(builder.includes('const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";'));
+  assert.ok(builder.includes('srcset="${brandLogoSvg}" type="image/svg+xml"'));
+  assert.ok(builder.includes('src="${brandLogoPng}" alt="NovaPharm Healthcare"'));
+  assert.notEqual(brand.brands.healthcare.primaryVector, "/assets/brand/novapharm-healthcare-logo.png");
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
