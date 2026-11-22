@@ -8,7 +8,7 @@ In `eu-north-1`, ListTables returned 15 existing tables and none was an FDA-spec
 `infra/aws/fda-isolated-quota-approval.cfn.json` proposes **one** new DynamoDB table with:
 - `PK` (string partition key) and `SK` (string sort key) exactly matching the existing atomic `UpdateItem` quota contract.
 - DynamoDB on-demand billing (NOT free), server-side encryption, TTL on `ttlEpoch`, and retained resources on deletion/replacement.
-- Every deployment gate default false: owner production signoff, quota provisioning, independent security/IAM approval, approved budget, and independent release acceptance. The table name defaults to `UNAPPROVED`. **All six conditions must pass** for creation.
+- Every deployment gate default false: owner production signoff, quota provisioning, independent security/IAM approval, approved budget, and independent release acceptance. The table name and target AWS account ID default to `UNAPPROVED`; the runtime target must also equal `eu-north-1`. **All nine approval/identity/region predicates must pass** for creation.
 - No new principal, IAM attachment, Lambda, API route, Cognito identity, secret or user data is created by this source template.
 
 ## Later independent work (not authorized here)
