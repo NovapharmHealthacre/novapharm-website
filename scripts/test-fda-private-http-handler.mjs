@@ -164,7 +164,8 @@ test("FDA allowlist denies unknown source metadata, unreviewed patient fields an
  const cases=[
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678",patient:{name:"SENSITIVE"}}]},
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],debugSecret:"SENSITIVE"},
-  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678",genericName:"SENSITIVE\\nTEXT"}]},
+  {sourceId:"us.fda.openfda.ndc",kind:"recalls",dataState:"public_source_observations",records:[{productNdc:"12345-678"}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678",genericName:"SENSITIVE\nTEXT"}]},
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],limitations:[{token:"SENSITIVE"}]},
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],matchedCountReported:-1},
  ];
