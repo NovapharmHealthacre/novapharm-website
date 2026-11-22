@@ -39,9 +39,11 @@ function create(options={}){
   env,clock:()=>now*1000,sdkLoader,
   searchEvidence:async (kind,drug,context)=>{
     seen.push(["fda",kind,drug,context]);
+    const samples={approvals:{applicationNumber:"NDA123456"},
+      ndc:{productNdc:"12345-678"},recalls:{recallNumber:"D-0001-2026"}};
     return {sourceId:"us.fda.openfda."+kind,
       dataState:"public_source_observations",
-      records:kind==="adverse-events"?[]:[{productNdc:"12345-678"}],
+      records:kind==="adverse-events"?[]:[samples[kind]],
       matchedCountReported:9};
   },
   searchLabels:async (drug,context)=>{
