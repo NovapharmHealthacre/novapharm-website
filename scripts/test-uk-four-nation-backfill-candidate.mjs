@@ -66,3 +66,22 @@ test('foreign, out-of-window, oversized, malformed and unsupported sources fail'
  assert.throws(()=>assessUkBackfillCandidateCoverage({...args,startPeriod:'1900-01',endPeriod:'2026-09',receipts:[]}),/refused/);
  assert.throws(()=>assessUkBackfillCandidateCoverage({...args,sourceId:'unregistered',receipts:[]}),/refused/);
 });
+
+test('non-geographic NHSBSA terminology history is never presented as national prescribing coverage',()=>{
+ const mapping=assessUkBackfillCandidateCoverage({
+  sourceId:'nhsbsa.bnf-snomed-map',startPeriod:'2026-08',endPeriod:'2026-09',
+  receipts:['2026-08','2026-09'].map(p=>receipt('nhsbsa.bnf-snomed-map','GB-ENG',p))
+ });
+ assert.equal(mapping.candidateCoverageComplete,true);
+ assert.equal(mapping.geographyApplicability,'not_applicable');
+ assert.equal(mapping.geographicCoverageVerified,false);
+ assert.equal(mapping.sourceRightsIndependentlyApproved,false);
+ assert.equal(mapping.canIngest,false);
+ assert.equal(mapping.canPublish,false);
+ const epd=assessUkBackfillCandidateCoverage({
+  sourceId:'nhsbsa.epd',startPeriod:'2026-09',endPeriod:'2026-09',receipts:[]
+ });
+ assert.equal(epd.geographyApplicability,'source_specific');
+ assert.equal(epd.geographicCoverageVerified,false);
+ assert.equal(epd.canIngest,false);
+});
