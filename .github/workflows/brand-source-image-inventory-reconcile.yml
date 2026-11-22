@@ -6,6 +6,8 @@ on:
       - brand/sovereign-crimson-garnet-20261122
     paths:
       - '.github/workflows/brand-source-image-inventory-reconcile.yml'
+      - 'assets/brand/**'
+      - 'scripts/test-official-brand-triad.mjs'
 
 permissions:
   contents: read
