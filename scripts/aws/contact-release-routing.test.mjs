@@ -1260,6 +1260,57 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
   }
 });
 
+
+test("UK #1026, #1030 and #1059 source-only merges never dispatch AWS contact or publish Pages", () => {
+  // Explicit reviewed changed-file sets only. Never skip on a broad UK/src/docs wildcard.
+  const groups = {"1026":[".github/workflows/uk-four-nation-source-metadata.yml",".github/workflows/uk-nhsbsa-mapping-metadata-only.yml","docs/data/nhsbsa-source-registry.md","docs/data/uk-four-nation-source-acceptance-20261121.md","packages/medicines-intelligence/src/resource-discovery.ts","packages/medicines-intelligence/src/source-registry.ts","packages/medicines-intelligence/test/source-contracts.test.ts","scripts/data/discover-medicines-sources.ts","scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs","scripts/run-uk-four-nation-source-metadata.mjs","scripts/test-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs","scripts/test-uk-four-nation-source-metadata.mjs","src/core/intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs","src/core/uk-four-nation-source-metadata.mjs"],"1030":[".github/workflows/uk-national-source-archive-preflight.yml","docs/data/uk-devolved-csv-quality-gate.md","docs/data/uk-national-source-archive-preflight.md","scripts/data/verify-uk-national-source-archive.mjs","scripts/data/verify-uk-private-backfill-file-batch.mjs","scripts/test-uk-bnf-snomed-reference-quality.mjs","scripts/test-uk-devolved-csv-quality.mjs","scripts/test-uk-four-nation-backfill-candidate.mjs","scripts/test-uk-medicine-metric-comparability.mjs","scripts/test-uk-national-source-archive-preflight.mjs","scripts/test-uk-private-backfill-file-batch.mjs","scripts/test-uk-wales-gp-zip-inventory.mjs","src/core/uk-bnf-snomed-reference-quality.mjs","src/core/uk-devolved-csv-quality.mjs","src/core/uk-four-nation-backfill-candidate.mjs","src/core/uk-medicine-metric-comparability.mjs","src/core/uk-national-source-archive-preflight.mjs","src/core/uk-private-backfill-file-batch.mjs","src/core/uk-wales-gp-zip-inventory.mjs"],"1059":[".github/workflows/uk-preview-source-identity-rights.yml","docs/data/uk-preview-source-identity-rights-gate.md","scripts/test-uk-preview-source-identity-rights-gate.mjs","src/core/uk-preview-source-identity-rights-gate.mjs"]};
+  const evidencePath = "docs/data/uk-source-only-publication-routing-20261122.md";
+  const neutralGuards = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs",
+  ];
+  const realPublicChanges = [
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css",
+    "contact/index.html",
+  ];
+  for (const name of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(name);
+    const start = workflow.indexOf('case "$changed" in');
+    assert.ok(start >= 0, name + " missing exact changed-file classifier");
+    const patternLine = workflow.slice(start).split("\n")[1].trim();
+    assert.ok(patternLine.endsWith(")"), name + " unbounded classifier");
+    const patterns = patternLine.slice(0, -1).split("|");
+    const protectedSource = path => patterns.some(pattern =>
+      pattern === path || (pattern.endsWith("/*") && path.startsWith(pattern.slice(0, -1)))
+    );
+    const skipPublication = changed => changed.length > 0 && changed.some(protectedSource) &&
+      changed.every(path => protectedSource(path) || neutralGuards.includes(path));
+    assert.equal(protectedSource(evidencePath), true, name + " must skip this source-only routing evidence");
+    for (const [pr, files] of Object.entries(groups)) {
+      assert.ok(files.length > 0, "missing expected reviewed files for PR " + pr);
+      for (const path of files) assert.equal(protectedSource(path), true,
+        name + " would permit unrelated AWS/Pages release on PR #" + pr + ": " + path);
+      assert.equal(skipPublication(files), true, name + " must block public dispatch for #" + pr);
+      assert.equal(skipPublication([...files, ...neutralGuards, evidencePath]), true,
+        name + " must block reviewed routing guard repair alongside #" + pr);
+      for (const realPublic of realPublicChanges) {
+        assert.equal(protectedSource(realPublic), false, name + " must not suppress public " + realPublic);
+        assert.equal(skipPublication([...files, realPublic]), false,
+          name + " must retain contact release for a private/public mixed commit");
+      }
+    }
+    assert.equal(skipPublication(neutralGuards), false,
+      name + " must not silently exempt policy-only changes from normal public gates");
+    assert.equal(skipPublication([]), false, name + " must not suppress empty changes");
+    assert.match(workflow, /private_only=true/);
+    assert.match(workflow, /found_ml=true/);
+  }
+});
+
 test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
   const paths = [
     "src/core/regulatory/fda-aws-lambda-entry.mjs",
