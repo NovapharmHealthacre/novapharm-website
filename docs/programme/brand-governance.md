@@ -59,3 +59,9 @@ The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), w
 | Shared Sovereign Black | `#0B0B0E` | Default light-mode text, labels and neutral actions across web properties |
 
 Typography hierarchy is OS-provided SF Pro/system interface; SF Compact-style tables; SF Mono-style IDs; New York editorial accents with platform-safe fallback. No Apple proprietary binaries are shipped. **Release boundary:** these source edits remain a draft PR; binary ZIP replacement, CI acceptance, native app icons, independent deployments and live asset verification are distinct gates.
+
+## Review-branch binary derivative evidence — 22 November 2026
+
+The dedicated three-brand raster workflow completed successfully on the isolated draft review branch. It rendered PNG, ICO, PWA and social derivatives exclusively from the exact owner-verified primary/favicon SVG sources and regenerated the tracked image inventory and checksum entries. Generated raster files are *derived assets*, not represented as byte-identical ZIP members. Machine-checkable provenance is in `audit/generated/three-brand-raster-provenance.json`.
+
+Deployment is separate from source readiness. `main` and `gh-pages` are intentionally unchanged by this staged branding release. Further gates: iOS/Android native resource compilation, an independently completed CI run on the exact PR head, Chromium/WebKit browser visual/accessibility tests, security checks, approval of production promotion, and public route/asset verification after deployment. The official mobile preview remains explicitly offline and unsigned until the app release policy permits otherwise.
