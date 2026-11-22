@@ -190,13 +190,17 @@ export async function authenticateNativeFdaWithPkce(
      typeof json.expires_in!=="number" || !Number.isInteger(json.expires_in) ||
      json.expires_in<60 || json.expires_in>3600)
     throw Error("Invalid Cognito access-token contract.");
+  // Copy values after runtime validation so TypeScript retains the narrowed
+  // types across the later async secure-store callback.
+  const accessToken: string=json.access_token;
+  const expiresIn: number=json.expires_in;
   // Serialize the final generation check and async Keystore write with
   // sign-out's clear. A superseded login cannot restore an earlier board token.
   await withStoreLock(platform.secureStore,async()=>{
     if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
     await platform.secureStore.save({
-      token:json.access_token,
-      expiresAtMs:platform.nowMs()+((json.expires_in as number)-30)*1000
+      token:accessToken,
+      expiresAtMs:platform.nowMs()+(expiresIn-30)*1000
     });
   });
   if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
