@@ -9,7 +9,7 @@ export const BNF_SNOMED_REFERENCE_HEADERS=Object.freeze([
   'SNOMED_CODE','DMD_PRODUCT_DESC','STRENGTH','UNIT_OF_MEASURE',
   'DMD_PRODUCT_PACK_DESC','PACK','SUB_PACK','VTM','VTM_NAME'
 ]);
-const sourceId='nhsbsa.bnf-snomed-map';
+const SOURCE_ID='nhsbsa.bnf-snomed-map';
 const types=Object.freeze(['VMP','VMPP','AMP','AMPP']);
 const refuse=reason=>{throw new Error('UK BNF SNOMED quarantine quality refused: '+reason);};
 function boundedString(v) {
@@ -23,9 +23,9 @@ function optionalNumericCode(v,label) {
   return value;
 }
 export function validateUkBnfSnomedReferenceSample({
-  requestedSourceId,reportingPeriod,headers,rows
+  sourceId:requestedSourceId,reportingPeriod,headers,rows
 }={}){
-  if(requestedSourceId!==sourceId)refuse('unregistered reference source');
+  if(requestedSourceId!==SOURCE_ID)refuse('unregistered reference source');
   if(typeof reportingPeriod!=='string'||
      !/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/.test(reportingPeriod))
     refuse('invalid monthly reference period');
@@ -75,7 +75,7 @@ export function validateUkBnfSnomedReferenceSample({
   }
   return Object.freeze({
     contract:'novapharm.uk.bnf-snomed-reference-quarantine-quality.v1',
-    sourceId,reportingPeriod,
+    sourceId:SOURCE_ID,reportingPeriod,
     sampleRowsInspected:rows.length,requiredColumnsVerified:BNF_SNOMED_REFERENCE_HEADERS.length,
     presentationRows,packRows,missingOrUnresolvedBnfCodeRows:unresolvedBnf,
     missingOrUnresolvedSnomedRows:unresolvedSnomed,missingOrUnresolvedVtmRows:unresolvedVtm,
