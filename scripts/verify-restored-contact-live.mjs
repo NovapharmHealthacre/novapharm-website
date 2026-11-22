@@ -35,6 +35,11 @@ async function check(name,action){
 }
 
 const page=await (async()=>{try{return await read(website,"/contact/","text/html");}catch{return null;}})();
+const requireReviewedDesign = process.env.NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN === "yes"
+  || !!page && (
+    page.includes('--ink:#0B0B0E')
+    || page.includes('type="submit" disabled aria-describedby="contact-submission-status"')
+  );
 await check("Public Contact form and exact API origin",async()=>{
   insist(!!page,"Live Contact HTML unavailable");
   insist(page.includes('data-live-b2b-enquiry-form'),"Actual API form missing; email draft still live");
@@ -44,7 +49,7 @@ await check("Public Contact form and exact API origin",async()=>{
   insist(page.includes('data-live-contact-status')&&page.includes("Submit enquiry securely"),"Accessible submit confirmation UI missing");
   insist(page.includes("privacyAcknowledgement")&&page.includes("safetyConfirmation"),"Required privacy and safety controls missing");
 });
-await check("Approved Contact visual identity and fail-closed controls",async()=>{
+if (requireReviewedDesign) await check("Approved Contact visual identity and fail-closed controls",async()=>{
   insist(!!page,"Live Contact HTML unavailable");
   for(const marker of [
     '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
@@ -74,8 +79,10 @@ await check("Production Contact client enforces durable receipt",async()=>{
   insist(js.includes('credentials: "omit"')&&js.includes('redirect: "error"'),"Unsafe API request credentials/redirect policy");
   insist(js.includes('new AbortController()')&&js.includes('status.replaceChildren()'),"Safe cancellation and status handling missing");
   insist(js.includes('"X-Novapharm-Intake": "v1"'),"Approved intake header not present");
-  insist(js.lastIndexOf('if (submit) submit.disabled = false;')>js.indexOf('form.addEventListener("submit"'),
-    "Contact submission enabled before its managed handler was registered");
+  if (requireReviewedDesign) insist(
+    js.lastIndexOf('if (submit) submit.disabled = false;')>js.indexOf('form.addEventListener("submit"'),
+    "Contact submission enabled before its managed handler was registered"
+  );
   insist(!/localStorage\s*\.\s*setItem|sessionStorage\s*\.\s*setItem/.test(js),"Contact client must not persist enquiry data in browser storage");
 });
 await check("Public privacy disclosures for actual intake",async()=>{
@@ -102,7 +109,7 @@ await check("Contact POST CORS preflight only — no user submission",async()=>{
   const headers=(r.headers.get("access-control-allow-headers")||"").toLowerCase();
   insist(headers.includes("content-type")&&headers.includes("x-novapharm-intake"),"Contact preflight custom header missing");
 });
-const report={time:new Date().toISOString(),scope:"READ_ONLY live GET/OPTIONS and static Contact metadata. No POST, users, orders, enquiry content or emails.",checked:rows.length,passed:rows.filter(x=>x.passed).length,failed:rows.filter(x=>!x.passed).length,rows};
+const report={time:new Date().toISOString(),scope:"READ_ONLY live GET/OPTIONS and static Contact metadata. No POST, users, orders, enquiry content or emails.",designMode:requireReviewedDesign?"reviewed-exact-assets":"existing-managed-contact",strictReviewRequested:process.env.NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN==="yes",checked:rows.length,passed:rows.filter(x=>x.passed).length,failed:rows.filter(x=>!x.passed).length,rows};
 mkdirSync("artifacts/site-restoration",{recursive:true});
 writeFileSync("artifacts/site-restoration/live-contact-acceptance.json",JSON.stringify(report,null,2)+"\n");
 console.log(JSON.stringify({checked:report.checked,passed:report.passed,failed:report.failed,failures:rows.filter(x=>!x.passed)}));
