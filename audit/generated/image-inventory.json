@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 93,
-      "referenceCount": 118,
+      "usageCount": 96,
+      "referenceCount": 123,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -71,7 +71,9 @@
         "apps/founder/package.json",
         "apps/founder/proxy.ts",
         "apps/portal/app/layout.tsx",
+        "apps/portal/lib/brand-metadata.ts",
         "apps/portal/scripts/validate-portal.ts",
+        "apps/portal/test/brand-metadata.test.ts",
         "apps/status/app/layout.tsx",
         "apps/status/scripts/validate-status.ts",
         "audit/generated/native-intelligence-icon-provenance.json",
@@ -149,6 +151,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -824,8 +827,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 75,
-      "referenceCount": 78,
+      "usageCount": 76,
+      "referenceCount": 79,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -835,6 +838,7 @@
         "account-application/index.html",
         "apps/corporate/app/layout.tsx",
         "apps/portal/app/layout.tsx",
+        "apps/portal/lib/brand-metadata.ts",
         "apps/status/app/layout.tsx",
         "audit/generated/three-brand-raster-provenance.json",
         "capabilities/index.html",
@@ -1107,8 +1111,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 81,
-      "referenceCount": 85,
+      "usageCount": 83,
+      "referenceCount": 87,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -1119,6 +1123,7 @@
         "account-application/index.html",
         "apps/corporate/app/layout.tsx",
         "apps/portal/app/layout.tsx",
+        "apps/portal/lib/brand-metadata.ts",
         "apps/status/app/layout.tsx",
         "capabilities/index.html",
         "careers/index.html",
@@ -1189,6 +1194,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -1261,9 +1267,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "apps/portal/lib/brand-metadata.ts",
         "audit/generated/three-brand-raster-provenance.json"
       ],
       "exactDuplicateGroup": null,
@@ -1298,10 +1305,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
+        "apps/portal/lib/brand-metadata.ts",
         "config/brand-identities.json",
         "scripts/programme/install-three-brand-release.mjs",
         "scripts/test-official-brand-triad.mjs"
@@ -1454,8 +1462,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 10,
-      "referenceCount": 12,
+      "usageCount": 11,
+      "referenceCount": 13,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         ".github/workflows/publish-aws-contact-production.yml",
@@ -1466,7 +1474,8 @@
         "scripts/programme/install-three-brand-release.mjs",
         "scripts/test-global-distribution-foundation.mjs",
         "scripts/test-official-brand-triad.mjs",
-        "scripts/test-public-visual-versioning.mjs"
+        "scripts/test-public-visual-versioning.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -1964,8 +1973,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 103,
-      "referenceCount": 215,
+      "usageCount": 105,
+      "referenceCount": 217,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -2065,8 +2074,10 @@
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "scripts/verify-intelligence-public-entry.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
         "technology/index.html",
         "trust-centre/index.html"
@@ -2140,9 +2151,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "apps/portal/lib/brand-metadata.ts",
         "audit/generated/three-brand-raster-provenance.json"
       ],
       "exactDuplicateGroup": null,
@@ -2219,10 +2231,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 9,
+      "usageCount": 9,
+      "referenceCount": 10,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
+        "apps/portal/lib/brand-metadata.ts",
         "audit/generated/native-intelligence-icon-provenance.json",
         "config/brand-identities.json",
         "native/novapharm-intelligence-ios/APP-ICON-PROVENANCE.md",
@@ -2380,8 +2393,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 9,
+      "referenceCount": 11,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "apps/portal/components/intelligence-sign-in.tsx",
@@ -2389,6 +2402,7 @@
         "scripts/programme/install-three-brand-release.mjs",
         "scripts/test-intelligence-technology-page.mjs",
         "scripts/test-official-brand-triad.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "src/content/technology-intelligence.html",
         "technology/index.html"
       ],
