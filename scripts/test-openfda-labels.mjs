@@ -19,6 +19,9 @@ const sourcePayload = {
   }],
 };
 
+const apiResponse = (payload=sourcePayload, options={}) =>
+  new Response(JSON.stringify(payload), {status:200,headers:{"content-type":"application/json"},...options});
+
 test("US public labels reject customer and unauthenticated actors before network access", async () => {
   const neverFetch = () => { throw Error("should never invoke a provider"); };
   await assert.rejects(() => searchOpenFdaLabels("apixaban", { accessScopes: ["customer"] }, { fetchImpl: neverFetch }), (error) => error.statusCode === 403);
@@ -38,7 +41,7 @@ test("FDA query is fixed-host read-only and outputs minimal source-labelled reco
     assert.equal(options.method, "GET");
     assert.equal(options.redirect, "error");
     assert.equal(options.headers.Accept, "application/json");
-    return { ok: true, status: 200, json: async () => sourcePayload };
+    return apiResponse();
   };
   const result = await searchOpenFdaLabels("apixaban", board, { fetchImpl: fakeFetch });
   assert.equal(requested, true);
@@ -59,7 +62,7 @@ test("optional FDA API key is sent only by HTTPS header, never reflected in sour
     fetchImpl: async (url, options) => {
       assert.equal(new URL(url).searchParams.has("api_key"), false);
       assert.equal(options.headers.Authorization, `Basic ${Buffer.from(`${key}:`).toString("base64")}`);
-      return { ok: true, status: 200, json: async () => sourcePayload };
+      return apiResponse();
     },
   });
   assert.equal(JSON.stringify(result).includes(key), false);
@@ -73,5 +76,18 @@ test("FDA request rejects search grammar injection and handles official empty an
   for (const status of [429, 500]) {
     await assert.rejects(() => searchOpenFdaLabels("apixaban", board, { fetchImpl: async () => ({ status, ok: false }) }), (error) => error.statusCode === 503);
   }
-  await assert.rejects(() => searchOpenFdaLabels("apixaban", board, { fetchImpl: async () => ({ status: 200, ok: true, json: async () => ({ results: null }) }) }), (error) => error.statusCode === 503);
+  await assert.rejects(() => searchOpenFdaLabels("apixaban", board, { fetchImpl: async () => apiResponse({ results: null }) }), (error) => error.statusCode === 503);
+});
+
+test("labels reject redirected, HTML, invalid UTF-8 and oversized FDA responses",async()=>{
+ const upstream=[
+  () => new Response("<html>not FDA</html>",{status:200,headers:{"content-type":"text/html"}}),
+  () => new Response(JSON.stringify(sourcePayload),{status:200,headers:{"content-type":"application/json","content-length":"262145"}}),
+  () => new Response(JSON.stringify({results:[{oversized:"x".repeat(300000)}]}),{status:200,headers:{"content-type":"application/json"}}),
+  () => new Response(new Uint8Array([0xff,0xfe]),{status:200,headers:{"content-type":"application/json"}}),
+  () => {const v=apiResponse();Object.defineProperty(v,"redirected",{value:true});return v;}
+ ];
+ for(const mock of upstream){
+  await assert.rejects(searchOpenFdaLabels("apixaban",board,{fetchImpl:mock}),error=>error.statusCode===503);
+ }
 });
