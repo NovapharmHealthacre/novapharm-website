@@ -7,6 +7,15 @@ on:
     paths:
       - '.github/workflows/brand-raster-candidate.yml'
       - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
+      - 'assets/brand/novapharm-healthcare-logo.svg'
+      - 'assets/brand/novapharm-healthcare-logo-reverse.svg'
+      - 'assets/brand/favicon.svg'
+      - 'assets/brand/novapharm-distribution-logo.svg'
+      - 'assets/brand/novapharm-distribution-logo-reverse.svg'
+      - 'assets/brand/novapharm-distribution-favicon.svg'
+      - 'assets/brand/novapharm-intelligence-logo.svg'
+      - 'assets/brand/novapharm-intelligence-logo-reverse.svg'
+      - 'assets/brand/novapharm-intelligence-favicon.svg'
 
 permissions:
   contents: read
