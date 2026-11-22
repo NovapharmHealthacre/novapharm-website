@@ -61,9 +61,14 @@ export function validateUkBnfSnomedReferenceSample({
      headers.length>128||headers.some(h=>typeof h!=='string'||h.length>160||
        h.trim()!==h||/[\u0000-\u001f]/.test(h)))refuse('invalid CSV headers');
   if(new Set(headers).size!==headers.length)refuse('duplicate CSV headers');
+  if(headers.length!==BNF_SNOMED_REFERENCE_HEADERS.length)
+    refuse('unexpected CSV schema column count');
+  // A pinned official resource dictionary has thirteen ordered fields.
+  // Unknown additions or rearrangements need a new reviewed schema version.
+  for(let i=0;i<BNF_SNOMED_REFERENCE_HEADERS.length;i++)
+    if(headers[i]!==BNF_SNOMED_REFERENCE_HEADERS[i])
+      refuse('pinned publisher CSV column order changed');
   const positions=new Map(headers.map((h,i)=>[h,i]));
-  for(const name of BNF_SNOMED_REFERENCE_HEADERS)
-    if(!positions.has(name))refuse('missing official field '+name);
   if(!Array.isArray(rows)||rows.length>1000)refuse('sample exceeds read-only bound');
   let unresolvedBnf=0,unresolvedSnomed=0,unresolvedVtm=0;
   let presentationRows=0,packRows=0,packOnlyFieldOnPresentation=0;
