@@ -185,3 +185,8 @@ The quarantine manifest provenance field `publisherUrl` for this BNF–SNOMED cr
 
 
 The release-specific reference quality preflight now also requires the **exact 13 ordered official publisher columns**. It refuses unreviewed additional columns, case-renamed headers and reordering; all such source schema changes require independent official publisher review and a new code-reviewed contract. This is intentional fail-closed behavior for a bounded private *sample*, not a claim that a complete real CSV has already passed this schema.
+
+
+### NHSBSA mapping is not a geographic medicine-activity source
+
+The official [NHSBSA BNF–SNOMED mapping description](https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping) labels **Geography: Not applicable** and explicitly says the reference data do not contain prescribing or dispensing usage. Its `GB-ENG` contract identifier represents the source publisher's administrative jurisdiction, **not a verified England medicine geography, England coverage count or UK-wide denominator**. Quarantine manifest, private historical candidate and reference version-comparison outputs now carry `geographyApplicability:'not_applicable'` and `geographicCoverageVerified:false`. Reference version comparisons do not return a nation and cannot sum metrics; England EPD prescribing remains a distinct source grain. This is a non-admission metadata correction only and does not imply independently verified licence, schema, publisher hash, or national evidence.
