@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { portalBrandMetadata, resolvePortalBrand } from "../lib/brand-metadata";
 
@@ -27,4 +28,13 @@ test("favicon and touch art remain exclusive to each licensed owner identity", (
     assets.add(icons.icon[0].url);
   }
   assert.equal(assets.size, 3);
+});
+
+
+test("portal neutral surfaces inherit owner-approved official whites without changing access policy", () => {
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /--white:\s*#FBFAEF\s*;/i);
+  assert.match(css, /--soft:\s*#F8F7F3\s*;/i);
+  assert.match(css, /--ink:\s*#0B0B0E\s*;/i);
+  assert.match(css, /--red:\s*#9D1B32\s*;/i);
 });
