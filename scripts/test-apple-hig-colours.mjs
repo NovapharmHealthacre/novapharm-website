@@ -81,12 +81,12 @@ assert.ok(packageJson.scripts.check.includes("design:colours:validate"), "Produc
 
 
 /* Owner-approved neutral brand identity: permanent CI guardrails. */
-const officialNeutrals = {
-  primary: "#FBFAEF",
-  secondary: "#F8F7F3",
-  black: "#0B0B0E",
-  divider: "#DEDCD5",
-};
+const officialNeutrals = JSON.parse(read("config/brand-neutrals.json"));
+assert.equal(officialNeutrals.primary, "#FBFAEF");
+assert.equal(officialNeutrals.secondary, "#F8F7F3");
+assert.equal(officialNeutrals.black, "#0B0B0E");
+assert.equal(officialNeutrals.divider, "#DEDCD5");
+assert.equal(officialNeutrals.version, 1);
 function firstColour(path, token) {
   const source = read(path);
   const match = source.match(new RegExp("^[ \\t]*" + token + ":\\s*(#[0-9a-fA-F]{6})\\s*;", "m"));
