@@ -9,6 +9,8 @@ on:
       - '.github/workflows/brand-source-image-inventory-reconcile.yml'
       - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
       - 'scripts/test-official-brand-triad.mjs'
+      # Visual-contract test edits may introduce new asset references; reindex exact source.
+      - 'scripts/test-visual-contracts.mjs'
       - 'scripts/programme/generate-image-inventory.mjs'
       - 'config/brand-identities.json'
       - 'assets/brand/novapharm-healthcare-logo.svg'
