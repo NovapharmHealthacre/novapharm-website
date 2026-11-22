@@ -1,7 +1,7 @@
 :root {
   --corporate-product-discipline-contract: 1;
-  --npd-red: #e3120b;
-  --npd-red-dark: #b30e09;
+  --npd-red: #9D1B32;
+  --npd-red-dark: #68101F;
   --npd-ink: #111111;
   --npd-text: #3f454b;
   --npd-muted: #626970;
@@ -2285,7 +2285,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 540;
   }
   .npd-global-nav.site-nav > a:hover,
-  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #b30e09; }
+  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #68101F; }
   .npd-global-nav.site-nav > a[aria-current="page"]::after { height: 0; }
   .npd-mega {
     position: absolute;
@@ -2333,7 +2333,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 620;
   }
   .npd-mega-column a:hover,
-  .npd-mega-column a:focus-visible { color: #bd100b; }
+  .npd-mega-column a:focus-visible { color: #68101F; }
 }
 @media (max-width: 1180px) {
   .npd-header .npd-mega { display: none !important; }
