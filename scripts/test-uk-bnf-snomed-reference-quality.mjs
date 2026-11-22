@@ -21,7 +21,7 @@ const make=(overrides={})=>{
  return BNF_SNOMED_REFERENCE_HEADERS.map(x=>fields[x]);
 };
 const args=(rows,extra={})=>({
- requestedSourceId:source,reportingPeriod:month,
+ sourceId:source,reportingPeriod:month,
  headers:[...BNF_SNOMED_REFERENCE_HEADERS],rows,...extra
 });
 test('NHSBSA dictionary 13-column schema preserves all four distinct identity levels',()=>{
@@ -75,7 +75,7 @@ test('invalid BNF, numeric SNOMED/VTM and strength not silently coerced',()=>{
  ]) assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make(change)])),/invalid|non-decimal/);
 });
 test('wrong source, period, missing/duplicated official columns and oversized samples fail',()=>{
- assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{requestedSourceId:'nhsbsa.epd'})),/unregistered/);
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{sourceId:'nhsbsa.epd'})),/unregistered/);
  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{reportingPeriod:'2026-Q3'})),/monthly/);
  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{headers:BNF_SNOMED_REFERENCE_HEADERS.slice(1)})),/invalid CSV headers/);
  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{headers:[...BNF_SNOMED_REFERENCE_HEADERS,'BNF_CODE']})),/duplicate/);
