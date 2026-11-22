@@ -36,6 +36,25 @@ export type NovaFDAAndroidPlatform = Readonly<{
   fetchImpl: typeof fetch;
   nowMs: ()=>number;
 }>;
+// A signed native adapter must reuse the same secureStore object for all
+// authentication, token lookup and sign-out calls. Serializing writes avoids
+// an in-flight async Keystore save resurrecting access after sign-out.
+type StoreSessionGate={generation:number; tail:Promise<void>};
+const sessionGates=new WeakMap<NovaFDASecureTokenStore,StoreSessionGate>();
+function sessionGate(store:NovaFDASecureTokenStore):StoreSessionGate {
+  let gate=sessionGates.get(store);
+  if(!gate){gate={generation:0,tail:Promise.resolve()};sessionGates.set(store,gate);}
+  return gate;
+}
+async function withStoreLock<T>(store:NovaFDASecureTokenStore,operation:()=>Promise<T>):Promise<T>{
+  const gate=sessionGate(store);
+  const preceding=gate.tail;
+  let release!:()=>void;
+  gate.tail=new Promise<void>(resolve=>{release=resolve;});
+  await preceding;
+  try{return await operation();}
+  finally{release();}
+}
 const requiredScope="novapharm/fda.read";
 const expectedHostEnd=".auth.eu-north-1.amazoncognito.com";
 const allowedName=/^[A-Za-z0-9_.-]+$/u;
@@ -93,9 +112,12 @@ export async function authenticateNativeFdaWithPkce(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<void>{
   assertReady(config,platform);
-  // Never let a failed account-switch or cancelled login reuse a prior board token.
-  // A failed Keystore clear aborts authentication before browser/network access.
-  await platform.secureStore.clear();
+  // Invalidate all older sessions before the first asynchronous operation.
+  const gate=sessionGate(platform.secureStore);
+  const attempt=++gate.generation;
+  // Deleting the old token must finish before OS entropy/browser requests.
+  await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
+  if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
   // The host platform must supply cryptographically secure 32-byte buffers.
   const [verifierBytes,stateBytes,nonceBytes]=await Promise.all([
     platform.secureRandomBytes(32),
@@ -167,26 +189,38 @@ export async function authenticateNativeFdaWithPkce(
      typeof json.expires_in!=="number" || !Number.isInteger(json.expires_in) ||
      json.expires_in<60 || json.expires_in>3600)
     throw Error("Invalid Cognito access-token contract.");
-  // Store ONLY a short-lived access token via Keystore adapter; no refresh tokens.
-  await platform.secureStore.save({
-    token:json.access_token,
-    expiresAtMs:platform.nowMs()+((json.expires_in as number)-30)*1000
+  // Serialize the final generation check and async Keystore write with
+  // sign-out's clear. A superseded login cannot restore an earlier board token.
+  await withStoreLock(platform.secureStore,async()=>{
+    if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
+    await platform.secureStore.save({
+      token:json.access_token,
+      expiresAtMs:platform.nowMs()+((json.expires_in as number)-30)*1000
+    });
   });
 }
 export async function verifiedNativeFdaAccessToken(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<string>{
   assertReady(config,platform);
-  const record=await platform.secureStore.load();
-  if(!record || !Number.isSafeInteger(record.expiresAtMs) ||
-      record.expiresAtMs<=platform.nowMs() ||
-      !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(record.token)){
-    await platform.secureStore.clear();
-    throw Error("FDA session expired or unavailable.");
-  }
-  return record.token;
+  const gate=sessionGate(platform.secureStore);
+  const generation=gate.generation;
+  return withStoreLock(platform.secureStore,async()=>{
+    if(gate.generation!==generation)throw Error("FDA session changed.");
+    const record=await platform.secureStore.load();
+    if(gate.generation!==generation)throw Error("FDA session changed.");
+    if(!record || !Number.isSafeInteger(record.expiresAtMs) ||
+        record.expiresAtMs<=platform.nowMs() ||
+        !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(record.token)){
+      await platform.secureStore.clear();
+      throw Error("FDA session expired or unavailable.");
+    }
+    return record.token;
+  });
 }
 export async function signOutNativeFda(platform:NovaFDAAndroidPlatform):Promise<void>{
   if(typeof platform?.secureStore?.clear!=="function")throw Error("No secure token storage.");
-  await platform.secureStore.clear();
+  const gate=sessionGate(platform.secureStore);
+  ++gate.generation;
+  await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
 }
