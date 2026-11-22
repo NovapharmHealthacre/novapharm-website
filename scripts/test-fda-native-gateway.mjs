@@ -81,6 +81,14 @@ test("FAERS must be count-only, rejects patient raw events, other unsafe respons
  }
 });
 
+test("native FDA gateway accepts valid bounded JSON with ordinary numeric content-length",async()=>{
+ const data=JSON.stringify(fixture("ndc"));
+ const mocked=new Response(data,{headers:{"content-type":"application/json","content-length":String(new TextEncoder().encode(data).byteLength)}});
+ const result=await queryProtectedFdaNative({
+   config,kind:"ndc",drug:"apixaban",accessToken:token,fetchImpl:async()=>mocked
+ });
+ assert.equal(result.sourceId,"us.fda.openfda.ndc");
+});
 test("native FDA gateway bounds streamed bytes even when content-length is missing or dishonest",async()=>{
  for(const mocked of [
   new Response(JSON.stringify(fixture("ndc")),{headers:{"content-type":"application/json","content-length":"262145"}}),
