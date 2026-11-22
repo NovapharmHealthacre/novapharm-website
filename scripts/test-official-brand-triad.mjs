@@ -130,3 +130,16 @@ test("Sovereign Black and native font roles are independent of brand accents", (
   assert.match(text("apps/portal/app/apple-pharma-portal.css"), /--portal-ink:\s*#0B0B0E/i);
   assert.doesNotMatch(text("assets/css/tokens.css"), /@font-face\s*\{[^}]*SF Pro/is);
 });
+
+test("registered three-brand image provenance stays SHA-bound and cannot be inferred", () => {
+  const generator = text("scripts/programme/generate-image-inventory.mjs");
+  assert.match(generator, /const officialBrand = await json\("config\/brand-identities\.json"\)/);
+  assert.match(generator, /const brandRasterEvidence = await json\("audit\/generated\/three-brand-raster-provenance\.json"\)/);
+  assert.match(generator, /actualSha !== expectedSha/);
+  assert.match(generator, /createHash\("sha256"\)\.update\(bytes\)\.digest\("hex"\) !== item\.sha256/);
+  assert.match(generator, /owner-approved-byte-exact-vector-source/);
+  assert.match(generator, /source-linked-derived-raster-with-verified-sha256/);
+  assert.match(generator, /registry\.get\(assetPath\)\?\.source/);
+  assert.match(generator, /approvedRasterPath/);
+  assert.doesNotMatch(generator, /provenanceStatus\s*=\s*"registered"\s*;/);
+});
