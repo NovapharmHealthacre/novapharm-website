@@ -127,6 +127,16 @@ if (form instanceof HTMLFormElement) {
           body: JSON.stringify(body),
           signal: controller.signal
         });
+        // Known pre-storage rejections are actionable; network/5xx/ambiguous
+        // receipts must not encourage a duplicate submission.
+        if ([400, 403, 415, 422].includes(response.status)) {
+          if (status) status.textContent = "Your enquiry could not be accepted. Check the required details and confirmations, or use the business email address above.";
+          return;
+        }
+        if (response.status === 429) {
+          if (status) status.textContent = "Too many requests were received. Please allow some time before trying again, or contact us using the business email address above.";
+          return;
+        }
         const result = await response.json().catch(() => null);
         if (response.status !== 201 || result?.persisted !== true ||
             !/^[0-9a-f-]{36}$/i.test(result.receiptId || "")) {
