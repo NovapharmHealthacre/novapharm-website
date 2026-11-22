@@ -28,6 +28,8 @@ on:
       - scripts/stamp-public-release-provenance.mjs
       - scripts/normalise-official-public-brand-metadata.mjs
       - scripts/test-official-public-brand-metadata.mjs
+      - scripts/verify-public-brand-source-live.mjs
+      - scripts/test-public-brand-source-live.mjs
       - scripts/test-quantum-static-public-candidate.mjs
       - quantum-research/index.html
       - assets/css/quantum-research.css
@@ -75,6 +77,7 @@ jobs:
       - name: Build and validate the public artifact
         run: |
           node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm run build:public-only
           npm run test:owner-corrections:public-only
           npm run validate:domain
@@ -148,6 +151,7 @@ jobs:
       - name: Build corrected public output
         run: |
           node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm run build:public-only
 
       - name: Validate owner corrections and public release artifact
@@ -364,6 +368,9 @@ jobs:
           done
           echo "::error::Quantum research route missing, stale, indexable, or unsafe on the custom domain." >&2
           exit 1
+
+      - name: Verify exact SHA, official browser colours and retained Contact B2B form on six live routes
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Mark publication successful
         if: success()
