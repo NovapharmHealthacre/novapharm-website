@@ -43,6 +43,7 @@ export async function verifyUkPrivateBackfillBatch({plan,quarantineRoot}={}){
   /^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/ :
   /^(?:19|20)\d{2}-Q[1-4]$/;
  const prepared=[];
+ const seenManifestFiles=new Set(),seenArchiveFiles=new Set(),seenArchiveDigests=new Map();
  let expectedBytes=0;
  for(const entry of plan.entries){
   requireKeys(entry,['period','manifestFile','archiveFile']);
@@ -51,6 +52,10 @@ export async function verifyUkPrivateBackfillBatch({plan,quarantineRoot}={}){
    deny('source partition outside requested historical window');
   const manifestFile=safeName(entry.manifestFile,'.json');
   const archiveFile=safeName(entry.archiveFile);
+  // One file path cannot independently represent several publisher partitions.
+  if(seenManifestFiles.has(manifestFile)||seenArchiveFiles.has(archiveFile))
+   deny('private source file reused across partition entries');
+  seenManifestFiles.add(manifestFile);seenArchiveFiles.add(archiveFile);
   const ext=archiveFile.toLowerCase().split('.').at(-1);
   if(!['csv','zip','xls','xlsx'].includes(ext))deny('unsupported archive format');
   const h=await open(join(root,manifestFile),constants.O_RDONLY|(constants.O_NOFOLLOW??0));
@@ -63,6 +68,12 @@ export async function verifyUkPrivateBackfillBatch({plan,quarantineRoot}={}){
   const m=validateUkNationalArchiveManifest(manifest);
   if(m.sourceId!==plan.sourceId||m.reportingPeriod!==entry.period||m.fileFormat.toLowerCase()!==ext)
    deny('source, period or format mismatch');
+  // Exact identical archive bytes across different months or quarters must be
+  // investigated, not automatically reported as independent period coverage.
+  const earlierPeriod=seenArchiveDigests.get(m.expectedSha256);
+  if(earlierPeriod&&earlierPeriod!==entry.period)
+   deny('archive digest reused across distinct reporting periods');
+  seenArchiveDigests.set(m.expectedSha256,entry.period);
   if(m.expectedBytes>maxBatchBytes-expectedBytes)
    deny('aggregate private batch byte budget exceeded');
   expectedBytes+=m.expectedBytes;
