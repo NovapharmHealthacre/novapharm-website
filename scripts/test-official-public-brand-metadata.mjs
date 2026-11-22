@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import test from "node:test";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -100,4 +101,41 @@ test("whole canonical release fixture updates all six key routes plus 54 registe
       "Colour normalization is not an attestation of deployed source");
   }
   assert.deepEqual(normaliseCanonicalPublicBrandMetadata(root), {checked:60, changed:0});
+});
+
+
+test("legacy Next Flight theme and strict CSP script hashes are updated together, not bypassed", () => {
+  const flight = "self.__next_f.push(" + JSON.stringify([1, '18:[["meta",' +
+    JSON.stringify({name:"theme-color",content:"#E3120B"}) + ']]']) + ")";
+  const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
+  const originalHash = digest(flight);
+  const html = '<html><head><meta name="theme-color" content="#E3120B">' +
+    '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; ' +
+    'script-src \'self\' \'sha256-' + originalHash + '\'; object-src \'none\'">' +
+    '</head><body><script>' + flight + '</script></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(html, palette);
+  assertOfficialPublicBrandMetadata(result, palette);
+  const changedFlight = result.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(changedFlight, "Next hydration script must still be present");
+  assert.match(changedFlight, /theme-color/);
+  assert.match(changedFlight, /#FBFAEF/);
+  assert.doesNotMatch(changedFlight, /#E3120B/i);
+  assert.match(result, /object-src 'none'/);
+  assert.match(result, /script-src 'self'/);
+  assert.ok(result.includes("'sha256-" + digest(changedFlight) + "'"));
+  assert.ok(!result.includes("'sha256-" + originalHash + "'"));
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result,
+    "Normalized page with valid regenerated CSP must remain byte-identical");
+});
+
+test("Next Flight rewrite refuses missing or mismatched CSP signatures", () => {
+  const flight = "self.__next_f.push(" + JSON.stringify([1, '18:[["meta",' +
+    JSON.stringify({name:"theme-color",content:"#E3120B"}) + ']]']) + ")";
+  const page = head => '<html><head><meta name="theme-color" content="#E3120B">' +
+    head + '</head><body><script>' + flight + '</script></body></html>';
+  assert.throws(() => normaliseOfficialPublicBrandMetadata(page(""), palette),
+    /verifiable inline CSP/);
+  const wrongHash = '<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'sha256-invalid\'">';
+  assert.throws(() => normaliseOfficialPublicBrandMetadata(page(wrongHash), palette),
+    /matching original CSP hash/);
 });
