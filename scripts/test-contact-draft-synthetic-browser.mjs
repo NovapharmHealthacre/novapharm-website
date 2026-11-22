@@ -149,10 +149,20 @@ try {
         if(width<=640)assert(view.secondTop>=view.firstBottom-2,label+" columns did not stack at "+width);
         result.viewports.push({width:width,overflow:false,fieldsReadable:true,buttonSize:true,brand:true});
       }
-      await page.locator(".ref-button").hover();
-      await page.waitForTimeout(220);
-      const hoverColour=await page.locator(".ref-button").evaluate(el=>getComputedStyle(el).backgroundColor);
-      assert(hoverColour==="rgb(104, 16, 31)",label+" dark Crimson hover contrast failed");
+      // Reposition the pointer to the final viewport's primary CTA after
+      // animations, allowing WebKit/Chromium a complete transition frame.
+      await page.locator(".ref-button").hover({force:true});
+      await page.waitForTimeout(420);
+      const hoverInfo=await page.locator(".ref-button").evaluate(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        hover:el.matches(":hover"),
+        disabled:el.disabled,
+        opacity:getComputedStyle(el).opacity,
+        transition:getComputedStyle(el).transitionDuration,
+        viewport:innerWidth
+      }));
+      assert(hoverInfo.hover&&!hoverInfo.disabled,label+" button cannot hover or stayed disabled: "+JSON.stringify(hoverInfo));
+      assert(hoverInfo.background==="rgb(104, 16, 31)",label+" dark Crimson hover contrast failed: "+JSON.stringify(hoverInfo));
       await page.mouse.move(1,1);
       await page.locator('[name="name"]').focus();
       const focus=await page.evaluate(()=>({
