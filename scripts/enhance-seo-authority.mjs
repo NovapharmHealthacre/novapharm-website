@@ -100,8 +100,11 @@ function canonicalOrganization() {
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": `${SITE_URL}/leadership/${person.slug}/#person`, name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/` })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }

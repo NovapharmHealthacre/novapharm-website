@@ -29,7 +29,7 @@ export function absoluteUrl(pathname = "/"): string {
 }
 
 export function organisationSchema() {
-  const vishal = personBySlug("vishal-chakravarty");
+  const founders = ["vishal-chakravarty", "prabhakar-lahare"].map(slug => personBySlug(slug));
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -60,11 +60,13 @@ export function organisationSchema() {
     foundingDate: company.incorporated,
     identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber, url: company.companiesHouseUrl },
     mainEntityOfPage: { "@id": `${siteUrl}/#webpage` },
-    founder: { "@id": vishal.id },
+    founder: founders.map(person => ({ "@type": "Person", "@id": person.id, name: person.displayName, url: person.canonicalUrl })),
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
-    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries", url: `${siteUrl}/contact/`, availableLanguage: "English" },
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
   };
 }
 

@@ -24,6 +24,11 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.equal(org["@id"], origin + "/#organization");
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
   assert.equal(org.identifier.value, "16716501");
+  assert.equal(org.telephone, "+44 7352 036605");
+  assert.equal(org.email, "enquiries@novapharmhealthcare.com");
+  assert.equal(org.contactPoint.telephone, org.telephone);
+  assert.equal(org.contactPoint.email, org.email);
+  assert.deepEqual(org.founder.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare"]);
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
   const approvedLogoAsset = ["assets", "brand", "pwa-icon-512.png"].join("/");
   assert.equal(org.logo["@id"], origin + "/#logo");
@@ -49,6 +54,9 @@ test("public company-facts page names the same UK organization and links genuine
   assert.equal(page?.url, origin + "/about/company/");
   assert.match(html, /NOVAPHARM HEALTHCARE LTD/);
   assert.match(html, /16716501/);
+  assert.match(html, /enquiries@novapharmhealthcare\.com/);
+  assert.match(html, /\+44 7352 036605/);
+  assert.match(html, /Prabhakar Vitthal Lahare/);
   assert.match(html, /data-company-identity-links/);
   assert(html.includes('href="https://www.linkedin.com/company/novapharm-healthcare/"'), "Exact company LinkedIn href missing");
   assert(html.includes('href="https://www.wikidata.org/wiki/Q137660644"'), "Exact Wikidata href missing");
@@ -74,6 +82,9 @@ test("the actual Next.js corporate website uses the same Knowledge Panel entity 
   assert.equal(home.logo.width, 512);
   assert.equal(home.logo.height, 512);
   assert.equal(home.identifier.value, "16716501");
+  assert(seoSource.includes("publicEnquiriesEmail") && seoSource.includes("publicTelephone"), "Next.js contact should match company source");
+  assert(seoSource.includes('"prabhakar-lahare"'), "Next.js founder graph includes Prabhakar");
+  assert(rendererSource.includes("publicEnquiriesEmail") && rendererSource.includes("publicTelephone"), "Visible corporate contact");
   assert(!home.address, "Registered residential address must remain absent from public Organization schema");
 });
 

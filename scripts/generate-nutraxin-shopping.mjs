@@ -251,9 +251,10 @@ for (const product of registered.products) {
     '<p class="nx-merchant-price">£' + money(p.retail_price_pence) +
     ' <small>including UK VAT</small></p><p class="nx-merchant-availability">' +
     (inStock ? "Available to order online in the UK." :
-      "Currently unavailable to order online. Contact us for availability.") + '</p></div>';
+      "Currently unavailable to order online. Contact us for availability.") +
+    '</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a></div>';
   if (html.includes('class="nx-merchant-offer"')) {
-    html = html.replace(/<div class="nx-merchant-offer"[^>]*>[\s\S]*?<\/p><\/div>/, offer);
+    html = html.replace(/<div class="nx-merchant-offer"[^>]*>[\s\S]*?<\/div>/, offer);
   } else {
     assert(html.includes('class="npd-product-pack"'));
     html = html.replace(/(<p class="npd-product-pack">[^<]+<\/p>)/, "$1" + offer);
@@ -281,6 +282,10 @@ for (const product of registered.products) {
   html = html.replaceAll(
     "availability and regulatory status are not asserted.",
     "the UK consumer price and ordering status are displayed; regulatory approval is not implied."
+  );
+  html = html.replaceAll(
+    "This website is for corporate and qualified B2B information only. NovaPharm does not provide medical advice, sell medicines to patients or invite patient orders. Product and regulatory information is not a substitute for advice from a healthcare professional or the relevant competent authority.",
+    "Nutraxin food supplements have a separate UK consumer shopping journey. NovaPharm does not provide medical advice or sell prescription medicines directly to patients. Pharmaceutical sourcing and regulated wholesale supply remain for qualified businesses and subject to applicable authorisations."
   );
   if (check) assert.equal(original, html, "Regenerate " + p.slug);
   else writeFileSync(path, html, "utf8");
