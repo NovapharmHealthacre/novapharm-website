@@ -99,6 +99,18 @@ test("generated public CSS bundle mirrors the owner-approved Royal neutrals", ()
   }
 });
 
+test("public release validates current owner-approved SHA provenance and PWA colours", () => {
+  const validator = text("scripts/validate-site.mjs");
+  const manifest = JSON.parse(text("manifest.webmanifest"));
+  assert.ok(validator.includes("config/brand-identities.json"));
+  assert.ok(validator.includes("audit/generated/three-brand-raster-provenance.json"));
+  assert.ok(validator.includes('createHash("sha256")'));
+  assert.ok(validator.includes("hash !== expectedHash"));
+  assert.doesNotMatch(validator, /#E3120B|9199250e117b5c7d2b39d4d08d33522928f668d36316863b4e60f5eb7ca2a729/i);
+  assert.equal(manifest.theme_color, brand.brands.healthcare.hex);
+  assert.equal(manifest.background_color, brand.neutralPalette.primaryWhite.hex);
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
