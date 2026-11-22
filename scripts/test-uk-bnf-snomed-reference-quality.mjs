@@ -89,3 +89,8 @@ test('pack-only annotations in presentation samples remain unresolved diagnostic
  assert.equal(x.presentationRowsWithUnexpectedPackFields,1);
  assert.equal(x.canPublish,false);
 });
+
+test('reference sampling enforces cumulative UTF-8 byte bound before reporting',()=>{
+ const rows=Array.from({length:130},()=>make({DMD_PRODUCT_DESC:'Z'.repeat(8190)}));
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args(rows)),/sample payload exceeds 1 MiB/);
+});
