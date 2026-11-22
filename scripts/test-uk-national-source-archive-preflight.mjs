@@ -14,7 +14,7 @@ const fixture = (sourceId, overrides={}) => {
     publisherFileName:'source.'+x.formats[0].toLowerCase(),sha256:h('a,b\n1,2\n'),byteSize:8,
     sourceVersion:'publisher-2026-09',discoveredAt:'2026-11-21T12:00:00.000Z',...overrides};
 };
-test('all eight nation/source/file contracts are explicit and correctly partitioned',()=>{
+test('all twelve nation/source/file contracts are explicit and correctly partitioned',()=>{
   assert.equal(UK_SOURCE_ARCHIVE_CONTRACTS.length,12);
   assert.deepEqual(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.jurisdiction)),new Set(['GB-ENG','GB-SCT','GB-WLS','GB-NIR']));
   assert.equal(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.sourceId)).size,8);
@@ -257,4 +257,19 @@ test('Welsh pharmacist ZIP fails closed for wrong month, missing BNF, non-CSV or
     {archivePath:p,quarantineRoot:root}),/ZIP inventory refused/);
   }
  }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('unverified Welsh dispensing files cannot masquerade as supported archive contracts',()=>{
+ const supported=new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.sourceId));
+ for(const sourceId of ['nwssp.gp-dispensing','nwssp.english-dispensing']){
+  assert.equal(supported.has(sourceId),false);
+  assert.throws(()=>validateUkNationalArchiveManifest({
+    ...fixture('nwssp.gp-prescribing'),sourceId
+  }),/unregistered source/);
+ }
+ // A terminology reference file is never additive with national prescribing facts.
+ const base={sourceId:'nhsbsa.epd',reportingPeriod:'2026-09',sourceVersion:'A'};
+ assert.throws(()=>verifyNationalComparisonBoundary(base,{
+  ...base,sourceId:'nhsbsa.bnf-snomed-map',sourceVersion:'B'
+ }),/measure definitions/);
 });
