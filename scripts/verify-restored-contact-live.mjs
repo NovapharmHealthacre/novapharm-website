@@ -8,8 +8,8 @@ const rows=[];
 function insist(condition,message){if(!condition)throw Error(message);}
 
 const reviewedBlobs=Object.freeze({
-  html:"7655359b3835cf766b7c734f71ad8260b0f436ba",
-  javascript:"35e7476cbbeaf4db693c614f9109a9c382527764",
+  html:"fa0c3c4b28cd5397afac1deffc3a9548c2b74e23",
+  javascript:"d405d459e089c3a696bd0ed6b2fb84bf529787bc",
   stylesheet:"9631537b380551b5dd3f8dbee81d93c3098bab54"
 });
 function reviewedGitBlob(text){
