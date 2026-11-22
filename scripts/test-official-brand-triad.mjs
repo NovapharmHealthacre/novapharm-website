@@ -68,6 +68,17 @@ test("outdated Economist Red not used by shared corporate or portal accent token
   assert.equal(JSON.parse(text("manifest.webmanifest")).theme_color, "#9D1B32");
 });
 
+test("generated light social artwork uses the approved Royal Mineral White, not legacy Pure White", () => {
+  const renderer = text("scripts/programme/rebuild-three-brand-derivatives.mjs");
+  assert.equal(brand.neutralPalette.primaryWhite.hex, "#FBFAEF");
+  assert.equal(brand.neutralPalette.secondaryWhite.hex, "#F8F7F3");
+  assert.equal(brand.neutralPalette.subtleDivider.hex, "#DEDCD5");
+  assert.equal(brand.neutralPalette.defaultInk.hex, "#0B0B0E");
+  assert.match(renderer, /officialLight=identities\.neutralPalette\?\.primaryWhite\?\.hex/);
+  assert.match(renderer, /social\(primary,reverse,officialLight,false\)/);
+  assert.doesNotMatch(renderer, /social\(primary,reverse,"#FFFFFF",false\)/);
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
