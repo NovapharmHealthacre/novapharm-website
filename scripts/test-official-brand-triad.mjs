@@ -44,6 +44,7 @@ for (const [key, filename] of Object.entries(logos)) {
 test("Healthcare and Intelligence primary vector bytes match uploaded packages", () => {
   assert.equal(sha256(logos.healthcare), brand.brands.healthcare.primaryVectorZipSha256);
   assert.equal(sha256(logos.intelligence), brand.brands.intelligence.primaryVectorZipSha256);
+  assert.equal(sha256(logos.distribution), brand.brands.distribution.primaryVectorZipSha256);
 });
 
 test("Intelligence historical approved vector retained and new blue replaces public secure entry", () => {
