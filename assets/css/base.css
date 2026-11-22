@@ -1,12 +1,12 @@
 :root {
   color-scheme: only light;
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --surface-2: #eef2f5;
+  --bg: #FBFAEF;
+  --surface: #F8F7F3;
+  --surface-2: #F8F7F3;
   --ink: #0B0B0E;
-  --text: #344054;
+  --text: #0B0B0E;
   --muted: #667085;
-  --line: #d0d5dd;
+  --line: #DEDCD5;
   --brand: #9D1B32;
   --brand-2: #68101F;
   --brand-text: #68101F;
