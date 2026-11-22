@@ -102,15 +102,15 @@ test("corporate sitemap dates stay aligned with the two published November ident
   const sitemap = read("sitemap.xml");
   for (const pathname of ["/", "/about/company/"]) {
     assert(
-      sitemap.includes(`<loc>${origin}${pathname}</loc><lastmod>2026-11-20</lastmod>`),
+      sitemap.includes(`<loc>${origin}${pathname}</loc><lastmod>2026-11-22</lastmod>`),
       `Static sitemap date missing for ${pathname}`,
     );
   }
   const generator = read("scripts/enhance-seo-authority.mjs");
-  assert(generator.includes('if (route === "/" || route === "/about/company/") return "2026-11-20";'),
+  assert(generator.includes('if (route === "/" || route === "/about/company/") return "2026-11-22";'),
     "The actual public sitemap generator must preserve the two November identity lastmod dates");
   const source = read("apps/corporate/app/sitemap.ts");
-  assert(source.includes('const corporateIdentityDate = new Date("2026-11-20T00:00:00Z");'),
+  assert(source.includes('const corporateIdentityDate = new Date("2026-11-22T00:00:00Z");'),
     "Next.js sitemap identity modification date must match the approved release");
   assert(source.includes('lastModified: slug === "" || slug === "about/company" ? corporateIdentityDate : contentDate'),
     "The Next.js sitemap must update only the two edited corporate URLs");
