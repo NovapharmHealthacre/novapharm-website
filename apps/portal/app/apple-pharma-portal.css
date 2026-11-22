@@ -290,3 +290,17 @@ textarea {
     color: var(--portal-ink);
   }
 }
+
+/* Royal neutrals: preserve Porcelain Stone for decorative hairlines.
+ * Auth, search and workspace controls require a visible independent edge. */
+:root { --portal-control-line: var(--np-color-separator-strong, #86868B); }
+.button.microsoft,
+.access-selector label,
+.portal-search > button,
+.user-summary button,
+.search-close,
+.icon-command,
+.area-switcher a,
+.menu-button,
+.intelligence-field-grid input,
+.intelligence-field-grid select { border-color: var(--portal-control-line); }
