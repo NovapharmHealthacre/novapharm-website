@@ -10,7 +10,7 @@ const distributionBrand = read("components/distribution-brand.tsx");
 const portalBrand = read("components/portal-brand.tsx");
 const dashboard = read("components/dashboard.tsx");
 
-test("employee WMS reuses approved in-repository official Distribution vector", () => {
+test("employee WMS uses the owner-supplied wider-aspect Distribution vector", () => {
   assert.match(logo, /viewBox="0 0 2307 408"/);
   assert.match(logo, /Novapharm Distribution/);
   assert.doesNotMatch(logo, /<script|<foreignObject|javascript:/i);
