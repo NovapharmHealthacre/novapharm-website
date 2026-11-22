@@ -1,6 +1,7 @@
 import { activateAccountRequestHtml } from "./activate-account-request.mjs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 
 const approvedApi = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i;
@@ -100,6 +101,28 @@ export function activateManagedContactReleaseHtml(template, origin) {
   return result;
 }
 
+// Preserve an immutable reviewed managed template while adding the exact
+// staged public build's source provenance after explicit owner-gated activation.
+export function stampManagedContactProvenance(managedHtml, baselineHtml, expectedSha) {
+  if (!/^[0-9a-f]{40}$/.test(expectedSha)) {
+    throw Error("Managed Contact source SHA is invalid");
+  }
+  const tag = '<meta name="novapharm-source-sha" content="' + expectedSha + '">';
+  const sourceTags = [...baselineHtml.matchAll(/<meta\b[^>]*\bname=["']novapharm-source-sha["'][^>]*>/gi)];
+  if (sourceTags.length !== 1 || sourceTags[0][0] !== tag) {
+    throw Error("Managed Contact baseline lacks exact reviewed Git source SHA");
+  }
+  if (!managedHtml.includes("</head>") ||
+      /<meta\b[^>]*\bname=["']novapharm-source-sha["'][^>]*>/i.test(managedHtml)) {
+    throw Error("Managed Contact template has duplicate or invalid release provenance");
+  }
+  const rendered = managedHtml.replace("</head>", '  ' + tag + '\n</head>');
+  if (rendered.split(tag).length !== 2) {
+    throw Error("Managed Contact source SHA must occur exactly once");
+  }
+  return rendered;
+}
+
 export function activatePrivacyHtml(html) {
   const anchor = '<section id="business-enquiries"><h2>3. Business enquiries</h2>';
   if (!html.includes(anchor)) throw Error("Privacy notice business-enquiries section missing");
@@ -134,7 +157,10 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
     resolve("src/content/contact-managed-release.html"),
     approvedContactBlobs["src/content/contact-managed-release.html"]
   ).toString("utf8");
-  const nextContact = activateManagedContactReleaseHtml(reviewedTemplate, origin);
+  const expectedSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+  const nextContact = stampManagedContactProvenance(
+    activateManagedContactReleaseHtml(reviewedTemplate, origin), contact, expectedSha
+  );
   const nextPrivacy = activatePrivacyHtml(notice);
   const nextAccount = activateAccountRequestHtml(account, origin);
   writeFileSync(contactPath, nextContact);
