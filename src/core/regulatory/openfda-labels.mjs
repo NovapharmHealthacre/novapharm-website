@@ -65,6 +65,7 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
       headers,
       signal: AbortSignal.timeout(8000),
       redirect: "error",
+      cache: "no-store",
     });
   } catch {
     throw unavailable();
@@ -83,18 +84,18 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
       "Do not rely on this service for medical diagnosis, treatment or regulated decisions.",
     ],
   };
+  if (response.redirected || (response.url && response.url !== requestUrl.toString()))
+    throw unavailable();
   if (response.status === 404) {
     return { ...metadata, dataState: "no_source_matches", records: [], truncated: false };
   }
   if (response.status === 429 || response.status >= 500 || !response.ok) throw unavailable();
-  if (response.redirected || (response.url && response.url !== requestUrl.toString()))
-    throw unavailable();
   // Never buffer arbitrary upstream JSON into memory. FDA labels may include
   // large free-text sections that are not approved for this source-only view.
   if (!/\bapplication\/json\b/iu.test(response.headers?.get("content-type") || "") ||
       !response.body?.getReader) throw unavailable();
   const declaredLength=Number(response.headers?.get("content-length") || 0);
-  if (!Number.isFinite(declaredLength) || declaredLength > MAX_BYTES) throw unavailable();
+  if (!Number.isSafeInteger(declaredLength) || declaredLength < 0 || declaredLength > MAX_BYTES) throw unavailable();
   const reader=response.body.getReader();
   const chunks=[];
   let bytes=0;
