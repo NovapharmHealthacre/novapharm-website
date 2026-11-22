@@ -11,7 +11,9 @@ const fixture = (sourceId, overrides={}) => {
   const x=UK_SOURCE_ARCHIVE_CONTRACTS.find(v=>v.sourceId===sourceId);
   return {contract:'novapharm.uk.source-archive-candidate.v1',sourceId, jurisdiction:x.jurisdiction,
     reportingPeriod:x.periodPrecision==='quarter'?'2026-Q2':'2026-09',format:x.formats[0],
-    publisherUrl:`https://${x.publisherHosts[0]}/datasets/verified`,publisherResourceId:sourceId==='nhsbsa.bnf-snomed-map'
+    publisherUrl:sourceId==='nhsbsa.bnf-snomed-map'
+      ? 'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/'+BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId
+      : `https://${x.publisherHosts[0]}/datasets/verified`,publisherResourceId:sourceId==='nhsbsa.bnf-snomed-map'
       ? BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId : 'official-resource-202609',
     publisherFileName:'source.'+x.formats[0].toLowerCase(),sha256:h('a,b\n1,2\n'),byteSize:8,
     sourceVersion:'publisher-2026-09',discoveredAt:'2026-11-21T12:00:00.000Z',...overrides};
@@ -302,7 +304,8 @@ test('publisher discovery timestamp must be a real UTC calendar instant, not Dat
 test('BNF–SNOMED quarantine archive manifest pins resource UUID to declared month',()=>{
  for(const [period,release] of Object.entries(BNF_SNOMED_PUBLIC_RESOURCE_RELEASES)){
   const receipt=validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
-   reportingPeriod:period,publisherResourceId:release.resourceId
+   reportingPeriod:period,publisherResourceId:release.resourceId,
+   publisherUrl:'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/'+release.resourceId
   }));
   assert.equal(receipt.publisherResourceId,release.resourceId);
   assert.equal(receipt.canIngest,false);
@@ -320,4 +323,25 @@ test('BNF–SNOMED quarantine archive manifest pins resource UUID to declared mo
  assert.throws(()=>validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
   reportingPeriod:'2026-08',publisherResourceId:BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId
  })),/publisher resource does not match reporting month/);
+});
+
+test('BNF crosswalk manifest refuses misleading publisher URLs even with valid source UUID',()=>{
+ const sep=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId;
+ for(const publisherUrl of [
+  'https://opendata.nhsbsa.net/datasets/verified',
+  'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping',
+  'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/'+BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-08'].resourceId,
+  'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/'+sep+'/download/source.csv',
+  'https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/'+sep+'?raw=true',
+  'https://nhsbsa-opendata.s3-eu-west-2.amazonaws.com/datasets/'+sep,
+ ]){
+  assert.throws(()=>validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+   publisherUrl
+  })),/unapproved publisher URL origin|not its official resource page/);
+ }
+ const alt=validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+  publisherUrl:'https://opendata.nhsbsa.net/dataset/ba1799d5-fac1-4432-8f76-ab7dfbb3e2f8/resource/'+sep
+ }));
+ assert.equal(alt.canIngest,false);
+ assert.equal(alt.canPublish,false);
 });
