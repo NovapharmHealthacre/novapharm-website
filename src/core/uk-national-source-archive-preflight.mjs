@@ -77,8 +77,17 @@ export function validateUkNationalArchiveManifest(input) {
     deny('invalid or excessive source file size');
   if (typeof input.sourceVersion !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,99}$/.test(input.sourceVersion))
     deny('missing source-version label');
-  if (typeof input.discoveredAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(input.discoveredAt) ||
-      !Number.isFinite(Date.parse(input.discoveredAt))) deny('invalid metadata discovery date');
+  // Date.parse can normalise nonexistent calendar dates (e.g. February 30).
+  // Reconstruct the exact UTC timestamp so a forged discovery day cannot pass.
+  const dateParts = typeof input.discoveredAt === 'string' &&
+    /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,3}))?Z$/.exec(input.discoveredAt);
+  const parsedTime = dateParts ? Date.parse(input.discoveredAt) : NaN;
+  const expectedIso = dateParts
+    ? dateParts[1] + '.' + (dateParts[2] ?? '').padEnd(3, '0') + 'Z'
+    : null;
+  if (!dateParts || !Number.isFinite(parsedTime) ||
+      new Date(parsedTime).toISOString() !== expectedIso)
+    deny('invalid metadata discovery date');
   if (!url.pathname || url.pathname === '/') deny('publisher dataset or resource path missing');
   return Object.freeze({
     contract: input.contract,
