@@ -27,3 +27,9 @@ Run:
 The test fixtures are wholly synthetic and use built-in Node test assertions, no network credentials or MongoDB connectivity. This is a draft candidate dependent on independent review and the UK publisher metadata PR #1026 and archive integrity PR #1030. Its 14-ID fixed source list must be reconciled against the accepted source registry on integration.
 
 A future trusted caller must filter source and review documents to this UK programme **before** passing them to the pure audit function, and must separately enforce access control, logging and protected persistence. Review-queue completeness is **not** terminology licensing, Quality certification, production medicine ingestion or web/iOS/Android release approval.
+
+## Publisher URL is not a licence
+
+On 22 November 2026 the 14 UK preview pending-rights records were independently classified with `rights_evidence_status: publisher_page_reference_only_independent_legal_verification_pending`. A publisher dataset page or an OGL banner alone is **not** a signed Legal decision or a grant covering third-party BNF, SNOMED CT, dm+d, model training, commercial redistribution, external customer apps or cross-border use. The audit now rejects any missing or mismatched evidence classification, even if `license_evidence_url` contains a valid HTTPS publisher URL. The caller must include the new `rights_evidence_status` field in its bounded rights projection. Non-UK sources are outside this fixed 14-source review scope.
+
+Two additional regression cases reject an absent classification and a forged independent-approval classification. This does not stop an actual independent approved rights record from being stored in a **separate reviewed authority**; it stops a preview *pending-review* record from impersonating that authority. Production rights and medicine admission remain separate release gates.

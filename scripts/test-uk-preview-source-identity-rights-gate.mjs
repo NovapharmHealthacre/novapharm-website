@@ -18,6 +18,7 @@ const reviews = () => UK_FOUR_NATION_REVIEW_SOURCE_IDS.map(id => ({
   source_id: legacy(id), source_version: versions(id),
   workspace_id: 'novapharm-internal-staging', environment: 'private_preview',
   status: 'pending_review', grant_active: false,
+  rights_evidence_status: 'publisher_page_reference_only_independent_legal_verification_pending',
   verified_by_rights_authority: false, allowed_purposes: [],
   commercial_analysis_approved: false,
   third_party_terminology_reuse_approved: false,
@@ -124,4 +125,13 @@ test('malformed or excessive arrays fail closed without external calls', () => {
   assert.throws(() => auditUkFourNationPendingReviewPreview(), /refused/);
   assert.throws(() => auditUkFourNationPendingReviewPreview({sourceDocuments: {}, rightsDocuments: []}), /refused/);
   rejects([...registry(), ...registry()], reviews());
+});
+
+test('a publisher URL without an explicit unverified evidence classification fails closed', () => {
+  const r = reviews(); delete r[0].rights_evidence_status;
+  rejects(registry(), r);
+});
+test('a false independent rights approval claim cannot hide behind a publisher URL', () => {
+  const r = reviews(); r[4].rights_evidence_status = 'independent_legal_approved';
+  rejects(registry(), r);
 });

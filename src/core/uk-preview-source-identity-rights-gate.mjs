@@ -27,6 +27,7 @@ export const UK_FOUR_NATION_REVIEW_SOURCE_IDS = Object.freeze([
 const SOURCE_IDS = new Set(UK_FOUR_NATION_REVIEW_SOURCE_IDS);
 const ALIASES = Object.freeze({nhsbsa_english_prescribing: 'nhsbsa.epd'});
 const PREVIEW_WORKSPACE = 'novapharm-internal-staging';
+const PUBLISHER_PAGE_ONLY = 'publisher_page_reference_only_independent_legal_verification_pending';
 const REVIEW_DATE = /^20\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/;
 const DENY = () => { throw new Error('UK preview source identity and rights check refused; no medicine data admitted.'); };
 const isRecord = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -70,6 +71,8 @@ function checkPendingRights(doc, sourceDoc) {
       doc.workspace_id !== PREVIEW_WORKSPACE ||
       doc.environment !== 'private_preview' ||
       doc.status !== 'pending_review' ||
+      // A publisher catalogue URL is not a licence, Legal decision or source-rights grant.
+      doc.rights_evidence_status !== PUBLISHER_PAGE_ONLY ||
       doc.grant_active !== false ||
       doc.verified_by_rights_authority !== false ||
       !Array.isArray(doc.allowed_purposes) || doc.allowed_purposes.length !== 0 ||
