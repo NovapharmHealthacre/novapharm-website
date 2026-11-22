@@ -325,7 +325,7 @@ function head(meta, slug = "", options = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#FBFAEF">
   <title>${esc(meta.title)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="robots" content="${options.robots || "index, follow, max-snippet:-1, max-image-preview:large"}">
@@ -1159,7 +1159,7 @@ export function buildPublicPages() {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#FBFAEF",
     theme_color: "#9D1B32",
     icons: [
       { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
