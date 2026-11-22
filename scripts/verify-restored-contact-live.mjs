@@ -14,7 +14,7 @@ const reviewedBlobs=Object.freeze({
 });
 function reviewedGitBlob(text){
   const bytes=Buffer.from(text,"utf8");
-  return createHash("sha1").update("blob "+bytes.length+"\\0").update(bytes).digest("hex");
+  return createHash("sha1").update("blob "+bytes.length).update(Uint8Array.of(0)).update(bytes).digest("hex");
 }
 
 async function read(origin,path,expectedMime){
