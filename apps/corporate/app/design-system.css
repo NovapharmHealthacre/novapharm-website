@@ -665,3 +665,10 @@ main [id] { scroll-margin-top: calc(var(--header) + 24px); }
   align-items: center;
   min-block-size: 44px;
 }
+
+/* Royal neutrals: Porcelain Stone is decorative, not a form/control outline.
+ * Controls use the independently contrast-tested strong semantic separator. */
+:root { --nph-control-line: var(--np-color-separator-strong, #86868B); }
+.mobile-menu summary,
+.button-light,
+.button-quiet { border-color: var(--nph-control-line); }
