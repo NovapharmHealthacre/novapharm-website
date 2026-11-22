@@ -1,13 +1,13 @@
 /* NovaPharm Distribution — premium employee experience.
    Restrained typography, clear task hierarchy, no decorative iconography.
    Authorisation stays in the existing server-side employee and tenant guards. */
-.employee-distribution-shell.workspace-shell{display:block;background:#fff;color:#0B0B0E;min-height:100vh}
+.employee-distribution-shell.workspace-shell{display:block;background:var(--portal-white,#FBFAEF);color:#0B0B0E;min-height:100vh}
 .employee-distribution-shell .workspace-sidebar{display:none}
-.employee-distribution-shell .workspace-main{width:100%;min-width:0;background:#fff}
+.employee-distribution-shell .workspace-main{width:100%;min-width:0;background:var(--portal-white,#FBFAEF)}
 .employee-distribution-shell .workspace-topbar{
  display:grid;grid-template-columns:minmax(160px,225px) minmax(0,1fr) minmax(135px,205px) auto;
  align-items:center;gap:clamp(12px,2vw,24px);min-height:84px;
- padding:12px clamp(22px,5vw,76px);background:#fff;border-bottom:1px solid #e8e8ed;
+ padding:12px clamp(22px,5vw,76px);background:var(--portal-white,#FBFAEF);border-bottom:1px solid #e8e8ed;
 }
 .employee-distribution-shell .workspace-topbar>.portal-brand{display:block;width:min(215px,100%);margin:0}
 .employee-distribution-shell .workspace-topbar>.portal-brand img{display:block;width:100%;height:auto}
@@ -26,7 +26,7 @@
 .employee-distribution-shell .user-summary span{max-width:130px;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.875rem}
 .employee-distribution-shell .user-summary small{display:none}
 .employee-distribution-shell .user-summary button{width:auto;height:44px;min-height:44px;padding:7px 16px;border-radius:999px;background:#0B0B0E;color:white;border:0;font-size:.875rem}
-.employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#0B0B0E;background:#fff;border:1px solid #d5d5da}
+.employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#0B0B0E;background:var(--portal-white,#FBFAEF);border:1px solid #d5d5da}
 .employee-distribution-shell .workspace-content{width:min(1510px,100%);max-width:1510px;margin:0 auto;padding:0 clamp(20px,5vw,76px) 70px}
 .employee-distribution-shell .module-heading{display:none}
 .distribution-employee{color:#0B0B0E}
@@ -169,7 +169,7 @@
 .distribution-wms-evidence-heading h2{font-size:clamp(1.9rem,3.4vw,3.4rem);line-height:1.1;letter-spacing:-.058em;font-weight:660;margin:0 0 16px}
 .distribution-wms-evidence-heading>p:not(.distribution-employee-overline){font-size:.91rem;color:#717179;line-height:1.65;max-width:80ch}
 .distribution-wms-evidence-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e4e4e8;border:1px solid #e4e4e8;border-radius:17px;overflow:hidden;margin:30px 0 37px}
-.distribution-wms-evidence-stats article{padding:25px 20px;background:#fff;display:flex;flex-direction:column;min-height:145px;gap:8px}
+.distribution-wms-evidence-stats article{padding:25px 20px;background:var(--portal-white,#FBFAEF);display:flex;flex-direction:column;min-height:145px;gap:8px}
 .distribution-wms-evidence-stats article span{font-size:.74rem;color:#66666e}
 .distribution-wms-evidence-stats article strong{font-size:clamp(1.45rem,2.1vw,2rem);letter-spacing:-.055em;font-weight:670}
 .distribution-wms-evidence-stats article small{font-size:.73rem;color:#616169;line-height:1.4}
@@ -190,7 +190,7 @@
 .np-segmented-choice__option{position:relative;display:flex;flex:1 1 5rem;min-inline-size:0;cursor:pointer}
 .np-segmented-choice__option input{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:inherit}
 .np-segmented-choice__option span{display:flex;align-items:center;justify-content:center;inline-size:100%;min-block-size:44px;padding:.5rem .85rem;border-radius:7px;font-size:.875rem;color:#515154;white-space:normal;text-align:center}
-.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#0B0B0E;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
+.np-segmented-choice__option:has(input:checked) span{background:var(--portal-white,#FBFAEF);color:#0B0B0E;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
 .np-segmented-choice__option:has(input:focus-visible) span{outline:3px solid #0b69ff;outline-offset:2px}
 .np-segmented-choice__option:has(input:disabled){cursor:not-allowed}
 .np-segmented-choice__option:has(input:disabled) span{opacity:.6}
@@ -199,8 +199,8 @@
 .distribution-wms-evidence-search{display:flex;flex-direction:column;gap:7px;font-size:.76rem;color:#55555d;margin-bottom:17px;max-width:480px}
 .distribution-wms-evidence-search label{font-weight:600}
 .distribution-wms-evidence-search-control{display:flex;align-items:stretch;gap:8px}
-.distribution-wms-evidence-search input{width:100%;min-width:0;flex:1;border:1px solid #d4d4da;border-radius:9px;min-height:44px;padding:10px 13px;font-size:.85rem;color:#0B0B0E;background:#fff}
-.distribution-wms-evidence-search-control button{min-height:44px;padding:8px 13px;border:1px solid #d4d4da;border-radius:9px;background:#fff;color:#0059b8;cursor:pointer}
+.distribution-wms-evidence-search input{width:100%;min-width:0;flex:1;border:1px solid #d4d4da;border-radius:9px;min-height:44px;padding:10px 13px;font-size:.85rem;color:#0B0B0E;background:var(--portal-white,#FBFAEF)}
+.distribution-wms-evidence-search-control button{min-height:44px;padding:8px 13px;border:1px solid #d4d4da;border-radius:9px;background:var(--portal-white,#FBFAEF);color:#0059b8;cursor:pointer}
 .distribution-wms-evidence-search-control button:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
 .distribution-wms-evidence-search p{margin:0;color:#626269;font-size:.72rem;line-height:1.45}
 @media(forced-colors:active){.distribution-wms-evidence-search input,.distribution-wms-evidence-search-control button{border-color:CanvasText}}
@@ -278,7 +278,7 @@
 .distribution-wms-pilot-form,.distribution-wms-pilot-summary{border:1px solid #dedee3;border-radius:16px;padding:clamp(18px,3vw,27px)}
 .distribution-wms-pilot-grid h3{margin:0 0 18px;font-size:1.1rem;letter-spacing:-.025em}
 .distribution-wms-pilot-form label{display:block;font-weight:650;font-size:.82rem;margin:17px 0 7px}
-.distribution-wms-pilot-form select,.distribution-wms-pilot-form textarea{width:100%;font-size:.88rem;line-height:1.4;background:#fff;border:1px solid #c7c7ce;border-radius:9px;padding:12px;color:#0B0B0E}
+.distribution-wms-pilot-form select,.distribution-wms-pilot-form textarea{width:100%;font-size:.88rem;line-height:1.4;background:var(--portal-white,#FBFAEF);border:1px solid #c7c7ce;border-radius:9px;padding:12px;color:#0B0B0E}
 .distribution-wms-pilot-form textarea{resize:vertical;min-height:95px}
 .distribution-wms-pilot-form select:focus-visible,.distribution-wms-pilot-form textarea:focus-visible,.distribution-wms-pilot-form button:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 .distribution-wms-pilot-form button{padding:11px 17px;background:#0B0B0E;border:1px solid #0B0B0E;color:white;border-radius:30px;font-size:.84rem;font-weight:650;cursor:pointer}
@@ -296,7 +296,7 @@
 @media(max-width:850px){.distribution-wms-pilot-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.distribution-wms-pilot-steps{grid-template-columns:1fr}.distribution-wms-pilot-steps li{padding:16px}}
 
-.distribution-wms-pilot-admin{margin-top:26px;padding:24px;border:1px solid #dedee3;border-radius:14px;background:#fff}
+.distribution-wms-pilot-admin{margin-top:26px;padding:24px;border:1px solid #dedee3;border-radius:14px;background:var(--portal-white,#FBFAEF)}
 .distribution-wms-pilot-admin h3{margin:0 0 9px;font-size:1.18rem}
 .distribution-wms-pilot-admin>p{max-width:90ch;font-size:.81rem;color:#595961;line-height:1.55}
 .distribution-wms-pilot-admin-stats{display:flex;gap:18px;flex-wrap:wrap;padding:17px 0}
@@ -333,7 +333,7 @@
 
 /* Apple HIG Patterns: chart values stay readable without colour or pointer input. */
 .distribution-wms-capacity-reset-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
-.distribution-wms-capacity-undo{min-height:44px;padding:8px 16px;border:1px solid #8d8d95;border-radius:999px;background:#fff;color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-undo{min-height:44px;padding:8px 16px;border:1px solid #8d8d95;border-radius:999px;background:var(--portal-white,#FBFAEF);color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
 .distribution-wms-capacity-zone-chart{margin:25px 0;min-width:0;border-top:1px solid #dedee3;padding-top:20px}
 .distribution-wms-capacity-zone-chart h4{margin:0 0 8px;font-size:1.05rem}
 .distribution-wms-capacity-zone-chart figcaption p{max-width:65ch;font-size:.82rem;color:#52525a;line-height:1.6;margin:0 0 20px}
@@ -369,9 +369,9 @@
 @media(forced-colors:active){.distribution-wms-capacity-undo:disabled{opacity:1;color:GrayText;border-color:GrayText}}
 
 /* Fullscreen is explicitly requested, browser-managed, and always has an exit control. */
-.distribution-wms-capacity-fullscreen{min-height:44px;margin-top:16px;border:1px solid #777780;border-radius:999px;padding:9px 18px;background:#fff;color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-fullscreen{min-height:44px;margin-top:16px;border:1px solid #777780;border-radius:999px;padding:9px 18px;background:var(--portal-white,#FBFAEF);color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
 .distribution-wms-capacity-fullscreen:hover{background:#f5f5f7}
 .distribution-wms-capacity-fullscreen:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
-.distribution-wms-capacity-studio:fullscreen{background:#fff;color:#0B0B0E;overflow-y:auto;max-height:100dvh;padding:clamp(1rem,3vw,3rem);box-sizing:border-box}
+.distribution-wms-capacity-studio:fullscreen{background:var(--portal-white,#FBFAEF);color:#0B0B0E;overflow-y:auto;max-height:100dvh;padding:clamp(1rem,3vw,3rem);box-sizing:border-box}
 .distribution-wms-capacity-studio:fullscreen .distribution-wms-capacity-body{width:min(1400px,100%);margin-inline:auto}
 @media(forced-colors:active){.distribution-wms-capacity-fullscreen{border:2px solid CanvasText;background:Canvas;color:CanvasText}}
