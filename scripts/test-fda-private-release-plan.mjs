@@ -133,6 +133,8 @@ test("iOS cached board token stays revoked when Keychain sign-out deletion fails
  assert.ok(getter.includes("guard !accessRevoked &&"));
  const begin=source.slice(source.indexOf("func beginSignIn("),source.indexOf("private func exchange("));
  assert.ok(begin.includes("accessRevoked=true"));
+ assert.ok(begin.indexOf("authGeneration &+= 1")<begin.indexOf("guard store.clear()"),
+   "Previous in-flight callbacks must be invalidated before even a failed Keychain erase");
  assert.ok(begin.indexOf("accessRevoked=true")<begin.indexOf("guard store.clear()"));
  const exchange=source.slice(source.indexOf("private func exchange("));
  const generation=exchange.indexOf("guard authGeneration == generation else");
