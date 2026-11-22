@@ -1263,6 +1263,10 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
 test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
   const paths = [
     "src/core/regulatory/fda-aws-lambda-entry.mjs",
+    "src/core/regulatory/fda-private-http-handler.mjs",
+    "scripts/test-fda-private-http-handler.mjs",
+    "src/core/regulatory/openfda-labels.mjs",
+    "scripts/test-openfda-labels.mjs",
     "deployment/aws/fda-private-lambda/index.mjs",
     "scripts/build-fda-private-lambda-zip.mjs",
     "scripts/test-fda-aws-lambda-entry.mjs",
