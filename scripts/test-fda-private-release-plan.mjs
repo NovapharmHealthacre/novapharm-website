@@ -99,5 +99,27 @@ test("iOS board sign-in refuses concurrent sessions and clears stale access befo
  assert.ok(concurrency>=0 && concurrency<clear);
  assert.ok(clear>concurrency && clear<verifier && verifier<browser,
    "Previous board access must be cleared before OS entropy and browser launch");
- assert.ok(segment.includes("catch { activeSession=nil;store.clear();completion(.failure(error)) }"));
+ assert.ok(segment.includes("if authGeneration == attemptGeneration { _ = store.clear() }"));
+});
+
+test("iOS rejected late OAuth token exchange cannot resurrect access after sign-out",()=>{
+ const source=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
+ const signOut=source.slice(source.indexOf("func signOut() -> Bool"),source.indexOf("func cachedAccessToken()"));
+ assert.ok(signOut.includes("authGeneration &+= 1"),"sign-out invalidates all in-flight callbacks");
+ assert.ok(signOut.indexOf("authGeneration &+= 1")<signOut.indexOf("activeSession?.cancel()"),
+   "invalidate attempt before asynchronous session cancellation");
+ const signIn=source.slice(source.indexOf("func beginSignIn("),source.indexOf("private func exchange("));
+ assert.ok(signIn.includes("authGeneration &+= 1"),"new sign-in supersedes prior exchange");
+ assert.ok(signIn.includes("let attemptGeneration=authGeneration"));
+ assert.ok(signIn.includes("self.authGeneration == attemptGeneration"),
+   "late callbacks cannot affect newer sessions");
+ assert.ok(signIn.includes("generation:attemptGeneration"));
+ assert.ok(signIn.includes("if self.authGeneration == attemptGeneration { _ = self.store.clear() }"),
+   "old callbacks cannot clear newer credentials");
+ const exchange=source.slice(source.indexOf("private func exchange("));
+ const awaitNetwork=exchange.indexOf("try await session.data(for:req)");
+ const generationCheck=exchange.indexOf("guard authGeneration == generation else");
+ const save=exchange.indexOf("try store.save(");
+ assert.ok(awaitNetwork>=0 && generationCheck>awaitNetwork && save>generationCheck,
+   "after suspending for network, generation must be revalidated before token persistence");
 });
