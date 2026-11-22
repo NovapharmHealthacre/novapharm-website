@@ -20,8 +20,37 @@ permissions:
   contents: read
 
 jobs:
+  verify-live-verifier-source:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check read-only live verifier syntax and Contact design contract
+        run: |
+          node --check scripts/verify-restored-contact-live.mjs
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          const source=readFileSync("scripts/verify-restored-contact-live.mjs","utf8");
+          for(const marker of [
+            'Approved Contact visual identity and fail-closed controls',
+            '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+            'type="submit" disabled aria-describedby="contact-submission-status"',
+            '/assets/css/novapharm-unified-20261107.css',
+            'if (submit) submit.disabled = false;',
+            'method:"OPTIONS"', 'method:"GET"'
+          ]) assert.ok(source.includes(marker), "Read-only verifier source contract missing: "+marker);
+          assert.ok(!/method\s*:\s*["']POST["']/.test(source), "Verifier may not perform a real POST");
+          console.log("Reviewed Contact live-verifier source and no-POST contract passed");
+          NODE
   verify-live-contact:
-    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
