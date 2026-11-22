@@ -177,6 +177,10 @@ for (const [token, hex] of [
 assert.match(reactStyles, /\.np-navigation\{[^}]*background:var\(--np-royal-canvas\)/);
 assert.match(reactStyles, /\.np-button--secondary\{[^}]*border-color:var\(--np-royal-control-border\)/);
 
+// Corporate default form inputs must have non-decorative control boundaries.
+assert.ok(read("apps/corporate/app/globals.css").includes("border: 1px solid #86868B; border-radius: 2px; background: var(--white);"),
+  "Corporate default form controls require visible border contrast");
+
 // Contact is an Apple-style readable surface, while essential inputs remain visible.
 const contactCss = read("assets/css/contact-premium.css");
 assert.ok(contactCss.includes("--np-contact-ink: #0B0B0E"));
