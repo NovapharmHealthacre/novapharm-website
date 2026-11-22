@@ -79,6 +79,26 @@ test("generated light social artwork uses the approved Royal Mineral White, not 
   assert.doesNotMatch(renderer, /social\(primary,reverse,"#FFFFFF",false\)/);
 });
 
+test("generated public CSS bundle mirrors the owner-approved Royal neutrals", () => {
+  const bundle = text("assets/css/novapharm.bundle.css");
+  assert.match(bundle, /--np-brand-white-primary:\s*#FBFAEF/i);
+  assert.match(bundle, /--np-brand-white-secondary:\s*#F8F7F3/i);
+  assert.match(bundle, /--np-brand-divider:\s*#DEDCD5/i);
+  const lightStart = bundle.indexOf(":root {\n  color-scheme: light;");
+  assert.ok(lightStart >= 0, "Missing generated HIG light palette block");
+  const lightBody = bundle.slice(lightStart, bundle.indexOf("}", lightStart));
+  for (const [token, hex] of [
+    ["canvas", "#FBFAEF"],
+    ["surface", "#F8F7F3"],
+    ["surface-raised", "#FBFAEF"],
+    ["label", "#0B0B0E"],
+    ["separator", "#DEDCD5"],
+  ]) {
+    assert.match(lightBody, new RegExp(`--np-color-${token}:\\s*${hex}`, "i"),
+      "Bundled " + token + " diverges from approved source palette");
+  }
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
