@@ -54,6 +54,17 @@ test("single isolated DynamoDB table matches atomic quota PK/SK, TTL, encryption
  for(const fragment of ['PK:{S:"FDA_QUOTA#"','SK:{S:"MINUTE#"','"#ttl":"ttlEpoch"','ConditionExpression:"attribute_not_exists(#used) OR #used < :max"'])
   assert.ok(quotaCode.includes(fragment),fragment);
 });
+test("example IAM policy is scoped to atomic UpdateItem and HMAC partition prefix only",()=>{
+ const iam=JSON.parse(read("infra/aws/fda-quota-least-privilege-policy.example.json"));
+ assert.equal(iam.Version,"2012-10-17");
+ assert.equal(iam.Statement.length,1);
+ const stmt=iam.Statement[0];
+ assert.equal(stmt.Effect,"Allow");
+ assert.deepEqual(stmt.Action,["dynamodb:UpdateItem"]);
+ assert.equal(stmt.Resource,"arn:aws:dynamodb:eu-north-1:APPROVED_ACCOUNT_ID:table/APPROVED_FDA_QUOTA_TABLE");
+ assert.deepEqual(stmt.Condition,{"ForAllValues:StringLike":{"dynamodb:LeadingKeys":["FDA_QUOTA#*"]}});
+ assert.ok(!JSON.stringify(iam).includes("novapharm-intelligence-customer-access"));
+});
 test("no default grants, static secrets, public endpoint or shared-table reference",()=>{
  const source=JSON.stringify(template);
  for(const token of ["AWS::IAM::","AWS::ApiGateway","AWS::Lambda::Permission","NPI_FDA_QUOTA_HMAC_SECRET","AWS::SecretsManager::Secret","novapharm-intelligence-customer-access"])
@@ -61,6 +72,7 @@ test("no default grants, static secrets, public endpoint or shared-table referen
  assert.match(read("config/intelligence/owner-production-constraints.json"),/"productionSignoff"\s*:\s*"not_granted"/);
  const paths=[
   "infra/aws/fda-isolated-quota-approval.cfn.json",
+  "infra/aws/fda-quota-least-privilege-policy.example.json",
   "scripts/test-fda-isolated-quota-approval.mjs",
   "docs/intelligence/fda-quota-approval-20261122.md",
   ".github/workflows/intelligence-fda-isolated-quota-contract.yml"
