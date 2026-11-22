@@ -13,6 +13,9 @@
           "dynamodb:LeadingKeys": [
             "FDA_QUOTA#*"
           ]
+        },
+        "Null": {
+          "dynamodb:LeadingKeys": "false"
         }
       }
     }
