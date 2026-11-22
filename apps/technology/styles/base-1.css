@@ -2,15 +2,15 @@
 :root {
     --ink: #0B0B0E;
     --ink-soft: #171a1f;
-    --paper: #f4f1ea;
-    --paper-bright: #fbfaf7;
-    --mist: #e8e7e3;
+    --paper: #FBFAEF;
+    --paper-bright: #F8F7F3;
+    --mist: #EDEBE5;
     --line: rgba(11, 13, 16, 0.17);
     --line-light: rgba(255, 255, 255, 0.2);
     --red: #b5212d;
     --red-deep: #8f1721;
     --red-bright: #ef4a52;
-    --white: #ffffff;
+    --white: #FBFAEF;
     --muted: #61656b;
     --muted-light: #b8bbc0;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;

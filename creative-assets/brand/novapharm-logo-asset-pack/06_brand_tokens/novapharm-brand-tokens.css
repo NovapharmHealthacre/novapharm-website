@@ -1,7 +1,10 @@
 :root {
   --novapharm-red: #9D1B32;
   --novapharm-red-rgb: 157 27 50;
-  --novapharm-white: #FFFFFF;
+  --novapharm-white: #FBFAEF;
+  --novapharm-white-primary: #FBFAEF;
+  --novapharm-white-secondary: #F8F7F3;
+  --novapharm-divider: #DEDCD5;
   --novapharm-black: #0B0B0E;
   --novapharm-pure-black: #000000;
   --novapharm-near-black: #0B0B0E;

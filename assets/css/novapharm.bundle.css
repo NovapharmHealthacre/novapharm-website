@@ -5,13 +5,13 @@
 /* Source: base.css */
 :root {
   color-scheme: only light;
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --surface-2: #eef2f5;
+  --bg: #FBFAEF;
+  --surface: #F8F7F3;
+  --surface-2: #F8F7F3;
   --ink: #0B0B0E;
   --text: #0B0B0E;
   --muted: #667085;
-  --line: #d0d5dd;
+  --line: #DEDCD5;
   --brand: #9D1B32;
   --brand-2: #68101F;
   --brand-text: #68101F;
@@ -1267,10 +1267,15 @@ td { color: var(--text); }
   --np-brand-white-secondary: #F8F7F3;
   --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
-  --bg: #F8F7F3;
-  --surface: #FBFAEF;
+  /* Owner-approved Royal neutrals */
+  --np-white-primary: #FBFAEF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
+  --bg: #FBFAEF;
+  --surface: #F8F7F3;
   --surface-2: #F8F7F3;
-  --surface-3: #dce6e2;
+  --surface-3: #EDEBE5;
   --paper: #FBFAEF;
   --ink: #0B0B0E;
   --text: #0B0B0E;
@@ -1459,14 +1464,14 @@ a:hover { color: var(--brand-2); }
   min-height: 48px;
   border-radius: 4px;
   border-color: var(--line-strong);
-  background: #fff;
+  background: var(--surface);
 }
 
 .field textarea { min-height: 156px; }
 
 .field label { font-size: 14px; }
 
-.table-wrap { background: #fff; }
+.table-wrap { background: var(--surface); }
 
 .sr-only {
   position: absolute;
@@ -7058,10 +7063,10 @@ body[data-page="cro"] .cro-leadership-proof {
   --npd-ink: #0B0B0E;
   --npd-text: #0B0B0E;
   --npd-muted: #626970;
-  --npd-line: #d7dadd;
-  --npd-line-strong: #aeb3b8;
-  --npd-soft: #f5f6f7;
-  --npd-white: #ffffff;
+  --npd-line: #DEDCD5;
+  --npd-line-strong: #86868B;
+  --npd-soft: #F8F7F3;
+  --npd-white: #FBFAEF;
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --npd-compact: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Arial Narrow", Arial, sans-serif);
   --npd-mono: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
@@ -9395,7 +9400,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-global-nav.site-nav > a { transition: none; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .npd-header .npd-mega { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .npd-header .npd-mega { background: var(--npd-soft); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media print { .npd-mega { display: none !important; } }
 
@@ -9424,15 +9429,15 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding:0 15px;
   border:1px solid #d6d6db;
   border-radius:999px;
-  background:#fff;
+  background:var(--npd-soft);
   color:#0B0B0E;
   font-weight:610;
 }
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:focus-visible {
-  background:#f5f5f7;
+  background:#F8F7F3;
   border-color:#99999f;
-  color:#111113;
+  color:#0B0B0E;
 }
 @media (max-width:1050px) {
   .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
@@ -9458,7 +9463,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   border: 0;
   border-bottom: 1px solid #dfe1e5;
   border-radius: 0;
-  background: #f5f5f7;
+  background: #F8F7F3;
   box-shadow: none;
 }
 .cookie-banner-inner {
@@ -9552,7 +9557,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 
 /* Public account pathway — optional HIG-aligned explanation, never a login gate. */
-.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#0B0B0E}
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:var(--npd-soft);color:#0B0B0E}
 .npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
 .npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
 .npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
@@ -9578,7 +9583,7 @@ body[data-page="legal/privacy"] .page-hero h1 {
   max-width: 900px;
 }
 body[data-page="legal/privacy"] .page-hero p { max-width: 64ch; line-height: 1.6; }
-body[data-page="legal/privacy"] .legal-section { background: #ffffff; }
+body[data-page="legal/privacy"] .legal-section { background: #FBFAEF; }
 body[data-page="legal/privacy"] .legal-layout {
   gap: clamp(26px, 5vw, 74px);
   grid-template-columns: minmax(210px, 0.32fr) minmax(0, 1fr);
@@ -9742,7 +9747,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
    Independent of Apple trademarks, fonts or copyrighted UI assets. */
-.np-contact { --np-contact-ink: #1d1d1f; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #f5f5f7; color: var(--np-contact-ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FBFAEF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
 .np-contact * { box-sizing: border-box; }
 .np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
 .np-contact a { text-underline-offset: .2em; }
@@ -9757,12 +9762,12 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
 .np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
-.np-contact-topic:hover { transform: translateY(-3px); background: #fff; border-color: #cbd1d9; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #FBFAEF; border-color: #cbd1d9; }
 .np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
 .np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
 .np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
-.np-contact-destination { padding: 80px 0 100px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination { padding: 80px 0 100px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
 .np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
 .np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
@@ -9774,7 +9779,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
 .np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
-.np-contact-safety { padding: 32px 0 70px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety { padding: 32px 0 70px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
 .np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
 .np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
@@ -9784,7 +9789,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-form-panel .field-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
 .np-contact-form-panel .contact-form label { min-width: 0; }
 .np-contact-form-panel .contact-form label > span { display: block; margin: 0 0 7px; font-size: 14px; font-weight: 620; }
-.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid #aeb5bf; border-radius: 11px; background: #fff; color: #1d1d1f; font: inherit; font-size: 15px; }
+.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid var(--np-contact-control-line, #86868B); border-radius: 11px; background: var(--np-contact-soft); color: var(--np-contact-ink); font: inherit; font-size: 15px; }
 .np-contact-form-panel .contact-form textarea { min-height: 142px; resize: vertical; }
 .np-contact-form-panel .contact-form :is(input, select, textarea):focus-visible { border-color: #1559a8; outline: 3px solid rgba(21,89,168,.22); outline-offset: 1px; }
 .np-contact-form-panel .contact-form .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; }
@@ -9805,14 +9810,15 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
  * as an accepted server submission. Managed submissions retain verification.
  */
 .np-contact.np-contact-reference {
-  --np-contact-ink: #1d1d1f;
+  --np-contact-ink: #0B0B0E;
   --np-contact-muted: #6e6e73;
   --np-contact-line: #c5c6cc;
-  --np-contact-soft: #f5f5f7;
+  --np-contact-control-line: var(--np-color-separator-strong, #86868B);
+  --np-contact-soft: #F8F7F3;
   --np-contact-blue: #006fe6;
   width: 100%;
   overflow: clip;
-  background: #fff;
+  background: #FBFAEF;
   color: var(--np-contact-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
@@ -9824,7 +9830,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-reference-hero {
   padding: clamp(64px, 7vw, 82px) 0 62px;
   text-align: center;
-  background: #fff;
+  background: #FBFAEF;
 }
 .np-contact-reference-kicker {
   display: block;
@@ -9853,7 +9859,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   line-height: 1.34;
   letter-spacing: 0;
 }
-.np-contact-reference-content { padding: 0 0 55px; background: #fff; }
+.np-contact-reference-content { padding: 0 0 55px; background: #FBFAEF; }
 .np-contact-reference-heading { margin: 0 0 25px; }
 .np-contact-reference .np-contact-reference-heading h2 {
   margin: 0 0 4px;
@@ -9892,9 +9898,9 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   min-height: 61px;
   margin: 0;
   padding: 8px 16px;
-  border: 1px solid var(--np-contact-line);
+  border: 1px solid var(--np-contact-control-line);
   border-radius: 12px;
-  background: #fff;
+  background: #F8F7F3;
   color: var(--np-contact-ink);
   transition: border-color 120ms ease, box-shadow 120ms ease;
 }
@@ -10053,7 +10059,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-reference .np-contact-reference-submit {
   flex: 0 0 auto;
   width: 160px;
-  min-height: 43px;
+  min-height: 44px;
   padding: 10px 18px;
   border: 0;
   border-radius: 999px;
@@ -10079,18 +10085,18 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   line-height: 1.5;
 }
 .np-contact-reference-status p { margin: 0; font-size: inherit; }
-.np-contact-reference-safety { padding: 0 0 31px; background: #fff; }
+.np-contact-reference-safety { padding: 0 0 31px; background: #FBFAEF; }
 .np-contact-reference-safety p {
   max-width: 914px;
   margin: 0;
   color: #6d7078;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.6;
 }
 .np-contact-reference-safety a { color: #465d81; }
 .np-contact-reference-footer {
   padding: 35px 0 38px;
-  background: #f5f5f7;
+  background: #F8F7F3;
 }
 .np-contact-reference-footer-inner {
   display: flex;
@@ -10101,7 +10107,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-reference-footer strong {
   display: block;
   font-family: inherit;
-  color: #1d1d1f;
+  color: #0B0B0E;
   font-size: 19px;
   letter-spacing: 0;
   line-height: 1.4;
@@ -10111,10 +10117,10 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   display: block;
   margin: 4px 0 0;
   color: #62646a;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.5;
 }
-.np-contact-reference-footer small { font-size: 11px; }
+.np-contact-reference-footer small { font-size: 14px; }
 .np-contact-reference-footer nav {
   display: flex;
   gap: 16px;
@@ -10127,18 +10133,18 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   align-items: center;
   min-height: 44px;
   color: #64676d;
-  font-size: 12px;
+  font-size: 14px;
   text-decoration: none;
 }
-.np-contact-reference-footer nav a:hover { color: #1d1d1f; text-decoration: underline; }
+.np-contact-reference-footer nav a:hover { color: #0B0B0E; text-decoration: underline; }
 
 /* Do not show two unrelated footers on this deliberately standalone page. */
 body:has(.np-contact-reference) .site-footer:not(.np-contact-reference-footer) { display: none; }
 body:has(.np-contact-reference) .site-header {
   min-height: 52px;
-  background: #fff;
+  background: #FBFAEF;
   box-shadow: none;
-  border-bottom: 1px solid #e8e8ed;
+  border-bottom: 1px solid #DEDCD5;
 }
 body:has(.np-contact-reference) .site-header .header-inner { min-height: 52px; }
 body:has(.np-contact-reference) .site-header .site-nav a { font-weight: 500; }
@@ -10201,12 +10207,12 @@ body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { 
  * design contracts unchanged. Uses system fonts, not proprietary Apple assets.
  */
 body[data-page="home"] {
-  --nph-ink: #111113;
+  --nph-ink: #0B0B0E;
   --nph-muted: #66666b;
-  --nph-silver: #f5f5f7;
-  --nph-line: #e7e7eb;
+  --nph-silver: #F8F7F3;
+  --nph-line: #DEDCD5;
   --nph-blue: #0066cc;
-  background: #fff;
+  background: #FBFAEF;
   color: var(--nph-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10267,9 +10273,9 @@ body[data-page="home"] .npd-apple-button {
   justify-content: center;
   min-height: 46px;
   padding: 13px 26px;
-  border: 1px solid #111113;
+  border: 1px solid #0B0B0E;
   border-radius: 999px;
-  background: #111113;
+  background: #0B0B0E;
   color: #fff;
   font-size: .94rem;
   font-weight: 600;
@@ -10379,7 +10385,7 @@ body[data-page="home"] .npd-apple-center > p:not(.npd-apple-eyebrow):not(.npd-ap
 }
 body[data-page="home"] .npd-apple-manifesto {
   padding: clamp(100px, 13vw, 195px) 0;
-  background: #fff;
+  background: #FBFAEF;
 }
 body[data-page="home"] .npd-apple-manifesto h2 {
   max-width: 860px;
@@ -10388,7 +10394,7 @@ body[data-page="home"] .npd-apple-manifesto h2 {
 }
 body[data-page="home"] .npd-apple-oncology {
   background: #080b11;
-  color: #f5f5f7;
+  color: #F8F7F3;
   padding: clamp(76px, 9vw, 148px) 0;
 }
 body[data-page="home"] .npd-apple-feature-grid {
@@ -10442,7 +10448,7 @@ body[data-page="home"] .npd-apple-product {
   padding: clamp(24px, 3vw, 42px) clamp(14px, 2vw, 30px) 36px;
   min-width: 0;
   min-height: 425px;
-  background: #fff;
+  background: #F8F7F3;
   border-radius: 24px;
   color: #161618;
   text-decoration: none;
@@ -10496,7 +10502,7 @@ body[data-page="home"] .npd-apple-products > .container > .npd-apple-footnote {
 }
 body[data-page="home"] .npd-apple-intelligence {
   padding: clamp(92px, 10vw, 170px) 0;
-  background: #fff;
+  background: #FBFAEF;
 }
 body[data-page="home"] .npd-apple-intelligence .npd-apple-footnote {
   margin-top: 30px;
@@ -10552,7 +10558,7 @@ body[data-page="home"] .npd-apple-nova-taxonomy {
 }
 body[data-page="home"] .npd-apple-sourcing {
   padding: clamp(96px, 11vw, 170px) 0;
-  background: #fff;
+  background: #FBFAEF;
 }
 body[data-page="home"] .npd-apple-section-lead {
   max-width: 790px;
@@ -10584,7 +10590,7 @@ body[data-page="home"] .npd-apple-sourcing-grid h3 { margin: 26px 0 16px; }
 body[data-page="home"] .npd-apple-sourcing-grid p { color: #6e6e73; font-size: .98rem; }
 body[data-page="home"] .npd-apple-governance {
   padding: clamp(90px, 10vw, 150px) 0;
-  background: #f5f5f7;
+  background: #F8F7F3;
 }
 body[data-page="home"] .npd-apple-governance-grid {
   display: grid;
@@ -10599,7 +10605,7 @@ body[data-page="home"] .npd-apple-governance-grid > div > p:not(.npd-apple-eyebr
   color: #66666b;
 }
 body[data-page="home"] .npd-apple-regulatory-notice {
-  background: #fff;
+  background: #FBFAEF;
   border: 1px solid #ebebee;
   border-radius: 28px;
   padding: clamp(30px, 4vw, 55px);
@@ -10609,7 +10615,7 @@ body[data-page="home"] .npd-apple-regulatory-notice p:last-child { color: #66666
 body[data-page="home"] .npd-apple-contact {
   padding: clamp(120px, 15vw, 215px) 0;
   text-align: center;
-  background: #fff;
+  background: #FBFAEF;
 }
 body[data-page="home"] .npd-apple-contact .npd-apple-actions-centered { justify-content: center; }
 body[data-page="home"] .npd-apple-contact .npd-apple-footnote {
@@ -10682,7 +10688,7 @@ body[data-page="home"] .npd-apple-contact .npd-apple-footnote {
   body[data-page="home"] .npd-apple-product-grid { grid-template-columns: repeat(3,1fr); }
 }
 
-/* WCAG 2.2 AA: subdued text must remain readable against both white and #f5f5f7. */
+/* WCAG 2.2 AA: subdued text must remain readable against both white and #F8F7F3. */
 body[data-page="home"] .npd-apple-products .npd-apple-footnote,
 body[data-page="home"] .npd-apple-products .npd-apple-product span {
   color: #57575d;
@@ -10760,7 +10766,7 @@ body[data-page="home"] .npd-apple-sourcing-grid article > span {
   gap: .7em;
   min-height: 48px;
   border-radius: 999px;
-  border: 1px solid #111113;
+  border: 1px solid #0B0B0E;
   padding: 12px 26px;
   font-size: .96rem;
   font-weight: 550;
@@ -10771,10 +10777,10 @@ body[data-page="home"] .npd-apple-sourcing-grid article > span {
 }
 :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary {
   color: #fff;
-  background: #111113;
+  background: #0B0B0E;
 }
 :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
-  color: #111113;
+  color: #0B0B0E;
   background: rgba(255,255,255,.78);
   border-color: #909298;
 }
@@ -10785,8 +10791,8 @@ body[data-page="home"] .npd-apple-sourcing-grid article > span {
 }
 :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary:hover {
   background: #fff;
-  border-color: #111113;
-  color: #111113;
+  border-color: #0B0B0E;
+  color: #0B0B0E;
 }
 :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-landscape {
   position: absolute;
@@ -11015,7 +11021,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary {
   background: rgba(255,255,255,.86);
   border-color: #73767c;
-  color: #111114;
+  color: #0B0B0E;
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-primary:hover {
   background: #333439;
@@ -11024,8 +11030,8 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary:hover {
   background: #fff;
-  border-color: #111114;
-  color: #111114;
+  border-color: #0B0B0E;
+  color: #0B0B0E;
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-landscape {
   display: block;
@@ -11120,10 +11126,15 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
  */
 :root {
   color-scheme: light;
+  /* Official light-mode neutrals; preserve independent dark-mode semantics */
+  --np-white-primary: #FBFAEF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
   --np-color-canvas: #FBFAEF;
   --np-color-surface: #F8F7F3;
-  --np-color-surface-recessed: #e8e8ed;
-  --np-color-surface-raised: #FBFAEF;
+  --np-color-surface-recessed: #EDEBE5;
+  --np-color-surface-raised: #F8F7F3;
   --np-color-label: #0B0B0E;
   --np-color-secondary-label: #424245;
   --np-color-tertiary-label: #595961;
@@ -11134,9 +11145,9 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-accent: #9D1B32;
   --np-color-accent-strong: #68101F;
   --np-color-accent-soft: #F8EDF0;
-  --np-color-on-accent: #ffffff;
+  --np-color-on-accent: #FBFAEF;
   --np-color-primary-action: #0B0B0E;
-  --np-color-on-primary-action: #ffffff;
+  --np-color-on-primary-action: #FBFAEF;
   --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;
@@ -11990,26 +12001,26 @@ body nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a {
  * No pseudo-refraction, decorative glass cards, text translucency or animated blur.
  */
 :root {
-  --np-material-navigation-solid: #ffffff;
-  --np-material-navigation-tint: rgba(255, 255, 255, 0.94);
-  --np-material-navigation-border: rgba(17, 24, 32, 0.12);
-  --np-material-menu-solid: #ffffff;
-  --np-material-menu-tint: rgba(255, 255, 255, 0.97);
-  --np-material-content-solid: var(--np-color-canvas, #ffffff);
-  --np-material-content-muted: var(--np-color-surface, #f5f5f7);
-  --np-material-label: var(--np-color-label, #1d1d1f);
+  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.94);
+  --np-material-navigation-border: rgba(11, 11, 14, 0.12);
+  --np-material-menu-solid: #F8F7F3;
+  --np-material-menu-tint: rgba(248, 247, 243, 0.97);
+  --np-material-content-solid: var(--np-color-canvas, #FBFAEF);
+  --np-material-content-muted: var(--np-color-surface, #F8F7F3);
+  --np-material-label: var(--np-color-label, #0B0B0E);
   --np-material-filter: saturate(125%) blur(14px);
   --np-material-filter-menu: saturate(115%) blur(18px);
 }
 html[data-np-estate="technology"] {
-  --np-material-navigation-solid: #f4f1ea;
-  --np-material-navigation-tint: rgba(244, 241, 234, 0.95);
-  --np-material-navigation-border: rgba(11, 13, 16, 0.16);
+  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.95);
+  --np-material-navigation-border: rgba(11, 11, 14, 0.16);
 }
 html[data-np-estate="portal"] {
-  --np-material-navigation-solid: #ffffff;
-  --np-material-navigation-tint: rgba(255, 255, 255, 0.97);
-  --np-material-menu-tint: rgba(255, 255, 255, 0.98);
+  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.97);
+  --np-material-menu-tint: rgba(248, 247, 243, 0.98);
 }
 :root[data-np-color-scheme="dark"] {
   --np-material-navigation-solid: #1c1c1e;

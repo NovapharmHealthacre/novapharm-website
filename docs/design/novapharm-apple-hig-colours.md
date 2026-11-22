@@ -8,6 +8,11 @@ Apple's guidance prioritises semantic meaning, judicious colour, distinct intera
 
 Default customer-facing appearance remains bright, white and quietly editorial. Black/charcoal is the neutral primary action; blue is the conventional text-link and focus colour; status colours communicate operational meaning and are never a substitute for visible status text.
 
+
+## Owner-approved neutral identity (22 November 2026)
+
+The canonical cross-estate brand contract is `config/brand-neutrals.json`: **Royal Mineral White `#FBFAEF` (primary), Royal Porcelain White `#F8F7F3` (secondary), Sovereign Black `#0B0B0E` (default text), and Porcelain Stone `#DEDCD5` (decorative divider only)**. A stronger semantic control-border token must remain independently contrast-safe. The neutral palette applies across static public pages, Corporate Next.js, protected Portal, Technology, Status and shared React components; distinct Healthcare, Intelligence and Distribution logo colours remain unchanged. Source updates are not proof of production deployment.
+
 ## The reusable palette
 
 Defined in `assets/css/novapharm-hig-colours.css`:
@@ -16,7 +21,7 @@ Defined in `assets/css/novapharm-hig-colours.css`:
 | --- | --- | --- |
 | Canvas / Royal Mineral White | `#FBFAEF` | Primary page background |
 | Grouped surface / Royal Porcelain White | `#F8F7F3` | Secondary neutral for panels, controls and sections |
-| Recessed surface | `#E8E8ED` | Third-level grouping |
+| Recessed surface | `#EDEBE5` | Third-level grouping |
 | Primary label | `#0B0B0E` | Headings and essential text |
 | Secondary label | `#424245` | Body text |
 | Tertiary label | `#595961` | Supporting captions |

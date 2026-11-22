@@ -90,7 +90,7 @@ test("generated public CSS bundle mirrors the owner-approved Royal neutrals", ()
   for (const [token, hex] of [
     ["canvas", "#FBFAEF"],
     ["surface", "#F8F7F3"],
-    ["surface-raised", "#FBFAEF"],
+    ["surface-raised", "#F8F7F3"],
     ["label", "#0B0B0E"],
     ["separator", "#DEDCD5"],
   ]) {

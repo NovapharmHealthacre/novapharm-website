@@ -85,3 +85,7 @@ assert their own live URLs; a public GitHub Pages release does not deploy them.
 ## 22 November 2026 — global neutral ink
 
 The official default web typographic ink is `#0B0B0E` (Sovereign Black) for light backgrounds, headings, body text, menus and neutral actions. This is a text/UI colour, **not** a demand to replace dark-mode light labels or the distinct Healthcare, Distribution and Intelligence identity colours. Use SF Pro via OS system UI where available, compact/native UI roles for dense tables, OS mono for identifiers, and New York only for purposeful editorial accents with legal platform fallbacks. Apple DMG/TTF/OTF resources must not be embedded in public website builds.
+
+## Official neutral identity — source release candidate
+
+Typography on light surfaces defaults to Sovereign Black `#0B0B0E` on Royal Mineral White `#FBFAEF` or Royal Porcelain White `#F8F7F3`. Porcelain Stone `#DEDCD5` remains decorative; accessible interactive boundaries use an independently contrasting separator. OS-provided Apple-style type families, tabular numerals, browser zoom and responsive text reflow remain the technical contract. This is not an Apple endorsement or confirmation of live deployment.

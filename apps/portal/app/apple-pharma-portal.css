@@ -1,9 +1,9 @@
 :root {
   --portal-ink: #0B0B0E;
   --portal-muted: #6e6e73;
-  --portal-line: #d2d2d7;
-  --portal-soft: #f5f5f7;
-  --portal-white: #ffffff;
+  --portal-line: #DEDCD5;
+  --portal-soft: #F8F7F3;
+  --portal-white: #FBFAEF;
   --portal-red: #9D1B32;
   --portal-red-text: #68101F;
   --portal-red-soft: #fff3f4;
@@ -296,3 +296,17 @@ textarea {
     color: var(--portal-ink);
   }
 }
+
+/* Royal neutrals: preserve Porcelain Stone for decorative hairlines.
+ * Auth, search and workspace controls require a visible independent edge. */
+:root { --portal-control-line: var(--np-color-separator-strong, #86868B); }
+.button.microsoft,
+.access-selector label,
+.portal-search > button,
+.user-summary button,
+.search-close,
+.icon-command,
+.area-switcher a,
+.menu-button,
+.intelligence-field-grid input,
+.intelligence-field-grid select { border-color: var(--portal-control-line); }

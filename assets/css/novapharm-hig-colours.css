@@ -7,10 +7,15 @@
  */
 :root {
   color-scheme: light;
+  /* Official light-mode neutrals; preserve independent dark-mode semantics */
+  --np-white-primary: #FBFAEF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
   --np-color-canvas: #FBFAEF;
   --np-color-surface: #F8F7F3;
-  --np-color-surface-recessed: #e8e8ed;
-  --np-color-surface-raised: #FBFAEF;
+  --np-color-surface-recessed: #EDEBE5;
+  --np-color-surface-raised: #F8F7F3;
   --np-color-label: #0B0B0E;
   --np-color-secondary-label: #424245;
   --np-color-tertiary-label: #595961;
@@ -21,9 +26,9 @@
   --np-color-accent: #9D1B32;
   --np-color-accent-strong: #68101F;
   --np-color-accent-soft: #F8EDF0;
-  --np-color-on-accent: #ffffff;
+  --np-color-on-accent: #FBFAEF;
   --np-color-primary-action: #0B0B0E;
-  --np-color-on-primary-action: #ffffff;
+  --np-color-on-primary-action: #FBFAEF;
   --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;

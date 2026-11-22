@@ -5,10 +5,15 @@
   --np-brand-white-secondary: #F8F7F3;
   --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
-  --bg: #F8F7F3;
-  --surface: #FBFAEF;
+  /* Owner-approved Royal neutrals */
+  --np-white-primary: #FBFAEF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
+  --bg: #FBFAEF;
+  --surface: #F8F7F3;
   --surface-2: #F8F7F3;
-  --surface-3: #dce6e2;
+  --surface-3: #EDEBE5;
   --paper: #FBFAEF;
   --ink: #0B0B0E;
   --text: #0B0B0E;
