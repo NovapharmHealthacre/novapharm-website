@@ -44,6 +44,19 @@ test("native transport cannot provide direct public-source browser calls",()=>{
  for(const source of [android,ios,auth]) assert.equal(source.includes("https://api.fda.gov/drug/"), false, "Native source must not contact public FDA hosts directly");
 });
 
+test("iOS Cognito client rejects alternate callback schemes and duplicate OAuth state/code",()=>{
+ const ios=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
+ assert.ok(ios.includes('redirectURL.absoluteString == "novapharmintelligence://oauth/callback"'));
+ assert.doesNotMatch(ios,/hasPrefix\("novapharm"\)/);
+ assert.ok(ios.includes('URLQueryItem(name:"nonce",value:nonce)'));
+ assert.ok(ios.includes('items.count==2'));
+ assert.ok(ios.includes('items.filter({$0.name=="state"}).count==1'));
+ assert.ok(ios.includes('items.filter({$0.name=="code"}).count==1'));
+ assert.ok(ios.includes('callback.fragment == nil'));
+ assert.ok(ios.includes('code.utf8.allSatisfy'));
+ assert.ok(ios.includes('kSecAttrAccessibleWhenUnlockedThisDeviceOnly'));
+ assert.ok(ios.includes('NovaNativeReleasePolicy.productionApproved'));
+});
 test("conditional CloudFormation route cannot activate without six independent signoffs",()=>{
  const template=JSON.parse(read("infra/aws/fda-private-jwt-route.cfn.json"));
  const required=["OwnerProductionSignoff","SourceRightsSignoff","NativeIdentitySignoff",
