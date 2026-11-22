@@ -26,7 +26,8 @@ test('all twelve nation/source/file contracts are explicit and correctly partiti
     const plan=validateUkNationalArchiveManifest(fixture(c.sourceId));
     assert.equal(plan.status,'quarantine_candidate');assert.equal(plan.canIngest,false);assert.equal(plan.canPublish,false);
     assert.equal(plan.admittedMedicineRows,0);assert.equal(plan.datasetRecordsRead,0);
-    assert.equal(plan.nation,c.nation);
+    assert.equal(plan.nation,c.geographyApplicability==='not_applicable'?null:c.nation);
+    assert.equal(plan.publisherNation,c.nation);
   }
 });
 test('cannot forge rights or customer publication in a manifest',()=>{
@@ -352,6 +353,8 @@ test('BNF–SNOMED mapping has no prescribing geography even though NHSBSA is En
  const receipt=validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map'));
  assert.equal(receipt.geographyApplicability,'not_applicable');
  assert.equal(receipt.geographicCoverageVerified,false);
+ assert.equal(receipt.nation,null);
+ assert.equal(receipt.publisherNation,'England');
  assert.equal(receipt.canIngest,false);
  assert.equal(receipt.canPublish,false);
  const compare=verifyNationalComparisonBoundary(
