@@ -5,11 +5,11 @@ Status: authoritative owner pack preserved; deployed web subset is byte-identica
 
 | Asset | Repository path | SHA-256 | Production use |
 |---|---|---|---|
-| Approved path-based vector wordmark | `assets/brand/novapharm-healthcare-logo.svg` | `d0041c2e635b71eaf2f15d99efbf4e3be4a07ccc6f609367999d95f968c08b70` | Header, footer, portals, Executive Platform and high-density web identity |
+| Approved path-based vector wordmark | `assets/brand/novapharm-healthcare-logo.svg` | `74c0fb2eb213242eb88a71dfd8cc1af068c8632696e08ec98aaf90f2cda63f82` | Header, footer, portals, Executive Platform and high-density web identity |
 | Approved 2048px raster wordmark | `assets/brand/novapharm-healthcare-logo.png` | `f1f5a0e0aa68ebf0f6f0370b45c2810d41b9420c2c930d4649cf199efeb96fdf` | `<picture>` fallback, email templates and structured-data organisation identity |
 | Approved reverse vector | `assets/brand/novapharm-healthcare-logo-reverse.svg` | `6571ff65dbf47ce33c9a6f725aa7a8d29dc07651ee261ec56d6ec3f117875f2e` | Controlled dark or red surfaces only |
 | Approved monochrome vector | `assets/brand/novapharm-healthcare-logo-monochrome.svg` | `f9543f7a851b8c307a3992d3fe0966823bb2871dca584b19729f1af54d1546ef` | Necessary single-colour output only |
-| Approved SVG favicon | `assets/brand/favicon.svg` | `24da07393fd633989211752171ce30f84b6029af69480c2e4ae6e3d88fe51846` | Modern browser identity at constrained sizes |
+| Approved SVG favicon | `assets/brand/favicon.svg` | `e81bbcfb6b680b52224e4b99d8753fa54045b6e0ef5dd6f3aac8ebfd28127cad` | Modern browser identity at constrained sizes |
 | Approved multi-resolution favicon | `assets/brand/favicon.ico` | `cdef00b3fdf6677dfd94897f2e48405b97c5bee8e5b82d0f23240eec2b937deb` | Legacy/desktop browser fallback |
 | Approved Apple touch icon | `assets/brand/apple-touch-icon.png` | `5f45536153ab8ac5f8c27aa764557b1297630859c21142deb071610ffa7d5e02` | Apple home-screen identity, 180x180 |
 | Approved PWA icons | `assets/brand/pwa-icon-192.png`, `assets/brand/pwa-icon-512.png`, `assets/brand/pwa-maskable-512.png` | Enforced by `npm run brand:validate` | Web application manifest, including a dedicated maskable surface |
