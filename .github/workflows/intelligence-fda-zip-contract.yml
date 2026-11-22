@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'src/core/regulatory/fda-aws-lambda-entry.mjs'
+      - 'src/core/regulatory/fda-private-http-handler.mjs'
+      - 'scripts/test-fda-private-http-handler.mjs'
+      - 'src/core/regulatory/openfda-labels.mjs'
+      - 'scripts/test-openfda-labels.mjs'
       - 'deployment/aws/fda-private-lambda/**'
       - 'scripts/build-fda-private-lambda-zip.mjs'
       - 'scripts/test-fda-aws-lambda-entry.mjs'
@@ -33,7 +37,7 @@ jobs:
           node --check scripts/test-fda-aws-lambda-entry.mjs
       - name: Security and FDA integration tests
         run: |
-          node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs
+          node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs scripts/test-openfda-labels.mjs scripts/test-openfda-evidence.mjs
       - name: Assemble SOURCE-ONLY zip, never deploy to AWS
         run: |
           node scripts/build-fda-private-lambda-zip.mjs "$RUNNER_TEMP/fda-private-source-only.zip"
