@@ -1,12 +1,10 @@
 {
   "brand": "NovaPharm Healthcare",
   "primary": {
-    "name": "Economist Red",
-    "hex": "#E3120B",
+    "name": "Royal Cochineal Crimson",
+    "hex": "#9D1B32",
     "rgb": [
-      227,
-      18,
-      11
+      157, 27, 50
     ]
   },
   "neutral": {
