@@ -36,13 +36,14 @@ const latePublicPages = [
 ];
 for (const route of latePublicPages) {
   if (register.some((record) => record.file === route)) continue;
-  assert.match(route, /^(?!\\/)(?!.*\\.\\.\\/)[a-zA-Z0-9/_-]+\\.html$/, "Unsafe late public page path");
+  assert.ok(!route.startsWith("/") && !route.includes("..") && route.endsWith(".html"),
+    "Unsafe late public page path");
   const full = resolve(root, route);
   assert.ok(existsSync(full), "Required late public HTML missing: " + route);
   let html = readFileSync(full, "utf8");
   assert.ok(html.includes("</head>"), "Late public HTML missing </head>: " + route);
-  html = html.replace(/\\s*<meta name="novapharm-source-sha" content="[0-9a-f]{40}">/gi, "");
-  html = html.replace("</head>", '  <meta name="novapharm-source-sha" content="' + sha + '">\\n</head>');
+  html = html.replace(/\s*<meta name="novapharm-source-sha" content="[0-9a-f]{40}">/gi, "");
+  html = html.replace("</head>", '  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
   assert.equal((html.match(/name="novapharm-source-sha"/g) ?? []).length, 1,
     "Missing or duplicate late-page source provenance: " + route);
   writeFileSync(full, html, "utf8");
