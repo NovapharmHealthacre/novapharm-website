@@ -41,6 +41,8 @@ on:
       - quantum-research/index.html
       - assets/css/quantum-research.css
       - scripts/test-static-public-source-safety.mjs
+      - scripts/check-pages-recovery-authority.mjs
+      - scripts/test-pages-recovery-authority.mjs
       - scripts/validate-module-media-sanity.mjs
       - scripts/validate-visual-refinement.mjs
       - package.json
@@ -74,6 +76,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
+      - name: Verify manual public recovery authorization rejects unsafe states
+        run: node --test scripts/test-pages-recovery-authority.mjs
 
       - name: Verify checked-in public source is default-deny
         run: node scripts/test-static-public-source-safety.mjs
@@ -125,6 +130,11 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
+      - name: Block unprotected or unsigned manual Pages recovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-pages-recovery-authority.mjs
 
       - name: Mark publication pending
         env:
