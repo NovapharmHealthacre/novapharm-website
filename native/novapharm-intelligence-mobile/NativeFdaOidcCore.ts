@@ -39,11 +39,11 @@ export type NovaFDAAndroidPlatform = Readonly<{
 // A signed native adapter must reuse the same secureStore object for all
 // authentication, token lookup and sign-out calls. Serializing writes avoids
 // an in-flight async Keystore save resurrecting access after sign-out.
-type StoreSessionGate={generation:number; tail:Promise<void>};
+type StoreSessionGate={generation:number; tail:Promise<void>; revoked:boolean};
 const sessionGates=new WeakMap<NovaFDASecureTokenStore,StoreSessionGate>();
 function sessionGate(store:NovaFDASecureTokenStore):StoreSessionGate {
   let gate=sessionGates.get(store);
-  if(!gate){gate={generation:0,tail:Promise.resolve()};sessionGates.set(store,gate);}
+  if(!gate){gate={generation:0,tail:Promise.resolve(),revoked:false};sessionGates.set(store,gate);}
   return gate;
 }
 async function withStoreLock<T>(store:NovaFDASecureTokenStore,operation:()=>Promise<T>):Promise<T>{
@@ -115,6 +115,7 @@ export async function authenticateNativeFdaWithPkce(
   // Invalidate all older sessions before the first asynchronous operation.
   const gate=sessionGate(platform.secureStore);
   const attempt=++gate.generation;
+  gate.revoked=true;
   // Deleting the old token must finish before OS entropy/browser requests.
   await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
   if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
@@ -199,6 +200,7 @@ export async function authenticateNativeFdaWithPkce(
     });
   });
   if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
+  gate.revoked=false;
 }
 export async function verifiedNativeFdaAccessToken(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
@@ -207,9 +209,9 @@ export async function verifiedNativeFdaAccessToken(
   const gate=sessionGate(platform.secureStore);
   const generation=gate.generation;
   return withStoreLock(platform.secureStore,async()=>{
-    if(gate.generation!==generation)throw Error("FDA session changed.");
+    if(gate.revoked || gate.generation!==generation)throw Error("FDA session changed.");
     const record=await platform.secureStore.load();
-    if(gate.generation!==generation)throw Error("FDA session changed.");
+    if(gate.revoked || gate.generation!==generation)throw Error("FDA session changed.");
     if(!record || !Number.isSafeInteger(record.expiresAtMs) ||
         record.expiresAtMs<=platform.nowMs() ||
         !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(record.token)){
@@ -223,5 +225,6 @@ export async function signOutNativeFda(platform:NovaFDAAndroidPlatform):Promise<
   if(typeof platform?.secureStore?.clear!=="function")throw Error("No secure token storage.");
   const gate=sessionGate(platform.secureStore);
   ++gate.generation;
+  gate.revoked=true;
   await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
 }
