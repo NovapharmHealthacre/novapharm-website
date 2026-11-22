@@ -544,6 +544,10 @@ jobs:
         with:
           ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           persist-credentials: false
+      - name: Fail closed if public GitHub branches have no enforced minimum protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release-branch-protection.mjs
       - name: Prove forward-only release ancestry and deploy evidence
         env:
           GH_TOKEN: ${{ github.token }}
