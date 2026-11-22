@@ -201,7 +201,7 @@ assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\
 assert.match(read("apps/founder/app/layout.tsx"), /themeColor:\s*"#0B0B0E"/);
 assert.match(read("apps/founder/app/manifest.ts"), /background_color:\s*"#0B0B0E"/);
 assert.match(read("apps/founder/app/manifest.ts"), /theme_color:\s*"#0B0B0E"/);
-assert.match(read("apps/founder/app/base.css"), /--ink:\s*#0B0B0E/);
+assert.match(read("apps/founder/app/base.css"), /--ink:\s*#0B0B0E/i);
 
 // The historical logo-kit token aliases must not revive retired Pure White.
 const logoKitTokens = read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.css");
