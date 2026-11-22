@@ -1,5 +1,5 @@
 :root {
-  --ink: #111827;
+  --ink: #0B0B0E;
   --muted: #526071;
   --line: #d8dee7;
   --soft: #f3f6f8;
@@ -14,7 +14,8 @@
   --amber: #9a6315;
   --focus: #1067a5;
   --radius: 4px;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
+  font-optical-sizing: auto;
   color: var(--ink);
   background: var(--soft);
   font-synthesis: none;

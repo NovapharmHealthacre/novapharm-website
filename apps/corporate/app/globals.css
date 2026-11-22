@@ -1,8 +1,8 @@
 :root {
   --navy: #0c1d2d;
   --navy-2: #152f43;
-  --ink: #101927;
-  --text: #334255;
+  --ink: #0B0B0E;
+  --text: #0B0B0E;
   --muted: #607083;
   --line: #d8e0e6;
   --soft: #f2f5f6;
@@ -19,18 +19,18 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header) + 18px); }
-body { margin: 0; background: var(--white); color: var(--text); font-family: Arial, "Helvetica Neue", sans-serif; font-size: 17px; line-height: 1.65; letter-spacing: 0; text-rendering: optimizeLegibility; }
-body, button, input, select, textarea { font-family: Arial, "Helvetica Neue", sans-serif; }
+body { margin: 0; background: var(--white); color: var(--text); font-family: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif); font-size: 17px; line-height: 1.65; letter-spacing: 0; text-rendering: optimizeLegibility; }
+body, button, input, select, textarea { font-family: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif); }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
 button, input, select, textarea { font-size: 1rem; }
 button, summary, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
 h1, h2, h3, p { margin-top: 0; }
-h1, h2, h3 { color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-weight: 500; line-height: 1.08; letter-spacing: 0; text-wrap: balance; }
-h1 { font-size: 64px; max-width: 980px; }
-h2 { font-size: 42px; }
-h3 { font-size: 25px; }
+h1, h2, h3 { color: var(--ink); font-family: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif); font-weight: 600; line-height: 1.08; letter-spacing: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.75rem, 6vw, 4rem); max-width: 980px; }
+h2 { font-size: clamp(2rem, 4vw, 2.625rem); }
+h3 { font-size: clamp(1.3rem, 2.2vw, 1.5625rem); }
 p { max-width: 72ch; }
 small { font-size: 0.78rem; }
 
