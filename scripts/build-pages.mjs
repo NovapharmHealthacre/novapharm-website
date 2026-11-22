@@ -9,7 +9,7 @@ const platformCapabilities = getPlatformCapabilities(platformMode);
 const apiBase = process.env.PUBLIC_API_ORIGIN || "";
 const secureRoot = process.env.SECURE_CONTENT_ROOT || "_secure";
 const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";
-const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";
+const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.svg";
 const brandFaviconSvg = "/assets/brand/favicon.svg";
 const brandAppleTouchIcon = "/assets/brand/apple-touch-icon.png";
 
