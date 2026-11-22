@@ -9,8 +9,8 @@ body[data-page="technology"] .np-intelligence {
   --npi-muted: #6e6e73;
   --npi-line: #d2d2d7;
   --npi-soft: #f5f5f7;
-  --npi-red: #e3120b;
-  --npi-red-deep: #bd100b;
+  --npi-red: #9D1B32;
+  --npi-red-deep: #68101F;
   color: var(--npi-ink);
   background: #fff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -398,7 +398,7 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-roadmap .npi-kicker,
 .np-intelligence .npi-product-family .npi-kicker,
 .np-intelligence .npi-final .npi-kicker,
-.np-intelligence .npi-terminal-section .npi-kicker { color: #bd100b; }
+.np-intelligence .npi-terminal-section .npi-kicker { color: #68101F; }
 .np-intelligence .npi-terminal-search .npi-terminal-search-hint { color: #555b64; }
 
 
@@ -833,7 +833,7 @@ body[data-page="technology"] .np-intelligence {
 
 /* Working public research entry. Official-source links only; no synthetic analytical results. */
 /* AA contrast on the soft research surface. */
-.np-intelligence .npi-research .npi-kicker { color: #bd100b; }
+.np-intelligence .npi-research .npi-kicker { color: #68101F; }
 
 .np-intelligence .npi-research { background: #f5f5f7; padding-block: clamp(80px, 9vw, 124px); }
 .np-intelligence .npi-research .npi-section-heading { margin-bottom: 38px; }
@@ -1033,7 +1033,7 @@ body[data-page="technology"] .np-intelligence {
 }
 .np-intelligence .npi-directory-intro > div:first-child { max-width: 680px; }
 /* AA contrast on the directory's #f5f5f7 surface, including 390px mobile. */
-.np-intelligence .npi-directory-intro .npi-kicker { color: #bd100b; }
+.np-intelligence .npi-directory-intro .npi-kicker { color: #68101F; }
 .np-intelligence .npi-directory-intro h3 {
   font-size: clamp(2rem,3.4vw,3.4rem);
   font-weight: 680;
@@ -1630,7 +1630,7 @@ body[data-page="technology"] .np-intelligence {
   padding: clamp(27px, 4vw, 52px);
   background: #fff;
   border: 1px solid #e3d7d6;
-  border-left: 4px solid #e3120b;
+  border-left: 4px solid #9D1B32;
   border-radius: 22px;
   box-shadow: 0 12px 30px rgba(30, 28, 30, .045);
 }
@@ -1696,11 +1696,11 @@ body[data-page="technology"] .np-intelligence {
 }
 
 /* Four-plan Intelligence pricing — Apple-inspired neutral layout, NovaPharm corporate identity.
-   Reuses the site's system font and approved #E3120B branding. No promotional card gradients. */
+   Reuses the site's system font and approved #9D1B32 branding. No promotional card gradients. */
 .np-intelligence #intelligence-pricing { background: #ffffff; color: #1d1d1f; }
 .np-intelligence #intelligence-pricing > .npi-wrap { width: min(1420px, calc(100% - 64px)); max-width: none; }
 .np-intelligence #intelligence-pricing .npi-pricing-intro { max-width: 950px; text-align: center; margin: 0 auto clamp(48px, 6vw, 82px); }
-.np-intelligence #intelligence-pricing .npi-pricing-intro .npi-kicker { color: #E3120B; letter-spacing: .09em; font-weight: 650; }
+.np-intelligence #intelligence-pricing .npi-pricing-intro .npi-kicker { color: #9D1B32; letter-spacing: .09em; font-weight: 650; }
 .np-intelligence #intelligence-pricing .npi-pricing-intro h2 {
   font-family: var(--font, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif);
   font-size: clamp(2.7rem, 5.5vw, 5rem); line-height: 1.08; font-weight: 700;
