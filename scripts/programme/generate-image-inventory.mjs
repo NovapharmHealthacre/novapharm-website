@@ -386,7 +386,11 @@ for (const [assetPath, expectedSha] of vectorEvidence) {
 const rasterPaths = new Set();
 for (const item of brandRasterEvidence.files) {
   const assetPath = item.path;
-  if (rasterPaths.has(assetPath) || !/^assets\\/brand\\/[a-z0-9._/-]+\\.(?:png|jpe?g|ico)$/u.test(assetPath) ||
+  const approvedRasterPath = typeof assetPath === "string" &&
+    assetPath.startsWith("assets/brand/") &&
+    !assetPath.slice("assets/brand/".length).includes("/") &&
+    [".png", ".jpg", ".jpeg", ".ico"].some((extension) => assetPath.endsWith(extension));
+  if (rasterPaths.has(assetPath) || !approvedRasterPath ||
       !officialMedia.has(assetPath) || !/^[a-f0-9]{64}$/u.test(item.sha256) ||
       !Number.isInteger(item.bytes) || item.bytes <= 0) {
     throw new Error("Invalid or missing three-brand physical derivative: " + String(assetPath));
