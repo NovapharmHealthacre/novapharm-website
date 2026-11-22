@@ -26,6 +26,7 @@ assert(contactHtml.includes("form-action 'none'"), "No non-JS post or form-actio
 assert(script.includes("result?.persisted !== true"), "Server durable receipt required");
 assert(contactHtml.includes('disabled aria-describedby="contact-submission-status"'), "Static submit must fail closed before managed client loads");
 assert(script.includes('if (submit) submit.disabled = false;'), "Managed client must explicitly activate submit after origin validation");
+assert(script.lastIndexOf('if (submit) submit.disabled = false;') > script.indexOf('form.addEventListener("submit"'), "Submit may activate only after the handler has been registered");
 assert(script.includes("response.status !== 201"), "HTTP 201 required");
 assert(privacy.includes("Secure business enquiry intake"), "Live data-processing disclosure missing");
 assert(privacy.includes("automatic expiry") || privacy.includes("Automatic expiry"), "Retention disclosure missing");
