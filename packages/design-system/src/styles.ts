@@ -43,7 +43,7 @@ export const designSystemCss = String.raw`
 .np-data-table .np-numeric{text-align:right;font-variant-numeric:tabular-nums}
 .np-timeline{counter-reset:step;list-style:none;padding:0;margin:0}
 .np-timeline li{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding-block:1.25rem;border-top:1px solid #d8dde4}
-.np-timeline__index{font-variant-numeric:tabular-nums;color:#B30E09;font-weight:700}
+.np-timeline__index{font-variant-numeric:tabular-nums;color:#68101F;font-weight:700}
 .np-field,.np-search,.np-file-upload{min-width:0;display:grid;gap:.5rem}
 .np-field__hint{color:#667085;margin:0}
 .np-field__error{color:#9f1239;font-weight:650}
@@ -54,7 +54,7 @@ export const designSystemCss = String.raw`
 .np-drawer>header,.np-document-viewer>header,.np-portal-controls{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
 .np-tabs [role=tablist]{display:flex;overflow:auto;border-bottom:1px solid #d8dde4}
 .np-tabs [role=tab]{min-height:44px;border:0;border-bottom:3px solid transparent;background:transparent;padding:.75rem 1rem}
-.np-tabs [role=tab][aria-selected=true]{border-color:#E3120B}
+.np-tabs [role=tab][aria-selected=true]{border-color:#9D1B32}
 .np-tabs [role=tabpanel]{padding-block:1.5rem}
 .np-search input,.np-field input,.np-field select,.np-field textarea,.np-file-upload input{width:100%;max-width:100%;min-height:44px;border:1px solid #98a2b3;border-radius:4px;padding:.7rem .8rem;font:inherit}
 /* Search fields: contextual scope, visible clear action, touch targets and resilient focus. */
@@ -87,7 +87,7 @@ export const designSystemCss = String.raw`
 .np-document-viewer__content{min-height:24rem;margin-top:1.5rem;border-top:1px solid #d8dde4;padding-top:1.5rem}
 .np-form{min-width:0;display:grid;gap:1.25rem}
 .np-button{min-height:44px;border-radius:4px;padding:.65rem 1rem;font:inherit;font-weight:700;border:1px solid transparent}
-.np-button--primary{background:#E3120B;color:#fff}
+.np-button--primary{background:#9D1B32;color:#fff}
 .np-button--secondary{background:#fff;color:#0d1b2a;border-color:#667085}
 .np-button--danger{background:#9f1239;color:#fff}
 :where(.np-button,.np-navigation a,.np-tabs button,input,select,textarea,summary):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
@@ -159,7 +159,7 @@ export const designSystemCss = String.raw`
 /* Original web representation of a payment request, not an Apple payment sheet. */
 .np-payment-request{max-inline-size:38rem;margin-inline:auto;display:grid;gap:1.25rem;padding:clamp(1.25rem,4vw,2.5rem);border:1px solid #d8dde4;border-radius:1.75rem;background:#f5f5f7;color:#1d1d1f;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
 .np-payment-request__header{display:grid;gap:.35rem}
-.np-payment-request__eyebrow{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;color:#B30E09;margin:0}
+.np-payment-request__eyebrow{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;color:#68101F;margin:0}
 .np-payment-request__header h2{font-size:clamp(1.625rem,4vw,2.5rem);font-weight:650;line-height:1.1;letter-spacing:-.025em;margin:0}
 .np-payment-request__card{padding:clamp(1.5rem,5vw,3rem);border:1px solid #d2d2d7;border-radius:1.5rem;background:#fff;box-shadow:0 .75rem 2rem rgb(0 0 0/.04);text-align:center}
 .np-payment-request__merchant{font-size:clamp(1rem,2.5vw,1.25rem);font-weight:620;margin:0}
@@ -254,7 +254,7 @@ export const designSystemCss = String.raw`
 .np-notification-settings fieldset{border:0;margin:0;padding:0;display:grid;gap:.75rem}
 .np-notification-settings legend{font-weight:650;padding-bottom:.75rem}
 .np-notification-settings__choice{display:flex;align-items:flex-start;gap:1rem;min-height:44px;padding:.75rem 0;border-bottom:1px solid #e5e5e9}
-.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#B30E09}
+.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#68101F}
 .np-notification-settings__choice span{display:grid;gap:.25rem;font-size:.95rem}
 .np-notification-settings__choice span span{color:#515154}
 .np-notification-settings button{min-height:44px;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d1d1f;color:#fff;font:inherit;font-weight:600;justify-self:start}
@@ -286,7 +286,7 @@ export const designSystemCss = String.raw`
 .np-choice-picker label{font-size:.875rem;font-weight:600}
 .np-choice-picker select{min-block-size:44px;padding:.5rem .75rem;max-inline-size:100%;font:inherit;border:1px solid #a8a8ae;border-radius:8px;background:Canvas;color:CanvasText}
 .np-binary-toggle{display:inline-flex;align-items:center;gap:.75rem;min-block-size:44px;cursor:pointer}
-.np-binary-toggle input{flex:none;inline-size:1.25rem;block-size:1.25rem;accent-color:#B30E09}
+.np-binary-toggle input{flex:none;inline-size:1.25rem;block-size:1.25rem;accent-color:#68101F}
 .np-binary-toggle:has(input:disabled){opacity:.65;cursor:not-allowed}
 .np-share-link{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.5rem}
 .np-share-link__status{font-size:.875rem;color:#515154}
