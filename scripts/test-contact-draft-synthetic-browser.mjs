@@ -159,6 +159,20 @@ try {
       assert(focus.focused==="name"&&focus.outline!=="none",label+" keyboard input focus outline missing");
       assert(result.attempts===2,"Expected two intercepted fake submissions");
       assert(result.realExternalRequests===0,"Blocked unexpected external requests");
+      // With JavaScript disabled, the static Pages form must not appear usable:
+      // its local POST target is deliberately prohibited by CSP form-action none.
+      const noJsContext=await browser.newContext({acceptDownloads:false,ignoreHTTPSErrors:true,javaScriptEnabled:false});
+      try {
+        await noJsContext.route("**/*",async route=>{
+          if(new URL(route.request().url()).origin===local) return route.continue();
+          return route.abort("blockedbyclient");
+        });
+        const noJsPage=await noJsContext.newPage();
+        await noJsPage.goto(local+"/contact/",{waitUntil:"domcontentloaded"});
+        assert(!(await noJsPage.locator("form[data-live-b2b-enquiry-form]").isVisible()),label+" nonfunctional no-JS POST form must be hidden");
+        assert(await noJsPage.locator("noscript a[href^='mailto:']").isVisible(),label+" no-JS email fallback must be visible");
+        result.noJsFallback=true;
+      } finally {await noJsContext.close();}
       await page.close();
     } finally {await context.close();await browser.close();}
     results.push(result);
