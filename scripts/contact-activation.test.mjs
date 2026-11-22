@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml } from "../scripts/activate-contact-intake.mjs";
+import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob } from "../scripts/activate-contact-intake.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
@@ -95,6 +95,9 @@ test("owner-gated production activation remains disabled without explicit accept
   assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
   assert.ok(activationSource.includes('refusing managed replacement'));
   assert.ok(activationSource.includes('Reviewed managed Contact stylesheet missing from Pages artifact'));
+  assert.ok(activationSource.includes('requireReviewedContactBlob(sharedStyle'), "Gated activator must verify final staged CSS");
+  assert.ok(activationSource.includes('requireReviewedContactBlob(resolve(artifactRoot, "assets/js/contact-production.js")'), "Gated activator must verify staged JS");
+
 });
 
 
@@ -108,11 +111,17 @@ test("Reviewed Contact and CSS Git blob parity is exact across release sources",
   ];
   for (const [file, expectedGitBlobSha] of assets) {
     assert.ok(existsSync(file), "Reviewed release asset missing: " + file);
-    const contents = readFileSync(file);
+    const contents = requireReviewedContactBlob(file, expectedGitBlobSha);
+    assert.equal(contents.toString("utf8"), readFileSync(file,"utf8"));
     const digest = createHash("sha1")
       .update("blob " + contents.length + "\0")
       .update(contents)
       .digest("hex");
     assert.equal(digest, expectedGitBlobSha, "Reviewed release asset drift: " + file);
+    assert.throws(
+      () => requireReviewedContactBlob(file, "0000000000000000000000000000000000000000"),
+      /differs from approved release source/
+    );
   }
+  assert.throws(() => requireReviewedContactBlob("assets/js/nonexistent-contact-client.js", "0"), /ENOENT/);
 });
