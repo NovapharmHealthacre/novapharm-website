@@ -114,7 +114,7 @@ test('aggregate declared file size is bounded before streaming even the first ar
  const huge=9*1024**3;
  for(const record of [first,second]){
   await writeFile(join(root,record.manifestFile),
-   JSON.stringify(manifest(record.period,{byteSize:huge})));
+   JSON.stringify(manifest(record.period,{byteSize:huge,sha256:hash(data+record.period+'\n')})));
  }
  await assert.rejects(verifyUkPrivateBackfillBatch({
   plan:plan([first,second],{startPeriod:'2026-08',endPeriod:'2026-09'}),
