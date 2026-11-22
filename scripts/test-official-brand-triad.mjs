@@ -111,6 +111,17 @@ test("public release validates current owner-approved SHA provenance and PWA col
   assert.equal(manifest.background_color, brand.neutralPalette.primaryWhite.hex);
 });
 
+test("public and protected page generators cannot restore retired pure-white browser surfaces", () => {
+  const publicBuild = text("scripts/build-public-pages.mjs");
+  const protectedBuild = text("scripts/build-pages.mjs");
+  assert.ok(publicBuild.includes('background_color: "#FBFAEF"'));
+  assert.ok(publicBuild.includes('meta name="theme-color" content="#FBFAEF"'));
+  assert.ok(protectedBuild.includes('meta name="theme-color" content="#FBFAEF"'));
+  assert.doesNotMatch(publicBuild, /background_color: "#ffffff"/i);
+  assert.doesNotMatch(publicBuild, /meta name="theme-color" content="#FFFFFF"/i);
+  assert.doesNotMatch(protectedBuild, /meta name="theme-color" content="#FFFFFF"/i);
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
