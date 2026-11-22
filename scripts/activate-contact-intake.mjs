@@ -23,7 +23,7 @@ export function activateContactHtml(html, origin) {
   if (!approvedApi.test(origin)) throw Error("Refusing unverified or non-AWS HTTPS contact origin");
   const required = [
     'data-email-enquiry-form',
-    'action="mailto:vishal@novapharmhealthcare.com"',
+    'action="mailto:bd@novapharmhealthcare.com"',
     'This public information release does not collect or transmit enquiry details',
     'src="/assets/js/contact-email-draft.js"',
     '<div class="np-contact-reference-actions">',
