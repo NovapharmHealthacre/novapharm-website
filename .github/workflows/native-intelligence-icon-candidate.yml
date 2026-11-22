@@ -15,6 +15,8 @@ on:
       - 'assets/css/novapharm-hig-colours.css'
       - 'assets/css/novapharm.bundle.css'
       - 'scripts/test-official-brand-triad.mjs'
+      # Source-level visual acceptance can introduce image reference counts.
+      - 'scripts/test-visual-contracts.mjs'
       - 'assets/css/tokens.css'
       # Re-run source-linked icon inventory after inherited parent token refinement.
       - 'apps/founder/app/base.css'
