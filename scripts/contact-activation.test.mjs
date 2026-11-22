@@ -83,6 +83,9 @@ test("owner-gated managed template preserves approved design and secure submissi
   assert.throws(() => activateManagedContactReleaseHtml(badOrder, origin), /CSS must load before/);
 
   assert.throws(() => activateManagedContactReleaseHtml(template, "https://unapproved.example"), /Refusing/);
+  // A different EU-North AWS API Gateway hostname must not silently receive
+  // regulated business enquiries, even though it matches the generic syntax.
+  assert.throws(() => activateManagedContactReleaseHtml(template, "https://abcdefghij.execute-api.eu-north-1.amazonaws.com"), /Refusing unapproved managed Contact API origin/);
 });
 
 test("owner-gated production activation remains disabled without explicit acceptance", () => {
