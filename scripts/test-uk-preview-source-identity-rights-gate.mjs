@@ -79,6 +79,31 @@ test('source record cannot claim accepted medicine observations', () => {
   const s = registry(); s[0].accepted_observations = 1;
   rejects(s, reviews());
 });
+test('present source admission, rights and customer-live flags must all remain explicitly false', () => {
+  for (const field of [
+    'data_persisted', 'source_rights_grant_active',
+    'independent_quality_approved', 'customer_country_live',
+    'canIngest', 'canPublish',
+  ]) {
+    const s = registry(); s[0][field] = true;
+    rejects(s, reviews());
+    const unknown = registry(); unknown[0][field] = null;
+    rejects(unknown, reviews());
+  }
+  const s = registry();
+  Object.assign(s[0], {
+    data_persisted: false, source_rights_grant_active: false,
+    independent_quality_approved: false, customer_country_live: false,
+    canIngest: false, canPublish: false, ingestion_status: 'metadata_only',
+  });
+  assert.equal(audit(s, reviews()).metadataReviewQueueComplete, true);
+});
+test('present source ingestion status cannot masquerade as metadata-only', () => {
+  for (const status of ['admitted', 'live', 'production', null]) {
+    const s = registry(); s[0].ingestion_status = status;
+    rejects(s, reviews());
+  }
+});
 test('source record cannot claim customer publication', () => {
   const s = registry(); s[4].customer_publish_approved = true;
   rejects(s, reviews());
