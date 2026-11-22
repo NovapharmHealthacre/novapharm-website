@@ -127,6 +127,7 @@ for (const [path, assignments] of [
 }
 for (const path of [
   "apps/corporate/app/layout.tsx",
+  "apps/portal/app/layout.tsx",
   "apps/technology/app/layout.tsx",
   "apps/status/app/layout.tsx",
 ]) {
