@@ -10,6 +10,22 @@ export const BNF_SNOMED_REFERENCE_HEADERS=Object.freeze([
   'DMD_PRODUCT_PACK_DESC','PACK','SUB_PACK','VTM','VTM_NAME'
 ]);
 const SOURCE_ID='nhsbsa.bnf-snomed-map';
+/**
+ * Code-reviewed, public CKAN resource IDs; metadata identity ONLY.
+ * Must never be interpreted as authenticated file bytes or source licence.
+ * The July 2026 portal dictionary declares strength integer, pack string,
+ * and VTM integer; the other listed months use numeric strength and pack.
+ */
+export const BNF_SNOMED_PUBLIC_RESOURCE_RELEASES=Object.freeze({
+ '2026-06':Object.freeze({resourceId:'aa0b2fef-ea4e-4f8f-9df1-269cecc7e293',
+   strengthType:'number',packType:'number',vtmType:'string'}),
+ '2026-07':Object.freeze({resourceId:'bafa30b6-4426-4578-a128-935d13b228e5',
+   strengthType:'integer',packType:'string',vtmType:'integer'}),
+ '2026-08':Object.freeze({resourceId:'624eadfc-5125-489d-b292-8bccbad6e657',
+   strengthType:'number',packType:'number',vtmType:'string'}),
+ '2026-09':Object.freeze({resourceId:'638b7dc9-1eac-4495-9fc5-423fc52483e2',
+   strengthType:'number',packType:'number',vtmType:'string'})
+});
 const types=Object.freeze(['VMP','VMPP','AMP','AMPP']);
 const refuse=reason=>{throw new Error('UK BNF SNOMED quarantine quality refused: '+reason);};
 function boundedString(v) {
@@ -32,12 +48,15 @@ function optionalDecimalMeasure(v,label) {
   return value;
 }
 export function validateUkBnfSnomedReferenceSample({
-  sourceId:requestedSourceId,reportingPeriod,headers,rows
+  sourceId:requestedSourceId,reportingPeriod,publisherResourceId,headers,rows
 }={}){
   if(requestedSourceId!==SOURCE_ID)refuse('unregistered reference source');
   if(typeof reportingPeriod!=='string'||
      !/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/.test(reportingPeriod))
     refuse('invalid monthly reference period');
+  const release=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[reportingPeriod];
+  if(!release||publisherResourceId!==release.resourceId)
+    refuse('unverified publisher resource for reporting period');
   if(!Array.isArray(headers)||headers.length<BNF_SNOMED_REFERENCE_HEADERS.length||
      headers.length>128||headers.some(h=>typeof h!=='string'||h.length>160||
        h.trim()!==h||/[\u0000-\u001f]/.test(h)))refuse('invalid CSV headers');
@@ -49,6 +68,7 @@ export function validateUkBnfSnomedReferenceSample({
   let unresolvedBnf=0,unresolvedSnomed=0,unresolvedVtm=0;
   let presentationRows=0,packRows=0,packOnlyFieldOnPresentation=0;
   let decimalStrengthRows=0,decimalPackRows=0;
+  let packLexicalExceptionRows=0;
   let aggregateUtf8Bytes=0;
   const bnfToSnomed=new Map();
   for(const row of rows){
@@ -77,9 +97,19 @@ export function validateUkBnfSnomedReferenceSample({
     const vtm=optionalNumericCode(get('VTM'),'VTM');
     if(!vtm)unresolvedVtm++;
     const strength=optionalDecimalMeasure(get('STRENGTH'),'strength');
-    const pack=optionalDecimalMeasure(get('PACK'),'pack');
+    if(release.strengthType==='integer' && strength.includes('.'))
+      refuse('invalid integer strength for resource version');
+    const rawPack=get('PACK');
+    // July's official CKAN dictionary calls PACK a string; do not invent a
+    // numeric contract for that specific file without inspecting actual data.
+    const pack=release.packType==='number'
+      ? optionalDecimalMeasure(rawPack,'pack')
+      : boundedString(rawPack);
+    if(release.packType==='string' && pack!=='' &&
+       !/^\d{1,15}(?:\.\d{1,8})?$/.test(pack))
+      packLexicalExceptionRows++;
     if(strength.includes('.'))decimalStrengthRows++;
-    if(pack.includes('.'))decimalPackRows++;
+    if(release.packType==='number'&&pack.includes('.'))decimalPackRows++;
     if(level==='presentation'&&
        ['UNIT_OF_MEASURE','DMD_PRODUCT_PACK_DESC','PACK','SUB_PACK']
          .some(field=>get(field)!==''))
@@ -91,14 +121,19 @@ export function validateUkBnfSnomedReferenceSample({
   }
   return Object.freeze({
     contract:'novapharm.uk.bnf-snomed-reference-quarantine-quality.v1',
-    sourceId:SOURCE_ID,reportingPeriod,
+    sourceId:SOURCE_ID,reportingPeriod,publisherResourceId,
+    metadataPinnedToPublishedResource:true,
+    exactSourceFileHashIndependentlyVerified:false,
+    selectedResourceDeclaredTypes:Object.freeze({
+      strength:release.strengthType,pack:release.packType,vtm:release.vtmType
+    }),
     sampleRowsInspected:rows.length,requiredColumnsVerified:BNF_SNOMED_REFERENCE_HEADERS.length,
     presentationRows,packRows,missingOrUnresolvedBnfCodeRows:unresolvedBnf,
     missingOrUnresolvedSnomedRows:unresolvedSnomed,missingOrUnresolvedVtmRows:unresolvedVtm,
     bnfCodesWithMultipleSnomedConceptsInSample:
       [...bnfToSnomed.values()].filter(s=>s.size>1).length,
     presentationRowsWithUnexpectedPackFields:packOnlyFieldOnPresentation,
-    decimalStrengthRows,decimalPackRows,
+    decimalStrengthRows,decimalPackRows,packLexicalExceptionRows,
     numericQuantitiesPreservedAsStrings:true,
     preservesMedicineCodesAsStrings:true,
     mappingOneToOneAssumed:false,
