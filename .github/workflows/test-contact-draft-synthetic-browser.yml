@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Pin the exact candidate tree; mutable draft branch advances must not silently change acceptance target.
-          ref: 147885c079631280a4243068958e3dd19c35dd41
+          ref: 733bca8e4889a5555b796aa24b8327c4e992da15
           path: contact-draft
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -38,6 +38,43 @@ jobs:
           node --check contact-draft/assets/js/contact-production.js
           node --check infra/aws/contact-production/index.js
           node --test scripts/aws/contact-production.test.mjs
+      - name: Verify exact Contact HIG layout and safety contract (source-only)
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          const h = readFileSync("contact-draft/contact/index.html", "utf8");
+          const j = readFileSync("contact-draft/assets/js/contact-production.js", "utf8");
+          const mustHave = [
+            'data-live-b2b-enquiry-form', 'role="status" aria-live="polite"',
+            'name="safetyConfirmation" value="yes" required',
+            'name="privacyAcknowledgement" value="yes" required',
+            '.ref-confirmation input[type=checkbox]:focus-visible',
+            '.ref-field:focus-within{outline:2px solid',
+            '.ref-form{max-width:790px',
+            'grid-template-columns:repeat(2,minmax(0,1fr))',
+            'font-size:16px', '@media(max-width:560px)',
+            'min-height:48px', '@media(forced-colors:active)',
+            '#9D1B32', '#68101F', '#0B0B0E',
+            ':root{--ink:#0B0B0E', ':root{--ref-ink:#0B0B0E',
+            '.ref-field>span{font-weight:560;color:var(--ref-ink)',
+            '<noscript>', '<noscript><style>.ref-form{display:none}</style>', 'NovaPharm Intelligence',
+            'disabled aria-describedby="contact-submission-status"', 'id="contact-submission-status"',
+            'src="/assets/js/contact-production.js"'
+          ];
+          for (const marker of mustHave) assert.ok(h.includes(marker), "Missing contact design marker: " + marker);
+          const sharedCssLink = '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07">';
+          assert.ok(h.indexOf(sharedCssLink) >= 0 && h.indexOf(sharedCssLink) < h.indexOf('<style>'), "Shared CSS must load before Contact-specific Sovereign Black rules");
+          assert.equal(h.split(sharedCssLink).length-1,1);
+
+          assert.equal((h.match(/type="checkbox"/g) || []).length, 2);
+          assert.ok(!h.includes('data-email-enquiry-form'));
+          assert.ok(h.includes('data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"'));
+          for (const marker of ['response.status !== 201', 'result?.persisted !== true', 'response.status === 403', 'response.status === 422', 'response.status === 429', 'form.setAttribute("aria-busy"', 'To avoid a duplicate']) {
+            assert.ok(j.includes(marker), "Missing submission safety marker: " + marker);
+          }
+          console.log("Exact-contact candidate: 23 source/safety invariant checks passed; synthetic browser run follows.");
+          NODE
       - name: Verify production HTTPS health and CORS preflight without sending enquiries
         run: node scripts/verify-contact-health-before-restore.mjs
       - name: Verify actual proposed public form and privacy with intercepted synthetic receipts
