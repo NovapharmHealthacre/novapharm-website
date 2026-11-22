@@ -37,6 +37,39 @@ export function nativeFdaGatewayReady(config:FdaProtectedGatewayConfig):boolean{
      /^(?:[a-z0-9-]+\.)+amazonaws\.com$|^[a-z0-9.-]+\.novapharmhealthcare\.com$/u.test(u.hostname);
  }catch{return false}
 }
+async function readBoundedFdaJson(response:Response):Promise<unknown>{
+  // A content-length header alone is not a memory bound. A producer may omit
+  // or falsify the header; reject large responses before buffering them.
+  const declared=response.headers.get("content-length");
+  if(declared!==null && (!/^\\d+$/u.test(declared) ||
+      Number(declared)>maxBytes || !Number.isSafeInteger(Number(declared))))
+    throw Error("FDA source response too large.");
+  const stream=response.body;
+  if(!stream || typeof stream.getReader!=="function")
+    throw Error("FDA response stream unavailable.");
+  const reader=stream.getReader();
+  const chunks:Uint8Array[]=[];
+  let total=0;
+  try{
+    while(true){
+      const {done,value}=await reader.read();
+      if(done)break;
+      if(!(value instanceof Uint8Array) ||
+         (total+=value.byteLength)>maxBytes)throw Error("FDA source response too large.");
+      chunks.push(value);
+    }
+  }catch{
+    throw Error("FDA source response unavailable or oversized.");
+  }finally{
+    try{await reader.cancel();}catch{}
+    try{reader.releaseLock();}catch{}
+  }
+  const bytes=new Uint8Array(total);
+  let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  try{return JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes));}
+  catch{throw Error("Invalid FDA research response.");}
+}
 export async function queryProtectedFdaNative({
   config,kind,drug,accessToken,fetchImpl=fetch
 }:{
@@ -68,18 +101,16 @@ export async function queryProtectedFdaNative({
    if(response.status!==200)throw Error("FDA source unavailable.");
    if(!/\bapplication\/json\b/i.test(response.headers.get("content-type")||""))
      throw Error("Unexpected FDA content type.");
-   const size=Number(response.headers.get("content-length")||0);
-   if(size>maxBytes)throw Error("FDA source response too large.");
-   const body=await response.text();
-   if(new TextEncoder().encode(body).byteLength>maxBytes)
-     throw Error("FDA source response too large.");
-   const data:unknown=JSON.parse(body);
+   const data=await readBoundedFdaJson(response);
    if(!data || typeof data!=="object" || !("records" in data) ||
       !Array.isArray(data.records) || data.records.length>5)
      throw Error("Invalid FDA research response.");
    const normalized=data as FdaProtectedSourceResult;
-   if(typeof normalized.sourceId!=="string"||
-      !["no_source_matches","public_source_observations"].includes(normalized.dataState))
+   const expectedSourceId=kind==="labels"?"us.fda.openfda-labels":"us.fda.openfda."+kind;
+   if(normalized.sourceId!==expectedSourceId ||
+      !["no_source_matches","public_source_observations"].includes(normalized.dataState) ||
+      (normalized.kind!==undefined && normalized.kind!==kind) ||
+      (normalized.dataState==="no_source_matches" && normalized.records.length!==0))
       throw Error("Invalid FDA source provenance.");
    if(kind==="adverse-events" && normalized.records.length!==0)
       throw Error("FAERS records may not contain patient-level entries.");
