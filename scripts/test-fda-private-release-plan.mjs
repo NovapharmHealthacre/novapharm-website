@@ -77,3 +77,19 @@ test("conditional CloudFormation route cannot activate without six independent s
  assert.equal(route.AuthorizerId.Ref,"VerifiedJWTAuthorizerId");
  assert.equal(template.Resources.PrivateFdaInvokePermission.Properties.Principal,"apigateway.amazonaws.com");
 });
+
+test("iOS board sign-in refuses concurrent sessions and clears stale access before new PKCE",()=>{
+ const source=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
+ const start=source.indexOf("    func beginSignIn(");
+ const end=source.indexOf("    private func exchange(",start);
+ assert.ok(start>0 && end>start,"Expected native session implementation");
+ const segment=source.slice(start,end);
+ const concurrency=segment.indexOf("guard activeSession == nil else");
+ const clear=segment.indexOf("store.clear()",concurrency);
+ const verifier=segment.indexOf("let verifier=fdaURLSafeBase64");
+ const browser=segment.indexOf("ASWebAuthenticationSession(");
+ assert.ok(concurrency>=0 && concurrency<clear);
+ assert.ok(clear>concurrency && clear<verifier && verifier<browser,
+   "Previous board access must be cleared before OS entropy and browser launch");
+ assert.ok(segment.includes("catch { activeSession=nil;store.clear();completion(.failure(error)) }"));
+});
