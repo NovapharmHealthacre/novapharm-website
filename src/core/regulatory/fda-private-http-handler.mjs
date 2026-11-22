@@ -81,7 +81,7 @@ function queryParams(event) {
   // queryStringParameters object. Compare both representations and reject
   // parameter pollution before calling the FDA or charging a board quota.
   const raw = event?.rawQueryString;
-  if (typeof raw !== "string" || !raw || raw.length > 500) return null;
+  if (typeof raw !== "string" || !raw || raw.length > 500 || raw.split("&").length !== 2) return null;
   const parsed = new URLSearchParams(raw);
   const keys = [...parsed.keys()];
   if (keys.length !== 2 || keys.filter(k=>k==="kind").length !== 1 ||
