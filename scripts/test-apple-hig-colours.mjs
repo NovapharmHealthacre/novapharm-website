@@ -238,6 +238,13 @@ assert.ok(!aboutTransform.includes('meta name="theme-color" content="#FFFFFF"'),
 const postBuildRoyal = read("scripts/validate-royal-public-theme.mjs");
 assert.match(read("scripts/build-site.mjs"), /await import\("\.\/validate-royal-public-theme\.mjs"\)/);
 assert.match(postBuildRoyal, /seo\/generated\/page-metadata-register\.json/);
+assert.match(postBuildRoyal, /"\/distribution\/", "\/market-access\/", "\/markets\/"/);
+const publicBuild = read("scripts/build-site.mjs");
+assert.ok(publicBuild.indexOf('await import("./apply-global-distribution-foundation.mjs")') >= 0 &&
+  publicBuild.indexOf('await import("./apply-global-distribution-foundation.mjs")') <
+  publicBuild.indexOf('await import("./enhance-seo-authority.mjs")'),
+  "Commercial pages must exist before canonical SEO registration");
+
 assert.match(postBuildRoyal, /expected exactly one browser theme tag/);
 assert.match(postBuildRoyal, /webManifest\.background_color/);
 

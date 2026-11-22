@@ -17,6 +17,13 @@ assert.equal(identities.neutralPalette.primaryWhite.hex, palette.primary);
 assert.ok(Array.isArray(register) && register.length >= 60,
   "Canonical public page inventory is incomplete");
 
+// These three commercial routes are generated before SEO enhancement. Their
+// inclusion prevents a shallow but numerically sufficient canonical index.
+const registeredRoutes = new Set(register.map((page) => page.route));
+for (const route of ["/distribution/", "/market-access/", "/markets/"]) {
+  assert.ok(registeredRoutes.has(route), "Required public commercial route absent from SEO register: " + route);
+}
+
 const errors = [];
 let checked = 0;
 for (const page of register) {
