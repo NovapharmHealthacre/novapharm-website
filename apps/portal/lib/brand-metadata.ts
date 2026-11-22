@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import type { PortalArea } from "@novapharm/portal-contracts";
+import type { Metadata } from "next";
 
 export type NovaPharmBrand = "healthcare" | "distribution" | "intelligence";
 
