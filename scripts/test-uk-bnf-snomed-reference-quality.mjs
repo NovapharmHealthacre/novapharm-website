@@ -71,7 +71,11 @@ test('invalid BNF, numeric SNOMED/VTM and strength not silently coerced',()=>{
   {SNOMED_CODE:'123.5'},
   {SNOMED_CODE:'1234567890123456789'},
   {VTM:'-12'},
-  {STRENGTH:'2.5'}
+  {STRENGTH:'-2.5'},
+  {STRENGTH:'1e3'},
+  {STRENGTH:'2,5'},
+  {PACK:'1e3'},
+  {PACK:'2,5'}
  ]) assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make(change)])),/invalid|non-decimal/);
 });
 test('wrong source, period, missing/duplicated official columns and oversized samples fail',()=>{
@@ -93,4 +97,26 @@ test('pack-only annotations in presentation samples remain unresolved diagnostic
 test('reference sampling enforces cumulative UTF-8 byte bound before reporting',()=>{
  const rows=Array.from({length:130},()=>make({DMD_PRODUCT_DESC:'Z'.repeat(8190)}));
  assert.throws(()=>validateUkBnfSnomedReferenceSample(args(rows)),/sample payload exceeds 1 MiB/);
+});
+
+test('September numeric STRENGTH and PACK allow bounded decimals without ID coercion',()=>{
+ const sample=validateUkBnfSnomedReferenceSample(args([
+  make({STRENGTH:'0.25',SNOMED_CODE:'000000000123456789'}),
+  make({PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',
+        STRENGTH:'2.5',PACK:'12.5',UNIT_OF_MEASURE:'ml'})
+ ]));
+ assert.equal(sample.decimalStrengthRows,2);
+ assert.equal(sample.decimalPackRows,1);
+ assert.equal(sample.numericQuantitiesPreservedAsStrings,true);
+ assert.equal(sample.preservesMedicineCodesAsStrings,true);
+ assert.equal(sample.canIngest,false);
+ assert.equal(sample.canPublish,false);
+ assert.equal(JSON.stringify(sample).includes('000000000123456789'),false);
+});
+test('oversized or exponent-style numeric measures fail even with well-formed reference keys',()=>{
+ for(const change of [
+  {STRENGTH:'0.123456789'}, {STRENGTH:'1234567890123456'},
+  {PACK:'1234567890123456'}, {PACK:'NaN'},
+  {PACK:'Infinity'}, {PACK:'-1'}, {PACK:'1,000.5'}, {PACK:'1.2.3'}
+ ]) assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make(change)])),/invalid.*numeric measure/);
 });
