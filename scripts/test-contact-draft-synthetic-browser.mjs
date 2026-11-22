@@ -103,6 +103,10 @@ try {
       await form.locator('button[type=submit]').click();
       await page.waitForFunction(()=>document.querySelector("[data-live-contact-status]")?.textContent?.includes("We could not confirm"),null,{timeout:10000});
       result.invalid=true;
+      // The previous click leaves the cursor hovering over Submit; deliberately
+      // exit hover and allow its 150ms colour transition to settle first.
+      await page.mouse.move(1,1);
+      await page.waitForTimeout(220);
       // Test real computed presentation in both browser engines, including
       // a narrow mobile viewport and a 200%-zoom-equivalent 640px reflow.
       result.viewports=[];
@@ -134,6 +138,11 @@ try {
         if(width<=640)assert(view.secondTop>=view.firstBottom-2,label+" columns did not stack at "+width);
         result.viewports.push({width:width,overflow:false,fieldsReadable:true,buttonSize:true,brand:true});
       }
+      await page.locator(".ref-button").hover();
+      await page.waitForTimeout(220);
+      const hoverColour=await page.locator(".ref-button").evaluate(el=>getComputedStyle(el).backgroundColor);
+      assert(hoverColour==="rgb(104, 16, 31)",label+" dark Crimson hover contrast failed");
+      await page.mouse.move(1,1);
       await page.locator('[name="name"]').focus();
       const focus=await page.evaluate(()=>({
         focused:document.activeElement?.getAttribute("name"),
