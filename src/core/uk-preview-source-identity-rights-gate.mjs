@@ -57,11 +57,28 @@ function uniqueDocuments(input) {
   return result;
 }
 
+const SOURCE_DENIED_IF_PRESENT = Object.freeze([
+  'data_persisted',
+  'source_rights_grant_active',
+  'independent_quality_approved',
+  'customer_country_live',
+  'canIngest',
+  'canPublish',
+]);
+
 function checkPreviewSource(doc) {
   if (doc.accepted_observations !== 0 ||
       doc.customer_publish_approved !== false ||
       typeof doc.rights_status !== 'string' ||
       !doc.rights_status.startsWith('pending_')) DENY();
+  // Optional caller projections cannot smuggle affirmative activation flags.
+  // Missing projected fields are NOT evidence that production is inactive;
+  // this offline audit never substitutes for a privileged production readback.
+  for (const field of SOURCE_DENIED_IF_PRESENT) {
+    if (Object.hasOwn(doc, field) && doc[field] !== false) DENY();
+  }
+  if (Object.hasOwn(doc, 'ingestion_status') &&
+      doc.ingestion_status !== 'metadata_only') DENY();
 }
 
 function checkPendingRights(doc, sourceDoc) {
