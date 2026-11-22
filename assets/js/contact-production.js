@@ -153,8 +153,8 @@ if (form instanceof HTMLFormElement) {
           status.replaceChildren();
           status.append(document.createTextNode("We could not confirm whether your enquiry was recorded. To avoid a duplicate, please do not resubmit immediately. To check its status, email "));
           const link = document.createElement("a");
-          link.href = "mailto:vishal@novapharmhealthcare.com";
-          link.textContent = "vishal@novapharmhealthcare.com";
+          link.href = "mailto:bd@novapharmhealthcare.com";
+          link.textContent = "bd@novapharmhealthcare.com";
           status.append(link, document.createTextNode("."));
         }
       } finally {
