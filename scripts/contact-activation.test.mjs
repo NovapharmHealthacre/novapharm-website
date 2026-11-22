@@ -8,7 +8,7 @@ const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
 const managedOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
   '<!DOCTYPE html><html><head></head><body>',
-  '<form class="np-contact-reference-form" data-email-enquiry-form action="mailto:vishal@novapharmhealthcare.com" method="post" enctype="text/plain">',
+  '<form class="np-contact-reference-form" data-email-enquiry-form action="mailto:bd@novapharmhealthcare.com" method="post" enctype="text/plain">',
   '<label class="np-contact-reference-field"><span>Country / region</span><input name="country"></label>',
   '<div class="np-contact-reference-actions"><button type="submit" class="np-contact-reference-submit">Open email draft</button></div>',
   '</form>',
