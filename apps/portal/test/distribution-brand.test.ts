@@ -12,7 +12,7 @@ const dashboard = read("components/dashboard.tsx");
 
 test("employee WMS uses the owner-supplied wider-aspect Distribution vector", () => {
   assert.match(logo, /viewBox="0 0 13000 1410.2538"/);
-  assert.match(logo, /Novapharm Distribution/);
+  assert.match(logo, /NovaPharm Distribution/);
   assert.doesNotMatch(logo, /<script|<foreignObject|javascript:/i);
   assert.match(distributionBrand, /novapharm-distribution-logo\.svg/);
   assert.match(distributionBrand, /alt="NovaPharm Distribution"/);
