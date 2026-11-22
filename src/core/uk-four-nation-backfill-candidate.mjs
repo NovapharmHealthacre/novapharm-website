@@ -70,6 +70,7 @@ export function assessUkBackfillCandidateCoverage({sourceId, startPeriod, endPer
   return Object.freeze({
     contract:'novapharm.uk.private-backfill-candidate-coverage.v1',
     sourceId:source.sourceId,jurisdiction:source.jurisdiction,
+    geographyApplicability:source.geographyApplicability,geographicCoverageVerified:false,
     periodPrecision:source.periodPrecision,startPeriod,endPeriod,requestedPeriods,
     candidateIntegrityVerifiedPeriods:candidateVerifiedPeriods.length,
     candidateCoverageComplete:candidateVerifiedPeriods.length === requestedPeriods,
