@@ -36,9 +36,17 @@ function check(tokenMap, foreground, background, minimum = 4.5) {
   );
 }
 
+const approvedNeutrals = JSON.parse(read("config/brand-identities.json")).neutralPalette;
+for (const [key, expected] of [["primaryWhite", "#FBFAEF"], ["secondaryWhite", "#F8F7F3"], ["defaultInk", "#0B0B0E"], ["subtleDivider", "#DEDCD5"]]) {
+  assert.equal(approvedNeutrals[key].hex, expected, `${key} canonical brand neutral has drifted`);
+}
 const light = tokensFor(":root {");
 const dark = tokensFor(':root[data-np-color-scheme="dark"] {');
 assert.equal(light["--np-color-label"], "#0b0b0e", "Official website label ink must be Sovereign Black");
+assert.equal(light["--np-color-canvas"], "#fbfaef", "Primary neutral canvas must be Royal Mineral White");
+assert.equal(light["--np-color-surface"], "#f8f7f3", "Secondary neutral must be Royal Porcelain White");
+assert.equal(light["--np-color-separator"], "#dedcd5", "Decorative separator must be Porcelain Stone");
+assert.equal(light["--np-color-surface-raised"], "#fbfaef", "Raised neutral must preserve Royal Mineral White");
 assert.equal(light["--np-color-primary-action"], "#0b0b0e", "Neutral primary actions must use Sovereign Black");
 assert.notEqual(dark["--np-color-label"], "#0b0b0e", "Dark appearance must retain visible reverse labels");
 assert.match(read("assets/css/tokens.css"), /--np-brand-black:\s*#0B0B0E/i);

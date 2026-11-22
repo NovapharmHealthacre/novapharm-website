@@ -12,6 +12,9 @@ const root=process.cwd(), abs=p=>path.join(root,p);
 const sha=b=>createHash("sha256").update(b).digest("hex");
 const identities=JSON.parse(await readFile(abs("config/brand-identities.json"),"utf8"));
 assert.equal(identities.approvedOn,"2026-11-22");
+// All light-brand social surfaces inherit the owner-approved white, never legacy pure white.
+const officialLight=identities.neutralPalette?.primaryWhite?.hex;
+assert.equal(officialLight,"#FBFAEF","Unapproved light social artwork background");
 const defs={
   healthcare:{logo:"novapharm-healthcare-logo.svg",icon:"favicon.svg",hex:"#9D1B32",h:258,p:"",social:["novapharm-open-graph-1200x630-white.jpg","novapharm-open-graph-1200x630-red.jpg"]},
   distribution:{logo:"novapharm-distribution-logo.svg",icon:"novapharm-distribution-favicon.svg",hex:"#3D0B13",h:222,p:"novapharm-distribution-",social:["novapharm-distribution-open-graph-1200x630-white.jpg","novapharm-distribution-open-graph-1200x630-garnet.jpg"]},
@@ -61,7 +64,7 @@ for(const [key,d] of Object.entries(defs)){
   if(key==="healthcare")for(const s of [16,32,48,64])stage("assets/brand/favicon-"+s+"x"+s+".png",rendered.get(s));
   const reverse=await readFile(abs("assets/brand/"+d.logo.replace(".svg","-reverse.svg")));
   const dark=key==="healthcare"?"#9D1B32":key==="distribution"?"#3D0B13":"#0B1023";
-  stage("assets/brand/"+d.social[0],await social(primary,reverse,"#FFFFFF",false));
+  stage("assets/brand/"+d.social[0],await social(primary,reverse,officialLight,false));
   stage("assets/brand/"+d.social[1],await social(primary,reverse,dark,true));
 }
 const governed=new Map([
@@ -93,6 +96,7 @@ for(const [file,data] of outputs){
 }
 const provenance="audit/generated/three-brand-raster-provenance.json";
 const report={schemaVersion:1,sourceDate:"2026-11-22",method:"SVG source master rasterized by sharp",count:outputs.size,
+ lightSocialBackground:officialLight,
  limitation:"Generated PNG, JPEG and ICO are derived, not original ZIP binaries.",
  files:[...outputs].filter(([file])=>file.startsWith("assets/brand/")).map(([file,data])=>({path:file,sha256:sha(data),bytes:data.length}))};
 await mkdir(path.dirname(abs(provenance)),{recursive:true});

@@ -14,13 +14,13 @@ Defined in `assets/css/novapharm-hig-colours.css`:
 
 | Role | Light | Application |
 | --- | --- | --- |
-| Canvas | `#FFFFFF` | Page background |
-| Grouped surface | `#F5F5F7` | Panels, controls, supporting sections |
+| Canvas / Royal Mineral White | `#FBFAEF` | Primary page background |
+| Grouped surface / Royal Porcelain White | `#F8F7F3` | Secondary neutral for panels, controls and sections |
 | Recessed surface | `#E8E8ED` | Third-level grouping |
 | Primary label | `#0B0B0E` | Headings and essential text |
 | Secondary label | `#424245` | Body text |
 | Tertiary label | `#595961` | Supporting captions |
-| Separator | `#D2D2D7` | Decorative dividers, not text |
+| Separator / Porcelain Stone | `#DEDCD5` | Decorative dividers only, not text or sole control boundaries |
 | Strong separator | `#86868B` | Visible form and control boundaries |
 | Link and focus | `#0066CC` | Navigation in content, keyboard focus |
 | Brand accent | `#9D1B32` | One prominent brand action or key emphasis |

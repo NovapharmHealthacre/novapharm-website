@@ -6,12 +6,12 @@
  * Intentionally does not target managed portal/authentication interfaces.
  */
 :root {
-  --nph-canvas: #ffffff;
-  --nph-silver: #f5f5f7;
+  --nph-canvas: #FBFAEF;
+  --nph-silver: #F8F7F3;
   --nph-ink: #0B0B0E;
   --nph-body: #0B0B0E;
   --nph-muted: #595961;
-  --nph-line: #d9d9df;
+  --nph-line: #DEDCD5;
   --nph-link: #0066cc;
   --nph-accent: #9D1B32;
   --nph-deep: #0a101a;
