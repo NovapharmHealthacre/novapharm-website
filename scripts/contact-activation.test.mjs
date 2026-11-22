@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
 const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
+const managedOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
   '<!DOCTYPE html><html><head></head><body>',
   '<form class="np-contact-reference-form" data-email-enquiry-form action="mailto:vishal@novapharmhealthcare.com" method="post" enctype="text/plain">',
@@ -61,9 +62,9 @@ test("owner-gated managed template preserves approved design and secure submissi
   assert.ok(template.includes('href="/' + stylePath + '"'), "Managed Contact references a missing/wrong CSS asset");
   const sharedStyles = readFileSync(stylePath,"utf8");
   assert.ok(sharedStyles.includes(".site-header") || sharedStyles.includes(".site-nav") || sharedStyles.includes(".nav"), "Shared stylesheet lacks expected navigation rules");
-  const rendered = activateManagedContactReleaseHtml(template, origin);
-  assert.ok(rendered.includes('data-live-b2b-enquiry-form data-api-origin="' + origin + '"'));
-  assert.equal((rendered.match(/data-api-origin=/g) || []).length, 1);
+  const rendered = activateManagedContactReleaseHtml(template, managedOrigin);
+  assert.ok(rendered.includes('data-live-b2b-enquiry-form data-api-managedOrigin="' + managedOrigin + '"'));
+  assert.equal((rendered.match(/data-api-managedOrigin=/g) || []).length, 1);
   assert.equal((rendered.match(/data-live-b2b-enquiry-form/g) || []).length, 1);
   for (const marker of [
     '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
@@ -75,18 +76,18 @@ test("owner-gated managed template preserves approved design and secure submissi
     "form-action 'none'"
   ]) assert.ok(rendered.includes(marker), "Lost reviewed managed marker: " + marker);
   assert.doesNotMatch(rendered, /data-email-enquiry-form|novapharm-ga4-id/);
-  const source = template.replace('data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-origin="https://unapproved.example"');
-  assert.throws(() => activateManagedContactReleaseHtml(source, origin), /marker missing/);
-  assert.throws(() => activateManagedContactReleaseHtml(template + '<div data-api-origin="duplicate"></div>', origin), /exactly one/);
-  assert.throws(() => activateManagedContactReleaseHtml(template.replace('href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/nonexistent.css"'), origin), /marker missing/);
+  const source = template.replace('data-api-managedOrigin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-managedOrigin="https://unapproved.example"');
+  assert.throws(() => activateManagedContactReleaseHtml(source, managedOrigin), /marker missing/);
+  assert.throws(() => activateManagedContactReleaseHtml(template + '<div data-api-managedOrigin="duplicate"></div>', managedOrigin), /exactly one/);
+  assert.throws(() => activateManagedContactReleaseHtml(template.replace('href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/nonexistent.css"'), managedOrigin), /marker missing/);
   const sharedLink = '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07">';
   const badOrder = template.replace(sharedLink, "").replace("<style>", "<style>" + sharedLink);
-  assert.throws(() => activateManagedContactReleaseHtml(badOrder, origin), /CSS must load before/);
+  assert.throws(() => activateManagedContactReleaseHtml(badOrder, managedOrigin), /CSS must load before/);
 
   assert.throws(() => activateManagedContactReleaseHtml(template, "https://unapproved.example"), /Refusing/);
   // A different EU-North AWS API Gateway hostname must not silently receive
   // regulated business enquiries, even though it matches the generic syntax.
-  assert.throws(() => activateManagedContactReleaseHtml(template, "https://abcdefghij.execute-api.eu-north-1.amazonaws.com"), /Refusing unapproved managed Contact API origin/);
+  assert.throws(() => activateManagedContactReleaseHtml(template, "https://abcdefghij.execute-api.eu-north-1.amazonaws.com"), /Refusing unapproved managed Contact API managedOrigin/);
 });
 
 test("owner-gated production activation remains disabled without explicit acceptance", () => {
