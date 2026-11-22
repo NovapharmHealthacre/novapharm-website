@@ -131,3 +131,36 @@ test("Reviewed Contact and CSS Git blob parity is exact across release sources",
   }
   assert.throws(() => requireReviewedContactBlob("assets/js/nonexistent-contact-client.js", "0"), /ENOENT/);
 });
+
+test("official Contact palette, adaptive layout and business-development email are pinned", () => {
+  const html=readFileSync("src/content/contact-managed-release.html","utf8");
+  const client=readFileSync("assets/js/contact-production.js","utf8");
+  const tokens=[
+    '<meta name="theme-color" content="#FBFAEF">',
+    '--royal-mineral-white:#FBFAEF',
+    '--royal-porcelain-white:#F8F7F3',
+    '--porcelain-stone:#DEDCD5',
+    '--ref-ink:#0B0B0E',
+    '--ref-blue:#9D1B32',
+    '.ref-content{background:var(--royal-porcelain-white)}',
+    '.ref-hero{background:var(--royal-mineral-white)',
+    '.ref-form{background:var(--royal-mineral-white)',
+    'inset-inline-end:0',
+    'text-align:start',
+    'dir="auto"',
+    'dir="ltr"',
+    'min-height:44px',
+    '@media(max-width:560px)',
+    '@media(max-width:1050px)'
+  ];
+  for(const t of tokens) assert.ok(html.includes(t), "Missing official Contact style/layout marker: "+t);
+  assert.equal((html.match(/mailto:bd@novapharmhealthcare\.com/g)||[]).length,2);
+  assert.equal((client.match(/bd@novapharmhealthcare\.com/g)||[]).length,2);
+  assert.ok(!html.includes("vishal@novapharmhealthcare.com"),"Old business email still visible in Contact");
+  assert.ok(!client.includes("vishal@novapharmhealthcare.com"),"Old business email still in recovery link");
+  assert.ok(html.includes('name="privacyAcknowledgement" value="yes" required'));
+  assert.ok(html.includes('name="safetyConfirmation" value="yes" required'));
+  assert.ok(html.includes('<noscript><style>.ref-form{display:none}</style>'));
+  assert.ok(client.includes('result?.persisted !== true'));
+  assert.ok(client.includes('form.addEventListener("submit"'));
+});
