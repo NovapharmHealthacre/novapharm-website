@@ -7,6 +7,8 @@ on:
     paths:
       - '.github/workflows/brand-raster-candidate.yml'
       - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
+      - 'scripts/test-official-brand-triad.mjs'
+      - 'config/brand-identities.json'
       - 'assets/brand/novapharm-healthcare-logo.svg'
       - 'assets/brand/novapharm-healthcare-logo-reverse.svg'
       - 'assets/brand/favicon.svg'
