@@ -129,6 +129,9 @@ test("all 19 consumer product pages have a working storefront module and interna
     assert(!(structured.additionalProperty || []).some(v => v.name === "Public status" && /not asserted/i.test(v.value)),
       "Contradictory availability signal: " + p.slug);
     assert(html.includes('data-merchant-sku="' + p.sku + '"'), "Visible retail offer missing: " + p.slug);
+    assert(html.includes('class="nx-merchant-shop-link" href="/products/nutraxin/"'), "Crawlable shopping link missing: " + p.slug);
+    assert(html.includes("Nutraxin food supplements have a separate UK consumer shopping journey."), "Retail/medicine scope must be clear: " + p.slug);
+    assert(!html.includes("This website is for corporate and qualified B2B information only."), "Legacy conflicting B2B-only notice: " + p.slug);
   }
 });
 
