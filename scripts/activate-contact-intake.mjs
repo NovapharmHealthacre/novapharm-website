@@ -54,6 +54,7 @@ export function activateManagedContactReleaseHtml(template, origin) {
   const sourceMarker = 'data-live-b2b-enquiry-form data-api-origin="' + sourceOrigin + '"';
   const required = [
     '<!doctype html>', sourceMarker,
+    'href="/assets/css/novapharm-unified-20261107.css"',
     'src="/assets/js/contact-production.js"',
     '<noscript><style>.ref-form{display:none}</style>',
     'type="submit" disabled aria-describedby="contact-submission-status"',
@@ -71,6 +72,9 @@ export function activateManagedContactReleaseHtml(template, origin) {
       template.includes('data-email-enquiry-form') ||
       template.includes('novapharm-ga4-id')) {
     throw Error("Reviewed managed Contact template must contain exactly one isolated secure enquiry form");
+  }
+  if (template.indexOf('href="/assets/css/novapharm-unified-20261107.css"') >= template.indexOf('<style>')) {
+    throw Error("Reviewed managed Contact CSS must load before scoped Contact styles");
   }
   const result = template.replace(sourceMarker, 'data-live-b2b-enquiry-form data-api-origin="' + origin + '"');
   if (result === template && origin !== sourceOrigin) throw Error("Reviewed managed Contact origin substitution failed");
