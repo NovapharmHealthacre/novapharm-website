@@ -3,11 +3,12 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const approvedApi = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i;
+const draftFormAttributes = 'data-email-enquiry-form action="mailto:vishal@novapharmhealthcare.com" method="post" enctype="text/plain"';
+const managedFormAction = 'action="/contact/" method="post"';
 export function activateContactHtml(html, origin) {
   if (!approvedApi.test(origin)) throw Error("Refusing unverified or non-AWS HTTPS contact origin");
   const required = [
-    'data-email-enquiry-form',
-    'action="mailto:vishal@novapharmhealthcare.com"',
+    draftFormAttributes,
     'This public information release does not collect or transmit enquiry details',
     'src="/assets/js/contact-email-draft.js"',
     '<div class="np-contact-reference-actions">',
@@ -23,7 +24,7 @@ export function activateContactHtml(html, origin) {
   const confirmations = '<div class="np-contact-reference-confirmations" role="group" aria-label="Enquiry confirmations">' + safety + privacy + '</div>';
 
   let out = html
-    .replace('data-email-enquiry-form', 'data-live-b2b-enquiry-form data-api-origin="' + origin + '"')
+    .replace(draftFormAttributes, 'data-live-b2b-enquiry-form data-api-origin="' + origin + '" ' + managedFormAction)
     .replace('<label class="np-contact-reference-field"><span>Country / region</span>', role + telephone + '<label class="np-contact-reference-field"><span>Country / region</span>')
     .replace('<div class="np-contact-reference-actions">', confirmations + '<div class="np-contact-reference-actions">')
     .replace('This website does not submit enquiries. Opening your email draft does not confirm delivery. Please do not include confidential dossiers or patient information.',
@@ -35,6 +36,8 @@ export function activateContactHtml(html, origin) {
     .replace('src="/assets/js/contact-email-draft.js"', 'src="/assets/js/contact-production.js"');
 
   if (!out.includes('data-live-b2b-enquiry-form') ||
+      !out.includes(managedFormAction) ||
+      out.includes('data-email-enquiry-form') ||
       !out.includes('name="privacyAcknowledgement"') ||
       !out.includes('name="safetyConfirmation"') ||
       !out.includes('class="np-contact-reference-confirmations"') ||
