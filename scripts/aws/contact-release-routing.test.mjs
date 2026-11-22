@@ -1216,3 +1216,46 @@ test("only exact native FDA preview paths can skip corporate AWS and Pages publi
     }
   }
 });
+
+test("FDA private JWT and mobile transport source files cannot trigger AWS contact/public site cutover", () => {
+  const protectedFiles = [
+    "src/core/regulatory/fda-private-http-handler.mjs",
+    "scripts/test-fda-private-http-handler.mjs",
+    "config/intelligence/us-fda-governance-source-manifest.json",
+    "src/core/regulatory/fda-data-admission.mjs",
+    "scripts/test-fda-governance-admission.mjs",
+    "native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts",
+    "native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts",
+    "scripts/test-fda-native-oidc-core.mjs",
+    "scripts/test-fda-native-gateway.mjs",
+    "native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift",
+    "native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift",
+    "native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift",
+    "infra/aws/fda-private-api-release-plan-20261121.json",
+    "infra/aws/fda-private-jwt-route.cfn.json",
+    "docs/intelligence/fda-six-gate-production-acceptance-20261121.md",
+    "scripts/test-fda-private-release-plan.mjs",
+    ".github/workflows/intelligence-fda-cross-platform-contracts.yml"
+  ];
+  for (const workflowName of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(workflowName);
+    const line = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(line);
+    const entries = line.trim().replace(/\)$/, "").split("|");
+    for (const path of protectedFiles)
+      assert.ok(entries.includes(path), workflowName + " must exclude exact source-only path " + path);
+    assert.equal(entries.includes("scripts/aws/contact-release-routing.test.mjs"), false,
+      "Publisher policy/test changes must remain neutral, never automatically private");
+    assert.ok(workflow.includes("scripts/aws/contact-release-routing.test.mjs|") ||
+      workflow.includes("|scripts/aws/contact-release-routing.test.mjs)"),
+      "Publisher policy file must retain its neutral classification");
+    for (const path of [
+      "server.mjs",
+      "apps/portal/app/gateway/[...path]/route.ts",
+      "native/novapharm-intelligence-ios/App/UnreviewedLogin.swift",
+      "native/novapharm-intelligence-mobile/UnreviewedLogin.tsx"
+    ]) assert.ok(!entries.includes(path), "Unreviewed public/authorization path must not be private-only " + path);
+    assert.ok(workflow.includes("0a9cf537732113aacf3e444e9efefaa47fb2d9e2"),
+      "Reviewed server blob pin must be preserved");
+  }
+});
