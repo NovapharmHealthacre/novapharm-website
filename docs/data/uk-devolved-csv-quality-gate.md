@@ -40,3 +40,11 @@ The pure `src/core/uk-medicine-metric-comparability.mjs` contract tests **candid
 Source references: [BSO official dataset explanation](https://www.opendatani.gov.uk/dataset/gp-prescribing-data) and [PHS dataset and quantities mapping guidance](https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community). Eight additional synthetic tests cover boundary and negative cases.
 
 **Not yet connected to live analytics:** This is a source contract for future accepted evidence, not a declaration that production time-series are fixed or quality-accepted.
+
+## 22 November 2026 — Wales GP ZIP member inventory
+
+The [official NWSSP General Practice Prescribing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/general-practice-prescribing-data-extract/) says each monthly compressed source file contains three distinct members: GPDataFileCCYYMM (medicine presentation; 15-character BNF), ChemSubstance (9-character chemical prefix), and an Address file (practice/health board/locality). The true names, formats and contents of a chosen official archive still require an exact-source validation; this contract follows the documented naming only.
+
+`src/core/uk-wales-gp-zip-inventory.mjs` examines a bounded ZIP central directory through an already-open file handle, never expanding the archive or reading pharmaceutical records. It checks the monthly GP member name, the two reference members, 3 exact files, no duplicate roles, encryption, path traversal, zip bombs or unexpected methods. ZIP64, unexpected publisher naming and member count fail closed pending Quality review. It verifies only the reported ZIP directory metadata; it does **not** independently authenticate the publisher, validate local file headers/CRC, approve licence/BNF rights, ingest or publish any medicine data.
+
+The output is always `sourceRowsRead:0`, `admittedMedicineRows:0`, `canExtract:false`, `canIngest:false`, `canPublish:false`, `customerCountryLive:false`. Five additional synthetic tests are part of the protected source-only GitHub workflow. Passing these tests **is not proof that a real Wales ZIP archive has been obtained or accepted**.
