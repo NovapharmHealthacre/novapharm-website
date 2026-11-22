@@ -198,6 +198,7 @@ export async function authenticateNativeFdaWithPkce(
       expiresAtMs:platform.nowMs()+((json.expires_in as number)-30)*1000
     });
   });
+  if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
 }
 export async function verifiedNativeFdaAccessToken(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
