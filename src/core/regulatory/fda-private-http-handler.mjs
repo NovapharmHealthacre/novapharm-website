@@ -103,6 +103,7 @@ function safeSourceResult(kind,result){
      !Object.keys(result).every(k=>allowedResultKeys.has(k)) ||
      !Array.isArray(result.records) || result.records.length>5 ||
      result.sourceId!==(kind==="labels"?"us.fda.openfda-labels":"us.fda.openfda."+kind) ||
+     (result.kind!==undefined && result.kind!==kind) ||
      !["no_source_matches","public_source_observations"].includes(result.dataState) ||
      (result.dataState==="no_source_matches" && result.records.length!==0) ||
      (kind==="adverse-events" && result.records.length!==0) ||
