@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { pageMeta, leadership } from "../src/content/site-content.mjs";
 import { resolve } from "node:path";
 
 // Run only after the complete public generator, editorial transforms and SHA
@@ -14,8 +15,40 @@ assert.equal(palette.secondary, "#F8F7F3", "Owner-approved secondary white chang
 assert.equal(palette.black, "#0B0B0E", "Owner-approved default black changed");
 assert.equal(palette.divider, "#DEDCD5", "Owner-approved divider changed");
 assert.equal(identities.neutralPalette.primaryWhite.hex, palette.primary);
-assert.ok(Array.isArray(register) && register.length >= 60,
-  "Canonical public page inventory is incomplete");
+assert.ok(Array.isArray(register), "Canonical SEO register must be an array");
+
+// Never guess a minimum route count: the reviewed register currently contains
+// 58 canonical files. Exact completeness is defined by the same governed inputs
+// used by enhance-seo-authority, including dynamic Insights and Nutraxin files.
+const retiredOrCompatibilitySlugs = new Set([
+  "search", "technology/ai-governance", "product-portfolio",
+  "product-portfolio/nutraxin"
+]);
+const expectedCanonicalFiles = new Set([
+  ...Object.keys(pageMeta)
+    .filter((slug) => !retiredOrCompatibilitySlugs.has(slug))
+    .map((slug) => slug ? slug + "/index.html" : "index.html"),
+  ...leadership.map((profile) => "leadership/" + profile.slug + "/index.html"),
+  ...readdirSync(resolve("src/content/insights"))
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => "news-insights/" +
+      JSON.parse(read("src/content/insights/" + name)).slug + "/index.html"),
+  "products/esco/index.html",
+  "account-application/index.html"
+]);
+const nutraxinDirectory = resolve("products/nutraxin");
+if (existsSync(nutraxinDirectory)) {
+  for (const entry of readdirSync(nutraxinDirectory, { withFileTypes: true })) {
+    if (entry.isDirectory() && existsSync(resolve(nutraxinDirectory, entry.name, "index.html"))) {
+      expectedCanonicalFiles.add("products/nutraxin/" + entry.name + "/index.html");
+    }
+  }
+}
+const registeredFiles = register.map((page) => page.file);
+assert.equal(new Set(registeredFiles).size, registeredFiles.length,
+  "Duplicate canonical public-page records");
+assert.deepEqual([...registeredFiles].sort(), [...expectedCanonicalFiles].sort(),
+  "Canonical SEO register differs from the complete governed public-page source inventory");
 
 // These three commercial routes are generated before SEO enhancement. Their
 // inclusion prevents a shallow but numerically sufficient canonical index.
