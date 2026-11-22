@@ -176,6 +176,22 @@ try {
         assert(await noJsPage.locator("noscript a[href^='mailto:']").isVisible(),label+" no-JS email fallback must be visible");
         result.noJsFallback=true;
       } finally {await noJsContext.close();}
+      // A blocked/unavailable JS asset must never expose a working-looking
+      // POST button. The visible fallback explains how to contact the team.
+      const missingScriptContext=await browser.newContext({acceptDownloads:false,ignoreHTTPSErrors:true});
+      try {
+        await missingScriptContext.route("**/*",async route=>{
+          const url=new URL(route.request().url());
+          if(url.origin!==local) return route.abort("blockedbyclient");
+          if(url.pathname==="/assets/js/contact-production.js") return route.abort("blockedbyclient");
+          return route.continue();
+        });
+        const missingScriptPage=await missingScriptContext.newPage();
+        await missingScriptPage.goto(local+"/contact/",{waitUntil:"domcontentloaded"});
+        assert(await missingScriptPage.locator(".ref-button").isDisabled(),label+" missing client may not leave an enabled submit button");
+        assert(await missingScriptPage.locator("#contact-submission-status").isVisible(),label+" missing client must leave a visible fallback status");
+        result.clientFailureSafe=true;
+      } finally {await missingScriptContext.close();}
       await page.close();
     } finally {await context.close();await browser.close();}
     results.push(result);
