@@ -210,18 +210,11 @@ function organisationSchema() {
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.registeredStreet,
-      addressLocality: "Feltham",
-      addressRegion: "England",
-      postalCode: company.registeredPostcode,
-      addressCountry: "GB"
-    },
     areaServed: ["United Kingdom", "International"],
     description: company.summary,
     sameAs: [company.companiesHouseUrl],
     founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": `${siteUrl}/leadership/${person.slug}/#person`, name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/` })),
+    member: leadership.filter(person => person.governance.toLowerCase().includes("statutory director")).map(person => ({ "@type": "Person", "@id": `${siteUrl}/leadership/${person.slug}/#person`, name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/` })),
     telephone: company.publicTelephone,
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
@@ -515,7 +508,7 @@ function companyPage() {
   const slug = "about/company";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "A UK B2B pharmaceutical business in regulated preparation.", company.summary, slug, { parent: { name: "About", href: "/about/" } })}
-  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div><div><dt>Founders</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a> and <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a></dd></div><div><dt>UK business telephone</dt><dd><a href="tel:+447352036605">${company.publicTelephone}</a></dd></div><div><dt>Business enquiries email</dt><dd><a href="mailto:${company.publicEnquiriesEmail}">${company.publicEnquiriesEmail}</a></dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
+  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div><div><dt>Founders</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a> and <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a></dd></div><div><dt>Board of directors</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a>, <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a>, <a href="/leadership/girish-achliya/">Dr Girish Shantilal Achliya</a>, <a href="/leadership/helly-panchal/">Dr Helly Panchal</a></dd></div><div><dt>UK business telephone</dt><dd><a href="tel:+447352036605">${company.publicTelephone}</a></dd></div><div><dt>Business enquiries email</dt><dd><a href="mailto:${company.publicEnquiriesEmail}">${company.publicEnquiriesEmail}</a></dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Sourcing model", "Diversified by design, qualified product by product.")}<div class="grid grid-3">${sourcingPillars.map((pillar) => `<article class="card"><span class="status-label">${pillar.status}</span><h3>${pillar.title}</h3><p>${pillar.text}</p></article>`).join("")}</div></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });

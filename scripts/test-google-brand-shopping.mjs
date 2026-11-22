@@ -29,6 +29,9 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.equal(org.contactPoint.telephone, org.telephone);
   assert.equal(org.contactPoint.email, org.email);
   assert.deepEqual(org.founder.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare"]);
+  assert.deepEqual(org.member.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare", "Dr Girish Shantilal Achliya", "Dr Helly Panchal"]);
+  assert.equal(new Set(org.member.map(person => person["@id"])).size, 4, "Each statutory director must have a unique profile identity");
+  assert(org.founder.every(person => org.member.some(member => member.name === person.name)), "Founders are a documented subset of the directors");
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
   const approvedLogoAsset = ["assets", "brand", "pwa-icon-512.png"].join("/");
   assert.equal(org.logo["@id"], origin + "/#logo");
@@ -57,6 +60,9 @@ test("public company-facts page names the same UK organization and links genuine
   assert.match(html, /enquiries@novapharmhealthcare\.com/);
   assert.match(html, /\+44 7352 036605/);
   assert.match(html, /Prabhakar Vitthal Lahare/);
+  assert.match(html, /Board of directors/);
+  assert.match(html, /Dr Girish Shantilal Achliya/);
+  assert.match(html, /Dr Helly Panchal/);
   assert.match(html, /data-company-identity-links/);
   assert(html.includes('href="https://www.linkedin.com/company/novapharm-healthcare/"'), "Exact company LinkedIn href missing");
   assert(html.includes('href="https://www.wikidata.org/wiki/Q137660644"'), "Exact Wikidata href missing");
@@ -84,6 +90,9 @@ test("the actual Next.js corporate website uses the same Knowledge Panel entity 
   assert.equal(home.identifier.value, "16716501");
   assert(seoSource.includes("publicEnquiriesEmail") && seoSource.includes("publicTelephone"), "Next.js contact should match company source");
   assert(seoSource.includes('"prabhakar-lahare"'), "Next.js founder graph includes Prabhakar");
+  assert(seoSource.includes('"girish-achliya"') && seoSource.includes('"helly-panchal"'), "Next.js board graph must include both scientific directors");
+  assert(rendererSource.includes("data-board-directors") && rendererSource.includes("Dr Girish Shantilal Achliya") && rendererSource.includes("Dr Helly Panchal"), "Next.js must visibly link all four directors");
+  assert(!read("scripts/build-public-pages.mjs").includes('streetAddress: company.registeredStreet'), "Legacy generator must not republish a residential address in public Organization schema");
   assert(rendererSource.includes("publicEnquiriesEmail") && rendererSource.includes("publicTelephone"), "Visible corporate contact");
   assert(!home.address, "Registered residential address must remain absent from public Organization schema");
 });
