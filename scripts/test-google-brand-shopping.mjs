@@ -118,6 +118,20 @@ test("corporate sitemap dates stay aligned with the two published November ident
     "The Next.js sitemap must update only the two edited corporate URLs");
 });
 
+test("one canonical host is published across source sitemaps and robots", () => {
+  assert.equal(read("CNAME").trim(), "novapharmhealthcare.com");
+  for (const file of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xml"]) {
+    const xml = read(file);
+    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+    assert(urls.length > 0, "Sitemap has no URLs: " + file);
+    assert(urls.every(url => url.startsWith(origin + "/")), "Non-canonical host in " + file);
+    assert(!xml.includes("<loc>https://www.novapharmhealthcare.com/"), "www URL conflicts with apex canonical: " + file);
+  }
+  const robots = read("robots.txt");
+  assert(robots.includes("Sitemap: " + origin + "/sitemap.xml"));
+  assert(!robots.includes("Sitemap: https://www.novapharmhealthcare.com/"));
+});
+
 test("all 19 consumer product pages have a working storefront module and internally consistent Offers", () => {
   assert.equal(registered.length, 19);
   assert.equal(catalogue.products.length, 19);
