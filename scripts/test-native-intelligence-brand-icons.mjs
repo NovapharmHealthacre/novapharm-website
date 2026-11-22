@@ -61,7 +61,7 @@ test("Android launcher has density-specific icons plus source-verified adaptive 
   assert.deepEqual(dimensions(android+"drawable-nodpi/"+name),[432,432]);
  for(const name of ["ic_launcher.xml","ic_launcher_round.xml"]){
   const adaptive=text(android+"mipmap-anydpi-v26/"+name);
-  assert.ok(adaptive.includes("android:drawable=\"@color/nova_research_accent\""));
+  assert.ok(adaptive.includes("android:drawable=\"@color/novapharm_intelligence_icon_background\""));
   assert.ok(adaptive.includes("android:drawable=\"@drawable/ic_launcher_foreground\""));
   assert.ok(adaptive.includes("android:drawable=\"@drawable/ic_launcher_monochrome\""));
  }
