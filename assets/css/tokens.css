@@ -1,15 +1,20 @@
 :root {
   color-scheme: only light;
   font-optical-sizing: auto;
-  --bg: #f3f5f4;
-  --surface: #ffffff;
-  --surface-2: #e9eeec;
-  --surface-3: #dce6e2;
-  --paper: #fbfcfb;
+  /* Owner-approved Royal neutral identity */
+  --np-white-primary: #FBFAEF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
+  --bg: #FBFAEF;
+  --surface: #F8F7F3;
+  --surface-2: #F8F7F3;
+  --surface-3: #EDEBE5;
+  --paper: #FBFAEF;
   --ink: #0B0B0E;
   --text: #0B0B0E;
   --muted: #657078;
-  --line: #ccd5d2;
+  --line: #DEDCD5;
   --line-strong: #aebbb7;
   --brand: #9D1B32;
   --brand-2: #68101F;
