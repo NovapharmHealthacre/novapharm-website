@@ -28,7 +28,8 @@ const definitions = [
 ];
 
 export const UK_SOURCE_ARCHIVE_CONTRACTS = Object.freeze(definitions.map(([sourceId, jurisdiction, nation, periodPrecision, formats, factGrain, publisherHosts]) =>
-  Object.freeze({sourceId, jurisdiction, nation, periodPrecision, formats: Object.freeze(formats), factGrain, publisherHosts: Object.freeze(publisherHosts)})
+  Object.freeze({sourceId, jurisdiction, nation, periodPrecision, formats: Object.freeze(formats), factGrain, publisherHosts: Object.freeze(publisherHosts),
+    geographyApplicability: sourceId === 'nhsbsa.bnf-snomed-map' ? 'not_applicable' : 'source_specific'})
 ));
 
 const allowedFields = new Set([
@@ -111,6 +112,8 @@ export function validateUkNationalArchiveManifest(input) {
     sourceId: source.sourceId,
     jurisdiction: source.jurisdiction,
     nation: source.nation,
+    geographyApplicability: source.geographyApplicability,
+    geographicCoverageVerified: false,
     reportingPeriod: input.reportingPeriod,
     periodPrecision: source.periodPrecision,
     fileFormat: input.format,
@@ -213,6 +216,9 @@ export function verifyNationalComparisonBoundary(left, right) {
   if (a.factGrain !== b.factGrain || a.sourceId !== b.sourceId)
     deny('incompatible or overlapping measure definitions');
   if (left.sourceVersion === right.sourceVersion) deny('duplicate data version would be double counted');
-  return Object.freeze({nation: a.nation, sourceId: a.sourceId, period: left.reportingPeriod,
+  return Object.freeze({nation: a.geographyApplicability === 'not_applicable' ? null : a.nation,
+    geographyApplicability: a.geographyApplicability,
+    geographicCoverageVerified: false,
+    sourceId: a.sourceId, period: left.reportingPeriod,
     permittedOperation: 'version_reconciliation_only', canSumMetrics: false});
 }
