@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Pin the exact candidate tree; mutable draft branch advances must not silently change acceptance target.
-          ref: 7980391f128c51f0a5d15265239c61982ddd2ab2
+          ref: 959cd70b3ee30733ccb20278547ac8362af1bdfc
           path: contact-draft
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -62,6 +62,10 @@ jobs:
             'src="/assets/js/contact-production.js"'
           ];
           for (const marker of mustHave) assert.ok(h.includes(marker), "Missing contact design marker: " + marker);
+          const sharedCssLink = '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07">';
+          assert.ok(h.indexOf(sharedCssLink) >= 0 && h.indexOf(sharedCssLink) < h.indexOf('<style>'), "Shared CSS must load before Contact-specific Sovereign Black rules");
+          assert.equal(h.split(sharedCssLink).length-1,1);
+
           assert.equal((h.match(/type="checkbox"/g) || []).length, 2);
           assert.ok(!h.includes('data-email-enquiry-form'));
           assert.ok(h.includes('data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"'));
