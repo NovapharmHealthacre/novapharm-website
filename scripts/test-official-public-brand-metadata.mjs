@@ -139,3 +139,22 @@ test("Next Flight rewrite refuses missing or mismatched CSP signatures", () => {
   assert.throws(() => normaliseOfficialPublicBrandMetadata(page(wrongHash), palette),
     /matching original CSP hash/);
 });
+
+test("Next Flight literal replacement tokens remain intact when viewport metadata is updated", () => {
+  const tokens = ["$&", "$`", "$'"];
+  const flight = "self.__next_f.push(" + JSON.stringify([1,
+    '18:[["meta",' + JSON.stringify({name:"theme-color",content:"#E3120B"}) +
+    ']] ' + tokens.join(" ")]) + ")";
+  const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
+  const input = '<html><head><meta name="theme-color" content="#E3120B">' +
+    '<meta http-equiv="Content-Security-Policy" content="script-src \\'self\\' \\'sha256-' + digest(flight) + '\\'">' +
+    '</head><body><script>' + flight + '</script></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(input, palette);
+  const body = result.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1];
+  assert.ok(body);
+  for (const token of tokens) assert.ok(body.includes(token), "Lost literal Flight token " + token);
+  assert.match(body, /#FBFAEF/);
+  assert.doesNotMatch(body, /#E3120B/);
+  assert.ok(result.includes("'sha256-" + digest(body) + "'"));
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
+});
