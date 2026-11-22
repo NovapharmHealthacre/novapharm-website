@@ -7,6 +7,11 @@ on:
     paths:
       - '.github/workflows/native-intelligence-icon-candidate.yml'
       - 'scripts/programme/rebuild-native-intelligence-app-icons.mjs'
+      - 'scripts/test-native-intelligence-brand-icons.mjs'
+      - 'config/brand-identities.json'
+      - 'native/novapharm-intelligence-ios/App/NovaTheme.swift'
+      - 'native/novapharm-intelligence-ios/App/NovaRootView.swift'
+      - 'native/novapharm-intelligence-android/app/src/main/res/values/colors.xml'
       - 'assets/brand/**'
 
 permissions:
