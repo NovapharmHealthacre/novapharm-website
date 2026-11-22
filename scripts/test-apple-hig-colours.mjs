@@ -36,6 +36,10 @@ function check(tokenMap, foreground, background, minimum = 4.5) {
   );
 }
 
+const approvedNeutrals = JSON.parse(read("config/brand-identities.json")).neutralPalette;
+for (const [key, expected] of [["primaryWhite", "#FBFAEF"], ["secondaryWhite", "#F8F7F3"], ["defaultInk", "#0B0B0E"], ["subtleDivider", "#DEDCD5"]]) {
+  assert.equal(approvedNeutrals[key].hex, expected, `${key} canonical brand neutral has drifted`);
+}
 const light = tokensFor(":root {");
 const dark = tokensFor(':root[data-np-color-scheme="dark"] {');
 assert.equal(light["--np-color-label"], "#0b0b0e", "Official website label ink must be Sovereign Black");
