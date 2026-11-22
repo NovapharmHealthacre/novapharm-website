@@ -19,6 +19,7 @@ function roleFor(name,period,sourceId){
   if(name.length>120||!/^[A-Za-z0-9._-]+$/.test(name)||name.includes('..'))refuse('unsafe filename');
   const base=name.toLowerCase().replace(/\.(?:txt|csv|dat)$/,'');
   const profile=WALES_ZIP_PROFILES[sourceId];
+  if(profile.hasBnf && !/\.csv$/i.test(name))refuse('independent pharmacist members must be CSV');
   if(base===profile.main+period.replace('-','')) {
     if(profile.hasBnf && !/\.csv$/i.test(name))refuse('independent pharmacist main member must be CSV');
     return profile.mainRole;
