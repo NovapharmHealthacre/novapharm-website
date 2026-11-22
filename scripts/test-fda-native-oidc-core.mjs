@@ -97,7 +97,7 @@ test("PKCE uses secure random S256 and stores only expiring access token via inj
  assert.equal(await verifiedNativeFdaAccessToken(config,adapter),mockedToken);
  await signOutNativeFda(adapter);
  assert.equal(stats().stored,null);
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
 });
 test("callback state replay, duplicate states, cross-origin and error redirects are rejected",async()=>{
  for(const url of [
@@ -141,8 +141,100 @@ test("invalid token responses never save identity or bearer content",async()=>{
    assert.equal(stats().stored,null);
  }
 });
+test("cancelled or failed second Android sign-in clears previously held board access token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.ok(stats().stored?.token);
+ await assert.rejects(authenticateNativeFdaWithPkce(config,{
+   ...adapter,openSystemAuthSession:async()=>null
+ }),/cancelled/);
+ assert.equal(stats().stored,null);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
+});
+test("unexpected OAuth callback parameters are rejected before token exchange",async()=>{
+ const {adapter,stats}=platform({openSystemAuthSession:async(uri,redirect)=>{
+   const state=new URL(uri).searchParams.get("state");
+   return redirect+"?code=PROTECTED_CODE&state="+state+"&access_token=attacker";
+ }});
+ await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/Invalid sign-in/);
+ assert.equal(stats().network,0);
+});
 test("expiry and revoked or empty keystore entries deny subsequent requests",async()=>{
  const {adapter,stats}=platform({nowMs:()=>1795300000000});
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
+ assert.equal(stats().stored,null);
+});
+
+test("Android in-flight Keystore save cannot restore board token after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseSave=()=>{},onEnter=()=>{};
+ const entered=new Promise(resolve=>{onEnter=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseSave=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  save:async value=>{onEnter();await waitForRelease;await adapter.secureStore.save(value);}
+ };
+ const signed={...adapter,secureStore};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const logout=signOutNativeFda(signed);
+ releaseSave();
+ const [authResult,logoutResult]=await Promise.allSettled([pending,logout]);
+ assert.equal(authResult.status,"rejected","a sign-in superseded by sign-out must not report success");
+ assert.equal(logoutResult.status,"fulfilled");
+ assert.equal(stats().stored,null,"sign-out must clear even an in-flight save");
+ await assert.rejects(verifiedNativeFdaAccessToken(config,signed),/expired|changed/);
+});
+test("Android cancelled in-flight OAuth response cannot save tokens after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFetch=()=>{},onFetch=()=>{};
+ const entered=new Promise(resolve=>{onFetch=resolve;});
+ const pendingResult=new Promise(resolve=>{releaseFetch=resolve;});
+ const signed={...adapter,fetchImpl:async (url,init)=>{
+  onFetch();await pendingResult;
+  return adapter.fetchImpl(url,init);
+ }};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ await signOutNativeFda(signed);
+ releaseFetch();
+ await assert.rejects(pending,/superseded/);
+ assert.equal(stats().stored,null);
+});
+test("Android secure-store deletion is serialized across concurrent sign-ins",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFirst=()=>{},onClear=()=>{},number=0;
+ const entered=new Promise(resolve=>{onClear=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseFirst=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  clear:async()=>{
+   number++;
+   if(number===1){onClear();await waitForRelease;}
+   return adapter.secureStore.clear();
+  }
+ };
+ const signed={...adapter,secureStore};
+ const first=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const second=authenticateNativeFdaWithPkce(config,signed);
+ releaseFirst();
+ const results=await Promise.allSettled([first,second]);
+ assert.deepEqual(results.map(x=>x.status),["rejected","fulfilled"]);
+ assert.equal(stats().stored?.token,mockedToken);
+});
+
+test("Android Keystore deletion failure leaves session revoked instead of exposing stale board token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.equal(stats().stored?.token,mockedToken);
+ // Reuse the same injected store identity throughout a session: swapping
+ // adapters would create a different synchronization domain.
+ const originalClear=adapter.secureStore.clear;
+ adapter.secureStore.clear=async()=>{throw Error("Keystore temporary failure");};
+ await assert.rejects(signOutNativeFda(adapter),/Keystore temporary failure/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/changed/);
+ adapter.secureStore.clear=originalClear;
+ await signOutNativeFda(adapter);
  assert.equal(stats().stored,null);
 });

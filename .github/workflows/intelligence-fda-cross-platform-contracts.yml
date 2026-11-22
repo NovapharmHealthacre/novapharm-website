@@ -41,6 +41,7 @@ jobs:
         run: |
           node --check src/core/regulatory/fda-private-http-handler.mjs
           node --check src/core/regulatory/fda-data-admission.mjs
+          node --check scripts/test-fda-private-http-handler.mjs
       - name: Run exhaustive negative authentication, data and mobile transport tests
         run: |
           node --experimental-strip-types --test scripts/test-fda-private-http-handler.mjs scripts/test-fda-governance-admission.mjs scripts/test-fda-native-gateway.mjs scripts/test-fda-native-oidc-core.mjs scripts/test-fda-private-release-plan.mjs
