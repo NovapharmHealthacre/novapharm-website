@@ -13,6 +13,16 @@ enum NovaTheme {
             ? UIColor.label
             : UIColor(red: 11.0 / 255, green: 11.0 / 255, blue: 14.0 / 255, alpha: 1)
     })
-    static let surface = Color(uiColor: .secondarySystemGroupedBackground)
-    static let background = Color(uiColor: .systemGroupedBackground)
+    // Owner-approved Royal Mineral White (#FBFAEF) and Royal Porcelain White
+    // (#F8F7F3) for the light appearance. Native dark materials remain dynamic.
+    static let surface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor.secondarySystemGroupedBackground
+            : UIColor(red: 248.0 / 255, green: 247.0 / 255, blue: 243.0 / 255, alpha: 1)
+    })
+    static let background = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor.systemGroupedBackground
+            : UIColor(red: 251.0 / 255, green: 250.0 / 255, blue: 239.0 / 255, alpha: 1)
+    })
 }
