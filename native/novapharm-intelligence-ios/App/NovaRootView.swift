@@ -24,7 +24,7 @@ private struct PreviewNotice: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("PRIVATE SWIFT PREVIEW")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(NovaTheme.primaryInk)
             Text("No mobile sign-in, live medicine data, customer records, payments or warehouse operations are enabled.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

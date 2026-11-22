@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="nova_research_canvas">#FFFFFF</color>
-    <color name="nova_research_primary">#1D1D1F</color>
+    <color name="nova_research_primary">#0B0B0E</color>
     <color name="nova_research_secondary">#424245</color>
     <color name="nova_research_accent">#2546D8</color>
 </resources>
