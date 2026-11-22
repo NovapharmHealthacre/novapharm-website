@@ -17,9 +17,10 @@ assert.equal(palette.divider, "#DEDCD5", "Owner-approved divider changed");
 assert.equal(identities.neutralPalette.primaryWhite.hex, palette.primary);
 assert.ok(Array.isArray(register), "Canonical SEO register must be an array");
 
-// Never guess a minimum route count: the reviewed register currently contains
-// 58 canonical files. Exact completeness is defined by the same governed inputs
-// used by enhance-seo-authority, including dynamic Insights and Nutraxin files.
+// The checked-in register has 58 prior-generation pages; a full current
+// build adds Distribution, Market Access, Markets and ESCO (62 expected today).
+// Never hard-code that count: enforce the same complete governed source inventory
+// as enhance-seo-authority, including dynamic Insights and Nutraxin files.
 const retiredOrCompatibilitySlugs = new Set([
   "search", "technology/ai-governance", "product-portfolio",
   "product-portfolio/nutraxin"
