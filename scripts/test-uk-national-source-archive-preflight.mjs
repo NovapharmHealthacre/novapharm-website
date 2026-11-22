@@ -81,6 +81,29 @@ test('no cross-nation, cross-grain or cross-period metric summation',()=>{
   assert.equal(result.permittedOperation,'version_reconciliation_only');
 });
 
+test('version-only reconciliation refuses missing or source-incompatible period metadata',()=>{
+  const a={sourceId:'nhsbsa.epd',reportingPeriod:'2026-09',sourceVersion:'A'};
+  const b={...a,sourceVersion:'B'};
+  for(const reportingPeriod of [undefined,null,'','2026-13','2026-Q3','2026-09-01']){
+    assert.throws(()=>verifyNationalComparisonBoundary({...a,reportingPeriod},b),/invalid reporting period/);
+    assert.throws(()=>verifyNationalComparisonBoundary(a,{...b,reportingPeriod}),/invalid reporting period/);
+  }
+  const quarterly={sourceId:'phs.prescribed-dispensed',reportingPeriod:'2026-Q3',sourceVersion:'A'};
+  assert.throws(()=>verifyNationalComparisonBoundary({...quarterly,reportingPeriod:'2026-09'},
+    {...quarterly,sourceVersion:'B'}),/invalid reporting period/);
+});
+test('version-only reconciliation rejects missing or malformed source versions',()=>{
+  const a={sourceId:'nhsbsa.epd',reportingPeriod:'2026-09',sourceVersion:'A'};
+  const b={...a,sourceVersion:'B'};
+  for(const sourceVersion of [undefined,null,'','two words','../untrusted','x'.repeat(101),0]){
+    assert.throws(()=>verifyNationalComparisonBoundary({...a,sourceVersion},b),/missing or invalid source version/);
+    assert.throws(()=>verifyNationalComparisonBoundary(a,{...b,sourceVersion}),/missing or invalid source version/);
+  }
+  const approved=verifyNationalComparisonBoundary(a,b);
+  assert.equal(approved.permittedOperation,'version_reconciliation_only');
+  assert.equal(approved.canSumMetrics,false);
+});
+
 test('CLI validates quarantined publisher fixture without disclosing source paths',async()=>{
   const {execFileSync}=await import('node:child_process');
   const root=await mkdtemp(join(tmpdir(),'uk-cli-'));
