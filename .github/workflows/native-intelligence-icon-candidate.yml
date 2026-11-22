@@ -13,6 +13,8 @@ on:
       - 'assets/css/novapharm.bundle.css'
       - 'scripts/test-official-brand-triad.mjs'
       - 'assets/css/tokens.css'
+      # Re-run source-linked icon inventory after inherited parent token refinement.
+      - 'apps/founder/app/base.css'
       - 'native/novapharm-intelligence-ios/App/NovaTheme.swift'
       - 'native/novapharm-intelligence-ios/App/NovaRootView.swift'
       - 'native/novapharm-intelligence-android/app/src/main/res/values/colors.xml'
