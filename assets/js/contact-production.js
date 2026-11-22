@@ -12,6 +12,10 @@ if (form instanceof HTMLFormElement) {
     if (submit) submit.disabled = true;
     if (status) status.textContent = "Secure online enquiries are temporarily unavailable. Please use the published business email address.";
   } else {
+    // The static document fails closed with a disabled submit control. Enable it
+    // only after this managed client has loaded and validated its API origin.
+    if (submit) submit.disabled = false;
+    if (status) status.textContent = "";
     const requestedType = new URLSearchParams(location.search).get("enquiry");
     const topic = form.elements.namedItem("enquiryType");
     if (topic instanceof HTMLSelectElement && requestedType) {
