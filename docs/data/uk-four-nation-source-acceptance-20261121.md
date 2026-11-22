@@ -53,3 +53,14 @@ Publisher references:
 - https://www.opendata.nhs.scot/dataset/prescriptions-in-the-community
 - https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/general-practice-prescribing-data-extract/
 - https://www.opendatani.gov.uk/dataset/gp-prescribing-data
+
+## Welsh medicine source-family coverage extension — 22 November 2026
+
+The following five extra **official source families** are now separate, documented-adapter-pending candidates in the draft source registry. They are not live data adapters:
+- `nwssp.hospital-prescribing`: [Hospital Prescribing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/hospital-prescribing-data-extract/). Hospital-origin prescribing is not GP-origin prescribing, inpatient use or total hospital purchasing.
+- `nwssp.dental-prescribing`: [Dental Prescribing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/dental-prescribing-data-extract/). Dental-origin prescribing and GP-origin prescribing have separate and potentially overlapping dispensing geographies.
+- `nwssp.independent-pharmacist-prescribing`: [Independent Prescribing - Pharmacist](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/independent-prescribing-pharmacist/). Pharmacist independent prescriber activity is not interchangeable with GP practice or hospital prescribing.
+- `nwssp.gp-dispensing`: [General Practice Dispensing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/dispensing-data-extracts2/general-practice-dispensing-data-extract/). Dispensing extracts and GP prescribing extracts may represent related claims and must not be summed.
+- `nwssp.english-dispensing`: [English Dispensing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/dispensing-data-extracts2/english-dispensing-data-extract/). Cross-border dispensing must not be double counted in national prescribing totals.
+
+The existing `nwssp.gp-prescribing` monthly presentation file and `nwssp.practice-pharmacy-flow` four-sheet workbook do not substitute for hospital, dental, independent-pharmacist or cross-border dispensing data. Source-specific release schedules, authoritative source versions, real archive checksums, field schemas, historical revisions, BNF/dm+d rights and clinical harmonisation need independent Quality and Legal review. No extra source is downloadable, ingested or customer-live solely because it is documented here.

@@ -156,3 +156,18 @@ test("DataStore SQL accepts one bounded SELECT and rejects mutation tokens", asy
   await client.datastoreSearchSql("SELECT * FROM resource LIMIT 10");
   assert.throws(() => client.datastoreSearchSql("SELECT * FROM resource; DROP TABLE resource"));
 });
+
+
+test("NHS Wales hospital, dental, independent prescriber and dispensing source families remain separate metadata-only candidates", () => {
+  const ids = ["nwssp.hospital-prescribing","nwssp.dental-prescribing","nwssp.independent-pharmacist-prescribing","nwssp.gp-dispensing","nwssp.english-dispensing"];
+  assert.equal(new Set(ids).size, ids.length);
+  for (const id of ids) {
+    const entry = registryEntry(id);
+    assert.equal(entry.jurisdiction, "Wales");
+    assert.equal(entry.accessMethod, "file_download");
+    assert.equal(entry.status, "documented_adapter_pending");
+    assert.equal(entry.latestResourceId, null);
+    assert.equal(entry.lastSuccessfullyIngestedAt, null);
+    assert.equal(shouldProbeCkanDatastore(entry), false);
+  }
+});
