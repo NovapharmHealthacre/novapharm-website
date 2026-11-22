@@ -1,0 +1,189 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "SOURCE-ONLY NovaPharm board FDA atomic quota DynamoDB table, zero resources with defaults. Never deploy without cost, rights, security, and owner signoff.",
+  "Parameters": {
+    "QuotaTableName": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|[A-Za-z0-9][A-Za-z0-9_.-]{1,253}[A-Za-z0-9])$",
+      "Description": "Reviewed new isolated table name; no existing shared-table reuse"
+    },
+    "OwnerProductionSignoff": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Manual external approval; must not be inferred from CI"
+    },
+    "QuotaProvisioningApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Manual external approval; must not be inferred from CI"
+    },
+    "SecurityAndIAMApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Manual external approval; must not be inferred from CI"
+    },
+    "BudgetAndBillingApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Manual external approval; must not be inferred from CI"
+    },
+    "IndependentReleaseAcceptance": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Manual external approval; must not be inferred from CI"
+    }
+  },
+  "Conditions": {
+    "CreateApprovedQuota": {
+      "Fn::And": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "OwnerProductionSignoff"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "QuotaProvisioningApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "SecurityAndIAMApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "BudgetAndBillingApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "IndependentReleaseAcceptance"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "QuotaTableName"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "FDAIsolatedQuotaTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Condition": "CreateApprovedQuota",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": {
+          "Ref": "QuotaTableName"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "PK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "SK",
+            "KeyType": "RANGE"
+          }
+        ],
+        "TimeToLiveSpecification": {
+          "AttributeName": "ttlEpoch",
+          "Enabled": true
+        },
+        "SSESpecification": {
+          "SSEEnabled": true,
+          "SSEType": "KMS"
+        },
+        "Tags": [
+          {
+            "Key": "novapharm:service",
+            "Value": "fda-board-private-quota"
+          },
+          {
+            "Key": "novapharm:data-classification",
+            "Value": "hmac-pseudonymous"
+          },
+          {
+            "Key": "novapharm:release",
+            "Value": "independently-approved-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ApprovalResult": {
+      "Description": "Default has zero resources and does not grant access or release FDA",
+      "Value": {
+        "Fn::If": [
+          "CreateApprovedQuota",
+          "table_created_only_no_iam_or_api",
+          "disabled_zero_resources"
+        ]
+      }
+    },
+    "ApprovedQuotaTableName": {
+      "Condition": "CreateApprovedQuota",
+      "Value": {
+        "Ref": "FDAIsolatedQuotaTable"
+      }
+    }
+  }
+}
