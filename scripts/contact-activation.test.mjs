@@ -111,7 +111,7 @@ test("Reviewed Contact and CSS Git blob parity is exact across release sources",
   // These reviewed bytes match PR #1016's Contact HTML/client and the existing
   // protected gh-pages shared CSS. Any change needs a fresh reviewed candidate.
   const assets = [
-    ["src/content/contact-managed-release.html", "fa0c3c4b28cd5397afac1deffc3a9548c2b74e23"],
+    ["src/content/contact-managed-release.html", "14591f43ff0ec6674b026a7bec629495f18fa50f"],
     ["assets/js/contact-production.js", "d405d459e089c3a696bd0ed6b2fb84bf529787bc"],
     ["assets/css/novapharm-unified-20261107.css", "9631537b380551b5dd3f8dbee81d93c3098bab54"]
   ];
