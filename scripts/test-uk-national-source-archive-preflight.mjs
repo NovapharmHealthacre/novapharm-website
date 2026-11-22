@@ -273,3 +273,26 @@ test('unverified Welsh dispensing files cannot masquerade as supported archive c
   ...base,sourceId:'nhsbsa.bnf-snomed-map',sourceVersion:'B'
  }),/measure definitions/);
 });
+
+test('publisher discovery timestamp must be a real UTC calendar instant, not Date.parse rollover',()=>{
+ const source='nhsbsa.epd';
+ for(const impossible of [
+  '2026-02-30T01:02:03Z',
+  '2025-02-29T01:02:03Z',
+  '2026-04-31T01:02:03Z',
+  '2026-13-01T01:02:03Z',
+  '2026-11-22T25:00:00Z',
+  '2026-11-22T10:60:00Z',
+  '2026-11-22T10:20:60Z',
+  '2026-11-22T10:20:30+01:00',
+  '2026-11-22T10:20:30.1234Z'
+ ]) assert.throws(()=>validateUkNationalArchiveManifest(fixture(source,{discoveredAt:impossible})),
+                   /invalid metadata discovery date/,impossible);
+ for(const valid of ['2024-02-29T00:00:00Z',
+                     '2026-11-22T10:20:30.1Z',
+                     '2026-11-22T10:20:30.123Z']){
+  const r=validateUkNationalArchiveManifest(fixture(source,{discoveredAt:valid}));
+  assert.equal(r.canPublish,false);
+  assert.equal(r.canIngest,false);
+ }
+});
