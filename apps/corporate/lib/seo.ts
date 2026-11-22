@@ -50,8 +50,8 @@ export function organisationSchema() {
     image: {
       "@type": "ImageObject",
       "@id": `${siteUrl}/#wordmark`,
-      url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
-      contentUrl: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
+      url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.svg`,
+      contentUrl: `${siteUrl}/assets/brand/novapharm-healthcare-logo.svg`,
       width: 2048,
       height: 258,
       caption: company.name,
