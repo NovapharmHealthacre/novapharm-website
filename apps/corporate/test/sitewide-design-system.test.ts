@@ -96,7 +96,7 @@ test("forensic page identity and privacy choices do not regress", () => {
 test("brand red token remains identical across public and managed corporate design", () => {
   const publicTokens = readFileSync(path.join(root, "../../assets/css/tokens.css"), "utf8");
   assert.match(publicTokens, /--brand:\s*#9D1B32/i);
-  assert.match(style, /--nph-accent:\s*#9D1B32/ii);
+  assert.match(style, /--nph-accent:\s*#9D1B32/i);
   assert.match(style, /--red-dark:\s*#68101F/i);
   assert.match(style, /--pharma-red-dark:\s*#68101F/i);
   assert.match(style, /--nph-link:\s*#0066cc/i, "Links and focus should remain distinguishable from brand CTAs");
