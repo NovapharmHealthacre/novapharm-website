@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "OnlyAtomicFDAQuotaUpdateWithinReviewedTable",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:UpdateItem"
+      ],
+      "Resource": "arn:aws:dynamodb:eu-north-1:APPROVED_ACCOUNT_ID:table/APPROVED_FDA_QUOTA_TABLE",
+      "Condition": {
+        "ForAllValues:StringLike": {
+          "dynamodb:LeadingKeys": [
+            "FDA_QUOTA#*"
+          ]
+        }
+      }
+    }
+  ]
+}
