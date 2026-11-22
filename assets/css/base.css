@@ -3,7 +3,7 @@
   --bg: #f7f8fa;
   --surface: #ffffff;
   --surface-2: #eef2f5;
-  --ink: #0d1726;
+  --ink: #0B0B0E;
   --text: #344054;
   --muted: #667085;
   --line: #d0d5dd;
@@ -29,7 +29,7 @@ body {
   margin: 0;
   font-family: var(--font);
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

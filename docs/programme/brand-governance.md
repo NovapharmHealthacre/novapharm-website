@@ -48,3 +48,9 @@ Evidence: `final-report/official-logo-register.md`, `creative-assets/asset-regis
 ## Superseding owner decision — 22 November 2026
 
 The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), with accessible deep hover shade `#68101F`. The separate NovaPharm Distribution primary logo uses Near-black Garnet `#3D0B13`. This decision supersedes August 2026 references to the former Economist Red. Approved reverse/monochrome variants retain their contrast-specific uses. Unrecoloured PNG, ICO, application-icon and social-card files in the earlier asset pack remain historical derivatives and require a separately verified re-render before they may be described as colour-current.
+
+## Superseding owner decision — Sovereign Black, 22 November 2026
+
+The official default on-screen black is **NovaPharm Sovereign Black `#0B0B0E`** (RGB 11, 11, 14). It governs primary body copy, headings, navigation text, standard labels, and neutral primary actions across the corporate website, Portal, Intelligence/technology, and Distribution interfaces wherever a dark-on-light colour is intended. Previous default black/ink values such as `#1D1D1F`, `#111111`, `#111113`, and dark-navy stand-ins are superseded as defaults; separately intentional navy backgrounds and graphite secondary labels remain distinct semantic colours. In reviewed dark mode, foreground labels remain light for accessibility; do not force dark text onto dark surfaces. `#000000` remains available solely as pure technical/monochrome black when an output medium requires it. This decision does **not** change Distribution's branded near-black garnet `#3D0B13`, Healthcare's primary crimson `#9D1B32`, or Intelligence's selected ultramarine `#2546D8`.
+
+The token changes are review-branch source work only until exact-head CI, generated-bundle parity, browser contrast and deployment checks are approved; do not infer a live publication from this specification.

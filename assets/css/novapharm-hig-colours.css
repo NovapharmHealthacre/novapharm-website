@@ -11,7 +11,7 @@
   --np-color-surface: #f5f5f7;
   --np-color-surface-recessed: #e8e8ed;
   --np-color-surface-raised: #ffffff;
-  --np-color-label: #1d1d1f;
+  --np-color-label: #0B0B0E;
   --np-color-secondary-label: #424245;
   --np-color-tertiary-label: #595961;
   --np-color-placeholder: #6e6e73;
@@ -22,7 +22,7 @@
   --np-color-accent-strong: #68101F;
   --np-color-accent-soft: #F8EDF0;
   --np-color-on-accent: #ffffff;
-  --np-color-primary-action: #1d1d1f;
+  --np-color-primary-action: #0B0B0E;
   --np-color-on-primary-action: #ffffff;
   --np-color-primary-action-hover: #343437;
   --np-color-success: #17745a;
@@ -53,9 +53,9 @@
   --np-color-accent: #F0A3B2;
   --np-color-accent-strong: #F7C8D0;
   --np-color-accent-soft: #351921;
-  --np-color-on-accent: #1d1d1f;
+  --np-color-on-accent: #0B0B0E;
   --np-color-primary-action: #f5f5f7;
-  --np-color-on-primary-action: #1d1d1f;
+  --np-color-on-primary-action: #0B0B0E;
   --np-color-primary-action-hover: #e5e5e7;
   --np-color-success: #65d6a9;
   --np-color-warning: #f0c671;
@@ -80,9 +80,9 @@
     --np-color-accent: #F0A3B2;
     --np-color-accent-strong: #F7C8D0;
     --np-color-accent-soft: #351921;
-    --np-color-on-accent: #1d1d1f;
+    --np-color-on-accent: #0B0B0E;
     --np-color-primary-action: #f5f5f7;
-    --np-color-on-primary-action: #1d1d1f;
+    --np-color-on-primary-action: #0B0B0E;
     --np-color-primary-action-hover: #e5e5e7;
     --np-color-success: #65d6a9;
     --np-color-warning: #f0c671;
@@ -111,7 +111,7 @@
     --np-color-link: #a6d1ff;
     --np-color-accent: #F7C8D0;
     --np-color-accent-strong: #ffcac7;
-    --np-color-on-accent: #1d1d1f;
+    --np-color-on-accent: #0B0B0E;
     --np-color-focus: #a6d1ff;
   }
 }
@@ -125,7 +125,7 @@
     --np-color-link: #a6d1ff;
     --np-color-accent: #F7C8D0;
     --np-color-accent-strong: #ffcac7;
-    --np-color-on-accent: #1d1d1f;
+    --np-color-on-accent: #0B0B0E;
     --np-color-focus: #a6d1ff;
   }
 }
@@ -139,7 +139,7 @@
   --surface-3: var(--np-color-surface-recessed);
   --paper: var(--np-color-canvas);
   --ink: var(--np-color-label);
-  --text: var(--np-color-secondary-label);
+  --text: var(--np-color-label);
   --muted: var(--np-color-tertiary-label);
   --line: var(--np-color-separator);
   --line-strong: var(--np-color-separator-strong);
@@ -156,7 +156,7 @@
   --nph-canvas: var(--np-color-canvas);
   --nph-silver: var(--np-color-surface);
   --nph-ink: var(--np-color-label);
-  --nph-body: var(--np-color-secondary-label);
+  --nph-body: var(--np-color-label);
   --nph-muted: var(--np-color-tertiary-label);
   --nph-line: var(--np-color-separator);
   --nph-link: var(--np-color-link);

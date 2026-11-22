@@ -9,7 +9,8 @@
   },
   "neutral": {
     "white": "#FFFFFF",
-    "black": "#000000",
-    "nearBlack": "#111111"
+    "black": "#0B0B0E",
+    "pureBlack": "#000000",
+    "nearBlack": "#0B0B0E"
   }
 }
