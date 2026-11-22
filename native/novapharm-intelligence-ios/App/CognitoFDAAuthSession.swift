@@ -118,6 +118,12 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
               config.isValid(bundleID:Bundle.main.bundleIdentifier) else {
             completion(.failure(NovaFDAOIDCError.unapproved));return
         }
+        // A cancelled or failed account switch must never leave the previous
+        // board access token usable while another OAuth session is underway.
+        guard activeSession == nil else {
+            completion(.failure(NovaFDAOIDCError.unapproved));return
+        }
+        store.clear()
         do {
             let verifier=fdaURLSafeBase64(try secureRandomData(length:32))
             let state=fdaURLSafeBase64(try secureRandomData(length:32))
@@ -166,7 +172,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
             session.presentationContextProvider=self
             activeSession=session
             guard session.start() else {throw NovaFDAOIDCError.unapproved}
-        } catch { activeSession=nil;completion(.failure(error)) }
+        } catch { activeSession=nil;store.clear();completion(.failure(error)) }
     }
 
     private func exchange(code:String,verifier:String) async throws -> String {
