@@ -131,6 +131,14 @@ test("generated Portal logo uses exact owner SVG and real PNG raster fallback", 
   assert.notEqual(brand.brands.healthcare.primaryVector, "/assets/brand/novapharm-healthcare-logo.png");
 });
 
+test("Portal navigation status and warehouse source disclaimer preserve accessible ink", () => {
+  const portal = text("apps/portal/app/apple-pharma-portal.css");
+  const warehouse = text("apps/portal/app/employee-distribution.css");
+  assert.match(portal, /\\.workspace-sidebar nav a\\.active > small \\{[^}]*color: #0B0B0E;/);
+  assert.match(warehouse, /\\.distribution-wms-workspace-map-disclaimer\\{[^}]*color:#595961/);
+  assert.doesNotMatch(warehouse, /\\.distribution-wms-workspace-map-disclaimer\\{[^}]*color:#73737a/i);
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
