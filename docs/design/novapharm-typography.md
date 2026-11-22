@@ -20,7 +20,7 @@ Apple's downloadable DMG files are **not committed, copied, converted, embedded,
 - **Consistency:** shared UI/compact/mono/editorial typography roles across the public website and separately deployed Next.js apps.
 - **Focus:** native focus-visible outlines, distinct active/disabled states, reduced motion, no ornamental typography, and 44px pointer/touch targets where practical.
 - **Data clarity:** use `font-variant-numeric: tabular-nums` for quantities, dates and finance; use monospaced type for IDs, not all metrics.
-- **Brand distinction:** retain NovaPharm's own logo, red `#E3120B`, photography, product evidence and page-specific designs; no implication of Apple affiliation.
+- **Brand distinction:** retain NovaPharm's own logo, red `#9D1B32`, photography, product evidence and page-specific designs; no implication of Apple affiliation.
 
 ## Usage
 
@@ -81,3 +81,7 @@ The source-level contract covers `assets/css/tokens.css` and
 Technology app, Status app, founder app and shared React design system.
 Independent apps must still be individually redeployed and smoke-tested to
 assert their own live URLs; a public GitHub Pages release does not deploy them.
+
+## 22 November 2026 — global neutral ink
+
+The official default web typographic ink is `#0B0B0E` (Sovereign Black) for light backgrounds, headings, body text, menus and neutral actions. This is a text/UI colour, **not** a demand to replace dark-mode light labels or the distinct Healthcare, Distribution and Intelligence identity colours. Use SF Pro via OS system UI where available, compact/native UI roles for dense tables, OS mono for identifiers, and New York only for purposeful editorial accents with legal platform fallbacks. Apple DMG/TTF/OTF resources must not be embedded in public website builds.

@@ -9,7 +9,7 @@
   --surface: #ffffff;
   --surface-2: #eef2f5;
   --ink: #0B0B0E;
-  --text: #344054;
+  --text: #0B0B0E;
   --muted: #667085;
   --line: #d0d5dd;
   --brand: #9D1B32;
@@ -23,7 +23,7 @@
   --danger: #b91c1c;
   --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
   --radius: 8px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+  --font: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
   --serif: var(--font);
   --container: 1240px;
 }
@@ -1262,6 +1262,7 @@ td { color: var(--text); }
 /* Source: tokens.css */
 :root {
   color-scheme: only light;
+  --np-brand-black: #0B0B0E;
   font-optical-sizing: auto;
   --bg: #f3f5f4;
   --surface: #ffffff;
@@ -7051,8 +7052,8 @@ body[data-page="cro"] .cro-leadership-proof {
   --corporate-product-discipline-contract: 1;
   --npd-red: #9D1B32;
   --npd-red-dark: #68101F;
-  --npd-ink: #111111;
-  --npd-text: #3f454b;
+  --npd-ink: #0B0B0E;
+  --npd-text: #0B0B0E;
   --npd-muted: #626970;
   --npd-line: #d7dadd;
   --npd-line-strong: #aeb3b8;
@@ -9370,7 +9371,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column a {
     display: block;
     width: fit-content;
-    color: #1d1d1f;
+    color: #0B0B0E;
     font-size: 14px;
     line-height: 1.4;
     font-weight: 540;
@@ -9421,7 +9422,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   border:1px solid #d6d6db;
   border-radius:999px;
   background:#fff;
-  color:#1d1d1f;
+  color:#0B0B0E;
   font-weight:610;
 }
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
@@ -9548,7 +9549,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 
 /* Public account pathway — optional HIG-aligned explanation, never a login gate. */
-.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#0B0B0E}
 .npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
 .npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
 .npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
@@ -11133,7 +11134,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-on-accent: #ffffff;
   --np-color-primary-action: #0B0B0E;
   --np-color-on-primary-action: #ffffff;
-  --np-color-primary-action-hover: #343437;
+  --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;
   --np-color-destructive: #9e1b47;

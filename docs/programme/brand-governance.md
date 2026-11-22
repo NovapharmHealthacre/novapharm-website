@@ -47,10 +47,21 @@ Evidence: `final-report/official-logo-register.md`, `creative-assets/asset-regis
 
 ## Superseding owner decision — 22 November 2026
 
-The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), with accessible deep hover shade `#68101F`. The separate NovaPharm Distribution primary logo uses Near-black Garnet `#3D0B13`. This decision supersedes August 2026 references to the former Economist Red. Approved reverse/monochrome variants retain their contrast-specific uses. Unrecoloured PNG, ICO, application-icon and social-card files in the earlier asset pack remain historical derivatives and require a separately verified re-render before they may be described as colour-current.
+The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), with accessible deep hover shade `#68101F`. The separate NovaPharm Distribution primary logo uses Near-black Garnet `#3D0B13`. The previous Economist Red `#E3120B` is retained here **only as deprecated historical colour evidence**; it is not permitted as the current primary identity. This decision supersedes August 2026 references to the former Economist Red. Approved reverse/monochrome variants retain their contrast-specific uses. Unrecoloured PNG, ICO, application-icon and social-card files in the earlier asset pack remain historical derivatives and require a separately verified re-render before they may be described as colour-current.
 
-## Superseding owner decision — Sovereign Black, 22 November 2026
+## Owner-approved three-brand palette and Apple-inspired typography (22 November 2026)
 
-The official default on-screen black is **NovaPharm Sovereign Black `#0B0B0E`** (RGB 11, 11, 14). It governs primary body copy, headings, navigation text, standard labels, and neutral primary actions across the corporate website, Portal, Intelligence/technology, and Distribution interfaces wherever a dark-on-light colour is intended. Previous default black/ink values such as `#1D1D1F`, `#111111`, `#111113`, and dark-navy stand-ins are superseded as defaults; separately intentional navy backgrounds and graphite secondary labels remain distinct semantic colours. In reviewed dark mode, foreground labels remain light for accessibility; do not force dark text onto dark surfaces. `#000000` remains available solely as pure technical/monochrome black when an output medium requires it. This decision does **not** change Distribution's branded near-black garnet `#3D0B13`, Healthcare's primary crimson `#9D1B32`, or Intelligence's selected ultramarine `#2546D8`.
+| Identity | Primary | Use |
+| --- | --- | --- |
+| NovaPharm Healthcare | `#9D1B32` | Corporate / customer-facing logo and controlled accent |
+| NovaPharm Distribution | `#3D0B13` | Operational and warehouse identity |
+| NovaPharm Intelligence | `#2546D8` | Research, intelligence sign-in, native Intelligence UI |
+| Shared Sovereign Black | `#0B0B0E` | Default light-mode text, labels and neutral actions across web properties |
 
-The token changes are review-branch source work only until exact-head CI, generated-bundle parity, browser contrast and deployment checks are approved; do not infer a live publication from this specification.
+Typography hierarchy is OS-provided SF Pro/system interface; SF Compact-style tables; SF Mono-style IDs; New York editorial accents with platform-safe fallback. No Apple proprietary binaries are shipped. **Release boundary:** these source edits remain a draft PR; binary ZIP replacement, CI acceptance, native app icons, independent deployments and live asset verification are distinct gates.
+
+## Review-branch binary derivative evidence — 22 November 2026
+
+The dedicated three-brand raster workflow completed successfully on the isolated draft review branch. It rendered PNG, ICO, PWA and social derivatives exclusively from the exact owner-verified primary/favicon SVG sources and regenerated the tracked image inventory and checksum entries. Generated raster files are *derived assets*, not represented as byte-identical ZIP members. Machine-checkable provenance is in `audit/generated/three-brand-raster-provenance.json`.
+
+Deployment is separate from source readiness. `main` and `gh-pages` are intentionally unchanged by this staged branding release. Further gates: iOS/Android native resource compilation, an independently completed CI run on the exact PR head, Chromium/WebKit browser visual/accessibility tests, security checks, approval of production promotion, and public route/asset verification after deployment. The official mobile preview remains explicitly offline and unsigned until the app release policy permits otherwise.
