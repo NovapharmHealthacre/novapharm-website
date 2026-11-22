@@ -71,7 +71,7 @@ const approvalProductFields=new Set(["brandName","dosageForm","marketingStatus",
 const approvalSubmissionFields=new Set(["status","statusDate","type"]);
 function safeText(value,max=512){
   return value===null || (typeof value==="string" && value.length<=max &&
-    !/[\\p{Cc}\\p{Cf}\\p{Cs}]/u.test(value));
+    !/[\p{Cc}\p{Cf}\p{Cs}]/u.test(value));
 }
 function safeTextArray(value,maxCount){
   return Array.isArray(value) && value.length<=maxCount &&
