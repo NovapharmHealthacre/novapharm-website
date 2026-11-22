@@ -177,3 +177,6 @@ Original official public resource metadata:
 - https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/638b7dc9-1eac-4495-9fc5-423fc52483e2
 
 **No source row was downloaded to derive these identities:** only official public release metadata was reviewed. A pinned resource ID is not a proof of bytes, archive authenticity, rights, source completeness, identity-level crosswalk acceptance or a permission for production. Even an accurate resource version still returns zero admissions with `canIngest=false` and `canPublish=false`; any new month requires independent publisher-metadata validation and code review before being added.
+
+
+The **outer private source archive manifest** now also checks the source-period-to-resource UUID pairing for `nhsbsa.bnf-snomed-map`, before it can return a quarantine candidate receipt. This complements the bounded reference sample checker, and protects private batch candidates from cross-period resource substitutions. Existing non-BNF source manifests retain their independently documented source rules. The resource check authenticates neither downloaded file content nor the requester's asserted checksum; that still needs independent publisher-file provenance and review.
