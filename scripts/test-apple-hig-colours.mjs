@@ -196,6 +196,11 @@ assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FB
 assert.match(contactCss, /\.np-contact-reference-footer\s*\{[^}]*background:\s*#F8F7F3/);
 assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\s*14px/);
 
+// The separate dark Founder web estate uses Sovereign Black as its browser
+// chrome while retaining intentional dark editorial surfaces and inverse text.
+assert.match(read("apps/founder/app/layout.tsx"), /themeColor:\s*"#0B0B0E"/);
+assert.match(read("apps/founder/app/base.css"), /--ink:\s*#0B0B0E/);
+
 // The historical logo-kit token aliases must not revive retired Pure White.
 const logoKitTokens = read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.css");
 const logoKitJson = JSON.parse(read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.json"));
