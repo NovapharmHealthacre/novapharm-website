@@ -20,10 +20,13 @@ struct NovaFDAOIDCConfiguration: Sendable {
               authorizeURL.host == tokenURL.host,
               authorizeURL.path == "/oauth2/authorize", tokenURL.path == "/oauth2/token",
               authorizeURL.host?.hasSuffix(".auth.eu-north-1.amazoncognito.com") == true,
-              redirectURL.scheme != nil, redirectURL.host == "oauth",
-              redirectURL.path == "/callback",
-              (redirectURL.scheme ?? "").hasPrefix("novapharm"),
-              !clientID.isEmpty else { return false }
+              redirectURL.absoluteString == "novapharmintelligence://oauth/callback",
+              authorizeURL.user == nil, authorizeURL.password == nil,
+              authorizeURL.port == nil, authorizeURL.query == nil, authorizeURL.fragment == nil,
+              tokenURL.user == nil, tokenURL.password == nil,
+              tokenURL.port == nil, tokenURL.query == nil, tokenURL.fragment == nil,
+              clientID.range(of: "^[a-z0-9]{8,64}$", options: .regularExpression) != nil
+              else { return false }
         return true
     }
 }
@@ -118,6 +121,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         do {
             let verifier=fdaURLSafeBase64(try secureRandomData(length:32))
             let state=fdaURLSafeBase64(try secureRandomData(length:32))
+            let nonce=fdaURLSafeBase64(try secureRandomData(length:32))
             let challenge=fdaURLSafeBase64(Data(SHA256.hash(data:Data(verifier.utf8))))
             var authorize=URLComponents(url:config.authorizeURL,resolvingAgainstBaseURL:false)
             authorize?.queryItems=[
@@ -126,6 +130,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
                 URLQueryItem(name:"response_type",value:"code"),
                 URLQueryItem(name:"scope",value:"openid profile novapharm/fda.read"),
                 URLQueryItem(name:"state",value:state),
+                URLQueryItem(name:"nonce",value:nonce),
                 URLQueryItem(name:"code_challenge_method",value:"S256"),
                 URLQueryItem(name:"code_challenge",value:challenge)
             ]
@@ -141,9 +146,16 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
                               callback.scheme == self.config.redirectURL.scheme,
                               callback.host == self.config.redirectURL.host,
                               callback.path == self.config.redirectURL.path,
+                              callback.port == nil,callback.user == nil,callback.password == nil,
+                              callback.fragment == nil,
                               let items=URLComponents(url:callback,resolvingAgainstBaseURL:false)?.queryItems,
+                              items.count==2,
+                              items.filter({$0.name=="state"}).count==1,
+                              items.filter({$0.name=="code"}).count==1,
                               items.first(where:{$0.name=="state"})?.value==state,
-                              let code=items.first(where:{$0.name=="code"})?.value,!code.isEmpty
+                              let code=items.first(where:{$0.name=="code"})?.value,
+                              (1...2048).contains(code.utf8.count),
+                              code.utf8.allSatisfy({$0>=0x21 && $0<=0x7E})
                               else {throw NovaFDAOIDCError.state}
                         let token=try await self.exchange(code:code,verifier:verifier)
                         completion(.success(token))
