@@ -1,5 +1,6 @@
 const OPENFDA_LABEL_ENDPOINT = "https://api.fda.gov/drug/label.json";
 const MAX_RESULTS = 5;
+const MAX_BYTES = 256 * 1024;
 
 function invalid(message) {
   return Object.assign(new Error(message), { statusCode: 400 });
@@ -64,6 +65,7 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
       headers,
       signal: AbortSignal.timeout(8000),
       redirect: "error",
+      cache: "no-store",
     });
   } catch {
     throw unavailable();
@@ -82,16 +84,39 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
       "Do not rely on this service for medical diagnosis, treatment or regulated decisions.",
     ],
   };
+  if (response.redirected || (response.url && response.url !== requestUrl.toString()))
+    throw unavailable();
   if (response.status === 404) {
     return { ...metadata, dataState: "no_source_matches", records: [], truncated: false };
   }
   if (response.status === 429 || response.status >= 500 || !response.ok) throw unavailable();
-  let payload;
+  // Never buffer arbitrary upstream JSON into memory. FDA labels may include
+  // large free-text sections that are not approved for this source-only view.
+  if (!/\bapplication\/json\b/iu.test(response.headers?.get("content-type") || "") ||
+      !response.body?.getReader) throw unavailable();
+  const declaredLength=Number(response.headers?.get("content-length") || 0);
+  if (!Number.isSafeInteger(declaredLength) || declaredLength < 0 || declaredLength > MAX_BYTES) throw unavailable();
+  const reader=response.body.getReader();
+  const chunks=[];
+  let bytes=0;
   try {
-    payload = await response.json();
-  } catch {
-    throw unavailable();
+    while(true){
+      const {done,value}=await reader.read();
+      if(done)break;
+      if(!(value instanceof Uint8Array) || (bytes+=value.byteLength)>MAX_BYTES) throw unavailable();
+      chunks.push(value);
+    }
+  } catch {throw unavailable();}
+  finally {
+    try { await reader.cancel(); } catch {}
+    try { reader.releaseLock(); } catch {}
   }
+  const encoded=new Uint8Array(bytes);
+  let offset=0;
+  for(const chunk of chunks){encoded.set(chunk,offset);offset+=chunk.byteLength;}
+  let payload;
+  try {payload=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(encoded));}
+  catch {throw unavailable();}
   if (!payload || !Array.isArray(payload.results)) throw unavailable();
   const records = payload.results.slice(0, MAX_RESULTS).map(mapRecord);
   return {
