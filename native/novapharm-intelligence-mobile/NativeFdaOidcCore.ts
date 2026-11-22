@@ -108,6 +108,43 @@ function assertReady(config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform):v
 export function nativeFdaOidcConfigured(config:NovaFDAOidcConfig):boolean{
   return validDomain(config);
 }
+// The Cognito token endpoint is untrusted I/O. Content-Length may be absent
+// or falsified: enforce a byte limit before buffering any response.
+const maxTokenResponseBytes=16*1024;
+async function readBoundedCognitoTokenResponse(response:Response):Promise<string>{
+  const declared=response.headers.get("content-length");
+  if(declared!==null && (!/^[0-9]+$/u.test(declared) ||
+     !Number.isSafeInteger(Number(declared)) ||
+     Number(declared)>maxTokenResponseBytes))
+    throw Error("Cognito token response oversized.");
+  const stream=response.body;
+  if(!stream || typeof stream.getReader!=="function")
+    throw Error("Cognito token response stream unavailable.");
+  const reader=stream.getReader();
+  const chunks:Uint8Array[]=[];
+  let total=0;
+  try{
+    while(true){
+      const {done,value}=await reader.read();
+      if(done)break;
+      if(!(value instanceof Uint8Array) ||
+         (total+=value.byteLength)>maxTokenResponseBytes)
+        throw Error("Cognito token response oversized.");
+      chunks.push(value);
+    }
+  }catch{
+    throw Error("Cognito token response unavailable or oversized.");
+  }finally{
+    try{await reader.cancel();}catch{}
+    try{reader.releaseLock();}catch{}
+  }
+  const bytes=new Uint8Array(total);
+  let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  try{return new TextDecoder("utf-8",{fatal:true}).decode(bytes);}
+  catch{throw Error("Invalid Cognito token response.");}
+}
+
 export async function authenticateNativeFdaWithPkce(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<void>{
@@ -179,8 +216,7 @@ export async function authenticateNativeFdaWithPkce(
     (response.url && response.url!==tokenUrl.toString()) ||
     !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
     throw Error("Cognito token exchange rejected.");
-  const body=await response.text();
-  if(body.length>16384)throw Error("Cognito token response oversized.");
+  const body=await readBoundedCognitoTokenResponse(response);
   let payload:unknown;
   try{payload=JSON.parse(body)}catch{throw Error("Invalid Cognito token response.");}
   if(!payload || typeof payload!=="object")throw Error("Invalid Cognito token response.");
