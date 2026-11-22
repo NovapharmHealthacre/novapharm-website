@@ -208,7 +208,10 @@
         "config/intelligence/owner-production-constraints.json",
         "infra",
         "integrations/mongodb-atlas",
-        "integrations/sharepoint"
+        "integrations/sharepoint",
+        "config/ci/ruleset-proposals/website-main.json",
+        "config/ci/ruleset-proposals/website-gh-pages-phase1.json",
+        "docs/release/github-ruleset-import-runbook.md"
       ],
       "tests": [
         "scripts/test-ci-workflow-security-inventory.mjs",
@@ -217,7 +220,8 @@
         "scripts/test-no-email-release-guard.mjs",
         "scripts/test-pages-monotonic-release.mjs",
         "scripts/test-sharepoint-graph-paths.mjs",
-        "scripts/test-sharepoint-sync-error-policy.mjs"
+        "scripts/test-sharepoint-sync-error-policy.mjs",
+        "scripts/test-ci-repository-ruleset-proposals.mjs"
       ]
     }
   },
