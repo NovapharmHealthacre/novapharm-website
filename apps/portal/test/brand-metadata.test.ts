@@ -43,4 +43,9 @@ test("portal neutral surfaces inherit owner-approved official whites without cha
   assert.match(portal, /--portal-divider:\s*#DEDCD5\s*;/i);
   assert.doesNotMatch(portal, /--portal-white:\s*#(?:ffffff|fff)\s*;/i);
   assert.match(portal, /background:\s*rgba\(251,250,239,\.9\)/i);
+  const distribution = readFileSync(new URL("../app/employee-distribution.css", import.meta.url), "utf8");
+  assert.match(distribution, /background:var\(--portal-white,#FBFAEF\)/i);
+  assert.doesNotMatch(distribution, /background:\s*#(?:fff|ffffff)\b/i);
+  // White text on deliberately dark controls remains an intentional accessibility choice.
+  assert.match(distribution, /color:#fff\b/i);
 });
