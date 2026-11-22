@@ -86,7 +86,7 @@ const approvedVariantDigests = Object.freeze({
 for (const [file, digest] of Object.entries(approvedVariantDigests)) {
   test("owner ZIP byte-exact logo and browser vector: " + file, () => {
     assert.equal(sha256(file), digest, "Only the exact approved ZIP master may be published");
-    assert.doesNotMatch(text(file), /<script\\b|<foreignObject\\b|javascript:/i);
+    assert.doesNotMatch(text(file), /<script\b|<foreignObject\b|javascript:/i);
   });
 }
 test("Sovereign Black and native font roles are independent of brand accents", () => {
@@ -94,8 +94,8 @@ test("Sovereign Black and native font roles are independent of brand accents", (
   assert.equal(system.brands.healthcare.hex, "#9D1B32");
   assert.equal(system.brands.distribution.hex, "#3D0B13");
   assert.equal(system.brands.intelligence.hex, "#2546D8");
-  assert.match(text("assets/css/tokens.css"), /--np-brand-black:\\s*#0B0B0E/i);
-  assert.match(text("apps/corporate/app/globals.css"), /font-family:\\s*var\\(--np-type-ui/);
-  assert.match(text("apps/portal/app/apple-pharma-portal.css"), /--portal-ink:\\s*#0B0B0E/i);
-  assert.doesNotMatch(text("assets/css/tokens.css"), /@font-face\\s*\\{[^}]*SF Pro/is);
+  assert.match(text("assets/css/tokens.css"), /--np-brand-black:\s*#0B0B0E/i);
+  assert.match(text("apps/corporate/app/globals.css"), /font-family:\s*var\(--np-type-ui/);
+  assert.match(text("apps/portal/app/apple-pharma-portal.css"), /--portal-ink:\s*#0B0B0E/i);
+  assert.doesNotMatch(text("assets/css/tokens.css"), /@font-face\s*\{[^}]*SF Pro/is);
 });
