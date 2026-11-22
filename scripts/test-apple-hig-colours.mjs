@@ -226,6 +226,13 @@ for (const [token,hex] of [
   assert.ok(logoKitTokens.includes(token + ": " + hex + ";"), "Logo-kit CSS must match " + token);
 }
 
+// Late editorial transforms must not undo the canonical browser theme.
+const aboutTransform = read("scripts/apply-about-editorial.mjs");
+assert.ok(aboutTransform.includes('meta name="theme-color" content="#FBFAEF"'),
+  "The post-build About transform must retain Royal Mineral White");
+assert.ok(!aboutTransform.includes('meta name="theme-color" content="#FFFFFF"'),
+  "The post-build About transform must never restore retired Pure White");
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
