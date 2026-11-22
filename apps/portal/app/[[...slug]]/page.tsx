@@ -1,13 +1,27 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
 import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
+import { portalBrandMetadata, resolvePortalBrand } from "../../lib/brand-metadata";
 
 export const dynamic = "force-dynamic";
 
-export default async function PortalPage({ params }: Readonly<{ params: Promise<{ slug?: string[] }> }>) {
+type PortalPageProps = Readonly<{ params: Promise<{ slug?: string[] }> }>;
+
+/** Purely visual route identity; never used as an access-control decision. */
+export async function generateMetadata({ params }: PortalPageProps): Promise<Metadata> {
+  const { slug = [] } = await params;
+  const view = resolvePortalView(slug.length ? `/${slug.join("/")}/` : "/");
+  const host = (await headers()).get("host") ?? "";
+  const area = view?.kind === "module" ? view.module.area : null;
+  return portalBrandMetadata(resolvePortalBrand(host, area));
+}
+
+
+export default async function PortalPage({ params }: PortalPageProps) {
   const { slug = [] } = await params;
   const view = resolvePortalView(slug.length ? `/${slug.join("/")}/` : "/");
   if (!view) notFound();
