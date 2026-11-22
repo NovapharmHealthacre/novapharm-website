@@ -13,7 +13,7 @@ In `eu-north-1`, ListTables returned 15 existing tables and none was an FDA-spec
 
 ## Later independent work (not authorized here)
 1. Approve actual table name, cost ceilings/budget alarms, and review DynamoDB TTL (best-effort asynchronous physical deletion; no guarantee of removal at expiry).
-2. Independently create an exact table-ARN-scoped `dynamodb:UpdateItem` policy for the **qualified FDA-only Lambda execution role**, and enforce its isolation from all unrelated customer and commerce tables. Never grant `Scan`, `DeleteTable`, or wildcard resources.
+2. Review `infra/aws/fda-quota-least-privilege-policy.example.json` as a **non-deploying example**: replace both placeholders only after approval, scope the role to `dynamodb:UpdateItem` and HMAC `FDA_QUOTA#` partition keys, verify effective role permissions have no other broad DynamoDB allowances. Independently create an exact table-ARN-scoped `dynamodb:UpdateItem` policy for the **qualified FDA-only Lambda execution role**, and enforce its isolation from all unrelated customer and commerce tables. Never grant `Scan`, `DeleteTable`, or wildcard resources.
 3. Approve a properly rotated server-held HMAC secret with least-privileged retrieval and no logging. Do not embed it in this template or a client.
 4. Validate the AWS SDK v3 version/handler and deploy only to a qualified, immutable Lambda alias, with the existing IAM catch-all untouched.
 5. Verify quota atomicity under real concurrency; 429/503 and entitlement/role separation; alarms, billable usage, retention, and redacted logs.
