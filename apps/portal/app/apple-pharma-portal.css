@@ -151,6 +151,8 @@ textarea {
   box-shadow: inset 3px 0 var(--portal-red);
 }
 .workspace-sidebar a small { color: var(--portal-muted); }
+/* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
+.workspace-sidebar a.active small { color: var(--portal-ink); }
 .sidebar-security {
   border-top-color: #e5e5e7;
   color: var(--portal-muted);
