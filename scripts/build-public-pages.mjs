@@ -36,7 +36,7 @@ const siteUrl = company.siteUrl;
 const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
 const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";
-const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";
+const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.svg";
 const brandLogoWidth = 2048;
 const brandLogoHeight = 258;
 const brandFaviconSvg = "/assets/brand/favicon.svg";
@@ -335,7 +335,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml">
   <link rel="icon" href="/assets/brand/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
-  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
+  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#9D1B32">
   <link rel="manifest" href="/manifest.webmanifest">
   <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
@@ -1160,7 +1160,7 @@ export function buildPublicPages() {
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",
-    theme_color: "#E3120B",
+    theme_color: "#9D1B32",
     icons: [
       { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/assets/brand/pwa-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
