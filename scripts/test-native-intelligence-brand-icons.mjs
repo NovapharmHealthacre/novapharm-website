@@ -28,6 +28,7 @@ test("all native assets derive from the byte-approved Intelligence SVG",()=>{
  assert.equal(report.sourceSha256,official.browserIconZipSha256);
  assert.equal(report.color,official.hex);
  assert.equal(report.lightInk,"#0B0B0E");
+ assert.equal(report.lightBackground,"#FBFAEF","Regenerate iOS/Android raster assets for official mineral-white canvas");
  assert.equal(report.outputs.length,15);
  for(const asset of report.outputs){
    assert.equal(hash(asset.filename),asset.sha256,asset.filename+" does not match provenance");
@@ -71,6 +72,9 @@ test("Sovereign Black is applied to light mode without destroying semantic nativ
  const light=text(android+"values/colors.xml");
  const dark=text(android+"values-night/colors.xml");
  assert.ok(light.includes("#FBFAEF"), "Native light canvas must use Royal Mineral White");
+ const renderer=text("scripts/programme/rebuild-native-intelligence-app-icons.mjs");
+ assert.ok(renderer.includes("const officialLight=registry.neutralPalette?.primaryWhite?.hex;"));
+ assert.ok(renderer.includes("await render(1024,officialLight,"));
  assert.ok(light.includes("#0B0B0E"));
  assert.ok(light.includes("#2546D8"));
  assert.ok(dark.includes("#F5F5F7"));
@@ -80,4 +84,10 @@ test("Sovereign Black is applied to light mode without destroying semantic nativ
  assert.ok(swift.includes("static let primaryInk"));
  assert.ok(swift.includes("UIColor.label"));
  assert.ok(swift.includes("red: 11.0 / 255"));
+ assert.ok(swift.includes("red: 251.0 / 255, green: 250.0 / 255, blue: 239.0 / 255"));
+ assert.ok(swift.includes("red: 248.0 / 255, green: 247.0 / 255, blue: 243.0 / 255"));
+ assert.ok(swift.includes("UIColor.systemGroupedBackground"), "Dark mode must retain native semantic grouping");
+ const root=text("native/novapharm-intelligence-ios/App/NovaRootView.swift");
+ assert.ok(root.includes(".scrollContentBackground(.hidden)"));
+ assert.ok(root.includes(".background(NovaTheme.background)"));
 });
