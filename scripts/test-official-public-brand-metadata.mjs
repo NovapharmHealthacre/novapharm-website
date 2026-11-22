@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, dirname } from "node:path";
 import {
   normaliseOfficialPublicBrandMetadata,
   assertOfficialPublicBrandMetadata,
-  officialPublicBrandPalette
+  officialPublicBrandPalette,
+  normaliseCanonicalPublicBrandMetadata
 } from "./normalise-official-public-brand-metadata.mjs";
 
 const palette = officialPublicBrandPalette();
@@ -59,4 +63,41 @@ test("published-source SHA must never be manufactured by colour normalisation", 
   assert.doesNotMatch(result, /novapharm-source-sha/);
   const proven = input.replace('</head>', '<meta name="novapharm-source-sha" content="f0dcd3caaa18073f4a2632aa5c2e075cdfdd40b0"></head>');
   assert.match(normaliseOfficialPublicBrandMetadata(proven, palette), /novapharm-source-sha" content="f0dcd3caaa18073f4a2632aa5c2e075cdfdd40b0"/);
+});
+
+
+test("whole canonical release fixture updates all six key routes plus 54 registered pages, then is idempotent", t => {
+  const root = mkdtempSync(join(tmpdir(), "novapharm-brand-metadata-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  mkdirSync(join(root, "config"), { recursive: true });
+  mkdirSync(join(root, "seo/generated"), { recursive: true });
+  const ownerRegistry = {
+    approvedOn: "2026-11-22",
+    neutralPalette: {
+      primaryWhite: {hex:"#FBFAEF"}, secondaryWhite: {hex:"#F8F7F3"},
+      defaultInk: {hex:"#0B0B0E"}
+    },
+    brands: { healthcare: {hex:"#9D1B32"} }
+  };
+  writeFileSync(join(root, "config/brand-identities.json"), JSON.stringify(ownerRegistry));
+  const keyRoutes = [
+    "index.html", "legal/accessibility/index.html", "contact/index.html",
+    "products/index.html", "capabilities/index.html", "oncology/index.html"
+  ];
+  const routes = [...keyRoutes, ...Array.from({length:54}, (_,i) => `fixture-${i}/index.html`)];
+  writeFileSync(join(root, "seo/generated/page-metadata-register.json"),
+    JSON.stringify(routes.map(file => ({file}))));
+  for (const route of routes) {
+    const file = join(root, route);
+    mkdirSync(dirname(file), {recursive:true});
+    writeFileSync(file, `<!DOCTYPE html><html lang="en-GB"><head><meta name="theme-color" content="#E3120B"><link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B"></head><body><main><h1>${route}</h1></main></body></html>`);
+  }
+  assert.deepEqual(normaliseCanonicalPublicBrandMetadata(root), {checked:60, changed:60});
+  for (const route of routes) {
+    const html = readFileSync(join(root, route), "utf8");
+    assertOfficialPublicBrandMetadata(html, palette);
+    assert.doesNotMatch(html, /novapharm-source-sha/,
+      "Colour normalization is not an attestation of deployed source");
+  }
+  assert.deepEqual(normaliseCanonicalPublicBrandMetadata(root), {checked:60, changed:0});
 });
