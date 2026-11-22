@@ -93,7 +93,12 @@ test("owner-gated managed template preserves approved design and secure submissi
 test("owner-gated production activation remains disabled without explicit acceptance", () => {
   const activationSource = readFileSync("scripts/activate-contact-intake.mjs", "utf8");
   assert.ok(activationSource.includes('if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes")'));
-  assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
+  assert.ok(
+    activationSource.includes('const reviewedTemplate = requireReviewedContactBlob(') &&
+    activationSource.includes('resolve("src/content/contact-managed-release.html")') &&
+    activationSource.includes('approvedContactBlobs["src/content/contact-managed-release.html"]'),
+    "Gated release must verify approved HTML blob before rendering"
+  );
   assert.ok(activationSource.includes('refusing managed replacement'));
   assert.ok(activationSource.includes('Reviewed managed Contact stylesheet missing from Pages artifact'));
   assert.ok(activationSource.includes('requireReviewedContactBlob(sharedStyle'), "Gated activator must verify final staged CSS");
