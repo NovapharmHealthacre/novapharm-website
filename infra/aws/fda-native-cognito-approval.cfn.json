@@ -1,0 +1,324 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "SOURCE ONLY FDA board Cognito OAuth identities. Default false/UNAPPROVED => zero resources. No group membership or API activation.",
+  "Parameters": {
+    "UserPoolId": {
+      "Type": "String",
+      "Default": "eu-north-1_jBL6hCUE2",
+      "AllowedPattern": "^eu-north-1_[A-Za-z0-9]+$",
+      "Description": "Existing production Cognito user pool; do not recreate"
+    },
+    "IosBundleId": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|com\\.novapharm\\.[A-Za-z0-9_.-]+)$",
+      "Description": "Approved signed native iOS bundle ID"
+    },
+    "AndroidPackageId": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|com\\.novapharm\\.[A-Za-z0-9_.-]+)$",
+      "Description": "Approved signed Android package identity"
+    },
+    "IosRedirectUri": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|novapharmintelligence://oauth/callback)$",
+      "Description": "Verified iOS custom URL scheme redirect registered in signed app"
+    },
+    "AndroidRedirectUri": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|novapharmintelligence://oauth/callback)$",
+      "Description": "Verified Android secure callback; confirm Android OS app-link ownership and intent filters"
+    },
+    "OwnerProductionSignoff": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    },
+    "NativeIdentityApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    },
+    "NativeCallbacksApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    },
+    "BoardGovernanceApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    },
+    "IndependentSecurityApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    },
+    "SourceRightsApproved": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "False until independently approved; creating resources is not FDA service release"
+    }
+  },
+  "Conditions": {
+    "CreateNativeFDAIdentity": {
+      "Fn::And": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "OwnerProductionSignoff"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "NativeIdentityApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "NativeCallbacksApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "BoardGovernanceApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "IndependentSecurityApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "SourceRightsApproved"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "IosBundleId"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AndroidPackageId"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "IosRedirectUri"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AndroidRedirectUri"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "FDAResourceServer": {
+      "Condition": "CreateNativeFDAIdentity",
+      "Type": "AWS::Cognito::UserPoolResourceServer",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPoolId"
+        },
+        "Identifier": "novapharm",
+        "Name": "NovaPharm protected FDA research",
+        "Scopes": [
+          {
+            "ScopeName": "fda.read",
+            "ScopeDescription": "Official US FDA research, approved board only"
+          }
+        ]
+      }
+    },
+    "FDABoardGroup": {
+      "Condition": "CreateNativeFDAIdentity",
+      "Type": "AWS::Cognito::UserPoolGroup",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPoolId"
+        },
+        "GroupName": "board-reviewers",
+        "Description": "Empty until individual board membership is independently approved"
+      }
+    },
+    "FDAiOSPublicClient": {
+      "Condition": "CreateNativeFDAIdentity",
+      "DependsOn": "FDAResourceServer",
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPoolId"
+        },
+        "ClientName": "NovaPharm FDA iOS public OAuth code PKCE",
+        "GenerateSecret": false,
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthScopes": [
+          "openid",
+          "profile",
+          "novapharm/fda.read"
+        ],
+        "CallbackURLs": [
+          {
+            "Ref": "IosRedirectUri"
+          }
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "EnableTokenRevocation": true,
+        "AccessTokenValidity": 60,
+        "IdTokenValidity": 60,
+        "RefreshTokenValidity": 1,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        }
+      }
+    },
+    "FDAAndroidPublicClient": {
+      "Condition": "CreateNativeFDAIdentity",
+      "DependsOn": "FDAResourceServer",
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPoolId"
+        },
+        "ClientName": "NovaPharm FDA Android public OAuth code PKCE",
+        "GenerateSecret": false,
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthScopes": [
+          "openid",
+          "profile",
+          "novapharm/fda.read"
+        ],
+        "CallbackURLs": [
+          {
+            "Ref": "AndroidRedirectUri"
+          }
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "EnableTokenRevocation": true,
+        "AccessTokenValidity": 60,
+        "IdTokenValidity": 60,
+        "RefreshTokenValidity": 1,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "NativeIdentityReleaseStatus": {
+      "Description": "Source-only template will create no resources without six signoffs and four verified identities",
+      "Value": {
+        "Fn::If": [
+          "CreateNativeFDAIdentity",
+          "native_identity_resources_created",
+          "disabled_zero_resources"
+        ]
+      }
+    },
+    "FDAiOSAppClientId": {
+      "Condition": "CreateNativeFDAIdentity",
+      "Value": {
+        "Ref": "FDAiOSPublicClient"
+      }
+    },
+    "FDAAndroidAppClientId": {
+      "Condition": "CreateNativeFDAIdentity",
+      "Value": {
+        "Ref": "FDAAndroidPublicClient"
+      }
+    }
+  }
+}
