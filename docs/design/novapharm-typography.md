@@ -20,7 +20,7 @@ Apple's downloadable DMG files are **not committed, copied, converted, embedded,
 - **Consistency:** shared UI/compact/mono/editorial typography roles across the public website and separately deployed Next.js apps.
 - **Focus:** native focus-visible outlines, distinct active/disabled states, reduced motion, no ornamental typography, and 44px pointer/touch targets where practical.
 - **Data clarity:** use `font-variant-numeric: tabular-nums` for quantities, dates and finance; use monospaced type for IDs, not all metrics.
-- **Brand distinction:** retain NovaPharm's own logo, red `#E3120B`, photography, product evidence and page-specific designs; no implication of Apple affiliation.
+- **Brand distinction:** retain NovaPharm's own logo, Royal Cochineal Crimson `#9D1B32`, Royal Mineral White `#FBFAEF`, Royal Porcelain White `#F8F7F3` and Sovereign Black `#0B0B0E`, photography, product evidence and page-specific designs; no implication of Apple affiliation.
 
 ## Usage
 
