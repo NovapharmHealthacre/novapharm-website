@@ -11318,6 +11318,21 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --red-deep: var(--np-color-accent-strong);
 }
 
+/* Royal Mineral and Porcelain are nearly indistinguishable as adjacent
+ * control surfaces. Functional boundaries use the stronger contrast-safe
+ * separator, while Porcelain Stone stays decorative. Scoped to existing
+ * light-appearance interactive surfaces; avoid overriding selected/error
+ * states or the independent dark appearance. */
+:root:not([data-np-color-scheme="dark"])[data-np-estate="corporate"] :where(
+  .button-light, .button-quiet, .mobile-menu summary
+),
+:root:not([data-np-color-scheme="dark"])[data-np-estate="portal"] :where(
+  .button.microsoft, .access-selector label, .portal-search > button,
+  .search-close, .user-summary button
+) {
+  border-color: var(--np-color-separator-strong);
+}
+
 /* Meaningful colours are opt-in for new components, never inferred from
  * decorative red text, links or screenshots. Statuses must include text. */
 :where([data-np-colour-role="surface"]) {
