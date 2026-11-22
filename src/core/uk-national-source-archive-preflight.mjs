@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { inspectWalesGpZipDirectory } from './uk-wales-gp-zip-inventory.mjs';
+import { inspectWalesGpZipDirectory, inspectWalesPublisherZipDirectory } from './uk-wales-gp-zip-inventory.mjs';
 import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep, extname } from 'node:path';
@@ -131,6 +131,7 @@ export async function verifyUkNationalArchiveBytes(manifest, {archivePath, quara
   let bytes = 0;
   const hash = createHash('sha256');
   let walesGpZipDirectory = null;
+  let walesPublisherZipDirectory = null;
   try {
     const openedStat = await handle.stat();
     if (!openedStat.isFile() || openedStat.size !== plan.expectedBytes) deny('archive changed between checks');
@@ -149,6 +150,15 @@ export async function verifyUkNationalArchiveBytes(manifest, {archivePath, quara
       });
       if (walesGpZipDirectory.sourceRowsRead !== 0 || walesGpZipDirectory.canIngest !== false)
         deny('Wales structural gate exceeded read-only boundary');
+    } else if (['nwssp.hospital-prescribing','nwssp.dental-prescribing',
+                 'nwssp.independent-pharmacist-prescribing'].includes(plan.sourceId)) {
+      walesPublisherZipDirectory = await inspectWalesPublisherZipDirectory(handle, {
+        sourceId:plan.sourceId,reportingPeriod:plan.reportingPeriod,
+      });
+      if (walesPublisherZipDirectory.sourceRowsRead!==0 ||
+          walesPublisherZipDirectory.canIngest!==false ||
+          walesPublisherZipDirectory.canPublish!==false)
+        deny('Wales prescribing structural gate exceeded read-only boundary');
     }
   } finally { await handle.close(); }
   return Object.freeze({
@@ -156,6 +166,7 @@ export async function verifyUkNationalArchiveBytes(manifest, {archivePath, quara
     byteCount: bytes, // No raw records or document contents exposed.
     verifiedSha256: plan.expectedSha256,
     ...(walesGpZipDirectory ? {walesGpZipDirectory} : {}),
+    ...(walesPublisherZipDirectory ? {walesPublisherZipDirectory} : {}),
     status: 'private_quarantine_integrity_verified',
     canIngest: false,
     canPublish: false,
