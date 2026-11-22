@@ -1,0 +1,79 @@
+name: Full-estate draft brand image inventory reconciliation
+
+on:
+  push:
+    branches:
+      - brand/full-estate-acceptance-20261122
+    paths:
+      - '.github/workflows/full-brand-integration-inventory.yml'
+      - 'apps/portal/**'
+      - 'native/novapharm-intelligence-ios/**'
+      - 'native/novapharm-intelligence-android/**'
+      - 'config/brand-identities.json'
+      - 'config/brand-neutrals.json'
+      - 'audit/generated/image-inventory.json'
+      - 'scripts/programme/generate-image-inventory.mjs'
+      - 'scripts/test-visual-contracts.mjs'
+      - 'scripts/test-official-brand-triad.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: full-estate-brand-inventory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile-integrated-source:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/brand/full-estate-acceptance-20261122' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact isolated full-estate review branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: brand/full-estate-acceptance-20261122
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Reject queued stale or cross-branch runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/brand/full-estate-acceptance-20261122"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/full-estate-acceptance-20261122 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact lockfile dependencies
+        run: npm ci --ignore-scripts
+      - name: Reconcile every real asset reference and preserve governance tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+          npm run brand:validate
+          npm run design:colours:validate
+          npm run post-pr53:validate
+          git diff --check
+      - name: Commit only source-derived media evidence into isolated draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "All integrated image references and source provenance are already current."
+            exit 0
+          fi
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/full-estate-acceptance-20261122 | cut -f1)" = "$GITHUB_SHA"
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(brand): reconcile full-estate source-derived image inventory"
+          git push origin HEAD:refs/heads/brand/full-estate-acceptance-20261122
