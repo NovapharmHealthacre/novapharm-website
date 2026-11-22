@@ -345,3 +345,28 @@ test('BNF crosswalk manifest refuses misleading publisher URLs even with valid s
  assert.equal(alt.canIngest,false);
  assert.equal(alt.canPublish,false);
 });
+
+test('BNF–SNOMED mapping has no prescribing geography even though NHSBSA is England-based',()=>{
+ const ref=UK_SOURCE_ARCHIVE_CONTRACTS.find(x=>x.sourceId==='nhsbsa.bnf-snomed-map');
+ assert.equal(ref.geographyApplicability,'not_applicable');
+ const receipt=validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map'));
+ assert.equal(receipt.geographyApplicability,'not_applicable');
+ assert.equal(receipt.geographicCoverageVerified,false);
+ assert.equal(receipt.canIngest,false);
+ assert.equal(receipt.canPublish,false);
+ const compare=verifyNationalComparisonBoundary(
+  {sourceId:ref.sourceId,reportingPeriod:'2026-09',sourceVersion:'publisher-v1'},
+  {sourceId:ref.sourceId,reportingPeriod:'2026-09',sourceVersion:'publisher-v2'}
+ );
+ assert.equal(compare.nation,null);
+ assert.equal(compare.geographyApplicability,'not_applicable');
+ assert.equal(compare.geographicCoverageVerified,false);
+ assert.equal(compare.permittedOperation,'version_reconciliation_only');
+ assert.equal(compare.canSumMetrics,false);
+ const epd=UK_SOURCE_ARCHIVE_CONTRACTS.find(x=>x.sourceId==='nhsbsa.epd');
+ assert.equal(epd.geographyApplicability,'source_specific');
+ assert.throws(()=>verifyNationalComparisonBoundary(
+  {sourceId:'nhsbsa.epd',reportingPeriod:'2026-09',sourceVersion:'publisher-v1'},
+  {sourceId:ref.sourceId,reportingPeriod:'2026-09',sourceVersion:'publisher-v2'}
+ ),/measure definitions/);
+});
