@@ -106,6 +106,12 @@ Example batch plan (all filenames are flat basenames inside the private root):
 
 The program permits at most 24 files in a batch, refuses path traversal, symlinked manifests, wrong sources or periods, and tampered archive bytes. It invokes the Wales GP structural ZIP inspector through the same archive verification call. Results contain only sanitized source and period coverage counts, not file contents or private local paths. It does not independently authenticate the claimed publisher digest, check clinical completeness, acquire source licences, ingest records or enable any live API. All results remain canIngest=false and canPublish=false.
 
+
+
+### Distinct-period file identity guard — 22 November 2026
+
+The private backfill batch preflight now refuses reuse of a manifest filename or archive filename across batch entries. It also refuses an identical claimed archive SHA-256 digest across two different reporting months or quarters: those identical bytes cannot independently demonstrate two period-specific source partitions without publisher and Quality reconciliation. This is a conservative integrity guard, not an assertion that different digests prove authentic publisher files. Revisions within one period remain version conflicts that must be resolved separately. Two additional synthetic regression tests cover the reused-path and reused-digest conditions. No source data was imported or published by this change.
+
 ### Two-pass private batch safety and bounded disk I/O
 
 The batch validates the source period window, every period and every manifest **before** reading any source archive payload. Total declared compressed/source file bytes are bounded at 16 GiB per invocation, in addition to the 24-file cap and per-file manifest cap. This prevents a later invalid manifest from causing earlier large files to be unnecessarily streamed. Independent publisher hash provenance and all clinical rights remain unapproved.
