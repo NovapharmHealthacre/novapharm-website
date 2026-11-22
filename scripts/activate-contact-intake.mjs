@@ -1,5 +1,5 @@
 import { activateAccountRequestHtml } from "./activate-account-request.mjs";
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const approvedApi = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i;
@@ -99,6 +99,10 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   if (!contact.includes('data-email-enquiry-form') || contact.includes('data-live-b2b-enquiry-form')) {
     throw Error("Unexpected staged Contact baseline; refusing managed replacement");
   }
+  // This CSS file was previously present only on gh-pages; never publish an
+  // HTML template whose required shared design stylesheet is missing.
+  const sharedStyle = resolve(artifactRoot, "assets/css/novapharm-unified-20261107.css");
+  if (!existsSync(sharedStyle)) throw Error("Reviewed managed Contact stylesheet missing from Pages artifact");
   const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");
   const nextContact = activateManagedContactReleaseHtml(reviewedTemplate, origin);
   const nextPrivacy = activatePrivacyHtml(notice);
