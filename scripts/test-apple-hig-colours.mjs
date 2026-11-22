@@ -196,6 +196,29 @@ assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FB
 assert.match(contactCss, /\.np-contact-reference-footer\s*\{[^}]*background:\s*#F8F7F3/);
 assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\s*14px/);
 
+// The historical logo-kit token aliases must not revive retired Pure White.
+const logoKitTokens = read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.css");
+const logoKitJson = JSON.parse(read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.json"));
+const brandIdentity = JSON.parse(read("config/brand-identities.json"));
+assert.equal(logoKitJson.neutral.white, officialNeutrals.primary);
+assert.equal(logoKitJson.neutral.primaryWhite, officialNeutrals.primary);
+assert.equal(logoKitJson.neutral.secondaryWhite, officialNeutrals.secondary);
+assert.equal(logoKitJson.neutral.divider, officialNeutrals.divider);
+assert.equal(logoKitJson.neutral.black, officialNeutrals.black);
+assert.equal(brandIdentity.neutralPalette.primaryWhite.hex, officialNeutrals.primary);
+assert.equal(brandIdentity.neutralPalette.secondaryWhite.hex, officialNeutrals.secondary);
+assert.equal(brandIdentity.neutralPalette.defaultInk.hex, officialNeutrals.black);
+assert.equal(brandIdentity.neutralPalette.subtleDivider.hex, officialNeutrals.divider);
+for (const [token,hex] of [
+  ["--novapharm-white", officialNeutrals.primary],
+  ["--novapharm-white-primary", officialNeutrals.primary],
+  ["--novapharm-white-secondary", officialNeutrals.secondary],
+  ["--novapharm-divider", officialNeutrals.divider],
+  ["--novapharm-black", officialNeutrals.black],
+]) {
+  assert.ok(logoKitTokens.includes(token + ": " + hex + ";"), "Logo-kit CSS must match " + token);
+}
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [

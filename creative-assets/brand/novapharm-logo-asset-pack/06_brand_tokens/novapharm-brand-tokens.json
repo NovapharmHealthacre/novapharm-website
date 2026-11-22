@@ -4,11 +4,16 @@
     "name": "Royal Cochineal Crimson",
     "hex": "#9D1B32",
     "rgb": [
-      157, 27, 50
+      157,
+      27,
+      50
     ]
   },
   "neutral": {
-    "white": "#FFFFFF",
+    "white": "#FBFAEF",
+    "primaryWhite": "#FBFAEF",
+    "secondaryWhite": "#F8F7F3",
+    "divider": "#DEDCD5",
     "black": "#0B0B0E",
     "pureBlack": "#000000",
     "nearBlack": "#0B0B0E"
