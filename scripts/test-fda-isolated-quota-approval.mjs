@@ -67,7 +67,7 @@ test("example IAM policy is scoped to atomic UpdateItem and HMAC partition prefi
  assert.equal(stmt.Effect,"Allow");
  assert.deepEqual(stmt.Action,["dynamodb:UpdateItem"]);
  assert.equal(stmt.Resource,"arn:aws:dynamodb:eu-north-1:APPROVED_ACCOUNT_ID:table/APPROVED_FDA_QUOTA_TABLE");
- assert.deepEqual(stmt.Condition,{"ForAllValues:StringLike":{"dynamodb:LeadingKeys":["FDA_QUOTA#*"]}});
+ assert.deepEqual(stmt.Condition,{"ForAllValues:StringLike":{"dynamodb:LeadingKeys":["FDA_QUOTA#*"]},"Null":{"dynamodb:LeadingKeys":"false"}});
  assert.ok(!JSON.stringify(iam).includes("novapharm-intelligence-customer-access"));
 });
 test("no default grants, static secrets, public endpoint or shared-table reference",()=>{
