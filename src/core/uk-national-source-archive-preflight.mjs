@@ -71,9 +71,20 @@ export function validateUkNationalArchiveManifest(input) {
     deny('invalid or missing publisher resource identifier');
   // The monthly NHSBSA reference is a known publisher-resource mapping; a
   // different month's UUID cannot stand in for these candidate source bytes.
-  if (input.sourceId === 'nhsbsa.bnf-snomed-map' &&
-      BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[input.reportingPeriod]?.resourceId !== input.publisherResourceId)
-    deny('BNF–SNOMED publisher resource does not match reporting month');
+  if (input.sourceId === 'nhsbsa.bnf-snomed-map') {
+    const expected = BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[input.reportingPeriod]?.resourceId;
+    if (!expected || expected !== input.publisherResourceId)
+      deny('BNF–SNOMED publisher resource does not match reporting month');
+    // Accept only the official NHSBSA CKAN resource page as provenance metadata,
+    // not an unrelated same-host URL or an ephemeral signed object-store link.
+    const approvedPaths = [
+      '/dataset/bnf-snomed-mapping/resource/' + expected,
+      '/dataset/ba1799d5-fac1-4432-8f76-ab7dfbb3e2f8/resource/' + expected,
+    ];
+    if (url.hostname !== 'opendata.nhsbsa.net' || url.search ||
+        !approvedPaths.includes(url.pathname))
+      deny('BNF–SNOMED archive metadata is not its official resource page');
+  }
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,159}$/.test(input.publisherFileName ?? ''))
     deny('invalid or missing publisher file name');
   if (extname(input.publisherFileName).slice(1).toUpperCase() !== input.format)
