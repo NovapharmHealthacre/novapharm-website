@@ -110,8 +110,9 @@ export function validateUkNationalArchiveManifest(input) {
   return Object.freeze({
     contract: input.contract,
     sourceId: source.sourceId,
-    jurisdiction: source.jurisdiction,
-    nation: source.nation,
+    jurisdiction: source.jurisdiction, // administrative publisher jurisdiction; not a data geography
+    publisherNation: source.nation,
+    nation: source.geographyApplicability === 'not_applicable' ? null : source.nation,
     geographyApplicability: source.geographyApplicability,
     geographicCoverageVerified: false,
     reportingPeriod: input.reportingPeriod,
