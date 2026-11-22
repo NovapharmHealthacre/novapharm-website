@@ -35,6 +35,7 @@ jobs:
           node --check src/core/regulatory/fda-aws-lambda-entry.mjs
           node --check scripts/build-fda-private-lambda-zip.mjs
           node --check scripts/test-fda-aws-lambda-entry.mjs
+          node --check scripts/test-fda-private-http-handler.mjs
       - name: Security and FDA integration tests
         run: |
           node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs scripts/test-openfda-labels.mjs scripts/test-openfda-evidence.mjs
