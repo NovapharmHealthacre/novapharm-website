@@ -248,6 +248,20 @@ assert.ok(publicBuild.indexOf('await import("./apply-global-distribution-foundat
 assert.match(postBuildRoyal, /expected exactly one browser theme tag/);
 assert.match(postBuildRoyal, /webManifest\.background_color/);
 
+// Page-specific home, corporate and navigation material roles may not override
+// the Royal light neutrals; preserve separate dark mode and inverse CTA text.
+for (const [path, tokens] of [
+  ["assets/css/homepage-editorial.css", ["--nph-ink: #0B0B0E", "--nph-silver: #F8F7F3", "--nph-line: #DEDCD5", "background: #FBFAEF"]],
+  ["assets/css/novapharm-hig-materials.css", ["--np-material-navigation-solid: #FBFAEF", "--np-material-menu-solid: #F8F7F3", "--np-material-label: var(--np-color-label, #0B0B0E)"]],
+  ["assets/css/corporate-product-discipline.css", ["--npd-white: #FBFAEF", "--npd-soft: #F8F7F3", "--npd-ink: #0B0B0E", "--npd-line: #DEDCD5", "--npd-line-strong: #86868B"]],
+]) {
+  const cssSource = read(path);
+  for (const token of tokens) assert.ok(cssSource.includes(token), path + " must keep " + token);
+  assert.ok(read("assets/css/novapharm.bundle.css").includes("/* Source: " + path.split("/").pop() + " */\n" + cssSource.trim()),
+    "Generated public bundle must match " + path);
+}
+assert.match(read("assets/css/novapharm-hig-materials.css"), /:root\[data-np-color-scheme="dark"\]/);
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
