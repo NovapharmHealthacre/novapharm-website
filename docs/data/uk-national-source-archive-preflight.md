@@ -132,3 +132,8 @@ Official publisher documentation:
 - https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/independent-prescribing-pharmacist/
 
 **Important limitations:** Published descriptions specify compressed archive members, but a selected real archived file and its precise container/extension have not yet been independently verified. A ZIP candidate profile does not establish that every historic publisher version will match ZIP format. Fail closed for alternate formats until independently authenticated and reviewed. No original Welsh data files, commercial rights, BNF/SNOMED/dm+d permissions, full-version clinical schemas, production history or customer-facing reads are admitted. `nwssp.gp-dispensing` and `nwssp.english-dispensing` remain uncontracted pending exact verified file formats, and must not be counted as ingested.
+
+
+### Strict UTC source discovery timestamps — 22 November 2026
+
+Archive candidate manifests now require an actual Gregorian UTC instant for `discoveredAt`: the parser round-trips the canonical timestamp to reject nonexistent calendar days, leap-day errors, invalid clock times, timezone-offset forms and overprecision. A date accepted by JavaScript's permissive `Date.parse` normalisation is **not** enough. Offline positive/negative tests verify valid leap years and fractional seconds as well as invalid source dates. This check prevents malformed provenance metadata from looking credible, but **does not independently authenticate the timestamp, publisher signature, archive SHA-256, licence, or medicine data**.
