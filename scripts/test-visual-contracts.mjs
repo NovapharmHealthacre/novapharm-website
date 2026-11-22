@@ -51,8 +51,13 @@ assert.ok(contrastOnWhite(focusColor) >= 3, "keyboard-focus outline must have at
 assert.ok(contrastOnWhite(highContrastDivider) >= 3, "high-contrast nontext divider must have at least 3:1 contrast on white");
 
 assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
-assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
-assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
+const identity = JSON.parse(text("config/brand-identities.json"));
+assert.equal(identity.approvedOn, "2026-11-22", "brand approval date must remain governed");
+assert.equal(identity.brands.healthcare.hex, "#9D1B32", "Healthcare uses owner-approved Royal Cochineal Crimson");
+assert.equal(identity.brands.healthcare.strongAccent, "#68101F", "small foregrounds use approved contrast-safe crimson");
+assert.ok(tokenCss.includes(`--brand: ${identity.brands.healthcare.hex};`), "corporate identity must match approved Healthcare crimson");
+assert.ok(tokenCss.includes(`--brand-text: ${identity.brands.healthcare.strongAccent};`), "small red foreground text must use the approved contrast-safe derivative");
+assert.doesNotMatch(tokenCss, /#E3120B|#B30E09/i, "retired Economist Red must not reappear in canonical tokens");
 
 const homepageCss = text("assets/css/homepage-editorial.css");
 assert.match(homepageCss, /\.npd-apple-hero/);
