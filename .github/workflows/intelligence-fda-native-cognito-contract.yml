@@ -1,0 +1,30 @@
+name: FDA Cognito native authorization boundaries
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/fda-native-cognito-approval.cfn.json'
+      - 'scripts/test-fda-native-cognito-approval.mjs'
+      - 'docs/intelligence/fda-native-cognito-approval-20261122.md'
+      - '.github/workflows/intelligence-fda-native-cognito-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-safety:
+    name: Validate default-off Cognito scopes, native clients and no member grants
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Check exact native Cognito scopes and approval predicates
+        run: node --test scripts/test-fda-native-cognito-approval.mjs
+      - name: Verify unchanged corporate publishing boundaries
+        run: node --test scripts/aws/contact-release-routing.test.mjs
