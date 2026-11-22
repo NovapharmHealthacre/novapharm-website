@@ -80,3 +80,36 @@ test("FAERS must be count-only, rejects patient raw events, other unsafe respons
      fetchImpl:async()=>v}));
  }
 });
+
+test("native FDA gateway bounds streamed bytes even when content-length is missing or dishonest",async()=>{
+ for(const mocked of [
+  new Response(JSON.stringify(fixture("ndc")),{headers:{"content-type":"application/json","content-length":"262145"}}),
+  new Response(JSON.stringify({sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{oversized:"x".repeat(280000)}]}),
+    {headers:{"content-type":"application/json"}}),
+  new Response(new Uint8Array([0xff,0xfe]),{headers:{"content-type":"application/json"}})
+ ]){
+  await assert.rejects(queryProtectedFdaNative({
+   config,kind:"ndc",drug:"apixaban",accessToken:token,fetchImpl:async()=>mocked
+  }));
+ }
+});
+test("native FDA gateway rejects source-ID swaps and contradictory source result kinds",async()=>{
+ const invalid=[
+  {...fixture("ndc"),sourceId:"us.fda.openfda.recalls"},
+  {...fixture("ndc"),kind:"recalls"},
+  {...fixture("ndc"),dataState:"no_source_matches"}
+ ];
+ for(const data of invalid){
+  await assert.rejects(queryProtectedFdaNative({
+   config,kind:"ndc",drug:"apixaban",accessToken:token,fetchImpl:async()=>response(data)
+  }),/provenance/);
+ }
+});
+test("native FDA gateway parses valid streaming body without reading the unbounded text method",async()=>{
+ const mocked=response(fixture("ndc"));
+ mocked.text=async()=>{throw Error("Forbidden unbounded text read");};
+ const value=await queryProtectedFdaNative({
+   config,kind:"ndc",drug:"apixaban",accessToken:token,fetchImpl:async()=>mocked
+ });
+ assert.equal(value.records.length,1);
+});
