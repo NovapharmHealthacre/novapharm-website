@@ -93,6 +93,9 @@ export async function authenticateNativeFdaWithPkce(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<void>{
   assertReady(config,platform);
+  // Never let a failed account-switch or cancelled login reuse a prior board token.
+  // A failed Keystore clear aborts authentication before browser/network access.
+  await platform.secureStore.clear();
   // The host platform must supply cryptographically secure 32-byte buffers.
   const [verifierBytes,stateBytes,nonceBytes]=await Promise.all([
     platform.secureRandomBytes(32),
@@ -125,7 +128,10 @@ export async function authenticateNativeFdaWithPkce(
      returned.username || returned.password) throw Error("Untrusted sign-in callback.");
   const code=singleParam(returned,"code");
   const observedState=singleParam(returned,"state");
-  if(observedState!==state || !code || code.length>2048 ||
+  const callbackKeys=[...returned.searchParams.keys()];
+  if(callbackKeys.length!==2 || !callbackKeys.includes("code") ||
+    !callbackKeys.includes("state") ||
+    observedState!==state || !code || code.length>2048 ||
     /[\p{Cc}\p{Cf}\p{Cs}]/u.test(code) ||
     returned.searchParams.has("error"))
     throw Error("Invalid sign-in state or authorization code.");
