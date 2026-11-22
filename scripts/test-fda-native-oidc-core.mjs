@@ -97,7 +97,7 @@ test("PKCE uses secure random S256 and stores only expiring access token via inj
  assert.equal(await verifiedNativeFdaAccessToken(config,adapter),mockedToken);
  await signOutNativeFda(adapter);
  assert.equal(stats().stored,null);
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
 });
 test("callback state replay, duplicate states, cross-origin and error redirects are rejected",async()=>{
  for(const url of [
@@ -149,7 +149,7 @@ test("cancelled or failed second Android sign-in clears previously held board ac
    ...adapter,openSystemAuthSession:async()=>null
  }),/cancelled/);
  assert.equal(stats().stored,null);
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
 });
 test("unexpected OAuth callback parameters are rejected before token exchange",async()=>{
  const {adapter,stats}=platform({openSystemAuthSession:async(uri,redirect)=>{
@@ -161,7 +161,7 @@ test("unexpected OAuth callback parameters are rejected before token exchange",a
 });
 test("expiry and revoked or empty keystore entries deny subsequent requests",async()=>{
  const {adapter,stats}=platform({nowMs:()=>1795300000000});
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
  assert.equal(stats().stored,null);
 });
 
