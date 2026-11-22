@@ -24,6 +24,8 @@ assert(!contactHtml.includes('>Open email draft</button>'), "Obsolete email-only
 assert(contactHtml.includes("connect-src 'self' " + origin), "Contact CSP origin allowlist");
 assert(contactHtml.includes("form-action 'none'"), "No non-JS post or form-action escape");
 assert(script.includes("result?.persisted !== true"), "Server durable receipt required");
+assert(contactHtml.includes('disabled aria-describedby="contact-submission-status"'), "Static submit must fail closed before managed client loads");
+assert(script.includes('if (submit) submit.disabled = false;'), "Managed client must explicitly activate submit after origin validation");
 assert(script.includes("response.status !== 201"), "HTTP 201 required");
 assert(privacy.includes("Secure business enquiry intake"), "Live data-processing disclosure missing");
 assert(privacy.includes("automatic expiry") || privacy.includes("Automatic expiry"), "Retention disclosure missing");
