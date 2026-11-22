@@ -85,7 +85,7 @@ test("labels reject redirected, HTML, invalid UTF-8 and oversized FDA responses"
   () => new Response(JSON.stringify(sourcePayload),{status:200,headers:{"content-type":"application/json","content-length":"262145"}}),
   () => new Response(JSON.stringify({results:[{oversized:"x".repeat(300000)}]}),{status:200,headers:{"content-type":"application/json"}}),
   () => new Response(new Uint8Array([0xff,0xfe]),{status:200,headers:{"content-type":"application/json"}}),
-  () => ({...apiResponse(),redirected:true})
+  () => {const v=apiResponse();Object.defineProperty(v,"redirected",{value:true});return v;}
  ];
  for(const mock of upstream){
   await assert.rejects(searchOpenFdaLabels("apixaban",board,{fetchImpl:mock}),error=>error.statusCode===503);
