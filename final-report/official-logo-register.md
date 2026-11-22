@@ -5,11 +5,11 @@ Status: authoritative owner pack preserved; deployed web subset is byte-identica
 
 | Asset | Repository path | SHA-256 | Production use |
 |---|---|---|---|
-| Approved path-based vector wordmark | `assets/brand/novapharm-healthcare-logo.svg` | `9199250e117b5c7d2b39d4d08d33522928f668d36316863b4e60f5eb7ca2a729` | Header, footer, portals, Executive Platform and high-density web identity |
+| Approved path-based vector wordmark | `assets/brand/novapharm-healthcare-logo.svg` | `d0041c2e635b71eaf2f15d99efbf4e3be4a07ccc6f609367999d95f968c08b70` | Header, footer, portals, Executive Platform and high-density web identity |
 | Approved 2048px raster wordmark | `assets/brand/novapharm-healthcare-logo.png` | `f1f5a0e0aa68ebf0f6f0370b45c2810d41b9420c2c930d4649cf199efeb96fdf` | `<picture>` fallback, email templates and structured-data organisation identity |
 | Approved reverse vector | `assets/brand/novapharm-healthcare-logo-reverse.svg` | `6571ff65dbf47ce33c9a6f725aa7a8d29dc07651ee261ec56d6ec3f117875f2e` | Controlled dark or red surfaces only |
 | Approved monochrome vector | `assets/brand/novapharm-healthcare-logo-monochrome.svg` | `f9543f7a851b8c307a3992d3fe0966823bb2871dca584b19729f1af54d1546ef` | Necessary single-colour output only |
-| Approved SVG favicon | `assets/brand/favicon.svg` | `f8abf32bef19098701e2e66097358d6f4fd517307dce19efb56b18b7cac43fcc` | Modern browser identity at constrained sizes |
+| Approved SVG favicon | `assets/brand/favicon.svg` | `24da07393fd633989211752171ce30f84b6029af69480c2e4ae6e3d88fe51846` | Modern browser identity at constrained sizes |
 | Approved multi-resolution favicon | `assets/brand/favicon.ico` | `cdef00b3fdf6677dfd94897f2e48405b97c5bee8e5b82d0f23240eec2b937deb` | Legacy/desktop browser fallback |
 | Approved Apple touch icon | `assets/brand/apple-touch-icon.png` | `5f45536153ab8ac5f8c27aa764557b1297630859c21142deb071610ffa7d5e02` | Apple home-screen identity, 180x180 |
 | Approved PWA icons | `assets/brand/pwa-icon-192.png`, `assets/brand/pwa-icon-512.png`, `assets/brand/pwa-maskable-512.png` | Enforced by `npm run brand:validate` | Web application manifest, including a dedicated maskable surface |
@@ -32,9 +32,9 @@ Default Open Graph image URL: `https://novapharmhealthcare.com/assets/brand/nova
 
 ## Owner decision
 
-The owner explicitly approved the complete asset pack on 13 August 2026. The supplied horizontal corporate logo remains unchanged in role and is never replaced by typed text. The pack's `N` favicon and `N + original arc` application mark are approved only for sizes where the full horizontal wordmark would be unreadable. Reverse and monochrome variants are approved only for their documented contrast/output contexts. Economist Red `#E3120B` is the authoritative primary identity colour.
+The owner explicitly approved the complete asset pack on 13 August 2026. The supplied horizontal corporate logo remains unchanged in role and is never replaced by typed text. The pack's `N` favicon and `N + original arc` application mark are approved only for sizes where the full horizontal wordmark would be unreadable. Reverse and monochrome variants are approved only for their documented contrast/output contexts. Royal Cochineal Crimson `#9D1B32` is the authoritative primary identity colour.
 
-Accessibility colour treatment: the logo and canonical graphical identity retain `#E3120B`. Small foreground labels and links on light neutral surfaces use the governed darker derivative `#B30E09` where required to preserve WCAG contrast. Browser acceptance verifies this distinction across Chromium and WebKit rather than modifying the supplied artwork.
+Accessibility colour treatment: the logo and canonical graphical identity retain `#9D1B32`. Small foreground labels and links on light neutral surfaces use the governed darker derivative `#68101F` where required to preserve WCAG contrast. Browser acceptance verifies this distinction across Chromium and WebKit rather than modifying the supplied artwork.
 
 ## PharmaScope product identity
 
@@ -54,3 +54,8 @@ Status: authoritative owner pack preserved; selected Portal delivery assets are 
 The complete owner-supplied PharmaScope pack contains 127 files and 126 checksum entries. It is preserved at `creative-assets/brand/pharmascope-logo-asset-pack/`; the seven necessary application assets above are deployed under `assets/brand/` and synchronized to `apps/portal/public/assets/brand/`. `npm run brand:validate` checks inventory counts, checksum coverage and byte identity.
 
 The supplied PharmaScope files carrying an `.svg` extension are official raster-preserving SVG containers: their markup embeds PNG image data rather than path-traced vector geometry. They are authoritative and may be used at their governed dimensions, but this register does not describe them as path-based master vectors. A future path-only master would require a new owner-approved asset and checksum record; no automatic tracing or logo redraw is authorised.
+
+
+## 22 November 2026 — Colour supersession
+
+Current Healthcare primary vector, web accents and favicon SVG now use Royal Cochineal Crimson `#9D1B32`; the Distribution vector uses Near-black Garnet `#3D0B13`. Historical red PNG, ICO, PWA and Open Graph raster derivatives have not yet been re-rendered; their legacy checksums remain accurate for those archived files and do not establish colour-current artwork. Prefer the current SVG on the website until revised raster variants are generated and approved.
