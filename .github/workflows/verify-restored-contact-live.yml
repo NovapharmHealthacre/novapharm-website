@@ -44,6 +44,10 @@ jobs:
             'type="submit" disabled aria-describedby="contact-submission-status"',
             '/assets/css/novapharm-unified-20261107.css',
             'if (submit) submit.disabled = false;',
+            'reviewedBlobs=Object.freeze({',
+            'Uint8Array.of(0)', 'Live Contact HTML differs from reviewed release',
+            'Live Contact CSS differs from reviewed release',
+            'Live Contact submission client differs from reviewed release',
             'method:"OPTIONS"', 'method:"GET"'
           ]) assert.ok(source.includes(marker), "Read-only verifier source contract missing: "+marker);
           assert.ok(!/method\s*:\s*["']POST["']/.test(source), "Verifier may not perform a real POST");
