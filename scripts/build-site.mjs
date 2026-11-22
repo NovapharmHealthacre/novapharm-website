@@ -82,3 +82,5 @@ await import("./version-public-visual-assets.mjs");
 
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
+// Fail the public build if any late route override restores old browser chrome.
+await import("./validate-royal-public-theme.mjs");

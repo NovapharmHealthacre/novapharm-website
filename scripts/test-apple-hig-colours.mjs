@@ -233,6 +233,14 @@ assert.ok(aboutTransform.includes('meta name="theme-color" content="#FBFAEF"'),
 assert.ok(!aboutTransform.includes('meta name="theme-color" content="#FFFFFF"'),
   "The post-build About transform must never restore retired Pure White");
 
+// Post-build release-gate validation is mandatory across the complete public
+// canonical page register, not merely the checked-in homepage source.
+const postBuildRoyal = read("scripts/validate-royal-public-theme.mjs");
+assert.match(read("scripts/build-site.mjs"), /await import\("\.\/validate-royal-public-theme\.mjs"\)/);
+assert.match(postBuildRoyal, /seo\/generated\/page-metadata-register\.json/);
+assert.match(postBuildRoyal, /expected exactly one browser theme tag/);
+assert.match(postBuildRoyal, /webManifest\.background_color/);
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
