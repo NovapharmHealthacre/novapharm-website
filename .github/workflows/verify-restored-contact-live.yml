@@ -6,6 +6,12 @@ on:
       - scripts/verify-restored-contact-live.mjs
       - .github/workflows/verify-restored-contact-live.yml
   workflow_dispatch:
+    inputs:
+      require_reviewed_contact:
+        description: Require exact approved Contact design/JS/CSS release identities (strict cutover check)
+        required: false
+        type: boolean
+        default: false
   # Deliberately no real contact POST; read-only production smoke check only.
   schedule:
     - cron: "43 4 * * *"
@@ -45,7 +51,8 @@ jobs:
             '/assets/css/novapharm-unified-20261107.css',
             'if (submit) submit.disabled = false;',
             'reviewedBlobs=Object.freeze({',
-            'Uint8Array.of(0)', 'Live Contact HTML differs from reviewed release',
+            'Uint8Array.of(0)', 'NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN',
+            'existing-managed-contact', 'reviewed-exact-assets', 'Live Contact HTML differs from reviewed release',
             'Live Contact CSS differs from reviewed release',
             'Live Contact submission client differs from reviewed release',
             'method:"OPTIONS"', 'method:"GET"'
@@ -55,6 +62,8 @@ jobs:
           NODE
   verify-live-contact:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    env:
+      NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN: ${{ github.event_name == 'workflow_dispatch' && inputs.require_reviewed_contact == true && 'yes' || 'no' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
