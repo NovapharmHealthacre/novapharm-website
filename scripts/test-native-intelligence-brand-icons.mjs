@@ -75,7 +75,7 @@ test("Sovereign Black is applied to light mode without destroying semantic nativ
  assert.ok(light.includes("#2546D8"));
  assert.ok(dark.includes("#F5F5F7"));
  assert.ok(dark.includes("#A8B8FF"));
- assert.ok(checkColour("#FFFFFF","#0B0B0E")>=7);
+ assert.ok(checkColour("#FBFAEF","#0B0B0E")>=7);
  const swift=text("native/novapharm-intelligence-ios/App/NovaTheme.swift");
  assert.ok(swift.includes("static let primaryInk"));
  assert.ok(swift.includes("UIColor.label"));
