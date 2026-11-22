@@ -49,6 +49,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Parse icon generator and source tests before expensive dependency installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/programme/rebuild-native-intelligence-app-icons.mjs
+          node --check scripts/test-native-intelligence-brand-icons.mjs
       - name: Install locked dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
       - name: Generate native icon candidates from owner-approved SVG only
