@@ -882,7 +882,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
-          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/"; do
+          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/" "legal/accessibility/"; do
             verified=false
             for attempt in $(seq 1 10); do
               curl --fail --silent --show-error --location --max-time 15 \
@@ -897,7 +897,7 @@ jobs:
             done
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
-          echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
+          echo 'The public origin serves the exact reviewed Git commit on all seven critical routes, including Markets and Accessibility.'
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
