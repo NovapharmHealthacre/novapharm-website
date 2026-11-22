@@ -122,6 +122,24 @@ test("public and protected page generators cannot restore retired pure-white bro
   assert.doesNotMatch(protectedBuild, /meta name="theme-color" content="#FFFFFF"/i);
 });
 
+test("generated Portal logo uses exact owner SVG and real PNG raster fallback", () => {
+  const builder = text("scripts/build-pages.mjs");
+  assert.ok(builder.includes('const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";'));
+  assert.ok(builder.includes('const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";'));
+  assert.ok(builder.includes('srcset="${brandLogoSvg}" type="image/svg+xml"'));
+  assert.ok(builder.includes('src="${brandLogoPng}" alt="NovaPharm Healthcare"'));
+  assert.notEqual(brand.brands.healthcare.primaryVector, "/assets/brand/novapharm-healthcare-logo.png");
+});
+
+test("Portal navigation status and warehouse source disclaimer preserve accessible ink", () => {
+  const portal = text("apps/portal/app/apple-pharma-portal.css");
+  const warehouse = text("apps/portal/app/employee-distribution.css");
+  assert.ok(portal.includes(".workspace-sidebar nav a.active > small {"));
+  assert.ok(portal.includes("color: #0B0B0E;"));
+  assert.ok(warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#595961;"));
+  assert.ok(!warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;"));
+});
+
 test("source-package quality exception is documented, not published as an image", () => {
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
