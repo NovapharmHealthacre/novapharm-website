@@ -138,6 +138,30 @@ assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-surface:\s*#F8
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.primary) >= 7);
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.secondary) >= 7);
 assert.ok(contrast(officialNeutrals.primary, light["--np-color-accent"]) >= 4.5);
+// The shared React design system is part of the same brand identity.
+const reactSystem = read("packages/design-system/src/index.ts");
+const reactStyles = read("packages/design-system/src/styles.ts");
+for (const [label, hex] of [
+  ["warmWhite", officialNeutrals.primary],
+  ["porcelainWhite", officialNeutrals.secondary],
+  ["sovereignBlack", officialNeutrals.black],
+  ["porcelainStone", officialNeutrals.divider],
+]) {
+  assert.ok(reactSystem.includes(label + ': "' + hex + '"'),
+    "Shared React design tokens must preserve " + label);
+}
+for (const [token, hex] of [
+  ["--np-royal-canvas", officialNeutrals.primary],
+  ["--np-royal-porcelain", officialNeutrals.secondary],
+  ["--np-royal-ink", officialNeutrals.black],
+  ["--np-royal-stone", officialNeutrals.divider],
+]) {
+  assert.ok(reactStyles.includes(token + ":" + hex),
+    "Shared React component CSS must preserve " + token);
+}
+assert.match(reactStyles, /\.np-navigation\{[^}]*background:var\(--np-royal-canvas\)/);
+assert.match(reactStyles, /\.np-button--secondary\{[^}]*border-color:var\(--np-royal-control-border\)/);
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
