@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml } from "../scripts/activate-contact-intake.mjs";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
@@ -55,6 +55,11 @@ test("updates the business-enquiry privacy text only when the expected section e
 
 test("owner-gated managed template preserves approved design and secure submission contract", () => {
   const template = readFileSync("src/content/contact-managed-release.html", "utf8");
+  const stylePath = "assets/css/novapharm-unified-20261107.css";
+  assert.ok(existsSync(stylePath), "Reviewed shared stylesheet must be present in the main source and staged artifact");
+  assert.ok(template.includes('href="/' + stylePath + '"'), "Managed Contact references a missing/wrong CSS asset");
+  const sharedStyles = readFileSync(stylePath,"utf8");
+  assert.ok(sharedStyles.includes(".site-header") || sharedStyles.includes(".site-nav") || sharedStyles.includes(".nav"), "Shared stylesheet lacks expected navigation rules");
   const rendered = activateManagedContactReleaseHtml(template, origin);
   assert.ok(rendered.includes('data-live-b2b-enquiry-form data-api-origin="' + origin + '"'));
   assert.equal((rendered.match(/data-api-origin=/g) || []).length, 1);
@@ -80,4 +85,5 @@ test("owner-gated production activation remains disabled without explicit accept
   assert.ok(activationSource.includes('if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes")'));
   assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
   assert.ok(activationSource.includes('refusing managed replacement'));
+  assert.ok(activationSource.includes('Reviewed managed Contact stylesheet missing from Pages artifact'));
 });
