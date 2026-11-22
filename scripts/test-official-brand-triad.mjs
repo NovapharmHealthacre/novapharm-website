@@ -72,3 +72,30 @@ test("source-package quality exception is documented, not published as an image"
   assert.match(brand.brands.intelligence.sourceIntegrityWarning, /zero bytes/);
   assert.ok(!Object.values(logos).some((file) => file.endsWith("dark-4096w.webp")));
 });
+
+
+const approvedVariantDigests = Object.freeze({
+  "assets/brand/novapharm-healthcare-logo-reverse.svg": "2aa3e14774fed64bd9454ed52ec3ca24a5dfa3b7477689093284c71eeebdf6f2",
+  "assets/brand/novapharm-healthcare-logo-monochrome.svg": "598b755d89d0db65ed9929a260d829aebaa68c476cd4e51a33f0b3a8b8d68d0f",
+  "assets/brand/novapharm-distribution-logo-reverse.svg": "ad4836f70ff23b66d5f213ed5188862628c41c918c451d7f709ab1baa1c2c036",
+  "assets/brand/novapharm-distribution-logo-monochrome.svg": "85e296f76cb1534112c34ad04ee97f4a93c5a034f40239ea57499795dd66f2e1",
+  "assets/brand/novapharm-intelligence-logo-reverse.svg": "0fc0272d8ab5c441193959f4afa3bac7939a5ca02ab706d5fb67c78cd6c62e1f",
+  "assets/brand/novapharm-intelligence-logo-monochrome.svg": "9a408c1b98e91035b01fb6ef4e01a893047e26252443c946ba7d22538eaa805e",
+  "assets/brand/safari-pinned-tab.svg": "5b82c63380e89fd83dc01596f4f76bcd84304e0b25581bba254f146cacbb262f",
+});
+for (const [file, digest] of Object.entries(approvedVariantDigests)) {
+  test("owner ZIP byte-exact logo and browser vector: " + file, () => {
+    assert.equal(sha256(file), digest, "Only the exact approved ZIP master may be published");
+    assert.doesNotMatch(text(file), /<script\\b|<foreignObject\\b|javascript:/i);
+  });
+}
+test("Sovereign Black and native font roles are independent of brand accents", () => {
+  const system = JSON.parse(text("config/brand-identities.json"));
+  assert.equal(system.brands.healthcare.hex, "#9D1B32");
+  assert.equal(system.brands.distribution.hex, "#3D0B13");
+  assert.equal(system.brands.intelligence.hex, "#2546D8");
+  assert.match(text("assets/css/tokens.css"), /--np-brand-black:\\s*#0B0B0E/i);
+  assert.match(text("apps/corporate/app/globals.css"), /font-family:\\s*var\\(--np-type-ui/);
+  assert.match(text("apps/portal/app/apple-pharma-portal.css"), /--portal-ink:\\s*#0B0B0E/i);
+  assert.doesNotMatch(text("assets/css/tokens.css"), /@font-face\\s*\\{[^}]*SF Pro/is);
+});
