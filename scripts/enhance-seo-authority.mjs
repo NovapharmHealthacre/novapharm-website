@@ -16,6 +16,27 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const officialNeutrals = JSON.parse(readFileSync(join(root, "config/brand-neutrals.json"), "utf8"));
+if (officialNeutrals.primary !== "#FBFAEF") {
+  throw new Error("Canonical public HTML generator requires approved Royal Mineral White");
+}
+
+// Canonical pages are sourced from both fresh templates and older product HTML.
+// Normalise only the browser theme tag; never rewrite inverse text, dark visuals,
+// a product's source data, or protected-route metadata.
+function normalizePublicTheme(html, file) {
+  const headEnd = html.search(/<\/head\s*>/i);
+  if (headEnd < 0) throw new Error("Canonical HTML has no closing head: " + file);
+  const head = html.slice(0, headEnd);
+  const themeTags = [...head.matchAll(/<meta\b[^>]*\bname\s*=\s*["']theme-color["'][^>]*>/gi)];
+  if (themeTags.length > 1) throw new Error("Duplicate canonical browser theme tags: " + file);
+  const replacement = '<meta name="theme-color" content="' + officialNeutrals.primary + '">';
+  if (themeTags.length === 0) {
+    return html.slice(0, headEnd) + replacement + "\n" + html.slice(headEnd);
+  }
+  return html.replace(themeTags[0][0], replacement);
+}
+
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
   if (route === "/" || route === "/about/company/") return "2026-11-20";
@@ -381,6 +402,7 @@ for (const file of [...new Set(publicFiles)]) {
   const article = route.startsWith("/news-insights/") ? articleBySlug.get(route.split("/")[2]) : null;
   const leader = route.startsWith("/leadership/") ? leaderBySlug.get(route.split("/")[2]) : null;
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
+  html = normalizePublicTheme(html, file);
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
   html = addCompanyIdentityLinks(html, route);

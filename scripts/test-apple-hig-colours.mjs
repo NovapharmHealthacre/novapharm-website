@@ -262,6 +262,16 @@ for (const [path, tokens] of [
 }
 assert.match(read("assets/css/novapharm-hig-materials.css"), /:root\[data-np-color-scheme="dark"\]/);
 
+// Product pages can be sourced from prior generated HTML: SEO enhancement must
+// normalise exactly one Royal Mineral browser theme for every canonical route.
+const seoAuthority = read("scripts/enhance-seo-authority.mjs");
+assert.ok(seoAuthority.includes("function normalizePublicTheme(html, file)"));
+assert.ok(seoAuthority.includes("html = normalizePublicTheme(html, file);"));
+assert.ok(seoAuthority.includes("Duplicate canonical browser theme tags"));
+assert.ok(seoAuthority.includes('config/brand-neutrals.json'));
+assert.doesNotMatch(seoAuthority.slice(seoAuthority.indexOf("function normalizePublicTheme"),
+  seoAuthority.indexOf("function normalizePublicTheme") + 1100), /#E3120B|#FFFFFF/);
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [
