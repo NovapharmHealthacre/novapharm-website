@@ -92,3 +92,16 @@ Even full receipt coverage returns `canIngest:false`, `canPublish:false`,
 `sourceRightsIndependentlyApproved:false`, and zero clinical rows reconciled.
 This is a manifest completeness preflight for future independently verified backfills,
 not evidence that all historical archive files have been obtained or authenticated.
+
+
+## 22 November — private source-file batch re-verification (read only)
+
+The standalone private backfill batch tool now rechecks actual quarantine file bytes against each source manifest before calculating gaps, version conflicts, or locally complete month/quarter ranges. The command is:
+
+    node scripts/data/verify-uk-private-backfill-file-batch.mjs --root PRIVATE_ROOT --plan batch-plan.json
+
+Example batch plan (all filenames are flat basenames inside the private root):
+
+    {"contract":"novapharm.uk.private-backfill-file-batch.v1","sourceId":"nhsbsa.epd","startPeriod":"2026-08","endPeriod":"2026-09","entries":[{"period":"2026-08","manifestFile":"aug.json","archiveFile":"aug.csv"}]}
+
+The program permits at most 24 files in a batch, refuses path traversal, symlinked manifests, wrong sources or periods, and tampered archive bytes. It invokes the Wales GP structural ZIP inspector through the same archive verification call. Results contain only sanitized source and period coverage counts, not file contents or private local paths. It does not independently authenticate the claimed publisher digest, check clinical completeness, acquire source licences, ingest records or enable any live API. All results remain canIngest=false and canPublish=false.
