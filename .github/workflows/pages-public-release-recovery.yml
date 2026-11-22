@@ -26,6 +26,8 @@ on:
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
       - scripts/stamp-public-release-provenance.mjs
+      - scripts/normalise-official-public-brand-metadata.mjs
+      - scripts/test-official-public-brand-metadata.mjs
       - scripts/test-quantum-static-public-candidate.mjs
       - quantum-research/index.html
       - assets/css/quantum-research.css
@@ -72,6 +74,7 @@ jobs:
 
       - name: Build and validate the public artifact
         run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
           npm run build:public-only
           npm run test:owner-corrections:public-only
           npm run validate:domain
@@ -143,7 +146,9 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build corrected public output
-        run: npm run build:public-only
+        run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
+          npm run build:public-only
 
       - name: Validate owner corrections and public release artifact
         run: |
