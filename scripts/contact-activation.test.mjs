@@ -78,8 +78,9 @@ test("owner-gated managed template preserves approved design and secure submissi
   assert.throws(() => activateManagedContactReleaseHtml(source, origin), /marker missing/);
   assert.throws(() => activateManagedContactReleaseHtml(template + '<div data-api-origin="duplicate"></div>', origin), /exactly one/);
   assert.throws(() => activateManagedContactReleaseHtml(template.replace('href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/nonexistent.css"'), origin), /marker missing/);
-  const badOrder = template.replace('href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/novapharm-unified-20261107.css"');
-  assert.ok(badOrder.indexOf('href="/assets/css/novapharm-unified-20261107.css"') < badOrder.indexOf("<style>"), "Reviewed shared CSS must precede the scoped Contact design");
+  const sharedLink = '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07">';
+  const badOrder = template.replace(sharedLink, "").replace("<style>", "<style>" + sharedLink);
+  assert.throws(() => activateManagedContactReleaseHtml(badOrder, origin), /CSS must load before/);
 
   assert.throws(() => activateManagedContactReleaseHtml(template, "https://unapproved.example"), /Refusing/);
 });
