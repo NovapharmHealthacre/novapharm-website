@@ -5,12 +5,14 @@ import { mkdtemp, mkdir, symlink, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { UK_SOURCE_ARCHIVE_CONTRACTS, validateUkNationalArchiveManifest, verifyUkNationalArchiveBytes, verifyNationalComparisonBoundary } from '../src/core/uk-national-source-archive-preflight.mjs';
+import { BNF_SNOMED_PUBLIC_RESOURCE_RELEASES } from '../src/core/uk-bnf-snomed-reference-quality.mjs';
 const h = value => createHash('sha256').update(value).digest('hex');
 const fixture = (sourceId, overrides={}) => {
   const x=UK_SOURCE_ARCHIVE_CONTRACTS.find(v=>v.sourceId===sourceId);
   return {contract:'novapharm.uk.source-archive-candidate.v1',sourceId, jurisdiction:x.jurisdiction,
     reportingPeriod:x.periodPrecision==='quarter'?'2026-Q2':'2026-09',format:x.formats[0],
-    publisherUrl:`https://${x.publisherHosts[0]}/datasets/verified`,publisherResourceId:'official-resource-202609',
+    publisherUrl:`https://${x.publisherHosts[0]}/datasets/verified`,publisherResourceId:sourceId==='nhsbsa.bnf-snomed-map'
+      ? BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId : 'official-resource-202609',
     publisherFileName:'source.'+x.formats[0].toLowerCase(),sha256:h('a,b\n1,2\n'),byteSize:8,
     sourceVersion:'publisher-2026-09',discoveredAt:'2026-11-21T12:00:00.000Z',...overrides};
 };
@@ -295,4 +297,27 @@ test('publisher discovery timestamp must be a real UTC calendar instant, not Dat
   assert.equal(r.canPublish,false);
   assert.equal(r.canIngest,false);
  }
+});
+
+test('BNF–SNOMED quarantine archive manifest pins resource UUID to declared month',()=>{
+ for(const [period,release] of Object.entries(BNF_SNOMED_PUBLIC_RESOURCE_RELEASES)){
+  const receipt=validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+   reportingPeriod:period,publisherResourceId:release.resourceId
+  }));
+  assert.equal(receipt.publisherResourceId,release.resourceId);
+  assert.equal(receipt.canIngest,false);
+  assert.equal(receipt.canPublish,false);
+  assert.equal(receipt.admittedMedicineRows,0);
+ }
+ for(const period of ['2026-05','2026-10']){
+  assert.throws(()=>validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+   reportingPeriod:period
+  })),/publisher resource does not match reporting month/);
+ }
+ assert.throws(()=>validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+  publisherResourceId:BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-08'].resourceId
+ })),/publisher resource does not match reporting month/);
+ assert.throws(()=>validateUkNationalArchiveManifest(fixture('nhsbsa.bnf-snomed-map',{
+  reportingPeriod:'2026-08',publisherResourceId:BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'].resourceId
+ })),/publisher resource does not match reporting month/);
 });
