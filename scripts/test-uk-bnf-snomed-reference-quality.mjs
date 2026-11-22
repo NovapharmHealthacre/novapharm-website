@@ -169,3 +169,18 @@ test('July 2026 source schema differs from September in declared numeric/string 
  })],{reportingPeriod:'2026-09',publisherResourceId:september.resourceId})),
  /invalid pack numeric measure/);
 });
+
+test('pinned NHSBSA 13-column dictionary fails closed on schema drift',()=>{
+ const official=[...BNF_SNOMED_REFERENCE_HEADERS];
+ const reordered=[...official];
+ [reordered[2],reordered[3]]=[reordered[3],reordered[2]];
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make()],{
+  headers:reordered
+ })),/pinned publisher CSV column order changed/);
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{
+  headers:[...official,'EXTRA_UNREVIEWED_FIELD']
+ })),/unexpected CSV schema column count/);
+ assert.throws(()=>validateUkBnfSnomedReferenceSample(args([],{
+  headers:official.map(h=>h==='VTM'?'vtm':h)
+ })),/pinned publisher CSV column order changed/);
+});
