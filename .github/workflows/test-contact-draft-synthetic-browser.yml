@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Pin the exact candidate tree; mutable draft branch advances must not silently change acceptance target.
-          ref: 959cd70b3ee30733ccb20278547ac8362af1bdfc
+          ref: f760e883f633b14112908c9144e361d4c8c3e60c
           path: contact-draft
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -59,6 +59,7 @@ jobs:
             ':root{--ink:#0B0B0E', ':root{--ref-ink:#0B0B0E',
             '.ref-field>span{font-weight:560;color:var(--ref-ink)',
             '<noscript>', '<noscript><style>.ref-form{display:none}</style>', 'NovaPharm Intelligence',
+            'disabled aria-describedby="contact-submission-status"', 'id="contact-submission-status"',
             'src="/assets/js/contact-production.js"'
           ];
           for (const marker of mustHave) assert.ok(h.includes(marker), "Missing contact design marker: " + marker);
