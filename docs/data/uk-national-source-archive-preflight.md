@@ -2,16 +2,20 @@
 
 **Status:** implementation candidate, read-only private-quarantine file integrity checking. No accepted medicine observations, no production/API/mobile activation, no approval or evidence of commercial/AI/BNF/SNOMED rights. **Never interpret a successful preflight receipt as source licence or medicine safety approval.**
 
-This package extends the existing England-focused EPD/PCA ingestion scripts with a separate source-file integrity boundary for all four nations. The eight supported *source types* are:
+This package extends the existing England-focused EPD/PCA ingestion scripts with a separate source-file integrity boundary for all four nations. The twelve supported **candidate archive format profiles** (eight original plus four publisher-confirmed candidate types) are:
 
 | Jurisdiction | Registry source ID | Publisher file type | Exact source grain | Period |
 | --- | --- | --- | --- | --- |
 | GB-ENG | `nhsbsa.epd` | CSV | England observed community prescribing | Month |
 | GB-ENG | `nhsbsa.pca` | CSV | England dispensing/reimbursement, NOT additive to EPD | Month |
+| GB-ENG (publisher) | `nhsbsa.bnf-snomed-map` | CSV | Monthly BNF↔SNOMED crosswalk reference, **no prescribing volumes**; geography not applicable to reference mappings | Month |
 | GB-SCT | `phs.prescribed-dispensed` | CSV | Prescriber-to-dispenser location flow, not medicines | **Quarter** |
 | GB-SCT | `phs.prescriptions-community` | CSV | Prescription-payment records: board, prescriber or dispenser views are different grains | Month |
 | GB-WLS | `nwssp.practice-pharmacy-flow` | XLS/XLSX | Practice ↔ pharmacy flows; no national medicine content implied | Month |
 | GB-WLS | `nwssp.gp-prescribing` | ZIP | GP presentation-level prescribing; contains main CSV, ChemSubstance and addresses | Month |
+| GB-WLS | `nwssp.hospital-prescribing` | ZIP candidate | Hospital-origin community-dispensed presentation data: main HospitalDataFileCCYYMM, ChemSubstance, Address | Month |
+| GB-WLS | `nwssp.dental-prescribing` | ZIP candidate | Dental-origin community-dispensed presentation data: main DentalDataFileCCYYMM, ChemSubstance, Address | Month |
+| GB-WLS | `nwssp.independent-pharmacist-prescribing` | ZIP candidate | Independent-pharmacist presentation data: four CSV members IPDataCCYYMM, BNF, ChemSubstance, Address | Month |
 | GB-NIR | `bso.dispensing-contractor` | CSV | Paid dispensing contractor flow, not medicine demand | Month |
 | GB-NIR | `bso.gp-prescribing` | CSV | Medicine-presentation items/quantity/cost, not contractor flow | Month |
 
@@ -115,3 +119,16 @@ The private backfill batch preflight now refuses reuse of a manifest filename or
 ### Two-pass private batch safety and bounded disk I/O
 
 The batch validates the source period window, every period and every manifest **before** reading any source archive payload. Total declared compressed/source file bytes are bounded at 16 GiB per invocation, in addition to the 24-file cap and per-file manifest cap. This prevents a later invalid manifest from causing earlier large files to be unnecessarily streamed. Independent publisher hash provenance and all clinical rights remain unapproved.
+
+
+## 22 November — additional reference and Welsh origin-specific private archive contracts
+
+The quarantine-only archive manifest registry now additionally recognises NHSBSA monthly BNF–SNOMED mapping CSV (as a **reference crosswalk, not a prescribing metric**), and three separate Welsh community-dispensed prescription-origin ZIP candidates: hospital, dental and independent-pharmacist. Their data grains must not be added to GP prescribing or English-dispensed-in-Wales records by assumption. The Wales scanner is bound to the **same already-hash-checked open file descriptor** as the existing GP directory inspector. It requires exactly three main/chemical/address entries for hospital and dental, and exactly four CSV entries including BNF for independent-pharmacist, with period-qualified main file naming, safe local and central headers, no extra entries, no traversal, no symlinks, bounded inflation, and no record extraction. Synthetic positive/negative tests cover the added profiles.
+
+Official publisher documentation:
+- https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping (monthly CSV with third-party rights reserved; not one-to-one mapping guaranteed)
+- https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/hospital-prescribing-data-extract/
+- https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/dental-prescribing-data-extract/
+- https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/independent-prescribing-pharmacist/
+
+**Important limitations:** Published descriptions specify compressed archive members, but a selected real archived file and its precise container/extension have not yet been independently verified. A ZIP candidate profile does not establish that every historic publisher version will match ZIP format. Fail closed for alternate formats until independently authenticated and reviewed. No original Welsh data files, commercial rights, BNF/SNOMED/dm+d permissions, full-version clinical schemas, production history or customer-facing reads are admitted. `nwssp.gp-dispensing` and `nwssp.english-dispensing` remain uncontracted pending exact verified file formats, and must not be counted as ingested.
