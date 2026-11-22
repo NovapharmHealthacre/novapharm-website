@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { inspectWalesGpZipDirectory } from './uk-wales-gp-zip-inventory.mjs';
 import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep, extname } from 'node:path';
@@ -124,6 +125,7 @@ export async function verifyUkNationalArchiveBytes(manifest, {archivePath, quara
   const handle = await open(exactPath, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
   let bytes = 0;
   const hash = createHash('sha256');
+  let walesGpZipDirectory = null;
   try {
     const openedStat = await handle.stat();
     if (!openedStat.isFile() || openedStat.size !== plan.expectedBytes) deny('archive changed between checks');
@@ -132,12 +134,23 @@ export async function verifyUkNationalArchiveBytes(manifest, {archivePath, quara
       if (bytes > plan.expectedBytes) deny('archive over-read');
       hash.update(chunk);
     }
+    // Hash, structural checks and receipt use one already-open file descriptor,
+    // so a matching caller-supplied hash alone cannot certify an unsafe Welsh ZIP.
+    if (bytes !== plan.expectedBytes || hash.digest('hex') !== plan.expectedSha256)
+      deny('archive hash or size mismatch');
+    if (plan.sourceId === 'nwssp.gp-prescribing') {
+      walesGpZipDirectory = await inspectWalesGpZipDirectory(handle, {
+        sourceId: plan.sourceId, reportingPeriod: plan.reportingPeriod,
+      });
+      if (walesGpZipDirectory.sourceRowsRead !== 0 || walesGpZipDirectory.canIngest !== false)
+        deny('Wales structural gate exceeded read-only boundary');
+    }
   } finally { await handle.close(); }
-  if (bytes !== plan.expectedBytes || hash.digest('hex') !== plan.expectedSha256) deny('archive hash or size mismatch');
   return Object.freeze({
     ...plan, archiveIntegrityVerified: true,
     byteCount: bytes, // No raw records or document contents exposed.
     verifiedSha256: plan.expectedSha256,
+    ...(walesGpZipDirectory ? {walesGpZipDirectory} : {}),
     status: 'private_quarantine_integrity_verified',
     canIngest: false,
     canPublish: false,
