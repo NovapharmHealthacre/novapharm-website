@@ -199,6 +199,8 @@ assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\
 // The separate dark Founder web estate uses Sovereign Black as its browser
 // chrome while retaining intentional dark editorial surfaces and inverse text.
 assert.match(read("apps/founder/app/layout.tsx"), /themeColor:\s*"#0B0B0E"/);
+assert.match(read("apps/founder/app/manifest.ts"), /background_color:\s*"#0B0B0E"/);
+assert.match(read("apps/founder/app/manifest.ts"), /theme_color:\s*"#0B0B0E"/);
 assert.match(read("apps/founder/app/base.css"), /--ink:\s*#0B0B0E/);
 
 // The historical logo-kit token aliases must not revive retired Pure White.
