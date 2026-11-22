@@ -49,9 +49,9 @@ write(android+"drawable-nodpi/ic_launcher_monochrome.png",await transparent(432,
 const report={schemaVersion:1,brand:"NovaPharm Intelligence",source:"assets/brand/novapharm-intelligence-favicon.svg",
  sourceSha256:sha(icon),color:"#2546D8",lightInk:"#0B0B0E",lightBackground:officialLight,status:"unsigned-source-assets-only",
  outputs:[...output].map(([filename,bytes])=>({filename,sha256:sha(bytes),bytes:bytes.length}))};
-const registry="audit/generated/native-intelligence-icon-provenance.json";
+const provenancePath="audit/generated/native-intelligence-icon-provenance.json";
 if(!process.argv.includes("--apply")){console.log("PREVIEW "+output.size+" native PNGs, source SHA "+sha(icon));process.exit(0);}
 for(const [file,bytes] of output){await mkdir(path.dirname(here(file)),{recursive:true});await writeFile(here(file),bytes);}
-await mkdir(path.dirname(here(registry)),{recursive:true});
-await writeFile(here(registry),JSON.stringify(report,null,2)+"\n");
+await mkdir(path.dirname(here(provenancePath)),{recursive:true});
+await writeFile(here(provenancePath),JSON.stringify(report,null,2)+"\n");
 console.log("PASS: wrote "+output.size+" native assets and signed-off provenance data, NOT an app release");
