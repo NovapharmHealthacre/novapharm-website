@@ -390,8 +390,13 @@ for (const item of brandRasterEvidence.files) {
     assetPath.startsWith("assets/brand/") &&
     !assetPath.slice("assets/brand/".length).includes("/") &&
     [".png", ".jpg", ".jpeg", ".ico"].some((extension) => assetPath.endsWith(extension));
+  // Browser ICO files are SHA-verified against this owner-approved manifest,
+  // but the current physical image inventory deliberately covers SVG, PNG,
+  // JPEG, WebP, AVIF, EPS and PDF rather than ICO.
+  const inventoriedRaster = !assetPath.endsWith(".ico");
   if (rasterPaths.has(assetPath) || !approvedRasterPath ||
-      !officialMedia.has(assetPath) || !/^[a-f0-9]{64}$/u.test(item.sha256) ||
+      (inventoriedRaster && !officialMedia.has(assetPath)) ||
+      !/^[a-f0-9]{64}$/u.test(item.sha256) ||
       !Number.isInteger(item.bytes) || item.bytes <= 0) {
     throw new Error("Invalid or missing three-brand physical derivative: " + String(assetPath));
   }
@@ -401,6 +406,7 @@ for (const item of brandRasterEvidence.files) {
       createHash("sha256").update(bytes).digest("hex") !== item.sha256) {
     throw new Error("Three-brand derivative does not match registered bytes: " + assetPath);
   }
+  if (!inventoriedRaster) continue; // Validate ICO bytes, but do not invent an inventory record.
   if (registry.get(assetPath)?.source) continue; // Preserve established source record.
   const estate = assetPath.includes("distribution") ? "distribution"
     : assetPath.includes("intelligence") ? "intelligence" : "healthcare";
