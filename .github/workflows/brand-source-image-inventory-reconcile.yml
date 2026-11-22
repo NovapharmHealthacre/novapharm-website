@@ -8,6 +8,7 @@ on:
       - '.github/workflows/brand-source-image-inventory-reconcile.yml'
       - 'assets/brand/**'
       - 'scripts/test-official-brand-triad.mjs'
+      - 'apps/corporate/test/sitewide-design-system.test.ts'
 
 permissions:
   contents: read
