@@ -5,7 +5,7 @@
     "QuotaTableName": {
       "Type": "String",
       "Default": "UNAPPROVED",
-      "AllowedPattern": "^(UNAPPROVED|[A-Za-z0-9][A-Za-z0-9_.-]{1,253}[A-Za-z0-9])$",
+      "AllowedPattern": "^(UNAPPROVED|novapharm-fda-quota-[a-z0-9-]{3,80})$",
       "Description": "Reviewed new isolated table name; no existing shared-table reuse"
     },
     "OwnerProductionSignoff": {
@@ -52,6 +52,12 @@
         "true"
       ],
       "Description": "Manual external approval; must not be inferred from CI"
+    },
+    "ApprovedAwsAccountId": {
+      "Type": "String",
+      "Default": "UNAPPROVED",
+      "AllowedPattern": "^(UNAPPROVED|[0-9]{12})$",
+      "Description": "Exact independently approved target AWS account number"
     }
   },
   "Conditions": {
@@ -107,6 +113,36 @@
                 "UNAPPROVED"
               ]
             }
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "ApprovedAwsAccountId"
+                },
+                "UNAPPROVED"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::AccountId"
+            },
+            {
+              "Ref": "ApprovedAwsAccountId"
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "eu-north-1"
           ]
         }
       ]
