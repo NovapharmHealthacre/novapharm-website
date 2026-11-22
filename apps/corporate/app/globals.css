@@ -381,7 +381,7 @@ tbody th { color: var(--ink); }
 .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
 .contact-form label:not(.check-row) { display: grid; gap: 7px; color: var(--ink); font-weight: 700; }
 .contact-form label small { color: var(--muted); font-weight: 400; }
-input, select, textarea { width: 100%; min-height: 48px; border: 1px solid #aebbc4; border-radius: 2px; background: var(--white); color: var(--ink); padding: 10px 12px; }
+input, select, textarea { width: 100%; min-height: 48px; border: 1px solid #86868B; border-radius: 2px; background: var(--white); color: var(--ink); padding: 10px 12px; }
 textarea { min-height: 170px; resize: vertical; }
 input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shadow: 0 0 0 2px rgba(11,110,208,.14); outline: none; }
 .field-note { color: var(--muted); font-size: .78rem; }
