@@ -1,0 +1,73 @@
+name: Render approved three-brand image candidates (draft PR only)
+
+on:
+  push:
+    branches:
+      - brand/sovereign-crimson-garnet-20261122
+    paths:
+      - '.github/workflows/brand-raster-candidate.yml'
+      - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brand-raster-candidate-20261122
+  cancel-in-progress: false
+
+jobs:
+  apply-reviewed-derived-art:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact feature branch, not PR merge commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: brand/sovereign-crimson-garnet-20261122
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Refuse stale or non-feature-branch execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/brand/sovereign-crimson-garnet-20261122"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/sovereign-crimson-garnet-20261122 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install audited dependencies
+        run: npm ci --ignore-scripts
+      - name: Derive browser, PWA, social and native handoff binaries from verified vectors
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/programme/rebuild-three-brand-derivatives.mjs
+          node scripts/programme/rebuild-three-brand-derivatives.mjs --apply
+          node --test scripts/test-official-brand-triad.mjs
+          npm run brand:validate
+          npm run design:app-icons:validate
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+      - name: Commit generated images, pack checksums, inventory and provenance to draft branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/sovereign-crimson-garnet-20261122 | cut -f1)" = "$GITHUB_SHA"
+          git add -A -- assets/brand creative-assets/brand/novapharm-logo-asset-pack audit/generated/image-inventory.json audit/generated/three-brand-raster-provenance.json
+          if git diff --cached --quiet; then
+            echo "All three-brand derivatives already match checked-in outputs."
+            exit 0
+          fi
+          git diff --cached --check
+          git diff --cached --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "brand(assets): add source-verified current-colour raster and app-icon candidates"
+          git push origin HEAD:refs/heads/brand/sovereign-crimson-garnet-20261122
