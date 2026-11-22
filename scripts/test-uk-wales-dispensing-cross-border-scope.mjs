@@ -12,7 +12,7 @@ const english = (sourceVersion='official-2026-07', reportingPeriod='2026-07') =>
   ({sourceId:'nwssp.english-dispensing', sourceVersion, reportingPeriod});
 
 test('only two specifically identified Welsh dispensing publisher scopes are accepted', () => {
-  assert.deepEqual(WALES_DISPENSING_SCOPE_SOURCE_IDS.sort?.call([...WALES_DISPENSING_SCOPE_SOURCE_IDS]),
+  assert.deepEqual([...WALES_DISPENSING_SCOPE_SOURCE_IDS].sort(),
     ['nwssp.english-dispensing', 'nwssp.gp-dispensing']);
   assert.throws(() => classifyWalesDispensingSource({
     sourceId:'nhsbsa.epd', sourceVersion:'official-2026-07', reportingPeriod:'2026-07',
