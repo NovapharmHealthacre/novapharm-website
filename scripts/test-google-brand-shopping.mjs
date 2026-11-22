@@ -31,6 +31,8 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   assert.deepEqual(org.founder.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare"]);
   assert.deepEqual(org.member.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare", "Dr Girish Shantilal Achliya", "Dr Helly Panchal"]);
   assert.equal(new Set(org.member.map(person => person["@id"])).size, 4, "Each statutory director must have a unique profile identity");
+  assert.equal(org.member.filter(person => person.image).length, 3, "Only approved leadership portraits can enter the corporate identity graph");
+  assert.equal(org.member.find(person => person.name === "Dr Helly Panchal").image, undefined, "Do not fabricate a portrait for Dr Helly");
   assert(org.founder.every(person => org.member.some(member => member.name === person.name)), "Founders are a documented subset of the directors");
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
   const approvedLogoAsset = ["assets", "brand", "pwa-icon-512.png"].join("/");
