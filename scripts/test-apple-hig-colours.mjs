@@ -138,6 +138,19 @@ assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-surface:\s*#F8
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.primary) >= 7);
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.secondary) >= 7);
 assert.ok(contrast(officialNeutrals.primary, light["--np-color-accent"]) >= 4.5);
+// Keep authored HTML and the build-time generators aligned: rebuilding the
+// static estate must not resurrect the retired pure-white page background.
+for (const path of [
+  "index.html",
+  "scripts/build-public-pages.mjs",
+  "scripts/build-pages.mjs",
+]) {
+  assert.ok(read(path).includes('meta name="theme-color" content="#FBFAEF"'),
+    path + " must use the official Royal Mineral browser theme");
+}
+assert.match(read("scripts/build-public-pages.mjs"), /background_color:\s*"#FBFAEF"/);
+assert.equal(JSON.parse(read("manifest.webmanifest")).background_color, officialNeutrals.primary);
+
 // Apple HIG and WCAG non-text contrast: visible control edges are separate
 // from the official low-contrast Porcelain Stone divider.
 for (const [path, token, controlSelector] of [
