@@ -1259,3 +1259,80 @@ test("FDA private JWT and mobile transport source files cannot trigger AWS conta
       "Reviewed server blob pin must be preserved");
   }
 });
+
+test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
+  const paths = [
+    "src/core/regulatory/fda-aws-lambda-entry.mjs",
+    "src/core/regulatory/fda-private-runtime.mjs",
+    "src/core/regulatory/fda-dynamodb-quota.mjs",
+    "src/core/regulatory/fda-private-http-handler.mjs",
+    "scripts/test-fda-private-http-handler.mjs",
+    "src/core/regulatory/openfda-labels.mjs",
+    "src/core/regulatory/openfda-evidence.mjs",
+    "scripts/test-openfda-labels.mjs",
+    "deployment/aws/fda-private-lambda/index.mjs",
+    "scripts/build-fda-private-lambda-zip.mjs",
+    "scripts/test-fda-aws-lambda-entry.mjs",
+    ".github/workflows/intelligence-fda-zip-contract.yml",
+    "docs/intelligence/fda-deployable-lambda-20261122.md"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const value = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(value && value.endsWith(")"), file + " must keep exact release classifier");
+    const protectedPaths = value.slice(0, -1).split("|");
+    // Every exemption must have one canonical match. Duplicates already
+    // caused unrelated cross-estate CI failures; omitted package modules
+    // could trigger public website publishing from private FDA edits.
+    assert.equal(new Set(protectedPaths).size, protectedPaths.length,
+      file + ": no duplicate source-only classifier paths");
+    for (const path of paths)
+      assert.equal(protectedPaths.filter(value => value === path).length, 1, file + ": " + path);
+    for (const value of ["server.mjs", "apps/portal/app/gateway/[...path]/route.ts",
+      "scripts/aws/contact-release-routing.test.mjs"]) {
+      assert.equal(protectedPaths.includes(value), false, "release policy must not broadly bypass public changes");
+    }
+    assert.match(workflow, /0a9cf537732113aacf3e444e9efefaa47fb2d9e2/,
+      "reviewed root server version pin must remain in place");
+  }
+});
+
+test("FDA Cognito native identity approval template stays source-only and is never an automatic website release", () => {
+  const paths = [
+    "infra/aws/fda-native-cognito-approval.cfn.json",
+    "scripts/test-fda-native-cognito-approval.mjs",
+    ".github/workflows/intelligence-fda-native-cognito-contract.yml",
+    "docs/intelligence/fda-native-cognito-approval-20261122.md"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const match = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/);
+    assert.ok(match, file + " must define approved exact-path exclusions");
+    const entries = match[1].trim().replace(/\)$/, "").split("|");
+    for (const path of paths) assert.equal(entries.filter(x => x === path).length,1,file + " missing exact " + path);
+    assert.equal(entries.includes("scripts/aws/contact-release-routing.test.mjs"),false,"release-policy test must remain neutral");
+    assert.equal(entries.includes("server.mjs"),false,"root web server remains governed");
+    assert.ok(workflow.includes("0a9cf537732113aacf3e444e9efefaa47fb2d9e2"),"reviewed source pin remains");
+  }
+});
+
+test("Integrated FDA isolated-quota approval assets remain private-only", () => {
+  const paths = [
+    "infra/aws/fda-isolated-quota-approval.cfn.json",
+    "infra/aws/fda-quota-least-privilege-policy.example.json",
+    "scripts/test-fda-isolated-quota-approval.mjs",
+    "docs/intelligence/fda-quota-approval-20261122.md",
+    ".github/workflows/intelligence-fda-isolated-quota-contract.yml"
+  ];
+  for (const file of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(file);
+    const raw=workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1]?.trim();
+    assert.ok(raw && raw.endsWith(")"), file + " must keep source-only path classifier");
+    const entries=raw.slice(0,-1).split("|");
+    for (const path of paths)
+      assert.equal(entries.filter(item => item === path).length,1,file + ": " + path);
+    assert.equal(new Set(entries).size, entries.length, file + " has duplicated source-only paths");
+    assert.equal(entries.includes("server.mjs"), false, file + " must not bypass public server");
+    assert.equal(entries.includes("scripts/aws/contact-release-routing.test.mjs"), false, file + " must not bypass publisher policy");
+  }
+});
