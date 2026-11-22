@@ -6,6 +6,9 @@ on:
       - brand/full-estate-acceptance-20261122
     paths:
       - '.github/workflows/full-brand-integration-inventory.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - '.github/workflows/release-contact-only.yml'
+      - 'contact/index.html'
       - 'apps/portal/**'
       - 'native/novapharm-intelligence-ios/**'
       - 'native/novapharm-intelligence-android/**'
