@@ -78,6 +78,14 @@ test("conditional CloudFormation route cannot activate without six independent s
  assert.equal(template.Resources.PrivateFdaInvokePermission.Properties.Principal,"apigateway.amazonaws.com");
 });
 
+test("iOS Keychain deletion failures deny replacing or switching board credentials",()=>{
+ const source=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
+ assert.ok(source.includes("func clear() -> Bool"));
+ assert.ok(source.includes("status == errSecSuccess || status == errSecItemNotFound"));
+ assert.ok(source.includes("guard clear() else { throw NovaFDAOIDCError.token }"));
+ assert.ok(source.includes("guard store.clear() else {"));
+ assert.ok(source.includes("func signOut() -> Bool"));
+});
 test("iOS board sign-in refuses concurrent sessions and clears stale access before new PKCE",()=>{
  const source=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
  const start=source.indexOf("    func beginSignIn(");
