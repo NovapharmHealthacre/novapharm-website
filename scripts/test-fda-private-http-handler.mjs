@@ -140,7 +140,7 @@ test("raw HTTP API query pollution is rejected before atomic quota and FDA egres
   assert.equal(calls.length,0,rawQueryString);
  }
  const {handler,calls}=create();
- assert.equal((await handler(event("ndc",{queryStringParameters:{kind:"ndc",drug:"apixaban",extra:"x"}})).statusCode,400);
+ assert.equal((await handler(event("ndc",{queryStringParameters:{kind:"ndc",drug:"apixaban",extra:"x"}}))).statusCode,400);
  assert.equal(calls.length,0);
 });
 test("unexpected, too-many, or oversized source records cannot leak through board API",async()=>{
