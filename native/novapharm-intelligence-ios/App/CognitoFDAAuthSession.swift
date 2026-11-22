@@ -97,6 +97,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
     // The current OAuth generation prevents in-flight token exchange from
     // restoring a board token after sign-out or a newer account switch.
     private var authGeneration: UInt64 = 0
+    private var accessRevoked = false
 
     init(config: NovaFDAOIDCConfiguration) { self.config=config;super.init() }
 
@@ -110,12 +111,13 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
     @discardableResult
     func signOut() -> Bool {
         authGeneration &+= 1
+        accessRevoked=true
         activeSession?.cancel()
         activeSession=nil
         return store.clear()
     }
     func cachedAccessToken() -> String? {
-        guard NovaNativeReleasePolicy.productionApproved &&
+        guard !accessRevoked && NovaNativeReleasePolicy.productionApproved &&
               NovaNativeReleasePolicy.authenticatedMobileClientAvailable &&
               NovaNativeReleasePolicy.protectedNetworkOperationsEnabled &&
               config.isValid(bundleID:Bundle.main.bundleIdentifier) else {return nil}
@@ -134,6 +136,8 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         guard activeSession == nil else {
             completion(.failure(NovaFDAOIDCError.unapproved));return
         }
+        // Even if Keychain deletion fails, do not hand out old board access.
+        accessRevoked=true
         guard store.clear() else {
             completion(.failure(NovaFDAOIDCError.token));return
         }
@@ -231,6 +235,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         // if signOut() or another sign-in superseded this in-flight request.
         guard authGeneration == generation else { throw NovaFDAOIDCError.unapproved }
         try store.save(token.access_token,expiresIn:token.expires_in)
+        accessRevoked=false
         return token.access_token
     }
 }
