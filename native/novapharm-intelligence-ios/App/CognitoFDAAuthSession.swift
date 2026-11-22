@@ -136,13 +136,15 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         guard activeSession == nil else {
             completion(.failure(NovaFDAOIDCError.unapproved));return
         }
-        // Even if Keychain deletion fails, do not hand out old board access.
+        // Invalidate older exchanges before even attempting Keychain erase.
+        // A failed erase must neither restore old access nor let a previous
+        // in-flight callback save a token after this account-switch attempt.
+        authGeneration &+= 1
+        let attemptGeneration=authGeneration
         accessRevoked=true
         guard store.clear() else {
             completion(.failure(NovaFDAOIDCError.token));return
         }
-        authGeneration &+= 1
-        let attemptGeneration=authGeneration
         do {
             let verifier=fdaURLSafeBase64(try secureRandomData(length:32))
             let state=fdaURLSafeBase64(try secureRandomData(length:32))
