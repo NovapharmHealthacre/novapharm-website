@@ -17,7 +17,7 @@ const fixture = (sourceId, overrides={}) => {
 test('all twelve nation/source/file contracts are explicit and correctly partitioned',()=>{
   assert.equal(UK_SOURCE_ARCHIVE_CONTRACTS.length,12);
   assert.deepEqual(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.jurisdiction)),new Set(['GB-ENG','GB-SCT','GB-WLS','GB-NIR']));
-  assert.equal(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.sourceId)).size,8);
+  assert.equal(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.sourceId)).size,12);
   for(const c of UK_SOURCE_ARCHIVE_CONTRACTS){
     const plan=validateUkNationalArchiveManifest(fixture(c.sourceId));
     assert.equal(plan.status,'quarantine_candidate');assert.equal(plan.canIngest,false);assert.equal(plan.canPublish,false);
