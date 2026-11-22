@@ -15,7 +15,7 @@ const fixture = (sourceId, overrides={}) => {
     sourceVersion:'publisher-2026-09',discoveredAt:'2026-11-21T12:00:00.000Z',...overrides};
 };
 test('all eight nation/source/file contracts are explicit and correctly partitioned',()=>{
-  assert.equal(UK_SOURCE_ARCHIVE_CONTRACTS.length,8);
+  assert.equal(UK_SOURCE_ARCHIVE_CONTRACTS.length,12);
   assert.deepEqual(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.jurisdiction)),new Set(['GB-ENG','GB-SCT','GB-WLS','GB-NIR']));
   assert.equal(new Set(UK_SOURCE_ARCHIVE_CONTRACTS.map(x=>x.sourceId)).size,8);
   for(const c of UK_SOURCE_ARCHIVE_CONTRACTS){
@@ -193,4 +193,68 @@ test('Wales ZIP structural errors are rejected even if caller-provided SHA match
       {sha256:'f'.repeat(64),byteSize:bytes.length}),{archivePath:archive,quarantineRoot:root}),
       /hash or size mismatch/);
   }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('four additional archive contracts distinguish reference mapping and three Welsh prescriber families',()=>{
+ const get=id=>UK_SOURCE_ARCHIVE_CONTRACTS.find(s=>s.sourceId===id);
+ const crosswalk=get('nhsbsa.bnf-snomed-map');
+ assert.equal(crosswalk.jurisdiction,'GB-ENG');
+ assert.deepEqual(crosswalk.formats,['CSV']);
+ assert.notEqual(crosswalk.factGrain,get('nhsbsa.epd').factGrain);
+ for(const id of ['nwssp.hospital-prescribing','nwssp.dental-prescribing',
+                  'nwssp.independent-pharmacist-prescribing']){
+  assert.equal(get(id).jurisdiction,'GB-WLS');
+  assert.deepEqual(get(id).formats,['ZIP']);
+  assert.equal(get(id).periodPrecision,'month');
+  assert.equal(validateUkNationalArchiveManifest(fixture(id)).canIngest,false);
+ }
+ assert.throws(()=>validateUkNationalArchiveManifest(fixture('nwssp.hospital-prescribing',
+  {sourceId:'nwssp.hospital-prescribing',format:'CSV',publisherFileName:'source.csv'})),/format/);
+});
+
+test('hospital and dental three-file and pharmacist four-CSV Welsh archive profiles are checked in same verified FD',async()=>{
+ const cases=[
+  ['nwssp.hospital-prescribing',['HospitalDataFile202609.txt','ChemSubstance.txt','Address.txt'],3],
+  ['nwssp.dental-prescribing',['DentalDataFile202609.csv','ChemSubstance.csv','Address.csv'],3],
+  ['nwssp.independent-pharmacist-prescribing',['IPData202609.csv','ChemSubstance.csv','Address.csv','BNF.csv'],4],
+ ];
+ const root=await mkdtemp(join(tmpdir(),'uk-wales-extended-'));
+ try{
+  for(let i=0;i<cases.length;i++){
+   const [sourceId,names,count]=cases[i];
+   const bytes=syntheticWalesGpZip(names);
+   const path=join(root,'source'+i+'.zip');
+   await writeFile(path,bytes);
+   const result=await verifyUkNationalArchiveBytes(fixture(sourceId,{
+    sha256:h(bytes),byteSize:bytes.length
+   }),{archivePath:path,quarantineRoot:root});
+   assert.equal(result.walesPublisherZipDirectory.directoryEntries,count);
+   assert.equal(result.walesPublisherZipDirectory.memberRoles.length,count);
+   assert.equal(result.walesPublisherZipDirectory.sourceRowsRead,0);
+   assert.equal(result.walesPublisherZipDirectory.canExtract,false);
+   assert.equal(result.canIngest,false);assert.equal(result.canPublish,false);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+
+test('Welsh pharmacist ZIP fails closed for wrong month, missing BNF, non-CSV or GP masquerade',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'uk-wales-pharmacist-negative-'));
+ const p=join(root,'source.zip');
+ const base=['IPData202609.csv','ChemSubstance.csv','Address.csv','BNF.csv'];
+ try{
+  for(const names of [
+   base.slice(0,3),
+   ['IPData202608.csv',...base.slice(1)],
+   ['IPData202609.csv','ChemSubstance.csv','Address.csv','Other.csv'],
+   ['IPData202609.csv','ChemSubstance.txt','Address.csv','BNF.csv'],
+   ['GPDataFile202609.csv',...base.slice(1)],
+   ['IPData202609.csv','ChemSubstance.csv','BNF.csv','BNF.csv']
+  ]){
+   const bytes=syntheticWalesGpZip(names);
+   await writeFile(p,bytes);
+   await assert.rejects(verifyUkNationalArchiveBytes(
+    fixture('nwssp.independent-pharmacist-prescribing',{sha256:h(bytes),byteSize:bytes.length}),
+    {archivePath:p,quarantineRoot:root}),/ZIP inventory refused/);
+  }
+ }finally{await rm(root,{recursive:true,force:true});}
 });
