@@ -91,7 +91,7 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
     throw unavailable();
   // Never buffer arbitrary upstream JSON into memory. FDA labels may include
   // large free-text sections that are not approved for this source-only view.
-  if (!/\\bapplication\\/json\\b/iu.test(response.headers?.get("content-type") || "") ||
+  if (!/\bapplication\/json\b/iu.test(response.headers?.get("content-type") || "") ||
       !response.body?.getReader) throw unavailable();
   const declaredLength=Number(response.headers?.get("content-length") || 0);
   if (!Number.isFinite(declaredLength) || declaredLength > MAX_BYTES) throw unavailable();
