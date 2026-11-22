@@ -12,12 +12,6 @@ let package = Package(
                           "USFdaSourcePreviewView.swift", "CognitoFDAAuthSession.swift"],
                 sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift", "CountryCatalog.swift",
                           "USFdaSourceCatalog.swift", "ProtectedFdaGateway.swift"]),
-        /* END */
-                exclude: ["NovaRootView.swift", "NovaPharmNativeApp.swift",
-                          "NovaTheme.swift", "OfflineBookmark.swift", "NovaCountryDirectoryView.swift",
-                          "USFdaSourcePreviewView.swift", "CognitoFDAAuthSession.swift"],
-                sources: ["WorkspaceCatalog.swift", "ReleasePolicy.swift", "CountryCatalog.swift",
-                          "USFdaSourceCatalog.swift", "ProtectedFdaGateway.swift"]),
         .testTarget(name: "NovaPharmNativeCoreTests",
                     dependencies: ["NovaPharmNativeCore"], path: "CoreTests")
     ]
