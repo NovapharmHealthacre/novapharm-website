@@ -3,15 +3,17 @@ export const designTokens = Object.freeze({
     midnight: "#0d1b2a",
     warmWhite: "#FBFAEF",
     porcelainWhite: "#F8F7F3",
-    sovereignBlack: "#0B0B0E",
     porcelainStone: "#DEDCD5",
     controlBorder: "#86868B",
     charcoal: "#1b2028",
     coolGrey: "#667085",
     silver: "#DEDCD5",
     pharmaceuticalBlue: "#eaf3f8",
+    sovereignBlack: "#0B0B0E",
     novapharmRed: "#9D1B32",
     novapharmRedText: "#68101F",
+    distributionGarnet: "#3D0B13",
+    intelligenceUltramarine: "#2546D8",
     focus: "#0b69ff"
   }),
   materials: Object.freeze({
@@ -30,10 +32,10 @@ export const designTokens = Object.freeze({
     })
   }),
   typography: Object.freeze({
-    uiFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    compactFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
+    uiFamily: "-apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', sans-serif",
+    compactFamily: "-apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif",
     monoFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-    editorialFamily: "ui-serif, 'Iowan Old Style', Charter, Georgia, serif",
+    editorialFamily: "'New York', 'Iowan Old Style', Charter, Georgia, serif",
     body: "1rem",
     caption: "0.875rem",
     lead: "clamp(1.125rem, 1.6vw, 1.375rem)",

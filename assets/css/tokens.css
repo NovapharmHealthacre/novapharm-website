@@ -1,7 +1,11 @@
 :root {
   color-scheme: only light;
+  --np-brand-black: #0B0B0E;
+  --np-brand-white-primary: #FBFAEF;
+  --np-brand-white-secondary: #F8F7F3;
+  --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
-  /* Owner-approved Royal neutral identity */
+  /* Owner-approved Royal neutrals */
   --np-white-primary: #FBFAEF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;

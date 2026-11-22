@@ -4,22 +4,14 @@ Reference: [Apple Human Interface Guidelines — Color](https://developer.apple.
 
 ## Design decision
 
-Apple's guidance prioritises semantic meaning, judicious colour, distinct interactive and noninteractive uses, dynamic appearances, increased contrast, accessible status feedback, and testing with realistic content. The implementation deliberately keeps NovaPharm's owner-approved Healthcare crimson **#9D1B32** as a *brand accent only*, not the universal colour of every link, error, selection, nav item or chart.
+Apple's guidance prioritises semantic meaning, judicious colour, distinct interactive and noninteractive uses, dynamic appearances, increased contrast, accessible status feedback, and testing with realistic content. The implementation deliberately keeps NovaPharm's approved red **#9D1B32** as a *brand accent only*, not the universal colour of every link, error, selection, nav item or chart.
 
 Default customer-facing appearance remains bright, white and quietly editorial. Black/charcoal is the neutral primary action; blue is the conventional text-link and focus colour; status colours communicate operational meaning and are never a substitute for visible status text.
 
-## Official Royal Neutral palette (owner-approved 22 November 2026)
 
-| Purpose | Name | HEX | Use |
-| --- | --- | --- | --- |
-| Primary | Royal Mineral White | `#FBFAEF` | Signature corporate canvas, editorial white, default browser theme |
-| Secondary | Royal Porcelain White | `#F8F7F3` | Supporting sections, grouped surfaces, form/panel backgrounds |
-| Typography | Sovereign Black | `#0B0B0E` | Main readable text, primary neutral actions |
-| Hairline | Porcelain Stone | `#DEDCD5` | Decorative dividers; never rely on it as a control boundary |
+## Owner-approved neutral identity (22 November 2026)
 
-These whites have deliberately very low mutual contrast. Preserve structural spacing, elevation and **stronger accessible boundaries** for controls and tables; `--np-color-separator-strong` remains independent of decorative Porcelain Stone. Do not recolour independent brand SVGs, semantic status colours, photographs or dark-mode-only components. The neutral tokens are registered in `assets/css/tokens.css` and `assets/css/novapharm-hig-colours.css` and enforced by `npm run design:colours:validate`. Native system-font fallbacks and responsive type roles remain in place; no proprietary Apple fonts are distributed.
-
-**Release boundary:** source branch stacked on unmerged brand PR #1037, which itself depends on draft PR #1035. Source implementation does not mean the GitHub Pages website, Portal or app stores have been deployed.
+The canonical cross-estate brand contract is `config/brand-neutrals.json`: **Royal Mineral White `#FBFAEF` (primary), Royal Porcelain White `#F8F7F3` (secondary), Sovereign Black `#0B0B0E` (default text), and Porcelain Stone `#DEDCD5` (decorative divider only)**. A stronger semantic control-border token must remain independently contrast-safe. The neutral palette applies across static public pages, Corporate Next.js, protected Portal, Technology, Status and shared React components; distinct Healthcare, Intelligence and Distribution logo colours remain unchanged. Source updates are not proof of production deployment.
 
 ## The reusable palette
 
@@ -27,18 +19,18 @@ Defined in `assets/css/novapharm-hig-colours.css`:
 
 | Role | Light | Application |
 | --- | --- | --- |
-| Canvas | `#FBFAEF` | Royal Mineral White, primary page canvas |
-| Grouped surface | `#F8F7F3` | Royal Porcelain White, secondary surface |
-| Recessed surface | `#E8E8ED` | Third-level grouping |
-| Primary label | `#0B0B0E` | Sovereign Black, default text |
+| Canvas / Royal Mineral White | `#FBFAEF` | Primary page background |
+| Grouped surface / Royal Porcelain White | `#F8F7F3` | Secondary neutral for panels, controls and sections |
+| Recessed surface | `#EDEBE5` | Third-level grouping |
+| Primary label | `#0B0B0E` | Headings and essential text |
 | Secondary label | `#424245` | Body text |
 | Tertiary label | `#595961` | Supporting captions |
-| Separator | `#DEDCD5` | Porcelain Stone, decorative dividers only |
+| Separator / Porcelain Stone | `#DEDCD5` | Decorative dividers only, not text or sole control boundaries |
 | Strong separator | `#86868B` | Visible form and control boundaries |
 | Link and focus | `#0066CC` | Navigation in content, keyboard focus |
-| Brand accent | `#9D1B32` | Healthcare crimson brand action |
-| Brand text | `#68101F` | Accessible crimson hover/text on warm light surfaces |
-| Neutral primary action | `#0B0B0E` | Sovereign Black primary action |
+| Brand accent | `#9D1B32` | One prominent brand action or key emphasis |
+| Brand text | `#68101F` | Red emphasis on light grouped surfaces |
+| Neutral primary action | `#0B0B0E` | Standard primary UI button |
 | Success | `#17745A` | Completed or operational |
 | Warning | `#965C0D` | Requires attention |
 | Destructive/error | `#9E1B47` | Failure; intentionally distinct from brand red |
@@ -66,3 +58,7 @@ For user-provided images and charts, use sRGB source artwork unless a reviewed P
 Run `npm run design:colours:validate`, `npm run design:typography:validate`, `npm run build:public-only`, `npm run apps:check`, and the existing browser acceptance checks. The new contract checks light/dark normal-text pairs at >=4.5:1, focus/strong control boundaries at >=3:1, distinct brand and failure hues, and integration into the app layouts and public build.
 
 Follow with browser screenshots and axe/keyboard checks for all key routes, checkout, search, account/address editing, medical search, Distribution/WMS status chips and responsive layouts. A passing token contract **does not** prove every legacy page, state or real device meets accessibility criteria or that the update has been published. Production publication remains subject to the current CI and deployment gates.
+
+## Sovereign Black and three identity colours — 22 November 2026
+
+Default light-mode headings, body copy, navigation and neutral primary actions use Sovereign Black `#0B0B0E`. Dark-mode foreground labels remain high-contrast light text, not black. Identity accents are explicitly scoped: Healthcare Royal Cochineal Crimson `#9D1B32`, Distribution Near-black Garnet `#3D0B13`, and Intelligence Regal Ultramarine `#2546D8`. Brand accents do not replace semantic warning/destructive/link/focus colours. Native/system web typography is used where provided by the operating system; no downloaded Apple fonts are redistributed.

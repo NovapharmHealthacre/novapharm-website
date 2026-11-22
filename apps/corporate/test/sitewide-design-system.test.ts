@@ -32,7 +32,7 @@ test("one governed design layer is applied across every public corporate route",
 
 test("Apple-inspired system remains a NovaPharm identity with accessible, functional surfaces", () => {
   assert.match(style, /-apple-system, BlinkMacSystemFont/);
-  assert.match(style, /--nph-accent:\s*#9D1B32/i);
+  assert.match(style, /--nph-accent:\s*#9D1B32/);
   assert.match(style, /--nph-link: #0066cc/);
   assert.match(style, /min-height: 46px/);
   assert.match(style, /:focus-visible/);
@@ -97,7 +97,7 @@ test("brand red token remains identical across public and managed corporate desi
   const publicTokens = readFileSync(path.join(root, "../../assets/css/tokens.css"), "utf8");
   assert.match(publicTokens, /--brand:\s*#9D1B32/i);
   assert.match(style, /--nph-accent:\s*#9D1B32/i);
-  assert.match(style, /--red-dark:\s*#68101F/i);
-  assert.match(style, /--pharma-red-dark:\s*#68101F/i);
+  assert.match(style, /--red-dark:\s*#68101f/i);
+  assert.match(style, /--pharma-red-dark:\s*#68101f/i);
   assert.match(style, /--nph-link:\s*#0066cc/i, "Links and focus should remain distinguishable from brand CTAs");
 });

@@ -32,7 +32,7 @@ function readDirectory(directory: string): readonly ContentSummary[] {
       const source = fs.readFileSync(path.join(directory, filename), "utf8");
       const parsed = matter(source);
       const data = parsed.data as Record<string, unknown>;
-      assert.equal(data["public"], true, `${filename}: only explicitly approved public content may be built`);
+      assert.equal(data.public, true, `${filename}: only explicitly approved public content may be built`);
       assert.doesNotMatch(parsed.content, /<[A-Za-z!/]/, `${filename}: raw HTML is prohibited in Markdown`);
       assert.doesNotMatch(
         parsed.content,
@@ -82,17 +82,17 @@ for (const article of articles) {
     fs.existsSync(path.join(publicRoot, image.replace(/^\//, ""))),
     `${article.filename}: social image does not exist`,
   );
-  const sources = article.data["sources"];
+  const sources = article.data.sources;
   assert.ok(Array.isArray(sources), `${article.filename}: sources must be an array`);
   for (const source of sources) {
     assert.ok(source && typeof source === "object", `${article.filename}: invalid source entry`);
     assert.match(
-      String((source as Record<string, unknown>)["url"]),
+      String((source as Record<string, unknown>).url),
       /^https:\/\//,
       `${article.filename}: source must use HTTPS`,
     );
   }
-  const related = article.data["related"];
+  const related = article.data.related;
   assert.ok(Array.isArray(related), `${article.filename}: related must be an array`);
   for (const relatedSlug of related)
     assert.ok(
@@ -114,9 +114,9 @@ for (const [label, pattern] of [
 
 const knowledgePath = path.join(publicRoot, "assets", "founder-knowledge.json");
 const knowledge = JSON.parse(fs.readFileSync(knowledgePath, "utf8")) as Record<string, unknown>;
-assert.equal(knowledge["schemaVersion"], "1.0.0", "Founder evidence schema version mismatch");
+assert.equal(knowledge.schemaVersion, "1.0.0", "Founder evidence schema version mismatch");
 assert.ok(
-  Array.isArray(knowledge["documents"]) && knowledge["documents"].length >= articles.length,
+  Array.isArray(knowledge.documents) && knowledge.documents.length >= articles.length,
   "Founder evidence corpus is incomplete",
 );
 

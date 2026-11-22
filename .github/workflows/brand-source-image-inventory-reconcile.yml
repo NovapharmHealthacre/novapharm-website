@@ -1,0 +1,94 @@
+name: NovaPharm three-brand image inventory reconciliation (draft branch only)
+
+on:
+  push:
+    branches:
+      - brand/sovereign-crimson-garnet-20261122
+    paths:
+      - '.github/workflows/brand-source-image-inventory-reconcile.yml'
+      - 'assets/brand/**'
+      - 'scripts/test-official-brand-triad.mjs'
+      - 'apps/corporate/test/sitewide-design-system.test.ts'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brand-source-image-inventory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Derive image inventory from the exact tracked source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          mkdir -p candidate
+          cp audit/generated/image-inventory.json candidate/image-inventory.json
+          printf '%s\n' "$GITHUB_SHA" > candidate/source-sha.txt
+          sha256sum candidate/image-inventory.json > candidate/sha256.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: brand-source-image-inventory-candidate
+          path: candidate/
+          retention-days: 7
+
+  apply:
+    needs: generate
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/brand/sovereign-crimson-garnet-20261122'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Ensure isolated review branch has not changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/sovereign-crimson-garnet-20261122 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: brand-source-image-inventory-candidate
+          path: ${{ runner.temp }}/novapharm-brand-image-candidate
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Validate exact-source candidate and commit evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < "$RUNNER_TEMP/novapharm-brand-image-candidate/source-sha.txt")" = "$GITHUB_SHA"
+          test -s "$RUNNER_TEMP/novapharm-brand-image-candidate/image-inventory.json"
+          sha256sum "$RUNNER_TEMP/novapharm-brand-image-candidate/image-inventory.json"
+          npm ci --ignore-scripts
+          cp "$RUNNER_TEMP/novapharm-brand-image-candidate/image-inventory.json" audit/generated/image-inventory.json
+          npm run images:inventory:validate
+          git diff --check
+          git add audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Brand source image inventory already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(evidence): reconcile audited three-brand source image inventory"
+          git push origin HEAD:refs/heads/brand/sovereign-crimson-garnet-20261122

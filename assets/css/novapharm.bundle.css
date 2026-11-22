@@ -23,7 +23,7 @@
   --danger: #b91c1c;
   --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
   --radius: 8px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+  --font: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
   --serif: var(--font);
   --container: 1240px;
 }
@@ -1262,8 +1262,12 @@ td { color: var(--text); }
 /* Source: tokens.css */
 :root {
   color-scheme: only light;
+  --np-brand-black: #0B0B0E;
+  --np-brand-white-primary: #FBFAEF;
+  --np-brand-white-secondary: #F8F7F3;
+  --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
-  /* Owner-approved Royal neutral identity */
+  /* Owner-approved Royal neutrals */
   --np-white-primary: #FBFAEF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;
@@ -7056,8 +7060,8 @@ body[data-page="cro"] .cro-leadership-proof {
   --corporate-product-discipline-contract: 1;
   --npd-red: #9D1B32;
   --npd-red-dark: #68101F;
-  --npd-ink: #111111;
-  --npd-text: #3f454b;
+  --npd-ink: #0B0B0E;
+  --npd-text: #0B0B0E;
   --npd-muted: #626970;
   --npd-line: #d7dadd;
   --npd-line-strong: #aeb3b8;
@@ -9375,7 +9379,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column a {
     display: block;
     width: fit-content;
-    color: #1d1d1f;
+    color: #0B0B0E;
     font-size: 14px;
     line-height: 1.4;
     font-weight: 540;
@@ -9426,7 +9430,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   border:1px solid #d6d6db;
   border-radius:999px;
   background:#fff;
-  color:#1d1d1f;
+  color:#0B0B0E;
   font-weight:610;
 }
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
@@ -9553,7 +9557,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 
 /* Public account pathway — optional HIG-aligned explanation, never a login gate. */
-.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#0B0B0E}
 .npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
 .npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
 .npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
@@ -11121,7 +11125,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
  */
 :root {
   color-scheme: light;
-  /* Official neutrals remain stable across light and dark semantic palettes. */
+  /* Official light-mode neutrals; preserve independent dark-mode semantics */
   --np-white-primary: #FBFAEF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;
@@ -11143,7 +11147,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-on-accent: #FBFAEF;
   --np-color-primary-action: #0B0B0E;
   --np-color-on-primary-action: #FBFAEF;
-  --np-color-primary-action-hover: #343437;
+  --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;
   --np-color-destructive: #9e1b47;
@@ -11316,21 +11320,6 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --muted: var(--np-color-tertiary-label);
   --red: var(--np-color-accent);
   --red-deep: var(--np-color-accent-strong);
-}
-
-/* Royal Mineral and Porcelain are nearly indistinguishable as adjacent
- * control surfaces. Functional boundaries use the stronger contrast-safe
- * separator, while Porcelain Stone stays decorative. Scoped to existing
- * light-appearance interactive surfaces; avoid overriding selected/error
- * states or the independent dark appearance. */
-:root:not([data-np-color-scheme="dark"])[data-np-estate="corporate"] :where(
-  .button-light, .button-quiet, .mobile-menu summary
-),
-:root:not([data-np-color-scheme="dark"])[data-np-estate="portal"] :where(
-  .button.microsoft, .access-selector label, .portal-search > button,
-  .search-close, .user-summary button
-) {
-  border-color: var(--np-color-separator-strong);
 }
 
 /* Meaningful colours are opt-in for new components, never inferred from
