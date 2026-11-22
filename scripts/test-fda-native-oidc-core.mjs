@@ -141,6 +141,24 @@ test("invalid token responses never save identity or bearer content",async()=>{
    assert.equal(stats().stored,null);
  }
 });
+test("cancelled or failed second Android sign-in clears previously held board access token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.ok(stats().stored?.token);
+ await assert.rejects(authenticateNativeFdaWithPkce(config,{
+   ...adapter,openSystemAuthSession:async()=>null
+ }),/cancelled/);
+ assert.equal(stats().stored,null);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+});
+test("unexpected OAuth callback parameters are rejected before token exchange",async()=>{
+ const {adapter,stats}=platform({openSystemAuthSession:async(uri,redirect)=>{
+   const state=new URL(uri).searchParams.get("state");
+   return redirect+"?code=PROTECTED_CODE&state="+state+"&access_token=attacker";
+ }});
+ await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/Invalid sign-in/);
+ assert.equal(stats().network,0);
+});
 test("expiry and revoked or empty keystore entries deny subsequent requests",async()=>{
  const {adapter,stats}=platform({nowMs:()=>1795300000000});
  await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
