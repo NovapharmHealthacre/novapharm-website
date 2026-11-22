@@ -146,11 +146,12 @@ test("Next Flight literal replacement tokens remain intact when viewport metadat
     '18:[["meta",' + JSON.stringify({name:"theme-color",content:"#E3120B"}) +
     ']] ' + tokens.join(" ")]) + ")";
   const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
+  const csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'sha256-" +
+    digest(flight) + "'\">";
   const input = '<html><head><meta name="theme-color" content="#E3120B">' +
-    '<meta http-equiv="Content-Security-Policy" content="script-src \\'self\\' \\'sha256-' + digest(flight) + '\\'">' +
-    '</head><body><script>' + flight + '</script></body></html>';
+    csp + '</head><body><script>' + flight + '</script></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(input, palette);
-  const body = result.match(/<script>([\\s\\S]*?)<\\/script>/)?.[1];
+  const body = result.split("<script>")[1]?.split("</script>")[0];
   assert.ok(body);
   for (const token of tokens) assert.ok(body.includes(token), "Lost literal Flight token " + token);
   assert.match(body, /#FBFAEF/);
