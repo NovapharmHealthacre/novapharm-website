@@ -1,10 +1,22 @@
 import { mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const website="https://novapharmhealthcare.com";
 const receiver="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
 const nonce=Date.now();
 const rows=[];
 function insist(condition,message){if(!condition)throw Error(message);}
+
+const reviewedBlobs=Object.freeze({
+  html:"7655359b3835cf766b7c734f71ad8260b0f436ba",
+  javascript:"35e7476cbbeaf4db693c614f9109a9c382527764",
+  stylesheet:"9631537b380551b5dd3f8dbee81d93c3098bab54"
+});
+function reviewedGitBlob(text){
+  const bytes=Buffer.from(text,"utf8");
+  return createHash("sha1").update("blob "+bytes.length+"\\0").update(bytes).digest("hex");
+}
+
 async function read(origin,path,expectedMime){
   const url=new URL(path,origin);
   url.searchParams.set("contact_release_probe",String(nonce));
@@ -42,8 +54,10 @@ await check("Approved Contact visual identity and fail-closed controls",async()=
   ]) insist(page.includes(marker),"Reviewed Contact design/safety marker missing: "+marker);
   const link='href="/assets/css/novapharm-unified-20261107.css"';
   insist(page.includes(link) && page.indexOf(link)<page.indexOf("<style>"),"Shared CSS not present ahead of scoped Contact styles");
+  insist(reviewedGitBlob(page)===reviewedBlobs.html,"Live Contact HTML differs from reviewed release");
   const css=await read(website,"/assets/css/novapharm-unified-20261107.css","text/css");
   insist(css.includes(".site-header") || css.includes(".nav"),"Reviewed Contact shared CSS missing expected layout rules");
+  insist(reviewedGitBlob(css)===reviewedBlobs.stylesheet,"Live Contact CSS differs from reviewed release");
 });
 await check("Contact CSP and public-only safety",async()=>{
   insist(!!page,"Live Contact HTML unavailable");
@@ -54,6 +68,7 @@ await check("Contact CSP and public-only safety",async()=>{
 });
 await check("Production Contact client enforces durable receipt",async()=>{
   const js=await read(website,"/assets/js/contact-production.js","javascript");
+  insist(reviewedGitBlob(js)===reviewedBlobs.javascript,"Live Contact submission client differs from reviewed release");
   insist(js.includes('fetch(origin + "/contact"'),"Production POST client unavailable");
   insist(js.includes('result?.persisted !== true')&&js.includes('response.status !== 201'),"Durable server receipt enforcement missing");
   insist(js.includes('credentials: "omit"')&&js.includes('redirect: "error"'),"Unsafe API request credentials/redirect policy");
