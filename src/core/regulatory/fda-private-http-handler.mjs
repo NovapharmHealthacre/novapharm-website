@@ -128,8 +128,9 @@ export function createPrivateFdaHandler({ limit, searchLabels=searchOpenFdaLabel
       // transport headers from an upstream API.
       if (!result || typeof result !== "object" || Array.isArray(result) ||
           !Array.isArray(result.records) || result.records.length>5 ||
-          typeof result.sourceId!=="string" ||
-          !["no_source_matches","public_source_observations"].includes(result.dataState))
+          result.sourceId !== (q.kind==="labels" ? "us.fda.openfda-labels" : "us.fda.openfda."+q.kind) ||
+          !["no_source_matches","public_source_observations"].includes(result.dataState) ||
+          (result.dataState==="no_source_matches" && result.records.length!==0))
         throw Error("Invalid source");
       if (q.kind==="adverse-events" && result.records.length!==0) throw Error("FAERS must be count-only");
       // Response payloads remain bounded even if an upstream adapter regresses.
