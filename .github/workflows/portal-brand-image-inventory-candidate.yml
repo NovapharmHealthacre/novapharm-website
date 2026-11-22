@@ -10,6 +10,8 @@ on:
       - 'apps/portal/lib/brand-metadata.ts'
       - 'apps/portal/components/distribution-brand.tsx'
       - 'apps/portal/app/apple-pharma-portal.css'
+      # Re-run inventory after inherited parent source sync while prior run is queued.
+      - 'apps/founder/app/base.css'
       - 'apps/portal/app/employee-distribution.css'
       - 'apps/portal/test/brand-metadata.test.ts'
       - 'assets/brand/**'
