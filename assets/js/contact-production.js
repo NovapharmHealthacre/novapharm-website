@@ -129,8 +129,12 @@ if (form instanceof HTMLFormElement) {
         });
         // Known pre-storage rejections are actionable; network/5xx/ambiguous
         // receipts must not encourage a duplicate submission.
-        if ([400, 403, 415, 422].includes(response.status)) {
-          if (status) status.textContent = "Your enquiry could not be accepted. Check the required details and confirmations, or use the business email address above.";
+        if (response.status === 422 || response.status === 400) {
+          if (status) status.textContent = "We couldn't accept those details. Check the required fields and both confirmations, or use the business email address above.";
+          return;
+        }
+        if (response.status === 403 || response.status === 415) {
+          if (status) status.textContent = "Secure online submission is unavailable for this request. Please contact us using the published business email address above.";
           return;
         }
         if (response.status === 429) {
