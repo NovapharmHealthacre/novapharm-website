@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activateContactHtml, activatePrivacyHtml } from "../scripts/activate-contact-intake.mjs";
+import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml } from "../scripts/activate-contact-intake.mjs";
+import { readFileSync } from "node:fs";
 
 const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
@@ -49,4 +50,35 @@ test("updates the business-enquiry privacy text only when the expected section e
   assert.match(changed, /EU North/);
   assert.match(changed, /reference-only/);
   assert.throws(() => activatePrivacyHtml("<p>Other notice</p>"), /missing/);
+});
+
+
+test("owner-gated managed template preserves approved design and secure submission contract", () => {
+  const template = readFileSync("src/content/contact-managed-release.html", "utf8");
+  const rendered = activateManagedContactReleaseHtml(template, origin);
+  assert.ok(rendered.includes('data-live-b2b-enquiry-form data-api-origin="' + origin + '"'));
+  assert.equal((rendered.match(/data-api-origin=/g) || []).length, 1);
+  assert.equal((rendered.match(/data-live-b2b-enquiry-form/g) || []).length, 1);
+  for (const marker of [
+    '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+    'type="submit" disabled aria-describedby="contact-submission-status"',
+    'name="privacyAcknowledgement" value="yes" required',
+    'name="safetyConfirmation" value="yes" required',
+    'src="/assets/js/contact-production.js"',
+    '<noscript><style>.ref-form{display:none}</style>',
+    "form-action 'none'"
+  ]) assert.ok(rendered.includes(marker), "Lost reviewed managed marker: " + marker);
+  assert.doesNotMatch(rendered, /data-email-enquiry-form|novapharm-ga4-id/);
+  const source = template.replace('data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-origin="https://unapproved.example"');
+  assert.throws(() => activateManagedContactReleaseHtml(source, origin), /marker missing/);
+  assert.throws(() => activateManagedContactReleaseHtml(template + '<div data-api-origin="duplicate"></div>', origin), /exactly one/);
+  assert.throws(() => activateManagedContactReleaseHtml(template, "https://unapproved.example"), /Refusing/);
+});
+
+test("owner-gated production activation remains disabled without explicit acceptance", () => {
+  assert.equal(process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes", false, "Unit tests must not run with production activation enabled");
+  const activationSource = readFileSync("scripts/activate-contact-intake.mjs", "utf8");
+  assert.ok(activationSource.includes('if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes")'));
+  assert.ok(activationSource.includes('const reviewedTemplate = readFileSync(resolve("src/content/contact-managed-release.html"), "utf8");'));
+  assert.ok(activationSource.includes('refusing managed replacement'));
 });
