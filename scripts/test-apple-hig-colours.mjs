@@ -177,6 +177,16 @@ for (const [token, hex] of [
 assert.match(reactStyles, /\.np-navigation\{[^}]*background:var\(--np-royal-canvas\)/);
 assert.match(reactStyles, /\.np-button--secondary\{[^}]*border-color:var\(--np-royal-control-border\)/);
 
+// Contact is an Apple-style readable surface, while essential inputs remain visible.
+const contactCss = read("assets/css/contact-premium.css");
+assert.ok(contactCss.includes("--np-contact-ink: #0B0B0E"));
+assert.ok(contactCss.includes("--np-contact-soft: #F8F7F3"));
+assert.ok(contactCss.includes("background: #FBFAEF"));
+assert.ok(contactCss.includes("--np-contact-control-line: var(--np-color-separator-strong, #86868B)"));
+assert.ok(contactCss.includes("border: 1px solid var(--np-contact-control-line)"));
+assert.ok(read("assets/css/novapharm.bundle.css").includes("/* Source: contact-premium.css */\n" + contactCss.trim()),
+  "Public CSS bundle must include the complete updated Contact stylesheet");
+
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
 for (const path of [

@@ -9747,7 +9747,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
    Independent of Apple trademarks, fonts or copyrighted UI assets. */
-.np-contact { --np-contact-ink: #1d1d1f; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #f5f5f7; color: var(--np-contact-ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FBFAEF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
 .np-contact * { box-sizing: border-box; }
 .np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
 .np-contact a { text-underline-offset: .2em; }
@@ -9762,12 +9762,12 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
 .np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
-.np-contact-topic:hover { transform: translateY(-3px); background: #fff; border-color: #cbd1d9; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #FBFAEF; border-color: #cbd1d9; }
 .np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
 .np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
 .np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
-.np-contact-destination { padding: 80px 0 100px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination { padding: 80px 0 100px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
 .np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
 .np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
@@ -9779,7 +9779,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
 .np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
-.np-contact-safety { padding: 32px 0 70px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety { padding: 32px 0 70px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
 .np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
 .np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
@@ -9789,7 +9789,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-form-panel .field-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
 .np-contact-form-panel .contact-form label { min-width: 0; }
 .np-contact-form-panel .contact-form label > span { display: block; margin: 0 0 7px; font-size: 14px; font-weight: 620; }
-.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid #aeb5bf; border-radius: 11px; background: #fff; color: #1d1d1f; font: inherit; font-size: 15px; }
+.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid var(--np-contact-control-line, #86868B); border-radius: 11px; background: var(--np-contact-soft); color: var(--np-contact-ink); font: inherit; font-size: 15px; }
 .np-contact-form-panel .contact-form textarea { min-height: 142px; resize: vertical; }
 .np-contact-form-panel .contact-form :is(input, select, textarea):focus-visible { border-color: #1559a8; outline: 3px solid rgba(21,89,168,.22); outline-offset: 1px; }
 .np-contact-form-panel .contact-form .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; }
@@ -9810,14 +9810,15 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
  * as an accepted server submission. Managed submissions retain verification.
  */
 .np-contact.np-contact-reference {
-  --np-contact-ink: #1d1d1f;
+  --np-contact-ink: #0B0B0E;
   --np-contact-muted: #6e6e73;
   --np-contact-line: #c5c6cc;
-  --np-contact-soft: #f5f5f7;
+  --np-contact-control-line: var(--np-color-separator-strong, #86868B);
+  --np-contact-soft: #F8F7F3;
   --np-contact-blue: #006fe6;
   width: 100%;
   overflow: clip;
-  background: #fff;
+  background: #FBFAEF;
   color: var(--np-contact-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
@@ -9897,9 +9898,9 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   min-height: 61px;
   margin: 0;
   padding: 8px 16px;
-  border: 1px solid var(--np-contact-line);
+  border: 1px solid var(--np-contact-control-line);
   border-radius: 12px;
-  background: #fff;
+  background: #F8F7F3;
   color: var(--np-contact-ink);
   transition: border-color 120ms ease, box-shadow 120ms ease;
 }
