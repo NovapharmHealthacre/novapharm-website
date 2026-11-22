@@ -1817,8 +1817,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 88,
-      "referenceCount": 233,
+      "usageCount": 90,
+      "referenceCount": 236,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1887,10 +1887,12 @@
         "products/strategic-portfolio/index.html",
         "regulatory-services/index.html",
         "scripts/apply-corporate-product-discipline.mjs",
+        "scripts/build-pages.mjs",
         "scripts/enhance-seo-authority.mjs",
         "scripts/generate-nutraxin-shopping.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-nutraxin-merchant.mjs",
+        "scripts/test-official-brand-triad.mjs",
         "scripts/test-owner-corrections.mjs",
         "scripts/test-public-visual-versioning.mjs",
         "scripts/test-seo-pages-release-preflight.mjs",
