@@ -143,6 +143,8 @@ test("raw HTTP API query pollution is rejected before atomic quota and FDA egres
 test("unexpected, too-many, or oversized source records cannot leak through board API",async()=>{
  for(const payload of [
   {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}],dataState:"unverified"},
+  {sourceId:"us.fda.openfda.recalls",records:[],dataState:"public_source_observations"},
+  {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}],dataState:"no_source_matches"},
   {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}]},
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:Array(6).fill({id:"x"})},
   {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{note:"x".repeat(270000)}]}
