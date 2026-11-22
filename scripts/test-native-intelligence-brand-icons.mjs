@@ -70,6 +70,7 @@ test("Android launcher has density-specific icons plus source-verified adaptive 
 test("Sovereign Black is applied to light mode without destroying semantic native dark mode",()=>{
  const light=text(android+"values/colors.xml");
  const dark=text(android+"values-night/colors.xml");
+ assert.ok(light.includes("#FBFAEF"), "Native light canvas must use Royal Mineral White");
  assert.ok(light.includes("#0B0B0E"));
  assert.ok(light.includes("#2546D8"));
  assert.ok(dark.includes("#F5F5F7"));
