@@ -28,15 +28,16 @@ async function fixture(callback){
 }
 async function add(root,period,prefix=period.replace('-','')){
  const a=prefix+'.csv',m=prefix+'.json';
- await writeFile(join(root,a),data);
- await writeFile(join(root,m),JSON.stringify(manifest(period)));
+ const payload=data+period+'\n';
+ await writeFile(join(root,a),payload);
+ await writeFile(join(root,m),JSON.stringify(manifest(period,{sha256:hash(payload),byteSize:Buffer.byteLength(payload)})));
  return {period,manifestFile:m,archiveFile:a};
 }
 test('verified archive bytes reveal missing months, never source rights',async()=>fixture(async root=>{
  const entries=[await add(root,'2026-07'),await add(root,'2026-09')];
  const x=await verifyUkPrivateBackfillBatch({plan:plan(entries),quarantineRoot:root});
  assert.equal(x.privateArchiveFilesRechecked,2);
- assert.equal(x.privateArchiveBytesRechecked,16);
+ assert.equal(x.privateArchiveBytesRechecked,32);
  assert.deepEqual(x.missingPeriods,['2026-08']);
  assert.equal(x.candidateCoverageComplete,false);
  assert.equal(x.sourceRightsIndependentlyApproved,false);
@@ -66,7 +67,7 @@ test('file tampering, date mismatch, traversal and scope mismatch fail closed',a
  const good=plan([row],{startPeriod:'2026-09',endPeriod:'2026-09'});
  await writeFile(join(root,row.archiveFile),'modified contents');
  await assert.rejects(verifyUkPrivateBackfillBatch({plan:good,quarantineRoot:root}),/mismatch/);
- await writeFile(join(root,row.archiveFile),data);
+ await writeFile(join(root,row.archiveFile),data+'2026-09\n');
  await assert.rejects(verifyUkPrivateBackfillBatch({
    plan:plan([{...row,period:'2026-08'}]),quarantineRoot:root}),/mismatch/);
  for(const field of ['manifestFile','archiveFile']){
@@ -118,4 +119,30 @@ test('aggregate declared file size is bounded before streaming even the first ar
  await assert.rejects(verifyUkPrivateBackfillBatch({
   plan:plan([first,second],{startPeriod:'2026-08',endPeriod:'2026-09'}),
   quarantineRoot:root}),/aggregate private batch byte budget exceeded/);
+}));
+
+test('same private manifest or archive filename cannot stand for two reporting months',async()=>fixture(async root=>{
+ const jul=await add(root,'2026-07','july');
+ const aug=await add(root,'2026-08','august');
+ const base={startPeriod:'2026-07',endPeriod:'2026-08'};
+ for(const field of ['manifestFile','archiveFile']){
+  const reused={...aug,[field]:jul[field]};
+  await assert.rejects(
+   verifyUkPrivateBackfillBatch({plan:plan([jul,reused],base),quarantineRoot:root}),
+   /source file reused across partition entries/);
+ }
+}));
+
+test('identical source bytes claimed under separate months require manual publisher reconciliation',async()=>fixture(async root=>{
+ const jul=await add(root,'2026-07','july');
+ const aug=await add(root,'2026-08','august');
+ const julyPayload=data+'2026-07\n';
+ await writeFile(join(root,aug.archiveFile),julyPayload);
+ await writeFile(join(root,aug.manifestFile),JSON.stringify(manifest('2026-08',{
+  sha256:hash(julyPayload),byteSize:Buffer.byteLength(julyPayload)
+ })));
+ await assert.rejects(verifyUkPrivateBackfillBatch({
+  plan:plan([jul,aug],{startPeriod:'2026-07',endPeriod:'2026-08'}),
+  quarantineRoot:root
+ }),/archive digest reused across distinct reporting periods/);
 }));
