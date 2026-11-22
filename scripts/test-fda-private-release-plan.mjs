@@ -123,3 +123,21 @@ test("iOS rejected late OAuth token exchange cannot resurrect access after sign-
  assert.ok(awaitNetwork>=0 && generationCheck>awaitNetwork && save>generationCheck,
    "after suspending for network, generation must be revalidated before token persistence");
 });
+
+test("iOS cached board token stays revoked when Keychain sign-out deletion fails",()=>{
+ const source=read("native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift");
+ const signOut=source.slice(source.indexOf("func signOut() -> Bool"),source.indexOf("func cachedAccessToken()"));
+ assert.ok(signOut.includes("accessRevoked=true"));
+ assert.ok(signOut.indexOf("accessRevoked=true")<signOut.indexOf("store.clear()"));
+ const getter=source.slice(source.indexOf("func cachedAccessToken()"),source.indexOf("func beginSignIn("));
+ assert.ok(getter.includes("guard !accessRevoked &&"));
+ const begin=source.slice(source.indexOf("func beginSignIn("),source.indexOf("private func exchange("));
+ assert.ok(begin.includes("accessRevoked=true"));
+ assert.ok(begin.indexOf("accessRevoked=true")<begin.indexOf("guard store.clear()"));
+ const exchange=source.slice(source.indexOf("private func exchange("));
+ const generation=exchange.indexOf("guard authGeneration == generation else");
+ const save=exchange.indexOf("try store.save(");
+ const authorize=exchange.indexOf("accessRevoked=false");
+ assert.ok(generation>=0 && save>generation && authorize>save,
+   "Only a current successful Keychain save can re-enable board access");
+});
