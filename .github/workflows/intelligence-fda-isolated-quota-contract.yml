@@ -1,0 +1,35 @@
+name: FDA isolated DynamoDB quota default-off approval contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/fda-isolated-quota-approval.cfn.json'
+      - 'scripts/test-fda-isolated-quota-approval.mjs'
+      - 'docs/intelligence/fda-quota-approval-20261122.md'
+      - '.github/workflows/intelligence-fda-isolated-quota-contract.yml'
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-quota-contract:
+    name: Verify zero default resources, atomic schema and private publication
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Verify JSON, fail-closed deployment conditions and quota-table schema
+        run: |
+          node --check scripts/test-fda-isolated-quota-approval.mjs
+          node --test scripts/test-fda-isolated-quota-approval.mjs scripts/test-fda-dynamodb-quota.mjs
+      - name: Ensure corporate website release boundaries remain intact
+        run: node --test scripts/aws/contact-release-routing.test.mjs
