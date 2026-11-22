@@ -170,7 +170,8 @@ test("public and protected static shells load RTL script without changing govern
   const privateBuilder = read("scripts/build-pages.mjs");
   assert.match(publicBuilder, /<script src="\/assets\/js\/rtl-localization\.js"><\/script>/);
   assert.match(privateBuilder, /<script src="\/assets\/js\/rtl-localization\.js"><\/script>/);
-  assert.match(publicBuilder, /<main id="main" lang="en-GB" data-np-untranslated>/);
+  assert.match(publicBuilder, /<main id="main"\$\{mainFocus\} lang="en-GB" data-np-untranslated>/);
+  assert.match(publicBuilder, /const mainFocus = slug === "legal\/accessibility" \? ' tabindex="-1"' : "";/);
   assert.match(js, /names\s*=\s*\{[\s\S]*ar:\s*\{[\s\S]*he:\s*\{/);
   assert.match(js, /\.site-header nav a/);
 });

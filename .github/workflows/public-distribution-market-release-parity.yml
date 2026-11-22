@@ -6,6 +6,8 @@ on:
       - scripts/test-distribution-market-build-parity.mjs
       - scripts/build-site.mjs
       - scripts/build-public-pages.mjs
+      - scripts/stamp-public-release-provenance.mjs
+      - scripts/stage-pages-artifact.mjs
       - scripts/enhance-seo-authority.mjs
       - scripts/apply-global-distribution-foundation.mjs
       - scripts/apply-markets-editorial.mjs

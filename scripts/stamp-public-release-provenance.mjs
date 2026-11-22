@@ -10,8 +10,9 @@ const register = JSON.parse(readFileSync(resolve(root, "seo/generated/page-metad
 assert.ok(register.length >= 60, "Canonical page register is incomplete");
 
 let stamped = 0;
-for (const record of register) {
-  const route = record.file;
+// Marketplace is added to the indexable sitemap after the SEO register is generated.
+const releasePages = new Set([...register.map(record => record.file), "products/marketplace/index.html"]);
+for (const route of releasePages) {
   assert.match(route, /^(?!\/)(?!.*\.\.\/)[a-zA-Z0-9/_-]+\.html$/, "Unsafe page path in SEO register");
   const full = resolve(root, route);
   assert.ok(existsSync(full), `Canonical HTML missing: ${route}`);
@@ -34,4 +35,4 @@ researchCandidate = researchCandidate.replace(/\s*<meta name="novapharm-source-s
 researchCandidate = researchCandidate.replace("</head>", '  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
 writeFileSync(researchCandidatePath, researchCandidate, "utf8");
 
-console.log(`Stamped ${stamped} generated canonical pages with verified Git source commit ${sha}; noindex quantum candidate stamped separately.`);
+console.log(`Stamped ${stamped} registered and late-generated pages with verified Git source commit ${sha}; noindex quantum candidate stamped separately.`);
