@@ -211,6 +211,16 @@ export function verifyNationalComparisonBoundary(left, right) {
   const a = UK_SOURCE_ARCHIVE_CONTRACTS.find(x => x.sourceId === left.sourceId);
   const b = UK_SOURCE_ARCHIVE_CONTRACTS.find(x => x.sourceId === right.sourceId);
   if (!a || !b) deny('unregistered comparison source');
+  // A version-reconciliation receipt must not be issued for an absent or
+  // malformed reporting period. Source-specific month/quarter precision is
+  // required even though the eventual result never permits metric summation.
+  if (!validPeriod(left.reportingPeriod, a.periodPrecision) ||
+      !validPeriod(right.reportingPeriod, b.periodPrecision))
+    deny('invalid reporting period for source precision');
+  const validVersion = version => typeof version === 'string' &&
+    /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(version);
+  if (!validVersion(left.sourceVersion) || !validVersion(right.sourceVersion))
+    deny('missing or invalid source version');
   if (a.jurisdiction !== b.jurisdiction) deny('cross-nation summation requires an independently accepted denominator and harmonisation contract');
   if (a.periodPrecision !== b.periodPrecision || left.reportingPeriod !== right.reportingPeriod)
     deny('incompatible reporting time periods');
