@@ -149,25 +149,36 @@ test('publisher period and CKAN resource identity must be exactly pinned before 
   })),/unverified publisher resource/);
  }
 });
-test('July 2026 source schema differs from September in declared numeric/string types',()=>{
- const july=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-07'];
- const julyResult=validateUkBnfSnomedReferenceSample(args([
-  make({PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',
-    PACK:'synthetic pack annotation',STRENGTH:'2',VTM:'000001234'})
- ],{reportingPeriod:'2026-07',publisherResourceId:july.resourceId}));
- assert.equal(julyResult.selectedResourceDeclaredTypes.strength,'integer');
- assert.equal(julyResult.selectedResourceDeclaredTypes.pack,'string');
- assert.equal(julyResult.selectedResourceDeclaredTypes.vtm,'integer');
- assert.equal(julyResult.packLexicalExceptionRows,1);
- assert.equal(julyResult.canIngest,false);
- assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make({STRENGTH:'2.5'})],{
-  reportingPeriod:'2026-07',publisherResourceId:july.resourceId
- })),/invalid integer strength/);
- const september=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES['2026-09'];
- assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make({
-  PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',PACK:'synthetic pack annotation'
- })],{reportingPeriod:'2026-09',publisherResourceId:september.resourceId})),
- /invalid pack numeric measure/);
+test('fresh NHSBSA portal declares identical numeric strength/pack and VTM string for all four data months',()=>{
+ const created=['2026-09-18','2026-10-06','2026-10-19','2026-11-19'];
+ const expectedMonths=['2026-06','2026-07','2026-08','2026-09'];
+ for(let i=0;i<expectedMonths.length;i++){
+  const period=expectedMonths[i],release=BNF_SNOMED_PUBLIC_RESOURCE_RELEASES[period];
+  assert.equal(release.sourceDataMonth,period);
+  assert.equal(release.portalCreatedOn,created[i]);
+  // Source month is not the later date the resource first appeared on ODP.
+  assert.notEqual(period,release.portalCreatedOn.slice(0,7));
+  const output=validateUkBnfSnomedReferenceSample(args([
+   make({STRENGTH:'2.5'}),
+   make({PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',
+     STRENGTH:'0.25',PACK:'12.5',UNIT_OF_MEASURE:'ml'})
+  ],{reportingPeriod:period,publisherResourceId:release.resourceId}));
+  assert.deepEqual(output.selectedResourceDeclaredTypes,{
+   strength:'number',pack:'number',vtm:'string'
+  });
+  assert.equal(output.decimalStrengthRows,2);
+  assert.equal(output.decimalPackRows,1);
+  assert.equal(output.sourceDataMonth,period);
+  assert.equal(output.portalResourceCreatedOn,created[i]);
+  assert.equal(output.sourceMonthAndPublicationDateKeptSeparate,true);
+  assert.equal(output.canIngest,false);
+  assert.equal(output.canPublish,false);
+  assert.equal(output.sourceRightsIndependentlyApproved,false);
+  assert.throws(()=>validateUkBnfSnomedReferenceSample(args([make({
+   PRESENTATION_PACK_LEVEL:'Pack',VMP_VMPP_AMP_AMPP:'AMPP',PACK:'synthetic text'
+  })],{reportingPeriod:period,publisherResourceId:release.resourceId})),
+   /invalid pack numeric measure/);
+ }
 });
 
 test('pinned NHSBSA 13-column dictionary fails closed on schema drift',()=>{
