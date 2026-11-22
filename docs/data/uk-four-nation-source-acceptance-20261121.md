@@ -64,3 +64,9 @@ The following five extra **official source families** are now separate, document
 - `nwssp.english-dispensing`: [English Dispensing Data Extract](https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/dispensing-data-extracts2/english-dispensing-data-extract/). Cross-border dispensing must not be double counted in national prescribing totals.
 
 The existing `nwssp.gp-prescribing` monthly presentation file and `nwssp.practice-pharmacy-flow` four-sheet workbook do not substitute for hospital, dental, independent-pharmacist or cross-border dispensing data. Source-specific release schedules, authoritative source versions, real archive checksums, field schemas, historical revisions, BNF/dm+d rights and clinical harmonisation need independent Quality and Legal review. No extra source is downloadable, ingested or customer-live solely because it is documented here.
+
+### Additional Wales publication-page checks — 22 November 2026
+
+The five new Wales source registry families (hospital, dental, independent-pharmacist prescribing, GP dispensing, English-origin dispensing in Wales) have explicit fixed official webpage probe inputs. The dedicated official-publisher CI requests only the page headers, cancels page-body reading and emits a sanitized metadata-only receipt for each; it does not discover or download an actual archive, parse BNF medicine rows, grant reuse rights or declare customer-live coverage.
+
+Every added Welsh source receives `latestReportingPeriod:null`, `publisherRowsRead:0`, `medicineDataAdmitted:false`, `sourceRightsIndependentlyApproved:false` and `canPublish:false`; exact-version source archives, legal rights and reconciliation remain open.

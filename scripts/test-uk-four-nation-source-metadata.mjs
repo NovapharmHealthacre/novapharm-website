@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { FOUR_NATION_SOURCES, UK_MEDICINE_PRESENTATION_SOURCES, probeThreeUkMedicinePresentationPublishers, probeUkNationPublisherMetadata, probeAllFourUkPublishers } from "../src/core/uk-four-nation-source-metadata.mjs";
+import { FOUR_NATION_SOURCES, UK_MEDICINE_PRESENTATION_SOURCES, probeThreeUkMedicinePresentationPublishers, probeFiveWelshPublicationPages, UK_WALES_EXTENDED_PUBLISHER_PAGES, probeUkNationPublisherMetadata, probeAllFourUkPublishers } from "../src/core/uk-four-nation-source-metadata.mjs";
 
 const id1 = "bafa30b6-4426-4578-a128-935d13b228e5";
 const id2 = "35b93e03-6330-4a7e-9be0-1f07c1495cc5";
@@ -108,4 +108,19 @@ test("three additional medicine-presentation publisher sources remain separate f
   assert.equal(queries.length,3);
   assert.deepEqual(rows.map(x=>x.latestReportingPeriod),["2026-08",null,"2026-09"]);
   assert.ok(rows.every(x=>x.rawMedicineRowsRead===0 && x.medicineDataAdmitted===false && x.canPublish===false));
+});
+
+test("five separate Welsh source pages are metadata-only with no published prescription rows", async () => {
+  assert.equal(UK_WALES_EXTENDED_PUBLISHER_PAGES.length, 5);
+  const requested = [];
+  const rows = await probeFiveWelshPublicationPages({fetchImplementation: async (url, opts) => {
+    requested.push({url,opts});
+    assert.ok(UK_WALES_EXTENDED_PUBLISHER_PAGES.some(x => x.url === url));
+    return new Response("<html>Official Wales source page</html>", {headers:{"content-type":"text/html"}});
+  }});
+  assert.equal(requested.length, 5);
+  assert.ok(requested.every(x => x.opts.method === "GET" && x.opts.redirect === "error"));
+  assert.equal(new Set(rows.map(x => x.sourceId)).size, 5);
+  assert.ok(rows.every(x => x.jurisdiction === "GB-WLS" && x.latestReportingPeriod === null &&
+    x.rawMedicineRowsRead === 0 && x.publisherRowsRead === 0 && x.canPublish === false));
 });

@@ -59,6 +59,12 @@ jobs:
         run: |
           mkdir -p artifacts/uk-four-nation
           node --experimental-transform-types scripts/run-uk-four-nation-source-metadata.mjs > artifacts/uk-four-nation/receipt.json
+          node --experimental-transform-types --input-type=module <<'NODE' > artifacts/uk-four-nation/wales-extension-receipt.json
+          import { probeFiveWelshPublicationPages } from './src/core/uk-four-nation-source-metadata.mjs';
+          const rows = await probeFiveWelshPublicationPages();
+          if (rows.length !== 5 || rows.some(x => x.jurisdiction !== 'GB-WLS' || x.canPublish !== false || x.rawMedicineRowsRead !== 0 || x.latestReportingPeriod !== null)) process.exit(1);
+          process.stdout.write(JSON.stringify(rows,null,2));
+          NODE
           node --experimental-transform-types --input-type=module <<'NODE' > artifacts/uk-four-nation/medicine-presentation-receipt.json
           import { probeThreeUkMedicinePresentationPublishers } from './src/core/uk-four-nation-source-metadata.mjs';
           const rows = await probeThreeUkMedicinePresentationPublishers();

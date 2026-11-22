@@ -54,6 +54,14 @@ export const UK_MEDICINE_PRESENTATION_SOURCES = Object.freeze([
   }),
 ]);
 
+export const UK_WALES_EXTENDED_PUBLISHER_PAGES = Object.freeze([
+  Object.freeze({sourceId:"nwssp.hospital-prescribing",nation:"Wales",jurisdiction:"GB-WLS",kind:"publisher_page",expectedPeriodPrecision:null,url:"https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/hospital-prescribing-data-extract/",packageName:null}),
+  Object.freeze({sourceId:"nwssp.dental-prescribing",nation:"Wales",jurisdiction:"GB-WLS",kind:"publisher_page",expectedPeriodPrecision:null,url:"https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/dental-prescribing-data-extract/",packageName:null}),
+  Object.freeze({sourceId:"nwssp.independent-pharmacist-prescribing",nation:"Wales",jurisdiction:"GB-WLS",kind:"publisher_page",expectedPeriodPrecision:null,url:"https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/prescribing-data-extracts/independent-prescribing-pharmacist/",packageName:null}),
+  Object.freeze({sourceId:"nwssp.gp-dispensing",nation:"Wales",jurisdiction:"GB-WLS",kind:"publisher_page",expectedPeriodPrecision:null,url:"https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/dispensing-data-extracts2/general-practice-dispensing-data-extract/",packageName:null}),
+  Object.freeze({sourceId:"nwssp.english-dispensing",nation:"Wales",jurisdiction:"GB-WLS",kind:"publisher_page",expectedPeriodPrecision:null,url:"https://nwssp.nhs.wales/ourservices/primary-care-services/general-information/data-and-publications/dispensing-data-extracts2/english-dispensing-data-extract/",packageName:null}),
+]);
+
 const MAX_METADATA_BYTES = 2 * 1024 * 1024;
 const MAX_RESOURCES = 256;
 const resourceIdPattern = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
@@ -89,7 +97,7 @@ export async function probeUkNationPublisherMetadata(sourceId, {
   fetchImplementation = fetch,
   now = () => new Date(),
 } = {}) {
-  const source = [...FOUR_NATION_SOURCES, ...UK_MEDICINE_PRESENTATION_SOURCES].find(entry => entry.sourceId === sourceId);
+  const source = [...FOUR_NATION_SOURCES, ...UK_MEDICINE_PRESENTATION_SOURCES, ...UK_WALES_EXTENDED_PUBLISHER_PAGES].find(entry => entry.sourceId === sourceId);
   if (!source) deny("unrecognised source");
   if (typeof fetchImplementation !== "function" || typeof now !== "function") deny("invalid dependencies");
   const date = now();
@@ -175,5 +183,18 @@ export async function probeThreeUkMedicinePresentationPublishers(options = {}) {
     results.push(await probeUkNationPublisherMetadata(source.sourceId, options));
   if(results.length!==3 || new Set(results.map(x=>x.nation)).size!==3)
     deny("three devolved medicine-presentation coverage invariant");
+  return Object.freeze(results);
+}
+
+/** Five separate Welsh data families: reachability ONLY, not a verified data feed. */
+export async function probeFiveWelshPublicationPages(options = {}) {
+  const results = [];
+  for (const source of UK_WALES_EXTENDED_PUBLISHER_PAGES)
+    results.push(await probeUkNationPublisherMetadata(source.sourceId, options));
+  if (results.length !== 5 ||
+      results.some(x => x.jurisdiction !== "GB-WLS" || x.rawMedicineRowsRead !== 0 ||
+        x.medicineDataAdmitted !== false || x.sourceRightsIndependentlyApproved !== false ||
+        x.canPublish !== false || x.latestReportingPeriod !== null || x.publisherRowsRead !== 0))
+    deny("Welsh page-only candidate invariant");
   return Object.freeze(results);
 }
