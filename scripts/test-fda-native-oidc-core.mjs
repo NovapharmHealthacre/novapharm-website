@@ -164,3 +164,62 @@ test("expiry and revoked or empty keystore entries deny subsequent requests",asy
  await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
  assert.equal(stats().stored,null);
 });
+
+test("Android in-flight Keystore save cannot restore board token after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseSave=()=>{},onEnter=()=>{};
+ const entered=new Promise(resolve=>{onEnter=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseSave=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  save:async value=>{onEnter();await waitForRelease;await adapter.secureStore.save(value);}
+ };
+ const signed={...adapter,secureStore};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const logout=signOutNativeFda(signed);
+ releaseSave();
+ const [authResult,logoutResult]=await Promise.allSettled([pending,logout]);
+ assert.equal(authResult.status,"rejected","a sign-in superseded by sign-out must not report success");
+ assert.equal(logoutResult.status,"fulfilled");
+ assert.equal(stats().stored,null,"sign-out must clear even an in-flight save");
+ await assert.rejects(verifiedNativeFdaAccessToken(config,signed),/expired|changed/);
+});
+test("Android cancelled in-flight OAuth response cannot save tokens after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFetch=()=>{},onFetch=()=>{};
+ const entered=new Promise(resolve=>{onFetch=resolve;});
+ const pendingResult=new Promise(resolve=>{releaseFetch=resolve;});
+ const signed={...adapter,fetchImpl:async (url,init)=>{
+  onFetch();await pendingResult;
+  return adapter.fetchImpl(url,init);
+ }};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ await signOutNativeFda(signed);
+ releaseFetch();
+ await assert.rejects(pending,/superseded/);
+ assert.equal(stats().stored,null);
+});
+test("Android secure-store deletion is serialized across concurrent sign-ins",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFirst=()=>{},onClear=()=>{},number=0;
+ const entered=new Promise(resolve=>{onClear=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseFirst=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  clear:async()=>{
+   number++;
+   if(number===1){onClear();await waitForRelease;}
+   return adapter.secureStore.clear();
+  }
+ };
+ const signed={...adapter,secureStore};
+ const first=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const second=authenticateNativeFdaWithPkce(config,signed);
+ releaseFirst();
+ const results=await Promise.allSettled([first,second]);
+ assert.deepEqual(results.map(x=>x.status),["rejected","fulfilled"]);
+ assert.equal(stats().stored?.token,mockedToken);
+});
