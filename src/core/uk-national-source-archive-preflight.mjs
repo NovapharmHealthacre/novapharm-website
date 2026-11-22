@@ -13,10 +13,15 @@ import { isAbsolute, relative, resolve, sep, extname } from 'node:path';
 const definitions = [
   ['nhsbsa.epd', 'GB-ENG', 'England', 'month', ['CSV'], 'nhsbsa-prescribed-in-community', ['opendata.nhsbsa.net', 'nhsbsa-opendata.s3-eu-west-2.amazonaws.com']],
   ['nhsbsa.pca', 'GB-ENG', 'England', 'month', ['CSV'], 'nhsbsa-community-dispensed-reimbursement', ['opendata.nhsbsa.net', 'nhsbsa-opendata.s3-eu-west-2.amazonaws.com']],
+  // Monthly terminology reference, not a prescribing/dispensing activity metric.
+  ['nhsbsa.bnf-snomed-map', 'GB-ENG', 'England', 'month', ['CSV'], 'nhsbsa-bnf-snomed-reference-crosswalk', ['opendata.nhsbsa.net', 'nhsbsa-opendata.s3-eu-west-2.amazonaws.com']],
   ['phs.prescribed-dispensed', 'GB-SCT', 'Scotland', 'quarter', ['CSV'], 'phs-practice-to-dispensary-flow', ['www.opendata.nhs.scot', 'opendata.nhs.scot']],
   ['phs.prescriptions-community', 'GB-SCT', 'Scotland', 'month', ['CSV'], 'phs-community-paid-prescriptions', ['www.opendata.nhs.scot', 'opendata.nhs.scot']],
   ['nwssp.practice-pharmacy-flow', 'GB-WLS', 'Wales', 'month', ['XLS', 'XLSX'], 'nwssp-practice-pharmacy-flow', ['nwssp.nhs.wales']],
   ['nwssp.gp-prescribing', 'GB-WLS', 'Wales', 'month', ['ZIP'], 'nwssp-gp-prescribing', ['nwssp.nhs.wales']],
+  ['nwssp.hospital-prescribing', 'GB-WLS', 'Wales', 'month', ['ZIP'], 'nwssp-hospital-origin-community-prescribing', ['nwssp.nhs.wales']],
+  ['nwssp.dental-prescribing', 'GB-WLS', 'Wales', 'month', ['ZIP'], 'nwssp-dental-origin-community-prescribing', ['nwssp.nhs.wales']],
+  ['nwssp.independent-pharmacist-prescribing', 'GB-WLS', 'Wales', 'month', ['ZIP'], 'nwssp-independent-pharmacist-community-prescribing', ['nwssp.nhs.wales']],
   ['bso.dispensing-contractor', 'GB-NIR', 'Northern Ireland', 'month', ['CSV'], 'bso-paid-contractor-flow', ['admin.opendatani.gov.uk', 'www.opendatani.gov.uk']],
   ['bso.gp-prescribing', 'GB-NIR', 'Northern Ireland', 'month', ['CSV'], 'bso-gp-dispensed-prescribing', ['admin.opendatani.gov.uk', 'www.opendatani.gov.uk']],
 ];
