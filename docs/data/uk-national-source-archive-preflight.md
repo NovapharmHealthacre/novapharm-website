@@ -137,3 +137,14 @@ Official publisher documentation:
 ### Strict UTC source discovery timestamps — 22 November 2026
 
 Archive candidate manifests now require an actual Gregorian UTC instant for `discoveredAt`: the parser round-trips the canonical timestamp to reject nonexistent calendar days, leap-day errors, invalid clock times, timezone-offset forms and overprecision. A date accepted by JavaScript's permissive `Date.parse` normalisation is **not** enough. Offline positive/negative tests verify valid leap years and fractional seconds as well as invalid source dates. This check prevents malformed provenance metadata from looking credible, but **does not independently authenticate the timestamp, publisher signature, archive SHA-256, licence, or medicine data**.
+
+
+## 22 November — NHSBSA BNF–SNOMED 13-column reference quality preflight
+
+The **official NHSBSA data dictionary** for the BNF–SNOMED mapping resource enumerates these 13 source fields, which are now tested in a separate bounded, non-publishing quality module `src/core/uk-bnf-snomed-reference-quality.mjs`: `PRESENTATION_PACK_LEVEL`, `VMP_VMPP_AMP_AMPP`, `BNF_CODE`, `BNF_NAME`, `SNOMED_CODE`, `DMD_PRODUCT_DESC`, `STRENGTH`, `UNIT_OF_MEASURE`, `DMD_PRODUCT_PACK_DESC`, `PACK`, `SUB_PACK`, `VTM`, `VTM_NAME`. Evidence: https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping/resource/bafa30b6-4426-4578-a128-935d13b228e5 .
+
+The validator accepts at most 1,000 **in-memory sample** rows, checks exact required headers and field-width bounds, keeps BNF/SNOMED/VTM identifiers as strings, distinguishes presentation VMP/AMP from pack VMPP/AMPP, detects missing unresolved codes and flags one-to-many BNF→SNOMED mappings **without choosing or deduplicating an identity**. It also flags pack-only fields when present on presentation rows. It emits only aggregate diagnostic counts and non-release flags; no sample medicine names, IDs or raw rows are returned or written to a store.
+
+**Explicit exclusions:** this is *not* an approved clinical vocabulary, no completed full-month row-quality or source-period verification, no authorised SNOMED/dm+d/BNF licence, no live medicine identity joins, no web/iOS/Android product data. A matching synthetic or private sample never establishes that any CSV is authentic, complete, clinically correct, or licensed. A publisher's OGL notice does not automatically grant embedded third-party BNF, dm+d or SNOMED rights. The reference has no applicable geography; it must not be used as prescribing activity or inferred national supply.
+
+The publisher reports that it is monthly retrospective data, usually with a two-month lag, and not a one-to-one crosswalk: https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping . Exact-head CI tests for the bounded reference gate are added to the existing UK private archive workflow; the latest test outcome must be checked at the current PR commit before claiming success.
