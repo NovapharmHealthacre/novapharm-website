@@ -79,4 +79,66 @@ const packageJson = JSON.parse(read("package.json"));
 assert.equal(packageJson.scripts["design:colours:validate"], "node scripts/test-apple-hig-colours.mjs");
 assert.ok(packageJson.scripts.check.includes("design:colours:validate"), "Production check must enforce colour contract");
 
+
+/* Owner-approved neutral brand identity: permanent CI guardrails. */
+const officialNeutrals = {
+  primary: "#FBFAEF",
+  secondary: "#F8F7F3",
+  black: "#0B0B0E",
+  divider: "#DEDCD5",
+};
+function firstColour(path, token) {
+  const source = read(path);
+  const match = source.match(new RegExp("^[ \\t]*" + token + ":\\s*(#[0-9a-fA-F]{6})\\s*;", "m"));
+  assert.ok(match, path + " missing " + token);
+  return match[1].toUpperCase();
+}
+for (const file of ["assets/css/tokens.css", "assets/css/novapharm-hig-colours.css"]) {
+  for (const [token, hex] of Object.entries({
+    "--np-white-primary": officialNeutrals.primary,
+    "--np-white-secondary": officialNeutrals.secondary,
+    "--np-black-default": officialNeutrals.black,
+    "--np-divider-subtle": officialNeutrals.divider,
+  })) {
+    assert.equal(firstColour(file, token), hex);
+  }
+}
+for (const [token, hex] of Object.entries({
+  "--np-color-canvas": officialNeutrals.primary,
+  "--np-color-surface": officialNeutrals.secondary,
+  "--np-color-surface-raised": officialNeutrals.secondary,
+  "--np-color-label": officialNeutrals.black,
+  "--np-color-separator": officialNeutrals.divider,
+  "--np-color-on-accent": officialNeutrals.primary,
+  "--np-color-on-primary-action": officialNeutrals.primary,
+})) {
+  assert.equal(firstColour("assets/css/novapharm-hig-colours.css", token), hex);
+}
+for (const [path, assignments] of [
+  ["assets/css/tokens.css", { "--paper": officialNeutrals.primary, "--surface": officialNeutrals.secondary, "--ink": officialNeutrals.black, "--line": officialNeutrals.divider }],
+  ["apps/corporate/app/design-system.css", { "--nph-canvas": officialNeutrals.primary, "--nph-silver": officialNeutrals.secondary, "--nph-ink": officialNeutrals.black, "--nph-line": officialNeutrals.divider }],
+  ["apps/portal/app/apple-pharma-portal.css", { "--portal-white": officialNeutrals.primary, "--portal-soft": officialNeutrals.secondary, "--portal-ink": officialNeutrals.black, "--portal-line": officialNeutrals.divider }],
+  ["apps/status/app/globals.css", { "--white": officialNeutrals.primary, "--soft": officialNeutrals.secondary, "--ink": officialNeutrals.black, "--line": officialNeutrals.divider }],
+  ["apps/technology/styles/base-1.css", { "--paper": officialNeutrals.primary, "--paper-bright": officialNeutrals.secondary, "--ink": officialNeutrals.black }],
+]) {
+  for (const [token, hex] of Object.entries(assignments)) {
+    assert.equal(firstColour(path, token), hex);
+  }
+}
+for (const path of [
+  "apps/corporate/app/layout.tsx",
+  "apps/technology/app/layout.tsx",
+  "apps/status/app/layout.tsx",
+]) {
+  assert.match(read(path), /themeColor:\s*"#FBFAEF"/);
+}
+assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-canvas:\s*#FBFAEF/);
+assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-surface:\s*#F8F7F3/);
+assert.ok(contrast(officialNeutrals.black, officialNeutrals.primary) >= 7);
+assert.ok(contrast(officialNeutrals.black, officialNeutrals.secondary) >= 7);
+assert.ok(contrast(officialNeutrals.primary, light["--np-color-accent"]) >= 4.5);
+// This low-contrast Stone hairline is decorative, not a form/control outline.
+assert.ok(contrast(officialNeutrals.divider, officialNeutrals.primary) < 3);
+check(light, "separator-strong", "surface", 3);
+
 console.log("NovaPharm Apple HIG-inspired semantic colour contract passed: 2 appearance palettes, contrast, estate imports and CI wiring.");
