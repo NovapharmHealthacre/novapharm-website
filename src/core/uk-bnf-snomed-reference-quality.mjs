@@ -22,6 +22,15 @@ function optionalNumericCode(v,label) {
   if(value!==''&&!/^\d{1,18}$/.test(value))refuse('non-decimal '+label+' identifier');
   return value;
 }
+// NHSBSA reports numeric STRENGTH/PACK in the August and September 2026
+// reference dictionaries. Keep decimal quantities as lexical values and never
+// coerce them into the SNOMED/BNF/dm+d identifier namespace.
+function optionalDecimalMeasure(v,label) {
+  const value=boundedString(v).trim();
+  if(value!=='' && !/^\d{1,15}(?:\.\d{1,8})?$/.test(value))
+    refuse('invalid '+label+' numeric measure');
+  return value;
+}
 export function validateUkBnfSnomedReferenceSample({
   sourceId:requestedSourceId,reportingPeriod,headers,rows
 }={}){
@@ -39,6 +48,7 @@ export function validateUkBnfSnomedReferenceSample({
   if(!Array.isArray(rows)||rows.length>1000)refuse('sample exceeds read-only bound');
   let unresolvedBnf=0,unresolvedSnomed=0,unresolvedVtm=0;
   let presentationRows=0,packRows=0,packOnlyFieldOnPresentation=0;
+  let decimalStrengthRows=0,decimalPackRows=0;
   let aggregateUtf8Bytes=0;
   const bnfToSnomed=new Map();
   for(const row of rows){
@@ -66,9 +76,10 @@ export function validateUkBnfSnomedReferenceSample({
     if(!snomed)unresolvedSnomed++;
     const vtm=optionalNumericCode(get('VTM'),'VTM');
     if(!vtm)unresolvedVtm++;
-    const strength=get('STRENGTH');
-    if(strength&&!/^\d{1,15}$/.test(strength))
-      refuse('invalid strength integer representation');
+    const strength=optionalDecimalMeasure(get('STRENGTH'),'strength');
+    const pack=optionalDecimalMeasure(get('PACK'),'pack');
+    if(strength.includes('.'))decimalStrengthRows++;
+    if(pack.includes('.'))decimalPackRows++;
     if(level==='presentation'&&
        ['UNIT_OF_MEASURE','DMD_PRODUCT_PACK_DESC','PACK','SUB_PACK']
          .some(field=>get(field)!==''))
@@ -87,6 +98,8 @@ export function validateUkBnfSnomedReferenceSample({
     bnfCodesWithMultipleSnomedConceptsInSample:
       [...bnfToSnomed.values()].filter(s=>s.size>1).length,
     presentationRowsWithUnexpectedPackFields:packOnlyFieldOnPresentation,
+    decimalStrengthRows,decimalPackRows,
+    numericQuantitiesPreservedAsStrings:true,
     preservesMedicineCodesAsStrings:true,
     mappingOneToOneAssumed:false,
     sourceFileAuthenticityIndependentlyVerified:false,
