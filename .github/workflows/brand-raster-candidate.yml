@@ -6,6 +6,7 @@ on:
       - brand/sovereign-crimson-garnet-20261122
     paths:
       - '.github/workflows/brand-raster-candidate.yml'
+      - '.github/workflows/brand-source-image-inventory-reconcile.yml'
       - 'scripts/programme/rebuild-three-brand-derivatives.mjs'
       - 'scripts/test-official-brand-triad.mjs'
       - 'config/brand-identities.json'
