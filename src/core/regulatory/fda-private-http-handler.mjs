@@ -77,13 +77,23 @@ function configured(env) {
     /^novapharm\/[A-Za-z0-9._-]+$/u.test(env.NPI_FDA_REQUIRED_SCOPE || "");
 }
 function queryParams(event) {
-  if (typeof event?.rawQueryString === "string" && event.rawQueryString.length > 500) return null;
+  // HTTP API payload v2 collapses repeated raw query parameters into the
+  // queryStringParameters object. Compare both representations and reject
+  // parameter pollution before calling the FDA or charging a board quota.
+  const raw = event?.rawQueryString;
+  if (typeof raw !== "string" || !raw || raw.length > 500) return null;
+  const parsed = new URLSearchParams(raw);
+  const keys = [...parsed.keys()];
+  if (keys.length !== 2 || keys.filter(k=>k==="kind").length !== 1 ||
+      keys.filter(k=>k==="drug").length !== 1) return null;
   const values = event?.queryStringParameters;
-  if (!values || typeof values !== "object" || Array.isArray(values)) return null;
+  if (!values || typeof values !== "object" || Array.isArray(values) ||
+      Object.keys(values).length !== 2) return null;
   const kind = values.kind;
   const drug = values.drug;
-  if (typeof kind !== "string" || !kindSet.has(kind)) return null;
-  if (typeof drug !== "string" || drug.length > 80 || !/^[A-Za-z][A-Za-z0-9 -]{1,63}$/u.test(drug)) return null;
+  if (typeof kind !== "string" || !kindSet.has(kind) || parsed.get("kind") !== kind) return null;
+  if (typeof drug !== "string" || drug.length > 80 ||
+      parsed.get("drug") !== drug || !/^[A-Za-z][A-Za-z0-9 -]{1,63}$/u.test(drug)) return null;
   return { kind, drug };
 }
 /**
@@ -116,8 +126,15 @@ export function createPrivateFdaHandler({ limit, searchLabels=searchOpenFdaLabel
         : await searchEvidence(q.kind,q.drug,context);
       // Never forward error objects, patient-level events, cookies, or source
       // transport headers from an upstream API.
-      if (!result || typeof result !== "object" || !Array.isArray(result.records)) throw Error("Invalid source");
+      if (!result || typeof result !== "object" || Array.isArray(result) ||
+          !Array.isArray(result.records) || result.records.length>5 ||
+          typeof result.sourceId!=="string" ||
+          !["no_source_matches","public_source_observations"].includes(result.dataState))
+        throw Error("Invalid source");
       if (q.kind==="adverse-events" && result.records.length!==0) throw Error("FAERS must be count-only");
+      // Response payloads remain bounded even if an upstream adapter regresses.
+      const serialized=JSON.stringify(result);
+      if (Buffer.byteLength(serialized,"utf8")>256*1024) throw Error("Oversized FDA response");
       return respond(200,result);
     } catch(error) {
       const status = error?.statusCode===400 ? 400 : 503;
