@@ -8,10 +8,11 @@ const add=(xml,route)=>xml.replace("</urlset>",'<url><loc>https://novapharmhealt
 const full=["/distribution/","/market-access/","/markets/","/products/esco/","/products/marketplace/"].reduce(add,source);
 test("sitemap contract is the exact approved canonical set, including generated collections",()=>{
   const result=validateCommerceSitemap(full,register);
+  const canonicals=new Set(result.canonicals);
   assert.equal(result.count,register.filter(x=>x.indexable===true).length+5);
-  for (const route of ["/distribution/","/market-access/","/markets/"]) assert.ok(result.canonicals.includes("https://novapharmhealthcare.com"+route));
-  assert.ok(result.canonicals.includes("https://novapharmhealthcare.com/products/esco/"));
-  assert.ok(result.canonicals.includes("https://novapharmhealthcare.com/products/marketplace/"));
+  for (const route of ["/distribution/","/market-access/","/markets/"]) assert.ok(canonicals.has("https://novapharmhealthcare.com"+route));
+  assert.ok(canonicals.has("https://novapharmhealthcare.com/products/esco/"));
+  assert.ok(canonicals.has("https://novapharmhealthcare.com/products/marketplace/"));
 });
 test("reject omission, extra URLs, private trackers, duplicates and wrong host",()=>{
   for(const xml of [
