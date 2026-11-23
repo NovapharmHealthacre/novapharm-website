@@ -215,7 +215,7 @@ function organisationSchema() {
     description: company.summary,
     sameAs: [company.companiesHouseUrl],
     founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/` })),
-    member: leadership.filter(person => person.governance.toLowerCase().includes("statutory director")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/`, ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/`, ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
     telephone: company.publicTelephone,
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
