@@ -24,7 +24,7 @@ private struct PreviewNotice: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("PRIVATE SWIFT PREVIEW")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(NovaTheme.primaryInk)
             Text("No mobile sign-in, live medicine data, customer records, payments or warehouse operations are enabled.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -90,7 +90,8 @@ private struct IntelligenceHomeView: View {
             }
         }
         .navigationTitle("Intelligence")
-        .scrollContentBackground(.visible)
+        .scrollContentBackground(.hidden)
+        .background(NovaTheme.background)
     }
 }
 
@@ -143,6 +144,8 @@ private struct WorkspaceListView: View {
         }
         .searchable(text: $searchText, prompt: "Search planned workspaces")
         .navigationTitle(area.title)
+        .scrollContentBackground(.hidden)
+        .background(NovaTheme.background)
     }
 }
 
@@ -197,6 +200,8 @@ private struct ModuleDetailView: View {
             }
         }
         .navigationTitle(module.title)
+        .scrollContentBackground(.hidden)
+        .background(NovaTheme.background)
     }
 }
 
@@ -221,5 +226,7 @@ private struct SavedModulesView: View {
             }
         }
         .navigationTitle("Saved")
+        .scrollContentBackground(.hidden)
+        .background(NovaTheme.background)
     }
 }

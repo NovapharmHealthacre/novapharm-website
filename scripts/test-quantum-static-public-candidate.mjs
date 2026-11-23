@@ -33,12 +33,17 @@ test("Pages allowlist, provenance stamp, and RTL inventory include exactly the c
   assert.doesNotMatch(stage, /^\s*"quantum-research",\s*$/m, "Quantum directory must never be bulk-copied");
   assert.ok(stage.includes('"quantum-research/index.html"'));
   assert.ok(stamp.includes('"quantum-research/index.html"'));
-  assert.ok(stamp.includes("noindex, nofollow"));
+  const pinned = read("scripts/lib/stamp-pinned-public-html.mjs");
+  assert.ok(stamp.includes('stampPinnedPublicHtml(root, "quantum-research/index.html", sha, { mustBeNoindex: true })'),
+    "Quantum provenance must retain the reviewed noindex gate");
+  assert.ok(pinned.includes("noindex, nofollow"),
+    "Shared descriptor stamper must reject quantum pages without noindex");
   assert.doesNotMatch(stamp, /existsSync\(researchCandidatePath\)/,
     "Quantum provenance source must be read without a check/read race");
   assert.ok(stage.includes("Quantum public candidate provenance mismatch"));
   assert.ok(stage.includes('/<form' + String.fromCharCode(92) + 'b|data-login-form'), "form detection must use a regex word boundary");
-  assert.ok(stamp.includes('researchCandidate.replace(/' + String.fromCharCode(92) + 's*<meta'), "repeat build must clean previous SHA");
+  assert.ok(pinned.includes('html = html.replace(/' + String.fromCharCode(92) + 's*<meta'),
+    "repeat build must clean previous SHA on the pinned descriptor");
 });
 test("standalone public candidate has no inline code, paid SDK or external runtime",()=>{
   const css=read("assets/css/quantum-research.css");

@@ -514,6 +514,15 @@ for (const page of canonicalPages) {
   }
 }
 
+// Check the actual staged canonical HTML, not just source templates or screenshots.
+// This is still source-only: it never asserts that live customer pages were deployed.
+const { officialPublicBrandPalette, assertOfficialPublicBrandMetadata } =
+  await import("./normalise-official-public-brand-metadata.mjs");
+const officialPalette = officialPublicBrandPalette(root);
+for (const page of canonicalPages) {
+  assertOfficialPublicBrandMetadata(readFileSync(join(output, page.file), "utf8"), officialPalette);
+}
+
 // Keep non-indexable quantum reference traceable to the exact released source.
 const quantumCandidate = readFileSync(join(output, "quantum-research/index.html"), "utf8");
 if (!quantumCandidate.includes('name="robots" content="noindex, nofollow"') ||

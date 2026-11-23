@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keep launcher artwork at its approved brand colour in both appearances. -->
+    <color name="novapharm_intelligence_icon_background">#2546D8</color>
+</resources>
