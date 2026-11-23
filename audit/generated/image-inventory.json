@@ -3225,8 +3225,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 68,
-      "referenceCount": 69,
+      "usageCount": 69,
+      "referenceCount": 70,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -3291,6 +3291,7 @@
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-apple-app-icons.mjs",
         "scripts/test-official-brand-triad.mjs",
+        "scripts/test-official-public-brand-metadata.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
