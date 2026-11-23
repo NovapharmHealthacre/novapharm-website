@@ -1,0 +1,65 @@
+name: FDA private JWT, native transport and data-governance acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/regulatory/fda-private-http-handler.mjs'
+      - 'src/core/regulatory/fda-data-admission.mjs'
+      - 'config/intelligence/us-fda-governance-source-manifest.json'
+      - 'scripts/test-fda-private-http-handler.mjs'
+      - 'scripts/test-fda-governance-admission.mjs'
+      - 'scripts/test-fda-native-gateway.mjs'
+      - 'scripts/test-fda-native-oidc-core.mjs'
+      - 'scripts/test-fda-private-release-plan.mjs'
+      - 'native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts'
+      - 'native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts'
+      - 'native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift'
+      - 'native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift'
+      - 'native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift'
+      - 'native/novapharm-intelligence-ios/Package.swift'
+      - 'infra/aws/fda-private-api-release-plan-20261121.json'
+      - 'infra/aws/fda-private-jwt-route.cfn.json'
+      - '.github/workflows/intelligence-fda-cross-platform-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  server-and-rights:
+    name: Validate private JWT claims, rights, datasets and quotas
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate release-blocked source and JWT syntax
+        run: |
+          node --check src/core/regulatory/fda-private-http-handler.mjs
+          node --check src/core/regulatory/fda-data-admission.mjs
+      - name: Run exhaustive negative authentication, data and mobile transport tests
+        run: |
+          node --experimental-strip-types --test scripts/test-fda-private-http-handler.mjs scripts/test-fda-governance-admission.mjs scripts/test-fda-native-gateway.mjs scripts/test-fda-native-oidc-core.mjs scripts/test-fda-private-release-plan.mjs
+          node --test scripts/test-openfda-evidence.mjs scripts/test-openfda-evidence-wiring.mjs
+      - name: Verify existing browser and customer publication remain denied
+        run: |
+          node --test scripts/aws/contact-release-routing.test.mjs
+  expo-typecheck:
+    name: Check Android Expo protected transport types
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Install existing lock without unreviewed scripts
+        run: npm ci --ignore-scripts --prefix native/novapharm-intelligence-mobile
+      - name: Strict TypeScript
+        run: npm run typecheck --prefix native/novapharm-intelligence-mobile

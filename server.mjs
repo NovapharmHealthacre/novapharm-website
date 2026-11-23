@@ -60,6 +60,7 @@ import { ES_CIMA_PROBE, probeCimaPublicMedicine } from "./src/core/intelligence-
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
 import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
+import { searchFdaEvidence } from "./src/core/regulatory/openfda-evidence.mjs";
 import { searchClinicalTrialsStudies } from "./src/core/regulatory/clinicaltrials-studies.mjs";
 import {
   changePassword,
@@ -993,6 +994,22 @@ export async function handleRequest(request, response) {
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
       json(response, 200, await searchOpenFdaLabels(url.searchParams.get("drug") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/regulatory/us/fda-evidence" && request.method === "GET") {
+      // Strictly research-only and disabled by default. Session precedes quota and outbound data.
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      if (process.env.NPI_OPENFDA_EVIDENCE_ENABLED !== "true") {
+        return json(response, 503, { error: "FDA extended evidence research has not been activated." });
+      }
+      if (!await rateLimit(request, "openfda-extended-evidence", 5, 60 * 1000)) {
+        return json(response, 429, { error: "FDA research rate limit reached." });
+      }
+      json(response, 200, await searchFdaEvidence(
+        url.searchParams.get("kind") || "", url.searchParams.get("drug") || "", enterpriseContext(session)
+      ));
       return;
     }
 
