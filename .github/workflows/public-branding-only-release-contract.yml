@@ -27,12 +27,27 @@ jobs:
           node-version: 24
       - name: Prove brand-only authorization cannot enable customer services
         run: node --test scripts/test-public-branding-only-release.mjs
-      - name: Prove current owner constraints fail closed for public branding
+      - name: Prove push and ordinary dispatch cannot use branding-only approval
         shell: bash
         run: |
           set -euo pipefail
-          if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=true CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
-            echo "::error::Branding release must not activate without a separately granted source signoff."
+          for event in push pull_request; do
+            if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT="$event" BRANDING_ONLY=true CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+              echo "::error::Non-manual events must never satisfy branding-only release signoff."
+              exit 1
+            fi
+          done
+          if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=false CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+            echo "::error::Ordinary manual dispatch cannot inherit brand-only approval."
             exit 1
           fi
-          echo 'Owner hold preserved: branding deployment remains denied until scoped signoff.'
+      - name: Confirm missing branding production signoff denies release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! jq -e '.publicBrandingRelease.enabled == true and .publicBrandingRelease.signoff == "granted"' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=true CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+              echo "::error::Missing separate branding signoff must fail closed."
+              exit 1
+            fi
+          fi

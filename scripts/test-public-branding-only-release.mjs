@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { APPROVED_CONTACT_ORIGIN, REVIEWED_CONTACT_BLOBS, evaluateBrandingOnlyRelease, gitBlobSha } from "./verify-public-branding-only-release.mjs";
 
 const sha = "a".repeat(40);
@@ -71,4 +72,15 @@ test("all three reviewed Contact blobs are immutable inputs to branding publishi
 });
 test("git-blob hash algorithm uses exact byte-length-prefixed SHA1", () => {
   assert.equal(gitBlobSha("hello"),"b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0");
+});
+
+test("production publisher retains its customer gate and adds only an explicit manual branding gate", () => {
+  const publisher = readFileSync(".github/workflows/publish-aws-contact-production.yml","utf8");
+  assert.ok(publisher.includes('.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true'));
+  assert.ok(publisher.includes('inputs.branding_only'));
+  assert.ok(publisher.includes('scripts/verify-public-branding-only-release.mjs'));
+  assert.ok(publisher.includes('run: node scripts/verify-public-brand-source-live.mjs'));
+  assert.match(publisher,/if: github.ref == 'refs\/heads\/main' && needs.release_scope.outputs.release_needed == 'true'/);
+  assert.match(publisher,/node scripts\/check-pages-monotonic-release\.mjs/);
+  assert.match(publisher,/node scripts\/activate-contact-intake\.mjs/);
 });
