@@ -6,13 +6,22 @@ const SHA = "a".repeat(40);
 
 function htmlFor(route, sha = SHA) {
   const contact = route === "/contact/"
-    ? '<form data-live-b2b-enquiry-form><button type="submit">Send</button></form>' +
+    ? '<form class="ref-form" method="post" action="/contact/" ' +
+      'data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com">' +
+      '<input name="safetyConfirmation" value="yes" required>' +
+      '<input name="privacyAcknowledgement" value="yes" required>' +
+      '<input name="name" dir="auto"><input name="email" dir="ltr">' +
+      '<a href="/legal/privacy/#business-enquiries">Privacy notice</a>' +
       '<a href="mailto:bd@novapharmhealthcare.com">Email</a>' +
-      '<script src="/assets/js/contact-production.js" defer></script>'
+      '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css">' +
+      '<script src="/assets/js/contact-production.js" defer></script></form>'
     : "";
   return '<html lang="en-GB"><head><meta name="novapharm-source-sha" content="' + sha + '">' +
     '<meta name="theme-color" content="#FBFAEF">' +
     '<link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#9D1B32">' +
+    (route === "/contact/" ? '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; ' +
+      'connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com; ' +
+      'form-action \'none\'">' : '') +
     '</head><body><main><h1>NovaPharm Healthcare</h1>' + contact +
     '</main></body></html>';
 }
@@ -62,7 +71,7 @@ test("Contact requires production AWS-backed form, client, BD address and no ema
     const broken = htmlFor("/contact/").replace(term, "broken");
     assert.notEqual(verifyPublishedHtml(broken, "/contact/", SHA).length, 0);
   }
-  const downgraded = htmlFor("/contact/").replace("<form data-live-b2b-enquiry-form>", "<form data-email-enquiry-form>");
+  const downgraded = htmlFor("/contact/").replace("data-live-b2b-enquiry-form", "data-email-enquiry-form");
   assert.ok(verifyPublishedHtml(downgraded, "/contact/", SHA).length >= 1);
 });
 
@@ -81,4 +90,34 @@ test("read-only auditor fails closed on HTTP redirects, errors or non-HTML conte
 
 test("invalid expected SHA cannot start a production audit", async () => {
   await assert.rejects(auditPublishedBrand({sourceSha:"not-a-commit",fetchImpl:async()=>{throw Error("should not be called");}}));
+});
+
+test("Contact release cannot pass with lost consent, CSP, approved API origin or RTL semantics", () => {
+  const html = htmlFor("/contact/");
+  assert.deepEqual(verifyPublishedHtml(html, "/contact/", SHA), []);
+  const weakened = [
+    ['name="safetyConfirmation" value="yes" required', 'name="safetyConfirmation"'],
+    ['name="privacyAcknowledgement" value="yes" required', 'name="privacyAcknowledgement"'],
+    ["form-action 'none'", "form-action 'self'"],
+    ['connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com', "connect-src 'self'"],
+    ['data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-origin="https://unreviewed.example.invalid"'],
+    ['href="/legal/privacy/#business-enquiries"', 'href="/other/privacy"'],
+    ['href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/unreviewed.css"'],
+    ['dir="auto"', 'dir="bad"'],
+    ['dir="ltr"', 'dir="bad"']
+  ];
+  for (const [before, after] of weakened) {
+    assert.ok(html.includes(before), "Fixture lacks original safety marker " + before);
+    const broken = html.replace(before, after);
+    assert.ok(verifyPublishedHtml(broken, "/contact/", SHA).length > 0,
+      "Contact safety regression undetected: " + before);
+  }
+});
+
+test("a superficial B2B marker cannot impersonate the reviewed live Contact form", () => {
+  const original = htmlFor("/contact/");
+  const spoof = original.replace(
+    '<form class="ref-form" method="post" action="/contact/" data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com">',
+    '<div data-live-b2b-enquiry-form>');
+  assert.ok(verifyPublishedHtml(spoof, "/contact/", SHA).some(e => e.includes("pinned API binding")));
 });

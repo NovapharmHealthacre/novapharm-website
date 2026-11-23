@@ -33,10 +33,34 @@ export function verifyPublishedHtml(html, route, sourceSha) {
   if (masks.length > 1 || masks.some(tag => attribute(tag, "color") !== "#9D1B32"))
     errors.push("Safari mask-icon differs from approved Healthcare Crimson");
   if (route === "/contact/") {
-    if (!html.includes("data-live-b2b-enquiry-form")) errors.push("Verified live B2B Contact form missing");
-    if (!html.includes("/assets/js/contact-production.js")) errors.push("Production Contact client missing");
-    if (!html.includes("bd@novapharmhealthcare.com")) errors.push("Approved Contact email missing");
-    if (html.includes("data-email-enquiry-form")) errors.push("Contact was downgraded to email-only");
+    // The managed AWS-backed Contact form is separately pinned by its original
+    // source blob. Verify critical live safety markers as well as the release
+    // SHA; a superficially branded email-only or unconsented form must fail.
+    const pinnedOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+    const reviewedForm = '<form class="ref-form" method="post" action="/contact/" ' +
+      'data-live-b2b-enquiry-form data-api-origin="' + pinnedOrigin + '">';
+    if (html.split(reviewedForm).length !== 2)
+      errors.push("Reviewed AWS B2B Contact form or pinned API binding missing");
+    if (!html.includes('src="/assets/js/contact-production.js"'))
+      errors.push("Production Contact client missing");
+    if (!html.includes("bd@novapharmhealthcare.com"))
+      errors.push("Approved Contact email missing");
+    if (html.includes("data-email-enquiry-form"))
+      errors.push("Contact was downgraded to email-only");
+    for (const field of ["safetyConfirmation", "privacyAcknowledgement"]) {
+      if (!html.includes('name="' + field + '" value="yes" required'))
+        errors.push("Required Contact confirmation missing: " + field);
+    }
+    if (!html.includes('href="/legal/privacy/#business-enquiries"'))
+      errors.push("Contact business enquiry privacy notice missing");
+    if (!html.includes('http-equiv="Content-Security-Policy"') ||
+        !html.includes("form-action 'none'") ||
+        !html.includes("connect-src 'self' " + pinnedOrigin))
+      errors.push("Reviewed Contact CSP or API egress boundary missing");
+    if (!html.includes('href="/assets/css/novapharm-unified-20261107.css"'))
+      errors.push("Reviewed managed Contact design stylesheet missing");
+    if (!html.includes('dir="auto"') || !html.includes('dir="ltr"'))
+      errors.push("Contact RTL and LTR input direction support missing");
   }
   return errors;
 }
