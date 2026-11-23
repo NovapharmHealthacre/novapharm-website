@@ -490,7 +490,20 @@ jobs:
           NOVAPHARM_CONTACT_ARTIFACT_ROOT: "_site"
           NOVAPHARM_CONTACT_API_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
+          set -euo pipefail
+          # Refuse to replace the live owner-reviewed Contact design with the
+          # older email-only/legacy-red source if PR #1044 is not integrated.
+          test -s src/content/contact-managed-release.html || {
+            echo "::error::Reviewed Contact template absent; merge approved managed Contact source before AWS Pages cutover." >&2
+            exit 1
+          }
+          grep -Fq 'bd@novapharmhealthcare.com' src/content/contact-managed-release.html || {
+            echo "::error::Reviewed managed Contact source lacks approved BD address." >&2
+            exit 1
+          }
           node scripts/activate-contact-intake.mjs
+          grep -Fq 'bd@novapharmhealthcare.com' _site/contact/index.html
+          grep -Fq '<meta name="theme-color" content="#FBFAEF">' _site/contact/index.html
           grep -Fq 'data-live-b2b-enquiry-form' _site/contact/index.html
           grep -Fq 'data-live-contact-status' _site/contact/index.html
           grep -Fq 'name="privacyAcknowledgement"' _site/contact/index.html
