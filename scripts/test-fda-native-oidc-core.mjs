@@ -302,3 +302,23 @@ test("Stalled Cognito response body obeys total request deadline",async()=>{
     globalThis.setTimeout=originalSetTimeout;
   }
 });
+
+test("Cognito oversized response still fails if reader cancellation never settles",async()=>{
+  let cancelled=0,deadlineTimer;
+  const stalledCancellation=new Promise(()=>{});
+  const response=new Response(new ReadableStream({
+    pull(controller){controller.enqueue(new Uint8Array(17000));},
+    cancel(){cancelled++;return stalledCancellation;}
+  }),{status:200,headers:{"content-type":"application/json"}});
+  const {adapter,stats}=platform({fetchImpl:async()=>response});
+  try{
+    const testDeadline=new Promise((_,reject)=>{
+      deadlineTimer=setTimeout(()=>reject(Error("Reader cancellation blocked FDA denial.")),2000);
+    });
+    await assert.rejects(Promise.race([
+      authenticateNativeFdaWithPkce(config,adapter),testDeadline
+    ]),/oversized/);
+    assert.equal(cancelled,1,"reader cancellation should be attempted");
+    assert.equal(stats().stored,null,"bad token must never reach Keystore");
+  }finally{clearTimeout(deadlineTimer);}
+});

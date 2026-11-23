@@ -142,7 +142,9 @@ async function readBoundedCognitoTokenResponse(response:Response,signal:AbortSig
     throw Error("Cognito token response unavailable or oversized.");
   }finally{
     signal.removeEventListener("abort",onAbort);
-    try{await reader.cancel();}catch{}
+    // A hostile stream may never settle cancel(). Do not let asynchronous
+    // cleanup defeat the 10-second response-body deadline.
+    try{void reader.cancel().catch(()=>{});}catch{}
     try{reader.releaseLock();}catch{}
   }
   const bytes=new Uint8Array(total);
