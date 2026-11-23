@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 84,
-      "referenceCount": 96,
+      "usageCount": 85,
+      "referenceCount": 97,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -140,6 +140,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -1093,8 +1094,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 77,
-      "referenceCount": 81,
+      "usageCount": 78,
+      "referenceCount": 82,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1171,6 +1172,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -1488,8 +1490,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 97,
-      "referenceCount": 201,
+      "usageCount": 98,
+      "referenceCount": 202,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1585,6 +1587,7 @@
         "scripts/verify-intelligence-public-entry.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
         "technology/index.html",
         "trust-centre/index.html"
