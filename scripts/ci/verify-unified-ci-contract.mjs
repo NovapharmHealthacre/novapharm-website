@@ -71,7 +71,12 @@ export function auditPolicy(root = REPO_ROOT, suppliedPolicy = null) {
   assert.match(publisher, /Prevent silent downgrade of a verified live contact service/);
   assert.match(publisher, /if: github.event_name != 'pull_request'/);
   const contact = read(root, ".github/workflows/publish-aws-contact-production.yml");
-  assert.match(contact, /Enforce owner-approved contact-production permission/);
+  assert.match(contact, /Enforce separately approved customer-production or public-branding-only permissions/);
+  // The former Contact-only step was deliberately expanded. Preserve the
+  // stronger fail-closed scope contract rather than accepting a renamed step.
+  assert.match(contact, /BRANDING_ONLY_REQUESTED: \$\{\{ inputs\.branding_only \}\}/);
+  assert.match(contact, /BRANDING_ONLY=true node scripts\/verify-public-branding-only-release\.mjs/);
+  assert.match(contact, /Branding-only publishing denied; general customer signoff cannot authorize this scope/);
   assert.match(contact, /productionSignoff/);
   return { projects: requiredProjects.reduce((n, type) => n + policy.projects[type].length, 0), domains: domainNames.length, tests: allTests.size, references: coverage };
 }
