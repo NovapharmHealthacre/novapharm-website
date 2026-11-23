@@ -79,6 +79,12 @@ on:
 permissions:
   contents: read
 
+# PR-only supersession prevents stale commits competing for runner slots.
+# Each main push and manual dispatch has a unique group: no cancellation there.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   rendered-public-estate:
     runs-on: ubuntu-24.04

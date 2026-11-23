@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { auditPolicy, REPO_ROOT, POLICY_FILE } from "./ci/verify-unified-ci-contract.mjs";
+import "./test-ci-superseded-pr-concurrency.mjs";
 
 const baseline = JSON.parse(readFileSync(join(REPO_ROOT, POLICY_FILE), "utf8"));
 const copy = () => structuredClone(baseline);
