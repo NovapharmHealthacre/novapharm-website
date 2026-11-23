@@ -44,3 +44,12 @@ The routing regression suite now tests these four paths in isolation, the routin
 **Merge order:** verify full exact-head CI and independent release-security review for this routing-repair PR, then merge it **before** independently reviewed PR #1111. Rebase or synchronize #1111 with the resulting main and rerun its required exact-head CI. This repair is not permission to import Welsh dispensing records, grant terminology licences, publish medicines, spend money, or deploy the public Contact site. Production remains restricted by owner-controlled release holds.
 
 Independent acceptance must still verify post-merge dispatcher and publisher skip behavior; a green source test does not prove live publishing was skipped.
+
+
+## 23 November 2026 — published-image audit #1010 source-only routing
+
+[PR #1010](https://github.com/NovapharmHealthacre/novapharm-website/pull/1010) is merged into protected `main` as `73c99d4c74c75a29ecbce6ce434dc4ac3be02a6c`. Its five files implement **read-only** SHA-256 equality testing of published images and static HTML image-alt attribute presence. They are neither a public Contact form change nor permission to publish a new site.
+
+Both managed AWS Contact dispatch and publisher classifiers must recognize **exactly** these five source-only files. No wildcard such as `scripts/*`, `.github/workflows/*`, or `assets/*` is permitted. This narrowly prevents an audit-only merge from being classified as a public release once the independent owner production hold is eventually lifted.
+
+The regression suite checks pure audit commits; audit plus reviewed release-routing controls; empty/control-only commits; and mixed commits touching genuine Contact, Nutraxin, page builder or CSS files. Mixed public changes must **never** be excluded from normal publication gates. Existing review, branch protection, production holds, data-rights and protected-service limits are unchanged. A passing source test does not replace post-merge workflow-run verification.
