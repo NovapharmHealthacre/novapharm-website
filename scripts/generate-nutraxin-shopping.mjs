@@ -252,7 +252,7 @@ for (const product of registered.products) {
     ' <small>including UK VAT</small></p><p class="nx-merchant-availability">' +
     (inStock ? "Available to order online in the UK." :
       "Currently unavailable to order online. Contact us for availability.") +
-    '</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a></div>';
+    '</p><p class="nx-merchant-regulatory-scope">Nutraxin food supplements have a separate UK consumer shopping journey. NovaPharm does not sell prescription medicines directly to patients. Regulated medicine supply is restricted to qualified businesses and remains subject to applicable authorisations.</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a></div>';
   if (html.includes('class="nx-merchant-offer"')) {
     html = html.replace(/<div class="nx-merchant-offer"[^>]*>[\s\S]*?<\/div>/, offer);
   } else {

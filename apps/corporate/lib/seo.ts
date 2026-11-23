@@ -62,7 +62,7 @@ export function organisationSchema() {
     identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber, url: company.companiesHouseUrl },
     mainEntityOfPage: { "@id": `${siteUrl}/#webpage` },
     founder: founders.map(person => ({ "@type": "Person", "@id": person.id, name: person.displayName, url: person.canonicalUrl })),
-    member: directors.map(person => ({ "@type": "Person", "@id": `${siteUrl}/leadership/${person.slug}/#person`, name: person.displayName, url: `${siteUrl}/leadership/${person.slug}/`, ...(person.imagePath ? { image: `${siteUrl}${person.imagePath}` } : {}) })),
+    member: directors.map(person => ({ "@type": "Person", "@id": person.id, name: person.displayName, url: person.canonicalUrl, ...(person.imagePath ? { image: `${siteUrl}${person.imagePath}` } : {}) })),
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
