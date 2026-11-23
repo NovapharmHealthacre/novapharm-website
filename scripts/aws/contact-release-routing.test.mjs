@@ -1371,6 +1371,6 @@ test("UK Wales cross-border source-only PR #1111 cannot trigger unrelated AWS Co
     assert.match(workflow, /found_ml=true/);
     cases.push(patterns);
   }
-  assert.deepEqual(cases[0], cases[1],
-    "public AWS dispatcher and publisher must agree on all exact-path exemptions");
+  assert.deepEqual([...cases[0]].sort(), [...cases[1]].sort(),
+    "public AWS dispatcher and publisher must agree on all exact-path exemptions regardless of order");
 });
