@@ -54,21 +54,6 @@ test("branding signoff must explicitly approve static public site and existing C
     assert.equal(evaluateBrandingOnlyRelease(v).approved,false);
   }
 });
-test("additional, missing or malformed branding scope keys fail closed", () => {
-  const mutations = [
-    v => { v.config.publicBrandingRelease.activateSubscriptions = true; },
-    v => { v.config.publicBrandingRelease.activateSubscriptions = false; },
-    v => { delete v.config.publicBrandingRelease.scope; },
-    v => { v.config.publicBrandingRelease = []; },
-    v => { v.config.publicBrandingRelease = null; }
-  ];
-  for (const mutate of mutations) {
-    const v = input();
-    mutate(v);
-    assert.equal(evaluateBrandingOnlyRelease(v).approved, false);
-  }
-});
-
 test("all customer, paid-service and external-email permissions remain denied", () => {
   for (const key of Object.keys(permissions)) {
     const v=input();v.config.productionPermissions[key]=true;
@@ -131,4 +116,36 @@ test("production publisher retains its customer gate and adds only an explicit m
   assert.match(publisher,/if: github.ref == 'refs\/heads\/main' && needs.release_scope.outputs.release_needed == 'true'/);
   assert.match(publisher,/node scripts\/check-pages-monotonic-release\.mjs/);
   assert.match(publisher,/node scripts\/activate-contact-intake\.mjs/);
+});
+
+test("checked-in separate branding decision never expands customer permissions", () => {
+  const config = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json", "utf8"));
+  const decision = config.publicBrandingRelease;
+  assert.ok(decision && typeof decision === "object" && !Array.isArray(decision));
+  assert.deepEqual(Object.keys(decision).sort(), ["enabled","signoff","scope"].sort());
+  assert.equal(decision.scope, "public-static-with-preserved-contact");
+  assert.ok(["not_granted","granted"].includes(decision.signoff));
+  assert.equal(typeof decision.enabled,"boolean");
+  assert.equal(config.productionSignoff, "not_granted");
+  for (const name of Object.keys(permissions)) assert.equal(config.productionPermissions[name], false, name);
+  for (const [name,value] of Object.entries(config.productionPermissions))
+    assert.equal(value,false,"Unknown permissions must also remain denied: "+name);
+  const v=input(); v.config=config;
+  assert.equal(evaluateBrandingOnlyRelease(v).approved,
+    decision.enabled === true && decision.signoff === "granted");
+});
+
+test("additional, missing or malformed branding scope keys fail closed", () => {
+  const mutations = [
+    v => { v.config.publicBrandingRelease.activateSubscriptions = true; },
+    v => { v.config.publicBrandingRelease.activateSubscriptions = false; },
+    v => { delete v.config.publicBrandingRelease.scope; },
+    v => { v.config.publicBrandingRelease = []; },
+    v => { v.config.publicBrandingRelease = null; }
+  ];
+  for (const mutate of mutations) {
+    const v = input();
+    mutate(v);
+    assert.equal(evaluateBrandingOnlyRelease(v).approved, false);
+  }
 });
