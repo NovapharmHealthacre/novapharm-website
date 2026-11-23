@@ -89,6 +89,18 @@ test("production publisher retains its customer gate and adds only an explicit m
   assert.ok(publisher.includes('.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true'));
   assert.ok(publisher.includes('inputs.branding_only'));
   assert.ok(publisher.includes('scripts/verify-public-branding-only-release.mjs'));
+  // Manually provided workflow inputs must never be expanded into executable Bash.
+  // GitHub Actions env mappings isolate quotes, backticks and $() from shell parsing.
+  const gate = publisher.split('id: owner_hold')[1]?.split('- name: Exclude Nova ML-only')[0] ?? '';
+  assert.match(gate, /RELEASE_EVENT: \$\{\{ github\.event_name \}\}/);
+  assert.match(gate, /BRANDING_ONLY_REQUESTED: \$\{\{ inputs\.branding_only \}\}/);
+  assert.match(gate, /EXPECTED_SHA: \$\{\{ inputs\.expected_sha \}\}/);
+  assert.match(gate, /CONTACT_API_ORIGIN: \$\{\{ inputs\.contact_api_origin \}\}/);
+  const bash = gate.split('run: |')[1] ?? '';
+  assert.ok(bash, 'Owner production gate must have a shell script');
+  assert.doesNotMatch(bash, /\$\{\{\s*(?:inputs\.|github\.event_name)/,
+    'Never interpolate untrusted workflow inputs into executable shell');
+  assert.match(bash, /BRANDING_ONLY=true node scripts\/verify-public-branding-only-release\.mjs/);
   assert.ok(publisher.includes('run: node scripts/verify-public-brand-source-live.mjs'));
   assert.match(publisher,/if: github.ref == 'refs\/heads\/main' && needs.release_scope.outputs.release_needed == 'true'/);
   assert.match(publisher,/node scripts\/check-pages-monotonic-release\.mjs/);
