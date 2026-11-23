@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { unstampedReviewedContactHtml } from "./lib/reviewed-contact-provenance.mjs";
 
 const website="https://novapharmhealthcare.com";
 const receiver="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
@@ -59,7 +60,9 @@ if (requireReviewedDesign) await check("Approved Contact visual identity and fai
   ]) insist(page.includes(marker),"Reviewed Contact design/safety marker missing: "+marker);
   const link='href="/assets/css/novapharm-unified-20261107.css"';
   insist(page.includes(link) && page.indexOf(link)<page.indexOf("<style>"),"Shared CSS not present ahead of scoped Contact styles");
-  insist(reviewedGitBlob(page)===reviewedBlobs.html,"Live Contact HTML differs from reviewed release");
+  const published=unstampedReviewedContactHtml(page);
+  insist(reviewedGitBlob(published.unstampedHtml)===reviewedBlobs.html,
+    "Live Contact HTML differs from reviewed release after exact provenance stamp removal");
   const css=await read(website,"/assets/css/novapharm-unified-20261107.css","text/css");
   insist(css.includes(".site-header") || css.includes(".nav"),"Reviewed Contact shared CSS missing expected layout rules");
   insist(reviewedGitBlob(css)===reviewedBlobs.stylesheet,"Live Contact CSS differs from reviewed release");
