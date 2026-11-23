@@ -45,12 +45,23 @@ function exactly(object, fields) {
 }
 
 export function validateOwnerProductionConstraints(policy) {
-  if (!exactly(policy, [
+  const engineeringFields = [
     "contract", "decisionDate", "vendorStrategy",
     "enterpriseVendorAccounts", "initialInfrastructureBudget",
     "engineeringTarget", "productionPermissions",
     "acceptedEngineeringScope", "productionSignoff"
-  ])) throw fail();
+  ];
+  // The public-website visual release is a *separate*, narrow owner decision.
+  // This validator may read that exact optional receipt, but must never turn
+  // it into Intelligence, customer, email, paid-infra or vendor permission.
+  const brandingPresent = exactly(policy, [...engineeringFields, "publicBrandingRelease"]);
+  if (!exactly(policy, engineeringFields) && !brandingPresent) throw fail();
+  if (brandingPresent && (
+    !exactly(policy.publicBrandingRelease, ["enabled", "signoff", "scope"]) ||
+    policy.publicBrandingRelease.enabled !== true ||
+    policy.publicBrandingRelease.signoff !== "granted" ||
+    policy.publicBrandingRelease.scope !== "public-static-with-preserved-contact"
+  )) throw fail();
 
   if (
     policy.contract !== "novapharm.intelligence.owner-constraints.v1" ||
