@@ -15,6 +15,7 @@ import {
   technologyMaturity
 } from "../src/content/site-content.mjs";
 import { croContent } from "../src/content/cro-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
 import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
@@ -210,18 +211,14 @@ function organisationSchema() {
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.registeredStreet,
-      addressLocality: "Feltham",
-      addressRegion: "England",
-      postalCode: company.registeredPostcode,
-      addressCountry: "GB"
-    },
     areaServed: ["United Kingdom", "International"],
     description: company.summary,
     sameAs: [company.companiesHouseUrl],
-    founder: { "@id": `${siteUrl}/leadership/vishal-chakravarty/#person` },
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
   };
 }
@@ -512,7 +509,7 @@ function companyPage() {
   const slug = "about/company";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "A UK B2B pharmaceutical business in regulated preparation.", company.summary, slug, { parent: { name: "About", href: "/about/" } })}
-  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
+  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div><div><dt>Founders</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a> and <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a></dd></div><div><dt>Board of directors</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a>, <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a>, <a href="/leadership/girish-achliya/">Dr Girish Shantilal Achliya</a>, <a href="/leadership/helly-panchal/">Dr Helly Panchal</a></dd></div><div><dt>UK business telephone</dt><dd><a href="tel:+447352036605">${company.publicTelephone}</a></dd></div><div><dt>Business enquiries email</dt><dd><a href="mailto:${company.publicEnquiriesEmail}">${company.publicEnquiriesEmail}</a></dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Sourcing model", "Diversified by design, qualified product by product.")}<div class="grid grid-3">${sourcingPillars.map((pillar) => `<article class="card"><span class="status-label">${pillar.status}</span><h3>${pillar.title}</h3><p>${pillar.text}</p></article>`).join("")}</div></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
@@ -546,14 +543,14 @@ function profilePage(profile) {
     eyebrow: profile.title
   };
   const canonical = absoluteUrl(routePath(slug));
-  const personId = `${canonical}#person`;
+  const personId = personIdForSlug(profile.slug);
   const person = {
     "@context": "https://schema.org",
     "@id": personId,
     "@type": "Person",
     name: profile.name,
     jobTitle: profile.schemaTitle,
-    url: canonical,
+    url: personUrlForSlug(profile.slug),
     ...(profile.image ? { image: absoluteUrl(profile.image) } : {}),
     description: profile.summary,
     worksFor: { "@id": organisationId },
@@ -567,7 +564,7 @@ function profilePage(profile) {
   schemas.push(person);
   schemas[2].mainEntity = { "@id": personId };
   const body = `<section class="profile-hero profile-hero-v3"><div class="profile-hero-media">${leaderVisual(profile, true)}</div><div class="container profile-hero-content">${breadcrumb([{ name: "Home", href: "/" }, { name: "Leadership", href: "/leadership/" }, { name: profile.displayName }])}<span class="eyebrow">${esc(profile.title)}</span><h1>${esc(profile.displayName)}</h1><p>${esc(profile.summary)}</p><span class="governance-badge">${esc(profile.governance)}</span></div></section>
-  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
+  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.slug === "vishal-chakravarty" ? `<p><a class="text-link" href="https://vishal.novapharmhealthcare.com/about/">Personal profile, evidence and published work</a></p>` : ""}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
   ${finalCta("Discuss a qualified pharmaceutical partnership.")}`;
   return documentShell({ meta, slug, body, options: { schemas } });
 }

@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { personIdForSlug, personUrlForSlug, VISHAL_PROFILE_ID } from "../src/seo/person-identity.mjs";
 import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
@@ -39,7 +40,7 @@ function normalizePublicTheme(html, file) {
 
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
-  if (route === "/" || route === "/about/company/") return "2026-11-20";
+  if (route === "/" || route === "/about/company/") return "2026-11-22";
   if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") return "2026-11-20";
   return ["/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
     ? "2026-11-10" : releaseDate;
@@ -121,8 +122,12 @@ function canonicalOrganization() {
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
@@ -159,12 +164,12 @@ function normalizePerson(schema, person) {
   return {
     ...schema,
     "@context": "https://schema.org",
-    "@id": `${canonicalUrl}#person`,
+    "@id": personIdForSlug(person.slug),
     "@type": "Person",
     name: person.displayName,
     alternateName: person.name !== person.displayName ? person.name : undefined,
     jobTitle: person.schemaTitle,
-    url: canonicalUrl,
+    url: personUrlForSlug(person.slug),
     image: person.image ? {
       "@type": "ImageObject",
       url: `${SITE_URL}${person.image}`,
@@ -176,7 +181,7 @@ function normalizePerson(schema, person) {
     affiliation: { "@id": ORGANIZATION_ID },
     sameAs: person.sameAs,
     knowsAbout: person.expertise,
-    mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` }
+    mainEntityOfPage: { "@id": person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_ID : `${canonicalUrl}#webpage` }
   };
 }
 
@@ -197,7 +202,7 @@ function normalizeArticle(schema, article, canonical, html) {
     description: article.summary,
     url: canonical,
     mainEntityOfPage: { "@id": `${canonical}#webpage` },
-    author: { "@id": `${SITE_URL}/leadership/${author.slug}/#person` },
+    author: { "@id": personIdForSlug(author.slug) },
     publisher: { "@id": ORGANIZATION_ID },
     image: {
       "@type": "ImageObject",
@@ -259,8 +264,8 @@ function enhanceJsonLd(html, route, article, leader) {
           "@type": "ProfilePage",
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
-          about: { "@id": `${canonical}#person` },
-          mainEntity: { "@id": `${canonical}#person` },
+          about: { "@id": personIdForSlug(leader.slug) },
+          mainEntity: { "@id": personIdForSlug(leader.slug) },
           primaryImageOfPage: leader.image ? { "@type": "ImageObject", url: `${SITE_URL}${leader.image}` } : undefined,
           dateModified: releaseDate
         };
