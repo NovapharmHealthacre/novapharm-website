@@ -96,7 +96,7 @@
     "test:internal-ai": "node scripts/test-internal-ai-gateway.mjs && node scripts/test-nova-openai-zdr.mjs && node scripts/test-nova-governed-medicine-answer.mjs",
     "test:enterprise-integrations": "node --test scripts/test-intelligence-enterprise-governed-read.mjs scripts/test-intelligence-enterprise-atlas-read-adapter.mjs scripts/test-intelligence-enterprise-vendor-probes.mjs scripts/test-intelligence-enterprise-vendor-http.mjs scripts/test-intelligence-enterprise-evidence-views.mjs",
     "test:document-scans": "node scripts/test-document-scan-engine.mjs",
-    "test:visual-contracts": "node scripts/test-visual-contracts.mjs",
+    "test:visual-contracts": "node scripts/test-visual-contracts.mjs && node --test scripts/test-official-public-brand-metadata.mjs && node --test scripts/test-public-brand-source-live.mjs",
     "test:cro": "node scripts/test-cro-section.mjs",
     "test:cro:browser": "node scripts/run-cro-browser-acceptance.mjs",
     "test:oncology-content": "node scripts/test-oncology-content.mjs",

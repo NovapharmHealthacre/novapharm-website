@@ -514,6 +514,16 @@ for (const page of canonicalPages) {
   }
 }
 
+// Every canonical published route must retain approved browser-facing brand metadata.
+// This is checked in the actual staged artifact, not inferred from source files.
+const { officialPublicBrandPalette, assertOfficialPublicBrandMetadata } =
+  await import("./normalise-official-public-brand-metadata.mjs");
+const officialPalette = officialPublicBrandPalette(root);
+for (const page of canonicalPages) {
+  const html = readFileSync(join(output, page.file), "utf8");
+  assertOfficialPublicBrandMetadata(html, officialPalette);
+}
+
 // Keep non-indexable quantum reference traceable to the exact released source.
 const quantumCandidate = readFileSync(join(output, "quantum-research/index.html"), "utf8");
 if (!quantumCandidate.includes('name="robots" content="noindex, nofollow"') ||
