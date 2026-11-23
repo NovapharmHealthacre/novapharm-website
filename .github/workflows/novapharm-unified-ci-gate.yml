@@ -35,10 +35,13 @@ jobs:
           node-version: "24"
       - name: Validate every registered project and release invariant
         run: node --test scripts/test-unified-ci-policy.mjs && node scripts/ci/verify-unified-ci-contract.mjs
+      - name: Guard optimized CI against skipped or weakened required checks
+        run: node --test scripts/test-ci-acceleration-contract.mjs scripts/test-ci-latency-audit.mjs
 
+  # These TWO exact-head contexts are independently required by protected main.
+  # Parallel execution only removes scheduling latency; either failed check blocks merge.
   contracts:
     name: Cross-estate regulated, AI, Google, Apple and native contracts
-    needs: policy
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -53,7 +56,7 @@ jobs:
           node-version: "24"
           cache: npm
       - name: Install reproducible checked-in dependencies without lifecycle scripts
-        run: npm ci --ignore-scripts
+        run: npm ci --ignore-scripts --prefer-offline
       - name: Generate full and public-only local build fixtures without publishing
         run: npm run build && npm run build:public-only
       - name: Run all registered cross-estate regression contracts
