@@ -16,6 +16,12 @@ test("canonical entity graph uses stable identifiers", () => {
     personBySlug("vishal-chakravarty").id,
     personBySlug("prabhakar-lahare").id,
   ]);
+  assert.deepEqual(organisation.member.map(person => person["@id"]), [
+    personBySlug("vishal-chakravarty").id,
+    personBySlug("prabhakar-lahare").id,
+    personBySlug("girish-achliya").id,
+    personBySlug("helly-panchal").id,
+  ]);
   assert.equal(websiteId, "https://novapharmhealthcare.com/#website");
 });
 
