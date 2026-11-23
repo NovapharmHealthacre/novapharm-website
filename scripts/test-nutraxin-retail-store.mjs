@@ -206,14 +206,19 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
  assert.equal(catalogue.products.length,19);
  for(const product of catalogue.products){
    const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
+   const classes=new Set([...html.matchAll(/class="([^"]+)"/g)]
+     .flatMap(match=>match[1].split(/\s+/)));
+   for(const requiredClass of [
+     "npd-product-hero-grid",
+     "npd-product-visual",
+     "npd-product-picture",
+     "npd-product-copy",
+     "npd-product-evidence",
+     "npd-composition"
+   ])assert.ok(classes.has(requiredClass),
+     product.slug+" missing CSS class "+requiredClass);
    for(const required of [
      'data-page="product-portfolio/nutraxin"',
-     'class="npd-product-hero-grid"',
-     'class="npd-product-visual"',
-     'class="npd-product-picture"',
-     'class="npd-product-copy"',
-     'class="npd-product-evidence"',
-     'class="npd-composition"',
      'href="/assets/css/nutraxin-merchant.css"',
      'src="/assets/js/nutraxin-retail-store.js"'
    ])assert.ok(html.includes(required),product.slug+" missing "+required);
