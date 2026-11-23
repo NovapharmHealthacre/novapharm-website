@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "description": "Read-only, fail-closed, cross-estate CI source and regression coverage. CI passing never grants production deployment, regulatory clearance, model approval, HIG acceptance or customer access.",
+  "projects": {
+    "apps": [
+      "api",
+      "commerce-stock-api",
+      "corporate",
+      "esco-checkout",
+      "founder",
+      "nutraxin-customer-api",
+      "nutraxin-payment-notifications",
+      "nutraxin-payments",
+      "nutraxin-products-checkout",
+      "portal",
+      "status",
+      "technology"
+    ],
+    "packages": [
+      "accessibility",
+      "auth",
+      "claims",
+      "config",
+      "content",
+      "design-system",
+      "forms",
+      "medicines-intelligence",
+      "platform-mode",
+      "portal-contracts",
+      "security",
+      "seo"
+    ],
+    "native": [
+      "novapharm-intelligence-android",
+      "novapharm-intelligence-apple",
+      "novapharm-intelligence-ios",
+      "novapharm-intelligence-mobile",
+      "novapharm-intelligence-storekit"
+    ],
+    "integrations": [
+      "mongodb-atlas",
+      "polar-speed",
+      "sharepoint"
+    ]
+  },
+  "domains": {
+    "corporate-website-and-seo": {
+      "sources": [
+        "apps/corporate",
+        "apps/founder",
+        "apps/status",
+        "apps/technology",
+        "packages/content",
+        "packages/seo",
+        "robots.txt",
+        "sitemap.xml",
+        "src/seo/authority-config.mjs"
+      ],
+      "tests": [
+        "scripts/test-commerce-marketplace.mjs",
+        "scripts/test-google-brand-shopping.mjs"
+      ]
+    },
+    "customer-employee-portal-and-security": {
+      "sources": [
+        "apps/api",
+        "apps/portal",
+        "packages/accessibility",
+        "packages/auth",
+        "packages/claims",
+        "packages/config",
+        "packages/forms",
+        "packages/platform-mode",
+        "packages/portal-contracts",
+        "packages/security"
+      ],
+      "tests": [
+        "scripts/test-intelligence-customer-governance.mjs",
+        "scripts/test-production-security.mjs"
+      ]
+    },
+    "pharma-data-and-regulatory": {
+      "sources": [
+        "docs/intelligence/global-pharma-sources-20261117.json",
+        "packages/medicines-intelligence",
+        "src/core/intelligence-global-source-gateway.mjs"
+      ],
+      "tests": [
+        "scripts/test-intelligence-global-intake-workflow.mjs",
+        "scripts/test-intelligence-official-live-pharma-quarantine.mjs",
+        "scripts/test-intelligence-official-live-pharma-server-gate.mjs",
+        "scripts/test-intelligence-openfda-ndc-quarantine-graph.mjs"
+      ]
+    },
+    "distribution-wms-and-supply-chain": {
+      "sources": [
+        "apps/portal/components/wms-prototype-workspace-map.tsx",
+        "integrations/polar-speed",
+        "src/core/wms-control-tower.mjs",
+        "src/core/wms-five-layer-readiness.mjs"
+      ],
+      "tests": [
+        "scripts/test-wms-execution-review.mjs",
+        "scripts/test-wms-fefo-wave-review.mjs",
+        "scripts/test-wms-five-layer-control-plane.mjs",
+        "scripts/test-wms-quality-workflows.mjs",
+        "scripts/test-wms-signed-provider-feed.mjs"
+      ]
+    },
+    "native-ios-swiftui": {
+      "sources": [
+        "native/novapharm-intelligence-apple",
+        "native/novapharm-intelligence-ios",
+        "native/novapharm-intelligence-storekit"
+      ],
+      "tests": [
+        "scripts/test-novapharm-native-ios-source-parity.mjs"
+      ]
+    },
+    "android-and-expo": {
+      "sources": [
+        "native/novapharm-intelligence-android",
+        "native/novapharm-intelligence-mobile"
+      ],
+      "tests": [
+        "scripts/test-intelligence-sparse-circuit-cross-platform.mjs"
+      ]
+    },
+    "apple-hig-and-accessibility": {
+      "sources": [
+        "docs/design/apple-hig-172-topic-acceptance-register.json",
+        "docs/design/apple-hig-attachment-evidence-20261118.json",
+        "packages/design-system"
+      ],
+      "tests": [
+        "scripts/test-apple-hig-516-platform-acceptance-plan.mjs",
+        "scripts/test-apple-hig-accessibility.mjs",
+        "scripts/test-apple-hig-colours.mjs",
+        "scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs",
+        "scripts/test-apple-hig-motion.mjs",
+        "scripts/test-apple-privacy-contract.mjs",
+        "scripts/test-hig-independent-review-authenticity.mjs"
+      ]
+    },
+    "ai-agents-and-openai-provider-boundaries": {
+      "sources": [
+        "docs/ai-risk-register.md",
+        "docs/ai-system-card.md",
+        "src/core/ai/ai-gateway.mjs",
+        "src/core/ai/provider-openai-zdr.mjs"
+      ],
+      "tests": [
+        "scripts/test-ai-policy.mjs",
+        "scripts/test-ai-prompt-injection.mjs",
+        "scripts/test-ci-public-ai-source-privacy.mjs",
+        "scripts/test-internal-ai-gateway.mjs",
+        "scripts/test-nova-governed-medicine-answer.mjs",
+        "scripts/test-nova-openai-zdr.mjs",
+        "scripts/test-nova-research-evaluation.mjs"
+      ]
+    },
+    "agi-alignment-ml-and-quantum-research": {
+      "sources": [
+        "docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md",
+        "docs/intelligence/quantum-research-program-v1.json",
+        "src/core/ai/model-registry.mjs"
+      ],
+      "tests": [
+        "scripts/test-intelligence-quantum-research.mjs",
+        "scripts/test-nova-alignment-governance.mjs",
+        "scripts/test-nova-compute-admission.mjs",
+        "scripts/test-nova-independent-review.mjs",
+        "scripts/test-nova-l0-governance.mjs",
+        "scripts/test-quantum-static-public-candidate.mjs"
+      ]
+    },
+    "google-search-maps-and-merchant": {
+      "sources": [
+        "assets/data/nutraxin-retail-catalogue.json",
+        "robots.txt",
+        "sitemap.xml"
+      ],
+      "tests": [
+        "scripts/test-governed-maps-contract.mjs"
+      ]
+    },
+    "commerce-stripe-nutraxin-esco": {
+      "sources": [
+        ".github/workflows/materialize-product-media.yml",
+        "apps/commerce-stock-api",
+        "apps/esco-checkout",
+        "apps/nutraxin-customer-api",
+        "apps/nutraxin-payment-notifications",
+        "apps/nutraxin-payments",
+        "apps/nutraxin-products-checkout",
+        "assets/data/esco-catalogue.json",
+        "assets/data/nutraxin-retail-catalogue.json"
+      ],
+      "tests": [
+        "scripts/test-ci-media-materialization-safety.mjs",
+        "scripts/test-esco-catalogue.mjs",
+        "scripts/test-nutraxin-retail-store.mjs",
+        "scripts/test-stripe-gateway.mjs"
+      ]
+    },
+    "cloud-atlas-sharepoint-and-release-safety": {
+      "sources": [
+        "config/intelligence/owner-production-constraints.json",
+        "infra",
+        "integrations/mongodb-atlas",
+        "integrations/sharepoint",
+        "config/ci/ruleset-proposals/website-main.json",
+        "config/ci/ruleset-proposals/website-gh-pages-phase1.json",
+        "docs/release/github-ruleset-import-runbook.md"
+      ],
+      "tests": [
+        "scripts/test-ci-workflow-security-inventory.mjs",
+        "scripts/test-intelligence-enterprise-readiness.mjs",
+        "scripts/test-intelligence-owner-production-constraints.mjs",
+        "scripts/test-no-email-release-guard.mjs",
+        "scripts/test-pages-monotonic-release.mjs",
+        "scripts/test-sharepoint-graph-paths.mjs",
+        "scripts/test-sharepoint-sync-error-policy.mjs",
+        "scripts/test-ci-repository-ruleset-proposals.mjs"
+      ]
+    }
+  },
+  "criticalWorkflows": [
+    "audit-restored-public-routes.yml",
+    "browser-acceptance.yml",
+    "ci.yml",
+    "codeql.yml",
+    "intelligence-owner-production-constraints.yml",
+    "intelligence-private-production-gate.yml",
+    "materialize-product-media.yml",
+    "nova-ios-swift-native.yml",
+    "nova-sparse-circuit-android.yml",
+    "novapharm-unified-ci-gate.yml",
+    "pages-live-publish.yml",
+    "public-pages-browser-acceptance.yml",
+    "publish-aws-contact-production.yml",
+    "supply-chain.yml"
+  ]
+}
