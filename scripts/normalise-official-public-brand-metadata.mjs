@@ -12,7 +12,67 @@ const hasMaskRel = /\brel\s*=\s*["']mask-icon["']/i;
 const contentAttribute = /\bcontent\s*=\s*(["'])[^"']*\1/i;
 const colorAttribute = /\bcolor\s*=\s*(["'])[^"']*\1/i;
 
-const inlineScriptTag = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+// Parse script element spans rather than filtering HTML with a script regex.
+// HTML end tags may contain case changes and unusual whitespace; refusing
+// ambiguous markup is safer than silently missing a Next.js hydration value.
+function isMarkupBoundary(ch) {
+  return ch === ">" || ch === "/" || ch === " " || ch === "\t" ||
+    ch === "\n" || ch === "\r" || ch === "\f";
+}
+
+function findTagEnd(html, from) {
+  let quote = null;
+  for (let i = from; i < html.length; i++) {
+    const ch = html[i];
+    if (quote) {
+      if (ch === quote) quote = null;
+    } else if (ch === '"' || ch === "'") {
+      quote = ch;
+    } else if (ch === ">") {
+      return i;
+    }
+  }
+  throw Error("Unterminated HTML tag in public brand metadata");
+}
+
+function scanInlineScripts(html) {
+  const lower = html.toLowerCase();
+  const scripts = [];
+  let cursor = 0;
+  while (cursor < html.length) {
+    const comment = lower.indexOf("<!--", cursor);
+    const start = lower.indexOf("<script", cursor);
+    if (comment !== -1 && (start === -1 || comment < start)) {
+      const endComment = lower.indexOf("-->", comment + 4);
+      assert.ok(endComment !== -1, "Unterminated HTML comment in public metadata");
+      cursor = endComment + 3;
+      continue;
+    }
+    if (start === -1) break;
+    if (!isMarkupBoundary(lower[start + 7])) {
+      cursor = start + 7;
+      continue;
+    }
+    const openEnd = findTagEnd(html, start + 7);
+    const bodyStart = openEnd + 1;
+    let close = lower.indexOf("</script", bodyStart);
+    while (close !== -1 && !isMarkupBoundary(lower[close + 8])) {
+      close = lower.indexOf("</script", close + 8);
+    }
+    assert.ok(close !== -1, "Unterminated script element in public metadata");
+    const closeEnd = findTagEnd(html, close + 8);
+    assert.match(html.slice(close + 8, closeEnd), /^[ \t\r\n\f]*$/,
+      "Ambiguous script end tag: refusing unsafe HTML rewrite");
+    scripts.push({
+      start, bodyStart, bodyEnd: close, end: closeEnd + 1,
+      opening: html.slice(start, bodyStart),
+      body: html.slice(bodyStart, close)
+    });
+    cursor = closeEnd + 1;
+  }
+  return scripts;
+}
+
 const nextFlightTheme = /(\\?"name\\?"\s*:\s*\\?"theme-color\\?"\s*,\s*\\?"content\\?"\s*:\s*\\?")(#[0-9a-f]{6})(\\?")/gi;
 
 // Next.js embeds viewport metadata in its Flight hydration payload as well as
@@ -23,22 +83,29 @@ function normaliseNextFlightTheme(html, palette) {
   const cspOriginal = html.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0] || null;
   let cspUpdated = cspOriginal;
   let alteredFlightScripts = 0;
-  const next = html.replace(inlineScriptTag, (whole, attributes, body) => {
-    if (/\bsrc\s*=/.test(attributes) || !body.includes("self.__next_f.push")) return whole;
-    const changedBody = body.replace(nextFlightTheme, (_found, start, _hex, end) =>
-      start + palette.background + end);
-    if (changedBody === body) return whole;
-    assert.ok(cspUpdated, "Refusing to change Next.js hydration without verifiable inline CSP");
-    const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
-    const originalToken = "'sha256-" + digest(body) + "'";
-    const updatedToken = "'sha256-" + digest(changedBody) + "'";
-    assert.equal(cspUpdated.split(originalToken).length, 2,
-      "Refusing Next.js hydration rewrite without exactly one matching original CSP hash");
-    cspUpdated = cspUpdated.replace(originalToken, updatedToken);
-    alteredFlightScripts++;
-    // Use a callback to avoid interpreting dollar tokens in Flight payloads.
-    return whole.replace(body, () => changedBody);
-  });
+  let next = "";
+  let cursor = 0;
+  for (const script of scanInlineScripts(html)) {
+    const body = script.body;
+    let changedBody = body;
+    if (!/(?:^|\s)src\s*=/i.test(script.opening) && body.includes("self.__next_f.push")) {
+      changedBody = body.replace(nextFlightTheme, (_found, start, _hex, end) =>
+        start + palette.background + end);
+      if (changedBody !== body) {
+        assert.ok(cspUpdated, "Refusing to change Next.js hydration without verifiable inline CSP");
+        const digest = value => createHash("sha256").update(value, "utf8").digest("base64");
+        const originalToken = "'sha256-" + digest(body) + "'";
+        const updatedToken = "'sha256-" + digest(changedBody) + "'";
+        assert.equal(cspUpdated.split(originalToken).length, 2,
+          "Refusing Next.js hydration rewrite without exactly one matching original CSP hash");
+        cspUpdated = cspUpdated.replace(originalToken, updatedToken);
+        alteredFlightScripts++;
+      }
+    }
+    next += html.slice(cursor, script.bodyStart) + changedBody;
+    cursor = script.bodyEnd;
+  }
+  next += html.slice(cursor);
   const result = cspUpdated !== cspOriginal ? next.replace(cspOriginal, cspUpdated) : next;
   if (alteredFlightScripts) {
     assert.ok(result.includes(cspUpdated), "Updated CSP must remain in the output document");
@@ -63,7 +130,7 @@ export function assertOfficialPublicBrandMetadata(html, palette) {
     assert.equal(masks[0].match(colorAttribute)[0].match(/["']([^"']*)["']/)[1],
       palette.crimson, "Safari mask-icon must use Healthcare's approved crimson");
   }
-  for (const [, , body] of html.matchAll(inlineScriptTag)) {
+  for (const { body } of scanInlineScripts(html)) {
     if (!body.includes("self.__next_f.push")) continue;
     for (const match of body.matchAll(nextFlightTheme)) {
       assert.equal(match[2], palette.background,

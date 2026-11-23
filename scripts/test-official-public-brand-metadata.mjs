@@ -115,7 +115,7 @@ test("legacy Next Flight theme and strict CSP script hashes are updated together
     '</head><body><script>' + flight + '</script></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(html, palette);
   assertOfficialPublicBrandMetadata(result, palette);
-  const changedFlight = result.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  const changedFlight = result.split("<script>")[1]?.split("</script>")[0];
   assert.ok(changedFlight, "Next hydration script must still be present");
   assert.match(changedFlight, /theme-color/);
   assert.match(changedFlight, /#FBFAEF/);
@@ -158,4 +158,30 @@ test("Next Flight literal replacement tokens remain intact when viewport metadat
   assert.doesNotMatch(body, /#E3120B/);
   assert.ok(result.includes("'sha256-" + digest(body) + "'"));
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
+});
+
+
+test("mixed-case script tags and whitespace closing tags preserve CSP-pinned Next hydration", () => {
+  const flight = "self.__next_f.push(" + JSON.stringify([1, '18:[["meta",' +
+    JSON.stringify({ name: "theme-color", content: "#E3120B" }) + ']]']) + ")";
+  const digest = text => createHash("sha256").update(text, "utf8").digest("base64");
+  const input = '<html><head><meta name="theme-color" content="#E3120B">' +
+    '<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'sha256-' +
+    digest(flight) + '\'"></head><body><!-- <script>ignore</script> -->' +
+    '<SCRIPT data-note="a>b">' + flight + '</ScRiPt \t\n></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(input, palette);
+  assertOfficialPublicBrandMetadata(result, palette);
+  assert.match(result, /<SCRIPT data-note="a>b">/);
+  assert.match(result, /<\/ScRiPt \t\n>/);
+  assert.match(result, /#FBFAEF/);
+  assert.doesNotMatch(result, /#E3120B/);
+  assert.ok(result.includes("'sha256-" + digest(flight.replace("#E3120B", "#FBFAEF")) + "'"));
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
+});
+
+test("ambiguous script closing tags fail closed, not skipped by a regex", () => {
+  const html = '<html><head><meta name="theme-color" content="#E3120B"></head>' +
+    '<body><script>self.__next_f.push([])</script \t\n fake></body></html>';
+  assert.throws(() => normaliseOfficialPublicBrandMetadata(html, palette),
+    /Ambiguous script end tag/);
 });
