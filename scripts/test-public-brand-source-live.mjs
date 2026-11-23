@@ -22,7 +22,7 @@ function htmlFor(route, sha = SHA) {
     '<link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#9D1B32">' +
     (route === "/contact/" ? '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; ' +
       'connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com; ' +
-      'form-action \'none\'">' : '') +
+      'object-src \'none\'; base-uri \'self\'; form-action \'none\'">' : '') +
     '</head><body><main><h1>NovaPharm Healthcare</h1>' + contact +
     '</main></body></html>';
 }
