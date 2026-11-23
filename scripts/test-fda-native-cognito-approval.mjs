@@ -64,3 +64,14 @@ test("native clients do not create a protected API route or override existing us
  ].sort());
  assert.ok(!Object.values(t.Resources).some(x=>/ApiGateway|Lambda|DynamoDB/u.test(x.Type)));
 });
+
+test("iOS and Android accept only the production Cognito tenant, not an AWS regional suffix",()=>{
+ const hostname="novapharm-intelligence-production-eun1.auth.eu-north-1.amazoncognito.com";
+ const ios=readFileSync(new URL("../native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift",import.meta.url),"utf8");
+ const android=readFileSync(new URL("../native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts",import.meta.url),"utf8");
+ assert.ok(ios.includes('authorizeURL.host == "'+hostname+'"'),"iOS must pin the exact Cognito tenant");
+ assert.ok(!ios.includes("authorizeURL.host?.hasSuffix"),"iOS must not trust a regional suffix");
+ assert.ok(android.includes('const expectedHost="'+hostname+'";'),"Android must pin the same Cognito tenant");
+ assert.ok(android.includes("domain.hostname===expectedHost"),"Android must enforce exact tenant match");
+ assert.ok(!android.includes("domain.hostname.endsWith("),"Android must not trust a regional suffix");
+});

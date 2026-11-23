@@ -19,7 +19,7 @@ struct NovaFDAOIDCConfiguration: Sendable {
               authorizeURL.scheme == "https", tokenURL.scheme == "https",
               authorizeURL.host == tokenURL.host,
               authorizeURL.path == "/oauth2/authorize", tokenURL.path == "/oauth2/token",
-              authorizeURL.host?.hasSuffix(".auth.eu-north-1.amazoncognito.com") == true,
+              authorizeURL.host == "novapharm-intelligence-production-eun1.auth.eu-north-1.amazoncognito.com",
               redirectURL.absoluteString == "novapharmintelligence://oauth/callback",
               authorizeURL.user == nil, authorizeURL.password == nil,
               authorizeURL.port == nil, authorizeURL.query == nil, authorizeURL.fragment == nil,
