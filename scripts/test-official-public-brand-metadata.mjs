@@ -191,22 +191,22 @@ test("all 19 actual Nutraxin storefronts normalize approved browser chrome witho
   const products = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
   assert.equal(products.length, 19, "Approved retail catalogue must retain 19 distinct SKUs");
   assert.equal(new Set(products.map(product => product.slug)).size, products.length);
-  const schemaScripts = html => [...html.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)]
+  const schemaScripts = html => [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
     .map(match => match[1]);
-  const releaseMarkers = html => [...html.matchAll(/<meta\\b[^>]*\\bname=["']novapharm-source-sha["'][^>]*>/gi)]
+  const releaseMarkers = html => [...html.matchAll(/<meta\b[^>]*\bname=["']novapharm-source-sha["'][^>]*>/gi)]
     .map(match => match[0]);
   for (const product of products) {
     const file = "products/nutraxin/" + product.slug + "/index.html";
     const html = readFileSync(file, "utf8");
-    const originalBody = html.slice(html.search(/<body\\b/i));
+    const originalBody = html.slice(html.search(/<body\b/i));
     assert.ok(originalBody.startsWith("<body"), "Published body boundary missing: " + file);
     assert.ok(html.includes('data-merchant-sku="' + product.sku + '"'),
       "Exact Nutraxin retail SKU missing: " + file);
     const normalized = normaliseOfficialPublicBrandMetadata(html, palette);
     assertOfficialPublicBrandMetadata(normalized, palette);
-    assert.match(normalized, /<meta\\b[^>]*\\bname=["']theme-color["'][^>]*\\bcontent=["']#FBFAEF["']/i,
+    assert.match(normalized, /<meta\b[^>]*\bname=["']theme-color["'][^>]*\bcontent=["']#FBFAEF["']/i,
       "Royal Mineral White browser theme missing: " + file);
-    assert.equal(normalized.slice(normalized.search(/<body\\b/i)), originalBody,
+    assert.equal(normalized.slice(normalized.search(/<body\b/i)), originalBody,
       "Brand metadata may not modify retail content, prices, checkout or safety wording: " + file);
     assert.deepEqual(schemaScripts(normalized), schemaScripts(html),
       "Brand metadata may not change product Offer or canonical structured data: " + file);
