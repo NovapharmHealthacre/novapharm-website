@@ -827,8 +827,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 76,
-      "referenceCount": 79,
+      "usageCount": 77,
+      "referenceCount": 81,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -902,6 +902,7 @@
         "scripts/test-apple-app-icons.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "service-unavailable/index.html",
         "services/index.html",
         "technology/index.html",
@@ -939,12 +940,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "audit/generated/three-brand-raster-provenance.json",
         "creative-assets/asset-register.json",
-        "scripts/programme/validate-brand-assets.mjs"
+        "scripts/programme/validate-brand-assets.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-002",
       "perceptualDuplicateCandidateGroup": "visual-candidate-004",
@@ -978,12 +980,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "audit/generated/three-brand-raster-provenance.json",
         "creative-assets/asset-register.json",
-        "scripts/programme/validate-brand-assets.mjs"
+        "scripts/programme/validate-brand-assets.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-003",
       "perceptualDuplicateCandidateGroup": "visual-candidate-004",
@@ -1017,12 +1020,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "audit/generated/three-brand-raster-provenance.json",
         "creative-assets/asset-register.json",
-        "scripts/programme/validate-brand-assets.mjs"
+        "scripts/programme/validate-brand-assets.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-004",
       "perceptualDuplicateCandidateGroup": "visual-candidate-004",
@@ -1056,12 +1060,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "audit/generated/three-brand-raster-provenance.json",
         "creative-assets/asset-register.json",
-        "scripts/programme/validate-brand-assets.mjs"
+        "scripts/programme/validate-brand-assets.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-005",
       "perceptualDuplicateCandidateGroup": "visual-candidate-004",
@@ -1230,10 +1235,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-005",
@@ -1267,11 +1273,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/portal/lib/brand-metadata.ts",
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-003",
@@ -1423,10 +1430,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -1463,7 +1471,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 11,
-      "referenceCount": 13,
+      "referenceCount": 15,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         ".github/workflows/publish-aws-contact-production.yml",
@@ -1509,10 +1517,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -1546,10 +1555,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -1583,10 +1593,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-004",
@@ -1620,10 +1631,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-005",
@@ -1657,10 +1669,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -1694,10 +1707,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-005",
@@ -1826,8 +1840,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 90,
-      "referenceCount": 236,
+      "usageCount": 91,
+      "referenceCount": 238,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1907,6 +1921,7 @@
         "scripts/test-seo-pages-release-preflight.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "scripts/verify-seo-pages-release-preflight.mjs",
         "scripts/version-public-visual-assets.mjs",
         "seo/generated/entity-register.json",
@@ -1974,7 +1989,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 105,
-      "referenceCount": 217,
+      "referenceCount": 219,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -2114,10 +2129,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-007",
@@ -2151,11 +2167,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/portal/lib/brand-metadata.ts",
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-007",
@@ -2354,10 +2371,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2394,7 +2412,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 9,
-      "referenceCount": 11,
+      "referenceCount": 13,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "apps/portal/components/intelligence-sign-in.tsx",
@@ -2438,10 +2456,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2475,10 +2494,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2512,10 +2532,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2549,10 +2570,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-007",
@@ -2586,10 +2608,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 3,
       "usageFiles": [
-        "audit/generated/three-brand-raster-provenance.json"
+        "audit/generated/three-brand-raster-provenance.json",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-008",
@@ -2623,12 +2646,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "audit/generated/three-brand-raster-provenance.json",
         "creative-assets/asset-register.json",
-        "scripts/programme/validate-brand-assets.mjs"
+        "scripts/programme/validate-brand-assets.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-011",
       "perceptualDuplicateCandidateGroup": "visual-candidate-009",
@@ -2667,8 +2691,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 70,
-      "referenceCount": 212,
+      "usageCount": 71,
+      "referenceCount": 214,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -2735,6 +2759,7 @@
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/reconcile-social-authority.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "seo/generated/social-image-register.json",
         "service-unavailable/index.html",
         "services/index.html",
@@ -3061,8 +3086,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 9,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "audit/generated/three-brand-raster-provenance.json",
@@ -3071,7 +3096,8 @@
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-apple-app-icons.mjs",
-        "scripts/validate-site.mjs"
+        "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-020",
       "perceptualDuplicateCandidateGroup": "visual-candidate-013",
@@ -3105,8 +3131,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 12,
-      "referenceCount": 16,
+      "usageCount": 13,
+      "referenceCount": 18,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "apps/corporate/lib/seo.ts",
@@ -3119,6 +3145,7 @@
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-apple-app-icons.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs",
         "seo/knowledge-panel-identity-release-20261120.md"
       ],
       "exactDuplicateGroup": "exact-021",
@@ -3153,8 +3180,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 9,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/app/manifest.ts",
         "audit/generated/three-brand-raster-provenance.json",
@@ -3163,7 +3190,8 @@
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-apple-app-icons.mjs",
-        "scripts/validate-site.mjs"
+        "scripts/validate-site.mjs",
+        "scripts/verify-live-official-brand.mjs"
       ],
       "exactDuplicateGroup": "exact-022",
       "perceptualDuplicateCandidateGroup": "visual-candidate-014",
