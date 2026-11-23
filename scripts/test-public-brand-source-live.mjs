@@ -162,3 +162,17 @@ test("HTML comments cannot impersonate the pinned managed Contact form", () => {
     .some(error => error.includes("pinned API binding")),
     "Comment-only Contact markup must never count as the pinned active form");
 });
+
+test("malformed or nested HTML comments fail closed before public receipt verification", () => {
+  const good = htmlFor("/");
+  assert.deepEqual(verifyPublishedHtml(good, "/", SHA), []);
+  const malformed = good.replace("</head>", "<!-- never closed</head>");
+  assert.throws(() => verifyPublishedHtml(malformed, "/", SHA), /Unterminated HTML comment/);
+  const nested = good.replace("</head>",
+    '<!-- untrusted <!-- <meta name="novapharm-source-sha" content="' + SHA + '"> -->\n</head>');
+  assert.throws(() => verifyPublishedHtml(nested, "/", SHA), /Ambiguous nested HTML comment/);
+  const multiple = good.replace("</head>",
+    '<!-- <h1>spoofed</h1> --><!-- <meta name="theme-color" content="#E3120B"> -->\n</head>');
+  assert.deepEqual(verifyPublishedHtml(multiple, "/", SHA), [],
+    "Separate inert comments cannot alter verified active metadata");
+});
