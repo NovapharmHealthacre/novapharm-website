@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Non-public approved Intelligence source member restoration; not a production or brand-wide release",
+  "sourceArchive": {
+    "originalSha256": "bb59275dc020eff267f7e4e8bddb9404615af8248fbc8b02b0faec93cfcba22c",
+    "repairedSha256": "eaca9870b73982d849acf31c805001fac2fee0054267c42d1d2a71e1ba49f817",
+    "members": 195,
+    "unchangedMembers": 194,
+    "changedMembers": 1
+  },
+  "member": {
+    "originalArchivePath": "NovaPharm_Intelligence_Regal_Ultramarine/02_web_transparent/dark/novapharm-intelligence-dark-4096w.webp",
+    "originalBytes": 0,
+    "approvedReferencePngPath": "NovaPharm_Intelligence_Regal_Ultramarine/02_web_transparent/dark/novapharm-intelligence-dark-4096w.png",
+    "approvedReferencePngSha256": "14fa05e60ae4ddfeb2bb0c1af0acf2701d22718cb01edaf5c7c1405f7dcf6ba2",
+    "approvedDecodedRgbaSha256": "c9736872379c0ceab97677c68aaeb0dd61cfe414686c663ba480c978e6308d17",
+    "gitPath": "creative-assets/brand/intelligence-regal-ultramarine/02_web_transparent/dark/novapharm-intelligence-dark-4096w.webp",
+    "gitBlobSha1": "6919cefcfe80f0e57b9042a08eb1573cd8a8724e",
+    "sha256": "8113196ea9fdf06a20870627bb7bf0dd20dbb372429c802d57244b823144a7f3",
+    "sizeBytes": 38922,
+    "width": 4096,
+    "height": 708,
+    "channels": 4,
+    "alphaMin": 0,
+    "alphaMax": 255,
+    "format": "webp-lossless-vp8l"
+  },
+  "brand": {
+    "name": "NovaPharm Intelligence",
+    "canonicalHex": "#2546D8"
+  },
+  "guardrails": {
+    "publicAssetPath": null,
+    "doNotReplaceProductionLogos": true,
+    "doNotAlterOriginalArchiveSha": true,
+    "noPagesOrAwsDeployment": true,
+    "independentVisualAndNativeAcceptanceStillRequired": true
+  }
+}

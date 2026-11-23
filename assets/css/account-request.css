@@ -18,7 +18,7 @@
 .npd-account-request-grid input:focus-visible, .npd-account-request-grid select:focus-visible { outline: 3px solid #1971ab; outline-offset: 2px; }
 .npd-account-request-trap { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
 .npd-account-request-consent { display: flex; align-items: flex-start; gap: 12px; margin-top: 20px; color: #475669; font-size: .88rem; line-height: 1.55; cursor: pointer; }
-.npd-account-request-consent input { width: 18px; height: 18px; flex: 0 0 18px; margin: 2px 0 0; accent-color: #b30e09; }
+.npd-account-request-consent input { width: 18px; height: 18px; flex: 0 0 18px; margin: 2px 0 0; accent-color: #68101F; }
 .npd-account-request-consent a, .npd-account-request-footnote a { color: #174b6d; text-decoration: underline; text-underline-offset: 3px; }
 .npd-account-request-submit { margin-top: 26px; width: 100%; border-radius: 10px; min-height: 52px; cursor: pointer; }
 .npd-account-request-submit:disabled { opacity: .6; cursor: wait; }

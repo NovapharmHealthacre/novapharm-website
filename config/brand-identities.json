@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "approvedOn": "2026-11-22",
+  "colorSpace": "sRGB IEC61966-2.1",
+  "neutralPalette": {
+    "primaryWhite": { "name": "Royal Mineral White", "hex": "#FBFAEF" },
+    "secondaryWhite": { "name": "Royal Porcelain White", "hex": "#F8F7F3" },
+    "defaultInk": { "name": "Sovereign Black", "hex": "#0B0B0E" },
+    "subtleDivider": { "name": "Porcelain Stone", "hex": "#DEDCD5" }
+  },
+  "brands": {
+    "healthcare": {
+      "officialName": "NovaPharm Healthcare",
+      "colorName": "Royal Cochineal Crimson",
+      "hex": "#9D1B32",
+      "rgb": [
+        157,
+        27,
+        50
+      ],
+      "strongAccent": "#68101F",
+      "primaryVector": "/assets/brand/novapharm-healthcare-logo.svg",
+      "favicon": "/assets/brand/favicon.svg",
+      "darkSurfaceVector": "/assets/brand/novapharm-healthcare-logo-reverse.svg",
+      "sourceZipSha256": "0474c7aa8956f9ac8d91477f853b8d6dd207059f8535898c0448b91e7ef3f353",
+      "sourceZipFiles": 250,
+      "primaryVectorZipSha256": "74c0fb2eb213242eb88a71dfd8cc1af068c8632696e08ec98aaf90f2cda63f82",
+      "browserIconZipSha256": "e81bbcfb6b680b52224e4b99d8753fa54045b6e0ef5dd6f3aac8ebfd28127cad"
+    },
+    "distribution": {
+      "officialName": "NovaPharm Distribution",
+      "colorName": "Near-black Garnet Shadow",
+      "hex": "#3D0B13",
+      "rgb": [
+        61,
+        11,
+        19
+      ],
+      "primaryVector": "/assets/brand/novapharm-distribution-logo.svg",
+      "favicon": "/assets/brand/novapharm-distribution-favicon.svg",
+      "sourceZipSha256": "cdfc6f5936ff4b5cf120cbc45bec0114b3910ce916c64d6fe7f27c144c504113",
+      "sourceZipFiles": 250,
+      "primaryVectorZipSha256": "28bf14552ad480c4e1fd62c23c8ef22af924826f5238d27d2b8cdc05ebc618c3",
+      "browserIconZipSha256": "1185538081ad237c93546fae9617c2a59e781f18bdd3294516a96fd7918a049a"
+    },
+    "intelligence": {
+      "officialName": "NovaPharm Intelligence",
+      "colorName": "Regal Ultramarine",
+      "hex": "#2546D8",
+      "rgb": [
+        37,
+        70,
+        216
+      ],
+      "darkSurfaceAccent": "#A8B8FF",
+      "primaryVector": "/assets/brand/novapharm-intelligence-logo.svg",
+      "favicon": "/assets/brand/novapharm-intelligence-favicon.svg",
+      "darkSurfaceVector": "/assets/brand/novapharm-intelligence-logo-reverse.svg",
+      "originalPreserved": "/assets/brand/novapharm-intelligence-approved.svg",
+      "sourceZipSha256": "bb59275dc020eff267f7e4e8bddb9404615af8248fbc8b02b0faec93cfcba22c",
+      "sourceZipFiles": 195,
+      "primaryVectorZipSha256": "8fa70018b05d1bc51b1c114a917ae94f68b77ee2ed65350da341aa23040d860e",
+      "browserIconZipSha256": "45953fe16cb8406af6bf4f8d5bafe84f623c5569ff5144fa1e56fde4fb866784",
+      "sourceIntegrityWarning": "One source member 02_web_transparent/dark/novapharm-intelligence-dark-4096w.webp is zero bytes; exclude until regenerated"
+    }
+  },
+  "rules": [
+    "Never substitute one subsidiary's identity on another subsidiary's surface.",
+    "Preserve approved artwork geometry, aspect ratios, named reverse and monochrome variants.",
+    "Use exact primary HEX on canonical vector logo; derived hover/focus and native dark colors may differ for accessibility.",
+    "Do not recolor destructive, advisory, safety or regulated status semantics as branding.",
+    "Treat original legacy image packs as historical until all replaced raster and app assets pass checked checksum and pixel audits.",
+    "Do not auto-publish public website, native apps or protected portals before independent release acceptance."
+  ]
+}

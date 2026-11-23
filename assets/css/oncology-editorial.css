@@ -3,7 +3,7 @@
  * Isolated to the Oncology route; no icons, emoji or Apple-owned assets.
  * Photographs are representative and their boundaries remain visible.
  */
-body[data-page="oncology"] .npoc-page{--oc-ink:#1d1d1f;--oc-text:#515158;--oc-line:#d5d5db;--oc-red:#e3120b;--oc-dark:#0a1725;background:#fff;color:var(--oc-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
+body[data-page="oncology"] .npoc-page{--oc-ink:#1d1d1f;--oc-text:#515158;--oc-line:#d5d5db;--oc-red:#9D1B32;--oc-dark:#0a1725;background:#fff;color:var(--oc-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
 body[data-page="oncology"] .npoc-page .container{width:min(calc(100% - 96px),1200px);margin-inline:auto}
 body[data-page="oncology"] .npoc-page :is(h1,h2,h3){font-family:inherit;font-weight:650;letter-spacing:0;text-wrap:balance}
 body[data-page="oncology"] .npoc-page :is(p,li){text-wrap:pretty}
@@ -28,8 +28,8 @@ body[data-page="oncology"] .npoc-hero-detail{max-width:550px;margin:0;color:#dce
 body[data-page="oncology"] .npoc-actions{display:flex;align-items:center;flex-wrap:wrap;gap:13px;margin-top:34px}
 body[data-page="oncology"] .npoc-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 24px;border:1px solid transparent;border-radius:999px;font-size:14px;font-weight:620;line-height:1.35;text-align:center;text-decoration:none;transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease}
 body[data-page="oncology"] .npoc-button:hover{transform:translateY(-1px)}
-body[data-page="oncology"] .npoc-button-primary{background:#e3120b;border-color:#e3120b;color:#fff}
-body[data-page="oncology"] .npoc-button-primary:hover{background:#b30e09;border-color:#b30e09;color:#fff}
+body[data-page="oncology"] .npoc-button-primary{background:#9D1B32;border-color:#9D1B32;color:#fff}
+body[data-page="oncology"] .npoc-button-primary:hover{background:#68101F;border-color:#68101F;color:#fff}
 body[data-page="oncology"] .npoc-button-light{background:transparent;border-color:rgba(255,255,255,.65);color:#fff}
 body[data-page="oncology"] .npoc-button-light:hover{background:rgba(255,255,255,.12);color:#fff}
 body[data-page="oncology"] .npoc-button-outline{background:transparent;border-color:#9999a1;color:var(--oc-ink)}

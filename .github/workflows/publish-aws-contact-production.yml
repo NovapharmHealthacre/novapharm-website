@@ -49,6 +49,8 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
       # The Apple-27-informed web foundation is part of the shipped public CSS.
@@ -293,9 +295,11 @@ jobs:
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           npm run validate
+          node scripts/verify-live-official-brand.mjs --source-only
           python3 scripts/validate-public-sitemaps.py
           node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only
@@ -882,7 +886,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
-          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/"; do
+          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/" "legal/accessibility/"; do
             verified=false
             for attempt in $(seq 1 10); do
               curl --fail --silent --show-error --location --max-time 15 \
@@ -897,7 +901,15 @@ jobs:
             done
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
-          echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
+          echo 'The public origin serves the exact reviewed Git commit on all seven critical routes, including Markets and Accessibility.'
+
+      - name: Verify exact official brand vectors, raster checksums, manifest and CSS on public origin
+        run: node scripts/verify-live-official-brand.mjs
+
+      - name: Independently verify six live source SHAs, approved browser colours and AWS Contact
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
