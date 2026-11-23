@@ -45,23 +45,14 @@ function exactly(object, fields) {
 }
 
 export function validateOwnerProductionConstraints(policy) {
-  const engineeringFields = [
+  if (!exactly(policy, [
     "contract", "decisionDate", "vendorStrategy",
     "enterpriseVendorAccounts", "initialInfrastructureBudget",
     "engineeringTarget", "productionPermissions",
-    "acceptedEngineeringScope", "productionSignoff"
-  ];
-  // The public-website visual release is a *separate*, narrow owner decision.
-  // This validator may read that exact optional receipt, but must never turn
-  // it into Intelligence, customer, email, paid-infra or vendor permission.
-  const brandingPresent = exactly(policy, [...engineeringFields, "publicBrandingRelease"]);
-  if (!exactly(policy, engineeringFields) && !brandingPresent) throw fail();
-  if (brandingPresent && (
-    !exactly(policy.publicBrandingRelease, ["enabled", "signoff", "scope"]) ||
-    policy.publicBrandingRelease.enabled !== true ||
-    policy.publicBrandingRelease.signoff !== "granted" ||
-    policy.publicBrandingRelease.scope !== "public-static-with-preserved-contact"
-  )) throw fail();
+    "acceptedEngineeringScope", "productionSignoff",
+    ...(policy && typeof policy === "object" && !Array.isArray(policy) &&
+      Object.hasOwn(policy, "publicBrandingRelease") ? ["publicBrandingRelease"] : [])
+  ])) throw fail();
 
   if (
     policy.contract !== "novapharm.intelligence.owner-constraints.v1" ||
@@ -71,6 +62,20 @@ export function validateOwnerProductionConstraints(policy) {
     policy.engineeringTarget !== "private_read_only_pilot" ||
     policy.productionSignoff !== "not_granted"
   ) throw fail();
+
+  // This is a narrowly-scoped *public website branding* permission, not an
+  // Intelligence / Portal / customer production signoff. Require an exact
+  // three-field contract; all other production controls are independently
+  // validated below and must remain denied.
+  if (Object.hasOwn(policy, "publicBrandingRelease")) {
+    const branding = policy.publicBrandingRelease;
+    if (!exactly(branding, ["enabled", "signoff", "scope"]) ||
+        branding.scope !== "public-static-with-preserved-contact" ||
+        !((branding.enabled === true && branding.signoff === "granted") ||
+          (branding.enabled === false && branding.signoff === "not_granted"))) {
+      throw fail();
+    }
+  }
 
   // The owner permits existing subscriptions only, capped at GBP 0
   // additional monthly spend. This authorises no new metered usage or

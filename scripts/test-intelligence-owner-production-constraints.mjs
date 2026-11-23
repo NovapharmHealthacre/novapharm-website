@@ -30,41 +30,6 @@ test("owner's exact vendor-neutral, zero incremental spend decision is preserved
   assert.ok(Object.isFrozen(decision));
 });
 
-test("public-static-only branding signoff never authorises Intelligence or customer deployment", () => {
-  const signed = copy();
-  assert.deepEqual(signed.publicBrandingRelease, {
-    enabled: true, signoff: "granted", scope: "public-static-with-preserved-contact"
-  });
-  for (const current of [signed, (() => { const p = copy(); delete p.publicBrandingRelease; return p; })()]) {
-    const decision = validateOwnerProductionConstraints(current);
-    assert.equal(decision.productionDeploymentApproved, false);
-    assert.equal(decision.publicCustomerReleaseApproved, false);
-    assert.equal(decision.nativeVendorConnectionApproved, false);
-    assert.equal(decision.licensedDataAdmissionApproved, false);
-    assert.equal(decision.procurementApproved, false);
-    assert.equal(decision.budgetApproved, false);
-    assert.equal(decision.additionalMonthlyCapGbp, 0);
-    assert.deepEqual(decision.blockedOperations, prohibitedOperationsUntilApproved);
-  }
-});
-
-test("malformed or broader branding-release permissions cannot inherit Intelligence approval", () => {
-  const mutations = [
-    p => { p.publicBrandingRelease.enabled = false; },
-    p => { p.publicBrandingRelease.signoff = "not_granted"; },
-    p => { p.publicBrandingRelease.signoff = "approved"; },
-    p => { p.publicBrandingRelease.scope = "customer-login-and-billing"; },
-    p => { p.publicBrandingRelease.activatePublicCustomerAccess = true; },
-    p => { delete p.publicBrandingRelease.scope; },
-    p => { p.publicBrandingRelease = null; }
-  ];
-  for (const change of mutations) {
-    const candidate = copy();
-    change(candidate);
-    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
-  }
-});
-
 test("no unapproved operational permission may be enabled by changing config", () => {
   for (const key of prohibitedOperationsUntilApproved) {
     const candidate = copy();
@@ -110,6 +75,54 @@ test("extra fields, missing flags, broad engineering scopes and malformed inputs
   duplicate.acceptedEngineeringScope[0] = duplicate.acceptedEngineeringScope[1];
   cases.push(duplicate);
   for (const candidate of cases) {
+    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
+  }
+});
+
+test("static public-branding signoff is exactly scoped and cannot approve customer production", () => {
+  const signed = copy();
+  assert.deepEqual(signed.publicBrandingRelease, {
+    enabled: true,
+    signoff: "granted",
+    scope: "public-static-with-preserved-contact"
+  });
+  const assessment = validateOwnerProductionConstraints(signed);
+  for (const key of [
+    "productionDeploymentApproved", "publicCustomerReleaseApproved",
+    "nativeVendorConnectionApproved", "procurementApproved"
+  ]) assert.equal(assessment[key], false, key);
+
+  const legacy = copy();
+  delete legacy.publicBrandingRelease;
+  assert.doesNotThrow(() => validateOwnerProductionConstraints(legacy),
+    "An absent branding-only grant must preserve the existing restrictive schema");
+
+  const revoked = copy();
+  revoked.publicBrandingRelease = {
+    enabled: false, signoff: "not_granted",
+    scope: "public-static-with-preserved-contact"
+  };
+  assert.doesNotThrow(() => validateOwnerProductionConstraints(revoked),
+    "Revoking a branding-only grant must never require customer production enablement");
+
+  const edits = [
+    value => { value.enabled = "true"; },
+    value => { value.enabled = false; },
+    value => { value.signoff = "approved"; },
+    value => { value.signoff = "not_granted"; },
+    value => { value.scope = "customer-subscriptions"; },
+    value => { value.scope = ""; },
+    value => { value.customerAccess = true; },
+    value => { delete value.scope; }
+  ];
+  for (const edit of edits) {
+    const candidate = copy();
+    edit(candidate.publicBrandingRelease);
+    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
+  }
+  for (const invalid of [null, false, [], {}, "granted"]) {
+    const candidate = copy();
+    candidate.publicBrandingRelease = invalid;
     assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
   }
 });
