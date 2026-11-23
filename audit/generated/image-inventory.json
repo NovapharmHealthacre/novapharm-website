@@ -1471,7 +1471,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 11,
-      "referenceCount": 13,
+      "referenceCount": 15,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         ".github/workflows/publish-aws-contact-production.yml",
@@ -1989,7 +1989,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 105,
-      "referenceCount": 217,
+      "referenceCount": 219,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -2412,7 +2412,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 9,
-      "referenceCount": 11,
+      "referenceCount": 13,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "apps/portal/components/intelligence-sign-in.tsx",
