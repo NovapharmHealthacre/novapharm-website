@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
+import { personIdForSlug, VISHAL_PERSON_ID } from "../src/seo/person-identity.mjs";
 import {
   INDEXNOW_KEY,
   ORGANIZATION_ID,
@@ -107,9 +108,10 @@ for (const person of leadership) {
   const schemas = parseSchemas(source(file), file);
   const profile = schemas.find((schema) => schema["@type"] === "ProfilePage");
   const personSchema = schemas.find((schema) => schema["@type"] === "Person");
-  const personId = `${SITE_URL}/leadership/${person.slug}/#person`;
+  const personId = personIdForSlug(person.slug);
   if (profile?.mainEntity?.["@id"] !== personId) fail(`${file} ProfilePage does not identify its canonical Person`);
   if (personSchema?.["@id"] !== personId || personSchema?.name !== person.displayName) fail(`${file} Person entity uses an inconsistent name or id`);
+  if (person.slug === "vishal-chakravarty" && personSchema?.["@id"] !== VISHAL_PERSON_ID) fail("Vishal must reuse the personal canonical Person identifier");
   if (personSchema?.worksFor?.["@id"] !== ORGANIZATION_ID) fail(`${file} Person entity is not connected to NovaPharm`);
   if (person.image && typeof personSchema?.image !== "object") fail(`${file} lacks an ImageObject for the approved portrait`);
 }
@@ -126,7 +128,7 @@ for (const article of articles) {
   const articleSchema = articleSchemas[0];
   if (articleSchema.publisher?.["@id"] !== ORGANIZATION_ID) fail(`${file} article publisher is not NovaPharm`);
   const leader = leadership.find((person) => person.displayName === article.author || person.name === article.author);
-  const expectedAuthorId = leader ? `${SITE_URL}/leadership/${leader.slug}/#person` : EDITORIAL_TEAM_ID;
+  const expectedAuthorId = leader ? personIdForSlug(leader.slug) : EDITORIAL_TEAM_ID;
   if (articleSchema.author?.["@id"] !== expectedAuthorId) fail(`${file} structured author does not match the visible byline`);
   if (!articleSchema.datePublished || !articleSchema.dateModified) fail(`${file} lacks accurate publication dates`);
   if (!articleSchema.wordCount || !articleSchema.timeRequired) fail(`${file} lacks article depth metadata`);
