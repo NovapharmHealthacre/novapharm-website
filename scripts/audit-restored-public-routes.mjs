@@ -1,7 +1,7 @@
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { createHash } from "node:crypto";
-import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
+import { inspectManagedContactMarkup, inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
 import { corporateRoutesFromSource, reconcilePublicRouteUniverse, summarizeObservedPublisherShas } from "./reconcile-live-public-routes.mjs";
 
 const origin = "https://novapharmhealthcare.com";
@@ -84,8 +84,9 @@ async function visit() {
         if (!record.visibleAnswers) record.warnings.push("Visible AEO answers not yet published");
       }
       if (path === "/contact/") {
-        record.emailDraftOnly = html.includes("Open email draft") && html.includes("does not collect or transmit enquiry details");
-        if (record.emailDraftOnly) record.warnings.push("Email draft only; no verified secure enquiry submission");
+        const contact = inspectManagedContactMarkup(html);
+        record.emailDraftOnly = contact.emailDraftOnly;
+        record.errors.push(...contact.issues);
       }
     } catch (error) {
       record.errors.push(String(error).slice(0, 200));
