@@ -230,6 +230,11 @@ export async function authenticateNativeFdaWithPkce(
       !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
       throw Error("Cognito token exchange rejected.");
     body=await readBoundedCognitoTokenResponse(response,controller.signal);
+  }catch(error){
+    // Failed status, MIME or bounded parsing must also abort the transport.
+    // Reader cancellation can be non-settling on an untrusted response body.
+    controller.abort();
+    throw error;
   }finally{
     clearTimeout(timeout);
   }

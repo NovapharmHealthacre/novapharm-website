@@ -322,3 +322,20 @@ test("Cognito oversized response still fails if reader cancellation never settle
     assert.equal(stats().stored,null,"bad token must never reach Keystore");
   }finally{clearTimeout(deadlineTimer);}
 });
+
+test("invalid Cognito response aborts network transport on fail-closed refusal",async()=>{
+  const failures=[
+    new Response("{}",{status:503,headers:{"content-type":"application/json"}}),
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"999999"}})
+  ];
+  for(const response of failures){
+    let requestSignal;
+    const {adapter,stats}=platform({fetchImpl:async (_uri,init)=>{
+      requestSignal=init.signal;
+      return response;
+    }});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter));
+    assert.equal(requestSignal?.aborted,true,"rejected response must abort transport");
+    assert.equal(stats().stored,null);
+  }
+});
