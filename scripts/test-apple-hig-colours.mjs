@@ -311,7 +311,7 @@ for (const path of [
   "scripts/build-pages.mjs",
 ]) {
   assert.ok(read(path).includes('meta name="theme-color" content="#FFFFFF"'),
-    path + " must use the official Royal Mineral browser theme");
+    path + " must use the official Pure White browser theme");
 }
 assert.match(read("scripts/build-public-pages.mjs"), /background_color:\s*"#FFFFFF"/);
 assert.equal(JSON.parse(read("manifest.webmanifest")).background_color, officialNeutrals.primary);

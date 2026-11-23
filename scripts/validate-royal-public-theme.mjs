@@ -103,6 +103,6 @@ assert.equal(webManifest.background_color?.toUpperCase(), palette.primary,
 assert.equal(webManifest.theme_color?.toUpperCase(), identities.brands.healthcare.hex,
   "Healthcare PWA accent must retain Royal Cochineal Crimson");
 
-assert.deepEqual(errors, [], "Royal browser theme mismatches after all build-time transforms");
+assert.deepEqual(errors, [], "Pure White browser theme mismatches after all build-time transforms");
 assert.equal(checked, allPublicPages.length);
 console.log("Verified " + checked + " canonical and approved late public pages plus PWA metadata against Pure White.");
