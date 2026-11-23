@@ -1,11 +1,12 @@
 :root {
-  --portal-ink: #1d1d1f;
+  --portal-ink: #0B0B0E;
   --portal-muted: #6e6e73;
-  --portal-line: #d2d2d7;
-  --portal-soft: #f5f5f7;
-  --portal-white: #ffffff;
-  --portal-red: #E3120B;
-  --portal-red-text: #B30E09;
+  --portal-line: #DEDCD5;
+  --portal-soft: #F8F7F3;
+  --portal-white: #FBFAEF;
+  --portal-divider: #DEDCD5;
+  --portal-red: #9D1B32;
+  --portal-red-text: #68101F;
   --portal-red-soft: #fff3f4;
   --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
@@ -151,6 +152,20 @@ textarea {
   box-shadow: inset 3px 0 var(--portal-red);
 }
 .workspace-sidebar a small { color: var(--portal-muted); }
+/* Use the approved Porcelain surface on selected routes, regardless of legacy
+   globals.css ordering. Black secondary labels on a navy active background
+   failed axe across Chromium/WebKit; preserve contrast on the whole active link. */
+/* Preserve WCAG AA selected-navigation contrast despite late stylesheet extraction. */
+.workspace-sidebar nav a.active {
+  color: #0B0B0E;
+  background-color: #F8F7F3;
+}
+/* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
+.workspace-sidebar nav a.active > small {
+  color: #0B0B0E;
+  background: transparent;
+  font-weight: 600;
+}
 .sidebar-security {
   border-top-color: #e5e5e7;
   color: var(--portal-muted);
@@ -160,8 +175,8 @@ textarea {
 .workspace-main { background: var(--portal-white); }
 .workspace-topbar {
   min-height: 64px;
-  border-bottom-color: #e5e5e7;
-  background: rgba(255,255,255,.9);
+  border-bottom-color: var(--portal-divider);
+  background: rgba(251,250,239,.9);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
@@ -290,3 +305,17 @@ textarea {
     color: var(--portal-ink);
   }
 }
+
+/* Royal neutrals: preserve Porcelain Stone for decorative hairlines.
+ * Auth, search and workspace controls require a visible independent edge. */
+:root { --portal-control-line: var(--np-color-separator-strong, #86868B); }
+.button.microsoft,
+.access-selector label,
+.portal-search > button,
+.user-summary button,
+.search-close,
+.icon-command,
+.area-switcher a,
+.menu-button,
+.intelligence-field-grid input,
+.intelligence-field-grid select { border-color: var(--portal-control-line); }

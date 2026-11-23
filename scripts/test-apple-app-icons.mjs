@@ -23,7 +23,7 @@ const sourcePaths = svgPaths(approved);
 
 check("two approved brand silhouette paths", () => {
   assert.equal(sourcePaths.length, 2);
-  assert.match(approved, /#E3120B/iu);
+  assert.match(approved, /#9D1B32/iu);
 });
 
 for (const [index, file] of [
@@ -75,7 +75,7 @@ check("static site icon declarations and manifest", () => {
   ]) assert.ok(index.includes(snippet), `missing static HTML reference ${snippet}`);
   const manifest = JSON.parse(text("manifest.webmanifest"));
   assert.equal(manifest.name, "NovaPharm Healthcare");
-  assert.equal(manifest.theme_color.toUpperCase(), "#E3120B");
+  assert.equal(manifest.theme_color.toUpperCase(), "#9D1B32");
   for (const [src, expected] of webIcons.slice(1)) {
     const item = manifest.icons.find((icon) => icon.src === src);
     assert.ok(item, `missing manifest icon ${src}`);

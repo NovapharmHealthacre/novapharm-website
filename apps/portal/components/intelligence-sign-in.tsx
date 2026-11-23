@@ -35,7 +35,7 @@ const navigation = [
 function IntelligenceLogo({ small = false }: Readonly<{ small?: boolean }>) {
   return (
     <Image
-      src="/assets/brand/novapharm-intelligence-approved.svg"
+      src="/assets/brand/novapharm-intelligence-logo.svg"
       alt="NovaPharm Intelligence"
       width={1950}
       height={337}

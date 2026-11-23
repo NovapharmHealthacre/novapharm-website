@@ -301,7 +301,18 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
     {!isEditorialPortal ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
       <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" className="np-symbol" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
-      <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span><small>{entry.releaseClassificationLabel}</small></a></li>)}</ul></nav>
+      <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => {
+          const current = entry.code === module.code;
+          return <li key={entry.code}><a
+            className={current ? "active" : ""}
+            href={entry.route}
+            aria-current={current ? "page" : undefined}
+            // Preserve readable Sovereign Black labels against active light background.
+            style={current ? { color: "#0B0B0E", backgroundColor: "#F8F7F3" } : undefined}
+          ><span>{entry.title}</span><small
+            style={current ? { color: "#0B0B0E" } : undefined}
+          >{entry.releaseClassificationLabel}</small></a></li>;
+        })}</ul></nav>
       <div className="sidebar-security"><ShieldCheck aria-hidden="true" className="np-symbol" /><span>Server-enforced access<br />No public caching</span></div>
     </aside> : null}
     <section className="workspace-main">

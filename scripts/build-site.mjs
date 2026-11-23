@@ -80,5 +80,12 @@ finalizePublicRtlArtifacts();
 // Run after every HTML/style entrypoint exists, before source-SHA stamping.
 await import("./version-public-visual-assets.mjs");
 
+// Normalize the browser theme, Safari mask tint and signed Next.js hydration
+// metadata before the authentic source SHA is stamped onto reviewed pages.
+const { normaliseCanonicalPublicBrandMetadata } = await import("./normalise-official-public-brand-metadata.mjs");
+normaliseCanonicalPublicBrandMetadata();
+
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
+// Fail the public build if any late route override restores old browser chrome.
+await import("./validate-royal-public-theme.mjs");
