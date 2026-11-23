@@ -8,7 +8,9 @@ const permissions = Object.freeze({
   activatePublicCustomerAccess: false, enableCustomerSubscriptions: false,
   enableCustomerBilling: false, cutOverPortalDnsOrApiMapping: false,
   sendExternalEmail: false, provisionNewPaidInfrastructure: false,
-  purchaseVendorLicenses: false, admitUnapprovedMedicineData: false
+  purchaseVendorLicenses: false, admitUnapprovedMedicineData: false,
+  activateNativePalantir: false, activateNativePrisma: false,
+  activateNativeBloomberg: false
 });
 function input() {
   return {
@@ -59,6 +61,14 @@ test("all customer, paid-service and external-email permissions remain denied", 
     delete v.config.productionPermissions[key];
     assert.equal(evaluateBrandingOnlyRelease(v).approved,false,key+" absent is not consent");
   }
+});
+test("future production permissions cannot silently expand a branding-only release", () => {
+  const v=input();
+  v.config.productionPermissions.newProductionCustomerExport=true;
+  assert.equal(evaluateBrandingOnlyRelease(v).approved,false);
+  delete v.config.productionPermissions.newProductionCustomerExport;
+  v.config.productionPermissions.newProductionCustomerExport=false;
+  assert.equal(evaluateBrandingOnlyRelease(v).approved,true);
 });
 test("general production signoff cannot be silently repurposed", () => {
   const v=input();v.config.productionSignoff="granted";

@@ -14,7 +14,8 @@ export const REVIEWED_CONTACT_BLOBS = Object.freeze({
 const BLOCKED_PERMISSIONS = Object.freeze([
   "activatePublicCustomerAccess", "enableCustomerSubscriptions", "enableCustomerBilling",
   "cutOverPortalDnsOrApiMapping", "sendExternalEmail", "provisionNewPaidInfrastructure",
-  "purchaseVendorLicenses", "admitUnapprovedMedicineData"
+  "purchaseVendorLicenses", "admitUnapprovedMedicineData",
+  "activateNativePalantir", "activateNativePrisma", "activateNativeBloomberg"
 ]);
 
 export function gitBlobSha(contents) {
@@ -43,6 +44,14 @@ export function evaluateBrandingOnlyRelease({
   for (const permission of BLOCKED_PERMISSIONS)
     if (permissions?.[permission] !== false)
       issues.push("Customer/regulated operation permission is not explicitly disabled: " + permission);
+  // Future permissions also default to DENY; a new feature flag cannot silently
+  // expand the scope of an already signed, public-branding-only release.
+  if (permissions && typeof permissions === "object" && !Array.isArray(permissions)) {
+    for (const [permission, enabled] of Object.entries(permissions)) {
+      if (!BLOCKED_PERMISSIONS.includes(permission) && enabled !== false)
+        issues.push("Additional production permission is not explicitly disabled: " + permission);
+    }
+  }
   for (const [path, expected] of Object.entries(REVIEWED_CONTACT_BLOBS))
     if (sourceBlobs?.[path] !== expected)
       issues.push("Reviewed live Contact source asset changed: " + path);
