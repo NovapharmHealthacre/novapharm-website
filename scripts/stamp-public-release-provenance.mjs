@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { stampMarketplaceSourceRevision } from "./marketplace-release-provenance.mjs";
 
 const root = process.cwd();
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
@@ -33,5 +34,18 @@ assert.ok(researchCandidate.includes('name="robots" content="noindex, nofollow"'
 researchCandidate = researchCandidate.replace(/\s*<meta name="novapharm-source-sha" content="[0-9a-f]{40}">/gi, "");
 researchCandidate = researchCandidate.replace("</head>", '  <meta name="novapharm-source-sha" content="' + sha + '">\n</head>');
 writeFileSync(researchCandidatePath, researchCandidate, "utf8");
+
+// Marketplace is materialised after the SEO page metadata register. Its
+// public URL is indexable but absent from that pre-Marketplace register, so
+// the original register-only loop cannot stamp it. Never overwrite a future
+// primary-register entry; only take the reviewed post-build fallback path.
+const marketplaceFile = "products/marketplace/index.html";
+if (!register.some(record => record.file === marketplaceFile)) {
+  const marketplacePath = resolve(root, marketplaceFile);
+  // Missing Marketplace at this point is a broken public build, not optional.
+  const currentMarketplaceHtml = readFileSync(marketplacePath, "utf8");
+  writeFileSync(marketplacePath,
+    stampMarketplaceSourceRevision(currentMarketplaceHtml, sha), "utf8");
+}
 
 console.log(`Stamped ${stamped} generated canonical pages with verified Git source commit ${sha}; noindex quantum candidate stamped separately.`);
