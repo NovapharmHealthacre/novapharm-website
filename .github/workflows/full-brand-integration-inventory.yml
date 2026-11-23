@@ -4,31 +4,9 @@ on:
   push:
     branches:
       - brand/full-estate-acceptance-20261122
-    paths:
-      - '.github/workflows/full-brand-integration-inventory.yml'
-      - '.github/workflows/publish-aws-contact-production.yml'
-      - '.github/workflows/release-contact-only.yml'
-      - 'contact/index.html'
-      - 'apps/portal/**'
-      - 'native/novapharm-intelligence-ios/**'
-      - 'native/novapharm-intelligence-android/**'
-      - 'config/brand-identities.json'
-      - 'config/brand-neutrals.json'
-      - 'audit/generated/image-inventory.json'
-      - 'scripts/programme/generate-image-inventory.mjs'
-      - 'scripts/test-visual-contracts.mjs'
-      - 'scripts/test-official-brand-triad.mjs'
-      - 'scripts/test-apple-hig-colours.mjs'
-      - 'scripts/test-quantum-static-public-candidate.mjs'
-      - 'scripts/stamp-public-release-provenance.mjs'
-      - 'scripts/lib/stamp-pinned-public-html.mjs'
-      - 'scripts/verify-live-official-brand.mjs'
-      # Reviewed managed Contact exact-source parity may add image references.
-      - 'src/content/contact-managed-release.html'
-      - 'assets/css/novapharm-unified-20261107.css'
-      - 'assets/js/contact-production.js'
-      - 'scripts/activate-contact-intake.mjs'
-      - 'scripts/contact-activation.test.mjs'
+    # The inventory generator scans every tracked text and asset file, not only
+    # selected directories. Any candidate change can alter canonical image usage.
+    # Keep exact-head checks and bot-loop protection below; no public publishing.
   workflow_dispatch:
 
 permissions:
