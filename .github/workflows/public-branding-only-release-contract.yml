@@ -7,6 +7,9 @@ on:
       - '.github/workflows/public-branding-only-release-contract.yml'
       - 'scripts/verify-public-branding-only-release.mjs'
       - 'scripts/test-public-branding-only-release.mjs'
+      - 'config/intelligence/owner-production-constraints.json'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
   workflow_dispatch:
 
 permissions:
@@ -26,7 +29,7 @@ jobs:
         with:
           node-version: 24
       - name: Prove brand-only authorization cannot enable customer services
-        run: node --test scripts/test-public-branding-only-release.mjs
+        run: node --test scripts/test-public-branding-only-release.mjs scripts/test-public-brand-source-live.mjs
       - name: Prove push and ordinary dispatch cannot use branding-only approval
         shell: bash
         run: |
