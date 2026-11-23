@@ -34,9 +34,21 @@ export const WALES_DISPENSING_SCOPE_SOURCE_IDS = Object.freeze(Object.keys(sourc
  */
 export function classifyWalesDispensingSource(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) deny('object required');
-  for (const key of Object.keys(input)) if (!allowedFields.has(key)) deny('unexpected field ' + key);
+  // Only own, plain data fields can assert a publisher source identity.
+  // Prototype inheritance, getters and symbol fields must never bypass denial.
+  const prototype = Object.getPrototypeOf(input);
+  if (prototype !== Object.prototype && prototype !== null) deny('plain metadata object required');
+  for (const key of Reflect.ownKeys(input)) {
+    if (typeof key !== 'string' || !allowedFields.has(key)) deny('unexpected metadata field');
+  }
+  for (const key of allowedFields) {
+    if (!Object.hasOwn(input, key)) deny('missing required field ' + key);
+    const descriptor = Object.getOwnPropertyDescriptor(input, key);
+    if (!descriptor || !Object.hasOwn(descriptor, 'value')) deny('data field required ' + key);
+  }
+  if (typeof input.sourceId !== 'string' || !Object.hasOwn(sourceDefinitions, input.sourceId))
+    deny('unsupported source identity');
   const def = sourceDefinitions[input.sourceId];
-  if (!def) deny('unsupported source identity');
   if (typeof input.reportingPeriod !== 'string' || !validMonth.test(input.reportingPeriod))
     deny('invalid reporting month');
   if (typeof input.sourceVersion !== 'string' || !validVersion.test(input.sourceVersion))
