@@ -1,0 +1,195 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Source-only FDA private JWT GET route gate. ALL approvals default false; not a live API or a cost-free production release.",
+  "Parameters": {
+    "PrivateHttpApiId": {
+      "Type": "String",
+      "Default": "q2e6ztf8ic",
+      "Description": "Existing NovaPharm private HTTP API id, verified separately"
+    },
+    "VerifiedJWTAuthorizerId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "JWT authorizer configured for approved app clients, issuer, audience and scope"
+    },
+    "QualifiedFdaLambdaArn": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Exact reviewed immutable alias qualified Lambda ARN that actually contains the new handler and distributed limiter"
+    },
+    "OwnerProductionSignoff": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    },
+    "SourceRightsSignoff": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    },
+    "NativeIdentitySignoff": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    },
+    "DistributedQuotaVerified": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    },
+    "PrivateImageVerified": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    },
+    "IndependentReleaseAcceptance": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ]
+    }
+  },
+  "Conditions": {
+    "AllowRoute": {
+      "Fn::And": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "OwnerProductionSignoff"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "SourceRightsSignoff"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "NativeIdentitySignoff"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "DistributedQuotaVerified"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "PrivateImageVerified"
+            },
+            "true"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "IndependentReleaseAcceptance"
+            },
+            "true"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "PrivateFdaIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Condition": "AllowRoute",
+      "Properties": {
+        "ApiId": {
+          "Ref": "PrivateHttpApiId"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationMethod": "POST",
+        "IntegrationUri": {
+          "Ref": "QualifiedFdaLambdaArn"
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 10000
+      }
+    },
+    "BoardOnlyFdaRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Condition": "AllowRoute",
+      "Properties": {
+        "ApiId": {
+          "Ref": "PrivateHttpApiId"
+        },
+        "RouteKey": "GET /v1/intelligence/regulatory/us/fda-research",
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "VerifiedJWTAuthorizerId"
+        },
+        "AuthorizationScopes": [
+          "novapharm/fda.read"
+        ],
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "PrivateFdaIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "PrivateFdaInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Condition": "AllowRoute",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "QualifiedFdaLambdaArn"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${PrivateHttpApiId}/*/GET/v1/intelligence/regulatory/us/fda-research"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "PrivateFdaReleaseStatus": {
+      "Description": "Conditional route is created only after six explicit approvals",
+      "Value": {
+        "Fn::If": [
+          "AllowRoute",
+          "explicit_jwt_route_enabled",
+          "disabled_no_resources_created"
+        ]
+      }
+    }
+  }
+}
