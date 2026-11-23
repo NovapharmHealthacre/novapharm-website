@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob } from "../scripts/activate-contact-intake.mjs";
+import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob, preserveManagedContactSourceSha } from "../scripts/activate-contact-intake.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
@@ -163,4 +163,41 @@ test("official Contact palette, adaptive layout and business-development email a
   assert.ok(html.includes('<noscript><style>.ref-form{display:none}</style>'));
   assert.ok(client.includes('result?.persisted !== true'));
   assert.ok(client.includes('form.addEventListener("submit"'));
+});
+
+
+test("managed Contact keeps exact verified Git source identity after replacing staged public HTML", () => {
+  const commit = "a".repeat(40);
+  const staged = '<html lang="en-GB"><head><meta name="novapharm-source-sha" content="' +
+    commit + '"></head><body><h1>Public-only baseline</h1></body></html>';
+  const reviewed = readFileSync("src/content/contact-managed-release.html", "utf8");
+  const managed = activateManagedContactReleaseHtml(reviewed, managedOrigin);
+  const released = preserveManagedContactSourceSha(staged, managed, commit);
+  assert.match(released, new RegExp('name="novapharm-source-sha" content="' + commit + '"'));
+  assert.equal((released.match(/name="novapharm-source-sha"/g) || []).length, 1);
+  assert.ok(released.includes('data-live-b2b-enquiry-form'));
+  assert.ok(released.includes('bd@novapharmhealthcare.com'));
+  assert.ok(released.includes('<meta name="theme-color" content="#FBFAEF">'));
+  assert.ok(!managed.includes('novapharm-source-sha'),
+    "Reviewed source template must not itself claim a deployed SHA");
+});
+
+test("managed Contact release refuses absent, stale, duplicate or invented provenance", () => {
+  const expected = "a".repeat(40);
+  const other = "b".repeat(40);
+  const stamp = value => '<meta name="novapharm-source-sha" content="' + value + '">';
+  const original = '<html><head>' + stamp(expected) + '</head><body></body></html>';
+  const managed = '<!doctype html><html><head><title>Managed</title></head><body></body></html>';
+  assert.throws(() => preserveManagedContactSourceSha(original, managed, other),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed, "not-git"),
+    /exact Git SHA/);
+  assert.throws(() => preserveManagedContactSourceSha(original.replace(stamp(expected), ""), managed, expected),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original.replace(stamp(expected), stamp(expected) + stamp(expected)), managed, expected),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed.replace("</head>", stamp(other) + "</head>"), expected),
+    /stale\/independent source receipt/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed.replace("</head>", ""), expected),
+    /head missing/);
 });

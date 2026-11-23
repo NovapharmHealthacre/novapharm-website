@@ -1,6 +1,7 @@
 import { activateAccountRequestHtml } from "./activate-account-request.mjs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 
 const approvedApi = /^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/i;
@@ -100,6 +101,29 @@ export function activateManagedContactReleaseHtml(template, origin) {
   return result;
 }
 
+// Add provenance only to the derived, owner-gated Contact artifact. The
+// source template remains byte-identical to its separately approved Git blob.
+// Never use a supplied/random SHA or copy a stale deployed receipt.
+export function preserveManagedContactSourceSha(stagedPublicHtml, managedHtml, exactGitSha) {
+  if (!/^[0-9a-f]{40}$/.test(exactGitSha)) {
+    throw Error("Approved Contact release identity must be an exact Git SHA");
+  }
+  const receipts = [...stagedPublicHtml.matchAll(/<meta\b[^>]*name=["']novapharm-source-sha["'][^>]*>/gi)];
+  if (receipts.length !== 1 || !receipts[0][0].includes('content="' + exactGitSha + '"')) {
+    throw Error("Staged Contact source SHA does not match verified source checkout");
+  }
+  if (/novapharm-source-sha/i.test(managedHtml)) {
+    throw Error("Managed Contact template must not contain a stale/independent source receipt");
+  }
+  if (!/<\/head>/i.test(managedHtml)) throw Error("Managed Contact head missing");
+  const result = managedHtml.replace(/<\/head>/i,
+    '  <meta name="novapharm-source-sha" content="' + exactGitSha + '">\n</head>');
+  if ((result.match(/name="novapharm-source-sha"/g) || []).length !== 1) {
+    throw Error("Managed Contact provenance must contain exactly one release receipt");
+  }
+  return result;
+}
+
 export function activatePrivacyHtml(html) {
   const anchor = '<section id="business-enquiries"><h2>3. Business enquiries</h2>';
   if (!html.includes(anchor)) throw Error("Privacy notice business-enquiries section missing");
@@ -134,7 +158,12 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
     resolve("src/content/contact-managed-release.html"),
     approvedContactBlobs["src/content/contact-managed-release.html"]
   ).toString("utf8");
-  const nextContact = activateManagedContactReleaseHtml(reviewedTemplate, origin);
+  // Build/source provenance is already exact-SHA-stamped before activation.
+  // The reviewed managed HTML replaces the public-only template, so retain the
+  // actual verified checkout identity rather than lose it during cutover.
+  const exactGitSha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: process.cwd(), encoding: "utf8" }).trim();
+  const nextContact = preserveManagedContactSourceSha(contact,
+    activateManagedContactReleaseHtml(reviewedTemplate, origin), exactGitSha);
   const nextPrivacy = activatePrivacyHtml(notice);
   const nextAccount = activateAccountRequestHtml(account, origin);
   writeFileSync(contactPath, nextContact);
