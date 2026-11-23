@@ -1,8 +1,8 @@
 export const designSystemCss = String.raw`
 .np-visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.np-skip-link{position:fixed;z-index:9999;inset:1rem auto auto 1rem;transform:translateY(-180%);background:#fff;color:#0d1b2a;padding:.75rem 1rem}
+.np-skip-link{position:fixed;z-index:9999;inset:1rem auto auto 1rem;transform:translateY(-180%);background:#fff;color:#0B0B0E;padding:.75rem 1rem}
 .np-skip-link:focus{transform:none}
-.np-navigation{min-height:4.5rem;display:grid;grid-template-columns:minmax(12rem,1fr) auto minmax(12rem,1fr);align-items:center;gap:1.5rem;padding:.75rem max(1rem,4vw);border-bottom:1px solid #d8dde4;background:#fbfaf8;color:#0d1b2a}
+.np-navigation{min-height:4.5rem;display:grid;grid-template-columns:minmax(12rem,1fr) auto minmax(12rem,1fr);align-items:center;gap:1.5rem;padding:.75rem max(1rem,4vw);border-bottom:1px solid #d8dde4;background:#fbfaf8;color:#0B0B0E}
 .np-navigation__brand{justify-self:start}
 .np-navigation__list{display:flex;align-items:center;gap:1.25rem;list-style:none;padding:0;margin:0}
 .np-navigation__list a[aria-current=page]{text-decoration-thickness:2px;text-underline-offset:.4rem}
@@ -28,7 +28,7 @@ export const designSystemCss = String.raw`
 .np-editorial__body{grid-column:7/-1}
 .np-editorial__media{grid-column:6/-1}
 .np-editorial--dark{background:#1b2028;color:#fff}
-.np-editorial--blue{background:#eaf3f8;color:#0d1b2a}
+.np-editorial--blue{background:#eaf3f8;color:#0B0B0E}
 .np-leadership-card{display:grid;grid-template-rows:auto 1fr;gap:1rem}
 .np-leadership-card__media{aspect-ratio:4/5;overflow:hidden;background:#eaf3f8}
 .np-leadership-card__media img{width:100%;height:100%;object-fit:cover}
@@ -88,7 +88,7 @@ export const designSystemCss = String.raw`
 .np-form{min-width:0;display:grid;gap:1.25rem}
 .np-button{min-height:44px;border-radius:4px;padding:.65rem 1rem;font:inherit;font-weight:700;border:1px solid transparent}
 .np-button--primary{background:#9D1B32;color:#fff}
-.np-button--secondary{background:#fff;color:#0d1b2a;border-color:#667085}
+.np-button--secondary{background:#fff;color:#0B0B0E;border-color:#667085}
 .np-button--danger{background:#9f1239;color:#fff}
 :where(.np-button,.np-navigation a,.np-tabs button,input,select,textarea,summary):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
 @media(max-width:800px){

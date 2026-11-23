@@ -29,7 +29,7 @@ body {
   margin: 0;
   font-family: var(--font);
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
