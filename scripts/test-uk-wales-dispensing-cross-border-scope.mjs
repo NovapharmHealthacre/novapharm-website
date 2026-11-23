@@ -93,3 +93,30 @@ test('caller must not forge rights, count, row geography, publication or other s
     assert.throws(()=>classifyWalesDispensingSource(malformed),/refused/);
   }
 });
+
+test('prototype-pollution keys, inherited assertions, getters and symbols fail closed', () => {
+  for (const sourceId of ['__proto__', 'constructor', 'toString', 'hasOwnProperty', null, 12, {}]) {
+    assert.throws(() => classifyWalesDispensingSource({...gp(), sourceId}), /unsupported source identity/);
+    assert.throws(() => assessWalesDispensingSourcePair(gp(), {...english(), sourceId}),
+      /unsupported source identity/);
+  }
+  const inherited = Object.create(gp());
+  assert.throws(() => classifyWalesDispensingSource(inherited), /plain metadata object required/);
+  let invoked = false;
+  const withGetter = {...gp()};
+  Object.defineProperty(withGetter, 'sourceId', {
+    enumerable: true,
+    get() { invoked = true; return 'nwssp.gp-dispensing'; },
+  });
+  assert.throws(() => classifyWalesDispensingSource(withGetter), /data field required sourceId/);
+  assert.equal(invoked, false, 'source identity getter must not execute');
+  const withSymbol = {...gp(), [Symbol('approved')]: true};
+  assert.throws(() => classifyWalesDispensingSource(withSymbol), /unexpected field/);
+  const missing = {...gp()};
+  delete missing.sourceVersion;
+  assert.throws(() => classifyWalesDispensingSource(missing), /missing required field sourceVersion/);
+  const noPrototype = Object.assign(Object.create(null), gp());
+  const allowed = classifyWalesDispensingSource(noPrototype);
+  assert.equal(allowed.canPublish, false);
+  assert.equal(allowed.canSumMetrics, false);
+});
