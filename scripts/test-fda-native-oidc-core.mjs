@@ -238,3 +238,104 @@ test("Android Keystore deletion failure leaves session revoked instead of exposi
  await signOutNativeFda(adapter);
  assert.equal(stats().stored,null);
 });
+
+test("Cognito token exchange rejects oversized streaming data before buffering or storing",async()=>{
+  let pulls=0,cancelled=0;
+  const oversizedStream=new ReadableStream({
+    pull(controller){
+      pulls++;
+      controller.enqueue(new Uint8Array(9000).fill(65));
+      if(pulls>=10)controller.close();
+    },
+    cancel(){cancelled++;}
+  });
+  const oversized=new Response(oversizedStream,{
+    status:200,headers:{"content-type":"application/json"}
+  });
+  const {adapter,stats}=platform({fetchImpl:async()=>oversized});
+  await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/oversized/);
+  assert.equal(stats().stored,null,"oversized token response must never reach Keystore");
+  assert.ok(pulls<10,"stream is stopped before reading the entire unbounded response");
+  assert.ok(cancelled>=1,"oversized reader is cancelled");
+});
+test("Cognito token exchange rejects false or malformed Content-Length and invalid UTF-8",async()=>{
+  const fixtures=[
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"999999"}}),
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"not-a-length"}}),
+    new Response(new Uint8Array([0xc3,0x28]),{
+      status:200,headers:{"content-type":"application/json"}
+    })
+  ];
+  for(const response of fixtures){
+    const {adapter,stats}=platform({fetchImpl:async()=>response});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter));
+    assert.equal(stats().stored,null);
+  }
+});
+test("valid Cognito token JSON uses bounded stream, not unbounded Response.text",async()=>{
+  const response=new Response(JSON.stringify({
+    token_type:"Bearer",access_token:mockedToken,expires_in:3600
+  }),{status:200,headers:{"content-type":"application/json"}});
+  response.text=async()=>{throw Error("Unbounded text must not be called");};
+  const {adapter,stats}=platform({fetchImpl:async()=>response});
+  await authenticateNativeFdaWithPkce(config,adapter);
+  assert.equal(stats().stored?.token,mockedToken);
+  await signOutNativeFda(adapter);
+  assert.equal(stats().stored,null);
+});
+test("Stalled Cognito response body obeys total request deadline",async()=>{
+  const originalSetTimeout=globalThis.setTimeout;
+  let cancelled=0;
+  globalThis.setTimeout=(callback,ms,...args)=>
+    originalSetTimeout(callback,ms===10000?25:ms,...args);
+  try{
+    const stream=new ReadableStream({
+      start(){},
+      cancel(){cancelled++;}
+    });
+    const response=new Response(stream,{status:200,headers:{"content-type":"application/json"}});
+    const {adapter,stats}=platform({fetchImpl:async()=>response});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/unavailable|deadline/);
+    assert.equal(stats().stored,null);
+    assert.ok(cancelled>=1);
+  }finally{
+    globalThis.setTimeout=originalSetTimeout;
+  }
+});
+
+test("Cognito oversized response still fails if reader cancellation never settles",async()=>{
+  let cancelled=0,deadlineTimer;
+  const stalledCancellation=new Promise(()=>{});
+  const response=new Response(new ReadableStream({
+    pull(controller){controller.enqueue(new Uint8Array(17000));},
+    cancel(){cancelled++;return stalledCancellation;}
+  }),{status:200,headers:{"content-type":"application/json"}});
+  const {adapter,stats}=platform({fetchImpl:async()=>response});
+  try{
+    const testDeadline=new Promise((_,reject)=>{
+      deadlineTimer=setTimeout(()=>reject(Error("Reader cancellation blocked FDA denial.")),2000);
+    });
+    await assert.rejects(Promise.race([
+      authenticateNativeFdaWithPkce(config,adapter),testDeadline
+    ]),/oversized/);
+    assert.equal(cancelled,1,"reader cancellation should be attempted");
+    assert.equal(stats().stored,null,"bad token must never reach Keystore");
+  }finally{clearTimeout(deadlineTimer);}
+});
+
+test("invalid Cognito response aborts network transport on fail-closed refusal",async()=>{
+  const failures=[
+    new Response("{}",{status:503,headers:{"content-type":"application/json"}}),
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"999999"}})
+  ];
+  for(const response of failures){
+    let requestSignal;
+    const {adapter,stats}=platform({fetchImpl:async (_uri,init)=>{
+      requestSignal=init.signal;
+      return response;
+    }});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter));
+    assert.equal(requestSignal?.aborted,true,"rejected response must abort transport");
+    assert.equal(stats().stored,null);
+  }
+});
