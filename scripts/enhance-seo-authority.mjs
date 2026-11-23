@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
@@ -104,8 +105,8 @@ function canonicalOrganization() {
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": `${SITE_URL}/leadership/${person.slug}/#person`, name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/` })),
-    member: leadership.filter(person => person.governance.toLowerCase().includes("statutory director")).map(person => ({ "@type": "Person", "@id": `${SITE_URL}/leadership/${person.slug}/#person`, name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/`, ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/` })),
+    member: leadership.filter(person => person.governance.toLowerCase().includes("statutory director")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/`, ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
@@ -142,12 +143,12 @@ function normalizePerson(schema, person) {
   return {
     ...schema,
     "@context": "https://schema.org",
-    "@id": `${canonicalUrl}#person`,
+    "@id": personIdForSlug(person.slug),
     "@type": "Person",
     name: person.displayName,
     alternateName: person.name !== person.displayName ? person.name : undefined,
     jobTitle: person.schemaTitle,
-    url: canonicalUrl,
+    url: personUrlForSlug(person.slug),
     image: person.image ? {
       "@type": "ImageObject",
       url: `${SITE_URL}${person.image}`,
@@ -180,7 +181,7 @@ function normalizeArticle(schema, article, canonical, html) {
     description: article.summary,
     url: canonical,
     mainEntityOfPage: { "@id": `${canonical}#webpage` },
-    author: { "@id": `${SITE_URL}/leadership/${author.slug}/#person` },
+    author: { "@id": personIdForSlug(author.slug) },
     publisher: { "@id": ORGANIZATION_ID },
     image: {
       "@type": "ImageObject",
@@ -242,8 +243,8 @@ function enhanceJsonLd(html, route, article, leader) {
           "@type": "ProfilePage",
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
-          about: { "@id": `${canonical}#person` },
-          mainEntity: { "@id": `${canonical}#person` },
+          about: { "@id": personIdForSlug(leader.slug) },
+          mainEntity: { "@id": personIdForSlug(leader.slug) },
           primaryImageOfPage: leader.image ? { "@type": "ImageObject", url: `${SITE_URL}${leader.image}` } : undefined,
           dateModified: releaseDate
         };
