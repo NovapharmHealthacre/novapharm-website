@@ -16,6 +16,27 @@ export function parseReportingPeriod(value: string): ReportingPeriod | null {
     const quarter = Number(financialQuarter[3]);
     return Object.freeze({ key: `${startYear}/${String(endYear).padStart(2, "0")}-Q${quarter}`, precision: "quarter", sortKey: startYear * 100 + quarter * 3, sourceText: financialQuarter[0] });
   }
+  // Scotland publishes Jan–Mar, Apr–Jun, Jul–Sep and Oct–Dec spans as QUARTERS.
+  // Interpret a dated span as one quarter, never as a single month's activity.
+  // Bounded separators: CKAN names and titles are untrusted; avoid polynomial backtracking.
+  const quarterSpan = text.match(/\b(jan(?:uary)?|apr(?:il)?|jul(?:y)?|oct(?:ober)?)[ \t]{0,12}(?:-|–|to)[ \t]{0,12}(mar(?:ch)?|jun(?:e)?|sep(?:t(?:ember)?)?|dec(?:ember)?)[ \t,_-]{0,12}((?:19|20)\d{2})\b/i);
+  if (quarterSpan) {
+    const first = monthNames[(quarterSpan[1] ?? "").toLowerCase()];
+    const last = monthNames[(quarterSpan[2] ?? "").toLowerCase()];
+    const year = Number(quarterSpan[3]);
+    if (first && last === first + 2) {
+      const value = Math.floor((first - 1) / 3) + 1;
+      return Object.freeze({ key: `${year}-Q${value}`, precision: "quarter", sortKey: year * 100 + value * 3, sourceText: quarterSpan[0] });
+    }
+  }
+  // Publisher resources can combine two months into one archive (for example,
+  // Scotland's board-level July–August 2026 file). Never report such an archive
+  // as a single accepted YYYY-MM partition. It requires a separate versioned
+  // date-range contract and explicit Quality reconciliation before ingestion.
+  const compactMonthRange = text.match(/(?:^|[^0-9])((?:19|20)\d{2})[_/-](0[1-9]|1[0-2])[_/-](0[1-9]|1[0-2])(?:[^0-9]|$)/i);
+  if (compactMonthRange && compactMonthRange[2] !== compactMonthRange[3]) return null;
+  const namedMonthRange = text.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[ \t]{0,12}(?:-|–|to)[ \t]{0,12}(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[ \t,_-]{0,12}((?:19|20)\d{2})\b/i);
+  if (namedMonthRange && monthNames[namedMonthRange[1]?.toLowerCase() ?? ""] !== monthNames[namedMonthRange[2]?.toLowerCase() ?? ""]) return null;
   const compactMonth = [...text.matchAll(/((?:19|20)\d{2})(0[1-9]|1[0-2])(?!\d)/g)].at(-1);
   if (compactMonth) {
     const year = Number(compactMonth[1]);

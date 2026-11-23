@@ -17,7 +17,7 @@ test("all thirty-two source-defined Corporate routes are screened even if sitema
 const slugs = Array.from({length:19}, (_, i) => "product-" + (i + 1));
 const core = ["/", "/about/", "/capabilities/", "/contact/", "/legal/privacy/", "/products/",
   "/products/nutraxin/", "/products/esco/", "/products/marketplace/",
-  "/regulatory-services/", "/services/", "/trust-centre/"];
+  "/regulatory-services/", "/services/", "/trust-centre/", "/distribution/", "/market-access/", "/markets/"];
 const productPaths = slugs.map(slug => "/products/nutraxin/" + slug + "/");
 const clean = [...core, ...productPaths];
 const audit = (source=clean, live=clean, products=slugs) =>
@@ -26,7 +26,7 @@ const audit = (source=clean, live=clean, products=slugs) =>
 test("all 19 source-approved Nutraxin product pages and critical core routes are required", () => {
   const report = audit();
   assert.equal(report.approvedNutraxinProductCount, 19);
-  assert.equal(report.expectedCriticalAndProductRoutes, 31);
+  assert.equal(report.expectedCriticalAndProductRoutes, 34);
   assert.deepEqual(report.issues, []);
 });
 
@@ -46,6 +46,17 @@ test("quiet loss of a product from live or source sitemap cannot count as full c
   assert.ok(audit(clean,clean.filter(x=>x!=="/contact/")).issues
     .includes("Required live sitemap route missing: /contact/"));
   assert.throws(() => audit(clean,clean,slugs.slice(0,18)),/at least the original 19/);
+});
+
+test("approved distribution and market routes are required live, even when absent before generation", () => {
+  const markets = ["/distribution/", "/market-access/", "/markets/"];
+  const prebuild = clean.filter(path => !markets.includes(path));
+  assert.deepEqual(audit(prebuild, clean).issues, []);
+  for (const missing of markets) {
+    const report = audit(prebuild, clean.filter(path => path !== missing));
+    assert.ok(report.issues.includes("Required live sitemap route missing: " + missing), missing);
+    assert.deepEqual(report.missingFromSourceSitemap, []);
+  }
 });
 
 test("unapproved product pages, protected routes and noindex research never enter sitemap", () => {
