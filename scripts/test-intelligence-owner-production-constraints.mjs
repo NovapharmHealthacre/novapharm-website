@@ -79,6 +79,54 @@ test("extra fields, missing flags, broad engineering scopes and malformed inputs
   }
 });
 
+test("static public-branding signoff is exactly scoped and cannot approve customer production", () => {
+  const signed = copy();
+  assert.deepEqual(signed.publicBrandingRelease, {
+    enabled: true,
+    signoff: "granted",
+    scope: "public-static-with-preserved-contact"
+  });
+  const assessment = validateOwnerProductionConstraints(signed);
+  for (const key of [
+    "productionDeploymentApproved", "publicCustomerReleaseApproved",
+    "nativeVendorConnectionApproved", "procurementApproved"
+  ]) assert.equal(assessment[key], false, key);
+
+  const legacy = copy();
+  delete legacy.publicBrandingRelease;
+  assert.doesNotThrow(() => validateOwnerProductionConstraints(legacy),
+    "An absent branding-only grant must preserve the existing restrictive schema");
+
+  const revoked = copy();
+  revoked.publicBrandingRelease = {
+    enabled: false, signoff: "not_granted",
+    scope: "public-static-with-preserved-contact"
+  };
+  assert.doesNotThrow(() => validateOwnerProductionConstraints(revoked),
+    "Revoking a branding-only grant must never require customer production enablement");
+
+  const edits = [
+    value => { value.enabled = "true"; },
+    value => { value.enabled = false; },
+    value => { value.signoff = "approved"; },
+    value => { value.signoff = "not_granted"; },
+    value => { value.scope = "customer-subscriptions"; },
+    value => { value.scope = ""; },
+    value => { value.customerAccess = true; },
+    value => { delete value.scope; }
+  ];
+  for (const edit of edits) {
+    const candidate = copy();
+    edit(candidate.publicBrandingRelease);
+    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
+  }
+  for (const invalid of [null, false, [], {}, "granted"]) {
+    const candidate = copy();
+    candidate.publicBrandingRelease = invalid;
+    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
+  }
+});
+
 test("AWS dedicated production ingress remains default-off in source control", () => {
   const cf = JSON.parse(readFileSync(
     new URL("../infra/aws/intelligence-dedicated-ingress-candidate.json", import.meta.url), "utf8"
