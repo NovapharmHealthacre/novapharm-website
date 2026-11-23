@@ -20,7 +20,7 @@ test("approved public browser colours and Sovereign Black come from owner regist
 });
 
 test("retired homepage and Products browser colours are corrected without changing page content", () => {
-  const legacy = '<!doctype html><html lang="en-GB"><head><meta name="theme-color" content="#FFFFFF"><link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B"><title>Approved Earth page</title></head><body><main id="main"><h1>Medicine. Where it needs to be.</h1></main></body></html>';
+  const legacy = '<!doctype html><html lang="en-GB"><head><meta name="theme-color" content="#FFFFFF"><link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#E3120B"><title>Approved Earth page</title></head><body><main id="main"><h1>Medicine. Where it needs to be.</h1></main></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(legacy, palette);
   assert.match(result, /name="theme-color" content="#FBFAEF"/);
   assert.match(result, /rel="mask-icon"[^>]*color="#9D1B32"/);
@@ -44,7 +44,7 @@ test("current Contact palette stays unchanged and the protected form binding is 
 });
 
 test("missing browser theme is added and approved mask colour is completed", () => {
-  const input = '<html><head><link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg"></head><body><h1>Products</h1></body></html>';
+  const input = '<html><head><link rel="mask-icon" href="/fixtures/brand-mask.svg"></head><body><h1>Products</h1></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(input, palette);
   assertOfficialPublicBrandMetadata(result, palette);
   assert.match(result, /rel="mask-icon"[^>]*color="#9D1B32"/);
@@ -91,7 +91,7 @@ test("whole canonical release fixture updates all six key routes plus 54 registe
   for (const route of routes) {
     const file = join(root, route);
     mkdirSync(dirname(file), {recursive:true});
-    writeFileSync(file, `<!DOCTYPE html><html lang="en-GB"><head><meta name="theme-color" content="#E3120B"><link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B"></head><body><main><h1>${route}</h1></main></body></html>`);
+    writeFileSync(file, `<!DOCTYPE html><html lang="en-GB"><head><meta name="theme-color" content="#E3120B"><link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#E3120B"></head><body><main><h1>${route}</h1></main></body></html>`);
   }
   assert.deepEqual(normaliseCanonicalPublicBrandMetadata(root), {checked:60, changed:60});
   for (const route of routes) {
