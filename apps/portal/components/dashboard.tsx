@@ -308,7 +308,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
             href={entry.route}
             aria-current={current ? "page" : undefined}
             // Preserve readable Sovereign Black labels against active light background.
-            style={current ? { color: "#0B0B0E", backgroundColor: "#F8EDF0" } : undefined}
+            style={current ? { color: "#0B0B0E", backgroundColor: "#F8F7F3" } : undefined}
           ><span>{entry.title}</span><small
             style={current ? { color: "#0B0B0E" } : undefined}
           >{entry.releaseClassificationLabel}</small></a></li>;

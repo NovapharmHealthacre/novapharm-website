@@ -367,7 +367,7 @@ async function inspectModule(
           };
         });
         assert.deepEqual(inkAndSurface, {
-          background: "rgb(248, 237, 240)",
+          background: "rgb(248, 247, 243)",
           title: "rgb(11, 11, 14)",
           status: "rgb(11, 11, 14)",
         }, `${module.route}: accessible active sidebar palette changed`);

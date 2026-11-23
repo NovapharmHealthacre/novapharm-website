@@ -158,7 +158,7 @@ textarea {
 /* Preserve WCAG AA selected-navigation contrast despite late stylesheet extraction. */
 .workspace-sidebar nav a.active {
   color: #0B0B0E;
-  background-color: #F8EDF0;
+  background-color: #F8F7F3;
 }
 /* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
 .workspace-sidebar nav a.active > small {

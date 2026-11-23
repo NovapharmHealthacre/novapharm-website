@@ -45,7 +45,7 @@ test("active customer and employee Portal nav pairs explicit surface and text co
   const background = declaration(active, "background-color");
   const title = declaration(active, "color");
   const detail = declaration(status, "color");
-  assert.equal(background, "#F8EDF0");
+  assert.equal(background, "#F8F7F3");
   assert.equal(title, "#0B0B0E");
   assert.equal(detail, "#0B0B0E");
   assert.ok(contrast(title, background) >= 4.5, "Active navigation titles must be WCAG AA readable");
@@ -70,7 +70,7 @@ test("unselected navigation and secure route disclosure are not modified by acti
 
 test("rendered active Portal links pin the WCAG light surface and ink despite late CSS extraction", () => {
   const dashboard = readFileSync(new URL("../components/dashboard.tsx", import.meta.url), "utf8");
-  assert.match(dashboard, /style=\{current \? \{ color: "#0B0B0E", backgroundColor: "#F8EDF0" \}/);
+  assert.match(dashboard, /style=\{current \? \{ color: "#0B0B0E", backgroundColor: "#F8F7F3" \}/);
   assert.match(dashboard, /style=\{current \? \{ color: "#0B0B0E" \} : undefined\}/);
   assert.match(dashboard, /aria-current=\{current \? "page" : undefined\}/);
   const background = declaration(rule(".workspace-sidebar nav a.active"), "background-color");
