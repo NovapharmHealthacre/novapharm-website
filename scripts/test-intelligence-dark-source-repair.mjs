@@ -99,3 +99,28 @@ test('canonical image inventory recognizes the repaired master as governed non-p
   assert.equal(record.provenanceRecord, 'audit/brand/intelligence-dark-webp-source-repair-20261123.json');
   assert.match(record.ownerApproval, /pending/i, 'Source repair is not a completed release approval');
 });
+
+
+test('reconciled full-estate image inventory pins the restored master without shipping it', () => {
+  // Check the actual regenerated 921-asset review inventory, not only the
+  // source artwork and register. This test also catches stale inventory after
+  // an automated inventory-only commit.
+  const inventory = JSON.parse(readFileSync(resolve(root, 'audit/generated/image-inventory.json'), 'utf8'));
+  assert.equal(inventory.assets.length, inventory.summary.trackedAssetCount,
+    'Generated inventory summary must describe every actual asset');
+  const matches = inventory.assets.filter(asset => asset.path === receipt.member.gitPath);
+  assert.equal(matches.length, 1, 'Restored source must appear exactly once in the full-estate inventory');
+  const asset = matches[0];
+  assert.equal(asset.sha256, receipt.member.sha256);
+  assert.equal(asset.bytes, receipt.member.sizeBytes);
+  assert.equal(asset.width, receipt.member.width);
+  assert.equal(asset.height, receipt.member.height);
+  assert.equal(asset.provenanceStatus, 'registered');
+  assert.equal(asset.canonicalDeliveryPath, receipt.member.gitPath);
+  assert.equal(asset.semanticPurpose, 'owner-supplied-intelligence-source-pack-master-not-for-publication');
+  assert.deepEqual(asset.routes, [], 'Non-public source may not claim a published route');
+  assert.equal(asset.lcpRelevance, false, 'Archival source cannot be represented as a public LCP image');
+  assert.match(asset.reviewStatus, /pending/i, 'Registry entry cannot self-approve release');
+  assert.equal(inventory.summary.overPublicDeliveryFileCeiling, 0,
+    'The original source repair must not exceed public image delivery limits');
+});
