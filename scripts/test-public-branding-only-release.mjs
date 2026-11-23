@@ -54,6 +54,21 @@ test("branding signoff must explicitly approve static public site and existing C
     assert.equal(evaluateBrandingOnlyRelease(v).approved,false);
   }
 });
+test("additional, missing or malformed branding scope keys fail closed", () => {
+  const mutations = [
+    v => { v.config.publicBrandingRelease.activateSubscriptions = true; },
+    v => { v.config.publicBrandingRelease.activateSubscriptions = false; },
+    v => { delete v.config.publicBrandingRelease.scope; },
+    v => { v.config.publicBrandingRelease = []; },
+    v => { v.config.publicBrandingRelease = null; }
+  ];
+  for (const mutate of mutations) {
+    const v = input();
+    mutate(v);
+    assert.equal(evaluateBrandingOnlyRelease(v).approved, false);
+  }
+});
+
 test("all customer, paid-service and external-email permissions remain denied", () => {
   for (const key of Object.keys(permissions)) {
     const v=input();v.config.productionPermissions[key]=true;
