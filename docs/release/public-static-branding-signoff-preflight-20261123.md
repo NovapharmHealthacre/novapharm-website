@@ -1,13 +1,13 @@
 # NovaPharm public-static branding release — owner signoff preflight
 
-**Status:** Source integration complete; separately approved production publication **NOT GRANTED**.
+**Status:** Public-static-with-preserved-Contact scope was separately authorised in source commit `26432d4ac2c53a8a39b6701fa77bccda487737ed`; **production publication has not been dispatched or verified**. Recheck the exact `main` head and owner decision before any release.
 
 This procedure is for the public-static branding already merged into `main` only. It does not approve Portal login, subscriptions, customer billing, external email, new paid infrastructure, vendor licenses, native enterprise integrations, medicine-data admission, or DNS/API cutovers. All eleven `productionPermissions` remain explicitly `false`, and `productionSignoff` must remain `not_granted`.
 
 ## Release candidate and required approvals
 
 1. Review the exact current `main` commit and the already merged branding and Pages verification changes. Never use a moving tag or abbreviated SHA for a deployment.
-2. Obtain a **separate, recorded owner signoff** specifically for the scope `public-static-with-preserved-contact`. Only after explicit approval, submit and merge a reviewed, CI-green change to `config/intelligence/owner-production-constraints.json` setting `publicBrandingRelease.enabled` to `true` and `publicBrandingRelease.signoff` to `granted`. Do not change any other permission, `productionSignoff`, or the approved scope.
+2. Confirm the already recorded **separate** public-static owner signoff remains valid in the exact current `main` commit: `publicBrandingRelease.enabled` must be `true`, `publicBrandingRelease.signoff` must be `granted`, and scope must equal `public-static-with-preserved-contact`. The signoff was added by commit `26432d4ac2c53a8a39b6701fa77bccda487737ed`, which requires its own post-merge security and release checks. Never treat it as customer production consent; do not modify `productionSignoff` or any of the eleven disabled permissions.
 3. Confirm the three immovable reviewed Contact blob hashes: `src/content/contact-managed-release.html` = `14591f43ff0ec6674b026a7bec629495f18fa50f`; `assets/js/contact-production.js` = `d405d459e089c3a696bd0ed6b2fb84bf529787bc`; `assets/css/novapharm-unified-20261107.css` = `9631537b380551b5dd3f8dbee81d93c3098bab54`. The approved Contact API must stay `https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com`.
 4. Verify required protected checks, supply-chain policy and CodeQL on the **new exact main SHA after signoff merge**. Any failure or changed Contact hash stops the release.
 
@@ -29,4 +29,4 @@ Accept publication only after the live custom domain returns the exact approved 
 
 If any check fails, **do not** claim launch success or broaden permissions. Preserve current production, investigate the release workflow and use the protected forward-only recovery process after separate approval. The `gh-pages` branch commit alone is not adequate proof of an Actions-artifact publication.
 
-This preflight deliberately leaves the approval **disabled**. It does not constitute signoff or dispatch any deployment.
+This preflight records the independently approved, still **unpublished** branding-only status. It does not itself grant new signoff, activate any other production permission or dispatch a deployment.

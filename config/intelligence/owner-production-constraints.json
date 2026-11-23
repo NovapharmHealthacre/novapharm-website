@@ -32,8 +32,8 @@
     "reversible_nonproduction_design"
   ],
   "publicBrandingRelease": {
-    "enabled": false,
-    "signoff": "not_granted",
+    "enabled": true,
+    "signoff": "granted",
     "scope": "public-static-with-preserved-contact"
   },
   "productionSignoff": "not_granted"
