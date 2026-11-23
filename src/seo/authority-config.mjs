@@ -1,4 +1,5 @@
 import { company, leadership, pageMeta } from "../content/site-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "./person-identity.mjs";
 
 export const SITE_URL = company.siteUrl;
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
@@ -125,8 +126,8 @@ export const canonicalEntities = Object.freeze([
     canonicalName: person.displayName,
     legalName: person.name,
     alternateNames: person.name === person.displayName ? [] : [person.name],
-    canonicalUrl: `${SITE_URL}/leadership/${person.slug}/`,
-    id: `${SITE_URL}/leadership/${person.slug}/#person`,
+    canonicalUrl: personUrlForSlug(person.slug),
+    id: personIdForSlug(person.slug),
     description: person.summary,
     image: person.image ? `${SITE_URL}${person.image}` : null,
     role: person.schemaTitle,
