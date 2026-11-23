@@ -226,11 +226,24 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         var form=URLComponents()
         form.queryItems=values
         req.httpBody=form.percentEncodedQuery?.data(using:.utf8)
-        let session=URLSession(configuration:.ephemeral)
-        let (data,response)=try await session.data(for:req)
+        // Never buffer an untrusted token response before checking the 16 KiB
+        // limit. The resource deadline covers the body, not only its headers.
+        let configuration=URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForRequest=10
+        configuration.timeoutIntervalForResource=10
+        let session=URLSession(configuration:configuration)
+        defer {session.invalidateAndCancel()}
+        let (bytes,response)=try await session.bytes(for:req)
         guard let http=response as? HTTPURLResponse,
-              http.statusCode==200,response.url==config.tokenURL,data.count<=16384,
-              let token=try? JSONDecoder().decode(NovaFDATokenResponse.self,from:data),
+              http.statusCode==200,response.url==config.tokenURL
+              else {throw NovaFDAOIDCError.token}
+        var data=Data()
+        data.reserveCapacity(16*1024)
+        for try await byte in bytes {
+            guard data.count<16*1024 else {throw NovaFDAOIDCError.token}
+            data.append(byte)
+        }
+        guard let token=try? JSONDecoder().decode(NovaFDATokenResponse.self,from:data),
               token.token_type.lowercased()=="bearer",token.access_token.count>40
               else {throw NovaFDAOIDCError.token}
         // URLSession.data(for:) suspends this actor. Do not save a token

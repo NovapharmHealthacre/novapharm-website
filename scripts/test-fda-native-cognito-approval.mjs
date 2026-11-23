@@ -75,3 +75,12 @@ test("iOS and Android accept only the production Cognito tenant, not an AWS regi
  assert.ok(android.includes("domain.hostname===expectedHost"),"Android must enforce exact tenant match");
  assert.ok(!android.includes("domain.hostname.endsWith("),"Android must not trust a regional suffix");
 });
+
+test("iOS Cognito token response is streamed with a byte and resource-time bound",()=>{
+ const ios=readFileSync(new URL("../native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift",import.meta.url),"utf8");
+ assert.ok(ios.includes("session.bytes(for:req)"),"iOS must stream before buffering");
+ assert.ok(!ios.includes("session.data(for:req)"),"iOS may not collect an unbounded token response");
+ assert.ok(ios.includes("guard data.count<16*1024"),"iOS must stop before buffering an oversized token");
+ assert.ok(ios.includes("configuration.timeoutIntervalForResource=10"),"iOS must bound total resource time");
+ assert.ok(ios.includes("session.invalidateAndCancel()"),"iOS must cancel/clean up the token session");
+});
