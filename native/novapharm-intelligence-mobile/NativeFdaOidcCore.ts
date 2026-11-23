@@ -56,7 +56,9 @@ async function withStoreLock<T>(store:NovaFDASecureTokenStore,operation:()=>Prom
   finally{release();}
 }
 const requiredScope="novapharm/fda.read";
-const expectedHostEnd=".auth.eu-north-1.amazoncognito.com";
+// Pin the only approved production Cognito tenant. A regional suffix would
+// admit unrelated Cognito user pools controlled by other AWS accounts.
+const expectedHost="novapharm-intelligence-production-eun1.auth.eu-north-1.amazoncognito.com";
 const allowedName=/^[A-Za-z0-9_.-]+$/u;
 function base64url(data:Uint8Array):string {
   const digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -84,7 +86,7 @@ function validDomain(config:NovaFDAOidcConfig):boolean{
       allowedName.test(config.expectedAndroidPackage) &&
       /^[a-z0-9]{8,64}$/u.test(config.clientId) &&
       domain.protocol==="https:" && !!domain.hostname &&
-      domain.hostname.endsWith(expectedHostEnd) &&
+      domain.hostname===expectedHost &&
       domain.port==="" && domain.username==="" && domain.password==="" &&
       domain.pathname==="/" && domain.search==="" && domain.hash==="" &&
       redirect.protocol==="novapharmintelligence:" && redirect.hostname==="oauth" &&

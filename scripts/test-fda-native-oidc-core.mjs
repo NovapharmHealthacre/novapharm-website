@@ -79,6 +79,8 @@ test("unregistered Android package, callback, redirect and Cognito origin fail b
    {redirectUri:"https://evil.example/callback"},
    {redirectUri:"novapharmintelligence://oauth/unknown"},
    {cognitoDomain:"https://evil.example/"},
+   // A different valid AWS Cognito tenant in the same region must be denied.
+   {cognitoDomain:"https://attacker-tenant.auth.eu-north-1.amazoncognito.com/"},
    {cognitoDomain:"http://novapharm-intelligence-production-eun1.auth.eu-north-1.amazoncognito.com/"},
    {clientId:"bad-id"}
  ]){
