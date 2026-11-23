@@ -179,16 +179,6 @@ test("mixed-case script tags and whitespace closing tags preserve CSP-pinned Nex
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
 });
 
-test("commented script-like markup stays inert during public theme normalization", () => {
-  const comment = '<!-- <script>self.__next_f.push({"name":"theme-color","content":"#E3120B"})</script> -->';
-  const page = '<html lang="en-GB"><head><meta name="theme-color" content="#E3120B"></head>' +
-    '<body>' + comment + '<main><h1>Public metadata</h1></main></body></html>';
-  const result = normaliseOfficialPublicBrandMetadata(page, palette);
-  assertOfficialPublicBrandMetadata(result, palette);
-  assert.ok(result.includes(comment), "HTML comments cannot become executable Flight scripts");
-  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
-});
-
 test("ambiguous script closing tags fail closed, not skipped by a regex", () => {
   const html = '<html><head><meta name="theme-color" content="#E3120B"></head>' +
     '<body><script>self.__next_f.push([])</script \t\n fake></body></html>';
@@ -196,6 +186,26 @@ test("ambiguous script closing tags fail closed, not skipped by a regex", () => 
     /Ambiguous script end tag/);
 });
 
+
+test("four checked-in first-party public routes have approved browser chrome before publication", () => {
+  const routes = [
+    "legal/accessibility/index.html",
+    "products/index.html",
+    "capabilities/index.html",
+    "oncology/index.html"
+  ];
+  for (const route of routes) {
+    const html = readFileSync(route, "utf8");
+    const endHead = html.indexOf("</head>");
+    assert.ok(endHead > 0, "Missing public head: " + route);
+    const head = html.slice(0, endHead);
+    assert.equal((head.match(/name="theme-color"/g) || []).length, 1, route);
+    assert.match(head, /<meta name="theme-color" content="#FBFAEF">/, route);
+    assert.equal((head.match(/rel="mask-icon"/g) || []).length, 1, route);
+    assert.match(head, /<link rel="mask-icon"[^>]*color="#9D1B32"/, route);
+    assert.doesNotMatch(head, /#E3120B/i, "Retired browser red in " + route);
+  }
+});
 
 test("all 19 actual Nutraxin storefronts normalize approved browser chrome without changing commerce or source receipts", () => {
   const products = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
@@ -227,25 +237,6 @@ test("all 19 actual Nutraxin storefronts normalize approved browser chrome witho
   }
 });
 
-test("four checked-in first-party public routes have approved browser chrome before publication", () => {
-  const routes = [
-    "legal/accessibility/index.html",
-    "products/index.html",
-    "capabilities/index.html",
-    "oncology/index.html"
-  ];
-  for (const route of routes) {
-    const html = readFileSync(route, "utf8");
-    const endHead = html.indexOf("</head>");
-    assert.ok(endHead > 0, "Missing public head: " + route);
-    const head = html.slice(0, endHead);
-    assert.equal((head.match(/name="theme-color"/g) || []).length, 1, route);
-    assert.match(head, /<meta name="theme-color" content="#FBFAEF">/, route);
-    assert.equal((head.match(/rel="mask-icon"/g) || []).length, 1, route);
-    assert.match(head, /<link rel="mask-icon"[^>]*color="#9D1B32"/, route);
-    assert.doesNotMatch(head, /#E3120B/i, "Retired browser red in " + route);
-  }
-});
 
 test("all 19 checked-in Nutraxin product heads use approved white and Safari crimson before any build", () => {
   // Source parity matters even when the public build also normalizes legacy
@@ -271,4 +262,14 @@ test("all 19 checked-in Nutraxin product heads use approved white and Safari cri
     assert.ok(html.includes('data-merchant-sku="' + product.sku + '"'),
       "Retail offer must retain its exact original SKU: " + file);
   }
+});
+
+test("commented script-like markup stays inert during public theme normalization", () => {
+  const comment = '<!-- <script>self.__next_f.push({"name":"theme-color","content":"#E3120B"})</script> -->';
+  const page = '<html lang="en-GB"><head><meta name="theme-color" content="#E3120B"></head>' +
+    '<body>' + comment + '<main><h1>Public metadata</h1></main></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(page, palette);
+  assertOfficialPublicBrandMetadata(result, palette);
+  assert.ok(result.includes(comment), "HTML comments cannot become executable Flight scripts");
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
 });

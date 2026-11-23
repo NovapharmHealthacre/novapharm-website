@@ -1840,8 +1840,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 91,
-      "referenceCount": 238,
+      "usageCount": 92,
+      "referenceCount": 240,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1860,6 +1860,7 @@
         "cro/index.html",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
+        "index.html",
         "investor-information/index.html",
         "leadership/girish-achliya/index.html",
         "leadership/helly-panchal/index.html",
@@ -1989,7 +1990,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 105,
-      "referenceCount": 219,
+      "referenceCount": 217,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
