@@ -577,6 +577,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
+          RELEASE_EVENT: ${{ github.event_name }}
+          BRANDING_ONLY: ${{ inputs.branding_only }}
+          CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
