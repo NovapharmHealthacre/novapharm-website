@@ -17,9 +17,9 @@ function rule(selector: string): string {
 
 function declaration(body: string, property: string): string {
   const expression = new RegExp("(?:^|;)\\s*" + property + "\\s*:\\s*([^;]+)", "i");
-  const found = body.match(expression);
-  assert.ok(found, "Missing explicit " + property + " declaration");
-  return found[1].trim().toUpperCase();
+  const value = body.match(expression)?.[1];
+  assert.ok(value, "Missing explicit " + property + " declaration");
+  return value.trim().toUpperCase();
 }
 
 function luminance(hex: string): number {
@@ -33,8 +33,10 @@ function luminance(hex: string): number {
 }
 
 function contrast(left: string, right: string): number {
-  const values = [luminance(left), luminance(right)].sort((a, b) => b - a);
-  return (values[0] + 0.05) / (values[1] + 0.05);
+  const leftLuminance = luminance(left);
+  const rightLuminance = luminance(right);
+  return (Math.max(leftLuminance, rightLuminance) + 0.05) /
+    (Math.min(leftLuminance, rightLuminance) + 0.05);
 }
 
 test("active customer and employee Portal nav pairs explicit surface and text colours", () => {
