@@ -105,8 +105,8 @@ function canonicalOrganization() {
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/` })),
-    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: `${SITE_URL}/leadership/${person.slug}/`, ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
