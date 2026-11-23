@@ -1,0 +1,36 @@
+name: UK private preview source identity and pending-rights boundaries
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/uk-preview-source-identity-rights-gate.mjs'
+      - 'scripts/test-uk-preview-source-identity-rights-gate.mjs'
+      - 'docs/data/uk-preview-source-identity-rights-gate.md'
+      - '.github/workflows/uk-preview-source-identity-rights.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deny-unapproved-source-identity-joins:
+    name: UK source alias and private pending-rights invariant
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Verify exact source-only contracts and test syntax
+        run: |
+          node --check src/core/uk-preview-source-identity-rights-gate.mjs
+          node --check scripts/test-uk-preview-source-identity-rights-gate.mjs
+      - name: Test 14 source ID matching and deny-by-default rights
+        run: node --test scripts/test-uk-preview-source-identity-rights-gate.mjs
