@@ -151,7 +151,14 @@ textarea {
   box-shadow: inset 3px 0 var(--portal-red);
 }
 .workspace-sidebar a small { color: var(--portal-muted); }
-/* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
+/* The sidebar's earlier dark active state has the same selector weight as
+   the white/porcelain brand override in the bundled CSS. Keep the active
+   link background and both labels in one higher-specificity light-surface
+   contract to prevent a dark-background/black-caption contrast regression. */
+.workspace-sidebar nav a.active {
+  color: #0B0B0E;
+  background-color: #F8EDF0;
+}
 .workspace-sidebar nav a.active > small {
   color: #0B0B0E;
   background: transparent;
