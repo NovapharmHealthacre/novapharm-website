@@ -148,8 +148,8 @@ test("Portal navigation status and warehouse source disclaimer preserve accessib
   const active = portal.match(/\.workspace-sidebar nav a\.active \{([^}]+)\}/);
   assert.ok(active, "Selected Portal sidebar links need a specific light-surface override");
   // Assert the exact approved literal pair; only CSS source values are inspected.
-  assert.match(active[1], /background-color:\\s*#F8F7F3\\s*;/i);
-  assert.match(active[1], /color:\\s*#0B0B0E\\s*;/i);
+  assert.match(active[1], /background-color:\s*#F8F7F3\s*;/i);
+  assert.match(active[1], /color:\s*#0B0B0E\s*;/i);
   assert.ok(warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#595961;"));
   assert.ok(!warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;"));
 });
