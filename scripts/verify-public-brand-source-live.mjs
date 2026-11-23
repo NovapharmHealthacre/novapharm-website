@@ -53,9 +53,11 @@ export function verifyPublishedHtml(html, route, sourceSha) {
     }
     if (!html.includes('href="/legal/privacy/#business-enquiries"'))
       errors.push("Contact business enquiry privacy notice missing");
-    if (!html.includes('http-equiv="Content-Security-Policy"') ||
-        !html.includes("form-action 'none'") ||
-        !html.includes("connect-src 'self' " + pinnedOrigin))
+    const cspTags = matches(html, "meta", "http-equiv", "Content-Security-Policy");
+    const contactCsp = cspTags.length === 1 ? attribute(cspTags[0], "content") : null;
+    if (!contactCsp || !contactCsp.includes("script-src 'self'") ||
+        !contactCsp.includes("form-action 'none'") ||
+        !contactCsp.includes("connect-src 'self' " + pinnedOrigin))
       errors.push("Reviewed Contact CSP or API egress boundary missing");
     if (!html.includes('href="/assets/css/novapharm-unified-20261107.css"'))
       errors.push("Reviewed managed Contact design stylesheet missing");
