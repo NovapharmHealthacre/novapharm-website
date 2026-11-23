@@ -4,32 +4,77 @@
  * This parser deliberately inspects public markup only: no JS, cookies,
  * authentication, proprietary Apple assets or patient/customer records.
  */
-function attribute(tag, name) {
-  if (!tag) return null;
-  const pattern = new RegExp("(?:^|\\s)" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", "i");
-  const match = tag.match(pattern);
-  return match ? (match[1] ?? match[2]) : null;
+import { parse } from "parse5";
+
+const htmlNamespace = "http://www.w3.org/1999/xhtml";
+const attribute = (element, name) => element?.attrs
+  ?.find(item => item.name === name && !item.namespace)?.value ?? null;
+
+function* elements(root) {
+  const pending = [root];
+  while (pending.length) {
+    const node = pending.pop();
+    if (node.tagName && node.namespaceURI === htmlNamespace) yield node;
+    // Template content is a separate inert fragment, not part of the public UI.
+    if (node.tagName === "template") continue;
+    const children = node.childNodes ?? [];
+    for (let i = children.length - 1; i >= 0; i--) pending.push(children[i]);
+  }
+}
+
+export const MANAGED_CONTACT_ORIGIN = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
+
+// This detects a lost or substituted production form. It cannot accept intake or delivery.
+export function inspectManagedContactMarkup(html) {
+  if (typeof html !== "string") throw new TypeError("Public Contact markup must be a string");
+  const nodes = [...elements(parse(html))];
+  const forms = nodes.filter(node => node.tagName === "form");
+  const managed = forms.filter(form => attribute(form, "data-live-b2b-enquiry-form") !== null);
+  const emailDraftOnly = forms.some(form => attribute(form, "data-email-enquiry-form") !== null ||
+    /^mailto:/i.test(attribute(form, "action")?.trim() ?? ""));
+  const issues = [];
+  if (managed.length !== 1) issues.push("Expected exactly one managed business enquiry form");
+  if (emailDraftOnly) issues.push("Email-draft form present on managed Contact");
+  for (const form of managed) {
+    if (attribute(form, "data-api-origin") !== MANAGED_CONTACT_ORIGIN) {
+      issues.push("Managed Contact is not pinned to the approved receiver");
+    }
+    const fields = [...elements(form)].filter(node => node.tagName === "input");
+    for (const name of ["privacyAcknowledgement", "safetyConfirmation"]) {
+      if (!fields.some(field => attribute(field, "name") === name &&
+          attribute(field, "type")?.toLowerCase() === "checkbox" && attribute(field, "required") !== null)) {
+        issues.push("Required Contact confirmation missing: " + name);
+      }
+    }
+  }
+  if (!nodes.some(node => node.tagName === "script" &&
+    attribute(node, "src") === "/assets/js/contact-production.js")) {
+    issues.push("Managed Contact production client missing");
+  }
+  return { emailDraftOnly, issues };
 }
 
 export function inspectPublicHigSignals(html) {
   if (typeof html !== "string") throw new TypeError("Public markup must be a string");
-  const htmlTag = html.match(/<html\b[^>]*>/i)?.[0] ?? "";
-  const tags = [...html.matchAll(/<meta\b[^>]*>/gi)].map(match => match[0]);
-  const meta = name => tags.find(tag => attribute(tag, "name")?.toLowerCase() === name) ?? "";
+  const nodes = [...elements(parse(html))];
+  const htmlTag = nodes.find(node => node.tagName === "html");
+  const meta = name => nodes.find(node => node.tagName === "meta" &&
+    attribute(node, "name")?.toLowerCase() === name);
   const viewport = attribute(meta("viewport"), "content") ?? "";
   const provenance = attribute(meta("novapharm-source-sha"), "content") ?? "";
   const language = attribute(htmlTag, "lang");
-  const h1Elements = [...html.matchAll(/<h1\b/gi)].length;
-  const skipLinks = [...html.matchAll(/<a\b[^>]*>/gi)].map(match => match[0]).filter(tag => {
+  const h1Elements = nodes.filter(node => node.tagName === "h1").length;
+  const skipLinks = nodes.filter(tag => {
+    if (tag.tagName !== "a") return false;
     const href = attribute(tag, "href") ?? "";
     const label = (attribute(tag, "class") ?? "") + " " + (attribute(tag, "aria-label") ?? "");
     return /^#[A-Za-z][A-Za-z0-9_-]*$/.test(href) &&
       /skip|bypass/i.test(label);
   });
-  const tagsWithId = [...html.matchAll(/<[^>]+>/g)].map(match => match[0]);
+  const ids = new Set(nodes.map(node => attribute(node, "id")).filter(Boolean));
   const skipTargetPresent = skipLinks.some(link => {
     const target = (attribute(link, "href") ?? "").slice(1);
-    return tagsWithId.some(tag => attribute(tag, "id") === target);
+    return ids.has(target);
   });
   const signals = {
     language,
