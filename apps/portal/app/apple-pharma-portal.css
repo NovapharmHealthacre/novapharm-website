@@ -176,7 +176,7 @@ textarea {
 .workspace-topbar {
   min-height: 64px;
   border-bottom-color: var(--portal-divider);
-  background: rgba(251,250,239,.9);
+  background: rgba(255,255,255,.9);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
