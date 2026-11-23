@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { leadership } from "../src/content/site-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
@@ -19,7 +20,7 @@ for (const person of leadership) {
   }
 
   const profileId = `${SITE_URL}${route}#webpage`;
-  const personId = `${SITE_URL}${route}#person`;
+  const personId = personIdForSlug(person.slug);
   const reconciled = schemas.map((schema) => {
     if (types(schema).includes("ProfilePage")) {
       return {
@@ -29,7 +30,7 @@ for (const person of leadership) {
         "@id": profileId,
         name: person.name,
         headline: `${person.displayName} — ${person.schemaTitle}`,
-        url: `${SITE_URL}${route}`,
+        url: personUrlForSlug(person.slug),
         inLanguage: "en-GB",
         isPartOf: { "@id": WEBSITE_ID },
         about: { "@id": personId },
