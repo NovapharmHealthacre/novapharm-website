@@ -18,8 +18,11 @@ function matches(html, tag, attributeName, expectedValue) {
   return tags.filter(value => attribute(value, attributeName)?.toLowerCase() === expectedValue.toLowerCase());
 }
 
-export function verifyPublishedHtml(html, route, sourceSha) {
+export function verifyPublishedHtml(rawHtml, route, sourceSha) {
   assert.match(sourceSha, /^[a-f0-9]{40}$/, "Exact release commit SHA required");
+  // A commented-out receipt, theme, H1, form, consent marker or CSP directive
+  // is not active HTML. Never let inert markup satisfy a production release.
+  const html = rawHtml.replace(/<!--[\s\S]*?-->/g, "");
   const errors = [];
   if (!/<html\b[^>]*\blang=["']en(?:-[^"']*)?["']/i.test(html)) errors.push("English HTML language missing");
   if ((html.match(/<h1(?:\s[^>]*)?>/gi) ?? []).length !== 1) errors.push("Expected one H1");
