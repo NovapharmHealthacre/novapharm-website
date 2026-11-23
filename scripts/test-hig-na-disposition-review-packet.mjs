@@ -11,13 +11,13 @@ const packet = readFileSync(
   "docs/design/apple-hig-na-disposition-review-packet-20261120.md", "utf8"
 );
 const platforms = ["web", "ios", "android"];
-const proposed = register.topics.filter(topic => platforms.every(platform =>
-  topic.platformApplicability[platform]?.state === "not_applicable"
-));
 const escapePipe = value => String(value).replaceAll("|", "\\|").replace(/\s+/g, " ").trim();
 
-test("the independent review packet lists every proposed all-platform N/A topic once", () => {
-  assert.equal(register.topics.length, 172);
+function validateScopeSnapshot(topics) {
+  assert.equal(topics.length, 172);
+  const proposed = topics.filter(topic => platforms.every(platform =>
+    topic.platformApplicability[platform]?.state === "not_applicable"
+  ));
   assert.equal(proposed.length, 28,
     "A change in proposed N/A scope must update and re-review the packet");
   const rows = packet.split("\n").filter(line =>
@@ -29,10 +29,8 @@ test("the independent review packet lists every proposed all-platform N/A topic 
     `| ${topic.sourceRowIndex + 1} | [${escapePipe(topic.title)}](${topic.url}) | ${escapePipe(topic.section)} | ${escapePipe(topic.priority)} | Pending |`
   );
   assert.deepEqual(rows, expected,
-    "Candidate rows, source links, order and pending status must match the register");
-});
+    "Candidate rows, source links and order must match the register's scope");
 
-test("the packet retains the exact three platform rationales for each proposal", () => {
   for (const [index, topic] of proposed.entries()) {
     const marker = `### ${index + 1}. ${topic.title} — row ${topic.sourceRowIndex + 1}`;
     const from = packet.indexOf(marker);
@@ -43,26 +41,29 @@ test("the packet retains the exact three platform rationales for each proposal",
       topic.title + ": missing exact primary source link");
     for (const [platform, label] of [["web", "Web"], ["ios", "Native iOS"], ["android", "Android"]]) {
       const expected = "- **" + label + ":** " + topic.platformApplicability[platform].rationale;
-      assert.ok(section.includes(expected),
+      assert.ok(section.split("\n").includes(expected),
         topic.title + ": missing/changed " + platform + " disposition rationale");
     }
     assert.ok(section.includes("- **Review result:** Pending independent approval"),
-      topic.title + ": no independent disposition has been established");
+      topic.title + ": historical packet must not claim to be the approval receipt");
   }
-});
+}
 
-test("a pending N/A packet must not silently conceal a newly accepted disposition", () => {
-  // The packet is an explicitly dated snapshot. If one of its 28 proposals
-  // becomes accepted, reconcile its pending row and receipt with the register.
-  // Other topics may legitimately advance to production-verified without
-  // forcing unrelated historical reviewer packets to fail CI.
-  for (const topic of proposed) {
-    assert.equal(topic.implementation, "not_verified",
-      topic.title + ": update the disposition packet after independent acceptance");
-    assert.equal(topic.notApplicableApproval, undefined,
-      topic.title + ": review packet cannot omit an independent N/A approval receipt");
-  }
+test("the dated packet preserves every all-platform N/A candidate and its exact rationales", () => {
+  validateScopeSnapshot(register.topics);
   assert.ok(packet.includes("0 accepted N/A"));
   assert.ok(packet.includes("not an approval"));
   assert.ok(packet.includes("other than the PR author"));
+});
+
+test("a subsequent disposition does not rewrite the packet, but a scope change requires re-review", () => {
+  // Current approvals are checked by the register and independent review suites.
+  const topics = structuredClone(register.topics);
+  const candidate = topics.find(topic => topic.title === "Digit entry views");
+  candidate.implementation = "not_applicable";
+  assert.doesNotThrow(() => validateScopeSnapshot(topics));
+  candidate.platformApplicability.web.rationale += " Changed after snapshot.";
+  assert.throws(() => validateScopeSnapshot(topics), /missing\/changed web disposition rationale/);
+  candidate.platformApplicability.web.state = "applicable";
+  assert.throws(() => validateScopeSnapshot(topics), /change in proposed N\/A scope/);
 });
