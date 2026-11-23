@@ -49,6 +49,8 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
       # The Apple-27-informed web foundation is part of the shipped public CSS.
@@ -293,6 +295,7 @@ jobs:
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           npm run validate
@@ -902,6 +905,11 @@ jobs:
 
       - name: Verify exact official brand vectors, raster checksums, manifest and CSS on public origin
         run: node scripts/verify-live-official-brand.mjs
+
+      - name: Independently verify six live source SHAs, approved browser colours and AWS Contact
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
