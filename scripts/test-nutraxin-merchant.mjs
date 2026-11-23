@@ -231,3 +231,12 @@ test("Nutraxin support email and delivery-returns policy are linked from each of
   assert(!/return(s)? (directly |to )?Polar Speed/i.test(policy),
     "Do not publish an unconfirmed warehouse consumer-return destination");
 });
+
+test("Nutraxin Bag exposes return rights and support before payment", () => {
+  for (const path of ["products/nutraxin/bag/index.html", "scripts/apply-corporate-product-discipline.mjs"]) {
+    const content = read(path);
+    assert(content.includes('href="/legal/returns/"'), "Return policy not linked in " + path);
+    assert(content.includes("support@novapharmhealthcare.com"), "Support contact missing in " + path);
+    assert(content.includes('data-nx-consumer-terms'), "Bag terms checkbox missing in " + path);
+  }
+});
