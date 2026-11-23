@@ -214,4 +214,7 @@ test("corporate founder and author graph reuses Vishal's canonical personal Pers
     origin + "/leadership/girish-achliya/#person",
     origin + "/leadership/helly-panchal/#person",
   ]);
+  assert.equal(organisation?.founder?.[0]?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(organisation?.member?.[0]?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(organisation?.member?.[1]?.url, origin + "/leadership/prabhakar-lahare/");
 });
