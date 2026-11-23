@@ -43,7 +43,7 @@ export const designSystemCss = String.raw`
 .np-data-table .np-numeric{text-align:right;font-variant-numeric:tabular-nums}
 .np-timeline{counter-reset:step;list-style:none;padding:0;margin:0}
 .np-timeline li{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding-block:1.25rem;border-top:1px solid #d8dde4}
-.np-timeline__index{font-variant-numeric:tabular-nums;color:#B30E09;font-weight:700}
+.np-timeline__index{font-variant-numeric:tabular-nums;color:#68101F;font-weight:700}
 .np-field,.np-search,.np-file-upload{min-width:0;display:grid;gap:.5rem}
 .np-field__hint{color:#667085;margin:0}
 .np-field__error{color:#9f1239;font-weight:650}
@@ -54,14 +54,14 @@ export const designSystemCss = String.raw`
 .np-drawer>header,.np-document-viewer>header,.np-portal-controls{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
 .np-tabs [role=tablist]{display:flex;overflow:auto;border-bottom:1px solid #d8dde4}
 .np-tabs [role=tab]{min-height:44px;border:0;border-bottom:3px solid transparent;background:transparent;padding:.75rem 1rem}
-.np-tabs [role=tab][aria-selected=true]{border-color:#E3120B}
+.np-tabs [role=tab][aria-selected=true]{border-color:#9D1B32}
 .np-tabs [role=tabpanel]{padding-block:1.5rem}
 .np-search input,.np-field input,.np-field select,.np-field textarea,.np-file-upload input{width:100%;max-width:100%;min-height:44px;border:1px solid #98a2b3;border-radius:4px;padding:.7rem .8rem;font:inherit}
 /* Search fields: contextual scope, visible clear action, touch targets and resilient focus. */
 .np-search__control{display:flex;align-items:center;min-width:0;border:1px solid #98a2b3;border-radius:12px;background:#fff;transition:border-color 160ms ease,box-shadow 160ms ease}
 .np-search__control:focus-within{border-color:#0b69ff;box-shadow:0 0 0 3px rgba(11,105,255,.16)}
 .np-search__icon{flex:none;margin-inline-start:13px;color:#667085}
-.np-search .np-search__control input{min-width:0;min-height:44px;flex:1;width:100%;border:0;border-radius:12px;padding:.65rem .75rem;background:transparent;font:inherit;color:#1d1d1f}
+.np-search .np-search__control input{min-width:0;min-height:44px;flex:1;width:100%;border:0;border-radius:12px;padding:.65rem .75rem;background:transparent;font:inherit;color:#0B0B0E}
 .np-search .np-search__control input:focus{outline:none}
 .np-search__control--clear input::-webkit-search-cancel-button{display:none}
 .np-search__clear{min-height:44px;flex:none;padding:0 .85rem;border:0;border-radius:10px;background:transparent;color:#0059b8;font:inherit;font-size:.875rem;cursor:pointer}
@@ -87,7 +87,7 @@ export const designSystemCss = String.raw`
 .np-document-viewer__content{min-height:24rem;margin-top:1.5rem;border-top:1px solid #d8dde4;padding-top:1.5rem}
 .np-form{min-width:0;display:grid;gap:1.25rem}
 .np-button{min-height:44px;border-radius:4px;padding:.65rem 1rem;font:inherit;font-weight:700;border:1px solid transparent}
-.np-button--primary{background:#E3120B;color:#fff}
+.np-button--primary{background:#9D1B32;color:#fff}
 .np-button--secondary{background:#fff;color:#0d1b2a;border-color:#667085}
 .np-button--danger{background:#9f1239;color:#fff}
 :where(.np-button,.np-navigation a,.np-tabs button,input,select,textarea,summary):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
@@ -157,9 +157,9 @@ export const designSystemCss = String.raw`
 @media (forced-colors:active){.np-navigation,.np-mega-menu{background:Canvas;color:CanvasText;border-color:CanvasText}}
 
 /* Original web representation of a payment request, not an Apple payment sheet. */
-.np-payment-request{max-inline-size:38rem;margin-inline:auto;display:grid;gap:1.25rem;padding:clamp(1.25rem,4vw,2.5rem);border:1px solid #d8dde4;border-radius:1.75rem;background:#f5f5f7;color:#1d1d1f;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.np-payment-request{max-inline-size:38rem;margin-inline:auto;display:grid;gap:1.25rem;padding:clamp(1.25rem,4vw,2.5rem);border:1px solid #d8dde4;border-radius:1.75rem;background:#f5f5f7;color:#0B0B0E;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
 .np-payment-request__header{display:grid;gap:.35rem}
-.np-payment-request__eyebrow{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;color:#B30E09;margin:0}
+.np-payment-request__eyebrow{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;color:#68101F;margin:0}
 .np-payment-request__header h2{font-size:clamp(1.625rem,4vw,2.5rem);font-weight:650;line-height:1.1;letter-spacing:-.025em;margin:0}
 .np-payment-request__card{padding:clamp(1.5rem,5vw,3rem);border:1px solid #d2d2d7;border-radius:1.5rem;background:#fff;box-shadow:0 .75rem 2rem rgb(0 0 0/.04);text-align:center}
 .np-payment-request__merchant{font-size:clamp(1rem,2.5vw,1.25rem);font-weight:620;margin:0}
@@ -171,7 +171,7 @@ export const designSystemCss = String.raw`
 .np-payment-request__actions :where(a,button){display:inline-flex;min-block-size:44px;align-items:center;justify-content:center;border-radius:999px;padding:.75rem 1.25rem;text-decoration:none;font-weight:650}
 .np-payment-request__actions :where(a,button):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
 @media(max-width:480px){.np-payment-request{border-radius:1rem;padding:1rem}.np-payment-request__card{padding:1.5rem 1rem}.np-payment-request__actions>*{flex:1 1 auto}}
-@media(prefers-contrast:more){.np-payment-request{border-color:#1d1d1f}.np-payment-request__card{border-color:#515154}.np-payment-request__note{color:#1d1d1f}}
+@media(prefers-contrast:more){.np-payment-request{border-color:#0B0B0E}.np-payment-request__card{border-color:#515154}.np-payment-request__note{color:#0B0B0E}}
 @media(forced-colors:active){.np-payment-request,.np-payment-request__card{border:1px solid CanvasText}}
 
 /* Layout and organization components share the same logical spacing as the web estate. */
@@ -194,11 +194,11 @@ export const designSystemCss = String.raw`
 @media(forced-colors:active){.np-hig-box{border-color:CanvasText}.np-hig-box--plain{border-color:transparent}}
 
 /* Native modal uses showModal() for inert background and focus containment. */
-.np-modal-dialog{max-height:min(85dvh,60rem);max-width:calc(100vw - 2rem);overflow:auto;color:#1d1d1f;background:#fff}
+.np-modal-dialog{max-height:min(85dvh,60rem);max-width:calc(100vw - 2rem);overflow:auto;color:#0B0B0E;background:#fff}
 .np-modal-dialog::backdrop{background:rgba(0,0,0,.48)}
 .np-modal-dialog__header{display:flex;align-items:start;justify-content:space-between;gap:1rem}
 .np-modal-dialog__header h2{margin:0;font-size:clamp(1.375rem,3vw,2rem);line-height:1.2}
-.np-modal-dialog__dismiss{min-height:44px;min-width:44px;border:1px solid #d2d2d7;border-radius:8px;background:#fff;color:#1d1d1f;font:inherit;cursor:pointer}
+.np-modal-dialog__dismiss{min-height:44px;min-width:44px;border:1px solid #d2d2d7;border-radius:8px;background:#fff;color:#0B0B0E;font:inherit;cursor:pointer}
 .np-modal-dialog__body{padding-block:1.25rem;max-width:68ch;line-height:1.6}
 .np-modal-dialog__actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end}
 .np-modal-dialog :where(button,a):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
@@ -208,7 +208,7 @@ export const designSystemCss = String.raw`
 @media (forced-colors:active){.np-modal-dialog{border:2px solid CanvasText}.np-modal-dialog__dismiss{border-color:CanvasText}.np-modal-dialog::backdrop{background:Canvas}}
 
 /* Local file selection is not a network upload; input is the keyboard alternative. */
-.np-file-zone{display:grid;gap:.6rem;border:1px dashed #8a8a91;border-radius:12px;background:#fff;padding:clamp(1rem,3vw,1.75rem);color:#1d1d1f;min-width:0}
+.np-file-zone{display:grid;gap:.6rem;border:1px dashed #8a8a91;border-radius:12px;background:#fff;padding:clamp(1rem,3vw,1.75rem);color:#0B0B0E;min-width:0}
 .np-file-zone--dragged{border:2px solid #0066cc;background:#f5faff}
 .np-file-zone label{font-weight:650}
 .np-file-zone input[type=file]{min-height:44px;max-width:100%;font:inherit}
@@ -236,7 +236,7 @@ export const designSystemCss = String.raw`
 }
 
 /* Private document details are a presentation of server-provided permissions only. */
-.np-controlled-document{min-width:0;border:1px solid #d8dde4;border-radius:12px;padding:clamp(1rem,3vw,2rem);background:#fff;color:#1d1d1f}
+.np-controlled-document{min-width:0;border:1px solid #d8dde4;border-radius:12px;padding:clamp(1rem,3vw,2rem);background:#fff;color:#0B0B0E}
 .np-controlled-document__header h2{font-size:clamp(1.1rem,2vw,1.65rem);margin:0 0 1rem}
 .np-controlled-document__access{display:grid;gap:.5rem;margin:0 0 1rem}
 .np-controlled-document__access>div{display:flex;flex-wrap:wrap;gap:1rem}
@@ -248,22 +248,22 @@ export const designSystemCss = String.raw`
 @media(forced-colors:active){.np-controlled-document{border-color:CanvasText}}
 
 /* Notification preferences: only confirmed server revisions count as saved. */
-.np-notification-settings{min-width:0;max-width:52rem;padding:clamp(1rem,3vw,2rem);border:1px solid #d8dde4;border-radius:12px;background:#fff;color:#1d1d1f}
+.np-notification-settings{min-width:0;max-width:52rem;padding:clamp(1rem,3vw,2rem);border:1px solid #d8dde4;border-radius:12px;background:#fff;color:#0B0B0E}
 .np-notification-settings h2{margin:0 0 .5rem}
 .np-notification-settings form{display:grid;gap:1rem}
 .np-notification-settings fieldset{border:0;margin:0;padding:0;display:grid;gap:.75rem}
 .np-notification-settings legend{font-weight:650;padding-bottom:.75rem}
 .np-notification-settings__choice{display:flex;align-items:flex-start;gap:1rem;min-height:44px;padding:.75rem 0;border-bottom:1px solid #e5e5e9}
-.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#B30E09}
+.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#68101F}
 .np-notification-settings__choice span{display:grid;gap:.25rem;font-size:.95rem}
 .np-notification-settings__choice span span{color:#515154}
-.np-notification-settings button{min-height:44px;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d1d1f;color:#fff;font:inherit;font-weight:600;justify-self:start}
+.np-notification-settings button{min-height:44px;padding:.6rem 1rem;border:0;border-radius:8px;background:#0B0B0E;color:#fff;font:inherit;font-weight:600;justify-self:start}
 .np-notification-settings button:disabled{opacity:.55;cursor:not-allowed}
 .np-notification-settings :is(input,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 @media(forced-colors:active){.np-notification-settings{border-color:CanvasText}.np-notification-settings button:disabled{opacity:1;color:GrayText}}
 
 /* Apple HIG menus/actions web adaptation: restrained, semantic and RTL-safe. */
-.np-command-menu{position:relative;display:inline-block;min-inline-size:0;color:#1d1d1f}
+.np-command-menu{position:relative;display:inline-block;min-inline-size:0;color:#0B0B0E}
 .np-command-menu__trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:.7rem;min-block-size:44px;padding:.6rem .85rem;font:inherit;font-weight:550;border:1px solid #d2d2d7;border-radius:9px;background:#fff;color:inherit;cursor:pointer;list-style:none}
 .np-command-menu__trigger::-webkit-details-marker{display:none}
 .np-command-menu__chevron{display:inline-block;font-size:1.125rem;line-height:1;transform:translateY(-.1rem)}
@@ -272,7 +272,7 @@ export const designSystemCss = String.raw`
 .np-command-menu--start .np-command-menu__items{inset-inline-end:auto;inset-inline-start:0}
 .np-command-menu__items>li{margin:0;padding:0}
 .np-command-menu__separated{border-block-start:1px solid #e5e5e9;margin-block-start:.35rem!important;padding-block-start:.35rem!important}
-.np-command-action{box-sizing:border-box;display:inline-flex;align-items:center;min-block-size:44px;padding:.65rem .8rem;background:transparent;border:0;border-radius:7px;text-align:start;text-decoration:none;color:#1d1d1f;cursor:pointer;font:inherit;line-height:1.3}
+.np-command-action{box-sizing:border-box;display:inline-flex;align-items:center;min-block-size:44px;padding:.65rem .8rem;background:transparent;border:0;border-radius:7px;text-align:start;text-decoration:none;color:#0B0B0E;cursor:pointer;font:inherit;line-height:1.3}
 .np-command-menu__items .np-command-action{display:flex;inline-size:100%;white-space:normal;overflow-wrap:anywhere}
 .np-command-action:hover:not(:disabled){background:#f5f5f7}
 .np-command-action:active:not(:disabled){background:#e8e8ed}
@@ -286,7 +286,7 @@ export const designSystemCss = String.raw`
 .np-choice-picker label{font-size:.875rem;font-weight:600}
 .np-choice-picker select{min-block-size:44px;padding:.5rem .75rem;max-inline-size:100%;font:inherit;border:1px solid #a8a8ae;border-radius:8px;background:Canvas;color:CanvasText}
 .np-binary-toggle{display:inline-flex;align-items:center;gap:.75rem;min-block-size:44px;cursor:pointer}
-.np-binary-toggle input{flex:none;inline-size:1.25rem;block-size:1.25rem;accent-color:#B30E09}
+.np-binary-toggle input{flex:none;inline-size:1.25rem;block-size:1.25rem;accent-color:#68101F}
 .np-binary-toggle:has(input:disabled){opacity:.65;cursor:not-allowed}
 .np-share-link{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.5rem}
 .np-share-link__status{font-size:.875rem;color:#515154}
@@ -301,7 +301,7 @@ export const designSystemCss = String.raw`
 .np-segmented-choice__option{position:relative;display:flex;flex:1 1 5rem;min-inline-size:0;cursor:pointer}
 .np-segmented-choice__option input{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:inherit}
 .np-segmented-choice__option span{display:flex;align-items:center;justify-content:center;inline-size:100%;min-block-size:44px;padding:.5rem .85rem;border-radius:7px;font-size:.875rem;color:#515154;white-space:normal;text-align:center}
-.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
+.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#0B0B0E;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
 .np-segmented-choice__option:has(input:focus-visible) span{outline:3px solid #0b69ff;outline-offset:2px}
 .np-segmented-choice__option:has(input:disabled){cursor:not-allowed}
 .np-segmented-choice__option:has(input:disabled) span{opacity:.6}

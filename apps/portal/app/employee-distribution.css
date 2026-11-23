@@ -1,7 +1,7 @@
 /* NovaPharm Distribution — premium employee experience.
    Restrained typography, clear task hierarchy, no decorative iconography.
    Authorisation stays in the existing server-side employee and tenant guards. */
-.employee-distribution-shell.workspace-shell{display:block;background:#fff;color:#1d1d1f;min-height:100vh}
+.employee-distribution-shell.workspace-shell{display:block;background:#fff;color:#0B0B0E;min-height:100vh}
 .employee-distribution-shell .workspace-sidebar{display:none}
 .employee-distribution-shell .workspace-main{width:100%;min-width:0;background:#fff}
 .employee-distribution-shell .workspace-topbar{
@@ -15,8 +15,8 @@
 .employee-distribution-shell .employee-primary-nav{display:flex;justify-content:center;gap:clamp(14px,2vw,30px);overflow-x:auto;align-items:center}
 .employee-distribution-shell .employee-primary-nav a{font-size:.875rem;color:#48484c;font-weight:500;text-decoration:none;white-space:nowrap;
  padding:10px 0;border-bottom:2px solid transparent}
-.employee-distribution-shell .employee-primary-nav a[aria-current="page"]{font-weight:680;border-color:#b5121f;color:#1d1d1f}
-.employee-distribution-shell .employee-primary-nav a:hover{color:#a90e1c}
+.employee-distribution-shell .employee-primary-nav a[aria-current="page"]{font-weight:680;border-color:#3D0B13;color:#0B0B0E}
+.employee-distribution-shell .employee-primary-nav a:hover{color:#3D0B13}
 .employee-distribution-shell .workspace-topbar search{min-width:0;max-width:205px}
 .employee-distribution-shell .portal-search{grid-template-columns:minmax(0,1fr) auto;gap:5px}
 .employee-distribution-shell .portal-search svg{display:none}
@@ -25,24 +25,24 @@
 .employee-distribution-shell .user-summary{display:flex;align-items:center;gap:10px}
 .employee-distribution-shell .user-summary span{max-width:130px;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.875rem}
 .employee-distribution-shell .user-summary small{display:none}
-.employee-distribution-shell .user-summary button{width:auto;height:44px;min-height:44px;padding:7px 16px;border-radius:999px;background:#1d1d1f;color:white;border:0;font-size:.875rem}
-.employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#1d1d1f;background:#fff;border:1px solid #d5d5da}
+.employee-distribution-shell .user-summary button{width:auto;height:44px;min-height:44px;padding:7px 16px;border-radius:999px;background:#0B0B0E;color:white;border:0;font-size:.875rem}
+.employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#0B0B0E;background:#fff;border:1px solid #d5d5da}
 .employee-distribution-shell .workspace-content{width:min(1510px,100%);max-width:1510px;margin:0 auto;padding:0 clamp(20px,5vw,76px) 70px}
 .employee-distribution-shell .module-heading{display:none}
-.distribution-employee{color:#1d1d1f}
+.distribution-employee{color:#0B0B0E}
 .distribution-employee-hero{padding:clamp(55px,6vw,95px) 3px clamp(45px,5vw,80px)}
 .distribution-employee-hero-small{padding-bottom:45px}
-.distribution-employee-overline{font-size:.875rem!important;letter-spacing:.12em;color:#96131e!important;font-weight:720;margin:0 0 18px!important}
+.distribution-employee-overline{font-size:.875rem!important;letter-spacing:.12em;color:#3D0B13!important;font-weight:720;margin:0 0 18px!important}
 .distribution-employee-hero h1{font-size:clamp(3rem,5.6vw,6rem);letter-spacing:-.067em;
  line-height:1.01;font-weight:650;max-width:1020px;margin:0}
 .distribution-employee-hero>p:not(.distribution-employee-overline){font-size:clamp(1.05rem,1.55vw,1.4rem);
  color:#696970;line-height:1.55;max-width:800px;margin:24px 0 0}
 .distribution-employee-links{display:flex;align-items:center;flex-wrap:wrap;gap:22px;margin-top:30px}
 .distribution-employee-links a{font-size:.91rem;text-decoration:none;font-weight:600}
-.distribution-employee-button{display:inline-flex;align-items:center;min-height:47px;border-radius:999px;background:#1d1d1f;
+.distribution-employee-button{display:inline-flex;align-items:center;min-height:47px;border-radius:999px;background:#0B0B0E;
  color:#fff;padding:13px 25px}
 .distribution-employee-button:hover{background:#343438}
-.distribution-employee-link,.distribution-employee-card a,.distribution-employee-notice a{color:#a20e1a}
+.distribution-employee-link,.distribution-employee-card a,.distribution-employee-notice a{color:#3D0B13}
 .distribution-employee-link:hover,.distribution-employee-card a:hover,.distribution-employee-notice a:hover{text-decoration:underline;text-underline-offset:3px}
 .distribution-employee-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .distribution-employee-card{min-width:0;background:#f5f5f7;border-radius:22px;padding:clamp(24px,3vw,35px);
@@ -61,7 +61,7 @@
 .distribution-employee-process ol{margin:0;padding:0;list-style:none;border-top:1px solid #d8d8df}
 .distribution-employee-process li{display:grid;grid-template-columns:65px minmax(0,1fr);gap:20px;
  padding:20px 0;border-bottom:1px solid #e6e6ea;align-items:start}
-.distribution-employee-step{font-size:1.4rem;letter-spacing:-.04em;font-weight:650;color:#9a111b}
+.distribution-employee-step{font-size:1.4rem;letter-spacing:-.04em;font-weight:650;color:#3D0B13}
 .distribution-employee-process h3{font-size:1.12rem;font-weight:650;margin:0 0 6px}
 .distribution-employee-process li p{font-size:.89rem;color:#68686e;margin:0;line-height:1.55}
 .distribution-employee-notice{padding:26px 0;border-top:1px solid #d8d8df;margin-top:35px;max-width:1050px}
@@ -107,7 +107,7 @@
 .distribution-employee-all li{border-top:1px solid #e2e2e5}
 .distribution-employee-all li a{display:block;min-height:48px;padding:15px 0;font-size:.88rem;
  color:#343438;text-decoration:none}
-.distribution-employee-all li a:hover{color:#a20e1a;text-decoration:underline;text-underline-offset:3px}
+.distribution-employee-all li a:hover{color:#3D0B13;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:890px){.distribution-employee-all ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.distribution-employee-all ul{grid-template-columns:1fr}}
 
@@ -153,19 +153,19 @@
 .distribution-wms-workspace-map-groups ol{padding:0;margin:0;list-style:none;border-top:1px solid #dedee2}
 .distribution-wms-workspace-map-groups li{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 0;border-bottom:1px solid #ededf0}
 .distribution-wms-workspace-map-groups li>div{min-width:0;display:flex;flex-direction:column;gap:5px}
-.distribution-wms-workspace-map-groups strong{font-size:.93rem;color:#1d1d1f;font-weight:650}
+.distribution-wms-workspace-map-groups strong{font-size:.93rem;color:#0B0B0E;font-weight:650}
 .distribution-wms-workspace-map-groups span{color:#595961;font-size:.8rem;line-height:1.4}
 .distribution-wms-workspace-map-groups small{font-size:.76rem;line-height:1.45;color:#595961}
 .distribution-wms-workspace-map-groups li>a{color:#a30c1b;font-size:.79rem;font-weight:650;text-decoration:none;flex-shrink:0;white-space:nowrap}
 .distribution-wms-workspace-map-groups li>a:hover{text-decoration:underline;text-underline-offset:3px}
 .distribution-wms-workspace-map-groups li>a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 .distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-weight:600;color:#51515a;flex-shrink:0;max-width:108px;text-align:right}
-.distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;line-height:1.6;max-width:95ch;border-top:1px solid #ededf0;padding:19px 0 0}
+.distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#595961;line-height:1.6;max-width:95ch;border-top:1px solid #ededf0;padding:19px 0 0}
 @media(max-width:830px){.distribution-wms-workspace-map-groups{grid-template-columns:1fr;gap:26px}}
 @media(max-width:420px){.distribution-wms-workspace-map-groups li{align-items:flex-start;gap:8px}.distribution-wms-workspace-map-groups li>a,.distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-size:.74rem}}
 
 /* NovaPharm Distribution - authenticated read-only intelligence, no decorative iconography. */
-.distribution-wms-evidence-studio{max-width:1260px;padding:44px 0 48px;margin:14px 0 28px;border-top:1px solid #e3e3e6;color:#1d1d1f}
+.distribution-wms-evidence-studio{max-width:1260px;padding:44px 0 48px;margin:14px 0 28px;border-top:1px solid #e3e3e6;color:#0B0B0E}
 .distribution-wms-evidence-heading h2{font-size:clamp(1.9rem,3.4vw,3.4rem);line-height:1.1;letter-spacing:-.058em;font-weight:660;margin:0 0 16px}
 .distribution-wms-evidence-heading>p:not(.distribution-employee-overline){font-size:.91rem;color:#717179;line-height:1.65;max-width:80ch}
 .distribution-wms-evidence-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e4e4e8;border:1px solid #e4e4e8;border-radius:17px;overflow:hidden;margin:30px 0 37px}
@@ -180,7 +180,7 @@
 .distribution-wms-evidence-bar-row>span{font-size:.8rem;font-weight:550}
 .distribution-wms-evidence-bar-row>small{font-size:.78rem;text-align:right;color:#66666e;font-variant-numeric:tabular-nums}
 .distribution-wms-evidence-bar-track{height:12px;border-radius:4px;background:#e7e7eb;overflow:hidden}
-.distribution-wms-evidence-bar{height:100%;border-radius:4px;background:#1d1d1f}
+.distribution-wms-evidence-bar{height:100%;border-radius:4px;background:#0B0B0E}
 .distribution-wms-evidence-footnote{font-size:.77rem;color:#606069;line-height:1.55;margin:22px 0 0;max-width:98ch}
 .distribution-wms-evidence-exceptions{padding:26px 0;border-top:1px solid #e6e6ea;border-bottom:1px solid #e6e6ea}
 .distribution-wms-evidence-exceptions-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
@@ -190,7 +190,7 @@
 .np-segmented-choice__option{position:relative;display:flex;flex:1 1 5rem;min-inline-size:0;cursor:pointer}
 .np-segmented-choice__option input{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:inherit}
 .np-segmented-choice__option span{display:flex;align-items:center;justify-content:center;inline-size:100%;min-block-size:44px;padding:.5rem .85rem;border-radius:7px;font-size:.875rem;color:#515154;white-space:normal;text-align:center}
-.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
+.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#0B0B0E;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
 .np-segmented-choice__option:has(input:focus-visible) span{outline:3px solid #0b69ff;outline-offset:2px}
 .np-segmented-choice__option:has(input:disabled){cursor:not-allowed}
 .np-segmented-choice__option:has(input:disabled) span{opacity:.6}
@@ -199,7 +199,7 @@
 .distribution-wms-evidence-search{display:flex;flex-direction:column;gap:7px;font-size:.76rem;color:#55555d;margin-bottom:17px;max-width:480px}
 .distribution-wms-evidence-search label{font-weight:600}
 .distribution-wms-evidence-search-control{display:flex;align-items:stretch;gap:8px}
-.distribution-wms-evidence-search input{width:100%;min-width:0;flex:1;border:1px solid #d4d4da;border-radius:9px;min-height:44px;padding:10px 13px;font-size:.85rem;color:#1d1d1f;background:#fff}
+.distribution-wms-evidence-search input{width:100%;min-width:0;flex:1;border:1px solid #d4d4da;border-radius:9px;min-height:44px;padding:10px 13px;font-size:.85rem;color:#0B0B0E;background:#fff}
 .distribution-wms-evidence-search-control button{min-height:44px;padding:8px 13px;border:1px solid #d4d4da;border-radius:9px;background:#fff;color:#0059b8;cursor:pointer}
 .distribution-wms-evidence-search-control button:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
 .distribution-wms-evidence-search p{margin:0;color:#626269;font-size:.72rem;line-height:1.45}
@@ -229,7 +229,7 @@
 .distribution-wms-capacity-fields label{display:flex;flex-direction:column;gap:7px;font-size:.74rem;color:#55555d;font-weight:550}
 .distribution-wms-capacity-fields input{width:100%;min-width:0;background:white;border:1px solid #cccdd3;border-radius:8px;padding:9px 11px;min-height:40px;font-size:.87rem;font-variant-numeric:tabular-nums}
 .distribution-wms-capacity-fields input:focus-visible,.distribution-wms-capacity-reset:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
-.distribution-wms-capacity-reset{background:transparent;border:1px solid #a7a7ac;border-radius:20px;min-height:37px;padding:8px 16px;margin-top:22px;cursor:pointer;color:#1d1d1f}
+.distribution-wms-capacity-reset{background:transparent;border:1px solid #a7a7ac;border-radius:20px;min-height:37px;padding:8px 16px;margin-top:22px;cursor:pointer;color:#0B0B0E}
 .distribution-wms-capacity-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#e8e8ed;border:1px solid #e8e8ed;border-radius:11px;overflow:hidden}
 .distribution-wms-capacity-metrics>div{background:#fafafb;display:flex;flex-direction:column;gap:6px;padding:17px;min-width:0}
 .distribution-wms-capacity-metrics span{font-size:.75rem;color:#585860}
@@ -264,7 +264,7 @@
 }
 
 /* Private Distribution UAT: real authenticated feedback, zero warehouse execution. */
-.distribution-wms-pilot{max-width:1260px;margin:32px 0;padding:44px 0;border-top:1px solid #dedee2;color:#1d1d1f}
+.distribution-wms-pilot{max-width:1260px;margin:32px 0;padding:44px 0;border-top:1px solid #dedee2;color:#0B0B0E}
 .distribution-wms-pilot-header h2{font-size:clamp(1.8rem,3.3vw,3.2rem);font-weight:660;line-height:1.15;letter-spacing:-.052em;margin:0 0 13px}
 .distribution-wms-pilot-header>p:not(.distribution-employee-overline){font-size:.92rem;color:#575761;line-height:1.65;max-width:78ch}
 .distribution-wms-pilot-steps{list-style:none;padding:0;margin:28px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#e5e5e9;border:1px solid #e5e5e9;border-radius:12px;overflow:hidden}
@@ -278,10 +278,10 @@
 .distribution-wms-pilot-form,.distribution-wms-pilot-summary{border:1px solid #dedee3;border-radius:16px;padding:clamp(18px,3vw,27px)}
 .distribution-wms-pilot-grid h3{margin:0 0 18px;font-size:1.1rem;letter-spacing:-.025em}
 .distribution-wms-pilot-form label{display:block;font-weight:650;font-size:.82rem;margin:17px 0 7px}
-.distribution-wms-pilot-form select,.distribution-wms-pilot-form textarea{width:100%;font-size:.88rem;line-height:1.4;background:#fff;border:1px solid #c7c7ce;border-radius:9px;padding:12px;color:#1d1d1f}
+.distribution-wms-pilot-form select,.distribution-wms-pilot-form textarea{width:100%;font-size:.88rem;line-height:1.4;background:#fff;border:1px solid #c7c7ce;border-radius:9px;padding:12px;color:#0B0B0E}
 .distribution-wms-pilot-form textarea{resize:vertical;min-height:95px}
 .distribution-wms-pilot-form select:focus-visible,.distribution-wms-pilot-form textarea:focus-visible,.distribution-wms-pilot-form button:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
-.distribution-wms-pilot-form button{padding:11px 17px;background:#1d1d1f;border:1px solid #1d1d1f;color:white;border-radius:30px;font-size:.84rem;font-weight:650;cursor:pointer}
+.distribution-wms-pilot-form button{padding:11px 17px;background:#0B0B0E;border:1px solid #0B0B0E;color:white;border-radius:30px;font-size:.84rem;font-weight:650;cursor:pointer}
 .distribution-wms-pilot-form button:disabled{opacity:.58;cursor:not-allowed}
 .distribution-wms-pilot-privacy,.distribution-wms-pilot-bottom{font-size:.77rem;line-height:1.6;color:#64646e;margin:18px 0}
 .distribution-wms-pilot-form p[role="status"]{font-size:.82rem;min-height:1.4em}
@@ -327,23 +327,23 @@
 }
 @media (prefers-contrast: more) {
   .employee-distribution-shell :where(.task-description, .activity-description) {
-    color: var(--portal-ink, #1d1d1f);
+    color: var(--portal-ink, #0B0B0E);
   }
 }
 
 /* Apple HIG Patterns: chart values stay readable without colour or pointer input. */
 .distribution-wms-capacity-reset-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
-.distribution-wms-capacity-undo{min-height:44px;padding:8px 16px;border:1px solid #8d8d95;border-radius:999px;background:#fff;color:#1d1d1f;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-undo{min-height:44px;padding:8px 16px;border:1px solid #8d8d95;border-radius:999px;background:#fff;color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
 .distribution-wms-capacity-zone-chart{margin:25px 0;min-width:0;border-top:1px solid #dedee3;padding-top:20px}
 .distribution-wms-capacity-zone-chart h4{margin:0 0 8px;font-size:1.05rem}
 .distribution-wms-capacity-zone-chart figcaption p{max-width:65ch;font-size:.82rem;color:#52525a;line-height:1.6;margin:0 0 20px}
 .distribution-wms-capacity-zone-bars{display:grid;gap:12px}
 .distribution-wms-capacity-zone-row{display:grid;grid-template-columns:minmax(4.5rem,1fr) minmax(5rem,3fr) minmax(6rem,1fr);align-items:center;gap:12px;min-height:44px;font-size:.85rem}
 .distribution-wms-capacity-zone-track{display:block;height:12px;background:#e4e4e8;border-radius:4px;overflow:hidden}
-.distribution-wms-capacity-zone-track>span{display:block;height:100%;background:#96131e}
+.distribution-wms-capacity-zone-track>span{display:block;height:100%;background:#3D0B13}
 .distribution-wms-capacity-zone-value{text-align:end;font-variant-numeric:tabular-nums}
 .distribution-wms-capacity-zone-data{margin-top:20px;border-top:1px solid #dddde2}
-.distribution-wms-capacity-zone-data summary{padding:12px 0;min-height:44px;cursor:pointer;color:#9a111b}
+.distribution-wms-capacity-zone-data summary{padding:12px 0;min-height:44px;cursor:pointer;color:#3D0B13}
 .distribution-wms-capacity-zone-data table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.85rem}
 .distribution-wms-capacity-zone-data caption{text-align:start;padding:12px 0;font-weight:600}
 .distribution-wms-capacity-zone-data :is(th,td){padding:10px 8px;border-bottom:1px solid #e8e8ed;text-align:start}
@@ -353,7 +353,7 @@
 @media(forced-colors:active){.distribution-wms-capacity-zone-track{border:1px solid CanvasText}.distribution-wms-capacity-zone-track>span{background:Highlight}}
 
 /* Recorded source coverage: exact values remain available without charts, colour or JS charts. */
-.distribution-wms-evidence-data{margin-top:18px;border-top:1px solid #d7d7dc;color:#1d1d1f}
+.distribution-wms-evidence-data{margin-top:18px;border-top:1px solid #d7d7dc;color:#0B0B0E}
 .distribution-wms-evidence-data>summary{min-height:44px;padding:14px 2px;cursor:pointer;color:#97121f;font-size:.9rem}
 .distribution-wms-evidence-data>summary:focus-visible,.distribution-wms-evidence-data-scroll:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 .distribution-wms-evidence-data-scroll{overflow-x:auto;max-width:100%}
@@ -369,9 +369,9 @@
 @media(forced-colors:active){.distribution-wms-capacity-undo:disabled{opacity:1;color:GrayText;border-color:GrayText}}
 
 /* Fullscreen is explicitly requested, browser-managed, and always has an exit control. */
-.distribution-wms-capacity-fullscreen{min-height:44px;margin-top:16px;border:1px solid #777780;border-radius:999px;padding:9px 18px;background:#fff;color:#1d1d1f;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-fullscreen{min-height:44px;margin-top:16px;border:1px solid #777780;border-radius:999px;padding:9px 18px;background:#fff;color:#0B0B0E;font:inherit;font-size:.875rem;cursor:pointer}
 .distribution-wms-capacity-fullscreen:hover{background:#f5f5f7}
 .distribution-wms-capacity-fullscreen:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
-.distribution-wms-capacity-studio:fullscreen{background:#fff;color:#1d1d1f;overflow-y:auto;max-height:100dvh;padding:clamp(1rem,3vw,3rem);box-sizing:border-box}
+.distribution-wms-capacity-studio:fullscreen{background:#fff;color:#0B0B0E;overflow-y:auto;max-height:100dvh;padding:clamp(1rem,3vw,3rem);box-sizing:border-box}
 .distribution-wms-capacity-studio:fullscreen .distribution-wms-capacity-body{width:min(1400px,100%);margin-inline:auto}
 @media(forced-colors:active){.distribution-wms-capacity-fullscreen{border:2px solid CanvasText;background:Canvas;color:CanvasText}}

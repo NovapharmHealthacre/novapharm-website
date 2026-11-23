@@ -8,13 +8,13 @@
   --bg: #f7f8fa;
   --surface: #ffffff;
   --surface-2: #eef2f5;
-  --ink: #0d1726;
-  --text: #344054;
+  --ink: #0B0B0E;
+  --text: #0B0B0E;
   --muted: #667085;
   --line: #d0d5dd;
-  --brand: #E3120B;
-  --brand-2: #B30E09;
-  --brand-text: #B30E09;
+  --brand: #9D1B32;
+  --brand-2: #68101F;
+  --brand-text: #68101F;
   --navy: #081827;
   --teal: #087f8c;
   --blue: #2457d6;
@@ -23,7 +23,7 @@
   --danger: #b91c1c;
   --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
   --radius: 8px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Arial, sans-serif;
+  --font: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
   --serif: var(--font);
   --container: 1240px;
 }
@@ -1262,20 +1262,24 @@ td { color: var(--text); }
 /* Source: tokens.css */
 :root {
   color-scheme: only light;
+  --np-brand-black: #0B0B0E;
+  --np-brand-white-primary: #FBFAEF;
+  --np-brand-white-secondary: #F8F7F3;
+  --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
-  --bg: #f3f5f4;
-  --surface: #ffffff;
-  --surface-2: #e9eeec;
+  --bg: #F8F7F3;
+  --surface: #FBFAEF;
+  --surface-2: #F8F7F3;
   --surface-3: #dce6e2;
-  --paper: #fbfcfb;
-  --ink: #111820;
-  --text: #354149;
+  --paper: #FBFAEF;
+  --ink: #0B0B0E;
+  --text: #0B0B0E;
   --muted: #657078;
-  --line: #ccd5d2;
+  --line: #DEDCD5;
   --line-strong: #aebbb7;
-  --brand: #E3120B;
-  --brand-2: #B30E09;
-  --brand-text: #B30E09;
+  --brand: #9D1B32;
+  --brand-2: #68101F;
+  --brand-text: #68101F;
   --navy: #101c27;
   --forest: #29584c;
   --teal: #477a76;
@@ -6158,8 +6162,8 @@ body[data-page="cro"] .cro-leadership-proof .section-kicker { color: #ffd3d4; }
   --np-line-soft: #e8e8ed;
   --np-soft: #f5f5f7;
   --np-white: #ffffff;
-  --np-red: #E3120B;
-  --np-red-dark: #B30E09;
+  --np-red: #9D1B32;
+  --np-red-dark: #68101F;
   --np-content: 1180px;
   --np-radius-media: 28px;
   --np-radius-control: 999px;
@@ -7049,10 +7053,10 @@ body[data-page="cro"] .cro-leadership-proof {
 /* Source: corporate-product-discipline.css */
 :root {
   --corporate-product-discipline-contract: 1;
-  --npd-red: #e3120b;
-  --npd-red-dark: #b30e09;
-  --npd-ink: #111111;
-  --npd-text: #3f454b;
+  --npd-red: #9D1B32;
+  --npd-red-dark: #68101F;
+  --npd-ink: #0B0B0E;
+  --npd-text: #0B0B0E;
   --npd-muted: #626970;
   --npd-line: #d7dadd;
   --npd-line-strong: #aeb3b8;
@@ -9334,7 +9338,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 540;
   }
   .npd-global-nav.site-nav > a:hover,
-  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #b30e09; }
+  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #68101F; }
   .npd-global-nav.site-nav > a[aria-current="page"]::after { height: 0; }
   .npd-mega {
     position: absolute;
@@ -9370,7 +9374,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column a {
     display: block;
     width: fit-content;
-    color: #1d1d1f;
+    color: #0B0B0E;
     font-size: 14px;
     line-height: 1.4;
     font-weight: 540;
@@ -9382,7 +9386,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 620;
   }
   .npd-mega-column a:hover,
-  .npd-mega-column a:focus-visible { color: #bd100b; }
+  .npd-mega-column a:focus-visible { color: #68101F; }
 }
 @media (max-width: 1180px) {
   .npd-header .npd-mega { display: none !important; }
@@ -9421,7 +9425,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   border:1px solid #d6d6db;
   border-radius:999px;
   background:#fff;
-  color:#1d1d1f;
+  color:#0B0B0E;
   font-weight:610;
 }
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
@@ -9548,7 +9552,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 
 /* Public account pathway — optional HIG-aligned explanation, never a login gate. */
-.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#0B0B0E}
 .npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
 .npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
 .npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
@@ -11116,29 +11120,29 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
  */
 :root {
   color-scheme: light;
-  --np-color-canvas: #ffffff;
-  --np-color-surface: #f5f5f7;
+  --np-color-canvas: #FBFAEF;
+  --np-color-surface: #F8F7F3;
   --np-color-surface-recessed: #e8e8ed;
-  --np-color-surface-raised: #ffffff;
-  --np-color-label: #1d1d1f;
+  --np-color-surface-raised: #FBFAEF;
+  --np-color-label: #0B0B0E;
   --np-color-secondary-label: #424245;
   --np-color-tertiary-label: #595961;
   --np-color-placeholder: #6e6e73;
-  --np-color-separator: #d2d2d7;
+  --np-color-separator: #DEDCD5;
   --np-color-separator-strong: #86868b;
   --np-color-link: #0066cc;
-  --np-color-accent: #e3120b;
-  --np-color-accent-strong: #b30e09;
-  --np-color-accent-soft: #fff2f1;
+  --np-color-accent: #9D1B32;
+  --np-color-accent-strong: #68101F;
+  --np-color-accent-soft: #F8EDF0;
   --np-color-on-accent: #ffffff;
-  --np-color-primary-action: #1d1d1f;
+  --np-color-primary-action: #0B0B0E;
   --np-color-on-primary-action: #ffffff;
-  --np-color-primary-action-hover: #343437;
+  --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;
   --np-color-destructive: #9e1b47;
   --np-color-focus: #0066cc;
-  --np-color-selection: #f9dfdd;
+  --np-color-selection: #F3DEE3;
 }
 
 /*
@@ -11159,9 +11163,9 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-separator: #48484a;
   --np-color-separator-strong: #8e8e93;
   --np-color-link: #80bcff;
-  --np-color-accent: #ff7370;
-  --np-color-accent-strong: #ffa49f;
-  --np-color-accent-soft: #402021;
+  --np-color-accent: #F0A3B2;
+  --np-color-accent-strong: #F7C8D0;
+  --np-color-accent-soft: #351921;
   --np-color-on-accent: #1d1d1f;
   --np-color-primary-action: #f5f5f7;
   --np-color-on-primary-action: #1d1d1f;
@@ -11170,7 +11174,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-warning: #f0c671;
   --np-color-destructive: #ff97ad;
   --np-color-focus: #80bcff;
-  --np-color-selection: #493238;
+  --np-color-selection: #4D2832;
 }
 @media (prefers-color-scheme: dark) {
   :root[data-np-color-scheme="system"] {
@@ -11186,9 +11190,9 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     --np-color-separator: #48484a;
     --np-color-separator-strong: #8e8e93;
     --np-color-link: #80bcff;
-    --np-color-accent: #ff7370;
-    --np-color-accent-strong: #ffa49f;
-    --np-color-accent-soft: #402021;
+    --np-color-accent: #F0A3B2;
+    --np-color-accent-strong: #F7C8D0;
+    --np-color-accent-soft: #351921;
     --np-color-on-accent: #1d1d1f;
     --np-color-primary-action: #f5f5f7;
     --np-color-on-primary-action: #1d1d1f;
@@ -11197,7 +11201,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     --np-color-warning: #f0c671;
     --np-color-destructive: #ff97ad;
     --np-color-focus: #80bcff;
-    --np-color-selection: #493238;
+    --np-color-selection: #4D2832;
   }
 }
 @media (prefers-contrast: more) {
@@ -11208,7 +11212,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     --np-color-separator: #86868b;
     --np-color-separator-strong: #54545a;
     --np-color-link: #004a99;
-    --np-color-accent: #b30e09;
+    --np-color-accent: #68101F;
     --np-color-focus: #004a99;
   }
   :root[data-np-color-scheme="dark"] {
@@ -11218,7 +11222,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     --np-color-separator: #aeaeb2;
     --np-color-separator-strong: #d1d1d6;
     --np-color-link: #a6d1ff;
-    --np-color-accent: #ffa49f;
+    --np-color-accent: #F7C8D0;
     --np-color-accent-strong: #ffcac7;
     --np-color-on-accent: #1d1d1f;
     --np-color-focus: #a6d1ff;
@@ -11232,7 +11236,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     --np-color-separator: #aeaeb2;
     --np-color-separator-strong: #d1d1d6;
     --np-color-link: #a6d1ff;
-    --np-color-accent: #ffa49f;
+    --np-color-accent: #F7C8D0;
     --np-color-accent-strong: #ffcac7;
     --np-color-on-accent: #1d1d1f;
     --np-color-focus: #a6d1ff;
@@ -11422,7 +11426,7 @@ svg.np-symbol[data-weight="strong"] { stroke-width: 2.25; }
 svg.np-symbol[data-tone="positive"] { color: var(--np-symbol-positive); }
 svg.np-symbol[data-tone="warning"] { color: var(--np-symbol-warning); }
 svg.np-symbol[data-tone="critical"] { color: var(--np-symbol-critical); }
-svg.np-symbol[data-tone="accent"] { color: var(--np-color-accent-strong, var(--nph-accent, var(--brand, #b30e09))); }
+svg.np-symbol[data-tone="accent"] { color: var(--np-color-accent-strong, var(--nph-accent, var(--brand, #68101F))); }
 svg.np-symbol[data-variant="filled"] [data-symbol-enclosure] { fill: currentColor; }
 svg.np-symbol[data-variant="filled"] [data-symbol-center] { stroke: var(--np-symbol-inverse, #fff); }
 /* Match functional icons to text, never to a separately hardcoded icon colour. */
@@ -12134,7 +12138,7 @@ html[data-np-estate="technology"] .site-header.is-scrolled::before {
 html {
   --np-platform-control: 44px;
   --np-platform-focus: #006edb;
-  --np-platform-red: #B30E09;
+  --np-platform-red: #68101F;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-block-start: 5rem;
@@ -12545,7 +12549,7 @@ html[dir="rtl"] .metric { border-right: 0; border-left: 1px solid var(--line); }
 html[dir="rtl"] :is(.module-notice, .action-warning, .intelligence-advisory,
  .article-aside, .article-disclaimer, .footer-status) {
   border-left: 0;
-  border-right: 3px solid var(--red, #E3120B);
+  border-right: 3px solid var(--red, #9D1B32);
   padding-left: 0;
   padding-right: 16px;
 }

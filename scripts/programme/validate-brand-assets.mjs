@@ -105,11 +105,11 @@ const primarySvg = await readFile(path.join(root, "assets/brand/novapharm-health
 for (const forbidden of [/<text\b/iu, /<script\b/iu, /(?:href|src)=["']https?:/iu]) {
   if (forbidden.test(primarySvg)) failures.push(`Primary web logo contains forbidden SVG content matching ${forbidden}`);
 }
-if (!/#E3120B/iu.test(primarySvg)) failures.push("Primary web logo does not contain the approved Economist Red #E3120B");
+if (!/#9D1B32/iu.test(primarySvg)) failures.push("Primary web logo does not contain the approved Royal Cochineal Crimson #9D1B32");
 
 const tokenSource = await readFile(path.join(packRoot, "06_brand_tokens/novapharm-brand-tokens.json"), "utf8");
 const tokens = JSON.parse(tokenSource);
-if (tokens?.primary?.hex !== "#E3120B") failures.push("Approved brand-token register must define #E3120B");
+if (tokens?.primary?.hex !== "#9D1B32") failures.push("Approved brand-token register must define #9D1B32");
 
 for (const [relativePath, [expectedWidth, expectedHeight]] of Object.entries(expectedRasterDimensions)) {
   const metadata = await sharp(path.join(root, relativePath)).metadata();

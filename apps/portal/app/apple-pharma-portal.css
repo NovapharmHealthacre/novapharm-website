@@ -1,11 +1,11 @@
 :root {
-  --portal-ink: #1d1d1f;
+  --portal-ink: #0B0B0E;
   --portal-muted: #6e6e73;
   --portal-line: #d2d2d7;
   --portal-soft: #f5f5f7;
   --portal-white: #ffffff;
-  --portal-red: #E3120B;
-  --portal-red-text: #B30E09;
+  --portal-red: #9D1B32;
+  --portal-red-text: #68101F;
   --portal-red-soft: #fff3f4;
   --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
@@ -151,6 +151,12 @@ textarea {
   box-shadow: inset 3px 0 var(--portal-red);
 }
 .workspace-sidebar a small { color: var(--portal-muted); }
+/* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
+.workspace-sidebar nav a.active > small {
+  color: #0B0B0E;
+  background: transparent;
+  font-weight: 600;
+}
 .sidebar-security {
   border-top-color: #e5e5e7;
   color: var(--portal-muted);

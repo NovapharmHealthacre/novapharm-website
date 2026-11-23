@@ -66,7 +66,7 @@ test("Founder retains its intentional dark identity, plus common symbols and mot
   const styles = read("apps/founder/app/base.css");
   assert.ok(layout.includes("assets/css/symbol-system.css"));
   assert.ok(layout.includes("assets/css/novapharm-hig-motion.css"));
-  assert.ok(styles.includes("--sans: system-ui"));
+  assert.ok(styles.includes("--sans: -apple-system, BlinkMacSystemFont"));
   assert.ok(styles.includes("color-scheme: dark"));
   assert.ok(!layout.includes("assets/css/novapharm-hig-colours.css"),
     "Do not force the light semantic palette onto the separately approved dark founder design");

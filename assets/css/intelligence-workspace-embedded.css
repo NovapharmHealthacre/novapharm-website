@@ -226,7 +226,7 @@
 .npi-workspace-live-experience .below{margin-top:30px}
 .npi-workspace-live-experience .actions{width:100%;justify-content:space-between}}
 @media (prefers-reduced-motion:reduce){.npi-workspace-live-experience *,.npi-workspace-live-experience *::before,.npi-workspace-live-experience *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
-.npi-workspace-live-experience{--red:#e3120b;--mint:#24836e;--focus:#0066cc}
+.npi-workspace-live-experience{--red:#2546D8;--mint:#24836e;--focus:#0066cc}
 .npi-workspace-live-experience .section{max-width:1700px;padding:48px 34px 48px}
 .npi-workspace-live-experience h1{font-size:clamp(41px,4vw,62px);letter-spacing:0;margin:13px 0 9px}
 .npi-workspace-live-experience .intro{font-size:17px}
@@ -287,8 +287,8 @@
 .npi-workspace-live-experience .supply-panel .section-label{margin:2px 0 12px}
 .npi-workspace-live-experience .supply-panels .bars{margin-top:12px;gap:18px}
 .npi-workspace-live-experience .supplier-overview{margin-top:12px}
-.npi-workspace-live-experience .supply-dashboard .chart-svg path[stroke="#3572dc"]{stroke:#e3120b}
-.npi-workspace-live-experience .supply-dashboard .chart-svg circle{fill:#e3120b}
+.npi-workspace-live-experience .supply-dashboard .chart-svg path[stroke="#3572dc"]{stroke:#2546D8}
+.npi-workspace-live-experience .supply-dashboard .chart-svg circle{fill:#2546D8}
 .npi-workspace-live-experience .supply-dashboard .bar-track i{background:#a6b8d7}
 .npi-workspace-live-experience .stage-bottom{padding:14px 5px}
 .npi-workspace-live-experience .below{margin-top:34px}
