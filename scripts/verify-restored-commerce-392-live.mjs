@@ -111,11 +111,12 @@ await Promise.all([
   }),
   check("/sitemap.xml","xml",xml=>{
     const canonicalRegister=JSON.parse(readFileSync(new URL("../seo/generated/page-metadata-register.json",import.meta.url),"utf8"));
-    validateCommerceSitemap(xml,canonicalRegister);
-    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'),"392-product Marketplace missing from sitemap");
-    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/esco/</loc>'),"373-reference ESCO collection missing from sitemap");
-    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>'),"Private-reference tracking must not be in sitemap");
-    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>'),"Customer bag must not be in sitemap");
+    const verified=validateCommerceSitemap(xml,canonicalRegister);
+    const exactUrls=new Set(verified.canonicals);
+    assert(exactUrls.has("https://novapharmhealthcare.com/products/marketplace/"),"392-product Marketplace missing from sitemap");
+    assert(exactUrls.has("https://novapharmhealthcare.com/products/esco/"),"373-reference ESCO collection missing from sitemap");
+    assert(!exactUrls.has("https://novapharmhealthcare.com/products/track/"),"Private-reference tracking must not be in sitemap");
+    assert(!exactUrls.has("https://novapharmhealthcare.com/products/esco/bag/"),"Customer bag must not be in sitemap");
   }),
   check("/assets/data/commerce-marketplace.json","application/json",body=>{
     const j=JSON.parse(body);
