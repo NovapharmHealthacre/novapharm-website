@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
-import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
+import { personIdForSlug, personUrlForSlug, VISHAL_PROFILE_ID } from "../src/seo/person-identity.mjs";
 import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
@@ -160,7 +160,7 @@ function normalizePerson(schema, person) {
     affiliation: { "@id": ORGANIZATION_ID },
     sameAs: person.sameAs,
     knowsAbout: person.expertise,
-    mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` }
+    mainEntityOfPage: { "@id": person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_ID : `${canonicalUrl}#webpage` }
   };
 }
 
