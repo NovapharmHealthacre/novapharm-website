@@ -34,7 +34,13 @@ export function evaluateBrandingOnlyRelease({
   if (contactApiOrigin !== APPROVED_CONTACT_ORIGIN)
     issues.push("The existing AWS Contact API origin must remain exactly pinned");
   const scope = config?.publicBrandingRelease;
-  if (scope?.enabled !== true || scope?.signoff !== "granted" ||
+  // An unknown field must not silently extend a previously approved scope.
+  // Keep this check independent of the Intelligence engineering validator:
+  // the publisher's runtime permission decision must also fail closed.
+  const scopeKeys = scope && typeof scope === "object" && !Array.isArray(scope)
+    ? Object.keys(scope).sort() : [];
+  if (scopeKeys.join(",") !== "enabled,scope,signoff" ||
+      scope?.enabled !== true || scope?.signoff !== "granted" ||
       scope?.scope !== "public-static-with-preserved-contact")
     issues.push("Separate branding-only production signoff is not granted");
   // This route must NOT approve Portal login, subscriptions, payments or any email.
