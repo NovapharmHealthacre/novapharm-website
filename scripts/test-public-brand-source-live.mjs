@@ -99,6 +99,8 @@ test("Contact release cannot pass with lost consent, CSP, approved API origin or
   const weakened = [
     ['name="safetyConfirmation" value="yes" required', 'name="safetyConfirmation"'],
     ['name="privacyAcknowledgement" value="yes" required', 'name="privacyAcknowledgement"'],
+    ['http-equiv="Content-Security-Policy"', 'http-equiv="X-Unreviewed-Policy"'],
+    ["script-src 'self'", "script-src 'self' 'unsafe-inline'"],
     ["form-action 'none'", "form-action 'self'"],
     ['connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com', "connect-src 'self'"],
     ['data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-origin="https://unreviewed.example.invalid"'],
