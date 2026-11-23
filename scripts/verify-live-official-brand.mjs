@@ -7,15 +7,61 @@ const origin = "https://novapharmhealthcare.com";
 const palette = JSON.parse(readFileSync("config/brand-identities.json", "utf8"));
 const raster = JSON.parse(readFileSync("audit/generated/three-brand-raster-provenance.json", "utf8"));
 
+// Every outbound URL is a checked-in literal, never derived from a source manifest.
+// Manifest paths may select one of these exact URLs, but cannot select a host,
+// query or arbitrary file path for a network request.
+const pinnedBrandUrls = new Map([
+  ["assets/brand/novapharm-healthcare-logo.svg", "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.svg"],
+  ["assets/brand/novapharm-distribution-logo.svg", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-logo.svg"],
+  ["assets/brand/novapharm-intelligence-logo.svg", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-logo.svg"],
+  ["assets/brand/novapharm-healthcare-logo.png", "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"],
+  ["assets/brand/favicon.ico", "https://novapharmhealthcare.com/assets/brand/favicon.ico"],
+  ["assets/brand/apple-touch-icon.png", "https://novapharmhealthcare.com/assets/brand/apple-touch-icon.png"],
+  ["assets/brand/pwa-icon-192.png", "https://novapharmhealthcare.com/assets/brand/pwa-icon-192.png"],
+  ["assets/brand/pwa-icon-512.png", "https://novapharmhealthcare.com/assets/brand/pwa-icon-512.png"],
+  ["assets/brand/novapharm-healthcare-app-icon-1024.png", "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-app-icon-1024.png"],
+  ["assets/brand/pwa-maskable-512.png", "https://novapharmhealthcare.com/assets/brand/pwa-maskable-512.png"],
+  ["assets/brand/favicon-16x16.png", "https://novapharmhealthcare.com/assets/brand/favicon-16x16.png"],
+  ["assets/brand/favicon-32x32.png", "https://novapharmhealthcare.com/assets/brand/favicon-32x32.png"],
+  ["assets/brand/favicon-48x48.png", "https://novapharmhealthcare.com/assets/brand/favicon-48x48.png"],
+  ["assets/brand/favicon-64x64.png", "https://novapharmhealthcare.com/assets/brand/favicon-64x64.png"],
+  ["assets/brand/novapharm-open-graph-1200x630-white.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-open-graph-1200x630-white.jpg"],
+  ["assets/brand/novapharm-open-graph-1200x630-red.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-open-graph-1200x630-red.jpg"],
+  ["assets/brand/novapharm-distribution-logo.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-logo.png"],
+  ["assets/brand/novapharm-distribution-favicon.ico", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-favicon.ico"],
+  ["assets/brand/novapharm-distribution-apple-touch-icon.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-apple-touch-icon.png"],
+  ["assets/brand/novapharm-distribution-pwa-icon-192.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-pwa-icon-192.png"],
+  ["assets/brand/novapharm-distribution-pwa-icon-512.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-pwa-icon-512.png"],
+  ["assets/brand/novapharm-distribution-app-icon-1024.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-app-icon-1024.png"],
+  ["assets/brand/novapharm-distribution-pwa-maskable-512.png", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-pwa-maskable-512.png"],
+  ["assets/brand/novapharm-distribution-open-graph-1200x630-white.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-open-graph-1200x630-white.jpg"],
+  ["assets/brand/novapharm-distribution-open-graph-1200x630-garnet.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-distribution-open-graph-1200x630-garnet.jpg"],
+  ["assets/brand/novapharm-intelligence-logo.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-logo.png"],
+  ["assets/brand/novapharm-intelligence-favicon.ico", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-favicon.ico"],
+  ["assets/brand/novapharm-intelligence-apple-touch-icon.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-apple-touch-icon.png"],
+  ["assets/brand/novapharm-intelligence-pwa-icon-192.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-pwa-icon-192.png"],
+  ["assets/brand/novapharm-intelligence-pwa-icon-512.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-pwa-icon-512.png"],
+  ["assets/brand/novapharm-intelligence-app-icon-1024.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-app-icon-1024.png"],
+  ["assets/brand/novapharm-intelligence-pwa-maskable-512.png", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-pwa-maskable-512.png"],
+  ["assets/brand/novapharm-intelligence-open-graph-1200x630-light.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-open-graph-1200x630-light.jpg"],
+  ["assets/brand/novapharm-intelligence-open-graph-1200x630-night.jpg", "https://novapharmhealthcare.com/assets/brand/novapharm-intelligence-open-graph-1200x630-night.jpg"],
+  ["manifest.webmanifest", "https://novapharmhealthcare.com/manifest.webmanifest"],
+  ["assets/css/novapharm.bundle.css", "https://novapharmhealthcare.com/assets/css/novapharm.bundle.css"],
+]);
+
 function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
 async function bytesAt(path) {
-  assert.match(path, /^assets\/brand\/[a-z0-9.-]+$|^assets\/css\/novapharm\.bundle\.css$|^manifest\.webmanifest$/i);
-  if (sourceOnly) return readFileSync(path);
-  const uri = new URL("/" + path, origin);
-  uri.searchParams.set("brand-source", process.env.GITHUB_SHA || "verified");
+  const pinnedUrl = pinnedBrandUrls.get(path);
+  assert.ok(pinnedUrl, "Brand asset is outside approved URL allowlist: " + String(path));
+  // Even local mode resolves through the static trusted URL mapping. The
+  // provenance JSON never becomes a file-system pathname or outbound URL.
+  if (sourceOnly) return readFileSync(new URL(pinnedUrl).pathname.slice(1));
+  const uri = new URL(pinnedUrl);
+  const sha = String(process.env.GITHUB_SHA || "");
+  uri.searchParams.set("brand-source", /^[a-f0-9]{40}$/.test(sha) ? sha : "verified");
   const response = await fetch(uri, {
     redirect: "error",
     headers: { "cache-control": "no-cache, no-store", pragma: "no-cache" },
