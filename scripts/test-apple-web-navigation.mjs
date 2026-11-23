@@ -52,9 +52,9 @@ test("the published bundle is exactly the design source tail", () => {
   assert.ok(bundle.endsWith(`/* Source: apple-web-navigation.css */\n${design.trim()}\n`));
 });
 
-test("Next.js corporate imports the same stylesheet and preserves the original approved brand asset", () => {
+test("Next.js corporate imports the same stylesheet and preserves the owner-approved Sovereign Crimson brand asset", () => {
   assert.match(corporateLayout, /assets\/css\/apple-web-navigation\.css/);
-  assert.match(corporateBrand, /novapharm-healthcare-logo\.png/);
+  assert.match(corporateBrand, /novapharm-healthcare-logo\.svg/);
   assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
   assert.match(corporateHeader, /<DesktopNavigation items=\{navigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
   assert.match(corporateDesktopNav, /<nav className="desktop-nav"/);

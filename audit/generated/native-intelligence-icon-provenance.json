@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "brand": "NovaPharm Intelligence",
+  "source": "assets/brand/novapharm-intelligence-favicon.svg",
+  "sourceSha256": "45953fe16cb8406af6bf4f8d5bafe84f623c5569ff5144fa1e56fde4fb866784",
+  "color": "#2546D8",
+  "lightInk": "#0B0B0E",
+  "lightBackground": "#FBFAEF",
+  "status": "unsigned-source-assets-only",
+  "outputs": [
+    {
+      "filename": "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-1024x1024.png",
+      "sha256": "d2131c5376807da4ef7ba7abffeb7441d3b2be91beb6934836a090f189b9aaa6",
+      "bytes": 17652
+    },
+    {
+      "filename": "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024x1024.png",
+      "sha256": "5067f68ac7b50853bb0f2db340ed58fd13336de9612c01b23e0837cb99b36c41",
+      "bytes": 18297
+    },
+    {
+      "filename": "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024x1024.png",
+      "sha256": "636a09bc3e43498db28b83e7a3f5468ea780776950c999af338cdaefbffc2054",
+      "bytes": 18365
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "sha256": "829dd830ad10e50682e4ad01da9e001d28735e76c0b47df5d0f8165378b4d3fb",
+      "bytes": 632
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "sha256": "829dd830ad10e50682e4ad01da9e001d28735e76c0b47df5d0f8165378b4d3fb",
+      "bytes": 632
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "sha256": "e30d99c04816da2b3f8d5ffb9ccba33f5bd50b5e4ef06da4981edaa1536f4f85",
+      "bytes": 856
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "sha256": "e30d99c04816da2b3f8d5ffb9ccba33f5bd50b5e4ef06da4981edaa1536f4f85",
+      "bytes": 856
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "d756b15f1517b589111453a6cdafb70c69a25f7e3ac8c85e522660ff7e741e53",
+      "bytes": 1094
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "sha256": "d756b15f1517b589111453a6cdafb70c69a25f7e3ac8c85e522660ff7e741e53",
+      "bytes": 1094
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "194a74cc9482e57c4368efbd8f3e9ecca20a6632bd2b79d58ce53bebbfd24f5d",
+      "bytes": 1683
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "sha256": "194a74cc9482e57c4368efbd8f3e9ecca20a6632bd2b79d58ce53bebbfd24f5d",
+      "bytes": 1683
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "2eb9be652302c7850ccfb801c5b70f2b17f18fbbe285d43ea4d6a3ec186fbe1d",
+      "bytes": 2213
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "sha256": "2eb9be652302c7850ccfb801c5b70f2b17f18fbbe285d43ea4d6a3ec186fbe1d",
+      "bytes": 2213
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png",
+      "sha256": "bfec95ecb4b7cc74e05bd9a5fc5c076e91991f9ddcfde06b7cbc49035fb430ba",
+      "bytes": 4227
+    },
+    {
+      "filename": "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_monochrome.png",
+      "sha256": "bfec95ecb4b7cc74e05bd9a5fc5c076e91991f9ddcfde06b7cbc49035fb430ba",
+      "bytes": 4227
+    }
+  ]
+}

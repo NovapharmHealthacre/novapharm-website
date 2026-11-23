@@ -27,6 +27,6 @@ for (const file of approvedMedia) {
 }
 
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");
-assert.match(logo, /#E3120B/i, "Official corporate logo does not use the approved identity red");
+assert.match(logo, /#9D1B32/i, "Official corporate logo does not use the approved identity red");
 assert.doesNotMatch(logo, /<text\b/i, "Official corporate logo must remain path-based");
 console.log("Corporate public media synchronised from the approved repository asset register.");

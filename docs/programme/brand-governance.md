@@ -11,7 +11,7 @@ Owner: NovaPharm Healthcare Ltd
 - Company number: `16716501`.
 - Official source logo: `assets/brand/novapharm-healthcare-logo.svg`.
 - Approved raster fallback: `assets/brand/novapharm-healthcare-logo.png`.
-- Authoritative primary colour: Economist Red `#E3120B` (`rgb(227 18 11)`).
+- Authoritative primary colour: Royal Cochineal Crimson `#9D1B32` (`rgb(157 27 50)`).
 - Governed source archive: `creative-assets/brand/novapharm-logo-asset-pack/`.
 - Approved small-format identity: `assets/brand/favicon.svg`, derived in the owner-supplied pack from the `N` and original arc for legibility.
 - Approved reverse, monochrome, PWA, Apple-touch and social variants are listed in `final-report/official-logo-register.md`.
@@ -28,7 +28,7 @@ Application build scripts copy the approved delivery assets and checksum tests v
 
 The selected direction is `Regulated Continuum`. The palette uses midnight navy, warm white, graphite, cool grey, muted silver and NovaPharm red as a controlled accent. Red is not a page background default and cannot be the only status signal. Cards use restrained radii and are limited to real item groupings or tools.
 
-Economist Red `#E3120B` remains the canonical identity colour for the logo, graphical accents, fills and borders. The governed darker derivative `#B30E09` is used when red is foreground text on white or neutral surfaces, particularly for small labels and links. This accessibility treatment does not recolour or alter the official logo; it preserves a minimum contrast margin across the estate's approved neutral surfaces.
+Royal Cochineal Crimson `#9D1B32` remains the canonical identity colour for the logo, graphical accents, fills and borders. The governed darker derivative `#68101F` is used when red is foreground text on white or neutral surfaces, particularly for small labels and links. This accessibility treatment does not recolour or alter the official logo; it preserves a minimum contrast margin across the estate's approved neutral surfaces.
 
 ## Media and portraits
 
@@ -43,3 +43,25 @@ Economist Red `#E3120B` remains the canonical identity colour for the logo, grap
 Logo-source changes require owner approval and checksum updates. New colours, typefaces, logo variants or executive images require brand and accessibility review. `npm run brand:validate` enforces the pack count, all registered checksums, byte identity of the public subset, path-only SVG safety, primary colour and raster dimensions. Changes must also pass visual regression, high-density rendering, mobile size, contrast, alt-text and layout-shift checks.
 
 Evidence: `final-report/official-logo-register.md`, `creative-assets/asset-register.json`, `creative-assets/visual-provenance.md`, `packages/design-system/` and `audit/evidence/design-system/`.
+
+
+## Superseding owner decision — 22 November 2026
+
+The corporate identity is Royal Cochineal Crimson `#9D1B32` (RGB 157, 27, 50), with accessible deep hover shade `#68101F`. The separate NovaPharm Distribution primary logo uses Near-black Garnet `#3D0B13`. The previous Economist Red `#E3120B` is retained here **only as deprecated historical colour evidence**; it is not permitted as the current primary identity. This decision supersedes August 2026 references to the former Economist Red. Approved reverse/monochrome variants retain their contrast-specific uses. Unrecoloured PNG, ICO, application-icon and social-card files in the earlier asset pack remain historical derivatives and require a separately verified re-render before they may be described as colour-current.
+
+## Owner-approved three-brand palette and Apple-inspired typography (22 November 2026)
+
+| Identity | Primary | Use |
+| --- | --- | --- |
+| NovaPharm Healthcare | `#9D1B32` | Corporate / customer-facing logo and controlled accent |
+| NovaPharm Distribution | `#3D0B13` | Operational and warehouse identity |
+| NovaPharm Intelligence | `#2546D8` | Research, intelligence sign-in, native Intelligence UI |
+| Shared Sovereign Black | `#0B0B0E` | Default light-mode text, labels and neutral actions across web properties |
+
+Typography hierarchy is OS-provided SF Pro/system interface; SF Compact-style tables; SF Mono-style IDs; New York editorial accents with platform-safe fallback. No Apple proprietary binaries are shipped. **Release boundary:** these source edits remain a draft PR; binary ZIP replacement, CI acceptance, native app icons, independent deployments and live asset verification are distinct gates.
+
+## Review-branch binary derivative evidence — 22 November 2026
+
+The dedicated three-brand raster workflow completed successfully on the isolated draft review branch. It rendered PNG, ICO, PWA and social derivatives exclusively from the exact owner-verified primary/favicon SVG sources and regenerated the tracked image inventory and checksum entries. Generated raster files are *derived assets*, not represented as byte-identical ZIP members. Machine-checkable provenance is in `audit/generated/three-brand-raster-provenance.json`.
+
+Deployment is separate from source readiness. `main` and `gh-pages` are intentionally unchanged by this staged branding release. Further gates: iOS/Android native resource compilation, an independently completed CI run on the exact PR head, Chromium/WebKit browser visual/accessibility tests, security checks, approval of production promotion, and public route/asset verification after deployment. The official mobile preview remains explicitly offline and unsigned until the app release policy permits otherwise.
