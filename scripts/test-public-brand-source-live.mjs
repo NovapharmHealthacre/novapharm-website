@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import { LIVE_ORIGIN, PUBLIC_ROUTES, auditPublishedBrand, verifyPublishedHtml } from "./verify-public-brand-source-live.mjs";
 
 const SHA = "a".repeat(40);
@@ -120,4 +121,15 @@ test("a superficial B2B marker cannot impersonate the reviewed live Contact form
     '<form class="ref-form" method="post" action="/contact/" data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com">',
     '<div data-live-b2b-enquiry-form>');
   assert.ok(verifyPublishedHtml(spoof, "/contact/", SHA).some(e => e.includes("pinned API binding")));
+});
+
+test("actual immutable managed Contact HTML satisfies all live release safety requirements", () => {
+  // Synthetic fixtures are useful for negative cases, but they cannot
+  // establish compatibility with the actual owner-reviewed Contact markup.
+  const managed = readFileSync(new URL("../src/content/contact-managed-release.html", import.meta.url), "utf8");
+  assert.ok(!managed.includes("novapharm-source-sha"), "Managed source must not forge publication receipts");
+  const stamped = managed.replace("</head>",
+    '<meta name="novapharm-source-sha" content="' + SHA + '">\n</head>');
+  assert.notEqual(stamped, managed, "Reviewed Contact must include a closing head");
+  assert.deepEqual(verifyPublishedHtml(stamped, "/contact/", SHA), []);
 });
