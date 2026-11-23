@@ -86,3 +86,16 @@ test('archival master is excluded from both the Pages and unified application re
   assert.doesNotMatch(united, /copyTree\(\s*path\.join\(root,\s*["']creative-assets["']/,
     'Do not bundle non-public source masters in native/protected app artifacts');
 });
+
+test('canonical image inventory recognizes the repaired master as governed non-public owner source', () => {
+  const registry = JSON.parse(readFileSync(resolve(root, 'creative-assets/asset-register.json'), 'utf8'));
+  const entries = registry.assets.filter(asset => asset.path === receipt.member.gitPath);
+  assert.equal(entries.length, 1, 'One unique asset provenance record is required');
+  const record = entries[0];
+  assert.equal(record.pageUsage?.length, 0, 'Source masters must not claim published page usage');
+  assert.equal(record.optimisedVariants?.length, 0, 'An unreviewed derivative is not registered');
+  assert.ok(record.source.includes(receipt.sourceArchive.originalSha256));
+  assert.ok(record.technicalStatus.includes(receipt.member.sha256));
+  assert.equal(record.provenanceRecord, 'audit/brand/intelligence-dark-webp-source-repair-20261123.json');
+  assert.match(record.ownerApproval, /pending/i, 'Source repair is not a completed release approval');
+});
