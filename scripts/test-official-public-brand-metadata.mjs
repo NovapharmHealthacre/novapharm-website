@@ -171,8 +171,8 @@ test("mixed-case script tags and whitespace closing tags preserve CSP-pinned Nex
     '<SCRIPT data-note="a>b">' + flight + '</ScRiPt \t\n></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(input, palette);
   assertOfficialPublicBrandMetadata(result, palette);
-  assert.match(result, /<SCRIPT data-note="a>b">/);
-  assert.match(result, /<\/ScRiPt \t\n>/);
+  assert.ok(result.includes('<SCRIPT data-note="a>b">'));
+  assert.ok(result.includes("</ScRiPt \t\n>"));
   assert.match(result, /#FBFAEF/);
   assert.doesNotMatch(result, /#E3120B/);
   assert.ok(result.includes("'sha256-" + digest(flight.replace("#E3120B", "#FBFAEF")) + "'"));
