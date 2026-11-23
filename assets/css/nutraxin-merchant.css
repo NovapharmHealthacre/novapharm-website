@@ -8,3 +8,374 @@
 .nx-merchant-shop-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .625rem 1rem; margin-top: .6rem; border: 1px solid #9D1B32; border-radius: 999px; color: #9D1B32; background: transparent; font-size: .95rem; line-height: 1.35; font-weight: 600; text-decoration: none; }
 .nx-merchant-shop-link:hover { color: #FFFFFF; background: #9D1B32; }
 .nx-merchant-shop-link:focus-visible { outline: 3px solid #9D1B32; outline-offset: 3px; }
+
+/*
+ * Shared Nutraxin product-detail layout contract (all 19 retail SKU pages).
+ * Adapted from Apple HIG typography/layout/accessibility principles, using
+ * NovaPharm's own approved system typography and pure-white brand canvas.
+ * Fixes narrow CSS-grid tracks and print/PDF single-character value wrapping.
+ * This stylesheet is linked by every product page AFTER novapharm.bundle.css.
+ */
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail {
+  --nx-detail-ink: #0B0B0E;
+  --nx-detail-muted: #565A61;
+  --nx-detail-line: #E5E5E7;
+  color: var(--nx-detail-ink);
+  background: #FFFFFF;
+  font-family: var(--npd-system, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif);
+  font-optical-sizing: auto;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero {
+  padding-block: clamp(36px, 5vw, 72px) clamp(48px, 6vw, 88px);
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(28px, 4vw, 72px);
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero-grid > *,
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence > * {
+  min-width: 0;
+  min-inline-size: 0;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual {
+  min-height: 0;
+  padding: clamp(20px, 3.5vw, 48px);
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: #F5F5F7;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual .npd-product-picture {
+  display: block;
+  width: min(100%, 520px);
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual .npd-product-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy {
+  min-width: 0;
+  max-width: 660px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy h1 {
+  max-width: 16ch;
+  margin: 10px 0 0;
+  font-size: clamp(2.15rem, 3.8vw, 3.65rem);
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-pack {
+  margin: 14px 0 0;
+  color: var(--nx-detail-muted);
+  font-size: clamp(1.05rem, 1.45vw, 1.3rem);
+  line-height: 1.4;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-panel {
+  max-width: 100%;
+  margin: 28px 0 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--nx-detail-line);
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: .08em;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-price {
+  margin: 12px 0 8px;
+  color: var(--nx-detail-ink);
+  font-size: clamp(1.7rem, 2.8vw, 2.2rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-note {
+  max-width: 55ch;
+  margin: 0 0 20px;
+  color: var(--nx-detail-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-qty-label {
+  min-width: 92px;
+  margin: 0;
+  line-height: 1.4;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-qty,
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-add,
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-bag-link {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-add {
+  padding: 11px 20px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-bag-link {
+  padding-inline: 6px;
+  text-align: center;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-merchant-offer {
+  margin: 22px 0 26px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-merchant-regulatory-scope {
+  max-width: 66ch;
+  margin: 0 0 12px;
+  color: var(--nx-detail-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+/* A hydrated retail price supersedes the static crawlable fallback: no duplicate offers. */
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy:has(> .nx-store-panel)
+  .nx-merchant-offer > :is(.nx-merchant-price, .nx-merchant-availability) {
+  display: none;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-meta {
+  margin: 24px 0 0;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-meta > div {
+  grid-template-columns: minmax(110px, .45fr) minmax(0, 1fr);
+  gap: 12px 18px;
+  padding-block: 15px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-meta :is(dt, dd) {
+  font-size: 14px;
+  line-height: 1.5;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-section-soft {
+  background: #FFFFFF;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(270px, .75fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro {
+  max-width: 100%;
+  margin-bottom: 28px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro h2 {
+  max-width: 22ch;
+  font-size: clamp(1.75rem, 3vw, 2.65rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.13;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-wrap: balance;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro > p:last-child {
+  margin-top: 14px;
+  max-width: 62ch;
+  color: var(--nx-detail-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition {
+  margin: 24px 0 0;
+  width: 100%;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(max-content, 32%);
+  gap: 14px 22px;
+  align-items: baseline;
+  padding-block: 15px;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition dt,
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition dd {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition dd {
+  min-width: max-content;
+  text-align: right;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-variant-numeric: tabular-nums;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-notice {
+  margin-top: 0;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: none;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-nutraxin-related,
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-nutraxin-answers {
+  background: #FFFFFF;
+}
+body[data-page="product-portfolio/nutraxin"] .npd-product-detail
+  :is(a, button, select):focus-visible {
+  outline: 3px solid #9D1B32;
+  outline-offset: 3px;
+}
+@media (max-width: 1050px) {
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero-grid,
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual {
+    width: min(100%, 640px);
+    justify-self: center;
+    box-sizing: border-box;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy {
+    width: 100%;
+    max-width: 680px;
+  }
+}
+@media (max-width: 600px) {
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero {
+    padding-block: 32px 48px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual {
+    border-radius: 16px;
+    padding: 20px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 8vw, 2.65rem);
+    line-height: 1.1;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-qty-label,
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-bag-link {
+    grid-column: 1 / -1;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-qty {
+    width: 100%;
+    max-width: none;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-add {
+    width: 100%;
+    padding-inline: 10px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition > div {
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 12px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition :is(dt, dd) {
+    font-size: 14px;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-meta > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
+/* Safari "Save as PDF" and Chromium print are distinct from the screen viewport:
+ * enforce a print-specific product grid, never a 420px fixed secondary track. */
+@media print {
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero {
+    padding: 2mm 0 8mm;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-hero-grid {
+    grid-template-columns: 54mm minmax(0, 1fr) !important;
+    gap: 8mm !important;
+    align-items: start;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual {
+    width: 54mm;
+    min-width: 0;
+    min-height: 0;
+    padding: 4mm;
+    border-radius: 3mm;
+    break-inside: avoid;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual .npd-product-picture {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-visual .npd-product-picture img {
+    width: 100%;
+    height: auto !important;
+    max-height: 48mm !important;
+    object-fit: contain;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-copy h1 {
+    max-width: none;
+    margin-top: 2mm;
+    font-size: 20pt;
+    line-height: 1.13;
+    letter-spacing: -.02em;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-pack {
+    margin-top: 2mm;
+    font-size: 11pt;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-panel {
+    margin: 4mm 0;
+    padding-top: 3mm;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-options {
+    display: none;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-meta {
+    margin-top: 4mm;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 6mm !important;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro {
+    margin-bottom: 4mm;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro h2 {
+    max-width: none;
+    font-size: 18pt !important;
+    line-height: 1.2;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence .npd-section-intro > p:last-child {
+    font-size: 10pt;
+    margin-top: 2mm;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition {
+    margin-top: 4mm;
+    width: 100%;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition > div {
+    grid-template-columns: minmax(0, 1fr) 42mm !important;
+    gap: 6mm;
+    padding-block: 2.5mm;
+    break-inside: avoid;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-composition dd {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+  body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-notice {
+    padding: 5mm;
+    break-inside: avoid;
+  }
+}
