@@ -92,7 +92,9 @@ assert.match(read("scripts/build-css-bundle.mjs"), /novapharm-hig-colours\.css/)
 assert.match(read("assets/css/novapharm.css"), /novapharm-hig-colours\.css/);
 assert.match(read("apps/technology/styles/components-4.css"), /\.related-insights__grid a > span\s*\{\s*color:\s*var\(--red-deep\)/, "Related article labels must use contrast-safe brand text");
 const packageJson = JSON.parse(read("package.json"));
-assert.equal(packageJson.scripts["design:colours:validate"], "node scripts/test-apple-hig-colours.mjs");
+assert.equal(packageJson.scripts["design:colours:validate"],
+  "node scripts/test-apple-hig-colours.mjs && node --test scripts/test-official-public-brand-metadata.mjs",
+  "Both approved colour and browser metadata assertions must run");
 assert.ok(packageJson.scripts.check.includes("design:colours:validate"), "Production check must enforce colour contract");
 
 /* Owner-approved neutral brand identity: permanent CI guardrails. */
