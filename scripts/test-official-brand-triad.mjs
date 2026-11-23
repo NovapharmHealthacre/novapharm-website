@@ -136,6 +136,15 @@ test("Portal navigation status and warehouse source disclaimer preserve accessib
   const warehouse = text("apps/portal/app/employee-distribution.css");
   assert.ok(portal.includes(".workspace-sidebar nav a.active > small {"));
   assert.ok(portal.includes("color: #0B0B0E;"));
+  // A base stylesheet can load after Apple Portal CSS. The more-specific active
+  // link selector must keep the approved light surface under Sovereign Black
+  // sublabels in Chromium and WebKit (previously 88 serious axe findings).
+  assert.match(portal, /--portal-soft:\\s*#F8F7F3/i);
+  assert.match(portal, /--portal-ink:\\s*#0B0B0E/i);
+  const active = portal.match(/\\.workspace-sidebar nav a\\.active \\{([^}]+)\\}/);
+  assert.ok(active, "Selected Portal sidebar links need a specific light-surface override");
+  assert.match(active[1], /background:\\s*var\\(--portal-soft\\)/);
+  assert.match(active[1], /color:\\s*var\\(--portal-ink\\)/);
   assert.ok(warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#595961;"));
   assert.ok(!warehouse.includes(".distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;"));
 });
