@@ -1,0 +1,56 @@
+name: Public branding-only release permission contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - '.github/workflows/public-branding-only-release-contract.yml'
+      - 'scripts/verify-public-branding-only-release.mjs'
+      - 'scripts/test-public-branding-only-release.mjs'
+      - 'config/intelligence/owner-production-constraints.json'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: branding-only-release-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Prove brand-only authorization cannot enable customer services
+        run: node --test scripts/test-public-branding-only-release.mjs scripts/test-public-brand-source-live.mjs
+      - name: Prove push and ordinary dispatch cannot use branding-only approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          for event in push pull_request; do
+            if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT="$event" BRANDING_ONLY=true CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+              echo "::error::Non-manual events must never satisfy branding-only release signoff."
+              exit 1
+            fi
+          done
+          if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=false CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+            echo "::error::Ordinary manual dispatch cannot inherit brand-only approval."
+            exit 1
+          fi
+      - name: Confirm missing branding production signoff denies release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! jq -e '.publicBrandingRelease.enabled == true and .publicBrandingRelease.signoff == "granted"' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            if EXPECTED_SHA="$GITHUB_SHA" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=true CONTACT_API_ORIGIN=https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com node scripts/verify-public-branding-only-release.mjs; then
+              echo "::error::Missing separate branding signoff must fail closed."
+              exit 1
+            fi
+          fi
