@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { leadership } from "../src/content/site-content.mjs";
-import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
+import { personIdForSlug, personUrlForSlug, VISHAL_PROFILE_ID } from "../src/seo/person-identity.mjs";
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
@@ -49,7 +49,7 @@ for (const person of leadership) {
         url: personUrlForSlug(person.slug),
         worksFor: { "@id": ORGANIZATION_ID },
         affiliation: { "@id": ORGANIZATION_ID },
-        mainEntityOfPage: { "@id": profileId }
+        mainEntityOfPage: { "@id": person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_ID : profileId }
       };
     }
     return schema;
