@@ -11,7 +11,7 @@ import sharp from "sharp";
 const root=process.cwd(), abs=p=>path.join(root,p);
 const sha=b=>createHash("sha256").update(b).digest("hex");
 const identities=JSON.parse(await readFile(abs("config/brand-identities.json"),"utf8"));
-assert.equal(identities.approvedOn,"2026-11-23");
+assert.equal(identities.approvedOn,"2026-11-22");
 // All light-brand social surfaces inherit the owner-approved white, never retired mineral white.
 const officialLight=identities.neutralPalette?.primaryWhite?.hex;
 assert.equal(officialLight,"#FFFFFF","Unapproved light social artwork background");

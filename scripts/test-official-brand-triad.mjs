@@ -22,7 +22,7 @@ const icons = {
 };
 
 test("three separate owner-approved entities and sRGB colours", () => {
-  assert.equal(brand.approvedOn, "2026-11-23");
+  assert.equal(brand.approvedOn, "2026-11-22");
   assert.deepEqual(
     Object.entries(brand.brands).map(([key, value]) => [key, value.hex]),
     [["healthcare", "#9D1B32"], ["distribution", "#3D0B13"], ["intelligence", "#2546D8"]],

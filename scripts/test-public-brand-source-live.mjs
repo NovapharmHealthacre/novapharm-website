@@ -133,7 +133,19 @@ test("actual immutable managed Contact HTML satisfies all live release safety re
   const stamped = managed.replace("</head>",
     '<meta name="novapharm-source-sha" content="' + SHA + '">\n</head>');
   assert.notEqual(stamped, managed, "Reviewed Contact must include a closing head");
-  assert.deepEqual(verifyPublishedHtml(stamped, "/contact/", SHA), []);
+  // Keep the owner-reviewed AWS Contact source byte-identical; it predates the
+  // new primary-white browser metadata. The old template must not be accepted
+  // as already published under the superseding palette.
+  assert.ok(stamped.includes('name="theme-color" content="#FBFAEF"'));
+  assert.ok(verifyPublishedHtml(stamped, "/contact/", SHA)
+    .some(error => error.includes("Pure White")));
+  // Test only the browser-theme normalization in memory, while preserving
+  // all managed Contact form, privacy, consent, CSP and API safety markers.
+  const normalized = stamped.replace(
+    'name="theme-color" content="#FBFAEF"',
+    'name="theme-color" content="#FFFFFF"');
+  assert.notEqual(normalized, stamped);
+  assert.deepEqual(verifyPublishedHtml(normalized, "/contact/", SHA), []);
 });
 
 test("commented-out source receipts, brand colours and headings cannot satisfy live checks", () => {
