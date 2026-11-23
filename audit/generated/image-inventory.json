@@ -1840,8 +1840,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 91,
-      "referenceCount": 238,
+      "usageCount": 92,
+      "referenceCount": 240,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1860,6 +1860,7 @@
         "cro/index.html",
         "docs/programme/brand-governance.md",
         "final-report/official-logo-register.md",
+        "index.html",
         "investor-information/index.html",
         "leadership/girish-achliya/index.html",
         "leadership/helly-panchal/index.html",
@@ -1989,7 +1990,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 105,
-      "referenceCount": 219,
+      "referenceCount": 217,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -9756,11 +9757,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 14,
-      "referenceCount": 29,
+      "usageCount": 15,
+      "referenceCount": 30,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/girish-achliya/index.html",
         "leadership/index.html",
         "packages/content/src/index.ts",
@@ -10235,11 +10237,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 11,
-      "referenceCount": 26,
+      "usageCount": 12,
+      "referenceCount": 27,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/index.html",
         "leadership/prabhakar-lahare/index.html",
         "packages/content/src/index.ts",
@@ -10399,11 +10402,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 12,
-      "referenceCount": 34,
+      "usageCount": 13,
+      "referenceCount": 35,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/index.html",
         "leadership/vishal-chakravarty/index.html",
         "packages/content/src/index.ts",
