@@ -217,3 +217,17 @@ test("19 product search descriptions and support links are source-aligned", () =
     assert.equal(nodes.find(n => n["@type"] === "WebPage")?.description, intent.metaDescription);
   }
 });
+
+test("Nutraxin support email and delivery-returns policy are linked from each offer", () => {
+  for (const product of catalogue.products) {
+    const html = read("products/nutraxin/" + product.slug + "/index.html");
+    assert(html.includes('mailto:support@novapharmhealthcare.com'));
+    assert(html.includes('href="/legal/returns/"'));
+  }
+  const policy = read("legal/returns/index.html");
+  assert(policy.includes("support@novapharmhealthcare.com"));
+  assert(policy.includes("14 days"));
+  assert(policy.includes("NovaPharm Healthcare Ltd"));
+  assert(!/return(s)? (directly |to )?Polar Speed/i.test(policy),
+    "Do not publish an unconfirmed warehouse consumer-return destination");
+});
