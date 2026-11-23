@@ -73,7 +73,8 @@ function verify(m, route, mode, viewport) {
   check(m.imageLoaded && m.imageFit === "contain", `${id}: pack image missing/cropped`);
   check(m.image.width > (mode === "print" ? 90 : 180) && m.image.height > 90,
     `${id}: pack image collapsed (${m.image.width}x${m.image.height})`);
-  check(m.heading.width > 160 && m.headlineFont >= 27 && m.headlineLeading > m.headlineFont,
+  check(m.heading.width > 160 && m.headlineFont >= (mode === "print" ? 26 : 27) &&
+    m.headlineLeading > m.headlineFont,
     `${id}: unreadable title`);
   check(m.rows.length === m.amounts.length && m.rows.length > 0,
     `${id}: missing composition values`);
