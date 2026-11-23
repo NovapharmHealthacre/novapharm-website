@@ -12,7 +12,7 @@ function htmlFor(route, sha = SHA) {
     : "";
   return '<html lang="en-GB"><head><meta name="novapharm-source-sha" content="' + sha + '">' +
     '<meta name="theme-color" content="#FBFAEF">' +
-    '<link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#9D1B32">' +
+    '<link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#9D1B32">' +
     '</head><body><main><h1>NovaPharm Healthcare</h1>' + contact +
     '</main></body></html>';
 }
