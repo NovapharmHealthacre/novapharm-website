@@ -352,6 +352,27 @@ async function inspectModule(
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
     await inspectLayout(page, `${engine} ${viewport.name} ${module.route}`);
+    if (viewport.name === "desktop-1440") {
+      // Inspect only CSS values, never account data, DOM contents or credentials.
+      // This catches stylesheet extraction/cascade regressions before Axe's
+      // final all-routes report, without weakening accessibility acceptance.
+      const selected = page.locator(".workspace-sidebar nav a[aria-current='page']");
+      if (await selected.count()) {
+        const inkAndSurface = await selected.evaluate((link) => {
+          const status = link.querySelector("small");
+          return {
+            background: getComputedStyle(link).backgroundColor,
+            title: getComputedStyle(link).color,
+            status: status ? getComputedStyle(status).color : null,
+          };
+        });
+        assert.deepEqual(inkAndSurface, {
+          background: "rgb(248, 237, 240)",
+          title: "rgb(11, 11, 14)",
+          status: "rgb(11, 11, 14)",
+        }, `${module.route}: accessible active sidebar palette changed`);
+      }
+    }
     assert.deepEqual(failedResources, [], `${engine} ${module.route}: failed subresources`);
     assert.deepEqual(consoleErrors, [], `${engine} ${module.route}: console errors`);
 
