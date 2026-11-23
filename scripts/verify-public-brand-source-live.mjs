@@ -55,9 +55,17 @@ export function verifyPublishedHtml(html, route, sourceSha) {
       errors.push("Contact business enquiry privacy notice missing");
     const cspTags = matches(html, "meta", "http-equiv", "Content-Security-Policy");
     const contactCsp = cspTags.length === 1 ? attribute(cspTags[0], "content") : null;
-    if (!contactCsp || !contactCsp.includes("script-src 'self'") ||
-        !contactCsp.includes("form-action 'none'") ||
-        !contactCsp.includes("connect-src 'self' " + pinnedOrigin))
+    const directives = contactCsp?.split(";").map(value => value.trim()).filter(Boolean) ?? [];
+    const requiredDirectives = [
+      "script-src 'self'", "connect-src 'self' " + pinnedOrigin,
+      "object-src 'none'", "base-uri 'self'", "form-action 'none'"
+    ];
+    const uniqueExactDirective = expected => {
+      const name = expected.split(" ")[0];
+      return directives.filter(value => value.split(" ")[0] === name).length === 1 &&
+        directives.includes(expected);
+    };
+    if (cspTags.length !== 1 || requiredDirectives.some(value => !uniqueExactDirective(value)))
       errors.push("Reviewed Contact CSP or API egress boundary missing");
     if (!html.includes('href="/assets/css/novapharm-unified-20261107.css"'))
       errors.push("Reviewed managed Contact design stylesheet missing");
