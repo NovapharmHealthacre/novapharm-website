@@ -263,3 +263,13 @@ test("all 19 checked-in Nutraxin product heads use approved white and Safari cri
       "Retail offer must retain its exact original SKU: " + file);
   }
 });
+
+test("commented script-like markup stays inert during public theme normalization", () => {
+  const comment = '<!-- <script>self.__next_f.push({"name":"theme-color","content":"#E3120B"})</script> -->';
+  const page = '<html lang="en-GB"><head><meta name="theme-color" content="#E3120B"></head>' +
+    '<body>' + comment + '<main><h1>Public metadata</h1></main></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(page, palette);
+  assertOfficialPublicBrandMetadata(result, palette);
+  assert.ok(result.includes(comment), "HTML comments cannot become executable Flight scripts");
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
+});

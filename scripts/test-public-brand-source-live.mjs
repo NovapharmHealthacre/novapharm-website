@@ -135,3 +135,44 @@ test("actual immutable managed Contact HTML satisfies all live release safety re
   assert.notEqual(stamped, managed, "Reviewed Contact must include a closing head");
   assert.deepEqual(verifyPublishedHtml(stamped, "/contact/", SHA), []);
 });
+
+test("commented-out source receipts, brand colours and headings cannot satisfy live checks", () => {
+  const good = htmlFor("/");
+  const hiddenReceipt = good.replace(/(<meta name="novapharm-source-sha"[^>]*>)/,
+    "<!-- $1 -->");
+  assert.ok(verifyPublishedHtml(hiddenReceipt, "/", SHA).some(error => error.includes("source SHA")));
+  const hiddenTheme = good.replace(/(<meta name="theme-color"[^>]*>)/, "<!-- $1 -->");
+  assert.ok(verifyPublishedHtml(hiddenTheme, "/", SHA).some(error => error.includes("Royal Mineral White")));
+  const hiddenH1 = good.replace("<h1>NovaPharm Healthcare</h1>",
+    "<!-- <h1>NovaPharm Healthcare</h1> -->");
+  assert.ok(verifyPublishedHtml(hiddenH1, "/", SHA).some(error => error.includes("one H1")));
+  const inertExtra = good.replace("</head>", "<!-- <meta name=\"novapharm-source-sha\" content=\"stale\"> -->\n</head>");
+  assert.deepEqual(verifyPublishedHtml(inertExtra, "/", SHA), [],
+    "Inert duplicate metadata must not cause a false rejection");
+});
+
+test("HTML comments cannot impersonate the pinned managed Contact form", () => {
+  const good = htmlFor("/contact/");
+  const pinnedOpening = '<form class="ref-form" method="post" action="/contact/" ' +
+    'data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com">';
+  assert.ok(good.includes(pinnedOpening));
+  const spoof = good.replace(pinnedOpening, '<div data-live-b2b-enquiry-form>')
+    .replace("</body>", "<!-- " + pinnedOpening + " -->\n</body>");
+  assert.ok(verifyPublishedHtml(spoof, "/contact/", SHA)
+    .some(error => error.includes("pinned API binding")),
+    "Comment-only Contact markup must never count as the pinned active form");
+});
+
+test("malformed or nested HTML comments fail closed before public receipt verification", () => {
+  const good = htmlFor("/");
+  assert.deepEqual(verifyPublishedHtml(good, "/", SHA), []);
+  const malformed = good.replace("</head>", "<!-- never closed</head>");
+  assert.throws(() => verifyPublishedHtml(malformed, "/", SHA), /Unterminated HTML comment/);
+  const nested = good.replace("</head>",
+    '<!-- untrusted <!-- <meta name="novapharm-source-sha" content="' + SHA + '"> -->\n</head>');
+  assert.throws(() => verifyPublishedHtml(nested, "/", SHA), /Ambiguous nested HTML comment/);
+  const multiple = good.replace("</head>",
+    '<!-- <h1>spoofed</h1> --><!-- <meta name="theme-color" content="#E3120B"> -->\n</head>');
+  assert.deepEqual(verifyPublishedHtml(multiple, "/", SHA), [],
+    "Separate inert comments cannot alter verified active metadata");
+});
