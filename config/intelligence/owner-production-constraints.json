@@ -31,5 +31,10 @@
     "source_rights_and_security_documentation",
     "reversible_nonproduction_design"
   ],
+  "publicBrandingRelease": {
+    "enabled": false,
+    "signoff": "not_granted",
+    "scope": "public-static-with-preserved-contact"
+  },
   "productionSignoff": "not_granted"
 }
