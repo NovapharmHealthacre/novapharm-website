@@ -117,3 +117,20 @@ test("production publisher retains its customer gate and adds only an explicit m
   assert.match(publisher,/node scripts\/check-pages-monotonic-release\.mjs/);
   assert.match(publisher,/node scripts\/activate-contact-intake\.mjs/);
 });
+
+test("checked-in separate branding decision never expands customer permissions", () => {
+  const config = JSON.parse(readFileSync("config/intelligence/owner-production-constraints.json", "utf8"));
+  const decision = config.publicBrandingRelease;
+  assert.ok(decision && typeof decision === "object" && !Array.isArray(decision));
+  assert.deepEqual(Object.keys(decision).sort(), ["enabled","signoff","scope"].sort());
+  assert.equal(decision.scope, "public-static-with-preserved-contact");
+  assert.ok(["not_granted","granted"].includes(decision.signoff));
+  assert.equal(typeof decision.enabled,"boolean");
+  assert.equal(config.productionSignoff, "not_granted");
+  for (const name of Object.keys(permissions)) assert.equal(config.productionPermissions[name], false, name);
+  for (const [name,value] of Object.entries(config.productionPermissions))
+    assert.equal(value,false,"Unknown permissions must also remain denied: "+name);
+  const v=input(); v.config=config;
+  assert.equal(evaluateBrandingOnlyRelease(v).approved,
+    decision.enabled === true && decision.signoff === "granted");
+});
