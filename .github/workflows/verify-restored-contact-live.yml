@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - scripts/verify-restored-contact-live.mjs
+      - scripts/lib/reviewed-contact-provenance.mjs
+      - scripts/test-reviewed-contact-provenance.mjs
       - .github/workflows/verify-restored-contact-live.yml
   workflow_dispatch:
     inputs:
@@ -37,6 +39,8 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
+      - name: Test provenance-only Contact HTML transformation
+        run: node --test scripts/test-reviewed-contact-provenance.mjs
       - name: Check read-only live verifier syntax and Contact design contract
         run: |
           node --check scripts/verify-restored-contact-live.mjs
