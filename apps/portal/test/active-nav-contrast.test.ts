@@ -66,3 +66,13 @@ test("unselected navigation and secure route disclosure are not modified by acti
   assert.match(universal, /\.workspace-sidebar a\.active/);
   assert.doesNotMatch(rule(".workspace-sidebar nav a.active"), /position|display|visibility|pointer-events|opacity/i);
 });
+
+
+test("rendered active Portal links pin the WCAG light surface and ink despite late CSS extraction", () => {
+  const dashboard = readFileSync(new URL("../components/dashboard.tsx", import.meta.url), "utf8");
+  assert.match(dashboard, /style=\{current \? \{ color: "#0B0B0E", backgroundColor: "#F8EDF0" \}/);
+  assert.match(dashboard, /style=\{current \? \{ color: "#0B0B0E" \} : undefined\}/);
+  assert.match(dashboard, /aria-current=\{current \? "page" : undefined\}/);
+  const background = declaration(rule(".workspace-sidebar nav a.active"), "background-color");
+  assert.ok(contrast("#0B0B0E", background) >= 4.5);
+});
