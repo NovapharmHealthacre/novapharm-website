@@ -185,3 +185,33 @@ test("the 19-row Google Merchant feed stays aligned with the approved consumer c
     assert.equal(row.brand, "Nutraxin");
   }
 });
+
+
+test("corporate founder and author graph reuses Vishal's canonical personal Person identity", () => {
+  const canonicalPersonId = "https://vishal.novapharmhealthcare.com/#person";
+  const leadershipPath = "leadership/vishal-chakravarty/index.html";
+  const html = read(leadershipPath);
+  const nodes = scripts(html);
+  const person = nodes.find(node => node["@type"] === "Person");
+  const profile = nodes.find(node => node["@type"] === "ProfilePage");
+  const homepage = scripts(read("index.html"));
+  const organisation = homepage.find(node =>
+    (Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]]).includes("Organization"));
+  assert.equal(person?.["@id"], canonicalPersonId, "Corporate Person must not compete with personal identity");
+  assert.equal(person?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(person?.mainEntityOfPage?.["@id"], "https://vishal.novapharmhealthcare.com/about/#profile");
+  assert.equal(person?.worksFor?.["@id"], origin + "/#organization");
+  assert.equal(profile?.url, origin + "/leadership/vishal-chakravarty/", "Company page keeps its own page URL");
+  assert.equal(profile?.mainEntity?.["@id"], canonicalPersonId);
+  assert(html.includes('href="https://vishal.novapharmhealthcare.com/about/"'), "The personal profile must be linked visibly");
+  assert.deepEqual(organisation?.founder?.map(node => node["@id"]), [
+    canonicalPersonId,
+    origin + "/leadership/prabhakar-lahare/#person",
+  ]);
+  assert.deepEqual(organisation?.member?.map(node => node["@id"]), [
+    canonicalPersonId,
+    origin + "/leadership/prabhakar-lahare/#person",
+    origin + "/leadership/girish-achliya/#person",
+    origin + "/leadership/helly-panchal/#person",
+  ]);
+});
