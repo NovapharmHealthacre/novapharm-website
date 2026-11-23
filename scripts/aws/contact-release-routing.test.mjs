@@ -1311,6 +1311,70 @@ test("UK #1026, #1030 and #1059 source-only merges never dispatch AWS contact or
   }
 });
 
+
+test("UK Wales cross-border source-only PR #1111 cannot trigger unrelated AWS Contact release", () => {
+  // Exact #1111 changed-file inventory: source guard, regression tests, docs,
+  // and dedicated CI; no public Contact, Nutraxin, or corporate route edit.
+  const walesSourceOnly = [
+    ".github/workflows/uk-wales-cross-border-dispensing-scope.yml",
+    "docs/data/uk-wales-cross-border-dispensing-scope.md",
+    "scripts/test-uk-wales-dispensing-cross-border-scope.mjs",
+    "src/core/uk-wales-dispensing-cross-border-scope.mjs",
+  ];
+  const releaseControlFiles = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs",
+  ];
+  const acceptedRoutingEvidence = "docs/data/uk-source-only-publication-routing-20261122.md";
+  const publicPaths = [
+    "contact/index.html",
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css",
+  ];
+  const cases = [];
+  for (const filename of [
+    "dispatch-approved-aws-contact-release.yml",
+    "publish-aws-contact-production.yml",
+  ]) {
+    const workflow = get(filename);
+    const classificationLine = workflow.match(/case "\$changed" in\s*\n\s*([^\n]+)/)?.[1];
+    assert.ok(classificationLine, filename + " must have exact source classifier");
+    const patterns = classificationLine.trim().replace(/\)$/, "").split("|");
+    const isPrivate = path => patterns.some(p =>
+      p === path || (p.endsWith("/*") && path.startsWith(p.slice(0, -1))));
+    // New UK source files must have exact-path coverage, not a wildcard over
+    // public/portal/web files. Both classifiers must agree on all four paths.
+    for (const path of walesSourceOnly) {
+      assert.ok(patterns.includes(path), filename + " missing exact protected source " + path);
+      assert.equal(isPrivate(path), true);
+    }
+    const neutral = new Set(releaseControlFiles);
+    const privateRelease = changed =>
+      changed.length > 0 && changed.some(isPrivate) &&
+      changed.every(path => isPrivate(path) || neutral.has(path));
+    assert.equal(privateRelease(walesSourceOnly), true, filename + " must skip AWS on PR #1111 source-only merge");
+    assert.equal(privateRelease([...releaseControlFiles,acceptedRoutingEvidence]), true,
+      filename + " must skip AWS during the guard-repair merge");
+    assert.equal(privateRelease(releaseControlFiles), false,
+      filename + " must not skip when only release controls change");
+    assert.equal(privateRelease([]), false,
+      filename + " cannot classify an empty change set as private");
+    for (const publicPath of publicPaths) {
+      assert.equal(isPrivate(publicPath), false, filename + " must not exempt public change " + publicPath);
+      assert.equal(privateRelease([...walesSourceOnly,publicPath]), false,
+        filename + " must not suppress mixed source and public Contact/site changes");
+    }
+    assert.match(workflow, /private_only=true/);
+    assert.match(workflow, /found_ml=true/);
+    cases.push(patterns);
+  }
+  assert.deepEqual([...cases[0]].sort(), [...cases[1]].sort(),
+    "public AWS dispatcher and publisher must agree on all exact-path exemptions regardless of order");
+});
+
 test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
   const paths = [
     "src/core/regulatory/fda-aws-lambda-entry.mjs",
