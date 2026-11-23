@@ -106,6 +106,14 @@ test("managed Contact retains exact reviewed source SHA after safe template acti
   assert.throws(() => stampManagedContactProvenance(managed, baseline, "b".repeat(40)), /baseline lacks exact/);
   assert.throws(() => stampManagedContactProvenance(managed, baseline, "invalid"), /source SHA is invalid/);
   assert.throws(() => stampManagedContactProvenance(published, baseline, sha), /duplicate or invalid release provenance/);
+  // Never let a stale release receipt hide in an HTML comment or DOM attribute.
+  // A managed template must be receipt-free before exact reviewed SHA insertion.
+  assert.throws(() => stampManagedContactProvenance(
+    managed.replace("</head>", "<!-- novapharm-source-sha: forged -->\n</head>"),
+    baseline, sha), /duplicate or invalid release provenance/);
+  assert.throws(() => stampManagedContactProvenance(
+    managed.replace("</head>", '<span data-novapharm-source-sha="forged"></span></head>'),
+    baseline, sha), /duplicate or invalid release provenance/);
   assert.throws(() => stampManagedContactProvenance(managed.replace("</head>", ""), baseline, sha), /duplicate or invalid release provenance/);
 });
 

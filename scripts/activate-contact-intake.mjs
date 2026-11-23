@@ -113,7 +113,7 @@ export function stampManagedContactProvenance(managedHtml, baselineHtml, expecte
     throw Error("Managed Contact baseline lacks exact reviewed Git source SHA");
   }
   if (!managedHtml.includes("</head>") ||
-      /<meta\b[^>]*\bname=["']novapharm-source-sha["'][^>]*>/i.test(managedHtml)) {
+      /novapharm-source-sha/i.test(managedHtml)) {
     throw Error("Managed Contact template has duplicate or invalid release provenance");
   }
   const rendered = managedHtml.replace("</head>", '  ' + tag + '\n</head>');
