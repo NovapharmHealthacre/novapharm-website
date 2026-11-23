@@ -164,13 +164,21 @@ jobs:
           CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
         run: |
           set -euo pipefail
-          # Preserve pre-existing customer-release gate for ordinary push and manual releases.
-          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+          # Never let a branding-only dispatch inherit a broader customer release.
+          # This branch must pass the separate exact-SHA, pinned-Contact, denied-
+          # customer-permissions contract even if general customer signoff changes.
+          if [ "$BRANDING_ONLY_REQUESTED" = "true" ]; then
+            if [ "$RELEASE_EVENT" = "workflow_dispatch" ] && \
+                 BRANDING_ONLY=true node scripts/verify-public-branding-only-release.mjs; then
+              echo "hold=false" >> "$GITHUB_OUTPUT"
+              echo "Scoped static branding publishing approved; protected customer services remain disabled."
+            else
+              echo "hold=true" >> "$GITHUB_OUTPUT"
+              echo "Branding-only publishing denied; general customer signoff cannot authorize this scope."
+            fi
+          elif jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            # Preserve the existing ordinary customer-production gate verbatim.
             echo "hold=false" >> "$GITHUB_OUTPUT"
-          elif [ "$RELEASE_EVENT" = "workflow_dispatch" ] && [ "$BRANDING_ONLY_REQUESTED" = "true" ] && \
-               BRANDING_ONLY=true node scripts/verify-public-branding-only-release.mjs; then
-            echo "hold=false" >> "$GITHUB_OUTPUT"
-            echo "Scoped static branding publishing approved; protected customer services remain disabled."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
             echo "Production on hold: neither customer release nor separate branding-only authorization is present."
