@@ -187,6 +187,26 @@ test("ambiguous script closing tags fail closed, not skipped by a regex", () => 
 });
 
 
+test("four checked-in first-party public routes have approved browser chrome before publication", () => {
+  const routes = [
+    "legal/accessibility/index.html",
+    "products/index.html",
+    "capabilities/index.html",
+    "oncology/index.html"
+  ];
+  for (const route of routes) {
+    const html = readFileSync(route, "utf8");
+    const endHead = html.indexOf("</head>");
+    assert.ok(endHead > 0, "Missing public head: " + route);
+    const head = html.slice(0, endHead);
+    assert.equal((head.match(/name="theme-color"/g) || []).length, 1, route);
+    assert.match(head, /<meta name="theme-color" content="#FBFAEF">/, route);
+    assert.equal((head.match(/rel="mask-icon"/g) || []).length, 1, route);
+    assert.match(head, /<link rel="mask-icon"[^>]*color="#9D1B32"/, route);
+    assert.doesNotMatch(head, /#E3120B/i, "Retired browser red in " + route);
+  }
+});
+
 test("all 19 actual Nutraxin storefronts normalize approved browser chrome without changing commerce or source receipts", () => {
   const products = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
   assert.equal(products.length, 19, "Approved retail catalogue must retain 19 distinct SKUs");
