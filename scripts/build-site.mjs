@@ -80,5 +80,10 @@ finalizePublicRtlArtifacts();
 // Run after every HTML/style entrypoint exists, before source-SHA stamping.
 await import("./version-public-visual-assets.mjs");
 
+// Apply the approved Healthcare browser palette after all editorial and CSS transforms.
+// The source-SHA receipt remains a separate, commit-authenticated step.
+const { normaliseCanonicalPublicBrandMetadata } = await import("./normalise-official-public-brand-metadata.mjs");
+normaliseCanonicalPublicBrandMetadata();
+
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");

@@ -47,3 +47,35 @@ Only BNF current, BNF historic, BNF changes, and Prescriber Details have complet
 ## Primary publisher
 
 [NHSBSA Open Data Portal](https://opendata.nhsbsa.net/)
+
+
+## 21 November 2026 — official BNF/SNOMED Open Data Portal discovery update
+
+This is a **source-configuration update only**, not a replacement for the 24 August 2026
+evidence above. NHSBSA announced migration of BNF–SNOMED Mapping to its official
+Open Data Portal on 27 October 2026:
+https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping
+
+The registered `nhsbsa.bnf-snomed-map` source now resolves this CKAN package through
+`https://opendata.nhsbsa.net/api/3/action` rather than treating the old ZIP/workbook
+landing page as the current transport. Source resource UUIDs and reporting periods are
+publisher-discovered, not hardcoded. On 21 November 2026, the publisher page listed
+September 2026 alongside June, July and August 2026 resources.
+
+**Fail-closed boundary:** For this terminology crosswalk, discovery reads CKAN
+`package_show` metadata only. It does **not** probe `datastore_search`, download
+CSV files, parse medicine mappings, write to MongoDB or AWS, make a customer/API/native
+application feed live, or approve AI/commercial reuse. A machine-readable discovery
+receipt is not a legal licence or an accepted identity relationship.
+
+Required next stages: separately verify publication resource metadata and checksum;
+independently review NHSBSA and third-party BNF, dm+d and SNOMED rights; implement an
+explicit versioned mapping schema and ambiguity review; test full private staging
+ingestion and immutable reconciliation; then complete authenticated tenant isolation
+and independent production release acceptance. EPD, PCA and mapping quantities must
+remain separate because this mapping does not encode dispensing or demand.
+
+The June 2026 EPD complete **isolated local** import is documented separately in
+`docs/data/medicines-intelligence-architecture.md`. The older August 24 registry
+snapshot's EPD sample statement should not be mistaken for the later August 28 local
+validation or for a production backfill.

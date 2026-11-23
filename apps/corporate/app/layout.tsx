@@ -60,7 +60,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#ffffff",
+  // Owner-approved browser surface; keep native Next/Flight output aligned with public HTML.
+  themeColor: "#FBFAEF",
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

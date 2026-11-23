@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { activateContactHtml, activatePrivacyHtml } from "../scripts/activate-contact-intake.mjs";
+import { activateContactHtml, activatePrivacyHtml, activateManagedContactReleaseHtml, requireReviewedContactBlob, preserveManagedContactSourceSha } from "../scripts/activate-contact-intake.mjs";
+import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const origin = "https://abc123.execute-api.eu-north-1.amazonaws.com";
+const managedOrigin = "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com";
 const fixture = [
   '<!DOCTYPE html><html><head></head><body>',
   '<form class="np-contact-reference-form" data-email-enquiry-form action="mailto:vishal@novapharmhealthcare.com" method="post" enctype="text/plain">',
@@ -49,4 +52,152 @@ test("updates the business-enquiry privacy text only when the expected section e
   assert.match(changed, /EU North/);
   assert.match(changed, /reference-only/);
   assert.throws(() => activatePrivacyHtml("<p>Other notice</p>"), /missing/);
+});
+
+
+test("owner-gated managed template preserves approved design and secure submission contract", () => {
+  const template = readFileSync("src/content/contact-managed-release.html", "utf8");
+  const stylePath = "assets/css/novapharm-unified-20261107.css";
+  assert.ok(existsSync(stylePath), "Reviewed shared stylesheet must be present in the main source and staged artifact");
+  assert.ok(template.includes('href="/' + stylePath + '"'), "Managed Contact references a missing/wrong CSS asset");
+  const sharedStyles = readFileSync(stylePath,"utf8");
+  assert.ok(sharedStyles.includes(".site-header") || sharedStyles.includes(".site-nav") || sharedStyles.includes(".nav"), "Shared stylesheet lacks expected navigation rules");
+  const rendered = activateManagedContactReleaseHtml(template, managedOrigin);
+  assert.ok(rendered.includes('data-live-b2b-enquiry-form data-api-origin="' + managedOrigin + '"'));
+  assert.equal((rendered.match(/data-api-origin=/g) || []).length, 1);
+  assert.equal((rendered.match(/data-live-b2b-enquiry-form/g) || []).length, 1);
+  for (const marker of [
+    '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+    'type="submit" disabled aria-describedby="contact-submission-status"',
+    'name="privacyAcknowledgement" value="yes" required',
+    'name="safetyConfirmation" value="yes" required',
+    'src="/assets/js/contact-production.js"',
+    '<noscript><style>.ref-form{display:none}</style>',
+    "form-action 'none'"
+  ]) assert.ok(rendered.includes(marker), "Lost reviewed managed marker: " + marker);
+  assert.doesNotMatch(rendered, /data-email-enquiry-form|novapharm-ga4-id/);
+  const source = template.replace('data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"', 'data-api-origin="https://unapproved.example"');
+  assert.throws(() => activateManagedContactReleaseHtml(source, managedOrigin), /marker missing/);
+  assert.throws(() => activateManagedContactReleaseHtml(template + '<div data-api-origin="duplicate"></div>', managedOrigin), /exactly one/);
+  assert.throws(() => activateManagedContactReleaseHtml(template.replace('href="/assets/css/novapharm-unified-20261107.css"', 'href="/assets/css/nonexistent.css"'), managedOrigin), /marker missing/);
+  const sharedLink = '<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" data-novapharm-design-system="2026-11-07">';
+  const badOrder = template.replace(sharedLink, "").replace("<style>", "<style>" + sharedLink);
+  assert.throws(() => activateManagedContactReleaseHtml(badOrder, managedOrigin), /CSS must load before/);
+
+  assert.throws(() => activateManagedContactReleaseHtml(template, "https://unapproved.example"), /Refusing/);
+  // A different EU-North AWS API Gateway hostname must not silently receive
+  // regulated business enquiries, even though it matches the generic syntax.
+  assert.throws(() => activateManagedContactReleaseHtml(template, "https://abcdefghij.execute-api.eu-north-1.amazonaws.com"), /Refusing unapproved managed Contact API origin/);
+});
+
+test("owner-gated production activation remains disabled without explicit acceptance", () => {
+  const activationSource = readFileSync("scripts/activate-contact-intake.mjs", "utf8");
+  assert.ok(activationSource.includes('if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes")'));
+  assert.ok(
+    activationSource.includes('const reviewedTemplate = requireReviewedContactBlob(') &&
+    activationSource.includes('resolve("src/content/contact-managed-release.html")') &&
+    activationSource.includes('approvedContactBlobs["src/content/contact-managed-release.html"]'),
+    "Gated release must verify approved HTML blob before rendering"
+  );
+  assert.ok(activationSource.includes('refusing managed replacement'));
+  assert.ok(activationSource.includes('Reviewed managed Contact stylesheet missing from Pages artifact'));
+  assert.ok(activationSource.includes('requireReviewedContactBlob(sharedStyle'), "Gated activator must verify final staged CSS");
+  assert.ok(activationSource.includes('requireReviewedContactBlob(resolve(artifactRoot, "assets/js/contact-production.js")'), "Gated activator must verify staged JS");
+
+});
+
+
+test("Reviewed Contact and CSS Git blob parity is exact across release sources", () => {
+  // These reviewed bytes match PR #1016's Contact HTML/client and the existing
+  // protected gh-pages shared CSS. Any change needs a fresh reviewed candidate.
+  const assets = [
+    ["src/content/contact-managed-release.html", "14591f43ff0ec6674b026a7bec629495f18fa50f"],
+    ["assets/js/contact-production.js", "d405d459e089c3a696bd0ed6b2fb84bf529787bc"],
+    ["assets/css/novapharm-unified-20261107.css", "9631537b380551b5dd3f8dbee81d93c3098bab54"]
+  ];
+  for (const [file, expectedGitBlobSha] of assets) {
+    assert.ok(existsSync(file), "Reviewed release asset missing: " + file);
+    const contents = requireReviewedContactBlob(file, expectedGitBlobSha);
+    assert.equal(contents.toString("utf8"), readFileSync(file,"utf8"));
+    const digest = createHash("sha1")
+      .update("blob " + contents.length + "\0")
+      .update(contents)
+      .digest("hex");
+    assert.equal(digest, expectedGitBlobSha, "Reviewed release asset drift: " + file);
+    assert.throws(
+      () => requireReviewedContactBlob(file, "0000000000000000000000000000000000000000"),
+      /differs from approved release source/
+    );
+  }
+  assert.throws(() => requireReviewedContactBlob("assets/js/nonexistent-contact-client.js", "0"), /ENOENT/);
+});
+
+test("official Contact palette, adaptive layout and business-development email are pinned", () => {
+  const html=readFileSync("src/content/contact-managed-release.html","utf8");
+  const client=readFileSync("assets/js/contact-production.js","utf8");
+  const tokens=[
+    '<meta name="theme-color" content="#FBFAEF">',
+    '--royal-mineral-white:#FBFAEF',
+    '--royal-porcelain-white:#F8F7F3',
+    '--porcelain-stone:#DEDCD5',
+    '--ref-ink:#0B0B0E',
+    '--ref-blue:#9D1B32',
+    '.ref-content{background:var(--royal-porcelain-white)}',
+    '.ref-hero{background:var(--royal-mineral-white)',
+    '.ref-form{background:var(--royal-mineral-white)',
+    'inset-inline-end:0',
+    'text-align:start',
+    'dir="auto"',
+    'dir="ltr"',
+    'min-height:44px',
+    '@media(max-width:560px)',
+    '@media(max-width:1050px)'
+  ];
+  for(const t of tokens) assert.ok(html.includes(t), "Missing official Contact style/layout marker: "+t);
+  assert.equal((html.match(/mailto:bd@novapharmhealthcare\.com/g)||[]).length,2);
+  assert.equal((client.match(/bd@novapharmhealthcare\.com/g)||[]).length,2);
+  assert.ok(!html.includes("vishal@novapharmhealthcare.com"),"Old business email still visible in Contact");
+  assert.ok(!client.includes("vishal@novapharmhealthcare.com"),"Old business email still in recovery link");
+  assert.ok(html.includes('name="privacyAcknowledgement" value="yes" required'));
+  assert.ok(html.includes('name="safetyConfirmation" value="yes" required'));
+  assert.ok(html.includes('<noscript><style>.ref-form{display:none}</style>'));
+  assert.ok(client.includes('result?.persisted !== true'));
+  assert.ok(client.includes('form.addEventListener("submit"'));
+});
+
+
+test("managed Contact keeps exact verified Git source identity after replacing staged public HTML", () => {
+  const commit = "a".repeat(40);
+  const staged = '<html lang="en-GB"><head><meta name="novapharm-source-sha" content="' +
+    commit + '"></head><body><h1>Public-only baseline</h1></body></html>';
+  const reviewed = readFileSync("src/content/contact-managed-release.html", "utf8");
+  const managed = activateManagedContactReleaseHtml(reviewed, managedOrigin);
+  const released = preserveManagedContactSourceSha(staged, managed, commit);
+  assert.match(released, new RegExp('name="novapharm-source-sha" content="' + commit + '"'));
+  assert.equal((released.match(/name="novapharm-source-sha"/g) || []).length, 1);
+  assert.ok(released.includes('data-live-b2b-enquiry-form'));
+  assert.ok(released.includes('bd@novapharmhealthcare.com'));
+  assert.ok(released.includes('<meta name="theme-color" content="#FBFAEF">'));
+  assert.ok(!managed.includes('novapharm-source-sha'),
+    "Reviewed source template must not itself claim a deployed SHA");
+});
+
+test("managed Contact release refuses absent, stale, duplicate or invented provenance", () => {
+  const expected = "a".repeat(40);
+  const other = "b".repeat(40);
+  const stamp = value => '<meta name="novapharm-source-sha" content="' + value + '">';
+  const original = '<html><head>' + stamp(expected) + '</head><body></body></html>';
+  const managed = '<!doctype html><html><head><title>Managed</title></head><body></body></html>';
+  assert.throws(() => preserveManagedContactSourceSha(original, managed, other),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed, "not-git"),
+    /exact Git SHA/);
+  assert.throws(() => preserveManagedContactSourceSha(original.replace(stamp(expected), ""), managed, expected),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original.replace(stamp(expected), stamp(expected) + stamp(expected)), managed, expected),
+    /does not match verified source checkout/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed.replace("</head>", stamp(other) + "</head>"), expected),
+    /stale\/independent source receipt/);
+  assert.throws(() => preserveManagedContactSourceSha(original, managed.replace("</head>", ""), expected),
+    /head missing/);
 });
