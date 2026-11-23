@@ -22,7 +22,7 @@ const icons = {
 };
 
 test("three separate owner-approved entities and sRGB colours", () => {
-  assert.equal(brand.approvedOn, "2026-11-22");
+  assert.equal(brand.approvedOn, "2026-11-23");
   assert.deepEqual(
     Object.entries(brand.brands).map(([key, value]) => [key, value.hex]),
     [["healthcare", "#9D1B32"], ["distribution", "#3D0B13"], ["intelligence", "#2546D8"]],
@@ -72,27 +72,27 @@ test("outdated Economist Red not used by shared corporate or portal accent token
   assert.equal(JSON.parse(text("manifest.webmanifest")).theme_color, "#9D1B32");
 });
 
-test("generated light social artwork uses the approved Royal Mineral White, not legacy Pure White", () => {
+test("generated light social artwork uses the approved Pure White, not legacy Royal Mineral White", () => {
   const renderer = text("scripts/programme/rebuild-three-brand-derivatives.mjs");
-  assert.equal(brand.neutralPalette.primaryWhite.hex, "#FBFAEF");
+  assert.equal(brand.neutralPalette.primaryWhite.hex, "#FFFFFF");
   assert.equal(brand.neutralPalette.secondaryWhite.hex, "#F8F7F3");
   assert.equal(brand.neutralPalette.subtleDivider.hex, "#DEDCD5");
   assert.equal(brand.neutralPalette.defaultInk.hex, "#0B0B0E");
   assert.match(renderer, /officialLight=identities\.neutralPalette\?\.primaryWhite\?\.hex/);
   assert.match(renderer, /social\(primary,reverse,officialLight,false\)/);
-  assert.doesNotMatch(renderer, /social\(primary,reverse,"#FFFFFF",false\)/);
+  assert.doesNotMatch(renderer, /social\(primary,reverse,"#FBFAEF",false\)/);
 });
 
 test("generated public CSS bundle mirrors the owner-approved Royal neutrals", () => {
   const bundle = text("assets/css/novapharm.bundle.css");
-  assert.match(bundle, /--np-brand-white-primary:\s*#FBFAEF/i);
+  assert.match(bundle, /--np-brand-white-primary:\s*#FFFFFF/i);
   assert.match(bundle, /--np-brand-white-secondary:\s*#F8F7F3/i);
   assert.match(bundle, /--np-brand-divider:\s*#DEDCD5/i);
   const lightStart = bundle.indexOf(":root {\n  color-scheme: light;");
   assert.ok(lightStart >= 0, "Missing generated HIG light palette block");
   const lightBody = bundle.slice(lightStart, bundle.indexOf("}", lightStart));
   for (const [token, hex] of [
-    ["canvas", "#FBFAEF"],
+    ["canvas", "#FFFFFF"],
     ["surface", "#F8F7F3"],
     ["surface-raised", "#F8F7F3"],
     ["label", "#0B0B0E"],
@@ -118,12 +118,12 @@ test("public release validates current owner-approved SHA provenance and PWA col
 test("public and protected page generators cannot restore retired pure-white browser surfaces", () => {
   const publicBuild = text("scripts/build-public-pages.mjs");
   const protectedBuild = text("scripts/build-pages.mjs");
-  assert.ok(publicBuild.includes('background_color: "#FBFAEF"'));
-  assert.ok(publicBuild.includes('meta name="theme-color" content="#FBFAEF"'));
-  assert.ok(protectedBuild.includes('meta name="theme-color" content="#FBFAEF"'));
-  assert.doesNotMatch(publicBuild, /background_color: "#ffffff"/i);
-  assert.doesNotMatch(publicBuild, /meta name="theme-color" content="#FFFFFF"/i);
-  assert.doesNotMatch(protectedBuild, /meta name="theme-color" content="#FFFFFF"/i);
+  assert.ok(publicBuild.includes('background_color: "#FFFFFF"'));
+  assert.ok(publicBuild.includes('meta name="theme-color" content="#FFFFFF"'));
+  assert.ok(protectedBuild.includes('meta name="theme-color" content="#FFFFFF"'));
+  assert.doesNotMatch(publicBuild, /background_color: "#FBFAEF"/i);
+  assert.doesNotMatch(publicBuild, /meta name="theme-color" content="#FBFAEF"/i);
+  assert.doesNotMatch(protectedBuild, /meta name="theme-color" content="#FBFAEF"/i);
 });
 
 test("generated Portal logo uses exact owner SVG and real PNG raster fallback", () => {

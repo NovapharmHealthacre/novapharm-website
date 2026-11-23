@@ -6,7 +6,7 @@
  * Intentionally does not target managed portal/authentication interfaces.
  */
 :root {
-  --nph-canvas: #FBFAEF;
+  --nph-canvas: #FFFFFF;
   --nph-silver: #F8F7F3;
   --nph-ink: #0B0B0E;
   --nph-body: #0B0B0E;

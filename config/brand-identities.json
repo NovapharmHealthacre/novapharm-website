@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "approvedOn": "2026-11-22",
+  "approvedOn": "2026-11-23",
   "colorSpace": "sRGB IEC61966-2.1",
   "neutralPalette": {
-    "primaryWhite": { "name": "Royal Mineral White", "hex": "#FBFAEF" },
+    "primaryWhite": { "name": "Pure White", "hex": "#FFFFFF" },
     "secondaryWhite": { "name": "Royal Porcelain White", "hex": "#F8F7F3" },
     "defaultInk": { "name": "Sovereign Black", "hex": "#0B0B0E" },
     "subtleDivider": { "name": "Porcelain Stone", "hex": "#DEDCD5" }

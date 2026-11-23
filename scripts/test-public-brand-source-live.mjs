@@ -18,7 +18,7 @@ function htmlFor(route, sha = SHA) {
       '<script src="/assets/js/contact-production.js" defer></script></form>'
     : "";
   return '<html lang="en-GB"><head><meta name="novapharm-source-sha" content="' + sha + '">' +
-    '<meta name="theme-color" content="#FBFAEF">' +
+    '<meta name="theme-color" content="#FFFFFF">' +
     '<link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#9D1B32">' +
     (route === "/contact/" ? '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; ' +
       'connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com; ' +
@@ -61,8 +61,8 @@ test("misleading or stale SHA cannot be accepted for release", () => {
 });
 
 test("retired theme or Safari red cannot pass live acceptance", () => {
-  assert.ok(verifyPublishedHtml(htmlFor("/").replace("#FBFAEF", "#E3120B"), "/", SHA)
-    .some(error => error.includes("Royal Mineral White")));
+  assert.ok(verifyPublishedHtml(htmlFor("/").replace("#FFFFFF", "#E3120B"), "/", SHA)
+    .some(error => error.includes("Pure White")));
   assert.ok(verifyPublishedHtml(htmlFor("/").replace("#9D1B32", "#E3120B"), "/", SHA)
     .some(error => error.includes("Crimson")));
 });
@@ -142,7 +142,7 @@ test("commented-out source receipts, brand colours and headings cannot satisfy l
     "<!-- $1 -->");
   assert.ok(verifyPublishedHtml(hiddenReceipt, "/", SHA).some(error => error.includes("source SHA")));
   const hiddenTheme = good.replace(/(<meta name="theme-color"[^>]*>)/, "<!-- $1 -->");
-  assert.ok(verifyPublishedHtml(hiddenTheme, "/", SHA).some(error => error.includes("Royal Mineral White")));
+  assert.ok(verifyPublishedHtml(hiddenTheme, "/", SHA).some(error => error.includes("Pure White")));
   const hiddenH1 = good.replace("<h1>NovaPharm Healthcare</h1>",
     "<!-- <h1>NovaPharm Healthcare</h1> -->");
   assert.ok(verifyPublishedHtml(hiddenH1, "/", SHA).some(error => error.includes("one H1")));

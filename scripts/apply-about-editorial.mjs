@@ -17,7 +17,7 @@ if (!html.includes(style)) {
   html = html.replace(anchor, anchor + "\n  " + style);
 }
 html = html.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="Meet NovaPharm Healthcare. Specialist medicines, resilient supply and decision systems, built on qualified evidence and regulatory readiness.">');
-html = html.replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#FBFAEF">');
+html = html.replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#FFFFFF">');
 // The original JPEG is retained for cross-platform social preview compatibility.
 
 // Keep the route-specific OG/Twitter image and dimensions from the generated social-image register.

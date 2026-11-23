@@ -10,7 +10,7 @@ const read = (path) => readFileSync(resolve(process.cwd(), path), "utf8");
 const palette = JSON.parse(read("config/brand-neutrals.json"));
 const identities = JSON.parse(read("config/brand-identities.json"));
 const register = JSON.parse(read("seo/generated/page-metadata-register.json"));
-assert.equal(palette.primary, "#FBFAEF", "Owner-approved primary white changed");
+assert.equal(palette.primary, "#FFFFFF", "Owner-approved primary white changed");
 assert.equal(palette.secondary, "#F8F7F3", "Owner-approved secondary white changed");
 assert.equal(palette.black, "#0B0B0E", "Owner-approved default black changed");
 assert.equal(palette.divider, "#DEDCD5", "Owner-approved divider changed");
@@ -99,10 +99,10 @@ for (const page of allPublicPages) {
 }
 const webManifest = JSON.parse(read("manifest.webmanifest"));
 assert.equal(webManifest.background_color?.toUpperCase(), palette.primary,
-  "Public PWA background must use Royal Mineral White");
+  "Public PWA background must use Pure White");
 assert.equal(webManifest.theme_color?.toUpperCase(), identities.brands.healthcare.hex,
   "Healthcare PWA accent must retain Royal Cochineal Crimson");
 
 assert.deepEqual(errors, [], "Royal browser theme mismatches after all build-time transforms");
 assert.equal(checked, allPublicPages.length);
-console.log("Verified " + checked + " canonical and approved late public pages plus PWA metadata against Royal Mineral White.");
+console.log("Verified " + checked + " canonical and approved late public pages plus PWA metadata against Pure White.");

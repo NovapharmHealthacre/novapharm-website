@@ -31,12 +31,12 @@ export const metadata: Metadata = {
   },
 };
 
-/* Royal Mineral White is the approved light browser surface for protected Portal. */
+/* Pure White is the approved light browser surface for protected Portal. */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#FBFAEF",
+  themeColor: "#FFFFFF",
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
