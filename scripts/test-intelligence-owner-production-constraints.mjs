@@ -30,6 +30,41 @@ test("owner's exact vendor-neutral, zero incremental spend decision is preserved
   assert.ok(Object.isFrozen(decision));
 });
 
+test("public-static-only branding signoff never authorises Intelligence or customer deployment", () => {
+  const signed = copy();
+  assert.deepEqual(signed.publicBrandingRelease, {
+    enabled: true, signoff: "granted", scope: "public-static-with-preserved-contact"
+  });
+  for (const current of [signed, (() => { const p = copy(); delete p.publicBrandingRelease; return p; })()]) {
+    const decision = validateOwnerProductionConstraints(current);
+    assert.equal(decision.productionDeploymentApproved, false);
+    assert.equal(decision.publicCustomerReleaseApproved, false);
+    assert.equal(decision.nativeVendorConnectionApproved, false);
+    assert.equal(decision.licensedDataAdmissionApproved, false);
+    assert.equal(decision.procurementApproved, false);
+    assert.equal(decision.budgetApproved, false);
+    assert.equal(decision.additionalMonthlyCapGbp, 0);
+    assert.deepEqual(decision.blockedOperations, prohibitedOperationsUntilApproved);
+  }
+});
+
+test("malformed or broader branding-release permissions cannot inherit Intelligence approval", () => {
+  const mutations = [
+    p => { p.publicBrandingRelease.enabled = false; },
+    p => { p.publicBrandingRelease.signoff = "not_granted"; },
+    p => { p.publicBrandingRelease.signoff = "approved"; },
+    p => { p.publicBrandingRelease.scope = "customer-login-and-billing"; },
+    p => { p.publicBrandingRelease.activatePublicCustomerAccess = true; },
+    p => { delete p.publicBrandingRelease.scope; },
+    p => { p.publicBrandingRelease = null; }
+  ];
+  for (const change of mutations) {
+    const candidate = copy();
+    change(candidate);
+    assert.throws(() => validateOwnerProductionConstraints(candidate), denial);
+  }
+});
+
 test("no unapproved operational permission may be enabled by changing config", () => {
   for (const key of prohibitedOperationsUntilApproved) {
     const candidate = copy();
