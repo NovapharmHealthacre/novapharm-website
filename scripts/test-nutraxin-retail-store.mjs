@@ -187,3 +187,39 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.match(js,/Your Bag is saved and you may start a new checkout/);
  assert.match(js,/No successful payment has been recorded/);
 });
+
+
+test("all 19 Nutraxin details share the responsive typography, image, purchase and print layout contract",()=>{
+ const css=readFileSync("assets/css/nutraxin-merchant.css","utf8");
+ const checks=[
+   /Shared Nutraxin product-detail layout contract/,
+   /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/,
+   /grid-template-columns:\s*minmax\(0, 1\.3fr\) minmax\(270px, \.75fr\)/,
+   /\.npd-product-picture img\s*\{[^}]*object-fit:\s*contain/s,
+   /\.npd-composition dd\s*\{[^}]*white-space:\s*nowrap/s,
+   /@media\s*\(max-width:\s*1050px\)/,
+   /@media\s*\(max-width:\s*600px\)/,
+   /@media print\s*\{[\s\S]*?\.npd-product-hero-grid\s*\{[^}]*54mm minmax\(0, 1fr\)/,
+   /@media print\s*\{[\s\S]*?\.npd-composition > div\s*\{[^}]*42mm\s*!important/
+ ];
+ for(const rule of checks)assert.match(css,rule,"Nutraxin CSS lost a required layout contract");
+ assert.equal(catalogue.products.length,19);
+ for(const product of catalogue.products){
+   const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
+   for(const required of [
+     'data-page="product-portfolio/nutraxin"',
+     'class="npd-product-hero-grid"',
+     'class="npd-product-visual"',
+     'class="npd-product-picture"',
+     'class="npd-product-copy"',
+     'class="npd-product-evidence"',
+     'class="npd-composition"',
+     'href="/assets/css/nutraxin-merchant.css"',
+     'src="/assets/js/nutraxin-retail-store.js"'
+   ])assert.ok(html.includes(required),product.slug+" missing "+required);
+   assert.equal((html.match(/<h1\b/g)||[]).length,1,product.slug+" title hierarchy");
+   assert.ok(html.includes('data-merchant-sku="'+product.sku+'"'),product.sku+" source price");
+   assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png"'),
+     product.slug+" pack photograph");
+ }
+});
