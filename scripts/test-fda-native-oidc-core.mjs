@@ -97,7 +97,7 @@ test("PKCE uses secure random S256 and stores only expiring access token via inj
  assert.equal(await verifiedNativeFdaAccessToken(config,adapter),mockedToken);
  await signOutNativeFda(adapter);
  assert.equal(stats().stored,null);
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
 });
 test("callback state replay, duplicate states, cross-origin and error redirects are rejected",async()=>{
  for(const url of [
@@ -141,8 +141,201 @@ test("invalid token responses never save identity or bearer content",async()=>{
    assert.equal(stats().stored,null);
  }
 });
+test("cancelled or failed second Android sign-in clears previously held board access token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.ok(stats().stored?.token);
+ await assert.rejects(authenticateNativeFdaWithPkce(config,{
+   ...adapter,openSystemAuthSession:async()=>null
+ }),/cancelled/);
+ assert.equal(stats().stored,null);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
+});
+test("unexpected OAuth callback parameters are rejected before token exchange",async()=>{
+ const {adapter,stats}=platform({openSystemAuthSession:async(uri,redirect)=>{
+   const state=new URL(uri).searchParams.get("state");
+   return redirect+"?code=PROTECTED_CODE&state="+state+"&access_token=attacker";
+ }});
+ await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/Invalid sign-in/);
+ assert.equal(stats().network,0);
+});
 test("expiry and revoked or empty keystore entries deny subsequent requests",async()=>{
  const {adapter,stats}=platform({nowMs:()=>1795300000000});
- await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/expired|changed/);
  assert.equal(stats().stored,null);
+});
+
+test("Android in-flight Keystore save cannot restore board token after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseSave=()=>{},onEnter=()=>{};
+ const entered=new Promise(resolve=>{onEnter=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseSave=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  save:async value=>{onEnter();await waitForRelease;await adapter.secureStore.save(value);}
+ };
+ const signed={...adapter,secureStore};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const logout=signOutNativeFda(signed);
+ releaseSave();
+ const [authResult,logoutResult]=await Promise.allSettled([pending,logout]);
+ assert.equal(authResult.status,"rejected","a sign-in superseded by sign-out must not report success");
+ assert.equal(logoutResult.status,"fulfilled");
+ assert.equal(stats().stored,null,"sign-out must clear even an in-flight save");
+ await assert.rejects(verifiedNativeFdaAccessToken(config,signed),/expired|changed/);
+});
+test("Android cancelled in-flight OAuth response cannot save tokens after sign-out",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFetch=()=>{},onFetch=()=>{};
+ const entered=new Promise(resolve=>{onFetch=resolve;});
+ const pendingResult=new Promise(resolve=>{releaseFetch=resolve;});
+ const signed={...adapter,fetchImpl:async (url,init)=>{
+  onFetch();await pendingResult;
+  return adapter.fetchImpl(url,init);
+ }};
+ const pending=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ await signOutNativeFda(signed);
+ releaseFetch();
+ await assert.rejects(pending,/superseded/);
+ assert.equal(stats().stored,null);
+});
+test("Android secure-store deletion is serialized across concurrent sign-ins",async()=>{
+ const {adapter,stats}=platform();
+ let releaseFirst=()=>{},onClear=()=>{},number=0;
+ const entered=new Promise(resolve=>{onClear=resolve;});
+ const waitForRelease=new Promise(resolve=>{releaseFirst=resolve;});
+ const secureStore={
+  ...adapter.secureStore,
+  clear:async()=>{
+   number++;
+   if(number===1){onClear();await waitForRelease;}
+   return adapter.secureStore.clear();
+  }
+ };
+ const signed={...adapter,secureStore};
+ const first=authenticateNativeFdaWithPkce(config,signed);
+ await entered;
+ const second=authenticateNativeFdaWithPkce(config,signed);
+ releaseFirst();
+ const results=await Promise.allSettled([first,second]);
+ assert.deepEqual(results.map(x=>x.status),["rejected","fulfilled"]);
+ assert.equal(stats().stored?.token,mockedToken);
+});
+
+test("Android Keystore deletion failure leaves session revoked instead of exposing stale board token",async()=>{
+ const {adapter,stats}=platform();
+ await authenticateNativeFdaWithPkce(config,adapter);
+ assert.equal(stats().stored?.token,mockedToken);
+ // Reuse the same injected store identity throughout a session: swapping
+ // adapters would create a different synchronization domain.
+ const originalClear=adapter.secureStore.clear;
+ adapter.secureStore.clear=async()=>{throw Error("Keystore temporary failure");};
+ await assert.rejects(signOutNativeFda(adapter),/Keystore temporary failure/);
+ await assert.rejects(verifiedNativeFdaAccessToken(config,adapter),/changed/);
+ adapter.secureStore.clear=originalClear;
+ await signOutNativeFda(adapter);
+ assert.equal(stats().stored,null);
+});
+
+test("Cognito token exchange rejects oversized streaming data before buffering or storing",async()=>{
+  let pulls=0,cancelled=0;
+  const oversizedStream=new ReadableStream({
+    pull(controller){
+      pulls++;
+      controller.enqueue(new Uint8Array(9000).fill(65));
+      if(pulls>=10)controller.close();
+    },
+    cancel(){cancelled++;}
+  });
+  const oversized=new Response(oversizedStream,{
+    status:200,headers:{"content-type":"application/json"}
+  });
+  const {adapter,stats}=platform({fetchImpl:async()=>oversized});
+  await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/oversized/);
+  assert.equal(stats().stored,null,"oversized token response must never reach Keystore");
+  assert.ok(pulls<10,"stream is stopped before reading the entire unbounded response");
+  assert.ok(cancelled>=1,"oversized reader is cancelled");
+});
+test("Cognito token exchange rejects false or malformed Content-Length and invalid UTF-8",async()=>{
+  const fixtures=[
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"999999"}}),
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"not-a-length"}}),
+    new Response(new Uint8Array([0xc3,0x28]),{
+      status:200,headers:{"content-type":"application/json"}
+    })
+  ];
+  for(const response of fixtures){
+    const {adapter,stats}=platform({fetchImpl:async()=>response});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter));
+    assert.equal(stats().stored,null);
+  }
+});
+test("valid Cognito token JSON uses bounded stream, not unbounded Response.text",async()=>{
+  const response=new Response(JSON.stringify({
+    token_type:"Bearer",access_token:mockedToken,expires_in:3600
+  }),{status:200,headers:{"content-type":"application/json"}});
+  response.text=async()=>{throw Error("Unbounded text must not be called");};
+  const {adapter,stats}=platform({fetchImpl:async()=>response});
+  await authenticateNativeFdaWithPkce(config,adapter);
+  assert.equal(stats().stored?.token,mockedToken);
+  await signOutNativeFda(adapter);
+  assert.equal(stats().stored,null);
+});
+test("Stalled Cognito response body obeys total request deadline",async()=>{
+  const originalSetTimeout=globalThis.setTimeout;
+  let cancelled=0;
+  globalThis.setTimeout=(callback,ms,...args)=>
+    originalSetTimeout(callback,ms===10000?25:ms,...args);
+  try{
+    const stream=new ReadableStream({
+      start(){},
+      cancel(){cancelled++;}
+    });
+    const response=new Response(stream,{status:200,headers:{"content-type":"application/json"}});
+    const {adapter,stats}=platform({fetchImpl:async()=>response});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter),/unavailable|deadline/);
+    assert.equal(stats().stored,null);
+    assert.ok(cancelled>=1);
+  }finally{
+    globalThis.setTimeout=originalSetTimeout;
+  }
+});
+
+test("Cognito oversized response still fails if reader cancellation never settles",async()=>{
+  let cancelled=0,deadlineTimer;
+  const stalledCancellation=new Promise(()=>{});
+  const response=new Response(new ReadableStream({
+    pull(controller){controller.enqueue(new Uint8Array(17000));},
+    cancel(){cancelled++;return stalledCancellation;}
+  }),{status:200,headers:{"content-type":"application/json"}});
+  const {adapter,stats}=platform({fetchImpl:async()=>response});
+  try{
+    const testDeadline=new Promise((_,reject)=>{
+      deadlineTimer=setTimeout(()=>reject(Error("Reader cancellation blocked FDA denial.")),2000);
+    });
+    await assert.rejects(Promise.race([
+      authenticateNativeFdaWithPkce(config,adapter),testDeadline
+    ]),/oversized/);
+    assert.equal(cancelled,1,"reader cancellation should be attempted");
+    assert.equal(stats().stored,null,"bad token must never reach Keystore");
+  }finally{clearTimeout(deadlineTimer);}
+});
+
+test("invalid Cognito response aborts network transport on fail-closed refusal",async()=>{
+  const failures=[
+    new Response("{}",{status:503,headers:{"content-type":"application/json"}}),
+    new Response("{}",{status:200,headers:{"content-type":"application/json","content-length":"999999"}})
+  ];
+  for(const response of failures){
+    let requestSignal;
+    const {adapter,stats}=platform({fetchImpl:async (_uri,init)=>{
+      requestSignal=init.signal;
+      return response;
+    }});
+    await assert.rejects(authenticateNativeFdaWithPkce(config,adapter));
+    assert.equal(requestSignal?.aborted,true,"rejected response must abort transport");
+    assert.equal(stats().stored,null);
+  }
 });

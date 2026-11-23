@@ -36,6 +36,25 @@ export type NovaFDAAndroidPlatform = Readonly<{
   fetchImpl: typeof fetch;
   nowMs: ()=>number;
 }>;
+// A signed native adapter must reuse the same secureStore object for all
+// authentication, token lookup and sign-out calls. Serializing writes avoids
+// an in-flight async Keystore save resurrecting access after sign-out.
+type StoreSessionGate={generation:number; tail:Promise<void>; revoked:boolean};
+const sessionGates=new WeakMap<NovaFDASecureTokenStore,StoreSessionGate>();
+function sessionGate(store:NovaFDASecureTokenStore):StoreSessionGate {
+  let gate=sessionGates.get(store);
+  if(!gate){gate={generation:0,tail:Promise.resolve(),revoked:false};sessionGates.set(store,gate);}
+  return gate;
+}
+async function withStoreLock<T>(store:NovaFDASecureTokenStore,operation:()=>Promise<T>):Promise<T>{
+  const gate=sessionGate(store);
+  const preceding=gate.tail;
+  let release!:()=>void;
+  gate.tail=new Promise<void>(resolve=>{release=resolve;});
+  await preceding;
+  try{return await operation();}
+  finally{release();}
+}
 const requiredScope="novapharm/fda.read";
 const expectedHostEnd=".auth.eu-north-1.amazoncognito.com";
 const allowedName=/^[A-Za-z0-9_.-]+$/u;
@@ -89,10 +108,63 @@ function assertReady(config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform):v
 export function nativeFdaOidcConfigured(config:NovaFDAOidcConfig):boolean{
   return validDomain(config);
 }
+// The Cognito token endpoint is untrusted I/O. Content-Length may be absent
+// or falsified: enforce a byte limit before buffering any response.
+const maxTokenResponseBytes=16*1024;
+async function readBoundedCognitoTokenResponse(response:Response,signal:AbortSignal):Promise<string>{
+  const declared=response.headers.get("content-length");
+  if(declared!==null && (!/^[0-9]+$/u.test(declared) ||
+     !Number.isSafeInteger(Number(declared)) ||
+     Number(declared)>maxTokenResponseBytes))
+    throw Error("Cognito token response oversized.");
+  const stream=response.body;
+  if(!stream || typeof stream.getReader!=="function")
+    throw Error("Cognito token response stream unavailable.");
+  const reader=stream.getReader();
+  const chunks:Uint8Array[]=[];
+  let total=0;
+  // Header completion is not the end of the request deadline.
+  let rejectAbort!: (reason:Error)=>void;
+  const aborted=new Promise<never>((_,reject)=>{rejectAbort=reject;});
+  const onAbort=()=>rejectAbort(Error("Cognito token response deadline exceeded."));
+  signal.addEventListener("abort",onAbort,{once:true});
+  if(signal.aborted)onAbort();
+  try{
+    while(true){
+      const {done,value}=await Promise.race([reader.read(),aborted]);
+      if(done)break;
+      if(!(value instanceof Uint8Array) ||
+         (total+=value.byteLength)>maxTokenResponseBytes)
+        throw Error("Cognito token response oversized.");
+      chunks.push(value);
+    }
+  }catch{
+    throw Error("Cognito token response unavailable or oversized.");
+  }finally{
+    signal.removeEventListener("abort",onAbort);
+    // A hostile stream may never settle cancel(). Do not let asynchronous
+    // cleanup defeat the 10-second response-body deadline.
+    try{void reader.cancel().catch(()=>{});}catch{}
+    try{reader.releaseLock();}catch{}
+  }
+  const bytes=new Uint8Array(total);
+  let offset=0;
+  for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  try{return new TextDecoder("utf-8",{fatal:true}).decode(bytes);}
+  catch{throw Error("Invalid Cognito token response.");}
+}
+
 export async function authenticateNativeFdaWithPkce(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<void>{
   assertReady(config,platform);
+  // Invalidate all older sessions before the first asynchronous operation.
+  const gate=sessionGate(platform.secureStore);
+  const attempt=++gate.generation;
+  gate.revoked=true;
+  // Deleting the old token must finish before OS entropy/browser requests.
+  await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
+  if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
   // The host platform must supply cryptographically secure 32-byte buffers.
   const [verifierBytes,stateBytes,nonceBytes]=await Promise.all([
     platform.secureRandomBytes(32),
@@ -125,7 +197,10 @@ export async function authenticateNativeFdaWithPkce(
      returned.username || returned.password) throw Error("Untrusted sign-in callback.");
   const code=singleParam(returned,"code");
   const observedState=singleParam(returned,"state");
-  if(observedState!==state || !code || code.length>2048 ||
+  const callbackKeys=[...returned.searchParams.keys()];
+  if(callbackKeys.length!==2 || !callbackKeys.includes("code") ||
+    !callbackKeys.includes("state") ||
+    observedState!==state || !code || code.length>2048 ||
     /[\p{Cc}\p{Cf}\p{Cs}]/u.test(code) ||
     returned.searchParams.has("error"))
     throw Error("Invalid sign-in state or authorization code.");
@@ -144,14 +219,25 @@ export async function authenticateNativeFdaWithPkce(
       headers:{"content-type":"application/x-www-form-urlencoded","accept":"application/json"},
       body:params.toString(),signal:controller.signal
     });
-  } catch {throw Error("Cognito token exchange unavailable.");}
-  finally { clearTimeout(timeout); }
-  if(response.status!==200 || response.redirected ||
-    (response.url && response.url!==tokenUrl.toString()) ||
-    !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
-    throw Error("Cognito token exchange rejected.");
-  const body=await response.text();
-  if(body.length>16384)throw Error("Cognito token response oversized.");
+  } catch {
+    clearTimeout(timeout);
+    throw Error("Cognito token exchange unavailable.");
+  }
+  let body:string;
+  try{
+    if(response.status!==200 || response.redirected ||
+      (response.url && response.url!==tokenUrl.toString()) ||
+      !/\bapplication\/json\b/iu.test(response.headers.get("content-type")||""))
+      throw Error("Cognito token exchange rejected.");
+    body=await readBoundedCognitoTokenResponse(response,controller.signal);
+  }catch(error){
+    // Failed status, MIME or bounded parsing must also abort the transport.
+    // Reader cancellation can be non-settling on an untrusted response body.
+    controller.abort();
+    throw error;
+  }finally{
+    clearTimeout(timeout);
+  }
   let payload:unknown;
   try{payload=JSON.parse(body)}catch{throw Error("Invalid Cognito token response.");}
   if(!payload || typeof payload!=="object")throw Error("Invalid Cognito token response.");
@@ -161,26 +247,45 @@ export async function authenticateNativeFdaWithPkce(
      typeof json.expires_in!=="number" || !Number.isInteger(json.expires_in) ||
      json.expires_in<60 || json.expires_in>3600)
     throw Error("Invalid Cognito access-token contract.");
-  // Store ONLY a short-lived access token via Keystore adapter; no refresh tokens.
-  await platform.secureStore.save({
-    token:json.access_token,
-    expiresAtMs:platform.nowMs()+((json.expires_in as number)-30)*1000
+  // Copy values after runtime validation so TypeScript retains the narrowed
+  // types across the later async secure-store callback.
+  const accessToken: string=json.access_token;
+  const expiresIn: number=json.expires_in;
+  // Serialize the final generation check and async Keystore write with
+  // sign-out's clear. A superseded login cannot restore an earlier board token.
+  await withStoreLock(platform.secureStore,async()=>{
+    if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
+    await platform.secureStore.save({
+      token:accessToken,
+      expiresAtMs:platform.nowMs()+(expiresIn-30)*1000
+    });
   });
+  if(gate.generation!==attempt)throw Error("FDA sign-in was superseded.");
+  gate.revoked=false;
 }
 export async function verifiedNativeFdaAccessToken(
  config:NovaFDAOidcConfig,platform:NovaFDAAndroidPlatform
 ):Promise<string>{
   assertReady(config,platform);
-  const record=await platform.secureStore.load();
-  if(!record || !Number.isSafeInteger(record.expiresAtMs) ||
-      record.expiresAtMs<=platform.nowMs() ||
-      !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(record.token)){
-    await platform.secureStore.clear();
-    throw Error("FDA session expired or unavailable.");
-  }
-  return record.token;
+  const gate=sessionGate(platform.secureStore);
+  const generation=gate.generation;
+  return withStoreLock(platform.secureStore,async()=>{
+    if(gate.revoked || gate.generation!==generation)throw Error("FDA session changed.");
+    const record=await platform.secureStore.load();
+    if(gate.revoked || gate.generation!==generation)throw Error("FDA session changed.");
+    if(!record || !Number.isSafeInteger(record.expiresAtMs) ||
+        record.expiresAtMs<=platform.nowMs() ||
+        !/^[A-Za-z0-9_.~-]{40,8192}$/u.test(record.token)){
+      await platform.secureStore.clear();
+      throw Error("FDA session expired or unavailable.");
+    }
+    return record.token;
+  });
 }
 export async function signOutNativeFda(platform:NovaFDAAndroidPlatform):Promise<void>{
   if(typeof platform?.secureStore?.clear!=="function")throw Error("No secure token storage.");
-  await platform.secureStore.clear();
+  const gate=sessionGate(platform.secureStore);
+  ++gate.generation;
+  gate.revoked=true;
+  await withStoreLock(platform.secureStore,()=>platform.secureStore.clear());
 }

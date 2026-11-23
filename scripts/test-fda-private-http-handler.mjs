@@ -42,7 +42,10 @@ function create(options={}) {
     limit:async ({sub,kind}) => {calls.push(["limiter",sub,kind]);return true;},
     searchEvidence:async (kind,drug,scope)=>{
       calls.push(["source",kind,drug,scope.accessScopes[0]]);
-      return {kind,sourceId:"us.fda.openfda."+kind,records:kind==="adverse-events"?[]:[{id:"source-only"}],matchedCountReported:2};
+      const samples={approvals:{applicationNumber:"NDA123456"},
+        ndc:{productNdc:"12345-678"},recalls:{recallNumber:"D-0001-2026"}};
+      return {kind,sourceId:"us.fda.openfda."+kind,dataState:"public_source_observations",
+        records:kind==="adverse-events"?[]:[samples[kind]],matchedCountReported:2};
     },
     searchLabels:async (drug,scope)=>{
       calls.push(["labels",drug,scope.accessScopes[0]]);
@@ -86,6 +89,33 @@ test("JWT claims are only accepted when gateway supplied access token, audience,
    assert.equal(calls.length,0);
  }
 });
+test("JWT NumericDate claims reject invalid coercions before quota or source egress",async()=>{
+  const baseline=event().requestContext.authorizer.jwt.claims;
+  const rejected=[
+    {exp:null},{exp:" "},{exp:true},{exp:"Infinity"},{exp:"1795261000.2"},
+    {nbf:null},{nbf:"invalid"},{nbf:" "},{nbf:NaN},{nbf:true},
+    {nbf:String(now+1)},{iat:null},{iat:"invalid"},{iat:false},
+    {iat:" "},{iat:String(now+31)}
+  ];
+  for(const overrides of rejected){
+    const {handler,calls}=create();
+    const e=event();
+    e.requestContext.authorizer.jwt.claims={...baseline,...overrides};
+    const v=await handler(e);
+    assert.equal(v.statusCode,403,JSON.stringify(overrides));
+    assert.deepEqual(calls,[],JSON.stringify(overrides));
+  }
+  // Real Cognito JWT NumericDate claims may arrive as numbers or strings.
+  for(const dateValues of [
+    {nbf:String(now-1),iat:String(now-1)},
+    {nbf:now-1,iat:now-1,exp:now+600}
+  ]){
+    const {handler}=create();
+    const e=event();
+    e.requestContext.authorizer.jwt.claims={...baseline,...dateValues};
+    assert.equal((await handler(e)).statusCode,200);
+  }
+});
 test("GET only, route exact, bounded kinds and drug input",async()=>{
  for(const change of [
    {rawPath:"/v1/intelligence/regulatory/us/fda-research/evil"},
@@ -117,6 +147,83 @@ for(const kind of allKinds){
    if(kind==="adverse-events")assert.equal(JSON.parse(v.body).records.length,0);
  });
 }
+test("raw HTTP API query pollution is rejected before atomic quota and FDA egress",async()=>{
+ const cases=[
+  "kind=ndc&kind=recalls&drug=apixaban",
+  "kind=ndc&drug=apixaban&drug=warfarin",
+  "kind=ndc&drug=apixaban&source=private",
+  "drug=apixaban",
+  "kind=ndc",
+  "kind=recalls&drug=apixaban",
+  "kind=ndc&drug=warfarin",
+  "kind=ndc&drug=apixaban&",
+  "kind=ndc&drug=apixaban&kind=ndc",
+  ""
+ ];
+ for(const rawQueryString of cases){
+  const {handler,calls}=create();
+  const res=await handler(event("ndc",{rawQueryString}));
+  assert.equal(res.statusCode,400,rawQueryString);
+  assert.equal(calls.length,0,rawQueryString);
+ }
+ const {handler,calls}=create();
+ assert.equal((await handler(event("ndc",{queryStringParameters:{kind:"ndc",drug:"apixaban",extra:"x"}}))).statusCode,400);
+ assert.equal(calls.length,0);
+});
+test("unexpected, too-many, or oversized source records cannot leak through board API",async()=>{
+ for(const payload of [
+  {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}],dataState:"unverified"},
+  {sourceId:"us.fda.openfda.recalls",records:[],dataState:"public_source_observations"},
+  {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}],dataState:"no_source_matches"},
+  {sourceId:"us.fda.openfda.ndc",records:[{id:"private"}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:Array(6).fill({id:"x"})},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{note:"x".repeat(270000)}]}
+ ]){
+  const {handler,calls}=create({searchEvidence:async()=>payload});
+  const result=await handler(event("ndc"));
+  assert.equal(result.statusCode,503);
+  assert.equal(calls[0][0],"limiter");
+  assert.ok(!result.body.includes("private"));
+  assert.ok(!result.body.includes("x".repeat(500)));
+ }
+});
+test("FDA allowlist denies unknown source metadata, unreviewed patient fields and nested objects",async()=>{
+ const cases=[
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678",patient:{name:"SENSITIVE"}}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],debugSecret:"SENSITIVE"},
+  {sourceId:"us.fda.openfda.ndc",kind:"recalls",dataState:"public_source_observations",records:[{productNdc:"12345-678"}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678",genericName:"SENSITIVE\nTEXT"}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],limitations:[{token:"SENSITIVE"}]},
+  {sourceId:"us.fda.openfda.ndc",dataState:"public_source_observations",records:[{productNdc:"12345-678"}],matchedCountReported:-1},
+ ];
+ for(const payload of cases){
+  const {handler,calls}=create({searchEvidence:async()=>payload});
+  const response=await handler(event("ndc"));
+  assert.equal(response.statusCode,503);
+  assert.equal(calls[0][0],"limiter");
+  assert.ok(!response.body.includes("SENSITIVE"));
+ }
+});
+test("FDA response allowlist accepts reviewed nested approvals and limited source fields",async()=>{
+ const {handler}=create({searchEvidence:async()=>({
+  sourceId:"us.fda.openfda.approvals",
+  dataState:"public_source_observations",kind:"approvals",
+  records:[{applicationNumber:"NDA123456",products:[{brandName:"Reviewed"}],
+    submissions:[{status:"AP"}]}],matchedCountReported:1,limitations:["Research only"]
+ })});
+ const response=await handler(event("approvals"));
+ assert.equal(response.statusCode,200);
+ assert.equal(JSON.parse(response.body).records[0].products[0].brandName,"Reviewed");
+});
+test("FDA response allowlist rejects unreviewed nested approval fields",async()=>{
+ const {handler}=create({searchEvidence:async()=>({
+  sourceId:"us.fda.openfda.approvals",dataState:"public_source_observations",
+  records:[{applicationNumber:"NDA123456",products:[{patient:"SENSITIVE"}]}]
+ })});
+ const response=await handler(event("approvals"));
+ assert.equal(response.statusCode,503);
+ assert.ok(!response.body.includes("SENSITIVE"));
+});
 test("quota refusal/transport failure and malformed FAERS data fail closed",async()=>{
  const blocked=create({limit:async()=>false});
  const status=await blocked.handler(event());

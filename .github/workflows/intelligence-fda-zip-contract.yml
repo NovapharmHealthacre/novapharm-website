@@ -1,0 +1,56 @@
+name: FDA private Lambda offline ZIP and integration contracts
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/regulatory/fda-aws-lambda-entry.mjs'
+      - 'src/core/regulatory/fda-private-http-handler.mjs'
+      - 'scripts/test-fda-private-http-handler.mjs'
+      - 'src/core/regulatory/openfda-labels.mjs'
+      - 'scripts/test-openfda-labels.mjs'
+      - 'deployment/aws/fda-private-lambda/**'
+      - 'scripts/build-fda-private-lambda-zip.mjs'
+      - 'scripts/test-fda-aws-lambda-entry.mjs'
+      - 'docs/intelligence/fda-deployable-lambda-20261122.md'
+      - '.github/workflows/intelligence-fda-zip-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-contract:
+    name: Test Lambda owner gates, SDK quota and source-only ZIP
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Validate offline packaging script and Lambda entrypoint
+        run: |
+          node --check src/core/regulatory/fda-aws-lambda-entry.mjs
+          node --check scripts/build-fda-private-lambda-zip.mjs
+          node --check scripts/test-fda-aws-lambda-entry.mjs
+          node --check scripts/test-fda-private-http-handler.mjs
+      - name: Security and FDA integration tests
+        run: |
+          node --test scripts/test-fda-aws-lambda-entry.mjs scripts/test-fda-private-http-handler.mjs scripts/test-fda-dynamodb-quota.mjs scripts/test-openfda-labels.mjs scripts/test-openfda-evidence.mjs
+      - name: Assemble SOURCE-ONLY zip, never deploy to AWS
+        run: |
+          node scripts/build-fda-private-lambda-zip.mjs "$RUNNER_TEMP/fda-private-source-only.zip"
+          unzip -t "$RUNNER_TEMP/fda-private-source-only.zip"
+          unzip -Z1 "$RUNNER_TEMP/fda-private-source-only.zip" > "$RUNNER_TEMP/fda-zip-entries.txt"
+          grep -qx 'index.mjs' "$RUNNER_TEMP/fda-zip-entries.txt"
+          grep -qx 'src/core/regulatory/fda-aws-lambda-entry.mjs' "$RUNNER_TEMP/fda-zip-entries.txt"
+          grep -qx 'src/core/regulatory/fda-private-runtime.mjs' "$RUNNER_TEMP/fda-zip-entries.txt"
+          test "$(wc -l < "$RUNNER_TEMP/fda-zip-entries.txt")" -eq 7
+          if grep -E '(^|/)(server.mjs|apps|assets|products|node_modules|\.env|private-key)' "$RUNNER_TEMP/fda-zip-entries.txt"; then
+            echo 'FDA ZIP includes public site or credentials' >&2; exit 1
+          fi
+          sha256sum "$RUNNER_TEMP/fda-private-source-only.zip"
+      - name: Keep corporate site publisher isolated
+        run: node --test scripts/aws/contact-release-routing.test.mjs
