@@ -1840,8 +1840,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 92,
-      "referenceCount": 240,
+      "usageCount": 93,
+      "referenceCount": 241,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1912,6 +1912,7 @@
         "regulatory-services/index.html",
         "scripts/apply-corporate-product-discipline.mjs",
         "scripts/build-pages.mjs",
+        "scripts/build-public-pages.mjs",
         "scripts/enhance-seo-authority.mjs",
         "scripts/generate-nutraxin-shopping.mjs",
         "scripts/programme/validate-brand-assets.mjs",
@@ -1990,7 +1991,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 105,
-      "referenceCount": 217,
+      "referenceCount": 216,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
