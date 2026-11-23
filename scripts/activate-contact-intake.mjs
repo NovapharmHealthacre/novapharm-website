@@ -108,16 +108,16 @@ export function preserveManagedContactSourceSha(stagedPublicHtml, managedHtml, e
   if (!/^[0-9a-f]{40}$/.test(exactGitSha)) {
     throw Error("Approved Contact release identity must be an exact Git SHA");
   }
-  const receipts = [...stagedPublicHtml.matchAll(/<meta\\b[^>]*name=["']novapharm-source-sha["'][^>]*>/gi)];
+  const receipts = [...stagedPublicHtml.matchAll(/<meta\b[^>]*name=["']novapharm-source-sha["'][^>]*>/gi)];
   if (receipts.length !== 1 || !receipts[0][0].includes('content="' + exactGitSha + '"')) {
     throw Error("Staged Contact source SHA does not match verified source checkout");
   }
   if (/novapharm-source-sha/i.test(managedHtml)) {
     throw Error("Managed Contact template must not contain a stale/independent source receipt");
   }
-  if (!/<\\/head>/i.test(managedHtml)) throw Error("Managed Contact head missing");
-  const result = managedHtml.replace(/<\\/head>/i,
-    '  <meta name="novapharm-source-sha" content="' + exactGitSha + '">\\n</head>');
+  if (!/<\/head>/i.test(managedHtml)) throw Error("Managed Contact head missing");
+  const result = managedHtml.replace(/<\/head>/i,
+    '  <meta name="novapharm-source-sha" content="' + exactGitSha + '">\n</head>');
   if ((result.match(/name="novapharm-source-sha"/g) || []).length !== 1) {
     throw Error("Managed Contact provenance must contain exactly one release receipt");
   }
