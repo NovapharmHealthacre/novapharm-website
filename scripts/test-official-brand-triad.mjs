@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { stampPinnedPublicHtml } from "./lib/stamp-pinned-public-html.mjs";
 import test from "node:test";
 
 const text = (path) => readFileSync(path, "utf8");
@@ -192,4 +196,52 @@ test("registered three-brand image provenance stays SHA-bound and cannot be infe
   assert.match(generator, /registry\.get\(assetPath\)\?\.source/);
   assert.match(generator, /approvedRasterPath/);
   assert.doesNotMatch(generator, /provenanceStatus\s*=\s*"registered"\s*;/);
+});
+
+
+test("public SHA stamper pins the opened file, refuses symlinks and preserves noindex", () => {
+  const root = mkdtempSync(join(tmpdir(), "novapharm-brand-provenance-"));
+  const sha = "a".repeat(40);
+  const marker = '<meta name="novapharm-source-sha" content="' + sha + '">';
+  try {
+    const main = join(root, "index.html");
+    writeFileSync(main, '<html><head><title>Page</title></head><body>Public</body></html>');
+    assert.ok(stampPinnedPublicHtml(root, "index.html", sha) > 0);
+    assert.equal(readFileSync(main, "utf8").split(marker).length - 1, 1);
+    stampPinnedPublicHtml(root, "index.html", sha);
+    assert.equal(readFileSync(main, "utf8").split(marker).length - 1, 1,
+      "repeated stamping may not duplicate the source SHA");
+
+    const noindex = join(root, "quantum.html");
+    writeFileSync(noindex, '<html><head><meta name="robots" content="noindex, nofollow"></head></html>');
+    stampPinnedPublicHtml(root, "quantum.html", sha, { mustBeNoindex: true });
+    assert.match(readFileSync(noindex, "utf8"), /noindex, nofollow/);
+    assert.throws(() => stampPinnedPublicHtml(root, "index.html", sha, { mustBeNoindex: true }),
+      /noindex marker missing/);
+    assert.throws(() => stampPinnedPublicHtml(root, "../outside.html", sha), /Unsafe public HTML route/);
+    assert.throws(() => stampPinnedPublicHtml(root, "/etc/passwd.html", sha), /Unsafe public HTML route/);
+    assert.throws(() => stampPinnedPublicHtml(root, "index.html", "invalid"), /Git SHA/);
+
+    if (process.platform !== "win32") {
+      symlinkSync(main, join(root, "link.html"));
+      assert.throws(() => stampPinnedPublicHtml(root, "link.html", sha), /ELOOP|symbolic link/i,
+        "public provenance must not follow substituted symlink targets");
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("official live branding verifier sends requests only to fixed URL allowlist", () => {
+  const source = text("scripts/verify-live-official-brand.mjs");
+  assert.match(source, /const pinnedBrandUrls = new Map\(\[/);
+  assert.match(source, /const pinnedUrl = pinnedBrandUrls\.get\(path\)/);
+  assert.doesNotMatch(source, /new URL\("\/" \+ path, origin\)/);
+  assert.match(source, /redirect: "error"/);
+  assert.match(source, /assert\.equal\(digest\(actual\), item\.sha256/);
+  const outcome = spawnSync(process.execPath,
+    ["scripts/verify-live-official-brand.mjs", "--source-only"],
+    { encoding: "utf8", timeout: 30000 });
+  assert.equal(outcome.status, 0, outcome.stderr || outcome.stdout);
+  assert.match(outcome.stdout, /Source official branding verified/);
 });
