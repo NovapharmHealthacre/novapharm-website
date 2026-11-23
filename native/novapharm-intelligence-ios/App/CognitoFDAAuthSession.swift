@@ -246,7 +246,7 @@ final class NovaFDACognitoMobileSession: NSObject, ASWebAuthenticationPresentati
         guard let token=try? JSONDecoder().decode(NovaFDATokenResponse.self,from:data),
               token.token_type.lowercased()=="bearer",token.access_token.count>40
               else {throw NovaFDAOIDCError.token}
-        // URLSession.data(for:) suspends this actor. Do not save a token
+        // URLSession.bytes(for:) and its streaming loop suspend this actor. Never save a token
         // if signOut() or another sign-in superseded this in-flight request.
         guard authGeneration == generation else { throw NovaFDAOIDCError.unapproved }
         try store.save(token.access_token,expiresIn:token.expires_in)

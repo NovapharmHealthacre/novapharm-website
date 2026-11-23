@@ -117,10 +117,11 @@ test("iOS rejected late OAuth token exchange cannot resurrect access after sign-
  assert.ok(signIn.includes("if self.authGeneration == attemptGeneration { _ = self.store.clear() }"),
    "old callbacks cannot clear newer credentials");
  const exchange=source.slice(source.indexOf("private func exchange("));
- const awaitNetwork=exchange.indexOf("try await session.data(for:req)");
+ const awaitNetwork=exchange.indexOf("try await session.bytes(for:req)");
+ const boundedRead=exchange.indexOf("for try await byte in bytes");
  const generationCheck=exchange.indexOf("guard authGeneration == generation else");
  const save=exchange.indexOf("try store.save(");
- assert.ok(awaitNetwork>=0 && generationCheck>awaitNetwork && save>generationCheck,
+ assert.ok(awaitNetwork>=0 && boundedRead>awaitNetwork && generationCheck>boundedRead && save>generationCheck,
    "after suspending for network, generation must be revalidated before token persistence");
 });
 
