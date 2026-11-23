@@ -200,3 +200,20 @@ test("Collection has crawlable direct links to every exact product landing page"
       "Collection missing a direct product link: " + product.sku);
   }
 });
+
+const keywordMap = JSON.parse(read("assets/data/nutraxin-uk-search-intents.json"));
+test("19 product search descriptions and support links are source-aligned", () => {
+  assert.equal(keywordMap.market, "GB");
+  assert.equal(keywordMap.products.length, 19);
+  const bySku = new Map(keywordMap.products.map(x => [x.sku, x]));
+  assert.equal(bySku.size, 19);
+  for (const product of catalogue.products) {
+    const intent = bySku.get(product.sku);
+    assert(intent && intent.slug === product.slug && intent.primaryQuery.endsWith(" UK"));
+    const html = read("products/nutraxin/" + product.slug + "/index.html");
+    assert(html.includes('meta name="description" content="' + intent.metaDescription.replaceAll("&","&amp;") + '"'));
+    assert(html.includes('href="/contact/?enquiry=Nutraxin%20order%20support"'));
+    const nodes = [...html.matchAll(/<script type="application\\/ld\\+json">([^<]+)<\\/script>/g)].map(m => JSON.parse(m[1]));
+    assert.equal(nodes.find(n => n["@type"] === "WebPage")?.description, intent.metaDescription);
+  }
+});
