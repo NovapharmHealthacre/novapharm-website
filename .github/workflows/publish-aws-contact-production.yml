@@ -49,6 +49,11 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      # Owner-approved browser metadata, synthetic regressions and live acceptance are release-critical.
+      - 'scripts/normalise-official-public-brand-metadata.mjs'
+      - 'scripts/test-official-public-brand-metadata.mjs'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
       # The Apple-27-informed web foundation is part of the shipped public CSS.
@@ -294,6 +299,8 @@ jobs:
           node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
+          node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           npm run validate
           python3 scripts/validate-public-sitemaps.py
@@ -898,6 +905,13 @@ jobs:
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
           echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
+
+      # Only the reviewed AWS-backed release can satisfy this B2B Contact proof.
+      # The PUBLIC_ONLY Pages publisher remains prohibited from downgrading Contact.
+      - name: Independently verify six live source SHAs, approved colours and Contact B2B integrity
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
