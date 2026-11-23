@@ -179,6 +179,16 @@ test("mixed-case script tags and whitespace closing tags preserve CSP-pinned Nex
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
 });
 
+test("commented script-like markup stays inert during public theme normalization", () => {
+  const comment = '<!-- <script>self.__next_f.push({"name":"theme-color","content":"#E3120B"})</script> -->';
+  const page = '<html lang="en-GB"><head><meta name="theme-color" content="#E3120B"></head>' +
+    '<body>' + comment + '<main><h1>Public metadata</h1></main></body></html>';
+  const result = normaliseOfficialPublicBrandMetadata(page, palette);
+  assertOfficialPublicBrandMetadata(result, palette);
+  assert.ok(result.includes(comment), "HTML comments cannot become executable Flight scripts");
+  assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
+});
+
 test("ambiguous script closing tags fail closed, not skipped by a regex", () => {
   const html = '<html><head><meta name="theme-color" content="#E3120B"></head>' +
     '<body><script>self.__next_f.push([])</script \t\n fake></body></html>';
