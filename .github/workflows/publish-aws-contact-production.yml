@@ -119,6 +119,11 @@ on:
         description: Verified eu-north-1 AWS HTTP API origin, HTTPS without a path
         type: string
         required: true
+      branding_only:
+        description: Manually authorize only a separately signed public branding release; no customer activation
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -147,17 +152,22 @@ jobs:
         with:
           fetch-depth: 2
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
-      - name: Enforce owner-approved contact-production permission
+      - name: Enforce separately approved customer-production or public-branding-only permissions
         id: owner_hold
         shell: bash
         run: |
           set -euo pipefail
-          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
+          # Preserve pre-existing customer-release gate for ordinary push and manual releases.
           if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
             echo "hold=false" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.branding_only }}" = "true" ] && \
+               EXPECTED_SHA="${{ inputs.expected_sha }}" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=true \
+               CONTACT_API_ORIGIN="${{ inputs.contact_api_origin }}" node scripts/verify-public-branding-only-release.mjs; then
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+            echo "Scoped static branding publishing approved; protected customer services remain disabled."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
-            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+            echo "Production on hold: neither customer release nor separate branding-only authorization is present."
           fi
       - name: Exclude Nova ML-only changes from unrelated public AWS contact publication
         id: classify
@@ -1153,6 +1163,10 @@ jobs:
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' /tmp/npi-live-intelligence.js
           grep -Fq 'data-live-b2b-enquiry-form' /tmp/npi-live-contact.html
           echo 'Live Intelligence official research and existing AWS-backed contact verified.'
+      - name: Verify exact published brand/source receipts and retained managed Contact
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
