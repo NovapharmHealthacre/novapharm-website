@@ -283,8 +283,13 @@ for (const late of [
   assert.ok(releaseStamper.includes('"' + late + '"'), late + " must be covered by post-build source stamping");
 }
 assert.ok(releaseStamper.includes("register.some((record) => record.file === route)"));
-assert.ok(releaseStamper.includes('Duplicate source proof') ||
-  releaseStamper.includes("Missing or duplicate late-page source provenance"));
+// The shared pinned-descriptor helper now owns one-and-only-one SHA protection.
+const pinnedStamper = read("scripts/lib/stamp-pinned-public-html.mjs");
+assert.ok(releaseStamper.includes("stampPinnedPublicHtml(root, route, sha)"));
+assert.ok(pinnedStamper.includes("Duplicate or missing release source provenance"));
+assert.ok(pinnedStamper.includes("constants.O_RDWR | constants.O_NOFOLLOW"));
+assert.ok(pinnedStamper.includes('readFileSync(fd, "utf8")'));
+assert.ok(pinnedStamper.includes("writeSync(fd, bytes, written, bytes.length - written, written)"));
 
 // Product pages can be sourced from prior generated HTML: SEO enhancement must
 // normalise exactly one Royal Mineral browser theme for every canonical route.
