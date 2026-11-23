@@ -1,0 +1,41 @@
+name: Intelligence approved dark WebP source repair (non-public)
+
+on:
+  pull_request:
+    paths:
+      - creative-assets/brand/intelligence-regal-ultramarine/02_web_transparent/dark/novapharm-intelligence-dark-4096w.webp
+      - audit/brand/intelligence-dark-webp-source-repair-20261123.json
+      - scripts/test-intelligence-dark-source-repair.mjs
+      - .github/workflows/intelligence-dark-source-asset-acceptance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-integrity:
+    name: Exact approved SHA, lossless pixels, alpha and production boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate source without publishing credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Install locked source-validation dependencies only
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify original provenance, exact decoded user-approved RGBA and no public activation
+        run: node --test scripts/test-intelligence-dark-source-repair.mjs
+      - name: Preserve checkable source and pixel receipt without shipping assets
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: intelligence-dark-4096w-source-proof-${{ github.event.pull_request.head.sha || github.sha }}
+          path: audit/brand/intelligence-dark-webp-source-repair-20261123.json
+          if-no-files-found: error
+          retention-days: 14
