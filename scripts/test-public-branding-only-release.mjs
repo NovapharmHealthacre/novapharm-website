@@ -98,6 +98,17 @@ test("production publisher retains its customer gate and adds only an explicit m
   assert.match(gate, /CONTACT_API_ORIGIN: \$\{\{ inputs\.contact_api_origin \}\}/);
   const bash = gate.split('run: |')[1] ?? '';
   assert.ok(bash, 'Owner production gate must have a shell script');
+  // In a branding-only dispatch, explicit narrow authorization must be
+  // evaluated BEFORE the broader productionSignoff/customer-access gate.
+  // Otherwise later general customer approval could silently bypass the
+  // review-only, Contact-pinned branding scope.
+  const brandingBranch = 'if [ "$BRANDING_ONLY_REQUESTED" = "true" ]; then';
+  const generalCustomerBranch = "elif jq -e '.productionSignoff";
+  assert.ok(bash.includes(brandingBranch), 'Explicit branding-only dispatch branch required');
+  assert.ok(bash.includes(generalCustomerBranch), 'Ordinary customer release branch preserved');
+  assert.ok(bash.indexOf(brandingBranch) < bash.indexOf(generalCustomerBranch),
+    'General customer approval must never precede branding-only authorization');
+  assert.match(bash, /Branding-only publishing denied; general customer signoff cannot authorize this scope/);
   assert.doesNotMatch(bash, /\$\{\{\s*(?:inputs\.|github\.event_name)/,
     'Never interpolate untrusted workflow inputs into executable shell');
   assert.match(bash, /BRANDING_ONLY=true node scripts\/verify-public-branding-only-release\.mjs/);
