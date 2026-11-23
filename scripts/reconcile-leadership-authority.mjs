@@ -30,7 +30,7 @@ for (const person of leadership) {
         "@id": profileId,
         name: person.name,
         headline: `${person.displayName} — ${person.schemaTitle}`,
-        url: personUrlForSlug(person.slug),
+        url: `${SITE_URL}${route}`,
         inLanguage: "en-GB",
         isPartOf: { "@id": WEBSITE_ID },
         about: { "@id": personId },
@@ -46,7 +46,7 @@ for (const person of leadership) {
         name: person.displayName,
         alternateName: person.name !== person.displayName ? person.name : undefined,
         jobTitle: person.schemaTitle,
-        url: `${SITE_URL}${route}`,
+        url: personUrlForSlug(person.slug),
         worksFor: { "@id": ORGANIZATION_ID },
         affiliation: { "@id": ORGANIZATION_ID },
         mainEntityOfPage: { "@id": profileId }
