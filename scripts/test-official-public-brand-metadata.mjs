@@ -216,3 +216,30 @@ test("all 19 actual Nutraxin storefronts normalize approved browser chrome witho
       "Retail colour normalisation must be idempotent: " + file);
   }
 });
+
+
+test("all 19 checked-in Nutraxin product heads use approved white and Safari crimson before any build", () => {
+  // Source parity matters even when the public build also normalizes legacy
+  // metadata. These 19 static route templates must never reintroduce retired
+  // browser chrome if a later release path stages their checked-in content.
+  const products = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
+  assert.equal(products.length, 19);
+  for (const product of products) {
+    const file = "products/nutraxin/" + product.slug + "/index.html";
+    const html = readFileSync(file, "utf8");
+    const endHead = html.indexOf("</head>");
+    assert.ok(endHead > 0, "Missing canonical page head: " + file);
+    const head = html.slice(0, endHead);
+    assert.equal(head.split('name="theme-color"').length - 1, 1,
+      "Expected exactly one browser theme: " + file);
+    assert.ok(head.includes('<meta name="theme-color" content="#FBFAEF">'),
+      "Unapproved browser surface: " + file);
+    assert.equal(head.split('rel="mask-icon"').length - 1, 1,
+      "Expected exactly one Safari mask: " + file);
+    assert.ok(head.includes('<link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#9D1B32">'),
+      "Safari mask must use official Healthcare Crimson: " + file);
+    assert.ok(!head.includes("#E3120B"), "Retired public-browser red remains: " + file);
+    assert.ok(html.includes('data-merchant-sku="' + product.sku + '"'),
+      "Retail offer must retain its exact original SKU: " + file);
+  }
+});
