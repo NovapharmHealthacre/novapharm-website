@@ -17,6 +17,11 @@ export const OWNER_BRANDING_SIGNOFF_SHA = "26432d4ac2c53a8a39b6701fa77bccda48773
 export const REVIEWED_LEGACY_CONTACT_BLOB = "14591f43ff0ec6674b026a7bec629495f18fa50f";
 const LIVE_CONTACT_URL = "https://novapharmhealthcare.com/contact/";
 
+export function gitBlobSha(contents) {
+  const bytes = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
+  return createHash("sha1").update("blob " + bytes.length + "\0").update(bytes).digest("hex");
+}
+
 export function canShip({
   publishedSha, candidateSha, mainSha,
   publishedToCandidate, candidateToMain, legacyProof = null
@@ -83,8 +88,7 @@ async function verifyLegacyBridge(repo, candidateSha) {
   if (bytes.length === 0 || bytes.length > 1600000) {
     throw new Error("Legacy Pages bootstrap denied: invalid live Contact byte size");
   }
-  const liveContactBlob = createHash("sha1")
-    .update("blob " + bytes.length + "\\0").update(bytes).digest("hex");
+  const liveContactBlob = gitBlobSha(bytes);
   if (liveContactBlob !== REVIEWED_LEGACY_CONTACT_BLOB) {
     throw new Error("Legacy Pages bootstrap denied: live Contact differs from the reviewed immutable form");
   }
