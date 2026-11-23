@@ -155,14 +155,20 @@ jobs:
       - name: Enforce separately approved customer-production or public-branding-only permissions
         id: owner_hold
         shell: bash
+        # Dispatch inputs must enter the shell as environment variables, never
+        # via raw GitHub expression interpolation inside executable Bash.
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          BRANDING_ONLY_REQUESTED: ${{ inputs.branding_only }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
         run: |
           set -euo pipefail
           # Preserve pre-existing customer-release gate for ordinary push and manual releases.
           if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
             echo "hold=false" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.branding_only }}" = "true" ] && \
-               EXPECTED_SHA="${{ inputs.expected_sha }}" RELEASE_EVENT=workflow_dispatch BRANDING_ONLY=true \
-               CONTACT_API_ORIGIN="${{ inputs.contact_api_origin }}" node scripts/verify-public-branding-only-release.mjs; then
+          elif [ "$RELEASE_EVENT" = "workflow_dispatch" ] && [ "$BRANDING_ONLY_REQUESTED" = "true" ] && \
+               BRANDING_ONLY=true node scripts/verify-public-branding-only-release.mjs; then
             echo "hold=false" >> "$GITHUB_OUTPUT"
             echo "Scoped static branding publishing approved; protected customer services remain disabled."
           else
