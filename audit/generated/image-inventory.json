@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 89,
-      "referenceCount": 113,
+      "usageCount": 90,
+      "referenceCount": 114,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -145,6 +145,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -1103,8 +1104,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 81,
-      "referenceCount": 85,
+      "usageCount": 82,
+      "referenceCount": 86,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -1185,6 +1186,7 @@
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "technology/index.html",
         "trust-centre/index.html"
       ],
@@ -1960,8 +1962,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 103,
-      "referenceCount": 215,
+      "usageCount": 104,
+      "referenceCount": 216,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -2063,6 +2065,7 @@
         "scripts/verify-intelligence-public-entry.mjs",
         "service-unavailable/index.html",
         "services/index.html",
+        "src/content/contact-managed-release.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
         "technology/index.html",
         "trust-centre/index.html"
