@@ -2,6 +2,8 @@ export const company = Object.freeze({
   name: "NovaPharm Healthcare",
   legalName: "NOVAPHARM HEALTHCARE LTD",
   companyNumber: "16716501",
+  publicTelephone: "+44 7352 036605",
+  publicEnquiriesEmail: "enquiries@novapharmhealthcare.com",
   incorporated: "2025-09-15",
   status: "Active",
   location: "Feltham, England",

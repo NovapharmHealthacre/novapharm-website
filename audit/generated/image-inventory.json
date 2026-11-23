@@ -8766,11 +8766,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 14,
-      "referenceCount": 29,
+      "usageCount": 15,
+      "referenceCount": 30,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/girish-achliya/index.html",
         "leadership/index.html",
         "packages/content/src/index.ts",
@@ -9245,11 +9246,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 11,
-      "referenceCount": 26,
+      "usageCount": 12,
+      "referenceCount": 27,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/index.html",
         "leadership/prabhakar-lahare/index.html",
         "packages/content/src/index.ts",
@@ -9409,11 +9411,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 12,
-      "referenceCount": 34,
+      "usageCount": 13,
+      "referenceCount": 35,
       "usageFiles": [
         "apps/corporate/data/site.ts",
         "creative-assets/asset-register.json",
+        "index.html",
         "leadership/index.html",
         "leadership/vishal-chakravarty/index.html",
         "packages/content/src/index.ts",
