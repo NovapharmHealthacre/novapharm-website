@@ -39,7 +39,7 @@ export function classifyWalesDispensingSource(input) {
   const prototype = Object.getPrototypeOf(input);
   if (prototype !== Object.prototype && prototype !== null) deny('plain metadata object required');
   for (const key of Reflect.ownKeys(input)) {
-    if (typeof key !== 'string' || !allowedFields.has(key)) deny('unexpected metadata field');
+    if (typeof key !== 'string' || !allowedFields.has(key)) deny('unexpected field ' + String(key));
   }
   for (const key of allowedFields) {
     if (!Object.hasOwn(input, key)) deny('missing required field ' + key);
