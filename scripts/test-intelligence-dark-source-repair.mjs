@@ -74,3 +74,15 @@ test('lossless decoded RGBA pixels equal approved user-source PNG fingerprint', 
   assert.equal(min, receipt.member.alphaMin);
   assert.equal(max, receipt.member.alphaMax);
 });
+
+test('archival master is excluded from both the Pages and unified application release packages', () => {
+  const pages = readFileSync(resolve(root, 'scripts/stage-pages-artifact.mjs'), 'utf8');
+  const roots = pages.match(/const allowedTopLevelDirectories = new Set\(\[([\s\S]*?)\]\);/)?.[1];
+  assert.ok(roots, 'Pages staging must retain a literal directory allowlist');
+  assert.doesNotMatch(roots, /["']creative-assets["']/, 'Never publish approved source masters');
+  assert.match(pages, /allowedTopLevelDirectories\.has\(entry\.name\)/,
+    'Pages staging must use the explicit public directory allowlist');
+  const united = readFileSync(resolve(root, 'scripts/package-unified-estate.mjs'), 'utf8');
+  assert.doesNotMatch(united, /copyTree\(\s*path\.join\(root,\s*["']creative-assets["']/,
+    'Do not bundle non-public source masters in native/protected app artifacts');
+});
