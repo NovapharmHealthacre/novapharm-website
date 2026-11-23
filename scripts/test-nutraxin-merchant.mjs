@@ -213,7 +213,7 @@ test("19 product search descriptions and support links are source-aligned", () =
     const html = read("products/nutraxin/" + product.slug + "/index.html");
     assert(html.includes('meta name="description" content="' + intent.metaDescription.replaceAll("&","&amp;") + '"'));
     assert(html.includes('href="/contact/?enquiry=Nutraxin%20order%20support"'));
-    const nodes = [...html.matchAll(/<script type="application\\/ld\\+json">([^<]+)<\\/script>/g)].map(m => JSON.parse(m[1]));
+    const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)].map(m => JSON.parse(m[1]));
     assert.equal(nodes.find(n => n["@type"] === "WebPage")?.description, intent.metaDescription);
   }
 });
