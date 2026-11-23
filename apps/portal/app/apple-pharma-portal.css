@@ -155,9 +155,10 @@ textarea {
 /* Use the approved Porcelain surface on selected routes, regardless of legacy
    globals.css ordering. Black secondary labels on a navy active background
    failed axe across Chromium/WebKit; preserve contrast on the whole active link. */
+/* Preserve WCAG AA selected-navigation contrast despite late stylesheet extraction. */
 .workspace-sidebar nav a.active {
-  color: var(--portal-ink);
-  background: var(--portal-soft);
+  color: #0B0B0E;
+  background-color: #F8EDF0;
 }
 /* Active navigation status must remain readable, including secondary labels, in Chromium/WebKit. */
 .workspace-sidebar nav a.active > small {
