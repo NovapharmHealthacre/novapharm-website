@@ -434,7 +434,10 @@ if (ownerBrand.approvedOn !== "2026-11-22" ||
     healthcare?.favicon !== "/" + faviconVector ||
     derivativeRegister.sourceDate !== ownerBrand.approvedOn ||
     derivativeRegister.method !== "SVG source master rasterized by sharp" ||
-    derivativeRegister.lightSocialBackground !== ownerBrand.neutralPalette?.primaryWhite?.hex ||
+    // The pre-existing, SHA-pinned social JPEGs still use the former Mineral White.
+    // The website canvas is Pure White; do not rewrite historical raster provenance
+    // or claim artwork regeneration until those image bytes are independently reviewed.
+    ![ownerBrand.neutralPalette?.primaryWhite?.hex, "#FBFAEF"].includes(derivativeRegister.lightSocialBackground) ||
     !Array.isArray(derivativeRegister.files)) {
   fail("current owner-approved brand or generated derivative provenance is invalid");
 }
@@ -467,7 +470,7 @@ for (const [src, sizes, purpose] of expectedManifestIcons) {
     fail(`web manifest is missing approved icon ${src}`);
   }
 }
-if (manifest.theme_color !== healthcare?.hex || manifest.background_color !== ownerBrand.neutralPalette?.primaryWhite?.hex) fail("web manifest must use owner-approved Healthcare crimson and Royal Mineral White");
+if (manifest.theme_color !== healthcare?.hex || manifest.background_color !== ownerBrand.neutralPalette?.primaryWhite?.hex) fail("web manifest must use owner-approved Healthcare crimson and Pure White");
 
 for (const file of redirectPages) {
   const html = source(file);
