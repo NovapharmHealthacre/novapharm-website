@@ -18,6 +18,11 @@ on:
       - 'scripts/programme/generate-image-inventory.mjs'
       - 'scripts/test-visual-contracts.mjs'
       - 'scripts/test-official-brand-triad.mjs'
+      - 'scripts/test-apple-hig-colours.mjs'
+      - 'scripts/test-quantum-static-public-candidate.mjs'
+      - 'scripts/stamp-public-release-provenance.mjs'
+      - 'scripts/lib/stamp-pinned-public-html.mjs'
+      - 'scripts/verify-live-official-brand.mjs'
       # Reviewed managed Contact exact-source parity may add image references.
       - 'src/content/contact-managed-release.html'
       - 'assets/css/novapharm-unified-20261107.css'
