@@ -18,11 +18,34 @@ function matches(html, tag, attributeName, expectedValue) {
   return tags.filter(value => attribute(value, attributeName)?.toLowerCase() === expectedValue.toLowerCase());
 }
 
+// Remove inert comment ranges with an explicit bounded scan, not a regex
+// substitution. Reject malformed/nested comments rather than allowing them
+// to manufacture active release receipts, headings or Contact form markers.
+function stripInertHtmlComments(html) {
+  const visible = [];
+  let cursor = 0;
+  while (cursor < html.length) {
+    const start = html.indexOf("<!--", cursor);
+    if (start === -1) {
+      visible.push(html.slice(cursor));
+      break;
+    }
+    const end = html.indexOf("-->", start + 4);
+    assert.ok(end !== -1, "Unterminated HTML comment in public release evidence");
+    const nested = html.indexOf("<!--", start + 4);
+    assert.ok(nested === -1 || nested >= end,
+      "Ambiguous nested HTML comment in public release evidence");
+    visible.push(html.slice(cursor, start));
+    cursor = end + 3;
+  }
+  return visible.join("");
+}
+
 export function verifyPublishedHtml(rawHtml, route, sourceSha) {
   assert.match(sourceSha, /^[a-f0-9]{40}$/, "Exact release commit SHA required");
   // A commented-out receipt, theme, H1, form, consent marker or CSP directive
   // is not active HTML. Never let inert markup satisfy a production release.
-  const html = rawHtml.replace(/<!--[\s\S]*?-->/g, "");
+  const html = stripInertHtmlComments(rawHtml);
   const errors = [];
   if (!/<html\b[^>]*\blang=["']en(?:-[^"']*)?["']/i.test(html)) errors.push("English HTML language missing");
   if ((html.match(/<h1(?:\s[^>]*)?>/gi) ?? []).length !== 1) errors.push("Expected one H1");
