@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import {
@@ -37,6 +37,14 @@ test("manifest recursively discovers all public image formats, excludes symlinks
       writeFileSync(full, bytes("image"));
     }
     writeFileSync(join(tree, "assets/media/about/not-an-image.txt"), bytes("nonimage"));
+    // An image-named symlink or a symlinked directory must never expand the
+    // audited publishing scope or smuggle files from outside the Pages tree.
+    if (process.platform !== "win32") {
+      const outside = join(tree, "outside-synthetic.png");
+      writeFileSync(outside, bytes("not an approved image"));
+      symlinkSync(outside, join(tree, "assets/media/about/linked-image.png"));
+      symlinkSync(join(tree, "assets/media/about"), join(tree, "assets/media/linked-folder"), "dir");
+    }
     const files = publishedImageManifest(tree, 7);
     assert.deepEqual(files, [...paths].sort());
     assert.throws(() => publishedImageManifest(tree, 8), /unexpectedly shrank/);
