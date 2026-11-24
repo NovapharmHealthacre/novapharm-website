@@ -82,3 +82,13 @@ test("all protected customer subpages expose the same primary task links without
   assert.match(dashboard, /navigation\.map\(\(entry\)/);
   assert.match(dashboard, /aria-current=\{entry\.code === module\.code \? "page" : undefined\}/);
 });
+
+
+test("sign-in prevents concurrent authentication and keeps workspace selection stable", () => {
+  assert.match(login, /const signInInFlight = useRef\(false\)/);
+  assert.match(login, /if \(signInInFlight\.current\) return;\s*signInInFlight\.current = true;\s*setBusy\(true\)/);
+  assert.match(login, /finally \{\s*signInInFlight\.current = false;\s*setBusy\(false\)/);
+  assert.match(login, /<fieldset className="access-selector" disabled=\{busy\}>/);
+  assert.match(login, /entraEnabled && !busy/);
+  assert.match(login, /result\.accessType !== accessType/);
+});
