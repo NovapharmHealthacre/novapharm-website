@@ -17,3 +17,7 @@ Only after approved exact-SHA deployment and independent permission verification
 ## Rollback
 
 Set ReleaseEnabled=false through the same stack (removes route/integration/invoke permission and denies reads); revoke only the separately granted customer-directory group membership if necessary. Confirm anonymous denial and existing session/checkout unchanged. Retain audit evidence. Do not delete or change existing API, tables, founder sessions, customer pools or payment configuration.
+
+## Native CloudFormation packaging alternative
+
+Run `python3 scripts/build_customer_admin_inline.py` on the exact reviewed merged commit. The deterministic template uses CloudFormation's Python `ZipFile` facility, retains the original role, function configuration and release conditions, and includes the bundled source SHA-256. No binary upload or extra build service is required. The existing 15 access/reader tests must pass against the generated inline module as well as the original source. Validate the exact generated template and review the disabled change set before execution. Compare the deployed code SHA and configuration to the approved candidate. The previously described S3 object steps apply only to the S3 ZIP path; this alternative uses the exact reviewed template bytes instead. All production gates and rollback requirements remain unchanged.
