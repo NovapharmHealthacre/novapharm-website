@@ -162,6 +162,21 @@ class ProductsPaymentTests(unittest.TestCase):
         self.assertFalse(DB.rows)
         self.assertFalse(WORKER.calls)
 
+    def test_promo_minimum_uses_only_eligible_merchandise(self):
+        from unittest.mock import patch
+        basket=dict(self.basket(),promo_code="TEST10")
+        basket["lines"].append({"sku":"NUT-UK-VD3-S30","quantity":2})
+        with patch.object(SSM,"get_parameter",return_value=self.promotion_policy(minimum_gross_minor=2000)):
+            rejected=API.handler(self.event("/quote","POST",basket),None)
+            self.assertEqual(rejected["statusCode"],422)
+            basket["lines"][0]["quantity"]=2
+            accepted=API.handler(self.event("/quote","POST",basket),None)
+            self.assertEqual(accepted["statusCode"],200,accepted["body"])
+            quote=json.loads(accepted["body"])
+            self.assertEqual(quote["discountGrossMinor"],216)
+            self.assertFalse(DB.rows)
+            self.assertFalse(WORKER.calls)
+
     def test_unimplemented_gift_card_never_silently_charges_full_price(self):
         result=API.direct_checkout(self.event("/checkout","POST",dict(self.basket(),gift_card_code="TESTGIFT")))
         self.assertEqual(result["statusCode"],422)
