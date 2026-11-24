@@ -269,7 +269,7 @@ export function DesktopNavigation({ items, portalOrigin, locale }: DesktopNaviga
             <div className="npd-mega-column" key={column.title}>
               <p>{column.title}</p>
               {column.links.map((link, index) => (
-                <a key={link.href} className={index === 0 ? "npd-mega-feature" : undefined}
+                <a key={`${link.href}:${link.label}`} className={index === 0 ? "npd-mega-feature" : undefined}
                   href={link.href} onClick={() => setActiveCategory(null)}>{link.label}</a>
               ))}
             </div>
