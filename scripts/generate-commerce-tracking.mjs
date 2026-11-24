@@ -18,7 +18,9 @@ const content=`<main id="main" class="np-order-track" data-np-order-lookup>
 <form class="np-order-track-form"><label for="np-order-reference">Order reference</label>
 <div class="np-order-track-controls"><input id="np-order-reference" name="order_ref" placeholder="NUT-… or ESCO-…" type="text" autocomplete="off" spellcheck="false" maxlength="52" required>
 <button type="submit">Check status</button></div></form>
-<p class="np-order-track-result" data-np-order-status role="status" aria-live="polite" hidden></p></section>
+<p class="np-order-track-result" data-np-order-status role="status" aria-live="polite" hidden></p>
+<p class="np-order-track-next" data-np-order-next role="status" aria-live="polite" hidden></p>
+<p class="np-order-track-help"><a href="mailto:support@novapharmhealthcare.com">Need help? Contact customer support</a>. Keep your reference private; never send card details or passwords.</p></section>
 <section class="np-order-track-wrap np-order-track-note"><h2>Payment is not delivery.</h2><p>A paid order means payment has been confirmed by the checkout service. Picking, dispatch, carrier tracking and delivery require separate verified events. An ESCO order request does not mean payment has been taken.</p>
 <a href="/products/nutraxin/account/">Personal Nutraxin account</a><a href="mailto:support@novapharmhealthcare.com">Need help with your order?</a><a href="/products/nutraxin/">Nutraxin collection</a><a href="/products/esco/">ESCO collection</a></section></main>`;
 
