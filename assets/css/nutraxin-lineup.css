@@ -317,3 +317,206 @@
 .nx-collection .nx-product-publisher {padding:8px 12px 16px;min-height:38px;font-size:.76rem;line-height:1.5}
 .nx-collection .nx-product-publisher a {color:#45454a;text-decoration:underline;text-underline-offset:3px}
 .nx-collection .nx-product-publisher .npd-publisher-unavailable {color:#66666d}
+
+/* Catalogue alignment contract — 19 governed products, 24 November 2026.
+   Preserve pack photography and buying actions; only the catalogue is scoped.
+   One price block, one aligned two-button row, one optical image baseline. */
+.nx-collection {
+  --nx-ink:#0B0B0E;
+  --nx-muted:#5B5C61;
+  --nx-brand:#9D1B32;
+  --nx-brand-hover:#791226;
+  --nx-stroke:#DEDCD5;
+  --nx-card-stage:#F8F7F3;
+  background:#FFFFFF;
+}
+.nx-collection .nx-range-section,
+.nx-collection .nx-range-section:nth-of-type(even) {background:#FFFFFF}
+.nx-collection .nx-product-grid {
+  align-items:stretch;
+  column-gap:clamp(16px,2vw,28px);
+  row-gap:clamp(42px,4.2vw,64px);
+}
+.nx-collection .nx-product-card-shell,
+.nx-collection .nx-product-card-shell:has(.nx-store-card-footer) {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  height:100%;
+  overflow:visible;
+  border-radius:0;
+}
+.nx-collection .nx-product-card-shell > .nx-product-card {
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  min-width:0;
+  overflow:visible;
+  border-radius:0;
+  transform:none;
+}
+.nx-collection .nx-product-card-shell > .nx-product-card:hover {transform:none}
+.nx-collection .nx-product-visual,
+.nx-collection .nx-range-section:nth-of-type(even) .nx-product-visual {
+  width:100%;
+  aspect-ratio:1 / 1;
+  padding:clamp(12px,1.5vw,24px);
+  border-radius:18px;
+  background:var(--nx-card-stage);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.nx-collection .nx-product-visual .nx-picture {
+  width:100%;
+  height:auto;
+  aspect-ratio:1 / 1;
+  max-height:none;
+  min-width:0;
+}
+.nx-collection .nx-product-visual .nx-picture img,
+.nx-collection .nx-product-card:hover .nx-product-visual .nx-picture img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  object-fit:contain;
+  object-position:center;
+  transform-origin:0 0;
+  transform:translate(var(--nx-pack-x,0%),var(--nx-pack-y,0%)) scale(var(--nx-pack-scale,1));
+  filter:none;
+  transition:none;
+}
+.nx-collection .nx-product-copy {
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  padding:24px 0 16px;
+  min-width:0;
+}
+.nx-collection .nx-product-category {
+  font-size:12px;
+  font-weight:650;
+  line-height:1.4;
+  color:var(--nx-brand);
+}
+.nx-collection .nx-product-copy h3 {
+  font-size:clamp(20px,1.65vw,25px);
+  font-weight:650;
+  letter-spacing: normal;
+  line-height:1.24;
+  min-height:2.48em;
+  margin:10px 0 0;
+  text-wrap:pretty;
+  overflow-wrap:anywhere;
+}
+.nx-collection .nx-product-copy p {
+  margin:8px 0 0;
+  color:var(--nx-muted);
+  font-size:14px;
+  line-height:1.5;
+}
+.nx-collection .nx-product-copy .nx-link {
+  margin-top:auto;
+  padding-top:18px;
+  color:var(--nx-brand);
+  font-size:14px;
+  line-height:1.4;
+}
+.nx-collection .nx-product-publisher {
+  min-height:46px;
+  padding:10px 0 16px;
+  font-size:13px;
+  line-height:1.5;
+}
+.nx-collection .nx-product-publisher a {color:var(--nx-muted)}
+.nx-collection .nx-product-card-shell > .nx-store-card-footer {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px 10px;
+  align-items:stretch;
+  padding:18px 0 0;
+  margin-top:auto;
+  background:transparent;
+  border:0;
+  border-top:1px solid var(--nx-stroke);
+  border-radius:0;
+  color:var(--nx-ink);
+  font-family:inherit;
+}
+.nx-collection .nx-store-card-footer > div:first-child {
+  grid-column:1 / -1;
+  min-width:0;
+}
+.nx-collection .nx-store-card-footer .nx-store-price {
+  display:block;
+  margin:0;
+  color:var(--nx-ink);
+  font-size:20px;
+  font-weight:650;
+  line-height:1.25;
+  font-variant-numeric:tabular-nums;
+  letter-spacing: normal;
+}
+.nx-collection .nx-store-card-footer .nx-store-vat-note {
+  font-size:12px;
+  line-height:1.45;
+  min-height:2.9em;
+  color:var(--nx-muted);
+  margin:5px 0 0;
+}
+.nx-collection .nx-store-card-footer .nx-store-add {
+  width:100%;
+  min-width:0;
+  min-height:48px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:11px 9px;
+  border:1px solid var(--nx-brand);
+  border-radius:999px;
+  color:#FFFFFF;
+  background:var(--nx-brand);
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.25;
+  white-space:normal;
+  text-align:center;
+}
+.nx-collection .nx-store-card-footer .nx-store-buy-now {
+  color:var(--nx-brand);
+  background:transparent;
+}
+.nx-collection .nx-store-card-footer .nx-store-add:hover:not(:disabled) {
+  background:var(--nx-brand-hover);
+  border-color:var(--nx-brand-hover);
+  color:#FFFFFF;
+}
+.nx-collection .nx-store-card-footer .nx-store-add:disabled {
+  background:#EAE8E4;
+  border-color:#EAE8E4;
+  color:#535458;
+  cursor:not-allowed;
+}
+.nx-collection :is(.nx-product-card,.nx-product-publisher a,.nx-store-card-footer button):focus-visible {
+  outline:3px solid var(--nx-brand);
+  outline-offset:4px;
+}
+@media (max-width:1080px) and (min-width:601px) {
+  .nx-collection .nx-product-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nx-collection .nx-product-copy h3 {min-height:3.72em}
+}
+@media (max-width:600px) {
+  .nx-collection .nx-product-grid {grid-template-columns:minmax(0,1fr);gap:42px}
+  .nx-collection .nx-product-visual {padding:18px;border-radius:16px}
+  .nx-collection .nx-product-copy {padding:20px 0 12px}
+  .nx-collection .nx-product-copy h3 {min-height:0;font-size:23px}
+  .nx-collection .nx-product-publisher {min-height:0}
+  .nx-collection .nx-store-card-footer .nx-store-vat-note {min-height:0}
+}
+@media (forced-colors:active) {
+  .nx-collection .nx-product-visual,
+  .nx-collection .nx-store-card-footer .nx-store-add {border:1px solid CanvasText}
+}
