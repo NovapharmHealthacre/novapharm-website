@@ -70,6 +70,13 @@ export function comparisonProducts(skus, data) {
   return [...new Set(skus)].filter(sku => bySku.has(sku)).slice(0, 3).map(sku => bySku.get(sku));
 }
 
+export function bagDiscoveryProducts(bag, data) {
+  if (!catalogueIsSafe(data) || !Array.isArray(bag)) return [];
+  const selected = new Set(safeBasket(bag, data.products).map(line => line.sku));
+  return data.products.filter(p => !selected.has(p.sku) &&
+    merchantSaleReady(p, data) && publicPrice(p, data) !== null).slice(0, 3);
+}
+
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
@@ -258,7 +265,13 @@ function runStore(data) {
       container.querySelector(".nx-bag-grid").append(discovery);
       const secure = make("div", "nx-bag-secure");
       secure.append(make("strong", null, "Secure payment"), make("p", null, "Payment is handled by Stripe. Available payment methods are shown during secure checkout."), anchor("Delivery, returns and refunds", "/legal/returns/", "nx-shop-link"));
-      container.querySelector(".nx-bag-summary").append(secure);
+      const summary = container.querySelector(".nx-bag-summary");
+      summary.id = "nx-bag-summary";
+      summary.tabIndex = -1;
+      summary.append(secure);
+      const review = anchor("View order summary", "#nx-bag-summary", "nx-bag-summary-jump nx-shop-link");
+      review.addEventListener("click", () => summary.focus({preventScroll:true}));
+      bagCount.insertAdjacentElement("afterend", review);
       const render = () => {
         const list = container.querySelector("[data-nx-bag-items]");
         const subtotal = container.querySelector("[data-nx-bag-subtotal]");
@@ -344,9 +357,7 @@ function runStore(data) {
           list.append(item);
         }
         // Catalogue browse shelf, not personalised supplement advice.
-        const suggestions = locked || confirmedOrder ? [] : data.products
-          .filter(p => !bag.some(line => line.sku === p.sku) && merchantSaleReady(p, data) && publicPrice(p, data) !== null)
-          .slice(0, 3);
+        const suggestions = locked || confirmedOrder ? [] : bagDiscoveryProducts(bag, data);
         discovery.hidden = suggestions.length === 0;
         discoveryGrid.replaceChildren();
         for (const p of suggestions) {
