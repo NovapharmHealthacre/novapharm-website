@@ -54,10 +54,11 @@ class GiftCard:
     version: int = 0
     redemptions: tuple = ()
     void: bool = False
+    frozen: bool = False
 
     @property
     def available(self):
-        if self.void:
+        if self.void or self.frozen:
             return 0
         return self.issued_minor - sum(
             r.minor - r.refunded for r in self.redemptions
@@ -93,8 +94,8 @@ def split_tender(total_minor, available_minor):
 def reserve(card, order, amount, expected_version):
     reference(order)
     positive(amount)
-    if card.void or expected_version != card.version:
-        raise ValueError("stale or void card")
+    if card.void or card.frozen or expected_version != card.version:
+        raise ValueError("stale, frozen or void card")
     if any(r.order == order for r in card.redemptions):
         raise ValueError("order reservation already exists")
     if amount > card.available:
@@ -107,7 +108,8 @@ def settle(card, order, action, expected_version):
     """Capture only after verified external payment or atomic gift-only settlement.
     Release only after verified terminal unpaid checkout. Caller owns evidence.
     """
-    if card.void or expected_version != card.version or action not in ("captured", "released"):
+    if (card.void or expected_version != card.version or action not in ("captured", "released")
+            or (card.frozen and action == "captured")):
         raise ValueError("invalid settlement")
     matches = [r for r in card.redemptions if r.order == order]
     if len(matches) != 1 or matches[0].status != "reserved":
@@ -135,3 +137,14 @@ def void_unused(card, expected_version):
     ):
         raise ValueError("card has unresolved or captured redemption")
     return replace(card, version=card.version + 1, void=True)
+
+
+def freeze(card, expected_version):
+    """Block further spend after verified adverse purchase-payment evidence.
+
+    Retain all prior reservation and refund history. A frozen card is not
+    automatically reactivated even if a dispute is later resolved.
+    """
+    if card.void or card.frozen or type(expected_version) is not int or expected_version != card.version:
+        raise ValueError("card cannot be frozen at this version")
+    return replace(card, version=card.version + 1, frozen=True)
