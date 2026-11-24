@@ -158,3 +158,17 @@ assert.doesNotMatch(chromeGenerator, /const headerLinks = route ===/);
 assert.match(chromeGenerator, /\["Intelligence", "\/technology\/", "intelligence"\]/);
 assert.match(chromeGenerator, /route === href \? ' aria-current="page"'/);
 
+
+
+const { composeManagedContactChrome } = await import("./activate-contact-intake.mjs");
+const managed = read("src/content/contact-managed-release.html");
+const staged = read("contact/index.html");
+const composed = composeManagedContactChrome(managed, staged);
+const intake = (html) => html.match(/<form\b[^>]*>[\s\S]*?<\/form>/)[0];
+assert.equal(intake(composed), intake(managed), "Managed form bytes must not change");
+assert.match(composed, /<header class="site-header npd-header"/);
+assert.match(composed, /<footer class="site-footer npd-footer"/);
+assert.doesNotMatch(composed, /<footer class="ref-footer"/);
+assert.ok(composed.includes("form-action 'none'"));
+assert.ok(composed.includes('src="/assets/js/contact-production.js"'));
+assert.throws(() => composeManagedContactChrome(managed, staged.replace('class="site-header npd-header"', 'class="missing"')));
