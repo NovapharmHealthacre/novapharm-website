@@ -209,6 +209,8 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
  assert.match(css,/--nx-showcase-ink:#0B0B0E/);
  assert.match(css,/--nx-showcase-accent:#9D1B32/);
  assert.match(css,/@media print\s*\{[\s\S]*?white-space:normal !important;/);
+ assert.match(css,/@media screen and \(min-width:1121px\) \{[\s\S]*?NUT-UK-B12-SL60/,
+   "Long B12 title sizing must apply only to screen, never A4 print");
  assert.equal(catalogue.products.length,19);
  for(const product of catalogue.products){
    const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
