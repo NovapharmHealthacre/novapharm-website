@@ -180,7 +180,6 @@
         },
         "MemorySize": 256,
         "Timeout": 20,
-        "ReservedConcurrentExecutions": 2,
         "Environment": {
           "Variables": {
             "CUSTOMER_DIRECTORY_RELEASE_ENABLED": {
