@@ -219,3 +219,9 @@
 .customer-editorial-dashboard .customer-primary-nav{flex-wrap:wrap;gap:4px clamp(12px,1.6vw,24px)}
 .customer-editorial-dashboard .customer-primary-nav a{min-height:44px;display:flex;align-items:center}
 @media(max-width:850px){.customer-editorial-dashboard .customer-primary-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}}
+
+.customer-related-tasks{order:2;background:#F8F7F3;border:1px solid #DEDCD5;border-radius:12px;padding:12px 16px;margin-block:8px 16px;color:#0B0B0E;min-width:0}
+.customer-related-tasks p{font-weight:600;margin:0 0 4px}
+.customer-related-tasks ul{display:flex;flex-wrap:wrap;gap:0 20px;list-style:none;margin:0;padding:0}
+.customer-related-tasks a{display:inline-flex;align-items:center;min-height:44px;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.customer-related-tasks a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
