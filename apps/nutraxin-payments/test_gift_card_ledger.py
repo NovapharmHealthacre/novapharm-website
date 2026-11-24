@@ -27,7 +27,8 @@ class MemoryDynamo:
             v = p.get("ExpressionAttributeValues", {})
             if expr == "attribute_not_exists(pk)":
                 ok = old is None
-            elif expr == "version = :expected":
+            elif expr == "#version = :expected":
+                assert p["ExpressionAttributeNames"] == {"#version":"version"}
                 ok = old is not None and old["version"] == v[":expected"]
             elif expr == "cardDigest = :digest AND #status = :prior AND refundedMinor = :refund":
                 ok = (old is not None and old["cardDigest"] == v[":digest"]
