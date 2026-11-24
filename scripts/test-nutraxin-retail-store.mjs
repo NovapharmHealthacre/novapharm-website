@@ -178,7 +178,7 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.equal(checkoutReturnOutcome(null),"pending");
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  const returned=js.split('const returnedOrder = query.get("order_id");')[1]?.split("// Products-site readiness")[0];
- assert.match(returned,/checkoutReturnOutcome\(result\)/);
+ assert.match(returned,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
  assert.match(returned,/outcome === "expired" \|\| outcome === "failed"/);
  assert.match(returned,/closedOrder = returnedOrder/);
  assert.match(returned,/if \(outcome === "paid"\)/);
@@ -186,4 +186,15 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.equal(returned.split("bag=[];saveBag(bag)").length-1,1,"Only verified paid status may empty the bag");
  assert.match(js,/Your Bag is saved and you may start a new checkout/);
  assert.match(js,/No successful payment has been recorded/);
+});
+
+test("checkout uncertainty is explicit and return verification blocks another payment",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.doesNotMatch(js,/No payment was taken\./);
+ assert.match(js,/We could not confirm the checkout response/);
+ assert.match(js,/const locked = checkoutInFlight \|\| checkoutUncertain \|\| !!awaitingOrder/);
+ assert.match(js,/quantityInput\.disabled = locked/);
+ assert.match(js,/remove\.disabled = locked/);
+ assert.match(js,/awaitingOrder = returnedOrder;\s*render\(\);\s*const status = async/);
+ assert.match(js,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
 });
