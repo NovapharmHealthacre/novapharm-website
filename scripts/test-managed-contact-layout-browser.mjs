@@ -50,7 +50,12 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
             topic:box(q(".ref-field.ref-full")), message:box(q(".ref-message")), textarea:box(q(".ref-message textarea")),
             confirms:[...form.querySelectorAll(".ref-confirmation")].map(box), explain:box(q(".ref-explain")),
             button:box(q(".ref-button")), actions:box(q(".ref-actions")), scroll:document.documentElement.scrollWidth,
-            width:document.documentElement.clientWidth, footer:!!q("footer.site-footer.npd-footer"), header:!!q("header.site-header.npd-header")
+            width:document.documentElement.clientWidth,
+            overflowNodes:[...document.querySelectorAll("body *")].flatMap(el => {
+              const r=el.getBoundingClientRect(), s=getComputedStyle(el);
+              return r.width>0 && r.height>0 && s.visibility!=="hidden" && (r.right>document.documentElement.clientWidth+1 || r.left < -1)
+                ? [{tag:el.tagName,id:el.id,cls:String(el.className).slice(0,100),left:r.left,right:r.right,width:r.width,scroll:el.scrollWidth}] : [];
+            }).slice(0,30), footer:!!q("footer.site-footer.npd-footer"), header:!!q("header.site-header.npd-header")
           };
         });
         const label = name + " " + width;
@@ -58,7 +63,8 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         assert.ok(result.white.every(c => c === "rgb(255, 255, 255)"), label+" nonwhite canvas: "+result.white);
         assert.equal(result.fields.length,6);
         assert.equal(result.hidden,"none");
-        assert.ok(result.scroll<=result.width+1,label+" horizontal overflow");
+        await page.screenshot({path:resolve(artifact,"managed-contact-"+name+"-"+width+".png"),fullPage:true});
+        assert.ok(result.scroll<=result.width+1,label+" horizontal overflow: "+JSON.stringify({scroll:result.scroll,width:result.width,nodes:result.overflowNodes}));
         assert.ok(result.header && result.footer,label+" shared chrome missing");
         near(result.rows[1].y-result.rows[0].bottom,16,"third-row spacing");
         near(result.topic.y-result.rows[1].bottom,16,"topic spacing");
@@ -75,7 +81,6 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         }
         assert.ok(result.message.h>=151 && result.textarea.h>=111,label+" message area too short: "+JSON.stringify({message:result.message,textarea:result.textarea}));
         assert.ok(result.button.y>=result.explain.bottom+15 && result.button.h>=47,label+" submit overlaps explanatory copy or touch target too small");
-        await page.screenshot({path:resolve(artifact,"managed-contact-"+name+"-"+width+".png"),fullPage:true});
         console.log(label+": pure white, aligned fields, consistent gaps, responsive button, no overflow");
       } finally { await context.close(); }
     }
