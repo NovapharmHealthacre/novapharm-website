@@ -77,6 +77,66 @@ def reply(status, body):
 def error(status, code):
     return reply(status, {"error":code})
 
+def load_campaign_pricing(*, promotions=False):
+    """Keep the shared 4KB Standard price parameter untouched.
+
+    A separate private ledger row carries the version-bound campaign policy.
+    No public route writes this row. A missing row preserves legacy behaviour;
+    malformed/conflicting rows fail closed for promotions only.
+    """
+    parameter=SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]
+    pricing=json.loads(parameter["Value"])
+    if not promotions:
+        return pricing
+    row=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+        Key={"pk":{"S":"RETAIL_PROMOTION_POLICY#V1"},"sk":{"S":"CONFIG"}},
+        ConsistentRead=True).get("Item") or {}
+    if not row:
+        return pricing
+    if (row.get("schema")!={"S":"retail-promotion-policy-v1"} or
+        row.get("priceParameterVersion")!={"N":str(parameter.get("Version"))} or
+        "retail_promotions" in pricing):
+        raise ValueError("campaign_policy_unavailable")
+    policy=json.loads(row.get("policyJson",{}).get("S",""))
+    if not isinstance(policy,dict) or type(policy.get("enabled")) is not bool:
+        raise ValueError("campaign_policy_unavailable")
+    if policy["enabled"] and not valid_campaign_economics(policy.get("economics")):
+        raise ValueError("campaign_policy_unavailable")
+    return dict(pricing,retail_promotions=policy)
+
+
+def valid_campaign_economics(model):
+    if not isinstance(model,dict):
+        return False
+    costs=model.get("unit_cost_minor")
+    capacity=model.get("carton_capacity")
+    return (isinstance(costs,dict) and set(costs)==set(PRODUCTS) and
+        all(type(v) is int and 0<v<=1000000 for v in costs.values()) and
+        isinstance(capacity,dict) and set(capacity)==set(PRODUCTS) and
+        all(type(v) is int and 1<=v<=24 for v in capacity.values()) and
+        all(type(model.get(k)) is int and 0<model[k]<=1000000 for k in
+            ("lead_carton_minor","additional_carton_minor","order_fixed_minor")) and
+        type(model.get("variable_fee_bps")) is int and 0<=model["variable_fee_bps"]<=2000 and
+        type(model.get("contribution_bps")) is int and 0<=model["contribution_bps"]<=5000)
+
+
+def modeled_contribution_passes(model, ordered, net, gross):
+    """Estimate contribution using reviewed cost assumptions, not guaranteed stock/cost.
+
+    Charge separate cartons per SKU rather than assuming mixed consolidation.
+    Apply fees to VAT-inclusive gross; round expense reserves upwards.
+    """
+    if not valid_campaign_economics(model):
+        return False
+    units=sum(model["unit_cost_minor"][item["sku"]]*item["quantity"] for item in ordered)
+    cartons=sum((item["quantity"]+model["carton_capacity"][item["sku"]]-1)//
+        model["carton_capacity"][item["sku"]] for item in ordered)
+    cost=units+model["lead_carton_minor"]+max(0,cartons-1)*model["additional_carton_minor"]+model["order_fixed_minor"]
+    fee=(gross*model["variable_fee_bps"]+9999)//10000
+    required=(net*model["contribution_bps"]+9999)//10000
+    return net-cost-fee>=required
+
+
 def retail_promotion(pricing, raw_code, instant):
     """Only owner-approved, time-bounded, reusable retail campaigns.
     Per-SKU net price floors include the owner's commercial cost policy.
@@ -120,7 +180,7 @@ def retail_promotion(pricing, raw_code, instant):
     if audience != "public_reusable" and (not isinstance(campaign_id,str)
         or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",campaign_id)):
         raise ValueError("promo_code_unavailable")
-    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,
+    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,\n            "economics":policy.get("economics"),
             "audience":audience,"campaign_id":campaign_id,"kind":kind,
             "occasion_year":campaign.get("occasion_year")}
 
@@ -267,7 +327,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
     if not isinstance(lines, list) or not 1 <= len(lines) <= 19:
         return error(400, "invalid_order_lines")
     try:
-        pricing = json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
+        pricing = load_campaign_pricing(promotions=promo_code is not None and promo_code != "")
         if pricing.get("status") != "owner_approved_provisional_for_authenticated_quotation_only":
             return error(503, "owner_price_policy_unavailable")
         if pricing.get("owner_retail_sale_authorised") is not True:
@@ -329,7 +389,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
                         "grossMinor": unit_gross * quantity})
     if promotion and (eligible_original_gross < promotion["minimum"] or original_gross <= gross or gross < 30):
         return error(422, "promo_code_not_applicable")
-    tax = gross - net
+    if promotion and promotion["economics"] is not None and not modeled_contribution_passes(promotion["economics"],ordered,net,gross):\n        return error(422,"promo_code_not_applicable")\n    tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
     basket_hash = hashlib.sha256(json.dumps(
@@ -556,7 +616,7 @@ def account_privileges(customer):
     subject=customer["subject"]
     try:
         stage=account_purchase_stage(subject)
-        pricing=json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
+        pricing=load_campaign_pricing(promotions=True)
         policy=pricing.get("retail_promotions")
         campaigns=policy.get("campaigns",{}) if isinstance(policy,dict) and policy.get("enabled") is True else {}
         if not isinstance(campaigns,dict) or len(campaigns)>12:
@@ -590,7 +650,7 @@ def handler(event, context):
                            "origin":"novapharmhealthcare.com",
                            "promotion_preview_supported":True,
                            "account_promotion_preview_supported":True,
-                           "account_privileges_supported":True,
+                           "account_privileges_supported":True,\n                           "ledger_campaign_policy_supported":True,
                            "checkout_path":"/products/nutraxin/bag/"})
     if path in ("/account/me","/account/orders","/account/checkout","/account/quote","/account/privileges"):
         customer=verified_consumer(event)
