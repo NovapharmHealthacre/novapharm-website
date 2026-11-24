@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - "apps/nutraxin-products-checkout/**"
+      - "apps/nutraxin-payments/gift_card_contract.py"
+      - "apps/nutraxin-payments/test_gift_card_contract.py"
+      - "assets/css/nutraxin-retail-store.css"
       - "infra/aws/nutraxin-products-checkout-api.json"
       - "assets/js/nutraxin-retail-store.js"
       - "assets/data/nutraxin-retail-catalogue.json"
@@ -31,6 +34,8 @@ jobs:
         run: python3 -m py_compile apps/nutraxin-products-checkout/index.py
       - name: Check guest Checkout and order status security
         run: python3 -m unittest discover -s apps/nutraxin-products-checkout -p 'test_public_checkout.py' -v
+      - name: Verify offline gift card balance and tender contract
+        run: python3 -m unittest discover -s apps/nutraxin-payments -p "test_gift_card_contract.py" -v
       - name: Check all 19 products, price and public Bag
         run: |
           node --test scripts/test-nutraxin-retail-store.mjs
