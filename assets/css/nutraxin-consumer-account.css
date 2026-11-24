@@ -39,3 +39,15 @@
 .nx-account-help-body ol{padding-inline-start:20px;margin:10px 0}
 .nx-account-help-body li+li{margin-top:7px}
 .nx-account-help-body a{color:#1655a4;text-underline-offset:3px}
+
+/* Personal customer orders: clear hierarchy, accessible actions, no progress inferred. */
+.nx-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}
+.nx-order-heading h2{margin:0}
+.nx-account-order{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:20px 0;border-color:#DEDCD5;font-size:14px}
+.nx-account-order strong{color:#0B0B0E;overflow-wrap:anywhere}
+.nx-account-order span{font-weight:600;color:#0B0B0E}
+.nx-account-order .nx-order-guidance{margin:0;color:#54545A;font-size:14px;line-height:1.6}
+.nx-order-copy{justify-self:start;border:1px solid #DEDCD5;border-radius:8px;background:#FFFFFF;color:#9D1B32;font:inherit;min-height:44px;padding:8px 12px;cursor:pointer}
+.nx-order-copy:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.nx-order-help{margin-top:16px!important}
+.nx-account-panel .nx-refresh-orders{min-height:44px}

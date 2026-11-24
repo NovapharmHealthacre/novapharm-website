@@ -94,17 +94,25 @@ async function accountRequest(config,route,accessToken){
  if(!r.ok)throw new Error("Account information is temporarily unavailable.");
  return r.json();
 }
+const orderStatusLabels=Object.freeze({AWAITING_STRIPE:"Payment pending",PROCESSING:"Order status processing",OPENING_CHECKOUT:"Opening secure checkout",APPROVED_FOR_PAYMENT:"Payment pending",CHECKOUT_OPEN:"Awaiting payment confirmation",PAID:"Payment confirmed",PAYMENT_FAILED:"Payment not completed",CHECKOUT_EXPIRED:"Checkout expired — payment not confirmed",CANCELLED:"Order cancelled"});
+const accountOrderReference=/^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const orderGuidance=Object.freeze({PAID:"Payment confirmed. Delivery details require separate shipping confirmation.",PAYMENT_FAILED:"Check your original payment confirmation or contact us before retrying.",CHECKOUT_EXPIRED:"Contact us if you need a fresh payment link.",CHECKOUT_OPEN:"Check the original checkout before attempting another payment.",APPROVED_FOR_PAYMENT:"Use your original verified payment instructions.",OPENING_CHECKOUT:"Wait for the original checkout to open.",PROCESSING:"Check again later, or contact customer support.",AWAITING_STRIPE:"Wait for confirmation before attempting another payment.",CANCELLED:"Contact us if the cancellation was unexpected."});
 function showOrders(data){
  const container=document.querySelector("[data-nx-account-orders]");if(!container)return;
  container.replaceChildren();
- if(!Array.isArray(data?.orders)){container.textContent="Order history is not available.";return}
- if(!data.orders.length){container.textContent="No account-linked orders yet. Orders placed while signed in will appear here after verification.";return}
+ if(!Array.isArray(data?.orders)){const li=document.createElement("li");li.textContent="Order history is temporarily unavailable. Select Refresh orders to try again.";container.append(li);return}
+ if(!data.orders.length){const li=document.createElement("li");li.textContent="No account-linked orders yet. If you purchased as a guest, use the order status page with your confirmation reference.";container.append(li);return}
  for(const o of data.orders){
-  if(typeof o.orderId!=="string" || !/^NUT-[0-9a-f-]{36}$/.test(o.orderId) || typeof o.status!=="string")continue;
+  if(typeof o.orderId!=="string" || !accountOrderReference.test(o.orderId) || typeof o.status!=="string")continue;
   const item=document.createElement("li");item.className="nx-account-order";
   const name=document.createElement("strong");name.textContent="Order "+o.orderId;
-  const state=document.createElement("span");state.textContent=o.status;
-  item.append(name,state);container.append(item);
+  const state=document.createElement("span");state.textContent=Object.hasOwn(orderStatusLabels,o.status)?orderStatusLabels[o.status]:"Status unavailable — check again or contact support.";
+  const guidance=document.createElement("p");guidance.className="nx-order-guidance";guidance.textContent=Object.hasOwn(orderGuidance,o.status)?orderGuidance[o.status]:"Refresh your order history or contact support for help.";
+  const copy=document.createElement("button");copy.type="button";copy.className="nx-order-copy";copy.textContent="Copy order reference";
+  copy.onclick=async()=>{try{await navigator.clipboard.writeText(o.orderId);status("Order reference copied.");}catch{status("Copy is unavailable. Select the reference above to copy it manually.");}};
+  item.append(name,state,guidance,copy);container.append(item);
+ }
+ if(!container.children.length){const li=document.createElement("li");li.textContent="No order records could be displayed. Refresh or contact customer support.";container.append(li);
  }
 }
 async function showAuthenticated(config,v){
@@ -125,6 +133,7 @@ async function showAuthenticated(config,v){
  text("[data-nx-account-email]",me.email||"Verified customer");
  showOrders(orders);
  status("Signed in securely.");
+ const refresh=document.querySelector("[data-nx-account-refresh]");if(refresh)refresh.disabled=false;
 }
 async function init(){
  const signIn=document.querySelector("[data-nx-account-signin]");
@@ -149,6 +158,14 @@ async function init(){
   url.searchParams.set("client_id",config.client_id);
   url.searchParams.set("logout_uri",ACCOUNT_URL);
   window.location.assign(url.href);
+ };
+ const refresh=document.querySelector("[data-nx-account-refresh]");
+ if(refresh)refresh.onclick=async()=>{
+  if(refresh.disabled)return;refresh.disabled=true;
+  // Remove old order records before rechecking identity; never leave a stale private view on failure.
+  showOrders(null);status("Refreshing your orders…");
+  try{const session=loadSession();if(!session)throw new Error("Your session expired. Please sign in again.");await showAuthenticated(config,session);}
+  catch(e){document.querySelector("[data-nx-account-public]").hidden=false;document.querySelector("[data-nx-account-private]").hidden=true;showOrders(null);text("[data-nx-account-email]","Verified account");status(e.message);}
  };
  const query=new URLSearchParams(window.location.search);
  if(query.has("error")){
