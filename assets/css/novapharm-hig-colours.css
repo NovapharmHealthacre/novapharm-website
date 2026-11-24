@@ -8,11 +8,11 @@
 :root {
   color-scheme: light;
   /* Official light-mode neutrals; preserve independent dark-mode semantics */
-  --np-white-primary: #FBFAEF;
+  --np-white-primary: #FFFFFF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;
   --np-divider-subtle: #DEDCD5;
-  --np-color-canvas: #FBFAEF;
+  --np-color-canvas: #FFFFFF;
   --np-color-surface: #F8F7F3;
   --np-color-surface-recessed: #EDEBE5;
   --np-color-surface-raised: #F8F7F3;
@@ -26,9 +26,9 @@
   --np-color-accent: #9D1B32;
   --np-color-accent-strong: #68101F;
   --np-color-accent-soft: #F8EDF0;
-  --np-color-on-accent: #FBFAEF;
+  --np-color-on-accent: #FFFFFF;
   --np-color-primary-action: #0B0B0E;
-  --np-color-on-primary-action: #FBFAEF;
+  --np-color-on-primary-action: #FFFFFF;
   --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;

@@ -6,24 +6,24 @@
  * No pseudo-refraction, decorative glass cards, text translucency or animated blur.
  */
 :root {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.94);
   --np-material-navigation-border: rgba(11, 11, 14, 0.12);
   --np-material-menu-solid: #F8F7F3;
   --np-material-menu-tint: rgba(248, 247, 243, 0.97);
-  --np-material-content-solid: var(--np-color-canvas, #FBFAEF);
+  --np-material-content-solid: var(--np-color-canvas, #FFFFFF);
   --np-material-content-muted: var(--np-color-surface, #F8F7F3);
   --np-material-label: var(--np-color-label, #0B0B0E);
   --np-material-filter: saturate(125%) blur(14px);
   --np-material-filter-menu: saturate(115%) blur(18px);
 }
 html[data-np-estate="technology"] {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.95);
   --np-material-navigation-border: rgba(11, 11, 14, 0.16);
 }
 html[data-np-estate="portal"] {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.97);
   --np-material-menu-tint: rgba(248, 247, 243, 0.98);
 }
