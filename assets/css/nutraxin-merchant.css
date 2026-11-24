@@ -71,7 +71,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-co
   font-size: clamp(2.15rem, 3.8vw, 3.65rem);
   font-weight: 650;
   line-height: 1.08;
-  letter-spacing: -0.045em;
+  letter-spacing: normal;
   text-wrap: balance;
   overflow-wrap: normal;
   word-break: normal;
@@ -179,7 +179,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-ev
   max-width: 22ch;
   font-size: clamp(1.75rem, 3vw, 2.65rem);
   font-weight: 650;
-  letter-spacing: -0.035em;
+  letter-spacing: normal;
   line-height: 1.13;
   overflow-wrap: normal;
   word-break: normal;
@@ -325,7 +325,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail
     margin-top: 2mm;
     font-size: 20pt;
     line-height: 1.13;
-    letter-spacing: -.02em;
+    letter-spacing: normal;
   }
   body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-pack {
     margin-top: 2mm;
@@ -468,7 +468,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-co
   font-size:clamp(2.85rem,4.5vw,4.6rem);
   font-weight:650;
   line-height:1.045;
-  letter-spacing:-.052em;
+  letter-spacing: normal;
   text-wrap:balance;
   overflow-wrap:normal;
   word-break:normal;
@@ -502,7 +502,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-price
   font-size:clamp(2.25rem,3.5vw,3.25rem);
   font-weight:660;
   line-height:1.08;
-  letter-spacing:-.03em;
+  letter-spacing: normal;
   font-variant-numeric:tabular-nums;
 }
 body[data-page="product-portfolio/nutraxin"] .npd-product-detail .nx-store-note {
@@ -664,7 +664,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-ev
   font-size:clamp(2.3rem,4.15vw,4rem);
   font-weight:630;
   line-height:1.08;
-  letter-spacing:-.047em;
+  letter-spacing: normal;
   text-wrap:balance;
   word-break:normal;
   overflow-wrap:normal;
@@ -874,7 +874,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
     max-width:none;
     font-size:20pt;
     line-height:1.13;
-    letter-spacing:-.02em;
+    letter-spacing: normal;
   }
   body[data-page="product-portfolio/nutraxin"] .npd-product-detail .npd-product-evidence {
     grid-template-columns:minmax(0,1fr) !important;
@@ -915,7 +915,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
 @media screen and (min-width:1121px) {
   body[data-page="product-portfolio/nutraxin"] .npd-product-detail:has([data-merchant-sku="NUT-UK-B12-SL60"]) .npd-product-copy h1 {
     font-size:clamp(2.45rem,3.75vw,3.9rem);
-    letter-spacing:-.045em;
+    letter-spacing: normal;
     overflow-wrap:break-word;
   }
 }
