@@ -94,7 +94,7 @@ async function accountRequest(config,route,accessToken){
  if(!r.ok)throw new Error("Account information is temporarily unavailable.");
  return r.json();
 }
-const orderStatusLabels=Object.freeze({AWAITING_STRIPE:"Payment pending",PROCESSING:"Order status processing",OPENING_CHECKOUT:"Opening secure checkout",APPROVED_FOR_PAYMENT:"Payment pending",CHECKOUT_OPEN:"Awaiting payment confirmation",PAID:"Payment confirmed",PAYMENT_FAILED:"Payment not completed",CANCELLED:"Order cancelled"});
+const orderStatusLabels=Object.freeze({AWAITING_STRIPE:"Payment pending",PROCESSING:"Order status processing",OPENING_CHECKOUT:"Opening secure checkout",APPROVED_FOR_PAYMENT:"Payment pending",CHECKOUT_OPEN:"Awaiting payment confirmation",PAID:"Payment confirmed",PAYMENT_FAILED:"Payment not completed",CHECKOUT_EXPIRED:"Checkout expired — payment not confirmed",CANCELLED:"Order cancelled"});
 function showOrders(data){
  const container=document.querySelector("[data-nx-account-orders]");if(!container)return;
  container.replaceChildren();
