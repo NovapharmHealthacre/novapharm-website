@@ -20,3 +20,8 @@
 .np-order-track-note h2{font-size:clamp(1.9rem,3.2vw,3.1rem)}
 .np-order-track-note a{color:#0066cc;font-weight:600;text-decoration:none;display:inline-block;margin:22px 25px 0 0}
 @media(max-width:620px){.np-order-track-wrap{width:calc(100% - 32px)}.np-order-track-panel{padding-block:55px}.np-order-track-controls{flex-direction:column}.np-order-track-note{padding:27px;margin-bottom:60px}}
+
+.np-order-track-next{border-inline-start:3px solid #9D1B32;padding:12px 16px;background:#F8F7F3;color:#0B0B0E!important;margin-block:12px}
+.np-order-track-next[hidden]{display:none}
+.np-order-track-help a{color:#9D1B32;text-decoration:underline;text-underline-offset:3px}
+.np-order-track-help a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
