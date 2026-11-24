@@ -74,3 +74,11 @@ test("customer entry exposes direct self-service without weakening role checks",
   for (const label of ["Track an order", "Find invoices", "Manage your account", "Get support"]) assert.ok(component.includes(label));
   assert.doesNotMatch(component, /customer-editorial-delivery-line|<span>DISPATCH<\/span>/);
 });
+
+test("all protected customer subpages expose the same primary task links without removing their full module menu", () => {
+  assert.match(dashboard, /const customerPrimaryNavigation = module\.area === "customer" \?/);
+  assert.match(dashboard, /module\.area === "customer" && !isEditorialCustomerDashboard \? <div className="customer-section-nav">\{customerPrimaryNavigation\}/);
+  assert.match(dashboard, /\{customerPrimaryNavigation\}/);
+  assert.match(dashboard, /navigation\.map\(\(entry\)/);
+  assert.match(dashboard, /aria-current=\{entry\.code === module\.code \? "page" : undefined\}/);
+});
