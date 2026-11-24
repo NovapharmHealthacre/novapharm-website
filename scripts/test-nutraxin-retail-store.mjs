@@ -187,3 +187,53 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.match(js,/Your Bag is saved and you may start a new checkout/);
  assert.match(js,/No successful payment has been recorded/);
 });
+
+
+test("all 19 Nutraxin details share the responsive typography, image, purchase and print layout contract",()=>{
+ const css=readFileSync("assets/css/nutraxin-merchant.css","utf8");
+ const checks=[
+   /Shared Nutraxin product-detail layout contract/,
+   /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/,
+   /grid-template-columns:\s*minmax\(0, 1\.3fr\) minmax\(270px, \.75fr\)/,
+   /\.npd-product-picture img\s*\{[^}]*object-fit:\s*contain/s,
+   /\.npd-composition dd\s*\{[^}]*white-space:\s*nowrap/s,
+   /@media\s*\(max-width:\s*1050px\)/,
+   /@media\s*\(max-width:\s*600px\)/,
+   /@media print\s*\{[\s\S]*?\.npd-product-hero-grid\s*\{[^}]*54mm minmax\(0, 1fr\)/,
+   /@media print\s*\{[\s\S]*?\.npd-composition > div\s*\{[^}]*42mm\s*!important/
+ ];
+ for(const rule of checks)assert.match(css,rule,"Nutraxin CSS lost a required layout contract");
+
+ assert.match(css,/NovaPharm Nutraxin Apple-inspired showcase v2/);
+ assert.match(css,/--nx-showcase-canvas:#FFFFFF/);
+ assert.match(css,/--nx-showcase-ink:#0B0B0E/);
+ assert.match(css,/--nx-showcase-accent:#9D1B32/);
+ assert.match(css,/@media print\s*\{[\s\S]*?white-space:normal !important;/);
+ assert.match(css,/@media screen and \(min-width:1121px\) \{[\s\S]*?NUT-UK-B12-SL60/,
+   "Long B12 title sizing must apply only to screen, never A4 print");
+ assert.equal(catalogue.products.length,19);
+ for(const product of catalogue.products){
+   const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
+   const classes=new Set([...html.matchAll(/class="([^"]+)"/g)]
+     .flatMap(match=>match[1].split(/\s+/)));
+   for(const requiredClass of [
+     "npd-product-hero-grid",
+     "npd-product-visual",
+     "npd-product-picture",
+     "npd-product-copy",
+     "npd-product-evidence",
+     "npd-composition"
+   ])assert.ok(classes.has(requiredClass),
+     product.slug+" missing CSS class "+requiredClass);
+   assert.ok(html.includes('data-page="product-portfolio/nutraxin"'),
+     product.slug+" missing governed product scope");
+   assert.match(html,/href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"/,
+     product.slug+" missing shared merchant stylesheet");
+   assert.match(html,/src="\/assets\/js\/nutraxin-retail-store\.js(?:\?[^"]*)?"/,
+     product.slug+" missing public retail module");
+   assert.equal((html.match(/<h1\b/g)||[]).length,1,product.slug+" title hierarchy");
+   assert.ok(html.includes('data-merchant-sku="'+product.sku+'"'),product.sku+" source price");
+   assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png(?:\\?[^"]*)?"'),
+     product.slug+" pack photograph");
+ }
+});
