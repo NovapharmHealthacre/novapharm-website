@@ -18,6 +18,7 @@
     CHECKOUT_OPEN:"Awaiting payment confirmation",
     PAID:"Payment confirmed",
     PAYMENT_FAILED:"Payment not completed",
+    CHECKOUT_EXPIRED:"Checkout expired — payment not confirmed",
     RECEIVED_AWAITING_CONFIRMATION:"Order request received, awaiting confirmation",
     AWAITING_CUSTOMER_ACCEPTANCE:"Awaiting your acceptance",
     ACCEPTED_AWAITING_PAYMENT:"Order accepted, awaiting payment",
