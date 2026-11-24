@@ -5,7 +5,7 @@ server policy and trusted Stripe/key adapters. This module never accepts an
 HTTP request or exposes gift codes. Live mode is intentionally prohibited
 until production approval and provider integration are verified.
 """
-import json
+import time
 import re
 from dataclasses import replace
 from gift_card_contract import reference
@@ -71,7 +71,7 @@ class PurchaseStore:
         return updated
 
 
-def open_checkout(store, purchase_id, subject, *, provider, policy):
+def open_checkout(store, purchase_id, subject, *, provider, policy, clock=time.time):
     """Provider must enforce Stripe idempotency; never regenerate an uncertain session."""
     row=store.read(purchase_id)
     if not row or row["subject"]!=S(subject):
@@ -88,8 +88,12 @@ def open_checkout(store, purchase_id, subject, *, provider, policy):
     # private adapter must never retry an uncertain request beyond Stripe's
     # idempotency retention window; it must instead reconcile manually.
     request_hash=S(fingerprint(params))
+    instant=int(clock())
     if row["status"]==S("CREATED"):
-        row=store.advance(row,"OPENING",checkoutHash=request_hash)
+        row=store.advance(row,"OPENING",checkoutHash=request_hash,openingAt=N(instant))
+    age=instant-int(row["openingAt"]["N"])
+    if age<0 or age>=23*3600:
+        raise ValueError("checkout requires manual reconciliation")
     if row["checkoutHash"]!=request_hash:
         raise ValueError("checkout parameters changed")
     session=provider.create_or_reconcile(params,idempotency_key="gift-checkout-"+purchase_id)
