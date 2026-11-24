@@ -512,6 +512,16 @@ jobs:
           NOVAPHARM_CONTACT_API_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           node scripts/activate-contact-intake.mjs
+          # Validate the actual composed artifact before upload, not only fixtures or source metadata.
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import { readFileSync } from "node:fs";
+            import { execFileSync } from "node:child_process";
+            import { verifyPublishedHtml } from "./scripts/verify-public-brand-source-live.mjs";
+            const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+            const html = readFileSync("_site/contact/index.html", "utf8");
+            assert.deepEqual(verifyPublishedHtml(html, "/contact/", sha), [], "Staged managed Contact colour, shared chrome or safety verification failed");
+          '
           grep -Fq 'data-live-b2b-enquiry-form' _site/contact/index.html
           grep -Fq 'data-live-contact-status' _site/contact/index.html
           grep -Fq 'name="privacyAcknowledgement"' _site/contact/index.html

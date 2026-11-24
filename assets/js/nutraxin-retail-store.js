@@ -70,6 +70,13 @@ export function comparisonProducts(skus, data) {
   return [...new Set(skus)].filter(sku => bySku.has(sku)).slice(0, 3).map(sku => bySku.get(sku));
 }
 
+export function bagDiscoveryProducts(bag, data) {
+  if (!catalogueIsSafe(data) || !Array.isArray(bag)) return [];
+  const selected = new Set(safeBasket(bag, data.products).map(line => line.sku));
+  return data.products.filter(p => !selected.has(p.sku) &&
+    merchantSaleReady(p, data) && publicPrice(p, data) !== null).slice(0, 3);
+}
+
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
@@ -249,7 +256,8 @@ function runStore(data) {
   const top = document.querySelector("main");
   if (!top) return;
   document.body.classList.add("nx-retail-store");
-  const nav = make("div", "nx-store-topbar");
+  const nav = make("nav", "nx-store-topbar");
+  nav.setAttribute("aria-label", "Nutraxin shopping navigation");
   nav.append(anchor("Explore Nutraxin", SHOP_URL));
   const bagNav = anchor("Bag", BAG_URL, "nx-store-bag-link");
   const tally = make("span", null, String(count(bag)));
@@ -258,11 +266,33 @@ function runStore(data) {
   nav.append(bagNav);
   nav.append(anchor("Account",ACCOUNT_URL,"nx-store-account-link"));
   top.insertAdjacentElement("beforebegin", nav);
+  for (const link of nav.querySelectorAll("a")) {
+    if (new URL(link.href).pathname.replace(/\/$/, "") === window.location.pathname.replace(/\/$/, "")) link.setAttribute("aria-current", "page");
+  }
 
   const path = window.location.pathname;
   if (path === BAG_URL || path === BAG_URL.slice(0, -1)) {
     const container = document.querySelector("[data-nx-public-bag]");
     if (container) {
+      const bagCount = make("p", "nx-bag-count");
+      bagCount.setAttribute("role", "status");
+      container.querySelector("h1").insertAdjacentElement("afterend", bagCount);
+      const discovery = make("section", "nx-bag-discover");
+      const discoveryHeading = make("h2", null, "Explore more from Nutraxin");
+      discoveryHeading.id = "nx-bag-discover-heading";
+      discovery.setAttribute("aria-labelledby", discoveryHeading.id);
+      const discoveryGrid = make("div", "nx-bag-discover-grid");
+      discovery.append(discoveryHeading, discoveryGrid);
+      container.querySelector(".nx-bag-grid").append(discovery);
+      const secure = make("div", "nx-bag-secure");
+      secure.append(make("strong", null, "Secure payment"), make("p", null, "Payment is handled by Stripe. Available payment methods are shown during secure checkout."), anchor("Delivery, returns and refunds", "/legal/returns/", "nx-shop-link"));
+      const summary = container.querySelector(".nx-bag-summary");
+      summary.id = "nx-bag-summary";
+      summary.tabIndex = -1;
+      summary.append(secure);
+      const review = anchor("View order summary", "#nx-bag-summary", "nx-bag-summary-jump nx-shop-link");
+      review.addEventListener("click", () => summary.focus({preventScroll:true}));
+      bagCount.insertAdjacentElement("afterend", review);
       let promoSupported = false;
       let promoQuote = null;
       let restoredAttemptBlocked = false;
@@ -368,6 +398,9 @@ function runStore(data) {
         const checkout = container.querySelector("[data-nx-checkout]");
         const explanation = container.querySelector("[data-nx-checkout-note]");
         const locked = checkoutInFlight || checkoutUncertain || !!awaitingOrder;
+        const focused = document.activeElement?.dataset?.nxBagFocus;
+        const nextCount = count(bag) + (count(bag) === 1 ? " item" : " items");
+        if (bagCount.textContent !== nextCount) bagCount.textContent = nextCount;
         list.replaceChildren();
         if (!bag.length && !confirmedOrder && !awaitingOrder) {
           const empty = make("div", "nx-bag-empty");
@@ -389,7 +422,10 @@ function runStore(data) {
           const name = make("h2", null, p.name);
           const pack = make("p", "nx-bag-pack", p.pack);
           const price = make("p", "nx-bag-price", productPriceLabel(p, data));
-          const label = make("label", null, "Quantity");
+          const actions = make("div", "nx-bag-actions");
+          const label = make("div", "nx-bag-quantity");
+          label.setAttribute("role", "group");
+          label.setAttribute("aria-label", "Quantity for " + p.name);
           const quantityInput = make("input");
           quantityInput.type = "number";
           quantityInput.min = "1";
@@ -399,8 +435,9 @@ function runStore(data) {
           quantityInput.value = String(line.quantity);
           quantityInput.disabled = locked;
           quantityInput.setAttribute("aria-label", "Quantity for " + p.name);
-          quantityInput.addEventListener("change", () => {
-            const quantity = Number(quantityInput.value);
+          quantityInput.dataset.nxBagFocus = p.sku + ":quantity";
+          const setQuantity = (quantity) => {
+            if (locked) return;
             if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_PER_SKU) {
               quantityInput.value = String(line.quantity);
               return;
@@ -408,19 +445,64 @@ function runStore(data) {
             if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity } : v);
             saveBag(bag); updateNav(); render();
-          });
-          label.append(quantityInput);
+          };
+          quantityInput.addEventListener("change", () => setQuantity(Number(quantityInput.value)));
+          const step = (delta, text, verb) => {
+            const button = make("button", null, text);
+            button.type = "button";
+            button.setAttribute("aria-label", verb + " quantity for " + p.name);
+            button.dataset.nxBagFocus = p.sku + ":" + verb;
+            button.disabled = locked || (delta < 0 ? line.quantity <= 1 : line.quantity >= MAX_PER_SKU);
+            button.addEventListener("click", () => setQuantity(line.quantity + delta));
+            return button;
+          };
+          label.append(step(-1, "−", "Decrease"), quantityInput, step(1, "+", "Increase"));
           const remove = make("button", "nx-bag-remove", "Remove");
           remove.type = "button";
           remove.disabled = locked;
+          remove.dataset.nxBagFocus = p.sku + ":remove";
+          remove.setAttribute("aria-label", "Remove " + p.name);
           remove.addEventListener("click", () => {
+            if (locked) return;
             if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.filter((v) => v.sku !== p.sku);
             saveBag(bag); updateNav(); render();
           });
-          details.append(name, pack, price, label, remove);
+          const unit = publicPrice(p, data);
+          const lineTotal = make("p", "nx-bag-line-total", unit === null ? "Pending" : formatGBP(unit * line.quantity));
+          actions.append(label, lineTotal, remove);
+          details.append(name, pack, price, actions);
           item.append(image, details);
           list.append(item);
+        }
+        // Catalogue browse shelf, not personalised supplement advice.
+        const suggestions = locked || confirmedOrder ? [] : bagDiscoveryProducts(bag, data);
+        discovery.hidden = suggestions.length === 0;
+        discoveryGrid.replaceChildren();
+        for (const p of suggestions) {
+          const card = make("article", "nx-bag-discover-card");
+          const image = make("img");
+          image.src = p.image; image.alt = p.name + " pack"; image.loading = "lazy"; image.width = 120; image.height = 120;
+          const title = make("h3", null, p.name);
+          const add = make("button", "nx-store-add", "Add to Bag");
+          add.type = "button";
+          add.dataset.nxBagFocus = p.sku + ":discover";
+          add.setAttribute("aria-label", "Add " + p.name + " to Bag");
+          add.addEventListener("click", () => {
+            if (locked || confirmedOrder) return;
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
+            put(p.sku, 1);
+            render();
+          });
+          card.append(image, title, make("p", null, p.pack), make("p", null, productPriceLabel(p, data)), add);
+          discoveryGrid.append(card);
+        }
+        if (focused) {
+          const targets = Array.from(container.querySelectorAll("[data-nx-bag-focus]"));
+          const exact = targets.find(el => el.dataset.nxBagFocus === focused && !el.disabled);
+          const sameProduct = targets.find(el => el.dataset.nxBagFocus === focused.split(":")[0] + ":quantity" && !el.disabled);
+          const fallback = targets.find(el => !el.disabled);
+          (exact || sameProduct || fallback || container.querySelector(".nx-shop-link"))?.focus();
         }
         const subtotalMinor = basketSubtotal(bag, data);
         const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight && !promoPending && !restoredAttemptBlocked);

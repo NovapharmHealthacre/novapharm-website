@@ -235,7 +235,7 @@ test("Nutraxin support email and delivery-returns policy are linked from each of
 test("Nutraxin Bag exposes return rights and support before payment", () => {
   for (const path of ["products/nutraxin/bag/index.html", "scripts/apply-corporate-product-discipline.mjs"]) {
     const content = read(path);
-    assert(content.includes('href="/legal/returns/"'), "Return policy not linked in " + path);
+    assert(content.includes('<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand'), "Preserve the reviewed direct checkout policy link (#1172) in " + path);
     assert(content.includes("support@novapharmhealthcare.com"), "Support contact missing in " + path);
     assert(content.includes('data-nx-consumer-terms'), "Bag terms checkbox missing in " + path);
   }

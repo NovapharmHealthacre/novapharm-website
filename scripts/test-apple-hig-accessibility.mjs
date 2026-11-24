@@ -174,3 +174,8 @@ assert.match(composed, /src="\/assets\/js\/rtl-localization\.js(?:\?[^"]*)?"/);
 assert.ok(composed.includes("form-action 'none'"));
 assert.ok(composed.includes('src="/assets/js/contact-production.js"'));
 assert.throws(() => composeManagedContactChrome(managed, staged.replace('class="site-header npd-header"', 'class="missing"')));
+
+assert.match(composed, /<meta name="theme-color" content="#FFFFFF">/);
+assert.match(composed, /--contact-primary-white:#FFFFFF/);
+assert.doesNotMatch(composed.match(/<style>[\s\S]*?<\/style>/)[0], /#FBFAEF|rgba\(251,250,239/);
+assert.equal(composed.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/)[0], managed.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/)[0]);

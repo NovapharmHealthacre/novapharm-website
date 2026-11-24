@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { bagDiscoveryProducts, comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -98,7 +98,13 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
- assert.match(html,/href="\/legal\/terms\/#nutraxin-consumer-sales"/);
+ assert.match(html,/data-nx-consumer-terms[^>]*><span>I accept the <a href="\/legal\/returns\/">Nutraxin delivery, returns and refunds policy<\/a>/);
+ const returns=readFileSync("legal/returns/index.html","utf8");
+ assert.match(returns,/14 days after receiving your goods/);
+ assert.match(returns,/a further 14 days after informing us/);
+ assert.match(returns,/refund within 14 days/);
+ assert.match(returns,/Nothing here excludes or reduces mandatory consumer rights/);
+ assert.match(returns,/href="\/legal\/terms\/"/);
  const legal=readFileSync("legal/terms/index.html","utf8");
  assert.match(legal,/id="nutraxin-consumer-sales"/);
  assert.match(legal,/14 days of receiving goods/);
@@ -275,6 +281,31 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
    assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png(?:\\?[^"]*)?"'),
      product.slug+" pack photograph");
  }
+});
+
+test("Bag discovery excludes existing selections and unavailable products, without tracking",()=>{
+ const first=catalogue.products[0];
+ const bag=[{sku:first.sku,quantity:2}];
+ const suggestions=bagDiscoveryProducts(bag,catalogue);
+ assert.equal(suggestions.length,3);
+ assert.ok(suggestions.every(p=>p.sku!==first.sku && p.available_to_sell && p.ordering_enabled));
+ const disabled={...catalogue,products:catalogue.products.map(p=>({...p,available_to_sell:false}))};
+ assert.deepEqual(bagDiscoveryProducts(bag,disabled),[]);
+ assert.deepEqual(bagDiscoveryProducts(bag,{...catalogue,checkout_enabled:false}),[]);
+ assert.deepEqual(bagDiscoveryProducts(catalogue.products.map(p=>({sku:p.sku,quantity:1})),catalogue),[]);
+ assert.deepEqual(bagDiscoveryProducts(bag,null),[]);
+});
+test("retail navigation shares a single aligned accessible target contract",()=>{
+ const css=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(css,/\.nx-retail-store \.nx-store-topbar\{[^}]*align-items:center/);
+ assert.match(css,/\.nx-retail-store \.nx-store-topbar>a\{[^}]*align-items:center[^}]*min-height:44px/);
+ assert.match(css,/body\.nx-retail-store\{background:#FFFFFF\}/);
+ assert.ok(js.includes('nav.setAttribute("aria-label", "Nutraxin shopping navigation")'));
+ assert.ok(js.includes('link.setAttribute("aria-current", "page")'));
+ assert.ok(js.includes('button.disabled = locked ||'));
+ assert.ok(js.includes('const suggestions = locked || confirmedOrder ? [] : bagDiscoveryProducts(bag, data)'));
+ assert.ok(js.includes('if (locked) return;'));
 });
 
 test("gift card preview matches approved denomination list and cannot collect payment", async()=>{
