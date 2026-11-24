@@ -123,6 +123,27 @@ function renderSection(section) {
   }
   table.append(body);
   tableRegion.append(table);
+  if (section.searchable === true && section.rows?.length) {
+    const filter = element("label", "enterprise-action-form");
+    const input = element("input");
+    input.type = "search";
+    input.autocomplete = "off";
+    input.placeholder = "Name, email, company or account";
+    const count = element("p", "", `${section.rows.length} customer records`);
+    count.setAttribute("role", "status");
+    filter.append(element("span", "", "Search customer directory"), input);
+    const records = [...body.rows];
+    input.addEventListener("input", () => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const record of records) {
+        record.hidden = !record.textContent.toLowerCase().includes(query);
+        if (!record.hidden) visible += 1;
+      }
+      count.textContent = `${visible} of ${records.length} customer records`;
+    });
+    wrapper.append(filter, count);
+  }
   wrapper.append(tableRegion);
   return wrapper;
 }
