@@ -63,6 +63,13 @@ export function merchantSaleReady(product, data) {
     product?.available_to_sell === true;
 }
 
+// Comparison is a transient, explicitly selected shortlist, not medical advice.
+export function comparisonProducts(skus, data) {
+  if (!catalogueIsSafe(data) || !Array.isArray(skus)) return [];
+  const bySku = new Map(data.products.map(p => [p.sku, p]));
+  return [...new Set(skus)].filter(sku => bySku.has(sku)).slice(0, 3).map(sku => bySku.get(sku));
+}
+
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
@@ -373,6 +380,46 @@ function runStore(data) {
       })();
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
+    const selected = new Set();
+    const compareButtons = new Map();
+    const comparison = make("section", "nx-compare");
+    comparison.setAttribute("aria-labelledby", "nx-compare-title");
+    const heading = make("h2", null, "Compare your favourites.");
+    heading.id = "nx-compare-title";
+    const intro = make("p", null, "Select up to three products. Compare pack sizes, published prices and product ranges, then view the full product information. This is not advice on suitability or treatment.");
+    const announcement = make("p", "nx-compare-status", "No products selected.");
+    announcement.setAttribute("role", "status");
+    const clear = make("button", "nx-compare-control", "Clear comparison");
+    clear.type = "button";
+    const results = make("div", "nx-compare-results");
+    const renderComparison = () => {
+      const products = comparisonProducts([...selected], data);
+      announcement.textContent = products.length + " of 3 products selected.";
+      clear.disabled = products.length === 0;
+      results.replaceChildren();
+      for (const [sku, button] of compareButtons) {
+        const chosen = selected.has(sku);
+        button.setAttribute("aria-pressed", String(chosen));
+        button.disabled = !chosen && products.length >= 3;
+      }
+      if (!products.length) return;
+      const grid = make("div", "nx-compare-grid");
+      for (const p of products) {
+        const item = make("article", "nx-compare-card");
+        item.append(make("h3", null, p.name));
+        const details = make("dl");
+        for (const [label, value] of [["Range", p.range || "Not recorded"], ["Pack", p.pack], ["Published price", productPriceLabel(p, data)]]) {
+          details.append(make("dt", null, label), make("dd", null, value));
+        }
+        item.append(details, anchor("View product details", productUrl(p), "nx-compare-link"));
+        grid.append(item);
+      }
+      results.append(grid);
+    };
+    clear.onclick = () => { selected.clear(); renderComparison(); heading.setAttribute("tabindex", "-1"); heading.focus(); };
+    comparison.append(heading, intro, announcement, clear, results);
+    const range = document.querySelector("#nx-range-overview");
+    if (range) range.insertAdjacentElement("beforebegin", comparison);
     for (const shell of document.querySelectorAll(".nx-product-card-shell")) {
       const link = shell.querySelector("[data-nx-product-slug]");
       const p = slugMap.get(link?.dataset.nxProductSlug);
@@ -392,6 +439,15 @@ function runStore(data) {
       buy.addEventListener("click", () => { put(p.sku, 1); window.location.assign(BAG_URL); });
       footer.append(priceWrap, add, buy);
       shell.append(footer);
+      if (range) {
+        const compare = make("button", "nx-compare-control", "Compare");
+        compare.type = "button";
+        compare.setAttribute("aria-label", "Compare " + p.name + ", " + p.pack);
+        compare.setAttribute("aria-pressed", "false");
+        compare.onclick = () => { if (selected.has(p.sku)) selected.delete(p.sku); else if (selected.size < 3) selected.add(p.sku); renderComparison(); };
+        compareButtons.set(p.sku, compare);
+        shell.append(compare, anchor("View comparison", "#nx-compare-title", "nx-compare-link"));
+      }
     }
   } else {
     const slug = path.split("/").filter(Boolean)[2] || "";
