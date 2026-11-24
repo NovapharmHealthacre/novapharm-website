@@ -94,16 +94,17 @@ async function accountRequest(config,route,accessToken){
  if(!r.ok)throw new Error("Account information is temporarily unavailable.");
  return r.json();
 }
+const orderStatusLabels=Object.freeze({AWAITING_STRIPE:"Payment pending",PROCESSING:"Order status processing",OPENING_CHECKOUT:"Opening secure checkout",APPROVED_FOR_PAYMENT:"Payment pending",CHECKOUT_OPEN:"Awaiting payment confirmation",PAID:"Payment confirmed",PAYMENT_FAILED:"Payment not completed",CANCELLED:"Order cancelled"});
 function showOrders(data){
  const container=document.querySelector("[data-nx-account-orders]");if(!container)return;
  container.replaceChildren();
  if(!Array.isArray(data?.orders)){container.textContent="Order history is not available.";return}
- if(!data.orders.length){container.textContent="No account-linked orders yet. Orders placed while signed in will appear here after verification.";return}
+ if(!data.orders.length){container.textContent="No account-linked orders yet. If you purchased as a guest, use the order status page with your confirmation reference.";return}
  for(const o of data.orders){
   if(typeof o.orderId!=="string" || !/^NUT-[0-9a-f-]{36}$/.test(o.orderId) || typeof o.status!=="string")continue;
   const item=document.createElement("li");item.className="nx-account-order";
   const name=document.createElement("strong");name.textContent="Order "+o.orderId;
-  const state=document.createElement("span");state.textContent=o.status;
+  const state=document.createElement("span");state.textContent=Object.hasOwn(orderStatusLabels,o.status)?orderStatusLabels[o.status]:"Status unavailable — check again or contact support.";
   item.append(name,state);container.append(item);
  }
 }
