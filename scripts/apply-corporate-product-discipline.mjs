@@ -477,6 +477,34 @@ function nutraxinBagMain() {
   </main>`;
 }
 
+function nutraxinGiftCardMain() {
+  return `<main id="main" class="npd-main nx-shop-bag nx-gift-page" data-nx-gift-preview>
+    <p class="nx-shop-eyebrow">NUTRAXIN / GIFT CARDS</p>
+    <h1>Give the gift of choice.</h1>
+    <p class="nx-shop-intro">Explore the planned NovaPharm digital gift card. Online purchasing is not available yet.</p>
+    <div class="nx-bag-grid nx-gift-grid">
+      <section class="nx-gift-visual" aria-label="Digital gift card preview">
+        <div class="nx-gift-card-art"><picture><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258"></picture><span>Digital gift card</span><strong data-nx-gift-value>£50</strong></div>
+        <p>Design preview. No redeemable code or balance has been issued.</p>
+      </section>
+      <section class="nx-bag-summary nx-gift-summary" aria-labelledby="nx-gift-title">
+        <h2 id="nx-gift-title">Choose an amount.</h2>
+        <fieldset class="nx-gift-options"><legend>Gift card value</legend>
+          <label><input type="radio" name="nx-gift-amount" value="1000">£10</label>
+          <label><input type="radio" name="nx-gift-amount" value="2500">£25</label>
+          <label><input type="radio" name="nx-gift-amount" value="5000" checked>£50</label>
+          <label><input type="radio" name="nx-gift-amount" value="10000">£100</label>
+          <label><input type="radio" name="nx-gift-amount" value="25000">£250</label>
+        </fieldset>
+        <dl><div class="nx-bag-total"><dt>Gift card value</dt><dd data-nx-gift-total>£50.00</dd></div></dl>
+        <p class="nx-store-note" role="status">Gift card purchases and redemption are not available at this time. No payment or personal details are collected on this page.</p>
+        <button type="button" class="nx-store-bag-button" disabled>Purchasing unavailable</button>
+        <p class="nx-store-note"><a href="/products/nutraxin/">Explore Nutraxin products</a> or <a href="mailto:support@novapharmhealthcare.com">contact our team</a>.</p>
+      </section>
+    </div>
+  </main>`;
+}
+
 function nutraxinOrderRequestMain() {
   const lines = products.map((product) => `<div class="nx-order-line" data-nutraxin-line="${esc(product.sku)}"><label for="nx-qty-${esc(product.sku)}"><span class="nx-order-name">${esc(product.name)}</span><span class="nx-order-pack">${esc(product.packSize)}</span></label><input id="nx-qty-${esc(product.sku)}" type="number" min="0" max="10000" step="1" value="0" inputmode="numeric" aria-label="Requested units: ${esc(product.name)}"></div>`).join("");
   return `<main id="main" class="npd-main nx-order">${localNavigation("products", "/products/nutraxin/order-request/")}<section class="nx-order-wrap"><p class="nx-order-eyebrow">NUTRAXIN / QUALIFIED BUSINESS ACCOUNTS</p><h1>Prepare your order request.</h1><p class="nx-order-lead">Select the Nutraxin products and quantities you would like NovaPharm to quote.</p><p class="nx-order-disclosure">This is a non-binding request for a quotation, not a purchase or accepted order. Product availability, customer qualification, compliance, prices, delivery and any applicable VAT must be confirmed by NovaPharm before an order can be accepted. No payment is requested.</p><form data-nutraxin-order-request><div class="nx-order-tablehead"><span>Product reference</span><span>Units requested</span></div>${lines}<p class="nx-order-fineprint">Continue to the secure business enquiry form to provide your company details and submit this request. No financial information is collected here.</p><div class="nx-order-actions"><button type="submit" class="nx-order-submit">Continue to business enquiry</button><a class="nx-order-back" href="/products/nutraxin/">Return to collection</a></div><p class="nx-order-feedback" role="status" aria-live="polite" data-nutraxin-order-feedback>Select a product and enter a quantity to prepare your enquiry.</p><noscript><p>To request a quotation without JavaScript, <a href="/contact/?enquiry=Pharmacy%20or%20wholesaler%20account">contact our business team</a> with the requested products and quantities.</p></noscript></form></section></main>`;
@@ -720,6 +748,11 @@ materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutra
   title: "Your Bag | Nutraxin | NovaPharm Healthcare",
   description: "Review your Nutraxin Bag, quantities, VAT and delivery information before choosing the next checkout step.",
   robots: "noindex, follow"
+}, nutraxinTemplate);
+materialize("products/nutraxin/gift-cards/index.html", "/products/nutraxin/gift-cards/", nutraxinGiftCardMain(), {
+  title: "Digital Gift Cards | NovaPharm Healthcare",
+  description: "Preview the planned NovaPharm digital gift card. Purchasing and redemption are not available yet.",
+  robots: "noindex, nofollow"
 }, nutraxinTemplate);
 materialize("products/nutraxin/order-request/index.html", "/products/nutraxin/order-request/", nutraxinOrderRequestMain(), {
   title: "Nutraxin Business Order Request | NovaPharm Healthcare",
