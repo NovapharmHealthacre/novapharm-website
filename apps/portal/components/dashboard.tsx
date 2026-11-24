@@ -10,7 +10,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { AccountAccessHelp } from "./account-access-help";
-import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { CustomerCommerceWorkspace, CustomerRelatedTasks } from "./customer-commerce-workspace";
 import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
@@ -361,6 +361,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
         {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
+        {module.area === "customer" && !isEditorialCustomerDashboard ? <CustomerRelatedTasks moduleCode={module.code} /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
