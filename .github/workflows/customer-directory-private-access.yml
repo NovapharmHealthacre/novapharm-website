@@ -1,0 +1,27 @@
+name: Customer directory private access acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/customer-admin-directory-*.py'
+      - 'infra/aws/intelligence-founder-session-api.py'
+      - 'scripts/test_customer_admin_directory_*.py'
+      - '.github/workflows/customer-directory-private-access.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/aws/customer-admin-directory-*.py'
+      - 'infra/aws/intelligence-founder-session-api.py'
+      - 'scripts/test_customer_admin_directory_*.py'
+      - '.github/workflows/customer-directory-private-access.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - run: python3 -m unittest discover -s scripts -p 'test_customer_admin_directory_*.py' -v
