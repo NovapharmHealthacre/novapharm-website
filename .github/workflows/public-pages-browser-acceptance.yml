@@ -125,6 +125,11 @@ jobs:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
           PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
         run: node scripts/test-public-sitemap-geometry.mjs
+      - name: Verify all 19 Nutraxin detail pages on Chromium and WebKit (desktop, tablet, mobile, print)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-nutraxin-product-layout-browser.mjs
       - name: Verify unboxed footer language picker on Chromium and WebKit at 320px, 390px and desktop
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
