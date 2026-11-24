@@ -228,6 +228,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
     net = 0
     gross = 0
     original_gross = 0
+    eligible_original_gross = 0
     for line in lines:
         if not isinstance(line, dict):
             return error(400, "invalid_order_line")
@@ -242,8 +243,10 @@ def direct_checkout(event, customer_subject=None, preview=False):
             return error(503, "invalid_seller_price")
         # Consumer catalogue, portal and Stripe all charge exactly the same
         # published unit price, including VAT rounded per unit.
-        original_gross += (unit + (unit * 20 + 50) // 100) * quantity
+        line_original_gross = (unit + (unit * 20 + 50) // 100) * quantity
+        original_gross += line_original_gross
         if promotion and sku in promotion["floors"]:
+            eligible_original_gross += line_original_gross
             discounted = unit - (unit * promotion["bps"]) // 10000
             # Reject the campaign rather than quietly exceeding its margin floor.
             if discounted < promotion["floors"][sku]:
@@ -257,7 +260,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         ordered.append({"sku": sku, "quantity": quantity,
                         "name": PRODUCTS[sku][0] + " (UK VAT included)",
                         "grossMinor": unit_gross * quantity})
-    if promotion and (original_gross < promotion["minimum"] or original_gross <= gross):
+    if promotion and (eligible_original_gross < promotion["minimum"] or original_gross <= gross):
         return error(422, "promo_code_not_applicable")
     tax = gross - net
     if tax < 0 or gross != net + tax:
