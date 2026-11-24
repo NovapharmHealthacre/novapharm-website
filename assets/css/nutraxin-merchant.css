@@ -912,7 +912,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
 
 /* Keep long technical names intact: scale the B12 hero before splitting a word.
    This applies only to desktop, leaving the existing tablet/mobile and A4 layout unchanged. */
-@media (min-width:1121px) {
+@media screen and (min-width:1121px) {
   body[data-page="product-portfolio/nutraxin"] .npd-product-detail:has([data-merchant-sku="NUT-UK-B12-SL60"]) .npd-product-copy h1 {
     font-size:clamp(2.45rem,3.75vw,3.9rem);
     letter-spacing:-.045em;
