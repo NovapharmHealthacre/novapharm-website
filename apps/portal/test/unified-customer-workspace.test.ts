@@ -63,3 +63,14 @@ test("Apple-inspired customer overview retains governed navigation and real prod
   }
   assert.doesNotMatch(component, /<iframe|data:image\/svg|https?:\/\//);
 });
+
+
+test("customer entry exposes direct self-service without weakening role checks", () => {
+  assert.match(login, /aria-label="Customer account options"/);
+  for (const link of ["/account-application/", "/products/track/", "/products/nutraxin/account/", "/products/nutraxin/bag/", "mailto:support@novapharmhealthcare.com"]) assert.ok(login.includes(link));
+  assert.match(login, /accessType === "customer" \? <nav className="customer-login-services"/);
+  assert.match(login, /result\.accessType !== accessType/);
+  assert.match(component, /aria-label="Common customer tasks"/);
+  for (const label of ["Track an order", "Find invoices", "Manage your account", "Get support"]) assert.ok(component.includes(label));
+  assert.doesNotMatch(component, /customer-editorial-delivery-line|<span>DISPATCH<\/span>/);
+});
