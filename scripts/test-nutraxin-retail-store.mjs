@@ -98,7 +98,13 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
- assert.match(html,/href="\/legal\/terms\/#nutraxin-consumer-sales"/);
+ assert.match(html,/data-nx-consumer-terms[^>]*><span>I accept the <a href="\/legal\/returns\/">Nutraxin delivery, returns and refunds policy<\/a>/);
+ const returns=readFileSync("legal/returns/index.html","utf8");
+ assert.match(returns,/14 days after receiving your goods/);
+ assert.match(returns,/a further 14 days after informing us/);
+ assert.match(returns,/refund within 14 days/);
+ assert.match(returns,/Nothing here excludes or reduces mandatory consumer rights/);
+ assert.match(returns,/href="\/legal\/terms\/"/);
  const legal=readFileSync("legal/terms/index.html","utf8");
  assert.match(legal,/id="nutraxin-consumer-sales"/);
  assert.match(legal,/14 days of receiving goods/);

@@ -23,7 +23,7 @@ test("diverged history, missing deployment and unknown comparisons fail closed",
 
 
 test("unrelated legacy branch is accepted only with exact independent migration proof", () => {
-  const legacy = "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e";
+  const legacy = "827fdf67341fe2f289e6d1a7810f847521b05dac";
   const proposal = { publishedSha: legacy, candidateSha: b, mainSha: c,
     publishedToCandidate: "unrelated", candidateToMain: "ahead" };
   assert.equal(canShip({ ...proposal, legacyBridgeVerified: true }), true);
@@ -31,6 +31,7 @@ test("unrelated legacy branch is accepted only with exact independent migration 
     { legacyBridgeVerified: false },
     { legacyBridgeVerified: "true" },
     { publishedSha: a, legacyBridgeVerified: true },
+    { publishedSha: "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e", legacyBridgeVerified: true },
     { candidateToMain: "behind", legacyBridgeVerified: true },
     { candidateToMain: "diverged", legacyBridgeVerified: true },
     { candidateToMain: undefined, legacyBridgeVerified: true },
