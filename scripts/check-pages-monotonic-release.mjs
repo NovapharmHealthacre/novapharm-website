@@ -10,8 +10,11 @@ import { fileURLToPath } from "node:url";
 const SHA = /^[a-f0-9]{40}$/;
 const REPO = /^[\w.-]+\/[\w.-]+$/;
 const COMPARE_OK = new Set(["identical", "ahead"]);
-// One-time migration from the last reviewed legacy gh-pages publication.
-export const REVIEWED_LEGACY_PAGES_SHA = "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e";
+// One-time migration from the exact reviewed legacy publication, including
+// the two reviewed Nutraxin customer-support releases (#1171 and #1172).
+// Do not inherit this exception for any future gh-pages commit.
+const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e";
+export const REVIEWED_LEGACY_PAGES_SHA = "827fdf67341fe2f289e6d1a7810f847521b05dac";
 export const BRAND_ONLY_AUTHORIZATION_ANCHOR = "26432d4ac2c53a8a39b6701fa77bccda487737ed";
 
 export function canShip({publishedSha, candidateSha, mainSha, publishedToCandidate, candidateToMain, legacyBridgeVerified = false}) {
@@ -49,6 +52,18 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   // A later or rewritten Pages branch must never inherit this exception.
   const legacyHead = github("repos/" + repo + "/git/ref/heads/gh-pages")?.object?.sha;
   if (legacyHead !== REVIEWED_LEGACY_PAGES_SHA) return false;
+
+  // Require forward ancestry from the previous reviewed legacy release.
+  const legacyLineage = github("repos/" + repo + "/compare/" +
+    PREVIOUS_REVIEWED_LEGACY_PAGES_SHA + "..." + publishedSha)?.status;
+  if (legacyLineage !== "ahead") return false;
+
+  // The latest legacy release fixed the direct checkout policy link (#1172).
+  // Do not migrate an artifact built from a source which would undo that fix.
+  const bag = readFileSync(resolve("products/nutraxin/bag/index.html"), "utf8");
+  const bagGenerator = readFileSync(resolve("scripts/apply-corporate-product-discipline.mjs"), "utf8");
+  const reviewedPolicyLink = '<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand';
+  if (![bag, bagGenerator].every(source => source.includes(reviewedPolicyLink))) return false;
 
   // The source must be the reviewed owner-scoped approval or its descendant.
   const approvalLineage = github("repos/" + repo + "/compare/" +
