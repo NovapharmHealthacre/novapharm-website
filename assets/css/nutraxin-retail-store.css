@@ -84,3 +84,14 @@
 .nx-compare-link{text-decoration:underline;text-underline-offset:3px}
 .nx-compare-control:focus-visible,.nx-compare-link:focus-visible,#nx-compare-title:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
 .nx-product-card-shell>.nx-compare-control,.nx-product-card-shell>.nx-compare-link{margin:4px 12px 8px}
+
+/* Retail promotion disclosure follows the approved neutral palette. */
+.nx-bag-promotion{border-block-end:1px solid #DEDCD5;margin-block:16px;padding-block:12px;color:#0B0B0E}
+.nx-bag-promotion summary{cursor:pointer;font-weight:600;min-height:44px;display:list-item;padding-block:8px;box-sizing:border-box}
+.nx-bag-promotion[hidden],.nx-bag-summary dl div[hidden]{display:none!important}
+.nx-bag-promotion>div{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.nx-bag-promotion label{display:grid;gap:6px;flex:1 1 160px;font-size:14px;min-width:0}
+.nx-bag-promotion input{box-sizing:border-box;min-width:0;width:100%;min-height:44px;border:1px solid #DEDCD5;border-radius:8px;background:#FFFFFF;color:#0B0B0E;padding:10px 12px;font:inherit}
+.nx-bag-promotion input:focus-visible,.nx-bag-promotion summary:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.nx-bag-promotion .nx-store-note{margin:8px 0 0;overflow-wrap:anywhere}
+.nx-bag-promotion .nx-store-note:empty{display:none}
