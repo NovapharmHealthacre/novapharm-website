@@ -67,8 +67,12 @@ async function audit() {
                 }
               }
             }
+            const insightsCurrent = currentCorporateNavigationAriaValue(route, "/news-insights/");
             const expectedActiveNavigation = navigation.find(([, href]) =>
-              isCurrentCorporateNavigation(route, href))?.[1] ?? null;
+              href !== "/news-insights/" && isCurrentCorporateNavigation(route, href))?.[1] ?? null;
+            if (insightsCurrent) {
+              await page.locator(`.site-footer a[href="/news-insights/"][aria-current="${insightsCurrent}"]`).waitFor({state:"attached",timeout:10000});
+            }
             // Wait for hydrated Next.js navigation semantics before reading the
             // rendered client components; never infer state from source alone.
             const expectedAriaState = expectedActiveNavigation
@@ -96,6 +100,7 @@ async function audit() {
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
                 currentNavigation: {
+                  insightsFooter: [...document.querySelectorAll('.site-footer a[href="/news-insights/"][aria-current]')].map(link => link.getAttribute("aria-current")),
                   desktop: [...document.querySelectorAll('.desktop-nav a[aria-current]')]
                     .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") })),
                   mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current]')]
@@ -156,6 +161,9 @@ async function audit() {
             const expectedCurrent = expectedActiveNavigation && expectedAriaState
               ? [{ href: expectedActiveNavigation, state: expectedAriaState }]
               : [];
+            if (JSON.stringify(data.currentNavigation.insightsFooter) !== JSON.stringify(insightsCurrent ? [insightsCurrent] : [])) {
+              faults.push("Insights footer current-location state is incorrect");
+            }
             if (JSON.stringify(data.currentNavigation.desktop) !== JSON.stringify(expectedCurrent) ||
                 JSON.stringify(data.currentNavigation.mobile) !== JSON.stringify(expectedCurrent)) {
               faults.push(`Current navigation accessibility state does not match ${expectedActiveNavigation ?? "no active section"}: ${JSON.stringify(data.currentNavigation)}`);
@@ -182,7 +190,7 @@ async function audit() {
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
             if(route==="/"&&vp.width>=1440){
               const nav=data.homeNavLabel;
-              if(!nav||nav.text!=="NovaPharm Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
+              if(!nav||nav.text!=="Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
                 faults.push(`Homepage Intelligence must use real, contrasting link text: ${JSON.stringify(nav)}`);
               if(nav&&!nav.portalVisible)
                 faults.push(`Homepage Secure Portal link must remain visible: ${JSON.stringify(nav)}`);

@@ -68,7 +68,7 @@ export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigati
             rel={isPortal ? "nofollow" : undefined}
             aria-current={!isPortal ? currentCorporateNavigationAriaValue(pathname, href) : undefined}
             onClick={close}
-          >{interfaceLabel(locale, label)}</a>;
+          >{label === "NovaPharm Intelligence" && locale === "en-GB" ? "Intelligence" : interfaceLabel(locale, label)}</a>;
         })}
       </nav>
     </details>

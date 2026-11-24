@@ -193,10 +193,10 @@ assert.ok(contactCss.includes("border: 1px solid var(--np-contact-control-line)"
 assert.ok(read("assets/css/novapharm.bundle.css").includes("/* Source: contact-premium.css */\n" + contactCss.trim()),
   "Public CSS bundle must include the complete updated Contact stylesheet");
 
-// Pure White and Royal Porcelain are the visible Contact hero, footer and form surfaces.
+// Contact hero and form retain the approved neutral roles; chrome comes from the shared design.
 assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FFFFFF/);
-assert.match(contactCss, /\.np-contact-reference-footer\s*\{[^}]*background:\s*#F8F7F3/);
-assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\s*14px/);
+assert.doesNotMatch(contactCss, /body:has\(\.np-contact-reference\) \.site-(?:header|footer)/, "Contact cannot hide or restyle the shared chrome");
+assert.match(read("assets/css/apple-web-navigation.css"), /\.npd-footer\.site-footer/);
 
 // The separate dark Founder web estate uses Sovereign Black as its browser
 // chrome while retaining intentional dark editorial surfaces and inverse text.
