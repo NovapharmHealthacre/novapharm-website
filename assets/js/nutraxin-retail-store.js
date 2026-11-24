@@ -654,10 +654,37 @@ function runStore(data) {
   updateNav();
 }
 
+export const GIFT_DENOMINATIONS = Object.freeze([1000,2500,5000,10000,25000]);
+
+export function giftPreviewAmount(value) {
+  const amount = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value;
+  return GIFT_DENOMINATIONS.includes(amount) ? amount : null;
+}
+
+function mountGiftPreview(main) {
+  const amountLabel = main.querySelector("[data-nx-gift-value]");
+  const totalLabel = main.querySelector("[data-nx-gift-total]");
+  const options = main.querySelectorAll('input[name="nx-gift-amount"]');
+  for (const input of options) {
+    input.addEventListener("change", () => {
+      const amount = giftPreviewAmount(input.value);
+      if (!input.checked || amount === null) return;
+      amountLabel.textContent = formatGBP(amount).replace(/\.00$/, "");
+      totalLabel.textContent = formatGBP(amount);
+    });
+  }
+  // Preview intentionally has no purchase request, personal data or redirect.
+}
+
 async function init() {
   if (typeof document === "undefined") return;
   const path = window.location.pathname;
   if (!path.startsWith(SHOP_URL) || path.startsWith(SHOP_URL + "order-request/")) return;
+  if (path === SHOP_URL + "gift-cards/" || path === SHOP_URL + "gift-cards") {
+    const preview = document.querySelector("[data-nx-gift-preview]");
+    if (preview) mountGiftPreview(preview);
+    return;
+  }
   installStyle();
   try {
     const response = await fetch(CATALOGUE_URL, { cache: "no-store", credentials: "omit" });
