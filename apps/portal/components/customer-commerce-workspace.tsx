@@ -76,7 +76,6 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
             <p>Find your orders, follow eligible deliveries and access returns in one secure workspace.</p>
             {orders ? <a href={orders.route}>Manage orders</a> : null}
           </div>
-          <p className="customer-editorial-delivery-detail">See confirmed delivery information in your order records.</p>
           {tracking ? <a className="customer-editorial-sub-link" href={tracking.route}>Delivery tracking</a> : null}
         </article>
       </section>
