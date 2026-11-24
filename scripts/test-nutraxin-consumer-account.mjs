@@ -155,3 +155,16 @@ test("customer account provides guest recovery and human-readable order states",
  assert.match(js,/Object\.hasOwn\(orderStatusLabels,o\.status\)/);
  assert.doesNotMatch(js,/state\.textContent=o\.status/);
 });
+
+
+test("verified personal customers can refresh orders and copy a reference without putting it into a URL",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ assert.match(html,/data-nx-account-refresh disabled/);
+ assert.match(js,/await showAuthenticated\(config,session\)/);
+ assert.match(js,/refresh\.disabled=true/);
+ assert.match(js,/navigator\.clipboard\.writeText\(o\.orderId\)/);
+ assert.match(js,/Payment confirmed\. Delivery details require separate shipping confirmation/);
+ assert.match(js,/showOrders\(null\);status\("Refreshing your orders/);
+ assert.match(js,/accountOrderReference\.test\(o\.orderId\)/);
+});
