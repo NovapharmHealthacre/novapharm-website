@@ -106,7 +106,65 @@ def retail_promotion(pricing, raw_code, instant):
         not isinstance(floors, dict) or not floors or
         any(k not in PRODUCTS or type(v) is not int or v <= 0 for k,v in floors.items())):
         raise ValueError("promo_code_unavailable")
-    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum}
+    audience = campaign.get("audience", "public_reusable")
+    campaign_id = campaign.get("campaign_id")
+    if audience not in ("public_reusable", "returning_account_once"):
+        raise ValueError("promo_code_unavailable")
+    if audience == "returning_account_once" and (not isinstance(campaign_id,str)
+        or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",campaign_id)):
+        raise ValueError("promo_code_unavailable")
+    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,
+            "audience":audience,"campaign_id":campaign_id}
+
+
+def returning_grant(promotion, subject, receipt, basket_hash):
+    """An account-bound, manually reviewed grant; never issued by this API.
+
+    A claim consumes the grant once when the durable order is created, not
+    when a browser previews it. An unpaid/expired claim remains held for
+    authorised reconciliation; do not automatically create a second credit.
+    """
+    if not isinstance(subject,str) or not re.fullmatch(r"consumer_[0-9a-f]{32}",subject):
+        raise ValueError("promo_code_unavailable")
+    campaign_id=promotion["campaign_id"]
+    digest=hashlib.sha256(json.dumps([campaign_id,subject],separators=(",",":")).encode()).hexdigest()
+    key={"pk":{"S":"PROMO_GRANT#"+digest},"sk":{"S":"META"}}
+    row=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,Key=key,
+                             ConsistentRead=True).get("Item") or {}
+    if (row.get("customerSub")!={"S":subject} or row.get("campaignId")!={"S":campaign_id}
+        or row.get("promotionCode")!={"S":promotion["code"]}):
+        raise ValueError("promo_code_unavailable")
+    state=row.get("status",{}).get("S")
+    if state=="CLAIMED" and receipt and row.get("claimedOrderId")=={"S":receipt} and row.get("claimedBasketHash")=={"S":basket_hash}:
+        return None
+    if state!="APPROVED":
+        raise ValueError("promo_code_unavailable")
+    prior_id=row.get("priorOrderId",{}).get("S","")
+    try:
+        expires=int(row.get("expiresAtUnix",{}).get("N",""))
+    except (ValueError,TypeError):
+        raise ValueError("promo_code_unavailable") from None
+    if not ORDER_ID.fullmatch(prior_id) or expires<=now() or prior_id==receipt:
+        raise ValueError("promo_code_unavailable")
+    prior=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+        Key={"pk":{"S":"ORDER#"+prior_id},"sk":{"S":"SUMMARY"}},
+        ConsistentRead=True).get("Item") or {}
+    if (prior.get("customerSub")!={"S":subject} or prior.get("status")!={"S":"PAID"}
+        or prior.get("ownerCommercialPolicy")!={"S":"nutraxin_uk_direct_v1"}):
+        raise ValueError("promo_code_unavailable")
+    if receipt is None:
+        return None
+    claimed=dict(row,status={"S":"CLAIMED"},claimedOrderId={"S":receipt},
+                 claimedBasketHash={"S":basket_hash},claimedAtUnix={"N":str(now())})
+    # Compare every binding used to validate eligibility. The order/index
+    # and claim are written in one DynamoDB transaction.
+    return {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":claimed,
+        "ConditionExpression":"#state = :approved AND customerSub = :subject AND campaignId = :campaign AND promotionCode = :code AND priorOrderId = :prior AND expiresAtUnix = :expiry AND expiresAtUnix > :now",
+        "ExpressionAttributeNames":{"#state":"status"},
+        "ExpressionAttributeValues":{":approved":{"S":"APPROVED"},":subject":{"S":subject},
+            ":campaign":{"S":campaign_id},":code":{"S":promotion["code"]},":prior":{"S":prior_id},
+            ":expiry":{"N":str(expires)},":now":{"N":str(now())}}}}
+
 
 
 def direct_checkout(event, customer_subject=None, preview=False):
@@ -212,6 +270,15 @@ def direct_checkout(event, customer_subject=None, preview=False):
             "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
             "original":original_gross, "discounted":gross, "lines":ordered
         },sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    grant_write=None
+    if promotion and promotion["audience"]=="returning_account_once":
+        try:
+            grant_write=returning_grant(promotion,customer_subject,
+                None if preview else "NUT-"+request_id,basket_hash)
+        except ValueError as exc:
+            return error(422,str(exc))
+        except ClientError:
+            return error(503,"promotion_eligibility_unavailable")
     if preview:
         return reply(200, {"currency":"GBP","originalGrossMinor":original_gross,
                           "discountGrossMinor":original_gross-gross,"totalGrossMinor":gross,
@@ -261,12 +328,25 @@ def direct_checkout(event, customer_subject=None, preview=False):
             index = {"pk":{"S":"CONSUMER#"+subject},
                      "sk":{"S":"ORDER#"+str(now()).zfill(12)+"#"+receipt},
                      "orderId":{"S":receipt},"customerSub":{"S":subject}}
-            PAYMENT_DDB.transact_write_items(TransactItems=[
+            # If a previously claimed grant is retried, never create a fresh
+            # order in the absence of the original durable summary.
+            if promotion and promotion["audience"]=="returning_account_once" and grant_write is None:
+                existing=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+                    Key={"pk":{"S":"ORDER#"+receipt},"sk":{"S":"SUMMARY"}},
+                    ConsistentRead=True).get("Item")
+                if not existing:
+                    return error(503,"promotion_reconciliation_required")
+                # Enter the same exact-request reconciliation below.
+                raise ClientError({"Error":{"Code":"TransactionCanceledException","Message":"Existing promotion claim"}},"TransactWriteItems")
+            writes=[
                 {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
                         "ConditionExpression":"attribute_not_exists(pk)"}},
                 {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
                         "ConditionExpression":"attribute_not_exists(pk)"}}
-            ])
+            ]
+            if grant_write is not None:
+                writes.append(grant_write)
+            PAYMENT_DDB.transact_write_items(TransactItems=writes)
         else:
             PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
                                 ConditionExpression="attribute_not_exists(pk)")
@@ -405,8 +485,9 @@ def handler(event, context):
                            "payment_collection_active":SHOP_ENABLED,
                            "origin":"novapharmhealthcare.com",
                            "promotion_preview_supported":True,
+                           "account_promotion_preview_supported":True,
                            "checkout_path":"/products/nutraxin/bag/"})
-    if path in ("/account/me","/account/orders","/account/checkout"):
+    if path in ("/account/me","/account/orders","/account/checkout","/account/quote"):
         customer=verified_consumer(event)
         if not customer:
             return error(401,"account_sign_in_required")
@@ -415,6 +496,8 @@ def handler(event, context):
                               "customer_type":"personal"})
         if path=="/account/orders" and method=="GET":
             return account_orders(customer)
+        if path=="/account/quote" and method=="POST":
+            return direct_checkout(event,customer["subject"],preview=True)
         if path=="/account/checkout" and method=="POST":
             return direct_checkout(event,customer["subject"])
         return error(405,"method_not_allowed")
