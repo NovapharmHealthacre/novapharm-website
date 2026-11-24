@@ -109,7 +109,7 @@ def retail_promotion(pricing, raw_code, instant):
     return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum}
 
 
-def direct_checkout(event, customer_subject=None):
+def direct_checkout(event, customer_subject=None, preview=False):
     # Merchant owner authorised the existing 48-unit-tier price for 1-10000
     # units, 20% UK VAT and no separately charged UK shipping. This business
     # decision does not represent physical warehouse stock as reserved.
@@ -134,10 +134,10 @@ def direct_checkout(event, customer_subject=None):
     # Never silently ignore a requested stored-value payment.
     if gift_card_code is not None and gift_card_code != "":
         return error(422, "gift_card_redemption_not_available")
-    if accepts is not True:
+    if not preview and accepts is not True:
         return error(400, "delivery_and_sale_terms_required")
-    if not isinstance(request_id, str) or not re.fullmatch(
-        r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", request_id):
+    if not preview and (not isinstance(request_id, str) or not re.fullmatch(
+        r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", request_id)):
         return error(400, "invalid_request_id")
     if not isinstance(lines, list) or not 1 <= len(lines) <= 19:
         return error(400, "invalid_order_lines")
@@ -212,6 +212,13 @@ def direct_checkout(event, customer_subject=None):
             "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
             "original":original_gross, "discounted":gross, "lines":ordered
         },sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    if preview:
+        return reply(200, {"currency":"GBP","originalGrossMinor":original_gross,
+                          "discountGrossMinor":original_gross-gross,"totalGrossMinor":gross,
+                          "taxMinor":tax,"basketVersion":basket_hash,
+                          "promotionCode":promotion["code"] if promotion else None})
+    if promotion and (body.get("basket_version") != basket_hash):
+        return error(422, "promo_quote_changed")
     receipt = "NUT-" + request_id
     subject = customer_subject or ("guest_" + request_id.replace("-", ""))
     quote_version = "ownerprice_v7_unitvat_" + basket_hash[:20]
@@ -397,6 +404,7 @@ def handler(event, context):
         return reply(200, {"checkout_ready":SHOP_ENABLED,
                            "payment_collection_active":SHOP_ENABLED,
                            "origin":"novapharmhealthcare.com",
+                           "promotion_preview_supported":True,
                            "checkout_path":"/products/nutraxin/bag/"})
     if path in ("/account/me","/account/orders","/account/checkout"):
         customer=verified_consumer(event)
@@ -410,6 +418,8 @@ def handler(event, context):
         if path=="/account/checkout" and method=="POST":
             return direct_checkout(event,customer["subject"])
         return error(405,"method_not_allowed")
+    if method == "POST" and path == "/quote":
+        return direct_checkout(event, preview=True)
     if method == "POST" and path == "/checkout":
         return direct_checkout(event)
     if method == "GET" and path.startswith("/status/"):
