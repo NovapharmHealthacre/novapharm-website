@@ -87,9 +87,9 @@ class GiftLedger:
             raise ValueError("operation reference already used for a different request")
         return json.loads(row["result"]["S"])
 
-    def _commit(self, operation, request_hash, result, writes):
+    def _commit(self, operation, request_hash, result, writes, audit):
         journal = {**key("GIFT_OP#" + operation), "fingerprint": S(request_hash),
-                   "result": S(canonical(result))}
+                   "result": S(canonical(result)), "audit": S(canonical(audit))}
         try:
             self.client.transact_write_items(TransactItems=[
                 *writes, self._put(journal)])
@@ -118,7 +118,9 @@ class GiftLedger:
         # same verified payment even when a different event/operation ID arrives.
         marker = {**key("GIFT_PURCHASE#" + payment_reference), "cardDigest": S(digest)}
         return self._commit(operation, request_hash, result,
-                            [self._put(self._card_row(digest, card)), self._put(marker)])
+                            [self._put(self._card_row(digest, card)), self._put(marker)],
+                            {"action":"issue","cardDigest":digest,"paymentReference":payment_reference,
+                             "issuedMinor":denomination})
 
     def transition(self, *, digest, operation, action, expected_version,
                    order=None, amount=None, sale_total=None, evidence=None):
@@ -180,6 +182,9 @@ class GiftLedger:
                 {":digest": S(digest), ":prior": S(prior_status), ":refund": N(prior_refunded)}))
             writes[-1]["Put"]["ExpressionAttributeNames"] = {"#status": "status"}
         writes.append(self._put(self._card_row(digest, updated),
-                                "version = :expected", {":expected": N(expected_version)}))
+                                "#version = :expected", {":expected": N(expected_version)}))
+        writes[-1]["Put"]["ExpressionAttributeNames"] = {"#version":"version"}
         result = {"version": updated.version, "availableMinor": updated.available}
-        return self._commit(operation, request_hash, result, writes)
+        return self._commit(operation, request_hash, result, writes,
+                            {"action":action,"cardDigest":digest,"order":order,"amount":amount,
+                             "saleTotal":sale_total,"evidence":evidence,"priorVersion":expected_version})
