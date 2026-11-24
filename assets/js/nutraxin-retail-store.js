@@ -443,6 +443,7 @@ function runStore(data) {
             const accountToken=consumerAccess();
             const mode=accountToken?"account":"guest";
             if (checkoutUncertain && (!lastAttempt || lastAttempt.basket !== basketId || lastAttempt.mode !== mode)) throw new Error("Original checkout cannot be resumed safely");
+            const reusedAttempt = (lastAttempt?.basket === basketId && lastAttempt.mode === mode) || (stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || ""));
             const requestId = lastAttempt?.basket === basketId && lastAttempt.mode === mode ? lastAttempt.id : stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
               ? stored.id : crypto.randomUUID();
             lastAttempt={basket:basketId,id:requestId,mode};
@@ -459,7 +460,7 @@ function runStore(data) {
               if(accountToken)try{sessionStorage.removeItem(ACCOUNT_SESSION_KEY)}catch{}
               throw new Error("Your account session expired. Please sign in again or choose guest checkout.");
             }
-            if (response.status === 422 && promoQuote && !checkoutUncertain) {
+            if (response.status === 422 && promoQuote && !checkoutUncertain && !reusedAttempt) {
               const rejection = await response.json().catch(() => null);
               // These specific server errors occur before any order write or
               // payment creation. Never unlock an ambiguous provider response.
