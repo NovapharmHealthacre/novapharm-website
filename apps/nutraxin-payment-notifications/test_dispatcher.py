@@ -42,6 +42,8 @@ def ledger():
             "orderId": s(ORDER_ID), "status": s("PAID"),
             "stripeSessionId": s(SESSION_ID), "lastStripeEventId": s(EVENT_ID),
             "totalGrossMinor": {"N": "1547"}, "currency": s("GBP"),
+            "shippingGrossMinor": {"N": "0"},
+            "approvedLinesJson": s(json.dumps([{"name": "Synthetic product & care", "sku": "NUT-UK-MGCX-T60", "quantity": 1, "grossMinor": 1547}])),
             "quoteVersion": s("quote_123"), "customerId": s("cust_123")}
 
 def session():
@@ -50,7 +52,8 @@ def session():
             "amount_total": 1547, "client_reference_id": ORDER_ID,
             "metadata": {"payment_attempt_id": ATTEMPT,
                          "quote_version": "quote_123", "customer_id": "cust_123"},
-            "customer_details": {"email": "customer@example.invalid"}}
+            "created": 1795000000,
+            "customer_details": {"email": "customer@example.invalid", "name": "Alex & Co"}}
 
 class FakeDDB:
     def __init__(self):
@@ -142,6 +145,22 @@ class NotificationContracts(unittest.TestCase):
         row=DB.rows[("ORDER#"+ORDER_ID,"PAYMENT_EVENT#"+EVENT_ID)]
         self.assertEqual(row["status"]["S"],"SENT")
         self.assertNotIn("email",row)
+        message = SES.sent[0]
+        self.assertEqual(message["ReplyToAddresses"], ["support@novapharmhealthcare.com"])
+        self.assertEqual(message["FromEmailAddress"], "NovaPharm Healthcare <vishal@novapharmhealthcare.com>")
+        body = message["Content"]["Simple"]["Body"]
+        self.assertIn("£15.47", body["Text"]["Data"])
+        self.assertIn("Synthetic product &amp; care", body["Html"]["Data"])
+        self.assertIn(APP.LOGO_URL, body["Html"]["Data"])
+        self.assertIn(APP.TRACK_URL, body["Html"]["Data"])
+        self.assertNotIn("customer@example.invalid", body["Html"]["Data"])
+        self.assertIn("A thoughtful choice.", body["Html"]["Data"])
+        self.assertIn("Dear Alex &amp; Co,", body["Html"]["Data"])
+        self.assertIn("magnesium-complex-60-tablets.png", body["Html"]["Data"])
+        self.assertIn("Order confirmed", body["Html"]["Data"])
+        self.assertIn("Preparing, dispatched and delivered are pending", body["Html"]["Data"])
+        self.assertIn("Returns and refunds", body["Html"]["Data"])
+        self.assertEqual(len(APP.PRODUCT_IMAGES), 19)
         self.assertEqual(self.result(self.scheduler())["sent"],0)
         self.assertEqual(len(SES.sent),1)
     def test_reject_mismatched_paid_session_and_preserve_outbox(self):
@@ -153,6 +172,11 @@ class NotificationContracts(unittest.TestCase):
         self.assertEqual(result["needs_review"],1)
         self.assertEqual(SES.sent,[])
         self.assertEqual(DB.rows[("ORDER#"+ORDER_ID,"PAYMENT_EVENT#"+EVENT_ID)]["status"]["S"],"PENDING_REVIEW")
+    def test_unreconciled_lines_never_send(self):
+        APP.ENABLED=True;SES.approved=True
+        DB.rows[("ORDER#"+ORDER_ID,"SUMMARY")]["approvedLinesJson"] = s(json.dumps([{"name":"<script>", "quantity":1,"grossMinor":1546}]))
+        self.assertEqual(self.result(self.scheduler())["needs_review"],1)
+        self.assertEqual(SES.sent,[])
     def test_scan_paginates_nonmatching_entries(self):
         APP.ENABLED=True;SES.approved=True
         DB.page_first=True
