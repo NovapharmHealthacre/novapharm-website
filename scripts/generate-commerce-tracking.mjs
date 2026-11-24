@@ -20,7 +20,7 @@ const content=`<main id="main" class="np-order-track" data-np-order-lookup>
 <button type="submit">Check status</button></div></form>
 <p class="np-order-track-result" data-np-order-status role="status" aria-live="polite" hidden></p></section>
 <section class="np-order-track-wrap np-order-track-note"><h2>Payment is not delivery.</h2><p>A paid order means payment has been confirmed by the checkout service. Picking, dispatch, carrier tracking and delivery require separate verified events. An ESCO order request does not mean payment has been taken.</p>
-<a href="/products/nutraxin/">Nutraxin collection</a><a href="/products/esco/">ESCO collection</a></section></main>`;
+<a href="/products/nutraxin/account/">Personal Nutraxin account</a><a href="mailto:support@novapharmhealthcare.com">Need help with your order?</a><a href="/products/nutraxin/">Nutraxin collection</a><a href="/products/esco/">ESCO collection</a></section></main>`;
 
 // A derived route must not inherit product-portfolio photography or Products-only
 // JSON-LD/social identity. The Products artwork is approved for that route alone.
