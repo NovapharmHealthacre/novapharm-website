@@ -59,6 +59,18 @@ export function verifyPublishedHtml(rawHtml, route, sourceSha) {
   if (masks.length > 1 || masks.some(tag => attribute(tag, "color") !== "#9D1B32"))
     errors.push("Safari mask-icon differs from approved Healthcare Crimson");
   if (route === "/contact/") {
+    const sharedHeader = /<header\s+class="site-header npd-header"[^>]*>/g;
+    const sharedFooter = /<footer\s+class="site-footer npd-footer"[^>]*>/g;
+    if ((html.match(sharedHeader) || []).length !== 1 ||
+        (html.match(sharedFooter) || []).length !== 1 ||
+        (html.match(/<footer\b/gi) || []).length !== 1)
+      errors.push("Shared corporate Contact header/footer missing or duplicated");
+    if (!/data-mega-trigger="distribution"/.test(html) ||
+        !/data-mega-trigger="intelligence"/.test(html))
+      errors.push("Shared Contact overview navigation missing");
+    if (!html.includes("--contact-primary-white:#FFFFFF") ||
+        [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].some(match => /#FBFAEF/i.test(match[1])))
+      errors.push("Contact visual CSS differs from approved Pure White");
     // The managed AWS-backed Contact form is separately pinned by its original
     // source blob. Verify critical live safety markers as well as the release
     // SHA; a superficially branded email-only or unconsented form must fail.
