@@ -79,9 +79,14 @@ function verify(m, route, mode, viewport) {
   check(m.rows.length === m.amounts.length && m.rows.length > 0,
     `${id}: missing composition values`);
   check(m.rows.every(row => !row.overflow), `${id}: composition table horizontal clipping`);
-  check(m.amounts.every(a => a.whiteSpace === "nowrap" &&
-    a.height <= a.lineHeight * 1.45 && a.scrollWidth <= a.width + 3),
-    `${id}: ingredient amount wrapped or overflowed`);
+  check(m.amounts.every(a => {
+    // A4 print must wrap a full-source narrative rather than crop its 42 mm column.
+    // Short numeric amounts must still remain on exactly one line.
+    const longPrintNarrative = mode === "print" && a.text.length > 32;
+    return a.scrollWidth <= a.width + 3 &&
+      (mode === "print" || a.whiteSpace === "nowrap") &&
+      a.height <= a.lineHeight * (longPrintNarrative ? 4.5 : 1.45);
+  }), `${id}: composition quantity clipped or unreadably wrapped`);
   if (mode === "print" || viewport === "desktop") {
     check(m.visual.right <= m.copy.x + 5, `${id}: pack overlaps price/title`);
   } else {
