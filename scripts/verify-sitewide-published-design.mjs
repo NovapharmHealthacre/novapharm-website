@@ -29,7 +29,7 @@ if (artifactMode) {
 const nonce = Date.now();
 async function get(route) {
   if (artifactMode) return readFileSync(resolve(artifactRoot, "." + route, "index.html"), "utf8");
-  const response = await fetch(LIVE_ORIGIN + route + "?sitewide_verification=" + nonce,
+  const response = await fetch(LIVE_ORIGIN + route + "?sitewide_verification=" + nonce + "-" + Date.now(),
     { redirect: "manual", headers: { "Cache-Control": "no-cache, no-store, max-age=0" },
       signal: AbortSignal.timeout(20000) });
   assert.equal(response.status, 200, route + " HTTP status");
@@ -38,8 +38,23 @@ async function get(route) {
   assert.ok(html.length < 1600000, route + " response budget");
   return html;
 }
-const home = await get("/");
-const source = home.match(/<meta name="novapharm-source-sha" content="([a-f0-9]{40})">/)?.[1];
+const receipt = html => html.match(/<meta name="novapharm-source-sha" content="([a-f0-9]{40})">/)?.[1];
+let home;
+if (!artifactMode && expected) {
+  // Pages may still be propagating after the deploy action returns. Only accept
+  // the approved SHA; never treat an older successful response as publication.
+  for (let attempt = 0; attempt < 12; attempt++) {
+    try {
+      const html = await get("/");
+      if (receipt(html) === expected) { home = html; break; }
+    } catch (error) {
+      console.warn("Waiting for exact deployment receipt: " + String(error.message).slice(0, 120));
+    }
+    if (attempt < 11) await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+  assert.ok(home, "Exact deployment receipt did not propagate");
+} else home = await get("/");
+const source = receipt(home);
 assert.ok(source, "Homepage missing exact source receipt: possible rollback");
 if (expected) assert.equal(source, expected, "Homepage does not match exact approved release");
 let failures = 0;
