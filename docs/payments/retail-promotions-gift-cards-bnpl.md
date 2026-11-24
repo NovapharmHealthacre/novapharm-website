@@ -26,3 +26,6 @@ The isolated ledger now supports a permanent frozen state: new reservations and 
 
 ## Go-live
 Sandbox isolation, approved margin and product rights, documented tax and provider approvals, regression tests for existing card/wallet flows, signed webhook and refund reconciliation, separate controlled deployment and live browser acceptance. No test charges against live customers.
+
+## SES delivery adapter candidate
+AWS read-only verification on 24 November 2026 confirmed the existing payment ledger is ACTIVE with pk/sk keys, SES production sending is enabled, and the NovaPharm domain is verified with successful DKIM signing. The private gift email sender uses that existing service, checks release approval and sender identity, and renders separate branded HTML and text messages. It is disabled by default, not scheduled, and tested with synthetic SES only. No actual gift card email was sent. Existing receipt dispatch remains unchanged. The original merged promo and gift candidate is not evidence of production checkout deployment; real sandbox acceptance, approved gift-card terms/tax and Stripe configuration, secure key/recipient provisioning, signed-event routing and redemption orchestration remain gates.
