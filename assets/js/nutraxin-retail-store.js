@@ -124,6 +124,55 @@ function toast(message) {
   document.body.append(n);
   window.setTimeout(() => n.remove(), 2600);
 }
+// Cosmetic only: align transparent pack photography to a shared optical baseline.
+// Never replace, crop, rewrite or stretch a product image. Opaque/unsupported images
+// retain their original contained presentation; checkout and availability are independent.
+function alignCataloguePack(image) {
+  if (!image) return;
+  const align = () => {
+    if (!image.complete || !image.naturalWidth || !image.naturalHeight) return;
+    image.style.removeProperty("--nx-pack-x");
+    image.style.removeProperty("--nx-pack-y");
+    image.style.removeProperty("--nx-pack-scale");
+    image.dataset.nxOptical = "contained";
+    try {
+      const size = 160;
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      const fit = Math.min(size / image.naturalWidth, size / image.naturalHeight);
+      const width = image.naturalWidth * fit, height = image.naturalHeight * fit;
+      ctx.drawImage(image, (size-width)/2, (size-height)/2, width, height);
+      const pixels = ctx.getImageData(0,0,size,size).data;
+      let left=size, top=size, right=-1, bottom=-1, transparent=0;
+      for(let y=0;y<size;y++) for(let x=0;x<size;x++) {
+        const alpha=pixels[(y*size+x)*4+3];
+        if(alpha<=16) {transparent++;continue;}
+        left=Math.min(left,x);right=Math.max(right,x);
+        top=Math.min(top,y);bottom=Math.max(bottom,y);
+      }
+      if(transparent < size*size*.08 || right<=left || bottom<=top) return;
+      // A conservative margin protects the whole pack, including soft shadows.
+      left=Math.max(0,left-1)/size; top=Math.max(0,top-1)/size;
+      right=Math.min(size,right+2)/size; bottom=Math.min(size,bottom+2)/size;
+      const scale=Math.min(.90/(right-left),.82/(bottom-top),1.45);
+      if(!Number.isFinite(scale)||scale<=0) return;
+      const x=.5-(left+right)*scale/2, y=.91-bottom*scale;
+      image.style.setProperty("--nx-pack-x", (100*x).toFixed(4)+"%");
+      image.style.setProperty("--nx-pack-y", (100*y).toFixed(4)+"%");
+      image.style.setProperty("--nx-pack-scale", scale.toFixed(6));
+      image.dataset.nxOptical = "aligned";
+      image.dataset.nxOpticalBounds = JSON.stringify([left,top,right,bottom]);
+    } catch {
+      // Rendering must remain safe for unsupported decoding/canvas formats.
+      image.dataset.nxOptical = "contained";
+    }
+  };
+  image.addEventListener("load",align);
+  if(image.complete) align();
+}
+
 function installStyle() {
   if (document.querySelector('[data-nx-retail-css]')) return;
   const link = document.createElement("link");
@@ -428,6 +477,7 @@ function runStore(data) {
     const range = document.querySelector("#nx-range-overview");
     if (range) range.insertAdjacentElement("beforebegin", comparison);
     for (const shell of document.querySelectorAll(".nx-product-card-shell")) {
+      alignCataloguePack(shell.querySelector(".nx-product-visual img"));
       const link = shell.querySelector("[data-nx-product-slug]");
       const p = slugMap.get(link?.dataset.nxProductSlug);
       if (!p) continue;
