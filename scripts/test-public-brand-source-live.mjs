@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { LIVE_ORIGIN, PUBLIC_ROUTES, auditPublishedBrand, verifyPublishedHtml } from "./verify-public-brand-source-live.mjs";
+import { composeManagedContactChrome } from "./activate-contact-intake.mjs";
 
 const SHA = "a".repeat(40);
 
@@ -23,8 +24,10 @@ function htmlFor(route, sha = SHA) {
     (route === "/contact/" ? '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; ' +
       'connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com; ' +
       'object-src \'none\'; base-uri \'self\'; form-action \'none\'">' : '') +
-    '</head><body><main><h1>NovaPharm Healthcare</h1>' + contact +
-    '</main></body></html>';
+    (contact ? '<style>:root{--contact-primary-white:#FFFFFF}</style>' : '') +
+    '</head><body>' + (contact ? '<header class="site-header npd-header"><nav><a data-mega-trigger="distribution" href="/distribution/">Distribution</a><a data-mega-trigger="intelligence" href="/technology/">Intelligence</a></nav></header>' : '') +
+    '<main><h1>NovaPharm Healthcare</h1>' + contact +
+    '</main>' + (contact ? '<footer class="site-footer npd-footer"></footer>' : '') + '</body></html>';
 }
 
 test("six-route release auditor enforces a single official public origin", async () => {
@@ -139,13 +142,19 @@ test("actual immutable managed Contact HTML satisfies all live release safety re
   assert.ok(stamped.includes('name="theme-color" content="#FBFAEF"'));
   assert.ok(verifyPublishedHtml(stamped, "/contact/", SHA)
     .some(error => error.includes("Pure White")));
-  // Test only the browser-theme normalization in memory, while preserving
-  // all managed Contact form, privacy, consent, CSP and API safety markers.
-  const normalized = stamped.replace(
-    'name="theme-color" content="#FBFAEF"',
-    'name="theme-color" content="#FFFFFF"');
-  assert.notEqual(normalized, stamped);
+  // Exercise the actual release composition, not a fake metadata-only correction.
+  const baseline = readFileSync(new URL("../contact/index.html", import.meta.url), "utf8");
+  // The checked-in HTML predates generator changes; insert a fixture for the
+  // new Distribution trigger only if the built baseline is not yet present.
+  const staged = baseline.includes('data-mega-trigger="distribution"') ? baseline :
+    baseline.replace('<a href="/oncology/" data-mega-trigger="oncology"', '<a href="/distribution/" data-mega-trigger="distribution">Distribution</a><a href="/oncology/" data-mega-trigger="oncology"');
+  const normalized = composeManagedContactChrome(stamped, staged);
   assert.deepEqual(verifyPublishedHtml(normalized, "/contact/", SHA), []);
+  for (const bad of [
+    normalized.replace('class="site-footer npd-footer"', 'class="ref-footer"'),
+    normalized.replace('--contact-primary-white:#FFFFFF', '--contact-primary-white:#FBFAEF'),
+    normalized.replace('data-mega-trigger="distribution"', 'data-old-trigger="distribution"')
+  ]) assert.notEqual(verifyPublishedHtml(bad, "/contact/", SHA).length, 0);
 });
 
 test("commented-out source receipts, brand colours and headings cannot satisfy live checks", () => {

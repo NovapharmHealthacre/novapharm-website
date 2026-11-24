@@ -121,15 +121,29 @@ export function composeManagedContactChrome(managedHtml, baselineHtml) {
   const oldFooter = one(managedHtml, /<footer class="ref-footer"[^>]*>[\s\S]*?<\/footer>/g, "legacy contact footer");
   const formPattern = /<form\b[^>]*>[\s\S]*?<\/form>/g;
   const originalForm = one(managedHtml, formPattern, "reviewed intake form");
+  const theme = one(managedHtml, /<meta name="theme-color" content="#FBFAEF">/g, "reviewed legacy Contact browser theme");
   const result = managedHtml
+    .replace(theme, '<meta name="theme-color" content="#FFFFFF">')
     .replace(oldHeader, () => header)
     .replace(oldFooter, () => footer)
     // Retire legacy chrome selectors; do not alter the reviewed form styles.
-    .replace(/<style>[\s\S]*?<\/style>/, (style) => style.replace(/\.site-header\b/g, ".contact-legacy-header"))
+    .replace(/<style>[\s\S]*?<\/style>/, (style) => {
+      // Apply the approved primary white only to the reviewed visual CSS.
+      // Retire legacy class selectors so they cannot restyle the shared shell.
+      if ((style.match(/#FBFAEF/g) || []).length !== 2) throw Error("Unexpected reviewed Contact palette");
+      return style.replace(/\.site-header\b/g, ".contact-legacy-header")
+        .replace(/\.mobile-menu\b/g, ".contact-legacy-mobile-menu")
+        .replace(/\.mobile-nav\b/g, ".contact-legacy-mobile-nav")
+        .replaceAll("#FBFAEF", "#FFFFFF")
+        .replaceAll("rgba(251,250,239,.96)", "rgba(255,255,255,.96)")
+        .replaceAll("--royal-mineral-white", "--contact-primary-white");
+    })
     .replace("<style>", () => rtl + css + "<style>")
     .replace("<body>", '<body data-page="contact" data-family="contact" data-route="/contact/">')
     .replace("</body>", () => nav + cookie + "</body>");
   if (one(result, formPattern, "composed intake form") !== originalForm ||
+      /#FBFAEF/i.test(result.match(/<style>[\s\S]*?<\/style>/)?.[0] || "") ||
+      !result.includes('--contact-primary-white:#FFFFFF') ||
       !result.includes("form-action 'none'") ||
       !result.includes('src="/assets/js/contact-production.js"')) {
     throw Error("Managed Contact shell composition changed the reviewed intake");
