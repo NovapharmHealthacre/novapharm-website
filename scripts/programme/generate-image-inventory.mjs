@@ -335,13 +335,16 @@ for (const file of mediaFiles.filter((value) => value.startsWith("creative-asset
 
 // Canonical three-brand source rights and SHA evidence: never infer provenance
 // from a filename, colour, matching perceptual image, or a declared renderer.
+// The canonical current web canvas is Pure White #FFFFFF, while previously
+// generated raster evidence remains historical (mineral-white #FBFAEF).
+// Do not relabel historical bytes or waive per-asset SHA checks.
 // The parent source registry records exact owner-supplied vector bytes; raster
 // candidates are admitted only when their current physical SHA matches the
 // signed-off generated-derivative register. No public release is implied.
 const officialBrand = await json("config/brand-identities.json");
 const brandRasterEvidence = await json("audit/generated/three-brand-raster-provenance.json");
 if (officialBrand.approvedOn !== "2026-11-22" ||
-    officialBrand.neutralPalette?.primaryWhite?.hex !== "#FBFAEF" ||
+    officialBrand.neutralPalette?.primaryWhite?.hex !== "#FFFFFF" ||
     brandRasterEvidence.sourceDate !== "2026-11-22" ||
     brandRasterEvidence.method !== "SVG source master rasterized by sharp" ||
     brandRasterEvidence.lightSocialBackground !== "#FBFAEF" ||
@@ -427,6 +430,8 @@ for (const item of brandRasterEvidence.files) {
 // iOS/Android icon as a governed physical asset only after checking the exact
 // owner-approved Intelligence SVG and its SHA-256 generated-output manifest.
 // No filename-only, similarity-only, or inferred source-rights admissions.
+// Native raster assets were approved under the older mineral-white canvas.
+// Preserve their byte-verified provenance until an independent regeneration.
 const nativeIconEvidence = await json("audit/generated/native-intelligence-icon-provenance.json");
 const nativeIconPaths = new Set([
   "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-1024x1024.png",
@@ -445,7 +450,7 @@ if (nativeIconEvidence.schemaVersion !== 1 ||
     nativeIconEvidence.sourceSha256 !== officialBrand.brands.intelligence.browserIconZipSha256 ||
     nativeIconEvidence.color !== officialBrand.brands.intelligence.hex ||
     nativeIconEvidence.lightInk !== officialBrand.neutralPalette.defaultInk.hex ||
-    nativeIconEvidence.lightBackground !== officialBrand.neutralPalette.primaryWhite.hex ||
+    nativeIconEvidence.lightBackground !== "#FBFAEF" ||
     nativeIconEvidence.status !== "unsigned-source-assets-only" ||
     !Array.isArray(nativeIconEvidence.outputs) ||
     nativeIconEvidence.outputs.length !== nativeIconPaths.size ||

@@ -9,7 +9,7 @@ body[data-page="home"] {
   --nph-silver: #F8F7F3;
   --nph-line: #DEDCD5;
   --nph-blue: #0066cc;
-  background: #FBFAEF;
+  background: #FFFFFF;
   color: var(--nph-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -182,7 +182,7 @@ body[data-page="home"] .npd-apple-center > p:not(.npd-apple-eyebrow):not(.npd-ap
 }
 body[data-page="home"] .npd-apple-manifesto {
   padding: clamp(100px, 13vw, 195px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-manifesto h2 {
   max-width: 860px;
@@ -299,7 +299,7 @@ body[data-page="home"] .npd-apple-products > .container > .npd-apple-footnote {
 }
 body[data-page="home"] .npd-apple-intelligence {
   padding: clamp(92px, 10vw, 170px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-intelligence .npd-apple-footnote {
   margin-top: 30px;
@@ -355,7 +355,7 @@ body[data-page="home"] .npd-apple-nova-taxonomy {
 }
 body[data-page="home"] .npd-apple-sourcing {
   padding: clamp(96px, 11vw, 170px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-section-lead {
   max-width: 790px;
@@ -402,7 +402,7 @@ body[data-page="home"] .npd-apple-governance-grid > div > p:not(.npd-apple-eyebr
   color: #66666b;
 }
 body[data-page="home"] .npd-apple-regulatory-notice {
-  background: #FBFAEF;
+  background: #FFFFFF;
   border: 1px solid #ebebee;
   border-radius: 28px;
   padding: clamp(30px, 4vw, 55px);
@@ -412,7 +412,7 @@ body[data-page="home"] .npd-apple-regulatory-notice p:last-child { color: #66666
 body[data-page="home"] .npd-apple-contact {
   padding: clamp(120px, 15vw, 215px) 0;
   text-align: center;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-contact .npd-apple-actions-centered { justify-content: center; }
 body[data-page="home"] .npd-apple-contact .npd-apple-footnote {

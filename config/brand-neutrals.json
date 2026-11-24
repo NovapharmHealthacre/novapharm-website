@@ -1,12 +1,12 @@
 {
   "version": 1,
   "palette": "NovaPharm Royal Neutral Identity",
-  "primary": "#FBFAEF",
+  "primary": "#FFFFFF",
   "secondary": "#F8F7F3",
   "black": "#0B0B0E",
   "divider": "#DEDCD5",
   "names": {
-    "primary": "Royal Mineral White",
+    "primary": "Pure White",
     "secondary": "Royal Porcelain White",
     "black": "Sovereign Black",
     "divider": "Porcelain Stone"

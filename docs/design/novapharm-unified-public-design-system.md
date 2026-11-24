@@ -5,7 +5,7 @@
 **Does not apply automatically to:** separate secure portal, NOVA Intelligence application, or founder site.
 
 
-**Owner-approved brand correction — 22 November 2026.** This source candidate uses Royal Mineral White \`#FBFAEF\` as the primary canvas, Royal Porcelain White \`#F8F7F3\` as the secondary surface, Sovereign Black \`#0B0B0E\` as default text and Porcelain Stone \`#DEDCD5\` for decorative hairlines only. Essential form/control boundaries retain a stronger accessible border. Values are enforced against \`config/brand-neutrals.json\` in the colour contract. Historic screenshot counts below are *not* acceptance evidence for this new release.
+**Owner-approved brand correction — 22 November 2026.** This source candidate uses Pure White \`#FFFFFF\` as the primary canvas, Royal Porcelain White \`#F8F7F3\` as the secondary surface, Sovereign Black \`#0B0B0E\` as default text and Porcelain Stone \`#DEDCD5\` for decorative hairlines only. Essential form/control boundaries retain a stronger accessible border. Values are enforced against \`config/brand-neutrals.json\` in the colour contract. Historic screenshot counts below are *not* acceptance evidence for this new release.
 
 ## Reference principles
 - Apple Human Interface Guidelines: clarity, hierarchy, familiarity, adaptability, craft, accessibility and purposeful colour.
@@ -16,7 +16,7 @@
 | Contract | Source of truth | Design |
 |---|---|---|
 | Ink | \`--nph-ink\` | \`#0B0B0E\` |
-| Canvas | \`--nph-canvas\` | \`#FBFAEF\` |
+| Canvas | \`--nph-canvas\` | \`#FFFFFF\` |
 | Soft surface | \`--nph-silver\` | \`#F8F7F3\` |
 | Information/body | \`--nph-body\` / \`--nph-muted\` | \`#0B0B0E\` / \`#595961\` |
 | Hairlines | \`--nph-line\` | \`#DEDCD5\` |

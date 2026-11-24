@@ -1,7 +1,7 @@
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
    Independent of Apple trademarks, fonts or copyrighted UI assets. */
-.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FBFAEF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
 .np-contact * { box-sizing: border-box; }
 .np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
 .np-contact a { text-underline-offset: .2em; }
@@ -16,12 +16,12 @@
 .np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
 .np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
-.np-contact-topic:hover { transform: translateY(-3px); background: #FBFAEF; border-color: #cbd1d9; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #FFFFFF; border-color: #cbd1d9; }
 .np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
 .np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
 .np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
-.np-contact-destination { padding: 80px 0 100px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination { padding: 80px 0 100px; background: #FFFFFF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
 .np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
 .np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
@@ -33,7 +33,7 @@
 .np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
 .np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
-.np-contact-safety { padding: 32px 0 70px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety { padding: 32px 0 70px; background: #FFFFFF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
 .np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
 .np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
@@ -72,7 +72,7 @@
   --np-contact-blue: #006fe6;
   width: 100%;
   overflow: clip;
-  background: #FBFAEF;
+  background: #FFFFFF;
   color: var(--np-contact-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
@@ -84,7 +84,7 @@
 .np-contact-reference-hero {
   padding: clamp(64px, 7vw, 82px) 0 62px;
   text-align: center;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 .np-contact-reference-kicker {
   display: block;
@@ -113,7 +113,7 @@
   line-height: 1.34;
   letter-spacing: 0;
 }
-.np-contact-reference-content { padding: 0 0 55px; background: #FBFAEF; }
+.np-contact-reference-content { padding: 0 0 55px; background: #FFFFFF; }
 .np-contact-reference-heading { margin: 0 0 25px; }
 .np-contact-reference .np-contact-reference-heading h2 {
   margin: 0 0 4px;
@@ -339,7 +339,7 @@
   line-height: 1.5;
 }
 .np-contact-reference-status p { margin: 0; font-size: inherit; }
-.np-contact-reference-safety { padding: 0 0 31px; background: #FBFAEF; }
+.np-contact-reference-safety { padding: 0 0 31px; background: #FFFFFF; }
 .np-contact-reference-safety p {
   max-width: 914px;
   margin: 0;

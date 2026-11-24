@@ -10,8 +10,8 @@
     ]
   },
   "neutral": {
-    "white": "#FBFAEF",
-    "primaryWhite": "#FBFAEF",
+    "white": "#FFFFFF",
+    "primaryWhite": "#FFFFFF",
     "secondaryWhite": "#F8F7F3",
     "divider": "#DEDCD5",
     "black": "#0B0B0E",
