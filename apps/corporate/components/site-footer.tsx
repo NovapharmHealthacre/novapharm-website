@@ -41,6 +41,10 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
           <AppleFooterNavigation label={interfaceLabel(locale, "Products")}>
             <Link href="/products/nutraxin/">{interfaceLabel(locale, "Nutraxin")}</Link>
             <Link href="/products/strategic-portfolio/">{interfaceLabel(locale, "Strategic portfolio")}</Link>
+            <Link href="/products/track/" lang="en-GB">Check order status</Link>
+            <Link href="/products/nutraxin/account/" lang="en-GB">Personal orders &amp; account</Link>
+            <Link href="/account-application/" lang="en-GB">Request a business account</Link>
+            <a href="mailto:support@novapharmhealthcare.com" lang="en-GB">Customer support</a>
           </AppleFooterNavigation>
         </nav>
         <nav aria-label={interfaceLabel(locale, "Legal links")}>
