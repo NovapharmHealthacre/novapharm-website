@@ -1,7 +1,7 @@
 export const designTokens = Object.freeze({
   colour: Object.freeze({
     midnight: "#0d1b2a",
-    warmWhite: "#FBFAEF",
+    warmWhite: "#FFFFFF",
     porcelainWhite: "#F8F7F3",
     porcelainStone: "#DEDCD5",
     controlBorder: "#86868B",
@@ -18,12 +18,12 @@ export const designTokens = Object.freeze({
   }),
   materials: Object.freeze({
     navigation: Object.freeze({
-      solid: "#FBFAEF",
+      solid: "#FFFFFF",
       translucent: "rgba(251, 250, 239, 0.94)",
       separator: "rgba(11, 11, 14, 0.12)",
       blurredOnlyWhenSupported: true
     }),
-    content: Object.freeze({ canvas: "#FBFAEF", grouped: "#F8F7F3", effect: "opaque" }),
+    content: Object.freeze({ canvas: "#FFFFFF", grouped: "#F8F7F3", effect: "opaque" }),
     accessibility: Object.freeze({
       reducedTransparencyAttribute: "data-np-transparency=reduce",
       motion: "prefers-reduced-motion",
