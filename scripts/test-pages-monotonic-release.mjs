@@ -1,7 +1,7 @@
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
-import { canShip } from "./check-pages-monotonic-release.mjs";
+import { canShip, compareStatus, REVIEWED_LEGACY_PAGES_SHA } from "./check-pages-monotonic-release.mjs";
 
 const a="a".repeat(40), b="b".repeat(40), c="c".repeat(40);
 test("approved newer build may publish despite unrelated newer main commits", () => {
@@ -47,4 +47,30 @@ test("deployment passes owner-scoped manual release inputs to the independent gu
   assert.match(workflow, /RELEASE_EVENT: \$\{\{ github\.event_name \}\}/);
   assert.match(workflow, /BRANDING_ONLY: \$\{\{ inputs\.branding_only \}\}/);
   assert.match(workflow, /CONTACT_API_ORIGIN: \$\{\{ inputs\.contact_api_origin \}\}/);
+});
+
+
+test("ancestry comparison filters GitHub response to status before buffering", () => {
+  const repo = "owner/repo";
+  for (const status of ["ahead", "identical", "behind", "diverged"]) {
+    assert.equal(compareStatus(repo, a, b, (command, args, options) => {
+      assert.equal(command, "gh");
+      assert.deepEqual(args, ["api", "repos/owner/repo/compare/" + a + "..." + b, "--jq", ".status"]);
+      assert.equal(options.timeout, 15000);
+      return status + "\n";
+    }), status);
+  }
+  for (const bad of ["", "null", "unrelated", "ahead\nbehind"]) {
+    assert.throws(() => compareStatus(repo, a, b, () => bad), /Invalid GitHub comparison status/);
+  }
+});
+
+test("comparison errors never grant rollback or broaden legacy exception", () => {
+  const fail = stderr => () => { throw Object.assign(new Error("gh failed"), { stderr }); };
+  const legacy404 = "gh: No common ancestor between " + REVIEWED_LEGACY_PAGES_SHA + " and " + b + ". (HTTP 404)";
+  assert.equal(compareStatus("owner/repo", REVIEWED_LEGACY_PAGES_SHA, b, fail(legacy404)), "unrelated");
+  assert.throws(() => compareStatus("owner/repo", a, b, fail(legacy404)), /gh failed/);
+  for (const stderr of ["ENOBUFS", "HTTP 403", "HTTP 404", "HTTP 429"]) {
+    assert.throws(() => compareStatus("owner/repo", REVIEWED_LEGACY_PAGES_SHA, b, fail(stderr)), /gh failed/);
+  }
 });
