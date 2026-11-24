@@ -6936,7 +6936,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 10,
-      "referenceCount": 23,
+      "referenceCount": 24,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",

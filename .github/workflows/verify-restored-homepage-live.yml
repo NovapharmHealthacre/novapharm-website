@@ -39,9 +39,9 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq '<meta name="theme-color" content="#FFFFFF">' index.html
-          grep -Fq 'Medicine. Where it needs to be' index.html
-          grep -Fq 'class="npd-apple-hero nph-earth-hero"' index.html
-          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' index.html
+          grep -Fq 'Medicine. Where it needs to be' apps/corporate/components/concise-home.tsx
+          grep -Fq 'className="npd-apple-hero nph-earth-hero"' apps/corporate/components/concise-home.tsx
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' apps/corporate/components/concise-home.tsx
           grep -Fq -- '--np-color-canvas: #FFFFFF' assets/css/novapharm.bundle.css
 
   live-origin-acceptance:
