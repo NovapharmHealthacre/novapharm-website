@@ -34,9 +34,15 @@ function github(path) {
 // Only translate GitHub's *exact* no-common-ancestor response to an
 // unrelated comparison for the approved legacy branch. Any other failure
 // (including authentication, missing object or rate limit) stays fatal.
-function compareStatus(repo, older, newer) {
+export function compareStatus(repo, older, newer, run = execFileSync) {
   try {
-    return github("repos/" + repo + "/compare/" + older + "..." + newer)?.status;
+    // GitHub compare can include hundreds of commits and full file patches.
+    // Only the status is required; filter in gh before stdout reaches Node.
+    const status = run("gh", ["api", "repos/" + repo + "/compare/" + older + "..." + newer, "--jq", ".status"], {
+      encoding: "utf8", timeout: 15000, stdio: ["ignore", "pipe", "pipe"]
+    }).trim();
+    if (!["identical", "ahead", "behind", "diverged"].includes(status)) throw new Error("Invalid GitHub comparison status");
+    return status;
   } catch (error) {
     const stderr = String(error?.stderr || "");
     if (older === REVIEWED_LEGACY_PAGES_SHA &&
@@ -54,8 +60,7 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   if (legacyHead !== REVIEWED_LEGACY_PAGES_SHA) return false;
 
   // Require forward ancestry from the previous reviewed legacy release.
-  const legacyLineage = github("repos/" + repo + "/compare/" +
-    PREVIOUS_REVIEWED_LEGACY_PAGES_SHA + "..." + publishedSha)?.status;
+  const legacyLineage = compareStatus(repo, PREVIOUS_REVIEWED_LEGACY_PAGES_SHA, publishedSha);
   if (legacyLineage !== "ahead") return false;
 
   // The latest legacy release fixed the direct checkout policy link (#1172).
@@ -66,8 +71,7 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   if (![bag, bagGenerator].every(source => source.includes(reviewedPolicyLink))) return false;
 
   // The source must be the reviewed owner-scoped approval or its descendant.
-  const approvalLineage = github("repos/" + repo + "/compare/" +
-    BRAND_ONLY_AUTHORIZATION_ANCHOR + "..." + candidateSha)?.status;
+  const approvalLineage = compareStatus(repo, BRAND_ONLY_AUTHORIZATION_ANCHOR, candidateSha);
   if (!COMPARE_OK.has(approvalLineage)) return false;
 
   // Re-run full manual branding-only authorization, including the exact
@@ -117,7 +121,7 @@ async function main() {
     independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha);
   const statuses = {
     publishedToCandidate,
-    candidateToMain:github("repos/" + repo + "/compare/" + candidateSha + "..." + mainSha)?.status,
+    candidateToMain:compareStatus(repo, candidateSha, mainSha),
     legacyBridgeVerified
   };
   if (!canShip({publishedSha, candidateSha, mainSha, ...statuses})) {
