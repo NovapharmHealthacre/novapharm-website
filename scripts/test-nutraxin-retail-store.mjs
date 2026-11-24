@@ -198,3 +198,12 @@ test("checkout uncertainty is explicit and return verification blocks another pa
  assert.match(js,/awaitingOrder = returnedOrder;\s*render\(\);\s*const status = async/);
  assert.match(js,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
 });
+
+
+test("an uncertain retry retains the in-memory idempotency key and reconciles already-paid attempts",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/checkoutUncertain && \(!lastAttempt \|\| lastAttempt\.basket !== basketId \|\| lastAttempt\.mode !== mode\)/);
+ assert.match(js,/lastAttempt\?\.basket === basketId && lastAttempt\.mode === mode \? lastAttempt\.id/);
+ assert.match(js,/result\?\.already_paid === true && result\?\.status === "PAID"/);
+ assert.match(js,/BAG_URL \+ "\?checkout=return&order_id=" \+ encodeURIComponent\(result\.orderId\)/);
+});
