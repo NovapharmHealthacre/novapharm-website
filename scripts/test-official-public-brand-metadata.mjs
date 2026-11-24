@@ -14,15 +14,15 @@ import {
 const palette = officialPublicBrandPalette();
 
 test("approved public browser colours and Sovereign Black come from owner registry", () => {
-  assert.equal(palette.background, "#FBFAEF");
+  assert.equal(palette.background, "#FFFFFF");
   assert.equal(palette.crimson, "#9D1B32");
   assert.equal(palette.defaultInk, "#0B0B0E");
 });
 
 test("retired homepage and Products browser colours are corrected without changing page content", () => {
-  const legacy = '<!doctype html><html lang="en-GB"><head><meta name="theme-color" content="#FFFFFF"><link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#E3120B"><title>Approved Earth page</title></head><body><main id="main"><h1>Medicine. Where it needs to be.</h1></main></body></html>';
+  const legacy = '<!doctype html><html lang="en-GB"><head><meta name="theme-color" content="#FBFAEF"><link rel="mask-icon" href="/fixtures/brand-mask.svg" color="#E3120B"><title>Approved Earth page</title></head><body><main id="main"><h1>Medicine. Where it needs to be.</h1></main></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(legacy, palette);
-  assert.match(result, /name="theme-color" content="#FBFAEF"/);
+  assert.match(result, /name="theme-color" content="#FFFFFF"/);
   assert.match(result, /rel="mask-icon"[^>]*color="#9D1B32"/);
   assert.match(result, /Medicine\. Where it needs to be\./);
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
@@ -38,7 +38,7 @@ test("Next accessibility page may lack Safari mask; its CSP and hydrated scripts
 });
 
 test("current Contact palette stays unchanged and the protected form binding is preserved", () => {
-  const contact = '<html><head><meta name="theme-color" content="#FBFAEF"></head><body><form data-live-b2b-enquiry-form data-api-origin="https://safe.example.invalid"><button type="submit">Send</button></form><a href="mailto:bd@novapharmhealthcare.com">Email</a><script src="/assets/js/contact-production.js" defer></script></body></html>';
+  const contact = '<html><head><meta name="theme-color" content="#FFFFFF"></head><body><form data-live-b2b-enquiry-form data-api-origin="https://safe.example.invalid"><button type="submit">Send</button></form><a href="mailto:bd@novapharmhealthcare.com">Email</a><script src="/assets/js/contact-production.js" defer></script></body></html>';
   const result = normaliseOfficialPublicBrandMetadata(contact, palette);
   assert.equal(result, contact);
 });
@@ -51,7 +51,7 @@ test("missing browser theme is added and approved mask colour is completed", () 
 });
 
 test("duplicate or malformed metadata fails closed instead of silently claiming compliance", () => {
-  const duplicate = '<head><meta name="theme-color" content="#FFFFFF"><meta name="theme-color" content="#E3120B"></head>';
+  const duplicate = '<head><meta name="theme-color" content="#FBFAEF"><meta name="theme-color" content="#E3120B"></head>';
   assert.throws(() => normaliseOfficialPublicBrandMetadata(duplicate, palette), /duplicate theme-color/i);
   assert.throws(() => normaliseOfficialPublicBrandMetadata('<body></body>', palette), /head/);
   const duplicateMask = '<head><link rel="mask-icon" href="/a.svg"><link rel="mask-icon" href="/b.svg"></head>';
@@ -75,7 +75,7 @@ test("whole canonical release fixture updates all six key routes plus 54 registe
   const ownerRegistry = {
     approvedOn: "2026-11-22",
     neutralPalette: {
-      primaryWhite: {hex:"#FBFAEF"}, secondaryWhite: {hex:"#F8F7F3"},
+      primaryWhite: {hex:"#FFFFFF"}, secondaryWhite: {hex:"#F8F7F3"},
       defaultInk: {hex:"#0B0B0E"}
     },
     brands: { healthcare: {hex:"#9D1B32"} }
@@ -118,7 +118,7 @@ test("legacy Next Flight theme and strict CSP script hashes are updated together
   const changedFlight = result.split("<script>")[1]?.split("</script>")[0];
   assert.ok(changedFlight, "Next hydration script must still be present");
   assert.match(changedFlight, /theme-color/);
-  assert.match(changedFlight, /#FBFAEF/);
+  assert.match(changedFlight, /#FFFFFF/);
   assert.doesNotMatch(changedFlight, /#E3120B/i);
   assert.match(result, /object-src 'none'/);
   assert.match(result, /script-src 'self'/);
@@ -154,7 +154,7 @@ test("Next Flight literal replacement tokens remain intact when viewport metadat
   const body = result.split("<script>")[1]?.split("</script>")[0];
   assert.ok(body);
   for (const token of tokens) assert.ok(body.includes(token), "Lost literal Flight token " + token);
-  assert.match(body, /#FBFAEF/);
+  assert.match(body, /#FFFFFF/);
   assert.doesNotMatch(body, /#E3120B/);
   assert.ok(result.includes("'sha256-" + digest(body) + "'"));
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
@@ -173,9 +173,9 @@ test("mixed-case script tags and whitespace closing tags preserve CSP-pinned Nex
   assertOfficialPublicBrandMetadata(result, palette);
   assert.ok(result.includes('<SCRIPT data-note="a>b">'));
   assert.ok(result.includes("</ScRiPt \t\n>"));
-  assert.match(result, /#FBFAEF/);
+  assert.match(result, /#FFFFFF/);
   assert.doesNotMatch(result, /#E3120B/);
-  assert.ok(result.includes("'sha256-" + digest(flight.replace("#E3120B", "#FBFAEF")) + "'"));
+  assert.ok(result.includes("'sha256-" + digest(flight.replace("#E3120B", "#FFFFFF")) + "'"));
   assert.equal(normaliseOfficialPublicBrandMetadata(result, palette), result);
 });
 
@@ -200,7 +200,7 @@ test("four checked-in first-party public routes have approved browser chrome bef
     assert.ok(endHead > 0, "Missing public head: " + route);
     const head = html.slice(0, endHead);
     assert.equal((head.match(/name="theme-color"/g) || []).length, 1, route);
-    assert.match(head, /<meta name="theme-color" content="#FBFAEF">/, route);
+    assert.match(head, /<meta name="theme-color" content="#FFFFFF">/, route);
     assert.equal((head.match(/rel="mask-icon"/g) || []).length, 1, route);
     assert.match(head, /<link rel="mask-icon"[^>]*color="#9D1B32"/, route);
     assert.doesNotMatch(head, /#E3120B/i, "Retired browser red in " + route);
@@ -224,8 +224,8 @@ test("all 19 actual Nutraxin storefronts normalize approved browser chrome witho
       "Exact Nutraxin retail SKU missing: " + file);
     const normalized = normaliseOfficialPublicBrandMetadata(html, palette);
     assertOfficialPublicBrandMetadata(normalized, palette);
-    assert.match(normalized, /<meta\b[^>]*\bname=["']theme-color["'][^>]*\bcontent=["']#FBFAEF["']/i,
-      "Royal Mineral White browser theme missing: " + file);
+    assert.match(normalized, /<meta\b[^>]*\bname=["']theme-color["'][^>]*\bcontent=["']#FFFFFF["']/i,
+      "Pure White browser theme missing: " + file);
     assert.equal(normalized.slice(normalized.search(/<body\b/i)), originalBody,
       "Brand metadata may not modify retail content, prices, checkout or safety wording: " + file);
     assert.deepEqual(schemaScripts(normalized), schemaScripts(html),
@@ -252,7 +252,7 @@ test("all 19 checked-in Nutraxin product heads use approved white and Safari cri
     const head = html.slice(0, endHead);
     assert.equal(head.split('name="theme-color"').length - 1, 1,
       "Expected exactly one browser theme: " + file);
-    assert.ok(head.includes('<meta name="theme-color" content="#FBFAEF">'),
+    assert.ok(head.includes('<meta name="theme-color" content="#FFFFFF">'),
       "Unapproved browser surface: " + file);
     assert.equal(head.split('rel="mask-icon"').length - 1, 1,
       "Expected exactly one Safari mask: " + file);

@@ -18,8 +18,8 @@ import {
 
 const root = resolve(process.cwd());
 const officialNeutrals = JSON.parse(readFileSync(join(root, "config/brand-neutrals.json"), "utf8"));
-if (officialNeutrals.primary !== "#FBFAEF") {
-  throw new Error("Canonical public HTML generator requires approved Royal Mineral White");
+if (officialNeutrals.primary !== "#FFFFFF") {
+  throw new Error("Canonical public HTML generator requires approved Pure White");
 }
 
 // Canonical pages are sourced from both fresh templates and older product HTML.
