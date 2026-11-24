@@ -282,6 +282,58 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            if (route.path === "/products/nutraxin/") {
+              const label = engineName + " " + viewport.name + " Nutraxin catalogue";
+              await page.waitForFunction(() => {
+                const cards = [...document.querySelectorAll(".nx-product-grid .nx-product-card-shell")];
+                return cards.length === 19 && cards.every(card =>
+                  card.querySelector(".nx-store-card-footer .nx-store-buy-now") &&
+                  card.querySelector(".nx-product-visual img")?.dataset.nxOptical);
+              }, undefined, { timeout: 15000 });
+              const audit = await page.evaluate(() => {
+                const box = el => { const r=el.getBoundingClientRect(); return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}; };
+                const close=(a,b)=>Math.abs(a-b)<=2;
+                const failures=[], images=[];
+                for(const grid of document.querySelectorAll(".nx-product-grid")) {
+                  const groups=[];
+                  for(const card of grid.querySelectorAll(".nx-product-card-shell")) {
+                    const slug=card.querySelector("[data-nx-product-slug]").dataset.nxProductSlug;
+                    const stage=card.querySelector(".nx-product-visual");
+                    const image=stage.querySelector("img");
+                    const footer=card.querySelector(".nx-store-card-footer");
+                    const price=footer.querySelector(".nx-store-price");
+                    const add=footer.querySelector(".nx-store-add:not(.nx-store-buy-now)");
+                    const buy=footer.querySelector(".nx-store-buy-now");
+                    const publisher=card.querySelector(".nx-product-publisher");
+                    const s=box(stage), a=box(add), b=box(buy), p=box(price), foot=box(footer);
+                    if(!image.complete||!image.naturalWidth||getComputedStyle(image).objectFit!=="contain") failures.push(slug+": image missing or distorted");
+                    if(!close(s.w,s.h)) failures.push(slug+": image stage is not square");
+                    if(!close(a.y,b.y)||!close(a.h,b.h)||!close(a.w,b.w)||a.h<44||a.right>b.x+1) failures.push(slug+": purchase buttons are not an equal aligned row");
+                    if(a.x<foot.x-1||b.right>foot.right+1||footer.scrollWidth>footer.clientWidth+2) failures.push(slug+": purchase controls overflow");
+                    if(p.bottom>a.y+1||box(publisher).bottom>foot.y+2) failures.push(slug+": price or publisher intersects purchase row");
+                    let row=groups.find(g=>close(g.stage.y,s.y));
+                    if(!row){row={stage:s,add:a,price:p,footer:foot,slug};groups.push(row);}
+                    else if(!close(row.stage.h,s.h)||!close(row.add.y,a.y)||!close(row.price.y,p.y)||!close(row.footer.y,foot.y)) failures.push(slug+": row baseline differs from "+row.slug);
+                    if(image.dataset.nxOptical==="aligned"){
+                      const bounds=JSON.parse(image.dataset.nxOpticalBounds);
+                      const matrix=new DOMMatrix(getComputedStyle(image).transform);
+                      const x=matrix.e/image.clientWidth, y=matrix.f/image.clientHeight, scale=matrix.a;
+                      const l=bounds[0]*scale+x,t=bounds[1]*scale+y,r=bounds[2]*scale+x,bottom=bounds[3]*scale+y;
+                      if(l<-.01||t<-.01||r>1.01||bottom>1.01||Math.abs(bottom-.91)>.02||Math.abs((l+r)/2-.5)>.02||Math.abs(matrix.d-scale)>.001) failures.push(slug+": visible pack bounds are clipped or optically misaligned");
+                    }
+                    images.push({slug,optical:image.dataset.nxOptical,stage:s,price:p,add:a,buy:b});
+                  }
+                }
+                return {cards:images.length,alignedImages:images.filter(i=>i.optical==="aligned").length,failures,images};
+              });
+              assert.equal(audit.cards,19,label+": expected all governed product cards");
+              assert.deepEqual(audit.failures,[],label+": card alignment failed");
+              const folder=path.join(artifactRoot,engineName,viewport.name);
+              await mkdir(folder,{recursive:true});
+              await page.locator(".nx-range-section").first().screenshot({path:path.join(folder,"nutraxin-catalogue-alignment.png"),animations:"disabled"});
+              await page.evaluate(()=>window.scrollTo({top:0,behavior:"instant"}));
+              console.log(label+": 19 cards; "+audit.alignedImages+" transparent pack baselines normalized; purchase geometry passed.");
+            }
             // Verify computed pointer-target geometry, not only checked-in
             // CSS declarations: later styles must not erase these improvements.
             const smallPublicNavigationTargets = await page.evaluate(() => {
