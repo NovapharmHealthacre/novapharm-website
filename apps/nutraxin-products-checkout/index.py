@@ -180,7 +180,8 @@ def retail_promotion(pricing, raw_code, instant):
     if audience != "public_reusable" and (not isinstance(campaign_id,str)
         or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",campaign_id)):
         raise ValueError("promo_code_unavailable")
-    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,\n            "economics":policy.get("economics"),
+    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,
+            "economics":policy.get("economics"),
             "audience":audience,"campaign_id":campaign_id,"kind":kind,
             "occasion_year":campaign.get("occasion_year")}
 
@@ -389,7 +390,9 @@ def direct_checkout(event, customer_subject=None, preview=False):
                         "grossMinor": unit_gross * quantity})
     if promotion and (eligible_original_gross < promotion["minimum"] or original_gross <= gross or gross < 30):
         return error(422, "promo_code_not_applicable")
-    if promotion and promotion["economics"] is not None and not modeled_contribution_passes(promotion["economics"],ordered,net,gross):\n        return error(422,"promo_code_not_applicable")\n    tax = gross - net
+    if promotion and promotion["economics"] is not None and not modeled_contribution_passes(promotion["economics"],ordered,net,gross):
+        return error(422,"promo_code_not_applicable")
+    tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
     basket_hash = hashlib.sha256(json.dumps(
@@ -650,7 +653,8 @@ def handler(event, context):
                            "origin":"novapharmhealthcare.com",
                            "promotion_preview_supported":True,
                            "account_promotion_preview_supported":True,
-                           "account_privileges_supported":True,\n                           "ledger_campaign_policy_supported":True,
+                           "account_privileges_supported":True,
+                           "ledger_campaign_policy_supported":True,
                            "checkout_path":"/products/nutraxin/bag/"})
     if path in ("/account/me","/account/orders","/account/checkout","/account/quote","/account/privileges"):
         customer=verified_consumer(event)
