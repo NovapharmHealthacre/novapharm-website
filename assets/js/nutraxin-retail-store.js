@@ -150,6 +150,7 @@ function runStore(data) {
   let closedOutcome = "";
   let checkoutInFlight = false;
   let checkoutUncertain = false;
+  let lastAttempt = null;
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -251,12 +252,12 @@ function runStore(data) {
         tax.textContent = "20% UK VAT included";
         grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
-        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? (consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
+        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : checkoutInFlight ? "Opening checkout…" : ready ? (checkoutUncertain ? "Retry original checkout" : consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
           ? "Payment confirmed for order " + confirmedOrder + ". NovaPharm will process your order."
-          : closedOutcome === "expired"
+          : closedOutcome === "expired" && !checkoutUncertain && !checkoutInFlight
           ? "Checkout expired for order " + closedOrder + " without a completed payment. Your Bag is saved and you may start a new checkout."
-          : closedOutcome === "failed"
+          : closedOutcome === "failed" && !checkoutUncertain && !checkoutInFlight
           ? "Payment failed for order " + closedOrder + ". No successful payment has been recorded. Your Bag is saved so you may try again."
           : awaitingOrder
           ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
@@ -282,10 +283,13 @@ function runStore(data) {
             let stored;
             try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
             catch { stored = null; }
-            const requestId = stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
-              ? stored.id : crypto.randomUUID();
-            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
             const accountToken=consumerAccess();
+            const mode=accountToken?"account":"guest";
+            if (checkoutUncertain && (!lastAttempt || lastAttempt.basket !== basketId || lastAttempt.mode !== mode)) throw new Error("Original checkout cannot be resumed safely");
+            const requestId = lastAttempt?.basket === basketId && lastAttempt.mode === mode ? lastAttempt.id : stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
+              ? stored.id : crypto.randomUUID();
+            lastAttempt={basket:basketId,id:requestId,mode};
+            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
             const headers={ "content-type": "application/json" };
             if(accountToken)headers.authorization="Bearer "+accountToken;
             const target=accountToken?"/account/checkout":"/checkout";
@@ -299,6 +303,12 @@ function runStore(data) {
             }
             if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
+            // The server may reconcile a previous idempotent attempt as already paid.
+            // Re-enter the normal status-verification path rather than open a second checkout.
+            if (result?.already_paid === true && result?.status === "PAID" && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(result.orderId || "")) {
+              window.location.assign(BAG_URL + "?checkout=return&order_id=" + encodeURIComponent(result.orderId));
+              return;
+            }
             const url = new URL(result.checkoutUrl || "");
             if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") throw new Error("Invalid payment destination");
             emitRetailFunnelEvent("begin_checkout");
