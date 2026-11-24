@@ -40,6 +40,9 @@ class DirectoryTests(unittest.TestCase):
         self.assertEqual(result["sources"][0]["enabledCount"], 1)
         self.assertIsNone(result["uniquePeopleCount"])
         self.assertNotIn("never-return", repr(result))
+        keys = [row["rowKey"] for source in result["sources"] for row in source["records"]]
+        self.assertEqual(len(set(keys)), 3)
+        self.assertTrue(all(len(key) == 32 for key in keys))
         self.assertNotIn("subject", repr(result))
         self.assertEqual(client.calls[1]["PaginationToken"], "next")
         self.assertEqual(client.calls[0]["UserPoolId"], directory.SOURCES[0][1])

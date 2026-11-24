@@ -5,6 +5,7 @@ The caller must audit access and enforce no-store responses. This module does
 not confer any authority on existing retail or founder-shell sessions.
 """
 from datetime import datetime, timezone
+import uuid
 
 REGION = "eu-north-1"
 SOURCES = (
@@ -49,6 +50,7 @@ def read_customer_identities(client, *, now=None):
                 if type(user.get("Enabled")) is not bool:
                     raise ValueError("Invalid identity status")
                 records.append({
+                    "rowKey": uuid.uuid4().hex,
                     "email": attrs.get("email"),
                     "name": attrs.get("name") or " ".join(
                         attrs[k] for k in ("given_name", "family_name") if attrs.get(k)

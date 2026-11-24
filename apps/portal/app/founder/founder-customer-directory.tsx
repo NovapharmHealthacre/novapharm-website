@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "./founder-customer-directory.module.css";
 
-type Identity = { email: string | null; name: string | null; registeredAt: string; status: string; enabled: boolean; emailVerified: boolean | null };
+type Identity = { rowKey: string; email: string | null; name: string | null; registeredAt: string; status: string; enabled: boolean; emailVerified: boolean | null };
 type Source = { source: string; identityCount: number; verifiedCount: number; enabledCount: number; records: Identity[] };
 type Directory = { observedAt: string; coverage: string; uniquePeopleCount: null; sources: Source[] };
 
@@ -44,10 +44,10 @@ export function FounderCustomerDirectory() {
         return <section key={source.source} className={styles.source}>
           <h3>{source.source === "healthcare-retail" ? "Healthcare retail" : source.source === "intelligence" ? "Intelligence" : source.source}</h3>
           <p>{source.identityCount} registered · {source.verifiedCount} email verified · {source.enabledCount} enabled</p>
-          <div className={styles.table} role="region" aria-label={source.source + " registered identities"} tabIndex={0}>
+          <section className={styles.table} aria-label={`${source.source} registered identities`}>
             <table><thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Registered (UTC)</th><th scope="col">Status</th><th scope="col">Email verified</th><th scope="col">Enabled</th></tr></thead>
-            <tbody>{rows.map((row, index) => <tr key={index}><td>{row.name ?? "Not recorded"}</td><td>{row.email ?? "Not recorded"}</td><td>{row.registeredAt}</td><td>{row.status}</td><td>{row.emailVerified === null ? "Unknown" : row.emailVerified ? "Yes" : "No"}</td><td>{row.enabled ? "Yes" : "No"}</td></tr>)}</tbody></table>
-          </div>
+            <tbody>{rows.map(row => <tr key={row.rowKey}><td>{row.name ?? "Not recorded"}</td><td>{row.email ?? "Not recorded"}</td><td>{row.registeredAt}</td><td>{row.status}</td><td>{row.emailVerified === null ? "Unknown" : row.emailVerified ? "Yes" : "No"}</td><td>{row.enabled ? "Yes" : "No"}</td></tr>)}</tbody></table>
+          </section>
           {rows.length === 0 && <p>No matching registered identities.</p>}
         </section>;
       })}
