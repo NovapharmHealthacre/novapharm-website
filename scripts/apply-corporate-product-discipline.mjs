@@ -689,6 +689,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
     html = html.replace("</body>",
       '  <script type="module" src="/assets/js/nutraxin-retail-store.js"></script>\n</body>');
   }
+  if (route === "/products/nutraxin/gift-cards/" && !html.includes('href="/assets/css/nutraxin-retail-store.css"')) {
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-retail-store.css">\n</head>');
+  }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
     html = html.replace("</body>", '  <script type="module" src="/assets/js/nutraxin-order-request.js"></script></body>');
