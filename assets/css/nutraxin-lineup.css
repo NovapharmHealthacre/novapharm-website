@@ -403,7 +403,7 @@
 .nx-collection .nx-product-copy h3 {
   font-size:clamp(20px,1.65vw,25px);
   font-weight:650;
-  letter-spacing:-.025em;
+  letter-spacing: normal;
   line-height:1.24;
   min-height:2.48em;
   margin:10px 0 0;
@@ -456,7 +456,7 @@
   font-weight:650;
   line-height:1.25;
   font-variant-numeric:tabular-nums;
-  letter-spacing:-.015em;
+  letter-spacing: normal;
 }
 .nx-collection .nx-store-card-footer .nx-store-vat-note {
   font-size:12px;
