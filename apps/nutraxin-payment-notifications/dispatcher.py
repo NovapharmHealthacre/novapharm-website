@@ -6,6 +6,8 @@ production access, sender authentication and paid-order acceptance pass.
 """
 import json
 from html import escape
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import os
 import re
 import time
@@ -122,6 +124,28 @@ def mark(order_id, event_id, status, message_id=None):
 LOGO_URL = "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
 TRACK_URL = "https://novapharmhealthcare.com/products/track/"
 SUPPORT = "support@novapharmhealthcare.com"
+PRODUCT_IMAGES = {
+    "NUT-UK-VD3-T120": ("vitamin-d3-120-tablets", "120 tablets"),
+    "NUT-UK-VD3-S30": ("vitamin-d3-spray-30ml", "30 ml"),
+    "NUT-UK-VD3K2-T120": ("vitamin-d3-k2-120-tablets", "120 tablets"),
+    "NUT-UK-VD3K2-S30": ("vitamin-d3-k2-spray-30ml", "30 ml"),
+    "NUT-UK-VC1000-T30": ("vitamin-c-1000mg-30-tablets", "30 tablets"),
+    "NUT-UK-VC500-C30": ("vitamin-c-500mg-chewable-30-tablets", "30 chewable tablets"),
+    "NUT-UK-VMAX-T60": ("vitamin-max-60-tablets", "60 tablets"),
+    "NUT-UK-VMAX-E15": ("vitamin-max-15-effervescent-tablets", "15 tablets"),
+    "NUT-UK-MGCX-T60": ("magnesium-complex-60-tablets", "60 tablets"),
+    "NUT-UK-MGDL-T60": ("magnesium-daily-60-tablets", "60 tablets"),
+    "NUT-UK-MVE-T60": ("multivitamin-mineral-energy-60-tablets", "60 tablets"),
+    "NUT-UK-MVW-T60": ("womens-multivitamin-complex-60-tablets", "60 tablets"),
+    "NUT-UK-MVM-T60": ("mens-multivitamin-complex-60-tablets", "60 tablets"),
+    "NUT-UK-CG-T30": ("collagen-gold-30-tablets", "30 tablets"),
+    "NUT-UK-CG-S30": ("collagen-gold-30-sachets", "30 sachets"),
+    "NUT-UK-CCX-T90": ("collagen-complex-90-tablets", "90 tablets"),
+    "NUT-UK-ART-T90": ("artoflex-90-tablets", "90 tablets"),
+    "NUT-UK-LCAR-T60": ("l-carnitine-60-tablets", "60 tablets"),
+    "NUT-UK-B12-SL60": ("vitamin-b12-60-sublingual-tablets", "60 sublingual tablets"),
+}
+PRODUCT_IMAGE_BASE = "https://novapharmhealthcare.com/assets/media/products/nutraxin/"
 
 def gbp(minor):
     return f"£{minor // 100:,}.{minor % 100:02d}"
@@ -143,50 +167,81 @@ def receipt_lines(row, amount):
             any(ord(c) < 32 for c in name) or type(qty) is not int or
             not 1 <= qty <= 10000 or type(gross) is not int or not 0 <= gross <= amount):
             raise ValueError("Invalid approved order line")
-        cleaned.append((name, qty, gross))
+        # Only first-party, SKU-allowlisted photographs; no remote input URLs.
+        sku = line.get("sku")
+        image, pack = PRODUCT_IMAGES.get(sku, ("", "")) if isinstance(sku, str) else ("", "")
+        cleaned.append((name, qty, gross, image, pack))
     if sum(line[2] for line in cleaned) + shipping != amount:
         raise ValueError("Order lines do not reconcile to payment")
     return cleaned, shipping
 
-def receipt_content(order_id, amount, lines, shipping):
+def order_date(session):
+    stamp = session.get("created")
+    if type(stamp) is not int or not 0 < stamp <= int(time.time()) + 300:
+        return ""
+    return datetime.fromtimestamp(stamp, timezone.utc).astimezone(ZoneInfo("Europe/London")).strftime("%d %B %Y").lstrip("0")
+
+def customer_name(session):
+    name = (session.get("customer_details") or {}).get("name")
+    if not isinstance(name, str):
+        return ""
+    name = " ".join(name.split())
+    return name[:100] if name and all(ord(c) >= 32 for c in name) else ""
+
+def confirmation_progress():
+    cells = []
+    for i, label in enumerate(("Confirmed", "Preparing", "Dispatched", "Delivered")):
+        color = "#9D1B32" if i == 0 else "#DEDCD5"
+        left = "#F8F7F3" if i == 0 else "#DEDCD5"
+        right = "#F8F7F3" if i == 3 else "#DEDCD5"
+        label_style = "color:#9D1B32;font-weight:bold" if i == 0 else "color:#525252"
+        cells.append(f'<td width="25%" align="center" valign="top"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="45%" valign="middle"><div style="background:{left};height:3px;line-height:3px;font-size:1px">&nbsp;</div></td><td align="center" style="font-size:23px;line-height:28px;color:{color}">&#9679;</td><td width="45%" valign="middle"><div style="background:{right};height:3px;line-height:3px;font-size:1px">&nbsp;</div></td></tr></table><div style="font-size:12px;line-height:18px;{label_style}">{label}</div></td>')
+    return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" aria-label="Order confirmed. Preparing, dispatched and delivered are pending."><tr>' + "".join(cells) + '</tr></table>'
+
+def receipt_content(order_id, amount, lines, shipping, name="", placed=""):
     subject = "Thank you for your order."
-    intro = "Your payment has been received. Thank you for choosing NovaPharm."
-    follow = "We will be in touch when your order is ready for dispatch. Payment confirmation does not mean your order has been dispatched."
-    plain_lines = [f"{name} | Quantity: {qty} | {gbp(gross)}" for name, qty, gross in lines]
-    body = "\n".join(["NovaPharm Healthcare", "", "Your order is confirmed.", "", intro,
-        follow, "", "Order reference: " + order_id, "", *plain_lines,
+    intro = "Thank you for choosing NovaPharm. We have received your order and payment."
+    follow = "We will be in touch once your order is on its way to you."
+    greeting = "Dear " + name + "," if name else ""
+    plain_lines = [f"{product} | {pack} | Quantity: {qty} | {gbp(gross)}" for product, qty, gross, image, pack in lines]
+    body = "\n".join(["NovaPharm Healthcare", "", "A thoughtful choice.", "", greeting, intro,
+        follow, "", "Order reference: " + order_id, *(["Order placed: " + placed] if placed else []),
+        "Order confirmed. Payment received. Dispatch pending.", "", *plain_lines,
         "Delivery: " + gbp(shipping), "Total paid (including applicable VAT): " + gbp(amount),
-        "", "Check order status (no account required): " + TRACK_URL,
-        "Enter the complete order reference above. This service shows status only.",
-        "", "At your service.", "For assistance, reply to this email or contact " + SUPPORT + ".",
-        "With care,", "NovaPharm Healthcare Ltd"])
-    rows = "".join(
-        f'<tr><td style="padding:18px 0;border-bottom:1px solid #DEDCD5;vertical-align:top">'
-        f'{escape(name)}<br><span style="font-size:13px;color:#525252">Quantity: {qty}</span></td>'
-        f'<td align="right" style="padding:18px 0 18px 12px;border-bottom:1px solid #DEDCD5;vertical-align:top;white-space:nowrap">{gbp(gross)}</td></tr>'
-        for name, qty, gross in lines)
+        "", "View your order: " + TRACK_URL,
+        "No account required. Enter your complete order reference to view the recorded status.",
+        "", "At your service.", "Should you wish to enquire about your order, arrange a return or simply speak with us, please reply to this email. We would be pleased to assist.",
+        SUPPORT, "With care,", "NovaPharm Healthcare Ltd"])
+    rows = []
+    for product, qty, gross, image, pack in lines:
+        photo = f'<img src="{PRODUCT_IMAGE_BASE}{image}.png" width="64" height="64" alt="" style="display:block;width:64px;height:64px;border:0">' if image else ""
+        rows.append(f'<tr><td width="76" style="padding:18px 8px 18px 0;border-bottom:1px solid #DEDCD5;vertical-align:middle">{photo}</td><td style="padding:18px 0;border-bottom:1px solid #DEDCD5;vertical-align:middle"><strong>{escape(product)}</strong><br><span style="font-size:13px;color:#525252">{escape(pack)}<br>Quantity: {qty}</span></td><td align="right" style="padding:18px 0 18px 8px;border-bottom:1px solid #DEDCD5;vertical-align:middle;white-space:nowrap">{gbp(gross)}</td></tr>')
+    rows_html = "".join(rows)
+    date_html = f'<td width="40%" valign="top"><div style="color:#525252;font-size:13px">Order placed</div><strong style="font-size:14px">{escape(placed)}</strong></td>' if placed else ""
+    greeting_html = f'<p style="margin:0 0 16px">{escape(greeting)}</p>' if greeting else ""
+    progress = confirmation_progress()
     html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{subject}</title></head>
 <body style="margin:0;padding:0;background:#FFFFFF;color:#0B0B0E;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;font-size:16px;line-height:1.6">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#FFFFFF"><tr><td align="center">
 <!--[if mso]><table role="presentation" width="600" align="center"><tr><td><![endif]-->
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#FFFFFF">
-<tr><td style="padding:40px 28px 32px"><img src="{LOGO_URL}" alt="NovaPharm Healthcare" width="240" style="display:block;width:240px;max-width:100%;height:auto;border:0"></td></tr>
-<tr><td style="padding:0 28px 28px"><h1 style="font-size:30px;line-height:1.25;font-weight:400;margin:0 0 24px">Your order is confirmed.</h1><p style="margin:0 0 16px">{intro}</p><p style="margin:0">{follow}</p></td></tr>
-<tr><td style="padding:0 28px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F8F7F3"><tr><td style="padding:20px"><p style="font-size:13px;color:#525252;margin:0 0 6px">Order reference</p><p style="font-size:14px;margin:0;overflow-wrap:anywhere;word-break:break-all">{escape(order_id)}</p></td></tr></table></td></tr>
-<tr><td style="padding:30px 28px"><h2 style="font-size:22px;font-weight:400;margin:0 0 8px">Your selection.</h2>
-<table width="100%" cellspacing="0" cellpadding="0" style="font-size:15px;line-height:1.5" aria-label="Order summary">{rows}
-<tr><td style="padding:16px 0 6px">Delivery</td><td align="right">{gbp(shipping)}</td></tr>
-<tr><td style="padding:8px 0;font-weight:bold">Total paid</td><td align="right" style="font-weight:bold">{gbp(amount)}</td></tr></table>
-<p style="font-size:13px;color:#525252;margin:8px 0 24px">Includes applicable VAT.</p>
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="border:1px solid #0B0B0E"><a href="{TRACK_URL}" style="display:block;padding:16px;color:#0B0B0E;font-weight:500;text-decoration:none">Check your order status &#8594;</a></td></tr></table>
+<tr><td align="center" style="padding:44px 24px 36px"><img src="{LOGO_URL}" alt="NovaPharm Healthcare" width="240" style="display:block;width:240px;max-width:100%;height:auto;border:0;margin:0 auto"></td></tr>
+<tr><td style="padding:0 24px 26px"><div style="border-top:1px solid #DEDCD5;padding-top:32px"><h1 style="font-size:26px;line-height:1.3;font-weight:500;margin:0 0 22px">A thoughtful choice.</h1>{greeting_html}<p style="margin:0 0 16px">{intro}</p><p style="margin:0">{follow}</p></div></td></tr>
+<tr><td style="padding:0 24px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F8F7F3"><tr><td style="padding:18px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td width="60%" valign="top" style="padding-right:12px"><div style="font-size:13px;color:#525252">Order reference</div><strong style="font-size:13px;overflow-wrap:anywhere;word-break:break-all">{escape(order_id)}</strong></td>{date_html}</tr></table><div style="border-top:1px solid #DEDCD5;margin:18px 0 12px"></div><p style="font-size:15px;font-weight:bold;margin:0 0 2px">Order confirmed</p><p style="font-size:13px;color:#525252;margin:0 0 12px">Payment received</p>{progress}</td></tr></table></td></tr>
+<tr><td style="padding:28px 24px"><h2 style="font-size:20px;font-weight:500;margin:0 0 12px">Your order.</h2>
+<table width="100%" cellspacing="0" cellpadding="0" style="font-size:15px;line-height:1.5" aria-label="Order summary">{rows_html}
+<tr><td colspan="2" style="padding:16px 0 6px">Delivery</td><td align="right">{gbp(shipping)}</td></tr>
+<tr><td colspan="2" style="padding:12px 0;font-weight:bold">Total paid</td><td align="right" style="font-weight:bold">{gbp(amount)}</td></tr></table>
+<p style="font-size:13px;color:#525252;margin:4px 0 20px">Includes applicable VAT.</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" bgcolor="#0B0B0E" style="background:#0B0B0E"><a href="{TRACK_URL}" style="display:block;padding:16px;color:#FFFFFF;font-weight:500;text-decoration:none">View your order</a></td></tr></table>
 <p style="font-size:13px;color:#525252;margin:12px 0 0">No account required. Enter your complete order reference to view the recorded status.</p></td></tr>
-<tr><td style="padding:0 28px 36px"><h2 style="font-size:22px;font-weight:400;margin:0 0 14px;border-top:1px solid #DEDCD5;padding-top:24px">At your service.</h2><p style="margin:0 0 16px">If you have any questions about your order, simply reply to this email. We would be pleased to assist.</p><p style="margin:0">With care,<br>NovaPharm Healthcare</p></td></tr>
-<tr><td style="background:#0B0B0E;color:#FFFFFF;padding:28px;font-size:14px"><h2 style="font-size:20px;font-weight:400;margin:0 0 16px">Customer care</h2><p style="margin:0 0 16px"><a href="mailto:{SUPPORT}" style="color:#FFFFFF;text-decoration:underline">{SUPPORT}</a></p><p style="margin:0 0 16px"><a href="{TRACK_URL}" style="color:#FFFFFF;text-decoration:underline">Order status</a></p><p style="margin:0;font-size:12px">NovaPharm Healthcare Ltd<br>United Kingdom</p></td></tr>
+<tr><td style="padding:0 24px 32px"><h2 style="font-size:20px;font-weight:500;margin:0 0 14px;border-top:1px solid #DEDCD5;padding-top:24px">At your service.</h2><p style="margin:0 0 16px">Should you wish to enquire about your order, arrange a return or simply speak with us, please reply to this email. We would be pleased to assist.</p><p style="margin:0 0 8px">With care,</p><strong>NovaPharm Healthcare</strong></td></tr>
+<tr><td style="background:#0B0B0E;color:#FFFFFF;padding:24px;font-size:14px"><h2 style="font-size:20px;font-weight:400;margin:0 0 14px">Customer care</h2><p style="margin:0;padding:12px 0;border-bottom:1px solid #505050"><a href="{TRACK_URL}" style="color:#FFFFFF;text-decoration:none">Track your order</a></p><p style="margin:0;padding:12px 0;border-bottom:1px solid #505050"><a href="mailto:{SUPPORT}?subject=Returns%20and%20refunds" style="color:#FFFFFF;text-decoration:none">Returns and refunds</a></p><p style="margin:0;padding:12px 0;border-bottom:1px solid #505050"><a href="mailto:{SUPPORT}" style="color:#FFFFFF;text-decoration:none">Contact us</a></p><p style="margin:16px 0 8px"><a href="mailto:{SUPPORT}" style="color:#FFFFFF;text-decoration:underline">{SUPPORT}</a></p><p style="margin:0;font-size:12px">NovaPharm Healthcare Ltd<br>London, United Kingdom</p></td></tr>
 </table><!--[if mso]></td></tr></table><![endif]--></td></tr></table></body></html>"""
     return subject, body, html
 
-def send_receipt(address, order_id, amount, lines, shipping):
-    subject, body, html = receipt_content(order_id, amount, lines, shipping)
+def send_receipt(address, order_id, amount, lines, shipping, name="", placed=""):
+    subject, body, html = receipt_content(order_id, amount, lines, shipping, name, placed)
     return SES.send_email(
         FromEmailAddress="NovaPharm Healthcare <" + SENDER + ">",
         ReplyToAddresses=[SUPPORT],
@@ -195,7 +250,6 @@ def send_receipt(address, order_id, amount, lines, shipping):
             "Subject": {"Data": subject, "Charset": "UTF-8"},
             "Body": {"Text": {"Data": body, "Charset": "UTF-8"},
                      "Html": {"Data": html, "Charset": "UTF-8"}}}})
-
 
 def handler(event, context):
     if not ENABLED:
@@ -250,7 +304,7 @@ def handler(event, context):
         except ClientError:
             continue  # Already claimed; never send again.
         try:
-            delivered = send_receipt(recipient, order_id, amount, lines, shipping)
+            delivered = send_receipt(recipient, order_id, amount, lines, shipping, customer_name(session), order_date(session))
         except ClientError:
             mark(order_id, event_id, "REVIEW_REQUIRED")
             review += 1
