@@ -11,10 +11,10 @@ const SHA = /^[a-f0-9]{40}$/;
 const REPO = /^[\w.-]+\/[\w.-]+$/;
 const COMPARE_OK = new Set(["identical", "ahead"]);
 // One-time migration from the exact reviewed legacy publication, including
-// the two reviewed Nutraxin customer-support releases (#1171 and #1172).
+// the reviewed Nutraxin coupon and bag publication (#1187).
 // Do not inherit this exception for any future gh-pages commit.
-const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e";
-export const REVIEWED_LEGACY_PAGES_SHA = "827fdf67341fe2f289e6d1a7810f847521b05dac";
+const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "827fdf67341fe2f289e6d1a7810f847521b05dac";
+export const REVIEWED_LEGACY_PAGES_SHA = "f82e3ab9391ec7d9185c254a7cc5877b5885a62b";
 export const BRAND_ONLY_AUTHORIZATION_ANCHOR = "26432d4ac2c53a8a39b6701fa77bccda487737ed";
 
 export function canShip({publishedSha, candidateSha, mainSha, publishedToCandidate, candidateToMain, legacyBridgeVerified = false}) {
@@ -69,6 +69,19 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   const bagGenerator = readFileSync(resolve("scripts/apply-corporate-product-discipline.mjs"), "utf8");
   const reviewedPolicyLink = '<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand';
   if (![bag, bagGenerator].every(source => source.includes(reviewedPolicyLink))) return false;
+
+  // #1187 published exactly two assets from the verified main source. Require
+  // the exact reviewed successor of both assets (retains the published bag
+  // and coupon behavior, adds gated account privileges), not an older build.
+  const retailAnchor = "df42e20f79a00184c7a59403d713ad77bdbb0c52";
+  if (!COMPARE_OK.has(compareStatus(repo, retailAnchor, candidateSha))) return false;
+  const reviewedRetail = {
+    "assets/css/nutraxin-retail-store.css": "10f56efb33df28b82645874c7e383049bf5d8a20",
+    "assets/js/nutraxin-retail-store.js": "68bd6b6bd152c4b1ad92ea995fe16fceb4930111"
+  };
+  for (const [path, expected] of Object.entries(reviewedRetail)) {
+    if (gitBlobSha(readFileSync(resolve(path))) !== expected) return false;
+  }
 
   // The source must be the reviewed owner-scoped approval or its descendant.
   const approvalLineage = compareStatus(repo, BRAND_ONLY_AUTHORIZATION_ANCHOR, candidateSha);

@@ -23,7 +23,7 @@ test("diverged history, missing deployment and unknown comparisons fail closed",
 
 
 test("unrelated legacy branch is accepted only with exact independent migration proof", () => {
-  const legacy = "827fdf67341fe2f289e6d1a7810f847521b05dac";
+  const legacy = "f82e3ab9391ec7d9185c254a7cc5877b5885a62b";
   const proposal = { publishedSha: legacy, candidateSha: b, mainSha: c,
     publishedToCandidate: "unrelated", candidateToMain: "ahead" };
   assert.equal(canShip({ ...proposal, legacyBridgeVerified: true }), true);
@@ -32,6 +32,7 @@ test("unrelated legacy branch is accepted only with exact independent migration 
     { legacyBridgeVerified: "true" },
     { publishedSha: a, legacyBridgeVerified: true },
     { publishedSha: "462fe8f33f8b09c007e61ef4908542d4e2bd0a7e", legacyBridgeVerified: true },
+    { publishedSha: "827fdf67341fe2f289e6d1a7810f847521b05dac", legacyBridgeVerified: true },
     { candidateToMain: "behind", legacyBridgeVerified: true },
     { candidateToMain: "diverged", legacyBridgeVerified: true },
     { candidateToMain: undefined, legacyBridgeVerified: true },
@@ -73,4 +74,14 @@ test("comparison errors never grant rollback or broaden legacy exception", () =>
   for (const stderr of ["ENOBUFS", "HTTP 403", "HTTP 404", "HTTP 429"]) {
     assert.throws(() => compareStatus("owner/repo", REVIEWED_LEGACY_PAGES_SHA, b, fail(stderr)), /gh failed/);
   }
+});
+
+ test("reviewed coupon bridge pins both successor retail assets and lineage", () => {
+  const guard = readFileSync(new URL("./check-pages-monotonic-release.mjs", import.meta.url), "utf8");
+  assert.ok(guard.includes('const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "827fdf67341fe2f289e6d1a7810f847521b05dac"'));
+  assert.ok(guard.includes('const retailAnchor = "df42e20f79a00184c7a59403d713ad77bdbb0c52"'));
+  assert.ok(guard.includes('compareStatus(repo, retailAnchor, candidateSha)'));
+  assert.ok(guard.includes('"assets/css/nutraxin-retail-store.css": "10f56efb33df28b82645874c7e383049bf5d8a20"'));
+  assert.ok(guard.includes('"assets/js/nutraxin-retail-store.js": "68bd6b6bd152c4b1ad92ea995fe16fceb4930111"'));
+  assert.ok(guard.includes('gitBlobSha(readFileSync(resolve(path))) !== expected'));
 });
