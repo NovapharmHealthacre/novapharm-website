@@ -43,7 +43,7 @@ def ledger():
             "stripeSessionId": s(SESSION_ID), "lastStripeEventId": s(EVENT_ID),
             "totalGrossMinor": {"N": "1547"}, "currency": s("GBP"),
             "shippingGrossMinor": {"N": "0"},
-            "approvedLinesJson": s(json.dumps([{"name": "Synthetic product & care", "quantity": 1, "grossMinor": 1547}])),
+            "approvedLinesJson": s(json.dumps([{"name": "Synthetic product & care", "sku": "NUT-UK-MGCX-T60", "quantity": 1, "grossMinor": 1547}])),
             "quoteVersion": s("quote_123"), "customerId": s("cust_123")}
 
 def session():
@@ -52,7 +52,8 @@ def session():
             "amount_total": 1547, "client_reference_id": ORDER_ID,
             "metadata": {"payment_attempt_id": ATTEMPT,
                          "quote_version": "quote_123", "customer_id": "cust_123"},
-            "customer_details": {"email": "customer@example.invalid"}}
+            "created": 1795000000,
+            "customer_details": {"email": "customer@example.invalid", "name": "Alex & Co"}}
 
 class FakeDDB:
     def __init__(self):
@@ -153,6 +154,13 @@ class NotificationContracts(unittest.TestCase):
         self.assertIn(APP.LOGO_URL, body["Html"]["Data"])
         self.assertIn(APP.TRACK_URL, body["Html"]["Data"])
         self.assertNotIn("customer@example.invalid", body["Html"]["Data"])
+        self.assertIn("A thoughtful choice.", body["Html"]["Data"])
+        self.assertIn("Dear Alex &amp; Co,", body["Html"]["Data"])
+        self.assertIn("magnesium-complex-60-tablets.png", body["Html"]["Data"])
+        self.assertIn("Order confirmed", body["Html"]["Data"])
+        self.assertIn("Preparing, dispatched and delivered are pending", body["Html"]["Data"])
+        self.assertIn("Returns and refunds", body["Html"]["Data"])
+        self.assertEqual(len(APP.PRODUCT_IMAGES), 19)
         self.assertEqual(self.result(self.scheduler())["sent"],0)
         self.assertEqual(len(SES.sent),1)
     def test_reject_mismatched_paid_session_and_preserve_outbox(self):
