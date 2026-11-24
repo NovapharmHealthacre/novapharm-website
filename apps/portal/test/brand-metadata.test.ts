@@ -35,18 +35,18 @@ test("favicon and touch art remain exclusive to each licensed owner identity", (
 
 test("portal neutral surfaces inherit owner-approved official whites without changing access policy", () => {
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(css, /--white:\s*#FBFAEF\s*;/i);
+  assert.match(css, /--white:\s*#FFFFFF\s*;/i);
   assert.match(css, /--soft:\s*#F8F7F3\s*;/i);
   assert.match(css, /--ink:\s*#0B0B0E\s*;/i);
   assert.match(css, /--red:\s*#9D1B32\s*;/i);
   const portal = readFileSync(new URL("../app/apple-pharma-portal.css", import.meta.url), "utf8");
-  assert.match(portal, /--portal-white:\s*#FBFAEF\s*;/i);
+  assert.match(portal, /--portal-white:\s*#FFFFFF\s*;/i);
   assert.match(portal, /--portal-soft:\s*#F8F7F3\s*;/i);
   assert.match(portal, /--portal-divider:\s*#DEDCD5\s*;/i);
-  assert.doesNotMatch(portal, /--portal-white:\s*#(?:ffffff|fff)\s*;/i);
-  assert.match(portal, /background:\s*rgba\(251,250,239,\.9\)/i);
+  // Pure White is the owner-approved primary; only secondary surfaces remain Porcelain.\n  assert.match(portal, /--portal-white:\s*#FFFFFF\s*;/i);
+  assert.match(portal, /background:\s*rgba\(255,255,255,\.9\)/i);
   const distribution = readFileSync(new URL("../app/employee-distribution.css", import.meta.url), "utf8");
-  assert.match(distribution, /background:var\(--portal-white,#FBFAEF\)/i);
+  assert.match(distribution, /background:var\(--portal-white,#FFFFFF\)/i);
   assert.doesNotMatch(distribution, /background:\s*#(?:fff|ffffff)\b/i);
   // White text on deliberately dark controls remains an intentional accessibility choice.
   assert.match(distribution, /color:#fff\b/i);

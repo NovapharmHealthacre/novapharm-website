@@ -385,10 +385,43 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
+  // Desktop links must keep their ordinary browser destinations even when
+  // pointer or keyboard focus has opened a preview directory.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [section, destination] of [
+    ["company", "/about/"], ["capabilities", "/capabilities/"],
+    ["distribution", "/distribution/"], ["oncology", "/oncology/"],
+    ["products", "/products/"], ["intelligence", "/technology/"],
+  ]) {
+    await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+    const trigger = page.locator(`header .desktop-nav > a[data-mega-trigger="${section}"]`);
+    const panel = page.locator(`header [data-mega-panel="${section}"]`);
+    await trigger.hover();
+    await panel.waitFor({ state: "visible" });
+    await trigger.click();
+    await page.waitForURL(`${baseUrl}${destination}`);
+    assert.equal(await page.locator("header.site-header.npd-header").count(), 1);
+    assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1);
+  }
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+  const companyTrigger = page.locator('header .desktop-nav > a[data-mega-trigger="company"]');
+  const companyPanel = page.locator('header [data-mega-panel="company"]');
+  await companyTrigger.focus();
+  await companyTrigger.press("ArrowDown");
+  await companyPanel.locator("a").first().waitFor({ state: "visible" });
+  await companyPanel.locator("a:focus").waitFor({ state: "attached" });
+  await page.keyboard.press("Escape");
+  await companyPanel.waitFor({ state: "hidden" });
+  assert.equal(await companyTrigger.evaluate((element) => document.activeElement === element), true);
+  await companyTrigger.press("Enter");
+  await page.waitForURL(`${baseUrl}/about/`);
+  await page.setViewportSize({ width: 390, height: 844 });
+
   await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
-  assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");
+  assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1, "shared Contact footer missing");
+  assert.equal(await page.locator("main footer").count(), 0, "Contact must not have a second footer");
   if (process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true") {
     assert.equal(await page.locator("form.contact-form").count(), 1, "verified managed contact form required");
     await page.getByLabel("Full name").fill("Validation User");
@@ -531,8 +564,8 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
       const visibleNavigationLinks = page.locator('header nav a:visible');
       assert.deepEqual(
         await visibleNavigationLinks.allTextContents(),
-        navigation.map(([label]) => label),
-        `${name}: scriptless primary navigation does not match the governed seven-destination architecture`,
+        navigation.filter(([, href]) => href !== "/news-insights/").map(([label]) => label === "NovaPharm Intelligence" ? "Intelligence" : label),
+        `${name}: scriptless primary navigation does not match the uniform eight-destination architecture`,
       );
       const layout = await page.evaluate(() => ({
         viewportWidth: document.documentElement.clientWidth,

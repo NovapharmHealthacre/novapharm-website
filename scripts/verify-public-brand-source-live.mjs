@@ -53,8 +53,8 @@ export function verifyPublishedHtml(rawHtml, route, sourceSha) {
   if (receipt.length !== 1 || attribute(receipt[0], "content") !== sourceSha)
     errors.push("Published source SHA absent, duplicated or not the exact release");
   const themes = matches(html, "meta", "name", "theme-color");
-  if (themes.length !== 1 || attribute(themes[0], "content") !== "#FBFAEF")
-    errors.push("Browser theme differs from approved Royal Mineral White");
+  if (themes.length !== 1 || attribute(themes[0], "content") !== "#FFFFFF")
+    errors.push("Browser theme differs from approved Pure White");
   const masks = matches(html, "link", "rel", "mask-icon");
   if (masks.length > 1 || masks.some(tag => attribute(tag, "color") !== "#9D1B32"))
     errors.push("Safari mask-icon differs from approved Healthcare Crimson");

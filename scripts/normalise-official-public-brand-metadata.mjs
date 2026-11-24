@@ -122,7 +122,7 @@ export function assertOfficialPublicBrandMetadata(html, palette) {
   assert.equal(themes.length, 1, "Exactly one public theme-color meta tag required");
   assert.match(themes[0], contentAttribute, "theme-color requires a content attribute");
   assert.equal(themes[0].match(contentAttribute)[0].match(/["']([^"']*)["']/)[1],
-    palette.background, "Browser theme must use approved Royal Mineral White");
+    palette.background, "Browser theme must use approved Pure White");
   const masks = matchingTags(html, maskTag, hasMaskRel);
   assert.ok(masks.length <= 1, "Duplicate mask-icon link is not permitted");
   if (masks.length) {
@@ -167,7 +167,7 @@ export function normaliseOfficialPublicBrandMetadata(html, palette) {
 export function officialPublicBrandPalette(root = process.cwd()) {
   const register = JSON.parse(readFileSync(join(root, "config/brand-identities.json"), "utf8"));
   assert.equal(register.approvedOn, "2026-11-22", "Use the November 2026 owner-approved brand registry");
-  assert.equal(register.neutralPalette.primaryWhite.hex, "#FBFAEF");
+  assert.equal(register.neutralPalette.primaryWhite.hex, "#FFFFFF");
   assert.equal(register.neutralPalette.secondaryWhite.hex, "#F8F7F3");
   assert.equal(register.neutralPalette.defaultInk.hex, "#0B0B0E");
   assert.equal(register.brands.healthcare.hex, "#9D1B32");

@@ -144,3 +144,33 @@ for (const token of [
   'target.width < 43.5 || target.height < 43.5'
 ]) assert.ok(renderedTouchAcceptance.includes(token),
   "Actual Chromium/WebKit touch hit-area acceptance missing " + token);
+
+
+/* Category labels must be ordinary links, not click-to-open-only controls.
+   ArrowDown continues to provide explicit keyboard access to the submenu. */
+assert.doesNotMatch(navigation, /trigger\.addEventListener\("click"/,
+  "Top-level category click/Enter must navigate to its overview");
+assert.match(navigation, /trigger\.addEventListener\("pointerenter"/);
+assert.match(navigation, /event\.key !== "ArrowDown"/);
+const chromeGenerator = read("scripts/apply-corporate-product-discipline.mjs");
+assert.match(chromeGenerator, /const headerLinks = globalNavigation\.filter/);
+assert.doesNotMatch(chromeGenerator, /const headerLinks = route ===/);
+assert.match(chromeGenerator, /\["Intelligence", "\/technology\/", "intelligence"\]/);
+assert.match(chromeGenerator, /route === href \? ' aria-current="page"'/);
+
+
+
+const { composeManagedContactChrome } = await import("./activate-contact-intake.mjs");
+const managed = read("src/content/contact-managed-release.html");
+const staged = read("contact/index.html");
+const composed = composeManagedContactChrome(managed, staged);
+const intake = (html) => html.match(/<form\b[^>]*>[\s\S]*?<\/form>/)[0];
+assert.equal(intake(composed), intake(managed), "Managed form bytes must not change");
+assert.match(composed, /<header class="site-header npd-header"/);
+assert.match(composed, /<footer class="site-footer npd-footer"/);
+assert.doesNotMatch(composed, /<footer class="ref-footer"/);
+assert.equal((composed.match(/<footer\b/g) || []).length, 1);
+assert.match(composed, /src="\/assets\/js\/rtl-localization\.js(?:\?[^"]*)?"/);
+assert.ok(composed.includes("form-action 'none'"));
+assert.ok(composed.includes('src="/assets/js/contact-production.js"'));
+assert.throws(() => composeManagedContactChrome(managed, staged.replace('class="site-header npd-header"', 'class="missing"')));

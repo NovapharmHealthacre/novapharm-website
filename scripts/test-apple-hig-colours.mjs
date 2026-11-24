@@ -37,13 +37,13 @@ function check(tokenMap, foreground, background, minimum = 4.5) {
 }
 
 const approvedNeutrals = JSON.parse(read("config/brand-identities.json")).neutralPalette;
-for (const [key, expected] of [["primaryWhite", "#FBFAEF"], ["secondaryWhite", "#F8F7F3"], ["defaultInk", "#0B0B0E"], ["subtleDivider", "#DEDCD5"]]) {
+for (const [key, expected] of [["primaryWhite", "#FFFFFF"], ["secondaryWhite", "#F8F7F3"], ["defaultInk", "#0B0B0E"], ["subtleDivider", "#DEDCD5"]]) {
   assert.equal(approvedNeutrals[key].hex, expected, `${key} canonical brand neutral has drifted`);
 }
 const light = tokensFor(":root {");
 const dark = tokensFor(':root[data-np-color-scheme="dark"] {');
 assert.equal(light["--np-color-label"], "#0b0b0e", "Official website label ink must be Sovereign Black");
-assert.equal(light["--np-color-canvas"], "#fbfaef", "Primary neutral canvas must be Royal Mineral White");
+assert.equal(light["--np-color-canvas"], "#ffffff", "Primary neutral canvas must be Pure White");
 assert.equal(light["--np-color-surface"], "#f8f7f3", "Secondary neutral must be Royal Porcelain White");
 assert.equal(light["--np-color-separator"], "#dedcd5", "Decorative separator must be Porcelain Stone");
 assert.equal(light["--np-color-surface-raised"], "#f8f7f3", "Raised neutral must use Royal Porcelain White");
@@ -99,7 +99,7 @@ assert.ok(packageJson.scripts.check.includes("design:colours:validate"), "Produc
 
 /* Owner-approved neutral brand identity: permanent CI guardrails. */
 const officialNeutrals = JSON.parse(read("config/brand-neutrals.json"));
-assert.equal(officialNeutrals.primary, "#FBFAEF");
+assert.equal(officialNeutrals.primary, "#FFFFFF");
 assert.equal(officialNeutrals.secondary, "#F8F7F3");
 assert.equal(officialNeutrals.black, "#0B0B0E");
 assert.equal(officialNeutrals.divider, "#DEDCD5");
@@ -148,9 +148,9 @@ for (const path of [
   "apps/technology/app/layout.tsx",
   "apps/status/app/layout.tsx",
 ]) {
-  assert.match(read(path), /themeColor:\s*"#FBFAEF"/);
+  assert.match(read(path), /themeColor:\s*"#FFFFFF"/);
 }
-assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-canvas:\s*#FBFAEF/);
+assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-canvas:\s*#FFFFFF/);
 assert.match(read("assets/css/novapharm.bundle.css"), /--np-color-surface:\s*#F8F7F3/);
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.primary) >= 7);
 assert.ok(contrast(officialNeutrals.black, officialNeutrals.secondary) >= 7);
@@ -187,16 +187,16 @@ assert.ok(read("apps/corporate/app/globals.css").includes("border: 1px solid #86
 const contactCss = read("assets/css/contact-premium.css");
 assert.ok(contactCss.includes("--np-contact-ink: #0B0B0E"));
 assert.ok(contactCss.includes("--np-contact-soft: #F8F7F3"));
-assert.ok(contactCss.includes("background: #FBFAEF"));
+assert.ok(contactCss.includes("background: #FFFFFF"));
 assert.ok(contactCss.includes("--np-contact-control-line: var(--np-color-separator-strong, #86868B)"));
 assert.ok(contactCss.includes("border: 1px solid var(--np-contact-control-line)"));
 assert.ok(read("assets/css/novapharm.bundle.css").includes("/* Source: contact-premium.css */\n" + contactCss.trim()),
   "Public CSS bundle must include the complete updated Contact stylesheet");
 
-// Royal Mineral and Porcelain are the visible Contact hero, footer and form surfaces.
-assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FBFAEF/);
-assert.match(contactCss, /\.np-contact-reference-footer\s*\{[^}]*background:\s*#F8F7F3/);
-assert.match(contactCss, /\.np-contact-reference-footer small\s*\{\s*font-size:\s*14px/);
+// Contact hero and form retain the approved neutral roles; chrome comes from the shared design.
+assert.match(contactCss, /\.np-contact-reference-hero\s*\{[^}]*background:\s*#FFFFFF/);
+assert.doesNotMatch(contactCss, /body:has\(\.np-contact-reference\) \.site-(?:header|footer)/, "Contact cannot hide or restyle the shared chrome");
+assert.match(read("assets/css/apple-web-navigation.css"), /\.npd-footer\.site-footer/);
 
 // The separate dark Founder web estate uses Sovereign Black as its browser
 // chrome while retaining intentional dark editorial surfaces and inverse text.
@@ -205,7 +205,7 @@ assert.match(read("apps/founder/app/manifest.ts"), /background_color:\s*"#0B0B0E
 assert.match(read("apps/founder/app/manifest.ts"), /theme_color:\s*"#0B0B0E"/);
 assert.match(read("apps/founder/app/base.css"), /--ink:\s*#0B0B0E/i);
 
-// The historical logo-kit token aliases must not revive retired Pure White.
+// The historical logo-kit token aliases must not revive retired Royal Mineral White.
 const logoKitTokens = read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.css");
 const logoKitJson = JSON.parse(read("creative-assets/brand/novapharm-logo-asset-pack/06_brand_tokens/novapharm-brand-tokens.json"));
 const brandIdentity = JSON.parse(read("config/brand-identities.json"));
@@ -230,10 +230,10 @@ for (const [token,hex] of [
 
 // Late editorial transforms must not undo the canonical browser theme.
 const aboutTransform = read("scripts/apply-about-editorial.mjs");
-assert.ok(aboutTransform.includes('meta name="theme-color" content="#FBFAEF"'),
-  "The post-build About transform must retain Royal Mineral White");
-assert.ok(!aboutTransform.includes('meta name="theme-color" content="#FFFFFF"'),
-  "The post-build About transform must never restore retired Pure White");
+assert.ok(aboutTransform.includes('meta name="theme-color" content="#FFFFFF"'),
+  "The post-build About transform must retain Pure White");
+assert.ok(!aboutTransform.includes('meta name="theme-color" content="#FBFAEF"'),
+  "The post-build About transform must never restore retired Royal Mineral White");
 
 // Post-build release-gate validation is mandatory across the complete public
 // canonical page register, not merely the checked-in homepage source.
@@ -259,9 +259,9 @@ assert.match(postBuildRoyal, /404\.html/);
 // Page-specific home, corporate and navigation material roles may not override
 // the Royal light neutrals; preserve separate dark mode and inverse CTA text.
 for (const [path, tokens] of [
-  ["assets/css/homepage-editorial.css", ["--nph-ink: #0B0B0E", "--nph-silver: #F8F7F3", "--nph-line: #DEDCD5", "background: #FBFAEF"]],
-  ["assets/css/novapharm-hig-materials.css", ["--np-material-navigation-solid: #FBFAEF", "--np-material-menu-solid: #F8F7F3", "--np-material-label: var(--np-color-label, #0B0B0E)"]],
-  ["assets/css/corporate-product-discipline.css", ["--npd-white: #FBFAEF", "--npd-soft: #F8F7F3", "--npd-ink: #0B0B0E", "--npd-line: #DEDCD5", "--npd-line-strong: #86868B"]],
+  ["assets/css/homepage-editorial.css", ["--nph-ink: #0B0B0E", "--nph-silver: #F8F7F3", "--nph-line: #DEDCD5", "background: #FFFFFF"]],
+  ["assets/css/novapharm-hig-materials.css", ["--np-material-navigation-solid: #FFFFFF", "--np-material-menu-solid: #F8F7F3", "--np-material-label: var(--np-color-label, #0B0B0E)"]],
+  ["assets/css/corporate-product-discipline.css", ["--npd-white: #FFFFFF", "--npd-soft: #F8F7F3", "--npd-ink: #0B0B0E", "--npd-line: #DEDCD5", "--npd-line-strong: #86868B"]],
 ]) {
   const cssSource = read(path);
   for (const token of tokens) assert.ok(cssSource.includes(token), path + " must keep " + token);
@@ -294,14 +294,14 @@ assert.ok(pinnedStamper.includes('readFileSync(fd, "utf8")'));
 assert.ok(pinnedStamper.includes("writeSync(fd, bytes, written, bytes.length - written, written)"));
 
 // Product pages can be sourced from prior generated HTML: SEO enhancement must
-// normalise exactly one Royal Mineral browser theme for every canonical route.
+// normalise exactly one Pure White browser theme for every canonical route.
 const seoAuthority = read("scripts/enhance-seo-authority.mjs");
 assert.ok(seoAuthority.includes("function normalizePublicTheme(html, file)"));
 assert.ok(seoAuthority.includes("html = normalizePublicTheme(html, file);"));
 assert.ok(seoAuthority.includes("Duplicate canonical browser theme tags"));
 assert.ok(seoAuthority.includes('config/brand-neutrals.json'));
 assert.doesNotMatch(seoAuthority.slice(seoAuthority.indexOf("function normalizePublicTheme"),
-  seoAuthority.indexOf("function normalizePublicTheme") + 1100), /#E3120B|#FFFFFF/);
+  seoAuthority.indexOf("function normalizePublicTheme") + 1100), /#E3120B|#FBFAEF/);
 
 // Keep authored HTML and the build-time generators aligned: rebuilding the
 // static estate must not resurrect the retired pure-white page background.
@@ -310,10 +310,10 @@ for (const path of [
   "scripts/build-public-pages.mjs",
   "scripts/build-pages.mjs",
 ]) {
-  assert.ok(read(path).includes('meta name="theme-color" content="#FBFAEF"'),
-    path + " must use the official Royal Mineral browser theme");
+  assert.ok(read(path).includes('meta name="theme-color" content="#FFFFFF"'),
+    path + " must use the official Pure White browser theme");
 }
-assert.match(read("scripts/build-public-pages.mjs"), /background_color:\s*"#FBFAEF"/);
+assert.match(read("scripts/build-public-pages.mjs"), /background_color:\s*"#FFFFFF"/);
 assert.equal(JSON.parse(read("manifest.webmanifest")).background_color, officialNeutrals.primary);
 
 // Apple HIG and WCAG non-text contrast: visible control edges are separate

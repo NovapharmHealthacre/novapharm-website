@@ -1,6 +1,6 @@
 export const designSystemCss = String.raw`
 /* Neutral source of truth: config/brand-neutrals.json, audited by design:colours:validate. */
-:root{--np-royal-canvas:#FBFAEF;--np-royal-porcelain:#F8F7F3;--np-royal-ink:#0B0B0E;--np-royal-stone:#DEDCD5;--np-royal-control-border:#86868B}
+:root{--np-royal-canvas:#FFFFFF;--np-royal-porcelain:#F8F7F3;--np-royal-ink:#0B0B0E;--np-royal-stone:#DEDCD5;--np-royal-control-border:#86868B}
 .np-visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .np-skip-link{position:fixed;z-index:9999;inset:1rem auto auto 1rem;transform:translateY(-180%);background:var(--np-royal-canvas);color:var(--np-royal-ink);padding:.75rem 1rem}
 .np-skip-link:focus{transform:none}

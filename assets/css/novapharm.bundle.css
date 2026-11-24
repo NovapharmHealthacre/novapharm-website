@@ -5,7 +5,7 @@
 /* Source: base.css */
 :root {
   color-scheme: only light;
-  --bg: #FBFAEF;
+  --bg: #FFFFFF;
   --surface: #F8F7F3;
   --surface-2: #F8F7F3;
   --ink: #0B0B0E;
@@ -1263,20 +1263,20 @@ td { color: var(--text); }
 :root {
   color-scheme: only light;
   --np-brand-black: #0B0B0E;
-  --np-brand-white-primary: #FBFAEF;
+  --np-brand-white-primary: #FFFFFF;
   --np-brand-white-secondary: #F8F7F3;
   --np-brand-divider: #DEDCD5;
   font-optical-sizing: auto;
   /* Owner-approved Royal neutrals */
-  --np-white-primary: #FBFAEF;
+  --np-white-primary: #FFFFFF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;
   --np-divider-subtle: #DEDCD5;
-  --bg: #FBFAEF;
+  --bg: #FFFFFF;
   --surface: #F8F7F3;
   --surface-2: #F8F7F3;
   --surface-3: #EDEBE5;
-  --paper: #FBFAEF;
+  --paper: #FFFFFF;
   --ink: #0B0B0E;
   --text: #0B0B0E;
   --muted: #657078;
@@ -7066,7 +7066,7 @@ body[data-page="cro"] .cro-leadership-proof {
   --npd-line: #DEDCD5;
   --npd-line-strong: #86868B;
   --npd-soft: #F8F7F3;
-  --npd-white: #FBFAEF;
+  --npd-white: #FFFFFF;
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --npd-compact: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Arial Narrow", Arial, sans-serif);
   --npd-mono: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
@@ -9583,7 +9583,7 @@ body[data-page="legal/privacy"] .page-hero h1 {
   max-width: 900px;
 }
 body[data-page="legal/privacy"] .page-hero p { max-width: 64ch; line-height: 1.6; }
-body[data-page="legal/privacy"] .legal-section { background: #FBFAEF; }
+body[data-page="legal/privacy"] .legal-section { background: #FFFFFF; }
 body[data-page="legal/privacy"] .legal-layout {
   gap: clamp(26px, 5vw, 74px);
   grid-template-columns: minmax(210px, 0.32fr) minmax(0, 1fr);
@@ -9747,7 +9747,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
    Independent of Apple trademarks, fonts or copyrighted UI assets. */
-.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FBFAEF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact { --np-contact-ink: #0B0B0E; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #F8F7F3; color: var(--np-contact-ink); background: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
 .np-contact * { box-sizing: border-box; }
 .np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
 .np-contact a { text-underline-offset: .2em; }
@@ -9762,12 +9762,12 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
 .np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
-.np-contact-topic:hover { transform: translateY(-3px); background: #FBFAEF; border-color: #cbd1d9; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #FFFFFF; border-color: #cbd1d9; }
 .np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
 .np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
 .np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
-.np-contact-destination { padding: 80px 0 100px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination { padding: 80px 0 100px; background: #FFFFFF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
 .np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
 .np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
@@ -9779,7 +9779,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
 .np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
 .np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
-.np-contact-safety { padding: 32px 0 70px; background: #FBFAEF; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety { padding: 32px 0 70px; background: #FFFFFF; border-top: 1px solid var(--np-contact-line); }
 .np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
 .np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
 .np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
@@ -9818,7 +9818,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   --np-contact-blue: #006fe6;
   width: 100%;
   overflow: clip;
-  background: #FBFAEF;
+  background: #FFFFFF;
   color: var(--np-contact-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
@@ -9830,7 +9830,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
 .np-contact-reference-hero {
   padding: clamp(64px, 7vw, 82px) 0 62px;
   text-align: center;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 .np-contact-reference-kicker {
   display: block;
@@ -9859,7 +9859,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   line-height: 1.34;
   letter-spacing: 0;
 }
-.np-contact-reference-content { padding: 0 0 55px; background: #FBFAEF; }
+.np-contact-reference-content { padding: 0 0 55px; background: #FFFFFF; }
 .np-contact-reference-heading { margin: 0 0 25px; }
 .np-contact-reference .np-contact-reference-heading h2 {
   margin: 0 0 4px;
@@ -10085,7 +10085,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   line-height: 1.5;
 }
 .np-contact-reference-status p { margin: 0; font-size: inherit; }
-.np-contact-reference-safety { padding: 0 0 31px; background: #FBFAEF; }
+.np-contact-reference-safety { padding: 0 0 31px; background: #FFFFFF; }
 .np-contact-reference-safety p {
   max-width: 914px;
   margin: 0;
@@ -10094,61 +10094,7 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   line-height: 1.6;
 }
 .np-contact-reference-safety a { color: #465d81; }
-.np-contact-reference-footer {
-  padding: 35px 0 38px;
-  background: #F8F7F3;
-}
-.np-contact-reference-footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 36px;
-}
-.np-contact-reference-footer strong {
-  display: block;
-  font-family: inherit;
-  color: #0B0B0E;
-  font-size: 19px;
-  letter-spacing: 0;
-  line-height: 1.4;
-}
-.np-contact-reference-footer p,
-.np-contact-reference-footer small {
-  display: block;
-  margin: 4px 0 0;
-  color: #62646a;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.np-contact-reference-footer small { font-size: 14px; }
-.np-contact-reference-footer nav {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding-top: 10px;
-}
-.np-contact-reference-footer nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: #64676d;
-  font-size: 14px;
-  text-decoration: none;
-}
-.np-contact-reference-footer nav a:hover { color: #0B0B0E; text-decoration: underline; }
-
-/* Do not show two unrelated footers on this deliberately standalone page. */
-body:has(.np-contact-reference) .site-footer:not(.np-contact-reference-footer) { display: none; }
-body:has(.np-contact-reference) .site-header {
-  min-height: 52px;
-  background: #FBFAEF;
-  box-shadow: none;
-  border-bottom: 1px solid #DEDCD5;
-}
-body:has(.np-contact-reference) .site-header .header-inner { min-height: 52px; }
-body:has(.np-contact-reference) .site-header .site-nav a { font-weight: 500; }
-body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { font-weight: 700; }
+/* Contact inherits the global site header and footer; no local chrome override. */
 
 @media (max-width: 700px) {
   .np-contact-reference-hero { padding: 75px 0 55px; }
@@ -10161,8 +10107,6 @@ body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { 
   .np-contact-reference .np-contact-reference-full { margin-top: 12px; }
   .np-contact-reference-actions { align-items: stretch; flex-direction: column; gap: 16px; }
   .np-contact-reference .np-contact-reference-submit { width: 100%; min-height: 46px; }
-  .np-contact-reference-footer-inner { flex-direction: column; gap: 22px; }
-  .np-contact-reference-footer nav { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .np-contact-reference .np-contact-reference-submit,
@@ -10212,7 +10156,7 @@ body[data-page="home"] {
   --nph-silver: #F8F7F3;
   --nph-line: #DEDCD5;
   --nph-blue: #0066cc;
-  background: #FBFAEF;
+  background: #FFFFFF;
   color: var(--nph-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10385,7 +10329,7 @@ body[data-page="home"] .npd-apple-center > p:not(.npd-apple-eyebrow):not(.npd-ap
 }
 body[data-page="home"] .npd-apple-manifesto {
   padding: clamp(100px, 13vw, 195px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-manifesto h2 {
   max-width: 860px;
@@ -10502,7 +10446,7 @@ body[data-page="home"] .npd-apple-products > .container > .npd-apple-footnote {
 }
 body[data-page="home"] .npd-apple-intelligence {
   padding: clamp(92px, 10vw, 170px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-intelligence .npd-apple-footnote {
   margin-top: 30px;
@@ -10558,7 +10502,7 @@ body[data-page="home"] .npd-apple-nova-taxonomy {
 }
 body[data-page="home"] .npd-apple-sourcing {
   padding: clamp(96px, 11vw, 170px) 0;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-section-lead {
   max-width: 790px;
@@ -10605,7 +10549,7 @@ body[data-page="home"] .npd-apple-governance-grid > div > p:not(.npd-apple-eyebr
   color: #66666b;
 }
 body[data-page="home"] .npd-apple-regulatory-notice {
-  background: #FBFAEF;
+  background: #FFFFFF;
   border: 1px solid #ebebee;
   border-radius: 28px;
   padding: clamp(30px, 4vw, 55px);
@@ -10615,7 +10559,7 @@ body[data-page="home"] .npd-apple-regulatory-notice p:last-child { color: #66666
 body[data-page="home"] .npd-apple-contact {
   padding: clamp(120px, 15vw, 215px) 0;
   text-align: center;
-  background: #FBFAEF;
+  background: #FFFFFF;
 }
 body[data-page="home"] .npd-apple-contact .npd-apple-actions-centered { justify-content: center; }
 body[data-page="home"] .npd-apple-contact .npd-apple-footnote {
@@ -11127,11 +11071,11 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
 :root {
   color-scheme: light;
   /* Official light-mode neutrals; preserve independent dark-mode semantics */
-  --np-white-primary: #FBFAEF;
+  --np-white-primary: #FFFFFF;
   --np-white-secondary: #F8F7F3;
   --np-black-default: #0B0B0E;
   --np-divider-subtle: #DEDCD5;
-  --np-color-canvas: #FBFAEF;
+  --np-color-canvas: #FFFFFF;
   --np-color-surface: #F8F7F3;
   --np-color-surface-recessed: #EDEBE5;
   --np-color-surface-raised: #F8F7F3;
@@ -11145,9 +11089,9 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-color-accent: #9D1B32;
   --np-color-accent-strong: #68101F;
   --np-color-accent-soft: #F8EDF0;
-  --np-color-on-accent: #FBFAEF;
+  --np-color-on-accent: #FFFFFF;
   --np-color-primary-action: #0B0B0E;
-  --np-color-on-primary-action: #FBFAEF;
+  --np-color-on-primary-action: #FFFFFF;
   --np-color-primary-action-hover: #242428;
   --np-color-success: #17745a;
   --np-color-warning: #965c0d;
@@ -12001,24 +11945,24 @@ body nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a {
  * No pseudo-refraction, decorative glass cards, text translucency or animated blur.
  */
 :root {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.94);
   --np-material-navigation-border: rgba(11, 11, 14, 0.12);
   --np-material-menu-solid: #F8F7F3;
   --np-material-menu-tint: rgba(248, 247, 243, 0.97);
-  --np-material-content-solid: var(--np-color-canvas, #FBFAEF);
+  --np-material-content-solid: var(--np-color-canvas, #FFFFFF);
   --np-material-content-muted: var(--np-color-surface, #F8F7F3);
   --np-material-label: var(--np-color-label, #0B0B0E);
   --np-material-filter: saturate(125%) blur(14px);
   --np-material-filter-menu: saturate(115%) blur(18px);
 }
 html[data-np-estate="technology"] {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.95);
   --np-material-navigation-border: rgba(11, 11, 14, 0.16);
 }
 html[data-np-estate="portal"] {
-  --np-material-navigation-solid: #FBFAEF;
+  --np-material-navigation-solid: #FFFFFF;
   --np-material-navigation-tint: rgba(251, 250, 239, 0.97);
   --np-material-menu-tint: rgba(248, 247, 243, 0.98);
 }
