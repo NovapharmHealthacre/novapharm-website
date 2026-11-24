@@ -325,8 +325,21 @@ async function inspectModule(
       }
       if (module.code === "customer.dashboard") {
         assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
-        assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
+        assert.equal(await page.locator(".customer-primary-nav a").count(), 6);
+        assert.equal(await page.getByRole("navigation", { name: "Common customer tasks" }).count(), 1);
         await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
+      }
+    }
+    if (module.area === "customer") {
+      const primary = page.getByRole("navigation", { name: "Customer workspace primary navigation" });
+      assert.equal(await primary.count(), 1, `${module.code}: primary navigation missing`);
+      assert.equal(await primary.locator("a").count(), 6, `${module.code}: primary destinations missing`);
+      for (const code of ["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.account", "customer.support"]) {
+        const entry = visiblePortalModules.find((candidate) => candidate.code === code);
+        assert.ok(entry, `Missing canonical destination ${code}`);
+        const link = primary.locator(`a[href="${entry.route}"]`);
+        assert.equal(await link.count(), 1, `${module.code}: missing ${code}`);
+        assert.equal(await link.getAttribute("aria-current"), module.code === code ? "page" : null);
       }
     }
     // Authenticated account/help routes must allow the optional first-run
@@ -876,7 +889,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
 
     for (const viewport of interactionOnly ? [] : viewports) {
       const anonymous = await browser.newContext(contextOptions(viewport));
-      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Sign in to the right workspace", "login");
+      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Welcome to NovaPharm.", "login");
       await anonymous.close();
 
       for (const area of areas) {
