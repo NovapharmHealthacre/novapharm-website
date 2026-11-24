@@ -26,13 +26,21 @@
         "true"
       ],
       "Default": "false"
+    },
+    "RouteEnabled": {
+      "Type": "String",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Default": "false"
     }
   },
   "Conditions": {
     "Publish": {
       "Fn::Equals": [
         {
-          "Ref": "ReleaseEnabled"
+          "Ref": "RouteEnabled"
         },
         "true"
       ]
@@ -240,6 +248,31 @@
           ]
         }
       }
+    }
+  },
+  "Rules": {
+    "ReleaseRequiresRoute": {
+      "RuleCondition": {
+        "Fn::Equals": [
+          {
+            "Ref": "ReleaseEnabled"
+          },
+          "true"
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "RouteEnabled"
+              },
+              "true"
+            ]
+          },
+          "AssertDescription": "Data release requires the separately installed private route."
+        }
+      ]
     }
   }
 }
