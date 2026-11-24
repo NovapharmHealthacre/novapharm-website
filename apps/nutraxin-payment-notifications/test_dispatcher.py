@@ -42,6 +42,8 @@ def ledger():
             "orderId": s(ORDER_ID), "status": s("PAID"),
             "stripeSessionId": s(SESSION_ID), "lastStripeEventId": s(EVENT_ID),
             "totalGrossMinor": {"N": "1547"}, "currency": s("GBP"),
+            "shippingGrossMinor": {"N": "0"},
+            "approvedLinesJson": s(json.dumps([{"name": "Synthetic product & care", "quantity": 1, "grossMinor": 1547}])),
             "quoteVersion": s("quote_123"), "customerId": s("cust_123")}
 
 def session():
@@ -142,6 +144,15 @@ class NotificationContracts(unittest.TestCase):
         row=DB.rows[("ORDER#"+ORDER_ID,"PAYMENT_EVENT#"+EVENT_ID)]
         self.assertEqual(row["status"]["S"],"SENT")
         self.assertNotIn("email",row)
+        message = SES.sent[0]
+        self.assertEqual(message["ReplyToAddresses"], ["support@novapharmhealthcare.com"])
+        self.assertEqual(message["FromEmailAddress"], "NovaPharm Healthcare <vishal@novapharmhealthcare.com>")
+        body = message["Content"]["Simple"]["Body"]
+        self.assertIn("£15.47", body["Text"]["Data"])
+        self.assertIn("Synthetic product &amp; care", body["Html"]["Data"])
+        self.assertIn(APP.LOGO_URL, body["Html"]["Data"])
+        self.assertIn(APP.TRACK_URL, body["Html"]["Data"])
+        self.assertNotIn("customer@example.invalid", body["Html"]["Data"])
         self.assertEqual(self.result(self.scheduler())["sent"],0)
         self.assertEqual(len(SES.sent),1)
     def test_reject_mismatched_paid_session_and_preserve_outbox(self):
@@ -153,6 +164,11 @@ class NotificationContracts(unittest.TestCase):
         self.assertEqual(result["needs_review"],1)
         self.assertEqual(SES.sent,[])
         self.assertEqual(DB.rows[("ORDER#"+ORDER_ID,"PAYMENT_EVENT#"+EVENT_ID)]["status"]["S"],"PENDING_REVIEW")
+    def test_unreconciled_lines_never_send(self):
+        APP.ENABLED=True;SES.approved=True
+        DB.rows[("ORDER#"+ORDER_ID,"SUMMARY")]["approvedLinesJson"] = s(json.dumps([{"name":"<script>", "quantity":1,"grossMinor":1546}]))
+        self.assertEqual(self.result(self.scheduler())["needs_review"],1)
+        self.assertEqual(SES.sent,[])
     def test_scan_paginates_nonmatching_entries(self):
         APP.ENABLED=True;SES.approved=True
         DB.page_first=True
