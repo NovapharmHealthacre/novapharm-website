@@ -125,27 +125,26 @@ LOGO_URL = "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-lo
 TRACK_URL = "https://novapharmhealthcare.com/products/track/"
 SUPPORT = "support@novapharmhealthcare.com"
 PRODUCT_IMAGES = {
-    "NUT-UK-VD3-T120": ("vitamin-d3-120-tablets", "120 tablets"),
-    "NUT-UK-VD3-S30": ("vitamin-d3-spray-30ml", "30 ml"),
-    "NUT-UK-VD3K2-T120": ("vitamin-d3-k2-120-tablets", "120 tablets"),
-    "NUT-UK-VD3K2-S30": ("vitamin-d3-k2-spray-30ml", "30 ml"),
-    "NUT-UK-VC1000-T30": ("vitamin-c-1000mg-30-tablets", "30 tablets"),
-    "NUT-UK-VC500-C30": ("vitamin-c-500mg-chewable-30-tablets", "30 chewable tablets"),
-    "NUT-UK-VMAX-T60": ("vitamin-max-60-tablets", "60 tablets"),
-    "NUT-UK-VMAX-E15": ("vitamin-max-15-effervescent-tablets", "15 tablets"),
-    "NUT-UK-MGCX-T60": ("magnesium-complex-60-tablets", "60 tablets"),
-    "NUT-UK-MGDL-T60": ("magnesium-daily-60-tablets", "60 tablets"),
-    "NUT-UK-MVE-T60": ("multivitamin-mineral-energy-60-tablets", "60 tablets"),
-    "NUT-UK-MVW-T60": ("womens-multivitamin-complex-60-tablets", "60 tablets"),
-    "NUT-UK-MVM-T60": ("mens-multivitamin-complex-60-tablets", "60 tablets"),
-    "NUT-UK-CG-T30": ("collagen-gold-30-tablets", "30 tablets"),
-    "NUT-UK-CG-S30": ("collagen-gold-30-sachets", "30 sachets"),
-    "NUT-UK-CCX-T90": ("collagen-complex-90-tablets", "90 tablets"),
-    "NUT-UK-ART-T90": ("artoflex-90-tablets", "90 tablets"),
-    "NUT-UK-LCAR-T60": ("l-carnitine-60-tablets", "60 tablets"),
-    "NUT-UK-B12-SL60": ("vitamin-b12-60-sublingual-tablets", "60 sublingual tablets"),
+    "NUT-UK-VD3-T120": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-120-tablets.png", "120 tablets"),
+    "NUT-UK-VD3-S30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-spray-30ml.png", "30 ml"),
+    "NUT-UK-VD3K2-T120": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets.png", "120 tablets"),
+    "NUT-UK-VD3K2-S30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml.png", "30 ml"),
+    "NUT-UK-VC1000-T30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets.png", "30 tablets"),
+    "NUT-UK-VC500-C30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets.png", "30 chewable tablets"),
+    "NUT-UK-VMAX-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-max-60-tablets.png", "60 tablets"),
+    "NUT-UK-VMAX-E15": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets.png", "15 tablets"),
+    "NUT-UK-MGCX-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/magnesium-complex-60-tablets.png", "60 tablets"),
+    "NUT-UK-MGDL-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/magnesium-daily-60-tablets.png", "60 tablets"),
+    "NUT-UK-MVE-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets.png", "60 tablets"),
+    "NUT-UK-MVW-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets.png", "60 tablets"),
+    "NUT-UK-MVM-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets.png", "60 tablets"),
+    "NUT-UK-CG-T30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-gold-30-tablets.png", "30 tablets"),
+    "NUT-UK-CG-S30": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-gold-30-sachets.png", "30 sachets"),
+    "NUT-UK-CCX-T90": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-complex-90-tablets.png", "90 tablets"),
+    "NUT-UK-ART-T90": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/artoflex-90-tablets.png", "90 tablets"),
+    "NUT-UK-LCAR-T60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/l-carnitine-60-tablets.png", "60 tablets"),
+    "NUT-UK-B12-SL60": ("https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets.png", "60 sublingual tablets"),
 }
-PRODUCT_IMAGE_BASE = "https://novapharmhealthcare.com/assets/media/products/nutraxin/"
 
 def gbp(minor):
     return f"£{minor // 100:,}.{minor % 100:02d}"
@@ -214,7 +213,7 @@ def receipt_content(order_id, amount, lines, shipping, name="", placed=""):
         SUPPORT, "With care,", "NovaPharm Healthcare Ltd"])
     rows = []
     for product, qty, gross, image, pack in lines:
-        photo = f'<img src="{PRODUCT_IMAGE_BASE}{image}.png" width="64" height="64" alt="" style="display:block;width:64px;height:64px;border:0">' if image else ""
+        photo = f'<img src="{image}" width="64" height="64" alt="" style="display:block;width:64px;height:64px;border:0">' if image else ""
         rows.append(f'<tr><td width="76" style="padding:18px 8px 18px 0;border-bottom:1px solid #DEDCD5;vertical-align:middle">{photo}</td><td style="padding:18px 0;border-bottom:1px solid #DEDCD5;vertical-align:middle"><strong>{escape(product)}</strong><br><span style="font-size:13px;color:#525252">{escape(pack)}<br>Quantity: {qty}</span></td><td align="right" style="padding:18px 0 18px 8px;border-bottom:1px solid #DEDCD5;vertical-align:middle;white-space:nowrap">{gbp(gross)}</td></tr>')
     rows_html = "".join(rows)
     date_html = f'<td width="40%" valign="top"><div style="color:#525252;font-size:13px">Order placed</div><strong style="font-size:14px">{escape(placed)}</strong></td>' if placed else ""
