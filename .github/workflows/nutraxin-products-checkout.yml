@@ -11,6 +11,8 @@ on:
       - "apps/nutraxin-payments/test_gift_card_purchase.py"
       - "apps/nutraxin-payments/gift_card_delivery.py"
       - "apps/nutraxin-payments/test_gift_card_delivery.py"
+      - "apps/nutraxin-payments/gift_card_orchestration.py"
+      - "apps/nutraxin-payments/test_gift_card_orchestration.py"
       - "assets/css/nutraxin-retail-store.css"
       - "infra/aws/nutraxin-products-checkout-api.json"
       - "assets/js/nutraxin-retail-store.js"
