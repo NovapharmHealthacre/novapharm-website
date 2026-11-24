@@ -560,10 +560,6 @@ function contactMain(existingHtml) {
     '<aside class="np-contact-reference-safety" aria-label="Important communication boundaries"><div class="np-contact-reference-shell">',
     '<p>Business enquiries only. This is not a medical or patient-ordering channel. Do not send patient-identifiable information, adverse-event reports or urgent medical details. Report suspected side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For UK emergencies call 999 or seek NHS 111 advice.</p>',
     '</div></aside>',
-    '<footer class="np-contact-reference-footer"><div class="np-contact-reference-shell np-contact-reference-footer-inner"><div>',
-    '<strong>Medicine. Where it needs to be.</strong>',
-    '<p>NovaPharm Healthcare Ltd · United Kingdom</p><small>Regulated wholesale supply has not commenced.</small>',
-    '</div><nav aria-label="Contact footer"><a href="/about/">Company</a><a href="/legal/privacy/">Privacy</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a></nav></div></footer>',
     '</main>'
   ].join("");
 }

@@ -420,7 +420,8 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
-  assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");
+  assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1, "shared Contact footer missing");
+  assert.equal(await page.locator("main footer").count(), 0, "Contact must not have a second footer");
   if (process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true") {
     assert.equal(await page.locator("form.contact-form").count(), 1, "verified managed contact form required");
     await page.getByLabel("Full name").fill("Validation User");

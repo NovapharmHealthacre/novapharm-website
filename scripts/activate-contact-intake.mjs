@@ -116,6 +116,7 @@ export function composeManagedContactChrome(managedHtml, baselineHtml) {
   const css = one(baselineHtml, /<link\b[^>]*href="\/assets\/css\/novapharm\.bundle\.css(?:\?[^"]*)?"[^>]*>/g, "staged corporate CSS");
   const nav = one(baselineHtml, /<script\b[^>]*src="\/assets\/js\/novapharm\.js(?:\?[^"]*)?"[^>]*><\/script>/g, "staged navigation script");
   const cookie = one(baselineHtml, /<script\b[^>]*src="\/assets\/js\/cookie-consent\.js(?:\?[^"]*)?"[^>]*><\/script>/g, "staged cookie controls");
+  const rtl = baselineHtml.match(/<script\b[^>]*src="\/assets\/js\/rtl-localization\.js(?:\?[^"]*)?"[^>]*><\/script>/)?.[0] || '<script src="/assets/js/rtl-localization.js"></script>';
   const oldHeader = one(managedHtml, /<header class="site-header"[^>]*>[\s\S]*?<\/header>/g, "legacy contact header");
   const oldFooter = one(managedHtml, /<footer class="ref-footer"[^>]*>[\s\S]*?<\/footer>/g, "legacy contact footer");
   const formPattern = /<form\b[^>]*>[\s\S]*?<\/form>/g;
@@ -125,7 +126,7 @@ export function composeManagedContactChrome(managedHtml, baselineHtml) {
     .replace(oldFooter, () => footer)
     // Retire legacy chrome selectors; do not alter the reviewed form styles.
     .replace(/<style>[\s\S]*?<\/style>/, (style) => style.replace(/\.site-header\b/g, ".contact-legacy-header"))
-    .replace("<style>", () => css + "<style>")
+    .replace("<style>", () => rtl + css + "<style>")
     .replace("<body>", '<body data-page="contact" data-family="contact" data-route="/contact/">')
     .replace("</body>", () => nav + cookie + "</body>");
   if (one(result, formPattern, "composed intake form") !== originalForm ||
