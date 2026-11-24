@@ -296,3 +296,27 @@ test("gift card preview matches approved denomination list and cannot collect pa
  const preview=readFileSync("assets/js/nutraxin-retail-store.js","utf8").split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
  assert.doesNotMatch(preview,/fetch\(|location\.assign|sessionStorage|localStorage/);
 });
+
+test("refresh restores original promo quote, or blocks a changed bag and identity mode",async()=>{
+ const {basketAttemptId,restoreCheckoutAttempt}=await import("../assets/js/nutraxin-retail-store.js");
+ const lines=[{sku:catalogue.products[0].sku,quantity:1}];
+ const quote={currency:"GBP",promotionCode:"SYNTHETIC10",basketVersion:"a".repeat(64),
+   originalGrossMinor:1000,discountGrossMinor:100,totalGrossMinor:900};
+ const record={id:"12345678-1234-4234-8234-123456789012",mode:"guest",quote,basket:basketAttemptId(lines,quote)};
+ const restored=restoreCheckoutAttempt(JSON.parse(JSON.stringify(record)),lines,"guest");
+ assert.equal(restored.resumable,true);
+ assert.deepEqual(restored.quote,quote);
+ assert.equal(restored.id,record.id);
+ for(const [r,b,m] of [
+   [record,[{...lines[0],quantity:2}],"guest"],
+   [record,lines,"account"],
+   [{...record,quote:{...quote,totalGrossMinor:1}},lines,"guest"],
+   [{id:record.id,basket:record.basket},lines,"guest"],
+   [{...record,quote:null},lines,"guest"]
+ ]) assert.equal(restoreCheckoutAttempt(r,b,m).resumable,false);
+ assert.equal(restoreCheckoutAttempt({...record,id:"bad"},lines,"guest"),null);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/sessionStorage\.setItem\(ATTEMPT_KEY,JSON\.stringify\(lastAttempt\)\)/);
+ assert.match(js,/!restoredAttemptBlocked/);
+ assert.match(js,/returnedOrder === "NUT-"\+lastAttempt\.id/);
+});
