@@ -459,6 +459,23 @@ function runStore(data) {
               if(accountToken)try{sessionStorage.removeItem(ACCOUNT_SESSION_KEY)}catch{}
               throw new Error("Your account session expired. Please sign in again or choose guest checkout.");
             }
+            if (response.status === 422 && promoQuote && !checkoutUncertain) {
+              const rejection = await response.json().catch(() => null);
+              // These specific server errors occur before any order write or
+              // payment creation. Never unlock an ambiguous provider response.
+              if (["promo_quote_changed","promo_code_unavailable","promo_code_not_applicable","invalid_promo_code"].includes(rejection?.error)) {
+                const oldCode = promoQuote.promotionCode;
+                clearPromotion("Your promotional offer has changed. Apply the code again to confirm the new total.");
+                promoInput.value = oldCode;
+                promoSection.open = true;
+                lastAttempt = null;
+                try { sessionStorage.removeItem("np-retail-checkout-attempt"); } catch {}
+                checkoutInFlight = false;
+                render();
+                promoInput.focus();
+                return;
+              }
+            }
             if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
             // The server may reconcile a previous idempotent attempt as already paid.
