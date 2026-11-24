@@ -208,3 +208,14 @@
 .customer-login-services>a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
 @media(max-width:850px){.customer-quick-tasks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.customer-quick-tasks{grid-template-columns:1fr}}
+
+/* Consistent customer navigation on subpages; existing full module menu remains available. */
+.customer-section-nav{background:#FFFFFF;border-bottom:1px solid #DEDCD5;padding:8px clamp(16px,3vw,36px)}
+.customer-section-nav .customer-primary-nav{display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;min-width:0}
+.customer-section-nav .customer-primary-nav a{display:inline-flex;align-items:center;min-height:44px;padding:4px 0;border-bottom:2px solid transparent;color:#0B0B0E;text-decoration:none;font-size:.9rem}
+.customer-section-nav .customer-primary-nav a[aria-current="page"]{border-bottom-color:#9D1B32;font-weight:650}
+.customer-section-nav .customer-primary-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.customer-section-nav .customer-primary-nav a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.customer-editorial-dashboard .customer-primary-nav{flex-wrap:wrap;gap:4px clamp(12px,1.6vw,24px)}
+.customer-editorial-dashboard .customer-primary-nav a{min-height:44px;display:flex;align-items:center}
+@media(max-width:850px){.customer-editorial-dashboard .customer-primary-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}}
