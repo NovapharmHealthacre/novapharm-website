@@ -366,3 +366,28 @@ test("personal privileges follow manual promo and require account-specific serve
  assert.ok(js.includes('No approved offers are available for this account right now.'));
  assert.ok(css.includes(".nx-bag-privileges[hidden]"));
 });
+
+test("Klarna retail identification is readiness-gated and contains no credit claims",async()=>{
+ const {klarnaCheckoutNotice}=await import("../assets/js/nutraxin-retail-store.js");
+ assert.equal(klarnaCheckoutNotice(true),"Choose Klarna at checkout. Availability depends on eligibility.");
+ for(const value of [false,undefined,null,1,"true",{}])assert.equal(klarnaCheckoutNotice(value),"");
+ assert.doesNotMatch(klarnaCheckoutNotice(true),/interest|instalment|repayment|APR|pay in 3/i);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.ok(js.includes("klarnaCheckoutNotice(ready && !checkoutUncertain)"));
+ assert.ok(js.includes("status?.payment_collection_active === true"));
+ assert.ok(js.includes("klarnaNotice.hidden = !message"));
+ // Inspect domain-like source tokens, not URL substrings or a runtime URL allowlist.
+ const forbiddenProviderToken = (token) => {
+  const labels = token.toLowerCase().split(".").filter(Boolean);
+  const [tld, domain, subdomain] = labels.reverse();
+  return tld === "com" && (domain === "klarna" || (domain === "stripe" && subdomain === "js"));
+ };
+ assert.equal(forbiddenProviderToken("js.stripe.com"),true);
+ assert.equal(forbiddenProviderToken("www.klarna.com"),true);
+ assert.equal(forbiddenProviderToken("klarna.com.example.org"),false);
+ assert.equal(forbiddenProviderToken("notklarna.com"),false);
+ const domainTokens = js.match(/[a-z0-9.-]+/gi) || [];
+ assert.equal(domainTokens.some(forbiddenProviderToken),false,"No Stripe.js or direct Klarna domain is embedded in this retail module");
+ const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
+ assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
+});
