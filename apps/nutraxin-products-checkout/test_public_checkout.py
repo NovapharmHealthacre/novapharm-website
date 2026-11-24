@@ -326,6 +326,33 @@ class ProductsPaymentTests(unittest.TestCase):
             self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
             self.assertFalse(WORKER.calls)
 
+    def test_ledger_campaign_policy_version_and_full_order_contribution(self):
+        from unittest.mock import patch
+        policy=json.loads(self.promotion_policy()["Parameter"]["Value"])
+        campaigns=policy.pop("retail_promotions")
+        campaigns["economics"]={
+            "unit_cost_minor":{sku:600 for sku in API.PRODUCTS},
+            "carton_capacity":{sku:12 for sku in API.PRODUCTS},
+            "lead_carton_minor":1000,"additional_carton_minor":300,
+            "order_fixed_minor":300,"variable_fee_bps":400,"contribution_bps":500}
+        key="RETAIL_PROMOTION_POLICY#V1"
+        DB.rows[key]={"pk":{"S":key},"sk":{"S":"CONFIG"},
+            "schema":{"S":"retail-promotion-policy-v1"},"priceParameterVersion":{"N":"6"},
+            "policyJson":{"S":json.dumps(campaigns)}}
+        with patch.object(SSM,"get_parameter",return_value={"Parameter":{"Version":6,"Value":json.dumps(policy)}}):
+            # A normal non-discounted quote is independent of the new policy.
+            self.assertEqual(API.handler(self.event("/quote","POST",self.basket()),None)["statusCode"],200)
+            small=dict(self.basket(),promo_code="TEST10")
+            self.assertEqual(API.handler(self.event("/quote","POST",small),None)["statusCode"],422)
+            large=dict(self.basket(qty=20),promo_code="TEST10")
+            accepted=API.handler(self.event("/quote","POST",large),None)
+            self.assertEqual(accepted["statusCode"],200,accepted["body"])
+            self.assertEqual(json.loads(accepted["body"])["discountGrossMinor"],2160)
+            DB.rows[key]["priceParameterVersion"]={"N":"5"}
+            self.assertEqual(API.handler(self.event("/quote","POST",large),None)["statusCode"],503)
+            self.assertEqual(API.handler(self.event("/quote","POST",self.basket()),None)["statusCode"],200)
+            self.assertFalse(WORKER.calls)
+
     def test_account_requires_valid_token_from_exact_consumer_pool(self):
         self.assertEqual(API.handler(self.account_event("/account/me"),None)["statusCode"],401)
         for token in [
