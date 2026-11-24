@@ -6,6 +6,8 @@ on:
       - 'infra/aws/customer-admin-directory-*.py'
       - 'infra/aws/intelligence-founder-session-api.py'
       - 'scripts/test_customer_admin_directory_*.py'
+      - 'scripts/build_customer_admin_inline.py'
+      - 'infra/aws/customer-admin-directory-candidate.json'
       - '.github/workflows/customer-directory-private-access.yml'
   push:
     branches: [main]
@@ -13,6 +15,8 @@ on:
       - 'infra/aws/customer-admin-directory-*.py'
       - 'infra/aws/intelligence-founder-session-api.py'
       - 'scripts/test_customer_admin_directory_*.py'
+      - 'scripts/build_customer_admin_inline.py'
+      - 'infra/aws/customer-admin-directory-candidate.json'
       - '.github/workflows/customer-directory-private-access.yml'
 
 permissions:
