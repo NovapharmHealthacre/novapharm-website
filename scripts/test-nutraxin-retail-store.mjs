@@ -376,9 +376,18 @@ test("Klarna retail identification is readiness-gated and contains no credit cla
  assert.ok(js.includes("klarnaCheckoutNotice(ready && !checkoutUncertain)"));
  assert.ok(js.includes("status?.payment_collection_active === true"));
  assert.ok(js.includes("klarnaNotice.hidden = !message"));
- // This is a source-text prohibition, not a URL host allowlist.
- assert.equal(js.includes("js.stripe.com"),false,"No Stripe.js script is loaded by this retail module");
- assert.equal(js.includes("klarna.com/"),false,"No direct Klarna URL is embedded in this retail module");
+ // Inspect domain-like source tokens, not URL substrings or a runtime URL allowlist.
+ const forbiddenProviderToken = (token) => {
+  const labels = token.toLowerCase().split(".").filter(Boolean);
+  const [tld, domain, subdomain] = labels.reverse();
+  return tld === "com" && (domain === "klarna" || (domain === "stripe" && subdomain === "js"));
+ };
+ assert.equal(forbiddenProviderToken("js.stripe.com"),true);
+ assert.equal(forbiddenProviderToken("www.klarna.com"),true);
+ assert.equal(forbiddenProviderToken("klarna.com.example.org"),false);
+ assert.equal(forbiddenProviderToken("notklarna.com"),false);
+ const domainTokens = js.match(/[a-z0-9.-]+/gi) || [];
+ assert.equal(domainTokens.some(forbiddenProviderToken),false,"No Stripe.js or direct Klarna domain is embedded in this retail module");
  const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
  assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
 });
