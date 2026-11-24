@@ -276,3 +276,23 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
      product.slug+" pack photograph");
  }
 });
+
+test("gift card preview matches approved denomination list and cannot collect payment", async()=>{
+ const {giftPreviewAmount,GIFT_DENOMINATIONS}=await import("../assets/js/nutraxin-retail-store.js");
+ assert.deepEqual(GIFT_DENOMINATIONS,[1000,2500,5000,10000,25000]);
+ for(const v of GIFT_DENOMINATIONS) assert.equal(giftPreviewAmount(String(v)),v);
+ for(const v of [0,100,5001,-1000,"5e3",null,{},true]) assert.equal(giftPreviewAmount(v),null);
+ const html=readFileSync("products/nutraxin/gift-cards/index.html","utf8");
+ const main=html.match(/<main id="main"[^>]*>[\s\S]*?<\/main>/)?.[0];
+ assert.ok(main);
+ assert.match(html,/name="robots" content="noindex, nofollow"/);
+ assert.match(main,/data-nx-gift-preview/);
+ assert.match(main,/<button type="button" class="nx-store-bag-button" disabled>Purchasing unavailable<\/button>/);
+ assert.doesNotMatch(main,/<form\b|type="email"|data-nx-checkout/);
+ const inputs=[...main.matchAll(/name="nx-gift-amount" value="(\d+)"/g)].map(m=>Number(m[1]));
+ assert.deepEqual(inputs,GIFT_DENOMINATIONS);
+ const generator=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
+ assert.ok(generator.includes('materialize("products/nutraxin/gift-cards/index.html"'));
+ const preview=readFileSync("assets/js/nutraxin-retail-store.js","utf8").split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
+ assert.doesNotMatch(preview,/fetch\(|location\.assign|sessionStorage|localStorage/);
+});
