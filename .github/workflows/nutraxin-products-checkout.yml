@@ -5,6 +5,8 @@ on:
       - "apps/nutraxin-products-checkout/**"
       - "apps/nutraxin-payments/gift_card_contract.py"
       - "apps/nutraxin-payments/test_gift_card_contract.py"
+      - "apps/nutraxin-payments/gift_card_ledger.py"
+      - "apps/nutraxin-payments/test_gift_card_ledger.py"
       - "assets/css/nutraxin-retail-store.css"
       - "infra/aws/nutraxin-products-checkout-api.json"
       - "assets/js/nutraxin-retail-store.js"
@@ -35,7 +37,7 @@ jobs:
       - name: Check guest Checkout and order status security
         run: python3 -m unittest discover -s apps/nutraxin-products-checkout -p 'test_public_checkout.py' -v
       - name: Verify offline gift card balance and tender contract
-        run: python3 -m unittest discover -s apps/nutraxin-payments -p "test_gift_card_contract.py" -v
+        run: python3 -m unittest discover -s apps/nutraxin-payments -p "test_gift_card*.py" -v
       - name: Check all 19 products, price and public Bag
         run: |
           node --test scripts/test-nutraxin-retail-store.mjs
