@@ -32,10 +32,24 @@ class FakeDB:
     def get_item(self, **kw):
         return {"Item":self.rows.get(kw["Key"]["pk"]["S"])}
     def transact_write_items(self, **kw):
-        items=[x["Put"]["Item"] for x in kw["TransactItems"]]
+        puts=[x["Put"] for x in kw["TransactItems"]]
+        items=[x["Item"] for x in puts]
         keys=[x["pk"]["S"] for x in items]
-        if len(keys)!=len(set(keys)) or any(k in self.rows for k in keys):
+        if len(keys)!=len(set(keys)):
             raise SyntheticClientError("TransactionCanceledException")
+        for key,put in zip(keys,puts):
+            old=self.rows.get(key)
+            if put["ConditionExpression"]=="attribute_not_exists(pk)":
+                ok=old is None
+            else:
+                assert put["ConditionExpression"]=="#state = :approved AND customerSub = :subject AND campaignId = :campaign AND promotionCode = :code AND priorOrderId = :prior AND expiresAtUnix = :expiry AND expiresAtUnix > :now"
+                v=put["ExpressionAttributeValues"]
+                ok=(old is not None and all(old.get(k)==v[a] for k,a in (
+                    ("status",":approved"),("customerSub",":subject"),("campaignId",":campaign"),
+                    ("promotionCode",":code"),("priorOrderId",":prior"),("expiresAtUnix",":expiry")))
+                    and int(old["expiresAtUnix"]["N"])>int(v[":now"]["N"]))
+            if not ok:
+                raise SyntheticClientError("TransactionCanceledException")
         for key,item in zip(keys,items):self.rows[key]=item
     def query(self, **kw):
         key=kw["ExpressionAttributeValues"][":subject"]["S"]
@@ -170,6 +184,57 @@ class ProductsPaymentTests(unittest.TestCase):
         event=self.event(route,method,payload)
         if token is not None:event["headers"]["authorization"]="Bearer "+token
         return event
+    def returning_fixture(self):
+        import hashlib
+        subject="consumer_11111111222243338444555555555555"
+        campaign="RETURN-2026"
+        prior="NUT-bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        digest=hashlib.sha256(json.dumps([campaign,subject],separators=(",",":")).encode()).hexdigest()
+        grant="PROMO_GRANT#"+digest
+        DB.rows["ORDER#"+prior]={"customerSub":{"S":subject},"status":{"S":"PAID"},
+            "ownerCommercialPolicy":{"S":"nutraxin_uk_direct_v1"}}
+        DB.rows[grant]={"pk":{"S":grant},"sk":{"S":"META"},"status":{"S":"APPROVED"},
+            "customerSub":{"S":subject},"campaignId":{"S":campaign},"promotionCode":{"S":"TEST10"},
+            "priorOrderId":{"S":prior},"expiresAtUnix":{"N":str(int(time.time())+1800)}}
+        return grant,prior,self.promotion_policy(audience="returning_account_once",campaign_id=campaign)
+
+    def test_returning_coupon_requires_verified_account_grant_and_single_use(self):
+        from unittest.mock import patch
+        grant,prior,policy=self.returning_fixture()
+        token=self.consumer_token()
+        basket=dict(self.basket(),promo_code="TEST10")
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            self.assertEqual(API.handler(self.event("/quote","POST",basket),None)["statusCode"],422)
+            self.assertEqual(API.handler(self.account_event("/account/quote","POST",basket,self.consumer_token(subject="99999999-2222-4333-8444-555555555555")),None)["statusCode"],422)
+            quote=API.handler(self.account_event("/account/quote","POST",basket,token),None)
+            self.assertEqual(quote["statusCode"],200,quote["body"])
+            self.assertEqual(DB.rows[grant]["status"]["S"],"APPROVED")
+            self.assertFalse(WORKER.calls)
+            basket["basket_version"]=json.loads(quote["body"])["basketVersion"]
+            event=self.account_event("/account/checkout","POST",basket,token)
+            self.assertEqual(API.handler(event,None)["statusCode"],200)
+            self.assertEqual(DB.rows[grant]["status"]["S"],"CLAIMED")
+            self.assertEqual(DB.rows[grant]["claimedOrderId"]["S"],"NUT-"+self.ID)
+            self.assertEqual(API.handler(event,None)["statusCode"],200)
+            duplicate=dict(basket,request_id="cccccccc-bbbb-4ccc-8ddd-eeeeeeeeeeee")
+            self.assertEqual(API.handler(self.account_event("/account/checkout","POST",duplicate,token),None)["statusCode"],422)
+            self.assertNotIn("ORDER#NUT-"+duplicate["request_id"],DB.rows)
+            self.assertEqual(len(WORKER.calls),2)
+            self.assertEqual(API.handler(self.account_event("/account/quote","POST",basket,token),None)["statusCode"],422)
+
+    def test_returning_coupon_requires_prior_paid_order_and_unexpired_grant(self):
+        from unittest.mock import patch
+        grant,prior,policy=self.returning_fixture()
+        token=self.consumer_token()
+        event=self.account_event("/account/quote","POST",dict(self.basket(),promo_code="TEST10"),token)
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            DB.rows["ORDER#"+prior]["status"]={"S":"PAYMENT_FAILED"}
+            self.assertEqual(API.handler(event,None)["statusCode"],422)
+            DB.rows["ORDER#"+prior]["status"]={"S":"PAID"}
+            DB.rows[grant]["expiresAtUnix"]={"N":"1"}
+            self.assertEqual(API.handler(event,None)["statusCode"],422)
+            self.assertFalse(WORKER.calls)
+
     def test_account_requires_valid_token_from_exact_consumer_pool(self):
         self.assertEqual(API.handler(self.account_event("/account/me"),None)["statusCode"],401)
         for token in [
