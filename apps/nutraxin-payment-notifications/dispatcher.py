@@ -5,6 +5,7 @@ Review-only deployment by default: NOTIFICATIONS_ENABLED is false until SES
 production access, sender authentication and paid-order acceptance pass.
 """
 import json
+from html import escape
 import os
 import re
 import time
@@ -118,22 +119,83 @@ def mark(order_id, event_id, status, message_id=None):
         ExpressionAttributeNames={"#s": "status"},
         ExpressionAttributeValues=values)
 
-def send_receipt(address, order_id, amount):
-    amount_gbp = "GBP " + format(amount / 100, ".2f")
-    subject = "Your NovaPharm Nutraxin payment confirmation"
-    body = ("Thank you for your Nutraxin order.\n\n"
-            "Your payment has been confirmed.\n"
-            "Order reference: " + order_id + "\n"
-            "Amount received: " + amount_gbp + " (including UK VAT and delivery)\n\n"
-            "We will communicate dispatch information separately. "
-            "Please retain your order reference.\n\n"
-            "NovaPharm Healthcare Ltd\nhttps://novapharmhealthcare.com/products/nutraxin/\n")
+LOGO_URL = "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+TRACK_URL = "https://novapharmhealthcare.com/products/track/"
+SUPPORT = "support@novapharmhealthcare.com"
+
+def gbp(minor):
+    return f"£{minor // 100:,}.{minor % 100:02d}"
+
+def receipt_lines(row, amount):
+    lines = json.loads(field(row, "approvedLinesJson") or "[]")
+    shipping_raw = field(row, "shippingGrossMinor", "N")
+    if not isinstance(shipping_raw, str) or not shipping_raw.isdecimal():
+        raise ValueError("Verified shipping amount missing")
+    shipping = int(shipping_raw)
+    if not isinstance(lines, list) or not 1 <= len(lines) <= 100:
+        raise ValueError("Verified order lines missing")
+    cleaned = []
+    for line in lines:
+        if not isinstance(line, dict):
+            raise ValueError("Invalid order line")
+        name, qty, gross = line.get("name"), line.get("quantity"), line.get("grossMinor")
+        if (not isinstance(name, str) or not 1 <= len(name) <= 200 or
+            any(ord(c) < 32 for c in name) or type(qty) is not int or
+            not 1 <= qty <= 10000 or type(gross) is not int or not 0 <= gross <= amount):
+            raise ValueError("Invalid approved order line")
+        cleaned.append((name, qty, gross))
+    if sum(line[2] for line in cleaned) + shipping != amount:
+        raise ValueError("Order lines do not reconcile to payment")
+    return cleaned, shipping
+
+def receipt_content(order_id, amount, lines, shipping):
+    subject = "Thank you for your order."
+    intro = "Your payment has been received. Thank you for choosing NovaPharm."
+    follow = "We will be in touch when your order is ready for dispatch. Payment confirmation does not mean your order has been dispatched."
+    plain_lines = [f"{name} | Quantity: {qty} | {gbp(gross)}" for name, qty, gross in lines]
+    body = "\n".join(["NovaPharm Healthcare", "", "Your order is confirmed.", "", intro,
+        follow, "", "Order reference: " + order_id, "", *plain_lines,
+        "Delivery: " + gbp(shipping), "Total paid (including applicable VAT): " + gbp(amount),
+        "", "Check order status (no account required): " + TRACK_URL,
+        "Enter the complete order reference above. This service shows status only.",
+        "", "At your service.", "For assistance, reply to this email or contact " + SUPPORT + ".",
+        "With care,", "NovaPharm Healthcare Ltd"])
+    rows = "".join(
+        f'<tr><td style="padding:18px 0;border-bottom:1px solid #DEDCD5;vertical-align:top">'
+        f'{escape(name)}<br><span style="font-size:13px;color:#525252">Quantity: {qty}</span></td>'
+        f'<td align="right" style="padding:18px 0 18px 12px;border-bottom:1px solid #DEDCD5;vertical-align:top;white-space:nowrap">{gbp(gross)}</td></tr>'
+        for name, qty, gross in lines)
+    html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{subject}</title></head>
+<body style="margin:0;padding:0;background:#FFFFFF;color:#0B0B0E;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;font-size:16px;line-height:1.6">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#FFFFFF"><tr><td align="center">
+<!--[if mso]><table role="presentation" width="600" align="center"><tr><td><![endif]-->
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background:#FFFFFF">
+<tr><td style="padding:40px 28px 32px"><img src="{LOGO_URL}" alt="NovaPharm Healthcare" width="240" style="display:block;width:240px;max-width:100%;height:auto;border:0"></td></tr>
+<tr><td style="padding:0 28px 28px"><h1 style="font-size:30px;line-height:1.25;font-weight:400;margin:0 0 24px">Your order is confirmed.</h1><p style="margin:0 0 16px">{intro}</p><p style="margin:0">{follow}</p></td></tr>
+<tr><td style="padding:0 28px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#F8F7F3"><tr><td style="padding:20px"><p style="font-size:13px;color:#525252;margin:0 0 6px">Order reference</p><p style="font-size:14px;margin:0;overflow-wrap:anywhere;word-break:break-all">{escape(order_id)}</p></td></tr></table></td></tr>
+<tr><td style="padding:30px 28px"><h2 style="font-size:22px;font-weight:400;margin:0 0 8px">Your selection.</h2>
+<table width="100%" cellspacing="0" cellpadding="0" style="font-size:15px;line-height:1.5" aria-label="Order summary">{rows}
+<tr><td style="padding:16px 0 6px">Delivery</td><td align="right">{gbp(shipping)}</td></tr>
+<tr><td style="padding:8px 0;font-weight:bold">Total paid</td><td align="right" style="font-weight:bold">{gbp(amount)}</td></tr></table>
+<p style="font-size:13px;color:#525252;margin:8px 0 24px">Includes applicable VAT.</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="border:1px solid #0B0B0E"><a href="{TRACK_URL}" style="display:block;padding:16px;color:#0B0B0E;font-weight:500;text-decoration:none">Check your order status &#8594;</a></td></tr></table>
+<p style="font-size:13px;color:#525252;margin:12px 0 0">No account required. Enter your complete order reference to view the recorded status.</p></td></tr>
+<tr><td style="padding:0 28px 36px"><h2 style="font-size:22px;font-weight:400;margin:0 0 14px;border-top:1px solid #DEDCD5;padding-top:24px">At your service.</h2><p style="margin:0 0 16px">If you have any questions about your order, simply reply to this email. We would be pleased to assist.</p><p style="margin:0">With care,<br>NovaPharm Healthcare</p></td></tr>
+<tr><td style="background:#0B0B0E;color:#FFFFFF;padding:28px;font-size:14px"><h2 style="font-size:20px;font-weight:400;margin:0 0 16px">Customer care</h2><p style="margin:0 0 16px"><a href="mailto:{SUPPORT}" style="color:#FFFFFF;text-decoration:underline">{SUPPORT}</a></p><p style="margin:0 0 16px"><a href="{TRACK_URL}" style="color:#FFFFFF;text-decoration:underline">Order status</a></p><p style="margin:0;font-size:12px">NovaPharm Healthcare Ltd<br>United Kingdom</p></td></tr>
+</table><!--[if mso]></td></tr></table><![endif]--></td></tr></table></body></html>"""
+    return subject, body, html
+
+def send_receipt(address, order_id, amount, lines, shipping):
+    subject, body, html = receipt_content(order_id, amount, lines, shipping)
     return SES.send_email(
-        FromEmailAddress=SENDER,
+        FromEmailAddress="NovaPharm Healthcare <" + SENDER + ">",
+        ReplyToAddresses=[SUPPORT],
         Destination={"ToAddresses": [address]},
         Content={"Simple": {
             "Subject": {"Data": subject, "Charset": "UTF-8"},
-            "Body": {"Text": {"Data": body, "Charset": "UTF-8"}}}})
+            "Body": {"Text": {"Data": body, "Charset": "UTF-8"},
+                     "Html": {"Data": html, "Charset": "UTF-8"}}}})
+
 
 def handler(event, context):
     if not ENABLED:
@@ -178,6 +240,7 @@ def handler(event, context):
             row, sid, amount = read_paid_order(order_id, event_id)
             session = stripe_session(sid)
             recipient = verified_recipient(session, row, sid, order_id, attempt_id, amount)
+            lines, shipping = receipt_lines(row, amount)
         except (ClientError, urllib.error.HTTPError, urllib.error.URLError,
                 TimeoutError, ValueError, KeyError, TypeError, json.JSONDecodeError):
             review += 1
@@ -187,7 +250,7 @@ def handler(event, context):
         except ClientError:
             continue  # Already claimed; never send again.
         try:
-            delivered = send_receipt(recipient, order_id, amount)
+            delivered = send_receipt(recipient, order_id, amount, lines, shipping)
         except ClientError:
             mark(order_id, event_id, "REVIEW_REQUIRED")
             review += 1
