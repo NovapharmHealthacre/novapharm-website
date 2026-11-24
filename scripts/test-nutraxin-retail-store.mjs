@@ -219,9 +219,9 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
      product.slug+" missing CSS class "+requiredClass);
    assert.ok(html.includes('data-page="product-portfolio/nutraxin"'),
      product.slug+" missing governed product scope");
-   assert.match(html,/href="\\/assets\\/css\\/nutraxin-merchant\\.css(?:\\?[^"]*)?"/,
+   assert.match(html,/href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"/,
      product.slug+" missing shared merchant stylesheet");
-   assert.match(html,/src="\\/assets\\/js\\/nutraxin-retail-store\\.js(?:\\?[^"]*)?"/,
+   assert.match(html,/src="\/assets\/js\/nutraxin-retail-store\.js(?:\?[^"]*)?"/,
      product.slug+" missing public retail module");
    assert.equal((html.match(/<h1\b/g)||[]).length,1,product.slug+" title hierarchy");
    assert.ok(html.includes('data-merchant-sku="'+product.sku+'"'),product.sku+" source price");
