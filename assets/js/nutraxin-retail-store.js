@@ -203,8 +203,15 @@ function runStore(data) {
         const explanation = container.querySelector("[data-nx-checkout-note]");
         const locked = checkoutInFlight || checkoutUncertain || !!awaitingOrder;
         list.replaceChildren();
-        if (!bag.length) {
-          list.append(make("p", "nx-bag-empty", "Your bag is empty. Explore the collection and add products to get started."));
+        if (!bag.length && !confirmedOrder && !awaitingOrder) {
+          const empty = make("div", "nx-bag-empty");
+          empty.append(make("p", null, "Your bag is empty. Explore the collection and add products to get started."), anchor("Continue shopping", SHOP_URL, "nx-compare-link"));
+          list.append(empty);
+        }
+        if (confirmedOrder || awaitingOrder || checkoutUncertain) {
+          const help = make("div", "nx-bag-order-help");
+          help.append(anchor("Check an order status", "/products/track/", "nx-compare-link"), anchor("Contact customer support", "mailto:support@novapharmhealthcare.com", "nx-compare-link"));
+          list.append(help);
         }
         for (const line of bag) {
           const p = productMap.get(line.sku);
