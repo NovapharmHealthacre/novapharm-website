@@ -21,6 +21,11 @@ class InlinePackaging(unittest.TestCase):
         old = json.loads((ROOT / "infra/aws/customer-admin-directory-candidate.json").read_text())
         self.assertEqual(t["Conditions"], old["Conditions"])
         self.assertEqual(t["Parameters"]["ReleaseEnabled"]["Default"], "false")
+        self.assertEqual(t["Parameters"]["RouteEnabled"]["Default"], "false")
+        self.assertEqual(t["Conditions"]["Publish"], {"Fn::Equals": [{"Ref": "RouteEnabled"}, "true"]})
+        self.assertEqual(t["Rules"], old["Rules"])
+        self.assertEqual(t["Rules"]["ReleaseRequiresRoute"]["RuleCondition"], {"Fn::Equals": [{"Ref": "ReleaseEnabled"}, "true"]})
+        self.assertEqual(t["Rules"]["ReleaseRequiresRoute"]["Assertions"][0]["Assert"], {"Fn::Equals": [{"Ref": "RouteEnabled"}, "true"]})
         for name, resource in old["Resources"].items():
             if name != "DirectoryFunction":
                 self.assertEqual(t["Resources"][name], resource)
