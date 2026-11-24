@@ -100,7 +100,7 @@
   border-top:1px solid #d1d1d6
 }
 .customer-editorial-dashboard .customer-editorial-delivery-line{position:absolute;top:-2px;left:0;width:34%;height:3px;background:#b5121f}
-.customer-editorial-dashboard .customer-editorial-sub-link{position:absolute;right:6%;bottom:64px;color:#66666c;text-decoration:underline;text-underline-offset:4px;font-size:.8rem}
+.customer-editorial-dashboard .customer-editorial-sub-link{align-self:flex-end;margin:0 24px 24px auto;color:#54545a;text-decoration:underline;text-underline-offset:4px;font-size:.85rem;z-index:1}
 .customer-editorial-dashboard .customer-editorial-index{padding:54px 4px 8px}
 .customer-editorial-dashboard .customer-editorial-index>h2{margin:0 0 25px;font-size:clamp(1.8rem,2.4vw,2.7rem);letter-spacing:-.045em}
 .customer-editorial-dashboard .customer-editorial-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(25px,4.2vw,70px)}
@@ -202,7 +202,6 @@
 .customer-quick-tasks>a strong{font-size:1rem;font-weight:650}
 .customer-quick-tasks>a span{font-size:.85rem;color:#54545a}
 .customer-quick-tasks>a:hover strong{text-decoration:underline;text-underline-offset:3px}
-.customer-editorial-dashboard .customer-editorial-delivery-detail{position:static;display:none}
 .customer-login-services{display:grid;gap:0;margin:14px 0;padding:0;border-top:1px solid #DEDCD5}
 .customer-login-services h3{margin:16px 0 6px;font-size:1rem;font-weight:650;color:#0B0B0E}
 .customer-login-services>a{display:flex;align-items:center;min-height:44px;padding:8px 0;border-bottom:1px solid #DEDCD5;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
