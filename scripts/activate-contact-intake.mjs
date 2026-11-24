@@ -101,6 +101,42 @@ export function activateManagedContactReleaseHtml(template, origin) {
   return result;
 }
 
+// The reviewed intake template remains hash-pinned. Reuse the final staged
+// corporate shell only after its independent form/endpoint checks pass.
+export function composeManagedContactChrome(managedHtml, baselineHtml) {
+  const headerPattern = /<header class="site-header npd-header"[^>]*>[\s\S]*?<\/header>/g;
+  const footerPattern = /<footer class="site-footer npd-footer"[^>]*>[\s\S]*?<\/footer>/g;
+  const one = (html, pattern, label) => {
+    const matches = [...html.matchAll(pattern)];
+    if (matches.length !== 1) throw Error("Expected exactly one " + label);
+    return matches[0][0];
+  };
+  const header = one(baselineHtml, headerPattern, "staged corporate header");
+  const footer = one(baselineHtml, footerPattern, "staged corporate footer");
+  const css = one(baselineHtml, /<link\b[^>]*href="\/assets\/css\/novapharm\.bundle\.css(?:\?[^"]*)?"[^>]*>/g, "staged corporate CSS");
+  const nav = one(baselineHtml, /<script\b[^>]*src="\/assets\/js\/novapharm\.js(?:\?[^"]*)?"[^>]*><\/script>/g, "staged navigation script");
+  const cookie = one(baselineHtml, /<script\b[^>]*src="\/assets\/js\/cookie-consent\.js(?:\?[^"]*)?"[^>]*><\/script>/g, "staged cookie controls");
+  const rtl = baselineHtml.match(/<script\b[^>]*src="\/assets\/js\/rtl-localization\.js(?:\?[^"]*)?"[^>]*><\/script>/)?.[0] || '<script src="/assets/js/rtl-localization.js"></script>';
+  const oldHeader = one(managedHtml, /<header class="site-header"[^>]*>[\s\S]*?<\/header>/g, "legacy contact header");
+  const oldFooter = one(managedHtml, /<footer class="ref-footer"[^>]*>[\s\S]*?<\/footer>/g, "legacy contact footer");
+  const formPattern = /<form\b[^>]*>[\s\S]*?<\/form>/g;
+  const originalForm = one(managedHtml, formPattern, "reviewed intake form");
+  const result = managedHtml
+    .replace(oldHeader, () => header)
+    .replace(oldFooter, () => footer)
+    // Retire legacy chrome selectors; do not alter the reviewed form styles.
+    .replace(/<style>[\s\S]*?<\/style>/, (style) => style.replace(/\.site-header\b/g, ".contact-legacy-header"))
+    .replace("<style>", () => rtl + css + "<style>")
+    .replace("<body>", '<body data-page="contact" data-family="contact" data-route="/contact/">')
+    .replace("</body>", () => nav + cookie + "</body>");
+  if (one(result, formPattern, "composed intake form") !== originalForm ||
+      !result.includes("form-action 'none'") ||
+      !result.includes('src="/assets/js/contact-production.js"')) {
+    throw Error("Managed Contact shell composition changed the reviewed intake");
+  }
+  return result;
+}
+
 // Preserve an immutable reviewed managed template while adding the exact
 // staged public build's source provenance after explicit owner-gated activation.
 export function stampManagedContactProvenance(managedHtml, baselineHtml, expectedSha) {
@@ -159,7 +195,7 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   ).toString("utf8");
   const expectedSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
   const nextContact = stampManagedContactProvenance(
-    activateManagedContactReleaseHtml(reviewedTemplate, origin), contact, expectedSha
+    composeManagedContactChrome(activateManagedContactReleaseHtml(reviewedTemplate, origin), contact), contact, expectedSha
   );
   const nextPrivacy = activatePrivacyHtml(notice);
   const nextAccount = activateAccountRequestHtml(account, origin);

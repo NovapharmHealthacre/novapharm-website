@@ -64,7 +64,7 @@ const globalNavigation = [
   ["Distribution", "/distribution/", "distribution"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
-  ["NovaPharm Intelligence", "/technology/", "intelligence"],
+  ["Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
   ["Secure Portal", "https://portal.novapharmhealthcare.com/", "portal"]
@@ -111,12 +111,9 @@ const megaNavigation = {
 };
 
 function header(route) {
-  const current = globalSection(route);
-  // The public homepage retains concise navigation but must never hide the
-  // explicit secure portal entry. Insights remains available through site links.
-  const headerLinks = route === "/"
-    ? globalNavigation.filter(([, href]) => href !== "/news-insights/")
-    : globalNavigation;
+  // Keep the approved homepage ordering and labels on every public route.
+  // Insights is still discoverable from the shared footer.
+  const headerLinks = globalNavigation.filter(([, href]) => href !== "/news-insights/");
   return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
@@ -124,7 +121,7 @@ function header(route) {
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${route === "/" && href === "/technology/" ? "Intelligence" : label}</a>`).join("")}
+        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${route === href ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
       </nav>
     </div>
     ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
@@ -563,10 +560,6 @@ function contactMain(existingHtml) {
     '<aside class="np-contact-reference-safety" aria-label="Important communication boundaries"><div class="np-contact-reference-shell">',
     '<p>Business enquiries only. This is not a medical or patient-ordering channel. Do not send patient-identifiable information, adverse-event reports or urgent medical details. Report suspected side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For UK emergencies call 999 or seek NHS 111 advice.</p>',
     '</div></aside>',
-    '<footer class="np-contact-reference-footer"><div class="np-contact-reference-shell np-contact-reference-footer-inner"><div>',
-    '<strong>Medicine. Where it needs to be.</strong>',
-    '<p>NovaPharm Healthcare Ltd · United Kingdom</p><small>Regulated wholesale supply has not commenced.</small>',
-    '</div><nav aria-label="Contact footer"><a href="/about/">Company</a><a href="/legal/privacy/">Privacy</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a></nav></div></footer>',
     '</main>'
   ].join("");
 }
