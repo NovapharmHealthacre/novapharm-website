@@ -336,7 +336,7 @@ function runStore(data) {
       const privilegeHeading = make("h3", null, "Your privileges");
       privilegeHeading.id = "nx-bag-privileges-heading";
       privileges.setAttribute("aria-labelledby", privilegeHeading.id);
-      const privilegeStatus = make("p", "nx-store-note");
+      const privilegeStatus = make("p", "nx-store-note", "Personal offers are available to eligible signed-in customers.");
       privilegeStatus.setAttribute("role", "status");
       const privilegeList = make("div", "nx-bag-privilege-list");
       const privilegeRefresh = make("button", "nx-compare-control", "Check my offers");
