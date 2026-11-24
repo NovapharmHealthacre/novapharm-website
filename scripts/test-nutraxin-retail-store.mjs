@@ -376,7 +376,9 @@ test("Klarna retail identification is readiness-gated and contains no credit cla
  assert.ok(js.includes("klarnaCheckoutNotice(ready && !checkoutUncertain)"));
  assert.ok(js.includes("status?.payment_collection_active === true"));
  assert.ok(js.includes("klarnaNotice.hidden = !message"));
- assert.doesNotMatch(js,/js\.stripe\.com|klarna\.com\//);
+ // This is a source-text prohibition, not a URL host allowlist.
+ assert.equal(js.includes("js.stripe.com"),false,"No Stripe.js script is loaded by this retail module");
+ assert.equal(js.includes("klarna.com/"),false,"No direct Klarna URL is embedded in this retail module");
  const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
  assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
 });
