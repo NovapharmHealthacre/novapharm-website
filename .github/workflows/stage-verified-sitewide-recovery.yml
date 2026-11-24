@@ -1,0 +1,71 @@
+name: Stage verified sitewide publication recovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/stage-verified-sitewide-recovery.yml'
+      - 'scripts/stage-verified-sitewide-recovery.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verified-sitewide-recovery-20261124
+  cancel-in-progress: false
+
+jobs:
+  stage-review-only:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      LEGACY_HEAD: 4c641e6c4277224014626e25bbf0bef060ba9706
+      RECOVERY_BRANCH: release/verified-sitewide-recovery-20261124
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+      - name: Retrieve exact previously verified public artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/14933088879/zip" > "$RUNNER_TEMP/verified-pages.zip"
+          echo "042e82c522cfea93f4678bbb9661d6a1744e5a77b209f4edf042bbb5221aa480  $RUNNER_TEMP/verified-pages.zip" | sha256sum -c -
+      - name: Stage only on a new branch from exact reviewed production head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin refs/heads/gh-pages:refs/remotes/origin/gh-pages
+          test "$(git rev-parse refs/remotes/origin/gh-pages)" = "$LEGACY_HEAD"
+          git worktree add --detach "$RUNNER_TEMP/recovery" "$LEGACY_HEAD"
+          python3 scripts/stage-verified-sitewide-recovery.py "$RUNNER_TEMP/verified-pages.zip" "$RUNNER_TEMP/recovery"
+          cd "$RUNNER_TEMP/recovery"
+          git add -A
+          git diff --cached --check
+          test -z "$(git diff --cached --name-only --diff-filter=D)"
+          test -z "$(git diff --cached --name-only -- assets/css/nutraxin-retail-store.css assets/js/nutraxin-retail-store.js)"
+          git diff --cached --stat
+          test -n "$(git diff --cached --name-only)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Restore verified public site while preserving approved retail assets"
+          test "$(git ls-remote origin refs/heads/gh-pages | cut -f1)" = "$LEGACY_HEAD"
+          if git ls-remote --exit-code origin "refs/heads/$RECOVERY_BRANCH" >/dev/null; then
+            echo "::error::Recovery branch already exists; inspect it rather than replacing it."
+            exit 1
+          fi
+          git push origin "HEAD:refs/heads/$RECOVERY_BRANCH"
+      - name: Open review-only production pull request
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr create --repo "$GITHUB_REPOSITORY" --base gh-pages --head "$RECOVERY_BRANCH" \
+            --title "Restore verified public sitewide design without retail rollback" \
+            --body "Re-stage the exact successful public artifact from run 45419712360, verified by its recorded SHA-256. Preserve current coupon and Klarna CSS/JS byte-for-byte; do not introduce the deferred gift-card route; no deletions, infrastructure changes, customer-permission changes, or direct production publication. Review the changed paths, validate the candidate, then merge through the existing production process. Source receipts describe the restored page release; the two retained retail assets are newer reviewed exceptions."
