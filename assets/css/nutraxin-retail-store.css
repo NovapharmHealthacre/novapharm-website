@@ -177,3 +177,15 @@ body.nx-retail-store{background:#FFFFFF}
 .nx-gift-options input{accent-color:#9D1B32}
 .nx-gift-options label:focus-within{outline:2px solid #9D1B32;outline-offset:3px}
 @media(max-width:480px){.nx-gift-visual{padding:16px}.nx-gift-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Account privileges: secondary to manual promotional code, never advertise unapproved offers. */
+.nx-bag-privileges{margin:16px 0;padding:16px 0;border-bottom:1px solid #DEDCD5}
+.nx-bag-privileges[hidden],.nx-bag-privileges [hidden]{display:none}
+.nx-bag-privileges h3{font-size:16px;font-weight:600;margin:0 0 8px;color:#0B0B0E}
+.nx-bag-privilege-list{display:grid;gap:8px}
+.nx-bag-privilege{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#FFFFFF;border:1px solid #DEDCD5;border-radius:8px}
+.nx-bag-privilege p{font-size:13px;line-height:1.5;margin:4px 0;color:#54545A}
+.nx-bag-privilege button{flex:none;min-height:44px}
+.nx-bag-privileges>a,.nx-bag-privileges>button{margin-top:8px}
+@media(max-width:420px){.nx-bag-privilege{align-items:stretch;flex-direction:column}}
