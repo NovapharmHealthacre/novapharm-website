@@ -179,3 +179,7 @@ assert.match(composed, /<meta name="theme-color" content="#FFFFFF">/);
 assert.match(composed, /--contact-primary-white:#FFFFFF/);
 assert.doesNotMatch(composed.match(/<style>[\s\S]*?<\/style>/)[0], /#FBFAEF|rgba\(251,250,239/);
 assert.equal(composed.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/)[0], managed.match(/<meta http-equiv="Content-Security-Policy"[^>]*>/)[0]);
+
+const { managedContactLayout } = await import("./managed-contact-layout.mjs");
+assert.ok(composed.match(/<style>[\s\S]*?<\/style>/)[0].endsWith(managedContactLayout + "</style>"));
+assert.match(composed, /\.ref-form > \.ref-grid ~ \.ref-grid/);
