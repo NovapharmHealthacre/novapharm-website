@@ -142,3 +142,9 @@ body.nx-retail-store{background:#FFFFFF}
  .nx-bag-discover-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:360px){.nx-bag-item{grid-template-columns:56px minmax(0,1fr)}.nx-bag-item img{width:56px;height:56px}.nx-bag-item .nx-bag-quantity input[type=number]{width:48px}.nx-bag-discover-grid{grid-template-columns:minmax(0,1fr)}}
+
+.nx-bag-count{font-size:15px;color:#54545A;margin:0 0 8px}
+.nx-bag-summary-jump{display:inline-flex;align-items:center;min-height:44px;margin-bottom:4px;text-decoration:underline!important;text-underline-offset:3px}
+#nx-bag-summary{scroll-margin-top:120px}
+.nx-bag-secure p{margin:0 0 8px}
+.nx-bag-discover[hidden]{display:none}
