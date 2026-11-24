@@ -1,7 +1,7 @@
 "use client";
 
 import { Building2, Eye, EyeOff, KeyRound, ShieldCheck, Users } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { destinationAfterPortalLogin, validatedCustomerCommerceIntentQuery } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
@@ -28,12 +28,15 @@ export function LoginPanel() {
   const [accessType, setAccessType] = useState<AccessType>("customer");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const signInInFlight = useRef(false);
   const [showPassword, setShowPassword] = useState(false);
   const [selectionQuery, setSelectionQuery] = useState("");
   useEffect(() => setSelectionQuery(validatedCustomerCommerceIntentQuery(window.location.search)), []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (signInInFlight.current) return;
+    signInInFlight.current = true;
     setBusy(true);
     setStatus("");
     const form = new FormData(event.currentTarget);
@@ -49,6 +52,7 @@ export function LoginPanel() {
     } catch (error) {
       setStatus(professionalError(error));
     } finally {
+      signInInFlight.current = false;
       setBusy(false);
     }
   }
@@ -72,7 +76,7 @@ export function LoginPanel() {
         <h2 id="sign-in-title">{accessType === "customer" ? "Sign in to your business account" : "Sign in to your portal"}</h2>
         <p className="muted" id="portal-account-reason">{accessReason[accessType]}</p>
       </div>
-      <fieldset className="access-selector">
+      <fieldset className="access-selector" disabled={busy}>
         <legend>Choose a workspace</legend>
         {accessTypes.map(({ value, label, icon: Icon }) => <label key={value} className={accessType === value ? "selected" : ""}>
           <input type="radio" name="accessType" value={value} checked={accessType === value} onChange={() => setAccessType(value)} />
@@ -92,7 +96,7 @@ export function LoginPanel() {
         </div>
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
       </form>
-      {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
+      {entraEnabled && !busy ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
       {accessType === "customer" ? <nav className="customer-login-services" aria-label="Customer account options">
