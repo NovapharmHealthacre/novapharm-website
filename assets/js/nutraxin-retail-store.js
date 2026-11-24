@@ -204,6 +204,27 @@ export function checkoutReturnOutcome(result) {
   return "pending";
 }
 
+const ATTEMPT_KEY = "np-retail-checkout-attempt";
+const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+export function basketAttemptId(bag, quote = null) {
+  const lines = [...bag].sort((a,b)=>a.sku.localeCompare(b.sku));
+  return quote ? JSON.stringify({lines,promo:quote.promotionCode,version:quote.basketVersion}) : JSON.stringify(lines);
+}
+
+export function restoreCheckoutAttempt(record, bag, mode) {
+  if (!record || !REQUEST_ID.test(record.id || "")) return null;
+  const quote = record.quote ?? null;
+  const quoteValid = quote === null || (
+    quote.currency === "GBP" && /^[A-Z0-9_-]{3,32}$/.test(quote.promotionCode || "") &&
+    /^[a-f0-9]{64}$/.test(quote.basketVersion || "") &&
+    [quote.originalGrossMinor,quote.discountGrossMinor,quote.totalGrossMinor].every(Number.isSafeInteger) &&
+    quote.discountGrossMinor > 0 && quote.totalGrossMinor >= 30 &&
+    quote.originalGrossMinor - quote.discountGrossMinor === quote.totalGrossMinor);
+  const resumable = quoteValid && record.mode === mode && record.basket === basketAttemptId(bag,quote);
+  return {id:record.id,basket:record.basket,mode:record.mode,quote:resumable?quote:null,resumable};
+}
+
 function runStore(data) {
   let bag = loadBag(data);
   let approvedRelease = false;
@@ -272,6 +293,102 @@ function runStore(data) {
       const review = anchor("View order summary", "#nx-bag-summary", "nx-bag-summary-jump nx-shop-link");
       review.addEventListener("click", () => summary.focus({preventScroll:true}));
       bagCount.insertAdjacentElement("afterend", review);
+      let promoSupported = false;
+      let promoQuote = null;
+      let restoredAttemptBlocked = false;
+      try {
+        const raw = JSON.parse(sessionStorage.getItem(ATTEMPT_KEY) || "null");
+        const restored = restoreCheckoutAttempt(raw,bag,consumerAccess()?"account":"guest");
+        if (restored) {
+          lastAttempt = restored;
+          checkoutUncertain = true;
+          restoredAttemptBlocked = !restored.resumable;
+          promoQuote = restored.quote;
+        }
+      } catch {}
+      let promoPending = false;
+      let promoGeneration = 0;
+      const promoSection = make("details", "nx-bag-promotion");
+      promoSection.hidden = true;
+      const promoSummary = make("summary", null, "Add a promo code");
+      const promoLabel = make("label", null, "Promotional code");
+      const promoInput = make("input");
+      promoInput.type = "text";
+      promoInput.maxLength = 32;
+      promoInput.autocomplete = "off";
+      promoInput.spellcheck = false;
+      promoInput.placeholder = "Enter your promo code";
+      if (promoQuote) promoInput.value = promoQuote.promotionCode;
+      promoLabel.append(promoInput);
+      const promoApply = make("button", "nx-compare-control", "Apply");
+      promoApply.type = "button";
+      const promoStatus = make("p", "nx-store-note");
+      promoStatus.setAttribute("role", "status");
+      const promoControls = make("div");
+      promoControls.append(promoLabel, promoApply);
+      promoSection.append(promoSummary, promoControls, promoStatus);
+      const termsAnchor = container.querySelector(".nx-store-consumer-terms");
+      if (termsAnchor) termsAnchor.before(promoSection);
+      const discountRow = make("div");
+      discountRow.hidden = true;
+      const discountAmount = make("dd");
+      discountRow.append(make("dt", null, "Promotional discount"), discountAmount);
+      const totalRow = container.querySelector(".nx-bag-total");
+      if (totalRow) totalRow.before(discountRow);
+      const clearPromotion = (message = "") => {
+        promoGeneration++;
+        promoPending = false;
+        promoQuote = null;
+        promoInput.value = "";
+        promoStatus.textContent = message;
+      };
+      const requestPromotion = async () => {
+        if (!promoSupported || !approvedRelease || !bag.length || promoPending ||
+            checkoutInFlight || checkoutUncertain || awaitingOrder || confirmedOrder) return;
+        if (promoQuote) {
+          clearPromotion("Promotional code removed.");
+          render();
+          return;
+        }
+        const code = promoInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9_-]{3,32}$/.test(code)) {
+          promoStatus.textContent = "Enter a valid promotional code.";
+          return;
+        }
+        const generation = ++promoGeneration;
+        promoPending = true;
+        promoStatus.textContent = "Checking your promotional code…";
+        render();
+        try {
+          const response = await fetch(CHECKOUT_API_ORIGIN + "/quote", {
+            method:"POST", mode:"cors", credentials:"omit",
+            headers:{"content-type":"application/json"},
+            body:JSON.stringify({lines:bag,promo_code:code}), cache:"no-store"
+          });
+          const quote = response.ok ? await response.json() : null;
+          if (generation !== promoGeneration) return;
+          const minor = [quote?.originalGrossMinor, quote?.discountGrossMinor, quote?.totalGrossMinor];
+          if (!quote || quote.currency !== "GBP" || quote.promotionCode !== code ||
+              !minor.every(Number.isSafeInteger) || minor[1] <= 0 || minor[2] < 30 ||
+              minor[0] - minor[1] !== minor[2] || !/^[a-f0-9]{64}$/.test(quote.basketVersion || "")) {
+            promoStatus.textContent = "This promotional code is not available for your bag.";
+            return;
+          }
+          promoQuote = quote;
+          promoStatus.textContent = "Promotional code applied. Your total has been updated.";
+        } catch {
+          if (generation === promoGeneration) promoStatus.textContent = "We could not check this code. Please try again.";
+        } finally {
+          if (generation === promoGeneration) {
+            promoPending = false;
+            render();
+          }
+        }
+      };
+      promoApply.addEventListener("click", requestPromotion);
+      promoInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") { event.preventDefault(); void requestPromotion(); }
+      });
       const render = () => {
         const list = container.querySelector("[data-nx-bag-items]");
         const subtotal = container.querySelector("[data-nx-bag-subtotal]");
@@ -325,6 +442,7 @@ function runStore(data) {
               quantityInput.value = String(line.quantity);
               return;
             }
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity } : v);
             saveBag(bag); updateNav(); render();
           };
@@ -346,6 +464,7 @@ function runStore(data) {
           remove.setAttribute("aria-label", "Remove " + p.name);
           remove.addEventListener("click", () => {
             if (locked) return;
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.filter((v) => v.sku !== p.sku);
             saveBag(bag); updateNav(); render();
           });
@@ -371,6 +490,7 @@ function runStore(data) {
           add.setAttribute("aria-label", "Add " + p.name + " to Bag");
           add.addEventListener("click", () => {
             if (locked || confirmedOrder) return;
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             put(p.sku, 1);
             render();
           });
@@ -385,7 +505,7 @@ function runStore(data) {
           (exact || sameProduct || fallback || container.querySelector(".nx-shop-link"))?.focus();
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight && !promoPending && !restoredAttemptBlocked);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -394,7 +514,14 @@ function runStore(data) {
           data.provisional_uk_delivery_cost_seller_funded === true;
         shipping.textContent = ready ? "Included · UK" : (ukDeliveryIncluded ? "£0.00 · UK only" : "Not confirmed");
         tax.textContent = "20% UK VAT included";
-        grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
+        promoSection.hidden = !promoSupported || !approvedRelease || !bag.length || !!confirmedOrder || !!awaitingOrder;
+        promoInput.disabled = locked || promoPending || !!promoQuote;
+        promoApply.disabled = locked || promoPending || !bag.length;
+        promoApply.textContent = promoPending ? "Checking…" : promoQuote ? "Remove" : "Apply";
+        discountRow.hidden = !promoQuote;
+        discountAmount.textContent = promoQuote ? "−" + formatGBP(promoQuote.discountGrossMinor) : "";
+        if (promoQuote) subtotal.textContent = formatGBP(promoQuote.originalGrossMinor);
+        grand.textContent = promoQuote ? formatGBP(promoQuote.totalGrossMinor) : subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
         checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : checkoutInFlight ? "Opening checkout…" : ready ? (checkoutUncertain ? "Retry original checkout" : consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
@@ -407,6 +534,8 @@ function runStore(data) {
           ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
           : checkoutInFlight
           ? "Opening secure checkout. Please wait."
+          : restoredAttemptBlocked
+          ? "An earlier checkout needs reconciliation. Check order NUT-" + lastAttempt.id + " or contact support before starting another payment."
           : checkoutUncertain
           ? "We could not confirm the checkout response. Your basket is saved. Check your existing payment confirmation or contact customer support before retrying this same basket."
           : ready
@@ -423,27 +552,48 @@ function runStore(data) {
           render();
           explanation.textContent = "Verifying your order securely…";
           try {
-            const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
+            const basketId = basketAttemptId(bag,promoQuote);
             let stored;
             try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
             catch { stored = null; }
             const accountToken=consumerAccess();
             const mode=accountToken?"account":"guest";
             if (checkoutUncertain && (!lastAttempt || lastAttempt.basket !== basketId || lastAttempt.mode !== mode)) throw new Error("Original checkout cannot be resumed safely");
-            const requestId = lastAttempt?.basket === basketId && lastAttempt.mode === mode ? lastAttempt.id : stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
+            const reusedAttempt = (lastAttempt?.basket === basketId && lastAttempt.mode === mode) || (stored?.basket === basketId && stored.mode === mode && REQUEST_ID.test(stored?.id || ""));
+            const requestId = lastAttempt?.basket === basketId && lastAttempt.mode === mode ? lastAttempt.id : stored?.basket === basketId && stored.mode === mode && REQUEST_ID.test(stored?.id || "")
               ? stored.id : crypto.randomUUID();
-            lastAttempt={basket:basketId,id:requestId,mode};
-            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
+            lastAttempt={basket:basketId,id:requestId,mode,quote:promoQuote};
+            // Persist the exact quote before any provider request. If storage
+            // is unavailable, do not open an unresumable payment.
+            sessionStorage.setItem(ATTEMPT_KEY,JSON.stringify(lastAttempt));
             const headers={ "content-type": "application/json" };
             if(accountToken)headers.authorization="Bearer "+accountToken;
             const target=accountToken?"/account/checkout":"/checkout";
             const response = await fetch(CHECKOUT_API_ORIGIN + target, {
               method: "POST", mode: "cors", credentials: "omit", headers,
-              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true }), cache: "no-store"
+              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true,
+                ...(promoQuote ? {promo_code:promoQuote.promotionCode,basket_version:promoQuote.basketVersion} : {}) }), cache: "no-store"
             });
             if (response.status === 401) {
               if(accountToken)try{sessionStorage.removeItem(ACCOUNT_SESSION_KEY)}catch{}
               throw new Error("Your account session expired. Please sign in again or choose guest checkout.");
+            }
+            if (response.status === 422 && promoQuote && !checkoutUncertain && !reusedAttempt) {
+              const rejection = await response.json().catch(() => null);
+              // These specific server errors occur before any order write or
+              // payment creation. Never unlock an ambiguous provider response.
+              if (["promo_quote_changed","promo_code_unavailable","promo_code_not_applicable","invalid_promo_code"].includes(rejection?.error)) {
+                const oldCode = promoQuote.promotionCode;
+                clearPromotion("Your promotional offer has changed. Apply the code again to confirm the new total.");
+                promoInput.value = oldCode;
+                promoSection.open = true;
+                lastAttempt = null;
+                try { sessionStorage.removeItem("np-retail-checkout-attempt"); } catch {}
+                checkoutInFlight = false;
+                render();
+                promoInput.focus();
+                return;
+              }
             }
             if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
@@ -467,7 +617,7 @@ function runStore(data) {
       render();
       const query = new URLSearchParams(window.location.search);
       const returnedOrder = query.get("order_id");
-      if (query.get("checkout") === "return" && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(returnedOrder || "")) {
+      if (query.get("checkout") === "return" && (!lastAttempt || returnedOrder === "NUT-"+lastAttempt.id) && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(returnedOrder || "")) {
         // Lock checkout before the first asynchronous verification can race readiness.
         awaitingOrder = returnedOrder;
         render();
@@ -480,6 +630,7 @@ function runStore(data) {
               confirmedOrder = returnedOrder;
               awaitingOrder = "";
               closedOutcome = "";
+              checkoutUncertain=false;restoredAttemptBlocked=false;lastAttempt=null;clearPromotion();
               bag=[];saveBag(bag);updateNav();
               try {sessionStorage.removeItem("np-retail-checkout-attempt");}catch{}
               render();
@@ -490,6 +641,7 @@ function runStore(data) {
               awaitingOrder = "";
               closedOrder = returnedOrder;
               closedOutcome = outcome;
+              checkoutUncertain=false;restoredAttemptBlocked=false;lastAttempt=null;clearPromotion();
               try {sessionStorage.removeItem("np-retail-checkout-attempt");}catch{}
               render();
               return;
@@ -512,6 +664,7 @@ function runStore(data) {
             {credentials:"omit",cache:"no-store",mode:"cors"});
           const v=r.ok?await r.json():null;
           approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true && v?.origin === "novapharmhealthcare.com";
+          promoSupported = v?.promotion_preview_supported === true;
         } catch { approvedRelease=false; }
         render();
       })();
@@ -621,10 +774,37 @@ function runStore(data) {
   updateNav();
 }
 
+export const GIFT_DENOMINATIONS = Object.freeze([1000,2500,5000,10000,25000]);
+
+export function giftPreviewAmount(value) {
+  const amount = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value;
+  return GIFT_DENOMINATIONS.includes(amount) ? amount : null;
+}
+
+function mountGiftPreview(main) {
+  const amountLabel = main.querySelector("[data-nx-gift-value]");
+  const totalLabel = main.querySelector("[data-nx-gift-total]");
+  const options = main.querySelectorAll('input[name="nx-gift-amount"]');
+  for (const input of options) {
+    input.addEventListener("change", () => {
+      const amount = giftPreviewAmount(input.value);
+      if (!input.checked || amount === null) return;
+      amountLabel.textContent = formatGBP(amount).replace(/\.00$/, "");
+      totalLabel.textContent = formatGBP(amount);
+    });
+  }
+  // Preview intentionally has no purchase request, personal data or redirect.
+}
+
 async function init() {
   if (typeof document === "undefined") return;
   const path = window.location.pathname;
   if (!path.startsWith(SHOP_URL) || path.startsWith(SHOP_URL + "order-request/")) return;
+  if (path === SHOP_URL + "gift-cards/" || path === SHOP_URL + "gift-cards") {
+    const preview = document.querySelector("[data-nx-gift-preview]");
+    if (preview) mountGiftPreview(preview);
+    return;
+  }
   installStyle();
   try {
     const response = await fetch(CATALOGUE_URL, { cache: "no-store", credentials: "omit" });
