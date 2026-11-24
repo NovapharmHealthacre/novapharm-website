@@ -268,7 +268,8 @@ def direct_checkout(event, customer_subject=None, preview=False):
     if promotion:
         basket_hash = hashlib.sha256(json.dumps({
             "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
-            "original":original_gross, "discounted":gross, "lines":ordered
+            "original":original_gross, "discounted":gross, "lines":ordered,
+            **({"campaignId":promotion["campaign_id"],"audience":promotion["audience"]} if promotion["audience"]=="returning_account_once" else {})
         },sort_keys=True,separators=(",",":")).encode()).hexdigest()
     grant_write=None
     if promotion and promotion["audience"]=="returning_account_once":
@@ -321,6 +322,9 @@ def direct_checkout(event, customer_subject=None, preview=False):
                      "promotionRevision":{"S":promotion["revision"]},
                      "preDiscountGrossMinor":{"N":str(original_gross)},
                      "discountGrossMinor":{"N":str(original_gross-gross)}})
+        if promotion["audience"]=="returning_account_once":
+            item["promotionCampaignId"]={"S":promotion["campaign_id"]}
+    prior=None
     try:
         if customer_subject:
             # A consumer-only index item is created atomically with the order.
@@ -331,22 +335,21 @@ def direct_checkout(event, customer_subject=None, preview=False):
             # If a previously claimed grant is retried, never create a fresh
             # order in the absence of the original durable summary.
             if promotion and promotion["audience"]=="returning_account_once" and grant_write is None:
-                existing=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+                prior=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
                     Key={"pk":{"S":"ORDER#"+receipt},"sk":{"S":"SUMMARY"}},
                     ConsistentRead=True).get("Item")
-                if not existing:
+                if not prior:
                     return error(503,"promotion_reconciliation_required")
-                # Enter the same exact-request reconciliation below.
-                raise ClientError({"Error":{"Code":"TransactionCanceledException","Message":"Existing promotion claim"}},"TransactWriteItems")
-            writes=[
-                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
-                        "ConditionExpression":"attribute_not_exists(pk)"}},
-                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
-                        "ConditionExpression":"attribute_not_exists(pk)"}}
-            ]
-            if grant_write is not None:
-                writes.append(grant_write)
-            PAYMENT_DDB.transact_write_items(TransactItems=writes)
+            else:
+                writes=[
+                    {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
+                            "ConditionExpression":"attribute_not_exists(pk)"}},
+                    {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
+                            "ConditionExpression":"attribute_not_exists(pk)"}}
+                ]
+                if grant_write is not None:
+                    writes.append(grant_write)
+                PAYMENT_DDB.transact_write_items(TransactItems=writes)
         else:
             PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
                                 ConditionExpression="attribute_not_exists(pk)")
@@ -366,6 +369,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         # infrastructure condition, not proof that a buyer reused an ID.
         if not prior:
             return error(503, "order_creation_unavailable")
+    if prior:
         if (prior.get("customerSub") != item["customerSub"] or
             prior.get("basketHash") != item["basketHash"] or
             prior.get("quoteVersion") != item["quoteVersion"] or
