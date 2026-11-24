@@ -144,3 +144,14 @@ test("consumer onboarding is optional, role-bound and privacy-discoverable",()=>
  assert.match(siteGenerator,/<details class="npd-account-guidance">/);
  assert.match(siteStyles,/\.npd-account-guidance summary:focus-visible/);
 });
+
+
+test("customer account provides guest recovery and human-readable order states",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ assert.match(html,/href="\/products\/track\/"/);
+ assert.match(html,/mailto:support@novapharmhealthcare\.com/);
+ assert.match(js,/PAID:"Payment confirmed"/);
+ assert.match(js,/Object\.hasOwn\(orderStatusLabels,o\.status\)/);
+ assert.doesNotMatch(js,/state\.textContent=o\.status/);
+});
