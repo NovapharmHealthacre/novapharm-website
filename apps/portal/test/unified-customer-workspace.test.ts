@@ -92,3 +92,14 @@ test("sign-in prevents concurrent authentication and keeps workspace selection s
   assert.match(login, /entraEnabled && !busy/);
   assert.match(login, /result\.accessType !== accessType/);
 });
+
+
+test("every customer service subpage has contextual next tasks without adding new authority", () => {
+  const related = component.split("const relatedTasks:")[1]?.split("export function CustomerRelatedTasks")[0] ?? "";
+  for (const module of customerModules.filter((entry) => entry.code !== "customer.dashboard")) {
+    assert.ok(related.includes(`"${module.code}": [`), module.code);
+  }
+  assert.match(component, /aria-label="Related customer tasks"/);
+  assert.match(component, /href=\{module.route\}/);
+  assert.match(dashboard, /module.area === "customer" && !isEditorialCustomerDashboard \? <CustomerRelatedTasks/);
+});
