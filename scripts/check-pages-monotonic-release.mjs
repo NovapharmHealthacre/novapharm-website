@@ -11,10 +11,10 @@ const SHA = /^[a-f0-9]{40}$/;
 const REPO = /^[\w.-]+\/[\w.-]+$/;
 const COMPARE_OK = new Set(["identical", "ahead"]);
 // One-time migration from the exact reviewed legacy publication, including
-// the reviewed Nutraxin coupon and Privileges publications (#1187, #1193).
+// the reviewed Nutraxin Privileges and Klarna publications (#1193, #1196).
 // Do not inherit this exception for any future gh-pages commit.
-const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "f82e3ab9391ec7d9185c254a7cc5877b5885a62b";
-export const REVIEWED_LEGACY_PAGES_SHA = "f942eafabfd18161da10835c49a1b1cf93e9b72f";
+const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "f942eafabfd18161da10835c49a1b1cf93e9b72f";
+export const REVIEWED_LEGACY_PAGES_SHA = "4c641e6c4277224014626e25bbf0bef060ba9706";
 export const BRAND_ONLY_AUTHORIZATION_ANCHOR = "26432d4ac2c53a8a39b6701fa77bccda487737ed";
 
 export function canShip({publishedSha, candidateSha, mainSha, publishedToCandidate, candidateToMain, legacyBridgeVerified = false}) {
@@ -70,14 +70,14 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   const reviewedPolicyLink = '<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand';
   if (![bag, bagGenerator].every(source => source.includes(reviewedPolicyLink))) return false;
 
-  // #1193 published exactly two assets from the verified main source.
+  // #1193 and #1196 published the reviewed retail assets now on main.
   // Require the exact already-published retail blobs, including gated
   // account privileges, so this Contact release cannot undo that release.
-  const retailAnchor = "df42e20f79a00184c7a59403d713ad77bdbb0c52";
+  const retailAnchor = "8c947fd708137ea72e6de4820d0eb27e07fb1f45";
   if (!COMPARE_OK.has(compareStatus(repo, retailAnchor, candidateSha))) return false;
   const reviewedRetail = {
     "assets/css/nutraxin-retail-store.css": "10f56efb33df28b82645874c7e383049bf5d8a20",
-    "assets/js/nutraxin-retail-store.js": "68bd6b6bd152c4b1ad92ea995fe16fceb4930111"
+    "assets/js/nutraxin-retail-store.js": "7507458a4a76bec98318304337873a11f2034b31"
   };
   for (const [path, expected] of Object.entries(reviewedRetail)) {
     if (gitBlobSha(readFileSync(resolve(path))) !== expected) return false;

@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import { resolve } from "node:path";
 import { LIVE_ORIGIN, verifyPublishedHtml, PUBLIC_ROUTES } from "./verify-public-brand-source-live.mjs";
 
 const products = [
@@ -14,8 +16,19 @@ const products = [
 const routes = [...new Set([...PUBLIC_ROUTES, "/about/", "/technology/", "/news-insights/",
   "/products/nutraxin/", "/products/nutraxin/bag/",
   ...products.map(slug => "/products/nutraxin/" + slug + "/")])];
+const artifactMode = process.argv[2] === "--artifact";
+const artifactRoot = artifactMode ? resolve(process.argv[3] || "_site") : null;
+const expected = artifactMode ? process.argv[4] : process.env.EXPECTED_SITEWIDE_SHA;
+if (expected) assert.match(expected, /^[a-f0-9]{40}$/, "Exact source SHA required");
+if (artifactMode) {
+  const dirs = readdirSync(resolve(artifactRoot, "products/nutraxin"), { withFileTypes: true });
+  const found = dirs.filter(d => d.isDirectory() && !["account","bag","gift-cards","order-request"].includes(d.name)).map(d => d.name).sort();
+  assert.deepEqual(found, [...products].sort(), "Exactly the 19 reviewed product routes are required");
+  assert.ok(readFileSync(resolve(artifactRoot, "assets/css/novapharm.bundle.css"), "utf8").includes("--np-color-canvas: #FFFFFF"), "Approved white canvas is missing");
+}
 const nonce = Date.now();
 async function get(route) {
+  if (artifactMode) return readFileSync(resolve(artifactRoot, "." + route, "index.html"), "utf8");
   const response = await fetch(LIVE_ORIGIN + route + "?sitewide_verification=" + nonce,
     { redirect: "manual", headers: { "Cache-Control": "no-cache, no-store, max-age=0" },
       signal: AbortSignal.timeout(20000) });
@@ -28,6 +41,7 @@ async function get(route) {
 const home = await get("/");
 const source = home.match(/<meta name="novapharm-source-sha" content="([a-f0-9]{40})">/)?.[1];
 assert.ok(source, "Homepage missing exact source receipt: possible rollback");
+if (expected) assert.equal(source, expected, "Homepage does not match exact approved release");
 let failures = 0;
 for (let i = 0; i < routes.length; i += 5) {
   await Promise.all(routes.slice(i, i + 5).map(async route => {
