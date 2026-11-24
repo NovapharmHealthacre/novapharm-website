@@ -242,6 +242,90 @@ function runStore(data) {
   if (path === BAG_URL || path === BAG_URL.slice(0, -1)) {
     const container = document.querySelector("[data-nx-public-bag]");
     if (container) {
+      let promoSupported = false;
+      let promoQuote = null;
+      let promoPending = false;
+      let promoGeneration = 0;
+      const promoSection = make("details", "nx-bag-promotion");
+      promoSection.hidden = true;
+      const promoSummary = make("summary", null, "Add a promo code");
+      const promoLabel = make("label", null, "Promotional code");
+      const promoInput = make("input");
+      promoInput.type = "text";
+      promoInput.maxLength = 32;
+      promoInput.autocomplete = "off";
+      promoInput.spellcheck = false;
+      promoInput.placeholder = "Enter your promo code";
+      promoLabel.append(promoInput);
+      const promoApply = make("button", "nx-compare-control", "Apply");
+      promoApply.type = "button";
+      const promoStatus = make("p", "nx-store-note");
+      promoStatus.setAttribute("role", "status");
+      const promoControls = make("div");
+      promoControls.append(promoLabel, promoApply);
+      promoSection.append(promoSummary, promoControls, promoStatus);
+      const termsAnchor = container.querySelector(".nx-store-consumer-terms");
+      if (termsAnchor) termsAnchor.before(promoSection);
+      const discountRow = make("div");
+      discountRow.hidden = true;
+      const discountAmount = make("dd");
+      discountRow.append(make("dt", null, "Promotional discount"), discountAmount);
+      const totalRow = container.querySelector(".nx-bag-total");
+      if (totalRow) totalRow.before(discountRow);
+      const clearPromotion = (message = "") => {
+        promoGeneration++;
+        promoPending = false;
+        promoQuote = null;
+        promoInput.value = "";
+        promoStatus.textContent = message;
+      };
+      const requestPromotion = async () => {
+        if (!promoSupported || !approvedRelease || !bag.length || promoPending ||
+            checkoutInFlight || checkoutUncertain || awaitingOrder || confirmedOrder) return;
+        if (promoQuote) {
+          clearPromotion("Promotional code removed.");
+          render();
+          return;
+        }
+        const code = promoInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9_-]{3,32}$/.test(code)) {
+          promoStatus.textContent = "Enter a valid promotional code.";
+          return;
+        }
+        const generation = ++promoGeneration;
+        promoPending = true;
+        promoStatus.textContent = "Checking your promotional code…";
+        render();
+        try {
+          const response = await fetch(CHECKOUT_API_ORIGIN + "/quote", {
+            method:"POST", mode:"cors", credentials:"omit",
+            headers:{"content-type":"application/json"},
+            body:JSON.stringify({lines:bag,promo_code:code}), cache:"no-store"
+          });
+          const quote = response.ok ? await response.json() : null;
+          if (generation !== promoGeneration) return;
+          const minor = [quote?.originalGrossMinor, quote?.discountGrossMinor, quote?.totalGrossMinor];
+          if (!quote || quote.currency !== "GBP" || quote.promotionCode !== code ||
+              !minor.every(Number.isSafeInteger) || minor[1] <= 0 || minor[2] < 30 ||
+              minor[0] - minor[1] !== minor[2] || !/^[a-f0-9]{64}$/.test(quote.basketVersion || "")) {
+            promoStatus.textContent = "This promotional code is not available for your bag.";
+            return;
+          }
+          promoQuote = quote;
+          promoStatus.textContent = "Promotional code applied. Your total has been updated.";
+        } catch {
+          if (generation === promoGeneration) promoStatus.textContent = "We could not check this code. Please try again.";
+        } finally {
+          if (generation === promoGeneration) {
+            promoPending = false;
+            render();
+          }
+        }
+      };
+      promoApply.addEventListener("click", requestPromotion);
+      promoInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") { event.preventDefault(); void requestPromotion(); }
+      });
       const render = () => {
         const list = container.querySelector("[data-nx-bag-items]");
         const subtotal = container.querySelector("[data-nx-bag-subtotal]");
@@ -288,6 +372,7 @@ function runStore(data) {
               quantityInput.value = String(line.quantity);
               return;
             }
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity } : v);
             saveBag(bag); updateNav(); render();
           });
@@ -296,6 +381,7 @@ function runStore(data) {
           remove.type = "button";
           remove.disabled = locked;
           remove.addEventListener("click", () => {
+            if (promoQuote || promoPending) clearPromotion("Bag updated. Apply your promotional code again.");
             bag = bag.filter((v) => v.sku !== p.sku);
             saveBag(bag); updateNav(); render();
           });
@@ -304,7 +390,7 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight && !promoPending);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -313,7 +399,14 @@ function runStore(data) {
           data.provisional_uk_delivery_cost_seller_funded === true;
         shipping.textContent = ready ? "Included · UK" : (ukDeliveryIncluded ? "£0.00 · UK only" : "Not confirmed");
         tax.textContent = "20% UK VAT included";
-        grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
+        promoSection.hidden = !promoSupported || !approvedRelease || !bag.length || !!confirmedOrder || !!awaitingOrder;
+        promoInput.disabled = locked || promoPending || !!promoQuote;
+        promoApply.disabled = locked || promoPending || !bag.length;
+        promoApply.textContent = promoPending ? "Checking…" : promoQuote ? "Remove" : "Apply";
+        discountRow.hidden = !promoQuote;
+        discountAmount.textContent = promoQuote ? "−" + formatGBP(promoQuote.discountGrossMinor) : "";
+        if (promoQuote) subtotal.textContent = formatGBP(promoQuote.originalGrossMinor);
+        grand.textContent = promoQuote ? formatGBP(promoQuote.totalGrossMinor) : subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
         checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : checkoutInFlight ? "Opening checkout…" : ready ? (checkoutUncertain ? "Retry original checkout" : consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
@@ -342,7 +435,8 @@ function runStore(data) {
           render();
           explanation.textContent = "Verifying your order securely…";
           try {
-            const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
+            const sortedBag = [...bag].sort((a,b)=>a.sku.localeCompare(b.sku));
+            const basketId = promoQuote ? JSON.stringify({lines:sortedBag,promo:promoQuote.promotionCode,version:promoQuote.basketVersion}) : JSON.stringify(sortedBag);
             let stored;
             try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
             catch { stored = null; }
@@ -358,7 +452,8 @@ function runStore(data) {
             const target=accountToken?"/account/checkout":"/checkout";
             const response = await fetch(CHECKOUT_API_ORIGIN + target, {
               method: "POST", mode: "cors", credentials: "omit", headers,
-              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true }), cache: "no-store"
+              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true,
+                ...(promoQuote ? {promo_code:promoQuote.promotionCode,basket_version:promoQuote.basketVersion} : {}) }), cache: "no-store"
             });
             if (response.status === 401) {
               if(accountToken)try{sessionStorage.removeItem(ACCOUNT_SESSION_KEY)}catch{}
@@ -431,6 +526,7 @@ function runStore(data) {
             {credentials:"omit",cache:"no-store",mode:"cors"});
           const v=r.ok?await r.json():null;
           approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true && v?.origin === "novapharmhealthcare.com";
+          promoSupported = v?.promotion_preview_supported === true;
         } catch { approvedRelease=false; }
         render();
       })();
