@@ -98,6 +98,7 @@ export function LoginPanel() {
       {accessType === "customer" ? <nav className="customer-login-services" aria-label="Customer account options">
         <h3>How can we help?</h3>
         <a href="https://novapharmhealthcare.com/account-application/">Request a business account</a>
+        <a href="https://novapharmhealthcare.com/products/track/">Check a retail order status</a>
         <a href="https://novapharmhealthcare.com/products/nutraxin/account/">Personal Nutraxin orders and account</a>
         <a href="https://novapharmhealthcare.com/products/nutraxin/bag/">Continue retail shopping as a guest</a>
         <a href="mailto:support@novapharmhealthcare.com">Get help signing in</a>
