@@ -32,6 +32,9 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/activate-contact-intake.mjs
+      - scripts/managed-contact-layout.mjs
+      - scripts/test-managed-contact-layout-browser.mjs
       - scripts/test-intelligence-accessibility-browser.mjs
       - assets/js/intelligence-workspace-*.js
       - scripts/test-public-sitemap-geometry.mjs
@@ -69,6 +72,9 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/activate-contact-intake.mjs
+      - scripts/managed-contact-layout.mjs
+      - scripts/test-managed-contact-layout-browser.mjs
       - scripts/test-intelligence-accessibility-browser.mjs
       - assets/js/intelligence-workspace-*.js
       - scripts/test-public-sitemap-geometry.mjs
@@ -120,6 +126,11 @@ jobs:
         run: |
           node scripts/ci/public-pages-static-server.mjs --bind 127.0.0.1 > /tmp/novapharm-public-server.log 2>&1 &
           echo $! > /tmp/novapharm-public-server.pid
+      - name: Verify rendered managed Contact (isolated local fixture, Chromium and WebKit)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-managed-contact-layout-browser.mjs
       - name: Audit every public sitemap route and commerce shell geometry
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
