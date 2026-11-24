@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { managedContactLayout } from "./managed-contact-layout.mjs";
 import { pathToFileURL } from "node:url";
 
 export const LIVE_ORIGIN = "https://novapharmhealthcare.com";
@@ -71,6 +72,8 @@ export function verifyPublishedHtml(rawHtml, route, sourceSha) {
     if (!html.includes("--contact-primary-white:#FFFFFF") ||
         [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].some(match => /#FBFAEF/i.test(match[1])))
       errors.push("Contact visual CSS differs from approved Pure White");
+    if (![...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].some(match => match[1].endsWith(managedContactLayout)))
+      errors.push("Managed Contact layout and spacing overlay missing or altered");
     // The managed AWS-backed Contact form is separately pinned by its original
     // source blob. Verify critical live safety markers as well as the release
     // SHA; a superficially branded email-only or unconsented form must fail.

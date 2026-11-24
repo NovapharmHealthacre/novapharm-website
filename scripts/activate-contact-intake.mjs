@@ -1,4 +1,5 @@
 import { activateAccountRequestHtml } from "./activate-account-request.mjs";
+import { managedContactLayout } from "./managed-contact-layout.mjs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -136,7 +137,8 @@ export function composeManagedContactChrome(managedHtml, baselineHtml) {
         .replace(/\.mobile-nav\b/g, ".contact-legacy-mobile-nav")
         .replaceAll("#FBFAEF", "#FFFFFF")
         .replaceAll("rgba(251,250,239,.96)", "rgba(255,255,255,.96)")
-        .replaceAll("--royal-mineral-white", "--contact-primary-white");
+        .replaceAll("--royal-mineral-white", "--contact-primary-white")
+        .replace("</style>", () => "\n" + managedContactLayout + "</style>");
     })
     .replace("<style>", () => rtl + css + "<style>")
     .replace("<body>", '<body data-page="contact" data-family="contact" data-route="/contact/">')
