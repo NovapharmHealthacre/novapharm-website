@@ -7,10 +7,16 @@ import { composeManagedContactChrome } from "./activate-contact-intake.mjs";
 
 const origin = new URL(process.env.PUBLIC_PAGES_BASE_URL || "http://127.0.0.1:4310");
 assert.equal(origin.hostname, "127.0.0.1", "Managed Contact visual test is local-only");
-const url = new URL("/contact/", origin).href;
+// Use a synthetic secure origin. WebKit applies the immutable production CSP
+// upgrade-insecure-requests even to HTTP loopback stylesheet/image requests.
+// Route every HTTPS fixture GET to the existing local server only; preserve
+// the actual CSP and never connect to the production API or public internet.
+const fixtureOrigin = "https://contact-fixture.invalid";
+const url = fixtureOrigin + "/contact/";
+const baselineUrl = new URL("/contact/", origin).href;
 let baseline;
 for (let i = 0; i < 60; i++) {
-  try { const r = await fetch(url); if (r.ok) { baseline = await r.text(); break; } } catch {}
+  try { const r = await fetch(baselineUrl); if (r.ok) { baseline = await r.text(); break; } } catch {}
   await new Promise(r => setTimeout(r, 500));
 }
 assert.ok(baseline, "Local public-only Contact baseline unavailable");
@@ -29,12 +35,23 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         // no real enquiries, no external network traffic or production mutation.
         await context.route("**/*", async route => {
           const req = route.request();
-          if (req.method() !== "GET" || new URL(req.url()).origin !== origin.origin) return route.abort();
+          const requestUrl = new URL(req.url());
+          if (req.method() !== "GET" || requestUrl.origin !== fixtureOrigin) return route.abort();
           if (req.url() === url) return route.fulfill({status: 200, contentType: "text/html", body: composed});
-          return route.continue();
+          const local = new URL(origin.href);
+          local.pathname = requestUrl.pathname;
+          local.search = requestUrl.search;
+          const response = await fetch(local, {redirect:"error"});
+          return route.fulfill({
+            status:response.status,
+            contentType:response.headers.get("content-type") || "application/octet-stream",
+            body:Buffer.from(await response.arrayBuffer())
+          });
         });
         const page = await context.newPage();
         await page.goto(url, {waitUntil: "load"});
+        const sharedCss = await page.evaluate(() => Array.from(document.styleSheets).some(sheet => sheet.href?.includes("/assets/css/novapharm.bundle.css") && sheet.cssRules.length > 0));
+        assert.ok(sharedCss, name+" "+width+" shared corporate stylesheet must load under the reviewed CSP");
         await page.evaluate(() => document.fonts.ready);
         const reject = page.locator("[data-consent-action='reject']:visible").first();
         if (await reject.count()) await reject.click();
@@ -66,6 +83,8 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         await page.screenshot({path:resolve(artifact,"managed-contact-"+name+"-"+width+".png"),fullPage:true});
         assert.ok(result.scroll<=result.width+1,label+" horizontal overflow: "+JSON.stringify({scroll:result.scroll,width:result.width,nodes:result.overflowNodes}));
         assert.ok(result.header && result.footer,label+" shared chrome missing");
+        const logo = await page.locator(".npd-header .brand-logo img").boundingBox();
+        assert.ok(logo && logo.width > 0 && logo.width <= Math.min(width, 250), label+" shared logo geometry invalid: "+JSON.stringify(logo));
         near(result.rows[1].y-result.rows[0].bottom,16,"third-row spacing");
         near(result.topic.y-result.rows[1].bottom,16,"topic spacing");
         near(result.message.y-result.topic.bottom,16,"message spacing");
