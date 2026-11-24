@@ -49,7 +49,7 @@
       const result=labels[data.status];
       show(result+(data.status==="PAID"?". Shipment and delivery tracking are separate from payment confirmation.":"."),"success");
     } catch(e) {
-      show("The order-status service is unavailable. Your order has not been changed; please try the existing Nutraxin or ESCO order page.","error");
+      show("We could not check your order right now. Your order has not been changed. Try again or contact customer support using the link below.","error");
     } finally{button.disabled=false;}
   });
 })();
