@@ -98,6 +98,62 @@ class ProductsPaymentTests(unittest.TestCase):
     def basket(self,qty=1):
         return {"request_id":self.ID,"accept_terms":True,
                 "lines":[{"sku":"NUT-UK-VD3-T120","quantity":qty}]}
+    def promotion_policy(self, **overrides):
+        policy=json.loads(SSM.get_parameter()["Parameter"]["Value"])
+        campaign={"approved":True,"starts_at":int(time.time())-60,
+                  "ends_at":int(time.time())+3600,"discount_bps":1000,
+                  "sku_min_net_minor":{"NUT-UK-VD3-T120":800},
+                  "revision":"synthetic-1","minimum_gross_minor":1000}
+        campaign.update(overrides)
+        policy["retail_promotions"]={"enabled":True,"campaigns":{"TEST10":campaign}}
+        return {"Parameter":{"Value":json.dumps(policy)}}
+
+    def test_promo_exact_server_total_and_replay(self):
+        from unittest.mock import patch
+        basket=dict(self.basket(),promo_code="test10")
+        with patch.object(SSM,"get_parameter",return_value=self.promotion_policy()):
+            preview=API.handler(self.event("/quote","POST",basket),None)
+            self.assertEqual(preview["statusCode"],200)
+            quote=json.loads(preview["body"])
+            self.assertEqual(quote["totalGrossMinor"],972)
+            self.assertEqual(quote["discountGrossMinor"],108)
+            self.assertFalse(DB.rows)
+            self.assertFalse(WORKER.calls)
+            self.assertEqual(API.direct_checkout(self.event("/checkout","POST",basket))["statusCode"],422)
+            self.assertFalse(DB.rows)
+            basket["basket_version"]=quote["basketVersion"]
+            result=API.direct_checkout(self.event("/checkout","POST",basket))
+            self.assertEqual(result["statusCode"],200)
+            record=DB.rows["ORDER#NUT-"+self.ID]
+            self.assertEqual(record["productNetMinor"]["N"],"810")
+            self.assertEqual(record["taxMinor"]["N"],"162")
+            self.assertEqual(record["totalGrossMinor"]["N"],"972")
+            self.assertEqual(record["discountGrossMinor"]["N"],"108")
+            self.assertEqual(record["promotionCode"]["S"],"TEST10")
+            self.assertEqual(json.loads(record["approvedLinesJson"]["S"])[0]["grossMinor"],972)
+            self.assertEqual(API.direct_checkout(self.event("/checkout","POST",basket))["statusCode"],200)
+            self.assertEqual(API.direct_checkout(self.event("/checkout","POST",self.basket()))["statusCode"],409)
+
+    def test_promo_invalid_expired_or_below_floor_creates_no_order(self):
+        from unittest.mock import patch
+        for overrides in ({"approved":False},{"ends_at":int(time.time())-1},
+                          {"sku_min_net_minor":{"NUT-UK-VD3-T120":850}},
+                          {"minimum_gross_minor":2000},
+                          {"sku_min_net_minor":{"NUT-UK-VD3-S30":800}}):
+            with self.subTest(overrides=overrides):
+                with patch.object(SSM,"get_parameter",return_value=self.promotion_policy(**overrides)):
+                    result=API.direct_checkout(self.event("/checkout","POST",dict(self.basket(),promo_code="TEST10")))
+                    self.assertEqual(result["statusCode"],422)
+        self.assertEqual(API.direct_checkout(self.event("/checkout","POST",dict(self.basket(),promo_code="TEST10")))["statusCode"],422)
+        self.assertFalse(DB.rows)
+        self.assertFalse(WORKER.calls)
+
+    def test_unimplemented_gift_card_never_silently_charges_full_price(self):
+        result=API.direct_checkout(self.event("/checkout","POST",dict(self.basket(),gift_card_code="TESTGIFT")))
+        self.assertEqual(result["statusCode"],422)
+        self.assertFalse(DB.rows)
+        self.assertFalse(WORKER.calls)
+
     def consumer_token(self, pool="eu-north-1_synthetic", client="synthetic-products-pkce",
                        verified=True, subject="11111111-2222-4333-8444-555555555555"):
         claims={"iss":"https://cognito-idp.eu-north-1.amazonaws.com/"+pool,
