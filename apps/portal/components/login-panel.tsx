@@ -60,16 +60,16 @@ export function LoginPanel() {
     <section className="login-context" aria-labelledby="portal-title">
       <PortalBrand />
       <div className="login-copy">
-        <p className="eyebrow">Secure workspace</p>
-        <h1 id="portal-title">Sign in to the right workspace</h1>
-        <p>Choose Customer, Employee, Board or Administrator. Your assigned permissions determine which tools and records you can access.</p>
+        <p className="eyebrow">{accessType === "customer" ? "Your business account" : "Secure workspace"}</p>
+        <h1 id="portal-title">{accessType === "customer" ? "Welcome to NovaPharm." : "Sign in to the right workspace"}</h1>
+        <p>{accessType === "customer" ? "Find your products, orders, account documents and support in one secure place." : "Choose your authorised workspace. Your assigned permissions determine which tools and records you can access."}</p>
       </div>
       <p className="environment-line">Authorised business users only. Activity is security logged.</p>
     </section>
     <section className="login-panel" aria-labelledby="sign-in-title">
       <div>
         <p className="eyebrow">NovaPharm identity</p>
-        <h2 id="sign-in-title">Sign in to your portal</h2>
+        <h2 id="sign-in-title">{accessType === "customer" ? "Sign in to your business account" : "Sign in to your portal"}</h2>
         <p className="muted" id="portal-account-reason">{accessReason[accessType]}</p>
       </div>
       <fieldset className="access-selector">
@@ -95,6 +95,13 @@ export function LoginPanel() {
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
+      {accessType === "customer" ? <nav className="customer-login-services" aria-label="Customer account options">
+        <h3>How can we help?</h3>
+        <a href="https://novapharmhealthcare.com/account-application/">Request a business account</a>
+        <a href="https://novapharmhealthcare.com/products/nutraxin/account/">Personal Nutraxin orders and account</a>
+        <a href="https://novapharmhealthcare.com/products/nutraxin/bag/">Continue retail shopping as a guest</a>
+        <a href="mailto:support@novapharmhealthcare.com">Get help signing in</a>
+      </nav> : null}
       <AccountAccessHelp audience={accessType} />
       <p className="portal-privacy-note">Sign-in processes account identity, access scope, session and security-audit information to protect your workspace. <a href="https://novapharmhealthcare.com/legal/privacy/" rel="noopener noreferrer">Privacy notice</a> · <a href="https://novapharmhealthcare.com/contact/" rel="noopener noreferrer">Privacy enquiries</a>. No marketing consent is required to sign in.</p>
     </section>
