@@ -334,6 +334,11 @@ async function inspectModule(
       const primary = page.getByRole("navigation", { name: "Customer workspace primary navigation" });
       assert.equal(await primary.count(), 1, `${module.code}: primary navigation missing`);
       assert.equal(await primary.locator("a").count(), 6, `${module.code}: primary destinations missing`);
+      if (module.code !== "customer.dashboard") {
+        const related = page.getByRole("navigation", { name: "Related customer tasks" });
+        assert.equal(await related.count(), 1, `${module.code}: related tasks missing`);
+        assert.ok(await related.locator("a").count() >= 2, `${module.code}: missing related destinations`);
+      }
       for (const code of ["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.account", "customer.support"]) {
         const entry = visiblePortalModules.find((candidate) => candidate.code === code);
         assert.ok(entry, `Missing canonical destination ${code}`);
