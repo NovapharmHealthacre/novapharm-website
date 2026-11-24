@@ -118,3 +118,37 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
   }
   return null;
 }
+
+
+// Contextual destinations are static canonical routes, never a new permission grant.
+const relatedTasks: Readonly<Record<string, readonly string[]>> = {
+  "customer.account": ["customer.settings", "customer.invoices", "customer.support"],
+  "customer.settings": ["customer.account", "customer.support"],
+  "customer.products": ["customer.price-lists", "customer.stock-availability", "customer.orders"],
+  "customer.price-lists": ["customer.products", "customer.stock-availability", "customer.support"],
+  "customer.stock-availability": ["customer.products", "customer.price-lists", "customer.support"],
+  "customer.orders": ["customer.order-tracking", "customer.delivery-tracking", "customer.returns", "customer.invoices", "customer.products"],
+  "customer.order-tracking": ["customer.orders", "customer.delivery-tracking", "customer.support"],
+  "customer.delivery-tracking": ["customer.orders", "customer.order-tracking", "customer.support"],
+  "customer.returns": ["customer.orders", "customer.quality-complaints", "customer.support"],
+  "customer.invoices": ["customer.orders", "customer.statements", "customer.support"],
+  "customer.statements": ["customer.invoices", "customer.account", "customer.support"],
+  "customer.documents": ["customer.regulatory-documents", "customer.downloads", "customer.invoices"],
+  "customer.regulatory-documents": ["customer.documents", "customer.downloads", "customer.quality-complaints"],
+  "customer.downloads": ["customer.documents", "customer.regulatory-documents", "customer.support"],
+  "customer.quality-complaints": ["customer.orders", "customer.returns", "customer.support"],
+  "customer.support": ["customer.orders", "customer.account", "customer.quality-complaints"],
+  "customer.analytics": ["customer.orders", "customer.invoices", "customer.products"],
+};
+
+export function CustomerRelatedTasks({ moduleCode }: Readonly<{ moduleCode: string }>) {
+  const destinations = relatedTasks[moduleCode];
+  if (!destinations) return null;
+  return <nav className="customer-related-tasks" aria-label="Related customer tasks">
+    <p>What would you like to do next?</p>
+    <ul>{destinations.map((code) => {
+      const module = moduleMap.get(code);
+      return module ? <li key={code}><a href={module.route}>{module.title}</a></li> : null;
+    })}</ul>
+  </nav>;
+}
