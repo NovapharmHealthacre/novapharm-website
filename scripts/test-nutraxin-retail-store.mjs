@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -178,7 +178,7 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.equal(checkoutReturnOutcome(null),"pending");
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  const returned=js.split('const returnedOrder = query.get("order_id");')[1]?.split("// Products-site readiness")[0];
- assert.match(returned,/checkoutReturnOutcome\(result\)/);
+ assert.match(returned,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
  assert.match(returned,/outcome === "expired" \|\| outcome === "failed"/);
  assert.match(returned,/closedOrder = returnedOrder/);
  assert.match(returned,/if \(outcome === "paid"\)/);
@@ -188,7 +188,46 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.match(js,/No successful payment has been recorded/);
 });
 
+test("checkout uncertainty is explicit and return verification blocks another payment",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.doesNotMatch(js,/No payment was taken\./);
+ assert.match(js,/We could not confirm the checkout response/);
+ assert.match(js,/const locked = checkoutInFlight \|\| checkoutUncertain \|\| !!awaitingOrder/);
+ assert.match(js,/quantityInput\.disabled = locked/);
+ assert.match(js,/remove\.disabled = locked/);
+ assert.match(js,/awaitingOrder = returnedOrder;\s*render\(\);\s*const status = async/);
+ assert.match(js,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
+});
 
+
+test("an uncertain retry retains the in-memory idempotency key and reconciles already-paid attempts",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/checkoutUncertain && \(!lastAttempt \|\| lastAttempt\.basket !== basketId \|\| lastAttempt\.mode !== mode\)/);
+ assert.match(js,/lastAttempt\?\.basket === basketId && lastAttempt\.mode === mode \? lastAttempt\.id/);
+ assert.match(js,/result\?\.already_paid === true && result\?\.status === "PAID"/);
+ assert.match(js,/BAG_URL \+ "\?checkout=return&order_id=" \+ encodeURIComponent\(result\.orderId\)/);
+});
+
+
+test("comparison limits selections to three unique canonical references",()=>{
+ const skus=catalogue.products.map(p=>p.sku);
+ assert.deepEqual(comparisonProducts([skus[0],skus[0],"UNKNOWN",skus[1],skus[2],skus[3]],catalogue).map(p=>p.sku),skus.slice(0,3));
+ assert.deepEqual(comparisonProducts(null,catalogue),[]);
+ assert.deepEqual(comparisonProducts(skus,{...catalogue,currency:"USD"}),[]);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/compare\.setAttribute\("aria-pressed", "false"\)/);
+ assert.match(js,/selected\.clear\(\)/);
+ assert.match(js,/This is not advice on suitability or treatment/);
+});
+
+
+test("basket recovery offers direct shopping and human support without claiming a payment result",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/!bag.length && !confirmedOrder && !awaitingOrder/);
+ assert.match(js,/anchor\("Continue shopping", SHOP_URL/);
+ assert.match(js,/anchor\("Check an order status", "\/products\/track\//);
+ assert.match(js,/anchor\("Contact customer support", "mailto:support@novapharmhealthcare.com"/);
+});
 test("all 19 Nutraxin details share the responsive typography, image, purchase and print layout contract",()=>{
  const css=readFileSync("assets/css/nutraxin-merchant.css","utf8");
  const checks=[

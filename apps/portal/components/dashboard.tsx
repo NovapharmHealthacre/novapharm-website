@@ -10,7 +10,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { AccountAccessHelp } from "./account-access-help";
-import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { CustomerCommerceWorkspace, CustomerRelatedTasks } from "./customer-commerce-workspace";
 import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
@@ -296,6 +296,14 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
   const isEditorialCustomerDashboard = module.code === "customer.dashboard";
   const isEditorialEmployeeDistribution = module.code === "employee.dashboard" || module.code === "employee.orders" || module.code === "employee.warehouse";
   const isEditorialPortal = isEditorialCustomerDashboard || isEditorialEmployeeDistribution;
+  const customerPrimaryNavigation = module.area === "customer" ? (
+    <nav className="customer-primary-nav" aria-label="Customer workspace primary navigation">
+            {(["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.account", "customer.support"] as const).map((code) => {
+              const entry = navigation.find((candidate) => candidate.code === code);
+              return entry ? <a key={entry.code} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "customer.dashboard" ? "Overview" : entry.title.replace(/^My /, "")}</a> : null;
+            })}
+          </nav>
+  ) : null;
   return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard"
     : isEditorialEmployeeDistribution ? "workspace-shell employee-distribution-shell" : "workspace-shell"}>
     {!isEditorialPortal ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
@@ -319,12 +327,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
       <header className="workspace-topbar">
         {isEditorialCustomerDashboard ? <>
           <PortalBrand home={areaLandingRoutes.customer} />
-          <nav className="customer-primary-nav" aria-label="Customer workspace primary navigation">
-            {(["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.support"] as const).map((code) => {
-              const entry = navigation.find((candidate) => candidate.code === code);
-              return entry ? <a key={entry.code} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "customer.dashboard" ? "Overview" : entry.title.replace(/^My /, "")}</a> : null;
-            })}
-          </nav>
+          {customerPrimaryNavigation}
         </> : null}
         {isEditorialEmployeeDistribution ? <>
           <DistributionBrand home={areaLandingRoutes.employee} />
@@ -338,6 +341,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
           </nav>
         </> : null}
         <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input ref={searchInputRef} id="portal-search" name="query" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchScopeId} aria-controls={searchOpen ? searchResultsId : undefined} aria-busy={searchBusy || undefined} placeholder={`Search ${areaLabels[module.area].toLowerCase()} records`} value={searchText} onChange={(event) => updateSearch(event.currentTarget.value)} />{searchText ? <button type="button" className="search-clear" aria-label="Clear authorised record search" onClick={clearSearch}>Clear</button> : null}<button type="submit" disabled={searchBusy} aria-expanded={searchOpen} aria-controls={searchOpen ? searchResultsId : undefined}>Search</button>{searchOpen ? <section className="search-results" id={searchResultsId} aria-label="Authorised search results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={dismissSearch}><X aria-hidden="true" className="np-symbol" /></button>{searchBusy ? <p>Searching current records…</p> : searchFailure ? <div role="alert"><p>Search could not be completed. {searchFailure}</p><button type="button" onClick={() => void runSearch(searchText.trim().slice(0, 120))} disabled={searchBusy}>Retry authorised search</button></div> : searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found in this scope.</p>}</section> : null}</form><p className="portal-search-scope" id={searchScopeId}>Search scope: your authorised {areaLabels[module.area].toLowerCase()} records. No search history saved.</p><p className="sr-only" role="status" aria-live="polite">{searchAnnouncement}</p></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
+      {module.area === "customer" && !isEditorialCustomerDashboard ? <div className="customer-section-nav">{customerPrimaryNavigation}</div> : null}
       <div className="workspace-content">
         {/* The route and scope are already verified on the server. Generic, non-sensitive
             guidance is rendered immediately so account data loading cannot cause CLS.
@@ -357,6 +361,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
         {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
+        {module.area === "customer" && !isEditorialCustomerDashboard ? <CustomerRelatedTasks moduleCode={module.code} /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">

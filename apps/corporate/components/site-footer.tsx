@@ -55,8 +55,11 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
             <AppleFooterNavigation label={interfaceLabel(locale, "Connect")}>
               <CurrentFooterLink href="/news-insights/">{interfaceLabel(locale, "Insights")}</CurrentFooterLink>
               <Link href="/contact/">{interfaceLabel(locale, "Contact")}</Link>
-              <Link href="/account-application/">{interfaceLabel(locale, "Open a business account")}</Link>
+              <Link href="/account-application/" lang="en-GB">Discuss account eligibility</Link>
               <a href={portalOrigin} rel="nofollow">{interfaceLabel(locale, "Secure Portal")}</a>
+              <Link href="/products/track/" lang="en-GB">Check order status</Link>
+              <Link href="/products/nutraxin/account/" lang="en-GB">Personal orders &amp; account</Link>
+              <a href="mailto:support@novapharmhealthcare.com" lang="en-GB">Customer support</a>
               <Link href="/trust-centre/">{interfaceLabel(locale, "Trust centre")}</Link>
             </AppleFooterNavigation>
           </nav>
