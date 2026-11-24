@@ -366,3 +366,17 @@ test("personal privileges follow manual promo and require account-specific serve
  assert.ok(js.includes('No approved offers are available for this account right now.'));
  assert.ok(css.includes(".nx-bag-privileges[hidden]"));
 });
+
+test("Klarna retail identification is readiness-gated and contains no credit claims",async()=>{
+ const {klarnaCheckoutNotice}=await import("../assets/js/nutraxin-retail-store.js");
+ assert.equal(klarnaCheckoutNotice(true),"Choose Klarna at checkout. Availability depends on eligibility.");
+ for(const value of [false,undefined,null,1,"true",{}])assert.equal(klarnaCheckoutNotice(value),"");
+ assert.doesNotMatch(klarnaCheckoutNotice(true),/interest|instalment|repayment|APR|pay in 3/i);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.ok(js.includes("klarnaCheckoutNotice(ready && !checkoutUncertain)"));
+ assert.ok(js.includes("status?.payment_collection_active === true"));
+ assert.ok(js.includes("klarnaNotice.hidden = !message"));
+ assert.doesNotMatch(js,/js\.stripe\.com|klarna\.com\//);
+ const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
+ assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
+});
