@@ -144,3 +144,17 @@ for (const token of [
   'target.width < 43.5 || target.height < 43.5'
 ]) assert.ok(renderedTouchAcceptance.includes(token),
   "Actual Chromium/WebKit touch hit-area acceptance missing " + token);
+
+
+/* Category labels must be ordinary links, not click-to-open-only controls.
+   ArrowDown continues to provide explicit keyboard access to the submenu. */
+assert.doesNotMatch(navigation, /trigger\.addEventListener\("click"/,
+  "Top-level category click/Enter must navigate to its overview");
+assert.match(navigation, /trigger\.addEventListener\("pointerenter"/);
+assert.match(navigation, /event\.key !== "ArrowDown"/);
+const chromeGenerator = read("scripts/apply-corporate-product-discipline.mjs");
+assert.match(chromeGenerator, /const headerLinks = globalNavigation\.filter/);
+assert.doesNotMatch(chromeGenerator, /const headerLinks = route ===/);
+assert.match(chromeGenerator, /\["Intelligence", "\/technology\/", "intelligence"\]/);
+assert.match(chromeGenerator, /route === href \? ' aria-current="page"'/);
+
