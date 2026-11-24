@@ -144,12 +144,19 @@ def issuance_code(payment_reference, issuance_key):
                             hashlib.sha256).hexdigest()[:32].upper()
 
 
-def issue_verified(ledger, purchase, session, intent, charge, issuance_key, lookup_key):
+def issue_verified(ledger, purchase, session, intent, charge, issuance_key, lookup_key,
+                   *, issuance_key_version=None, lookup_key_version=None):
     """Return only ledger outcome. Separate private delivery worker retrieves code."""
     if issuance_key == lookup_key:
         raise ValueError("separate issuance and lookup keys required")
     payment = verified_payment(purchase, session, intent, charge)
     digest = code_digest(issuance_code(payment, issuance_key), lookup_key)
+    delivery = None
+    if issuance_key_version is not None or lookup_key_version is not None:
+        delivery = {"purchaseId":purchase.purchase_id,"issuanceKeyVersion":issuance_key_version,
+                    "lookupKeyVersion":lookup_key_version}
+        for value in delivery.values():
+            reference(value)
     return ledger.issue_paid(digest=digest, denomination=purchase.denomination,
         verified_paid_minor=purchase.denomination, payment_reference=payment,
-        operation="giftissue_" + payment)
+        operation="giftissue_" + payment, delivery=delivery)
