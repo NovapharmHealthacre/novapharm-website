@@ -3,6 +3,7 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import { LIVE_ORIGIN, PUBLIC_ROUTES, auditPublishedBrand, verifyPublishedHtml } from "./verify-public-brand-source-live.mjs";
 import { composeManagedContactChrome } from "./activate-contact-intake.mjs";
+import { managedContactLayout } from "./managed-contact-layout.mjs";
 
 const SHA = "a".repeat(40);
 
@@ -24,7 +25,7 @@ function htmlFor(route, sha = SHA) {
     (route === "/contact/" ? '<meta http-equiv="Content-Security-Policy" content="script-src \'self\'; ' +
       'connect-src \'self\' https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com; ' +
       'object-src \'none\'; base-uri \'self\'; form-action \'none\'">' : '') +
-    (contact ? '<style>:root{--contact-primary-white:#FFFFFF}</style>' : '') +
+    (contact ? '<style>:root{--contact-primary-white:#FFFFFF}\n' + managedContactLayout + '</style>' : '') +
     '</head><body>' + (contact ? '<header class="site-header npd-header"><nav><a data-mega-trigger="distribution" href="/distribution/">Distribution</a><a data-mega-trigger="intelligence" href="/technology/">Intelligence</a></nav></header>' : '') +
     '<main><h1>NovaPharm Healthcare</h1>' + contact +
     '</main>' + (contact ? '<footer class="site-footer npd-footer"></footer>' : '') + '</body></html>';
@@ -196,4 +197,10 @@ test("malformed or nested HTML comments fail closed before public receipt verifi
     '<!-- <h1>spoofed</h1> --><!-- <meta name="theme-color" content="#E3120B"> -->\n</head>');
   assert.deepEqual(verifyPublishedHtml(multiple, "/", SHA), [],
     "Separate inert comments cannot alter verified active metadata");
+});
+
+ test("Contact release rejects missing or altered spacing overlay", () => {
+  const good = htmlFor("/contact/");
+  for (const bad of [good.replace(managedContactLayout, ""), good.replace("gap: 16px;", "gap: 0;")])
+    assert.ok(verifyPublishedHtml(bad, "/contact/", SHA).some(error => error.includes("spacing overlay")));
 });

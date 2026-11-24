@@ -26,13 +26,21 @@
         "true"
       ],
       "Default": "false"
+    },
+    "RouteEnabled": {
+      "Type": "String",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Default": "false"
     }
   },
   "Conditions": {
     "Publish": {
       "Fn::Equals": [
         {
-          "Ref": "ReleaseEnabled"
+          "Ref": "RouteEnabled"
         },
         "true"
       ]
@@ -180,7 +188,6 @@
         },
         "MemorySize": 256,
         "Timeout": 20,
-        "ReservedConcurrentExecutions": 2,
         "Environment": {
           "Variables": {
             "CUSTOMER_DIRECTORY_RELEASE_ENABLED": {
@@ -241,6 +248,31 @@
           ]
         }
       }
+    }
+  },
+  "Rules": {
+    "ReleaseRequiresRoute": {
+      "RuleCondition": {
+        "Fn::Equals": [
+          {
+            "Ref": "ReleaseEnabled"
+          },
+          "true"
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "RouteEnabled"
+              },
+              "true"
+            ]
+          },
+          "AssertDescription": "Data release requires the separately installed private route."
+        }
+      ]
     }
   }
 }

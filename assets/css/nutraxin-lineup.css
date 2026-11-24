@@ -71,7 +71,7 @@
 }
 .nx-collection .nx-local-title {font-size:.99rem;font-weight:750;letter-spacing: 0}
 .nx-collection .nx-local-links {display:flex;align-items:center;gap:30px}
-.nx-collection .nx-local-links a {font-size:.77rem; font-weight:560;color:#434347;white-space:nowrap}
+.nx-collection .nx-local-links a {display:inline-flex;align-items:center;min-height:44px;flex:0 0 auto;font-size:.77rem; font-weight:560;color:#434347;white-space:nowrap}
 .nx-collection .nx-local-links a:hover {color:var(--nx-brand)}
 .nx-collection [id^="nx-"] {scroll-margin-top:78px}
 .nx-collection .nx-button {
