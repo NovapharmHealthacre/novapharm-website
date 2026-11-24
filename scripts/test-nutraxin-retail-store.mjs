@@ -203,6 +203,12 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
    /@media print\s*\{[\s\S]*?\.npd-composition > div\s*\{[^}]*42mm\s*!important/
  ];
  for(const rule of checks)assert.match(css,rule,"Nutraxin CSS lost a required layout contract");
+
+ assert.match(css,/NovaPharm Nutraxin Apple-inspired showcase v2/);
+ assert.match(css,/--nx-showcase-canvas:#FFFFFF/);
+ assert.match(css,/--nx-showcase-ink:#0B0B0E/);
+ assert.match(css,/--nx-showcase-accent:#9D1B32/);
+ assert.match(css,/@media print\s*\{[\s\S]*?white-space:normal !important;/);
  assert.equal(catalogue.products.length,19);
  for(const product of catalogue.products){
    const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
@@ -225,7 +231,7 @@ test("all 19 Nutraxin details share the responsive typography, image, purchase a
      product.slug+" missing public retail module");
    assert.equal((html.match(/<h1\b/g)||[]).length,1,product.slug+" title hierarchy");
    assert.ok(html.includes('data-merchant-sku="'+product.sku+'"'),product.sku+" source price");
-   assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png"'),
+   assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png(?:\\?[^"]*)?"'),
      product.slug+" pack photograph");
  }
 });
