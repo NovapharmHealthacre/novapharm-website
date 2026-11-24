@@ -103,12 +103,21 @@ class GiftLedger:
         return result
 
     def issue_paid(self, *, digest, denomination, verified_paid_minor,
-                   payment_reference, operation):
+                   payment_reference, operation, delivery=None):
         digest_id(digest)
         reference(operation)
         reference(payment_reference)
-        request_hash = fingerprint(["issue", digest, denomination,
-                                    verified_paid_minor, payment_reference])
+        if delivery is not None:
+            if not isinstance(delivery, dict) or set(delivery) != {"purchaseId","issuanceKeyVersion","lookupKeyVersion"}:
+                raise ValueError("invalid private delivery binding")
+            for value in delivery.values():
+                reference(value)
+            if not delivery["purchaseId"].startswith("GIFT-"):
+                raise ValueError("invalid delivery purchase namespace")
+        request = ["issue", digest, denomination, verified_paid_minor, payment_reference]
+        if delivery is not None:
+            request.append(delivery)
+        request_hash = fingerprint(request)
         existing = self._replay(operation, request_hash)
         if existing is not None:
             return existing
@@ -117,8 +126,15 @@ class GiftLedger:
         # Separate uniqueness marker prevents issuing a second card from the
         # same verified payment even when a different event/operation ID arrives.
         marker = {**key("GIFT_PURCHASE#" + payment_reference), "cardDigest": S(digest)}
-        return self._commit(operation, request_hash, result,
-                            [self._put(self._card_row(digest, card)), self._put(marker)],
+        writes = [self._put(self._card_row(digest, card)), self._put(marker)]
+        if delivery is not None:
+            outbox = {**key("GIFT_DELIVERY#" + payment_reference),
+                      "status": S("PENDING"), "version": N(0),
+                      "paymentReference": S(payment_reference), "cardDigest": S(digest),
+                      "denominationMinor": N(denomination),
+                      **{name:S(value) for name,value in delivery.items()}}
+            writes.append(self._put(outbox))
+        return self._commit(operation, request_hash, result, writes,
                             {"action":"issue","cardDigest":digest,"paymentReference":payment_reference,
                              "issuedMinor":denomination})
 
