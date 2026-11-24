@@ -95,3 +95,21 @@
 .nx-bag-promotion input:focus-visible,.nx-bag-promotion summary:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
 .nx-bag-promotion .nx-store-note{margin:8px 0 0;overflow-wrap:anywhere}
 .nx-bag-promotion .nx-store-note:empty{display:none}
+
+/* Digital gift-card preview: no live tender controls or simulated purchase. */
+.nx-gift-page{background:#FFFFFF;color:#0B0B0E}
+.nx-gift-grid{align-items:start}
+.nx-gift-visual{min-width:0;padding:clamp(18px,4vw,48px);background:#F8F7F3;border-radius:24px}
+.nx-gift-card-art{aspect-ratio:1.586;box-sizing:border-box;border:1px solid #DEDCD5;border-radius:18px;padding:clamp(20px,4vw,40px);background:#FFFFFF;display:flex;flex-direction:column;justify-content:space-between;gap:12px;color:#0B0B0E;box-shadow:0 12px 32px rgba(11,11,14,.07)}
+.nx-gift-card-art img{display:block;width:min(80%,280px);height:auto}
+.nx-gift-card-art span{font-size:clamp(.85rem,2vw,1.1rem);margin-top:auto}
+.nx-gift-card-art strong{font-size:clamp(2rem,5vw,4rem);font-weight:500;letter-spacing:-.04em}
+.nx-gift-visual>p{font-size:14px;margin:16px 0 0;color:#55555A}
+.nx-gift-summary{background:#FFFFFF;border:1px solid #DEDCD5}
+.nx-gift-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:10px;border:0;padding:0;margin:0;min-width:0}
+.nx-gift-options legend{font-size:14px;margin-bottom:12px;color:#0B0B0E}
+.nx-gift-options label{display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border:1px solid #DEDCD5;border-radius:10px;background:#FFFFFF;color:#0B0B0E;cursor:pointer;padding:6px;font-size:14px}
+.nx-gift-options label:has(input:checked){border-color:#9D1B32;box-shadow:inset 0 0 0 1px #9D1B32}
+.nx-gift-options input{accent-color:#9D1B32}
+.nx-gift-options label:focus-within{outline:2px solid #9D1B32;outline-offset:3px}
+@media(max-width:480px){.nx-gift-visual{padding:16px}.nx-gift-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
