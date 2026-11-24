@@ -11,10 +11,10 @@ const SHA = /^[a-f0-9]{40}$/;
 const REPO = /^[\w.-]+\/[\w.-]+$/;
 const COMPARE_OK = new Set(["identical", "ahead"]);
 // One-time migration from the exact reviewed legacy publication, including
-// the reviewed Nutraxin coupon and bag publication (#1187).
+// the reviewed Nutraxin coupon and Privileges publications (#1187, #1193).
 // Do not inherit this exception for any future gh-pages commit.
-const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "827fdf67341fe2f289e6d1a7810f847521b05dac";
-export const REVIEWED_LEGACY_PAGES_SHA = "f82e3ab9391ec7d9185c254a7cc5877b5885a62b";
+const PREVIOUS_REVIEWED_LEGACY_PAGES_SHA = "f82e3ab9391ec7d9185c254a7cc5877b5885a62b";
+export const REVIEWED_LEGACY_PAGES_SHA = "f942eafabfd18161da10835c49a1b1cf93e9b72f";
 export const BRAND_ONLY_AUTHORIZATION_ANCHOR = "26432d4ac2c53a8a39b6701fa77bccda487737ed";
 
 export function canShip({publishedSha, candidateSha, mainSha, publishedToCandidate, candidateToMain, legacyBridgeVerified = false}) {
@@ -70,9 +70,9 @@ function independentlyVerifyLegacyBridge(repo, publishedSha, candidateSha) {
   const reviewedPolicyLink = '<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand';
   if (![bag, bagGenerator].every(source => source.includes(reviewedPolicyLink))) return false;
 
-  // #1187 published exactly two assets from the verified main source. Require
-  // the exact reviewed successor of both assets (retains the published bag
-  // and coupon behavior, adds gated account privileges), not an older build.
+  // #1193 published exactly two assets from the verified main source.
+  // Require the exact already-published retail blobs, including gated
+  // account privileges, so this Contact release cannot undo that release.
   const retailAnchor = "df42e20f79a00184c7a59403d713ad77bdbb0c52";
   if (!COMPARE_OK.has(compareStatus(repo, retailAnchor, candidateSha))) return false;
   const reviewedRetail = {
