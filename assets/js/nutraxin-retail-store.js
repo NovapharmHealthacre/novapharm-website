@@ -295,6 +295,7 @@ function runStore(data) {
       bagCount.insertAdjacentElement("afterend", review);
       let promoSupported = false;
       let accountPromoSupported = false;
+      let privilegesSupported = false;
       let promoQuote = null;
       let restoredAttemptBlocked = false;
       try {
@@ -330,6 +331,81 @@ function runStore(data) {
       promoSection.append(promoSummary, promoControls, promoStatus);
       const termsAnchor = container.querySelector(".nx-store-consumer-terms");
       if (termsAnchor) termsAnchor.before(promoSection);
+      const privileges = make("section", "nx-bag-privileges");
+      privileges.hidden = true;
+      const privilegeHeading = make("h3", null, "Your privileges");
+      privilegeHeading.id = "nx-bag-privileges-heading";
+      privileges.setAttribute("aria-labelledby", privilegeHeading.id);
+      const privilegeStatus = make("p", "nx-store-note");
+      privilegeStatus.setAttribute("role", "status");
+      const privilegeList = make("div", "nx-bag-privilege-list");
+      const privilegeRefresh = make("button", "nx-compare-control", "Check my offers");
+      privilegeRefresh.type = "button";
+      const privilegeSignIn = anchor("Sign in to discover your privileges", SHOP_URL + "account/", "nx-shop-link");
+      privileges.append(privilegeHeading, privilegeStatus, privilegeList, privilegeRefresh, privilegeSignIn);
+      promoSection.after(privileges);
+      let privilegeToken = null;
+      let privilegeLoading = false;
+      let privilegeSequence = 0;
+      const loadPrivileges = async () => {
+        const token = consumerAccess();
+        if (!privilegesSupported || !approvedRelease || !token || privilegeLoading ||
+            checkoutInFlight || checkoutUncertain || awaitingOrder || confirmedOrder) return;
+        const sequence = ++privilegeSequence;
+        privilegeToken = token;
+        privilegeLoading = true;
+        privilegeList.replaceChildren();
+        privilegeStatus.textContent = "Checking your available privileges…";
+        render();
+        try {
+          const response = await fetch(CHECKOUT_API_ORIGIN + "/account/privileges", {
+            method:"GET", credentials:"omit", mode:"cors", cache:"no-store",
+            redirect:"error", referrerPolicy:"no-referrer",
+            headers:{authorization:"Bearer " + token, Accept:"application/json"}
+          });
+          const payload = response.ok ? await response.json() : null;
+          if (sequence !== privilegeSequence || token !== consumerAccess()) return;
+          const stages = {
+            no_recorded_paid_orders:"Welcome to NovaPharm. No paid orders are recorded for this account.",
+            one_paid_order:"Thank you for shopping with us. Your next purchase would be your second recorded paid order.",
+            two_paid_orders:"Welcome back. Two paid orders are recorded for this account.",
+            three_or_more_paid_orders:"Thank you for your continued trust in NovaPharm.",
+            unknown:"We could not establish your purchase stage."
+          };
+          if (!payload || payload.coverage !== "recorded_account_paid_orders_only" ||
+              !Object.hasOwn(stages,payload.stage) || !Array.isArray(payload.offers) || payload.offers.length > 8) throw new Error("unavailable");
+          privilegeStatus.textContent = stages[payload.stage] +
+            (payload.offers.length ? " Select an available offer to check your bag." : " No approved offers are available for this account right now.");
+          for (const offer of payload.offers) {
+            if (!offer || !/^[A-Z0-9_-]{3,32}$/.test(offer.code || "") ||
+                typeof offer.title !== "string" || offer.title.length > 80 ||
+                !Number.isSafeInteger(offer.discountBps) || offer.discountBps < 1 || offer.discountBps > 5000 ||
+                !Number.isSafeInteger(offer.minimumGrossMinor) || offer.minimumGrossMinor < 0) continue;
+            const row = make("div", "nx-bag-privilege");
+            const details = make("div");
+            const title = make("strong", null, offer.title);
+            const description = make("p", null, (offer.discountBps / 100) + "% off eligible products" +
+              (offer.minimumGrossMinor ? " · Minimum eligible spend " + formatGBP(offer.minimumGrossMinor) : "") + ". Terms apply.");
+            const apply = make("button", "nx-compare-control", "Apply");
+            apply.type = "button";
+            apply.setAttribute("aria-label", "Apply " + offer.title);
+            apply.addEventListener("click", () => {
+              if (token !== consumerAccess() || promoQuote || promoPending || checkoutInFlight || checkoutUncertain || awaitingOrder || confirmedOrder) return;
+              promoSection.open = true;
+              promoInput.value = offer.code;
+              void requestPromotion();
+            });
+            details.append(title, description);
+            row.append(details,apply);
+            privilegeList.append(row);
+          }
+        } catch {
+          if (sequence === privilegeSequence) privilegeStatus.textContent = "We could not check your privileges. Please try again.";
+        } finally {
+          if (sequence === privilegeSequence) { privilegeLoading = false; render(); }
+        }
+      };
+      privilegeRefresh.addEventListener("click", () => void loadPrivileges());
       const discountRow = make("div");
       discountRow.hidden = true;
       const discountAmount = make("dd");
@@ -520,6 +596,19 @@ function runStore(data) {
         shipping.textContent = ready ? "Included · UK" : (ukDeliveryIncluded ? "£0.00 · UK only" : "Not confirmed");
         tax.textContent = "20% UK VAT included";
         promoSection.hidden = !promoSupported || !approvedRelease || !bag.length || !!confirmedOrder || !!awaitingOrder;
+        privileges.hidden = promoSection.hidden || !privilegesSupported;
+        const currentPrivilegeToken = consumerAccess();
+        if (privilegeToken !== currentPrivilegeToken) {
+          privilegeSequence++;
+          privilegeToken = currentPrivilegeToken;
+          privilegeLoading = false;
+          privilegeList.replaceChildren();
+          privilegeStatus.textContent = currentPrivilegeToken ? "Check your account for available personal offers." : "Personal offers are available to eligible signed-in customers.";
+        }
+        privilegeSignIn.hidden = !!currentPrivilegeToken;
+        privilegeRefresh.hidden = !currentPrivilegeToken;
+        privilegeRefresh.disabled = locked || privilegeLoading || promoPending;
+        for (const button of privilegeList.querySelectorAll("button")) button.disabled = locked || promoPending || !!promoQuote;
         promoInput.disabled = locked || promoPending || !!promoQuote;
         promoApply.disabled = locked || promoPending || !bag.length;
         promoApply.textContent = promoPending ? "Checking…" : promoQuote ? "Remove" : "Apply";
@@ -671,8 +760,10 @@ function runStore(data) {
           approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true && v?.origin === "novapharmhealthcare.com";
           promoSupported = v?.promotion_preview_supported === true;
           accountPromoSupported = v?.account_promotion_preview_supported === true;
+          privilegesSupported = accountPromoSupported && v?.account_privileges_supported === true;
         } catch { approvedRelease=false; }
         render();
+        if (privilegesSupported && consumerAccess() && bag.length) void loadPrivileges();
       })();
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
