@@ -289,6 +289,9 @@ function runStore(data) {
       const summary = container.querySelector(".nx-bag-summary");
       summary.id = "nx-bag-summary";
       summary.tabIndex = -1;
+      const klarnaNotice = make("p", "nx-store-note nx-klarna-method");
+      klarnaNotice.hidden = true;
+      secure.append(klarnaNotice);
       summary.append(secure);
       const review = anchor("View order summary", "#nx-bag-summary", "nx-bag-summary-jump nx-shop-link");
       review.addEventListener("click", () => summary.focus({preventScroll:true}));
@@ -616,6 +619,9 @@ function runStore(data) {
         discountAmount.textContent = promoQuote ? "−" + formatGBP(promoQuote.discountGrossMinor) : "";
         if (promoQuote) subtotal.textContent = formatGBP(promoQuote.originalGrossMinor);
         grand.textContent = promoQuote ? formatGBP(promoQuote.totalGrossMinor) : subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
+        const paymentNotice = klarnaCheckoutNotice(ready && !checkoutUncertain);
+        klarnaNotice.textContent = paymentNotice;
+        klarnaNotice.hidden = !paymentNotice;
         checkout.disabled = !ready;
         checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : checkoutInFlight ? "Opening checkout…" : ready ? (checkoutUncertain ? "Retry original checkout" : consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
@@ -863,6 +869,20 @@ function runStore(data) {
       buy.disabled = !merchantSaleReady(p, data);buy.addEventListener("click",()=>{put(p.sku,Number(quantity.value));window.location.assign(BAG_URL);});
       options.append(label, add, buy, anchor("View Bag", BAG_URL, "nx-store-bag-link"));
       panel.append(options);
+      const klarnaNotice = make("p", "nx-store-note nx-klarna-method");
+      klarnaNotice.hidden = true;
+      panel.append(klarnaNotice);
+      if (merchantSaleReady(p, data)) void (async () => {
+        try {
+          const response = await fetch(CHECKOUT_API_ORIGIN + "/readiness",
+            {credentials:"omit",cache:"no-store",mode:"cors"});
+          const status = response.ok ? await response.json() : null;
+          const message = klarnaCheckoutNotice(status?.checkout_ready === true &&
+            status?.payment_collection_active === true && status?.origin === "novapharmhealthcare.com");
+          klarnaNotice.textContent = message;
+          klarnaNotice.hidden = !message;
+        } catch { klarnaNotice.hidden = true; }
+      })();
       const pack = copy.querySelector(".npd-product-pack");
       if (pack) pack.insertAdjacentElement("afterend", panel);
       else copy.prepend(panel);
@@ -872,6 +892,11 @@ function runStore(data) {
 }
 
 export const GIFT_DENOMINATIONS = Object.freeze([1000,2500,5000,10000,25000]);
+
+// Payment-method identification only: no credit or instalment advertising.
+export function klarnaCheckoutNotice(ready) {
+  return ready === true ? "Choose Klarna at checkout. Availability depends on eligibility." : "";
+}
 
 export function giftPreviewAmount(value) {
   const amount = typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value;
