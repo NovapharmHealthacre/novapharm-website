@@ -195,3 +195,17 @@
   .customer-editorial-dashboard .user-summary button,
   .customer-editorial-dashboard .user-summary .icon-command{padding:6px 8px;font-size:.7rem}
 }
+
+/* Customer-first shortcuts: real routes, no simulated account or shipment data. */
+.customer-quick-tasks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 28px}
+.customer-quick-tasks>a{display:flex;flex-direction:column;gap:7px;min-width:0;padding:18px 16px;border:1px solid #DEDCD5;border-radius:12px;background:#F8F7F3;color:#0B0B0E;text-decoration:none;line-height:1.4;overflow-wrap:anywhere}
+.customer-quick-tasks>a strong{font-size:1rem;font-weight:650}
+.customer-quick-tasks>a span{font-size:.85rem;color:#54545a}
+.customer-quick-tasks>a:hover strong{text-decoration:underline;text-underline-offset:3px}
+.customer-editorial-dashboard .customer-editorial-delivery-detail{position:static;display:none}
+.customer-login-services{display:grid;gap:0;margin:14px 0;padding:0;border-top:1px solid #DEDCD5}
+.customer-login-services h3{margin:16px 0 6px;font-size:1rem;font-weight:650;color:#0B0B0E}
+.customer-login-services>a{display:flex;align-items:center;min-height:44px;padding:8px 0;border-bottom:1px solid #DEDCD5;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.customer-login-services>a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+@media(max-width:850px){.customer-quick-tasks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.customer-quick-tasks{grid-template-columns:1fr}}
