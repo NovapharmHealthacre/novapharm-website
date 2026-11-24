@@ -63,3 +63,43 @@ test("Apple-inspired customer overview retains governed navigation and real prod
   }
   assert.doesNotMatch(component, /<iframe|data:image\/svg|https?:\/\//);
 });
+
+
+test("customer entry exposes direct self-service without weakening role checks", () => {
+  assert.match(login, /aria-label="Customer account options"/);
+  for (const link of ["/account-application/", "/products/track/", "/products/nutraxin/account/", "/products/nutraxin/bag/", "mailto:support@novapharmhealthcare.com"]) assert.ok(login.includes(link));
+  assert.match(login, /accessType === "customer" \? <nav className="customer-login-services"/);
+  assert.match(login, /result\.accessType !== accessType/);
+  assert.match(component, /aria-label="Common customer tasks"/);
+  for (const label of ["Track an order", "Find invoices", "Manage your account", "Get support"]) assert.ok(component.includes(label));
+  assert.doesNotMatch(component, /customer-editorial-delivery-line|<span>DISPATCH<\/span>/);
+});
+
+test("all protected customer subpages expose the same primary task links without removing their full module menu", () => {
+  assert.match(dashboard, /const customerPrimaryNavigation = module\.area === "customer" \?/);
+  assert.match(dashboard, /module\.area === "customer" && !isEditorialCustomerDashboard \? <div className="customer-section-nav">\{customerPrimaryNavigation\}/);
+  assert.match(dashboard, /\{customerPrimaryNavigation\}/);
+  assert.match(dashboard, /navigation\.map\(\(entry\)/);
+  assert.match(dashboard, /aria-current=\{entry\.code === module\.code \? "page" : undefined\}/);
+});
+
+
+test("sign-in prevents concurrent authentication and keeps workspace selection stable", () => {
+  assert.match(login, /const signInInFlight = useRef\(false\)/);
+  assert.match(login, /if \(signInInFlight\.current\) return;\s*signInInFlight\.current = true;\s*setBusy\(true\)/);
+  assert.match(login, /finally \{\s*signInInFlight\.current = false;\s*setBusy\(false\)/);
+  assert.match(login, /<fieldset className="access-selector" disabled=\{busy\}>/);
+  assert.match(login, /entraEnabled && !busy/);
+  assert.match(login, /result\.accessType !== accessType/);
+});
+
+
+test("every customer service subpage has contextual next tasks without adding new authority", () => {
+  const related = component.split("const relatedTasks:")[1]?.split("export function CustomerRelatedTasks")[0] ?? "";
+  for (const module of customerModules.filter((entry) => entry.code !== "customer.dashboard")) {
+    assert.ok(related.includes(`"${module.code}": [`), module.code);
+  }
+  assert.match(component, /aria-label="Related customer tasks"/);
+  assert.match(component, /href=\{module.route\}/);
+  assert.match(dashboard, /module.area === "customer" && !isEditorialCustomerDashboard \? <CustomerRelatedTasks/);
+});

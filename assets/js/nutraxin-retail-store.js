@@ -63,6 +63,13 @@ export function merchantSaleReady(product, data) {
     product?.available_to_sell === true;
 }
 
+// Comparison is a transient, explicitly selected shortlist, not medical advice.
+export function comparisonProducts(skus, data) {
+  if (!catalogueIsSafe(data) || !Array.isArray(skus)) return [];
+  const bySku = new Map(data.products.map(p => [p.sku, p]));
+  return [...new Set(skus)].filter(sku => bySku.has(sku)).slice(0, 3).map(sku => bySku.get(sku));
+}
+
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
@@ -197,6 +204,9 @@ function runStore(data) {
   let awaitingOrder = "";
   let closedOrder = "";
   let closedOutcome = "";
+  let checkoutInFlight = false;
+  let checkoutUncertain = false;
+  let lastAttempt = null;
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -240,9 +250,17 @@ function runStore(data) {
         const grand = container.querySelector("[data-nx-bag-total]");
         const checkout = container.querySelector("[data-nx-checkout]");
         const explanation = container.querySelector("[data-nx-checkout-note]");
+        const locked = checkoutInFlight || checkoutUncertain || !!awaitingOrder;
         list.replaceChildren();
-        if (!bag.length) {
-          list.append(make("p", "nx-bag-empty", "Your bag is empty. Explore the collection and add products to get started."));
+        if (!bag.length && !confirmedOrder && !awaitingOrder) {
+          const empty = make("div", "nx-bag-empty");
+          empty.append(make("p", null, "Your bag is empty. Explore the collection and add products to get started."), anchor("Continue shopping", SHOP_URL, "nx-compare-link"));
+          list.append(empty);
+        }
+        if (confirmedOrder || awaitingOrder || checkoutUncertain) {
+          const help = make("div", "nx-bag-order-help");
+          help.append(anchor("Check an order status", "/products/track/", "nx-compare-link"), anchor("Contact customer support", "mailto:support@novapharmhealthcare.com", "nx-compare-link"));
+          list.append(help);
         }
         for (const line of bag) {
           const p = productMap.get(line.sku);
@@ -262,6 +280,7 @@ function runStore(data) {
           quantityInput.step = "1";
           quantityInput.inputMode = "numeric";
           quantityInput.value = String(line.quantity);
+          quantityInput.disabled = locked;
           quantityInput.setAttribute("aria-label", "Quantity for " + p.name);
           quantityInput.addEventListener("change", () => {
             const quantity = Number(quantityInput.value);
@@ -275,6 +294,7 @@ function runStore(data) {
           label.append(quantityInput);
           const remove = make("button", "nx-bag-remove", "Remove");
           remove.type = "button";
+          remove.disabled = locked;
           remove.addEventListener("click", () => {
             bag = bag.filter((v) => v.sku !== p.sku);
             saveBag(bag); updateNav(); render();
@@ -284,7 +304,7 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -295,36 +315,44 @@ function runStore(data) {
         tax.textContent = "20% UK VAT included";
         grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
-        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? (consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
+        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : checkoutInFlight ? "Opening checkout…" : ready ? (checkoutUncertain ? "Retry original checkout" : consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
           ? "Payment confirmed for order " + confirmedOrder + ". NovaPharm will process your order."
-          : closedOutcome === "expired"
+          : closedOutcome === "expired" && !checkoutUncertain && !checkoutInFlight
           ? "Checkout expired for order " + closedOrder + " without a completed payment. Your Bag is saved and you may start a new checkout."
-          : closedOutcome === "failed"
+          : closedOutcome === "failed" && !checkoutUncertain && !checkoutInFlight
           ? "Payment failed for order " + closedOrder + ". No successful payment has been recorded. Your Bag is saved so you may try again."
           : awaitingOrder
           ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
+          : checkoutInFlight
+          ? "Opening secure checkout. Please wait."
+          : checkoutUncertain
+          ? "We could not confirm the checkout response. Your basket is saved. Check your existing payment confirmation or contact customer support before retrying this same basket."
           : ready
-          ? "Continue as a guest. Stripe will collect your email, UK delivery details and payment. NovaPharm independently verifies the order total and payment before fulfilment."
+          ? (consumerAccess() ? "Continue with your verified account. Stripe will collect required delivery and payment details." : "Continue as a guest. Stripe will collect your email, UK delivery details and payment.") + " NovaPharm verifies the order total and payment before fulfilment."
           : "Your Bag is saved. Checkout is temporarily unavailable; no card details are collected here.";
         checkout.onclick = async () => {
-          if (!ready) return;
+          if (!ready || checkoutInFlight) return;
           const terms = container.querySelector("[data-nx-consumer-terms]");
           if (!terms || !terms.checked) {
             explanation.textContent = "Accept the UK consumer and manufacturer delivery terms before checkout.";
             return;
           }
-          checkout.disabled = true;
+          checkoutInFlight = true;
+          render();
           explanation.textContent = "Verifying your order securely…";
           try {
             const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
             let stored;
             try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
             catch { stored = null; }
-            const requestId = stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
-              ? stored.id : crypto.randomUUID();
-            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
             const accountToken=consumerAccess();
+            const mode=accountToken?"account":"guest";
+            if (checkoutUncertain && (!lastAttempt || lastAttempt.basket !== basketId || lastAttempt.mode !== mode)) throw new Error("Original checkout cannot be resumed safely");
+            const requestId = lastAttempt?.basket === basketId && lastAttempt.mode === mode ? lastAttempt.id : stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
+              ? stored.id : crypto.randomUUID();
+            lastAttempt={basket:basketId,id:requestId,mode};
+            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
             const headers={ "content-type": "application/json" };
             if(accountToken)headers.authorization="Bearer "+accountToken;
             const target=accountToken?"/account/checkout":"/checkout";
@@ -338,13 +366,20 @@ function runStore(data) {
             }
             if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
+            // The server may reconcile a previous idempotent attempt as already paid.
+            // Re-enter the normal status-verification path rather than open a second checkout.
+            if (result?.already_paid === true && result?.status === "PAID" && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(result.orderId || "")) {
+              window.location.assign(BAG_URL + "?checkout=return&order_id=" + encodeURIComponent(result.orderId));
+              return;
+            }
             const url = new URL(result.checkoutUrl || "");
             if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") throw new Error("Invalid payment destination");
             emitRetailFunnelEvent("begin_checkout");
             window.location.assign(url.href);
           } catch {
-            explanation.textContent = "Checkout is not available. No payment was taken. Your bag is still saved.";
-            checkout.disabled = false;
+            checkoutUncertain = true;
+            checkoutInFlight = false;
+            render();
           }
         };
       };
@@ -352,11 +387,14 @@ function runStore(data) {
       const query = new URLSearchParams(window.location.search);
       const returnedOrder = query.get("order_id");
       if (query.get("checkout") === "return" && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(returnedOrder || "")) {
+        // Lock checkout before the first asynchronous verification can race readiness.
+        awaitingOrder = returnedOrder;
+        render();
         const status = async (attempt = 0) => {
           try {
             const r = await fetch(CHECKOUT_API_ORIGIN + "/status/" + encodeURIComponent(returnedOrder),{mode:"cors",credentials:"omit",cache:"no-store"});
             const result = r.ok ? await r.json() : null;
-            const outcome = checkoutReturnOutcome(result);
+            const outcome = checkoutReturnOutcome(result?.orderId === returnedOrder ? result : null);
             if (outcome === "paid") {
               confirmedOrder = returnedOrder;
               awaitingOrder = "";
@@ -398,6 +436,46 @@ function runStore(data) {
       })();
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
+    const selected = new Set();
+    const compareButtons = new Map();
+    const comparison = make("section", "nx-compare");
+    comparison.setAttribute("aria-labelledby", "nx-compare-title");
+    const heading = make("h2", null, "Compare your favourites.");
+    heading.id = "nx-compare-title";
+    const intro = make("p", null, "Select up to three products. Compare pack sizes, published prices and product ranges, then view the full product information. This is not advice on suitability or treatment.");
+    const announcement = make("p", "nx-compare-status", "No products selected.");
+    announcement.setAttribute("role", "status");
+    const clear = make("button", "nx-compare-control", "Clear comparison");
+    clear.type = "button";
+    const results = make("div", "nx-compare-results");
+    const renderComparison = () => {
+      const products = comparisonProducts([...selected], data);
+      announcement.textContent = products.length + " of 3 products selected.";
+      clear.disabled = products.length === 0;
+      results.replaceChildren();
+      for (const [sku, button] of compareButtons) {
+        const chosen = selected.has(sku);
+        button.setAttribute("aria-pressed", String(chosen));
+        button.disabled = !chosen && products.length >= 3;
+      }
+      if (!products.length) return;
+      const grid = make("div", "nx-compare-grid");
+      for (const p of products) {
+        const item = make("article", "nx-compare-card");
+        item.append(make("h3", null, p.name));
+        const details = make("dl");
+        for (const [label, value] of [["Range", p.range || "Not recorded"], ["Pack", p.pack], ["Published price", productPriceLabel(p, data)]]) {
+          details.append(make("dt", null, label), make("dd", null, value));
+        }
+        item.append(details, anchor("View product details", productUrl(p), "nx-compare-link"));
+        grid.append(item);
+      }
+      results.append(grid);
+    };
+    clear.onclick = () => { selected.clear(); renderComparison(); heading.setAttribute("tabindex", "-1"); heading.focus(); };
+    comparison.append(heading, intro, announcement, clear, results);
+    const range = document.querySelector("#nx-range-overview");
+    if (range) range.insertAdjacentElement("beforebegin", comparison);
     for (const shell of document.querySelectorAll(".nx-product-card-shell")) {
       alignCataloguePack(shell.querySelector(".nx-product-visual img"));
       const link = shell.querySelector("[data-nx-product-slug]");
@@ -418,6 +496,15 @@ function runStore(data) {
       buy.addEventListener("click", () => { put(p.sku, 1); window.location.assign(BAG_URL); });
       footer.append(priceWrap, add, buy);
       shell.append(footer);
+      if (range) {
+        const compare = make("button", "nx-compare-control", "Compare");
+        compare.type = "button";
+        compare.setAttribute("aria-label", "Compare " + p.name + ", " + p.pack);
+        compare.setAttribute("aria-pressed", "false");
+        compare.onclick = () => { if (selected.has(p.sku)) selected.delete(p.sku); else if (selected.size < 3) selected.add(p.sku); renderComparison(); };
+        compareButtons.set(p.sku, compare);
+        shell.append(compare, anchor("View comparison", "#nx-compare-title", "nx-compare-link"));
+      }
     }
   } else {
     const slug = path.split("/").filter(Boolean)[2] || "";
