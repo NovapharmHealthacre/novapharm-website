@@ -112,6 +112,16 @@ class ProductsPaymentTests(unittest.TestCase):
         from unittest.mock import patch
         basket=dict(self.basket(),promo_code="test10")
         with patch.object(SSM,"get_parameter",return_value=self.promotion_policy()):
+            preview=API.handler(self.event("/quote","POST",basket),None)
+            self.assertEqual(preview["statusCode"],200)
+            quote=json.loads(preview["body"])
+            self.assertEqual(quote["totalGrossMinor"],972)
+            self.assertEqual(quote["discountGrossMinor"],108)
+            self.assertFalse(DB.rows)
+            self.assertFalse(WORKER.calls)
+            self.assertEqual(API.direct_checkout(self.event("/checkout","POST",basket))["statusCode"],422)
+            self.assertFalse(DB.rows)
+            basket["basket_version"]=quote["basketVersion"]
             result=API.direct_checkout(self.event("/checkout","POST",basket))
             self.assertEqual(result["statusCode"],200)
             record=DB.rows["ORDER#NUT-"+self.ID]
