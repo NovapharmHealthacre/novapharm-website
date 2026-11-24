@@ -219,3 +219,12 @@ test("comparison limits selections to three unique canonical references",()=>{
  assert.match(js,/selected\.clear\(\)/);
  assert.match(js,/This is not advice on suitability or treatment/);
 });
+
+
+test("basket recovery offers direct shopping and human support without claiming a payment result",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/!bag.length && !confirmedOrder && !awaitingOrder/);
+ assert.match(js,/anchor\("Continue shopping", SHOP_URL/);
+ assert.match(js,/anchor\("Check an order status", "\/products\/track\//);
+ assert.match(js,/anchor\("Contact customer support", "mailto:support@novapharmhealthcare.com"/);
+});
