@@ -134,3 +134,18 @@ test("checked-in separate branding decision never expands customer permissions",
   assert.equal(evaluateBrandingOnlyRelease(v).approved,
     decision.enabled === true && decision.signoff === "granted");
 });
+
+test("additional, missing or malformed branding scope keys fail closed", () => {
+  const mutations = [
+    v => { v.config.publicBrandingRelease.activateSubscriptions = true; },
+    v => { v.config.publicBrandingRelease.activateSubscriptions = false; },
+    v => { delete v.config.publicBrandingRelease.scope; },
+    v => { v.config.publicBrandingRelease = []; },
+    v => { v.config.publicBrandingRelease = null; }
+  ];
+  for (const mutate of mutations) {
+    const v = input();
+    mutate(v);
+    assert.equal(evaluateBrandingOnlyRelease(v).approved, false);
+  }
+});
