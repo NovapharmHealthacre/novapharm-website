@@ -73,7 +73,7 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
           for(let i=1;i<6;i++) { near(result.fields[i].x,result.fields[0].x,"mobile column alignment"); near(result.fields[i].y-result.fields[i-1].bottom,16,"mobile gap"); }
           near(result.button.w,result.actions.w,"full width mobile submit");
         }
-        assert.ok(result.message.h>=151 && result.textarea.h>=111,label+" message area too short");
+        assert.ok(result.message.h>=151 && result.textarea.h>=111,label+" message area too short: "+JSON.stringify({message:result.message,textarea:result.textarea}));
         assert.ok(result.button.y>=result.explain.bottom+15 && result.button.h>=47,label+" submit overlaps explanatory copy or touch target too small");
         await page.screenshot({path:resolve(artifact,"managed-contact-"+name+"-"+width+".png"),fullPage:true});
         console.log(label+": pure white, aligned fields, consistent gaps, responsive button, no overflow");
