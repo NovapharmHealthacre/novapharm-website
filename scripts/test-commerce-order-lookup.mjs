@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {runInNewContext} from 'node:vm';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const read=path=>readFileSync(path,'utf8');
@@ -38,4 +39,28 @@ test('tracking UI does not collect payment, send email or store customer data',(
  assert.doesNotMatch(html,/type="email"|type="password"|data-payment-intent/);
  assert.match(script,/credentials:"omit"/);
  assert.match(script,/textContent/);
+});
+
+test('order lookup explains next steps without inventing fulfilment and clears stale advice',async()=>{
+ const ref='NUT-12345678-1234-4234-8234-123456789abc';
+ let submit,reply='PAID',requests=0;
+ const form={addEventListener:(type,fn)=>{assert.equal(type,'submit');submit=fn;}};
+ const input={value:ref},status={hidden:true,textContent:'',dataset:{}},next={hidden:true,textContent:''},button={disabled:false};
+ const selectors={'form':form,"input[name='order_ref']":input,'[data-np-order-status]':status,'button[type=\'submit\']':button,'[data-np-order-next]':next};
+ runInNewContext(read('assets/js/commerce-order-track.js'),{
+   document:{querySelector:()=>({querySelector:s=>selectors[s]})},
+   fetch:async(url,options)=>{requests++;assert.equal(options.credentials,'omit');assert.ok(url.endsWith('/'+ref));return {ok:true,json:async()=>({orderId:ref,status:reply})};},
+ });
+ const event={preventDefault(){}};
+ await submit(event);
+ assert.equal(status.textContent,'Payment confirmed.');
+ assert.match(next.textContent,/not dispatch/);
+ assert.equal(next.hidden,false);
+ reply='CHECKOUT_EXPIRED';await submit(event);
+ assert.match(next.textContent,/new payment link/);
+ reply='UNKNOWN';await submit(event);
+ assert.equal(next.hidden,true);assert.equal(next.textContent,'');
+ input.value='invalid';await submit(event);
+ assert.equal(requests,3);assert.equal(next.hidden,true);
+ assert.equal(button.disabled,false);
 });
