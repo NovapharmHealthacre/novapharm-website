@@ -148,6 +148,8 @@ function runStore(data) {
   let awaitingOrder = "";
   let closedOrder = "";
   let closedOutcome = "";
+  let checkoutInFlight = false;
+  let checkoutUncertain = false;
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -191,6 +193,7 @@ function runStore(data) {
         const grand = container.querySelector("[data-nx-bag-total]");
         const checkout = container.querySelector("[data-nx-checkout]");
         const explanation = container.querySelector("[data-nx-checkout-note]");
+        const locked = checkoutInFlight || checkoutUncertain || !!awaitingOrder;
         list.replaceChildren();
         if (!bag.length) {
           list.append(make("p", "nx-bag-empty", "Your bag is empty. Explore the collection and add products to get started."));
@@ -213,6 +216,7 @@ function runStore(data) {
           quantityInput.step = "1";
           quantityInput.inputMode = "numeric";
           quantityInput.value = String(line.quantity);
+          quantityInput.disabled = locked;
           quantityInput.setAttribute("aria-label", "Quantity for " + p.name);
           quantityInput.addEventListener("change", () => {
             const quantity = Number(quantityInput.value);
@@ -226,6 +230,7 @@ function runStore(data) {
           label.append(quantityInput);
           const remove = make("button", "nx-bag-remove", "Remove");
           remove.type = "button";
+          remove.disabled = locked;
           remove.addEventListener("click", () => {
             bag = bag.filter((v) => v.sku !== p.sku);
             saveBag(bag); updateNav(); render();
@@ -235,7 +240,7 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -255,17 +260,22 @@ function runStore(data) {
           ? "Payment failed for order " + closedOrder + ". No successful payment has been recorded. Your Bag is saved so you may try again."
           : awaitingOrder
           ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
+          : checkoutInFlight
+          ? "Opening secure checkout. Please wait."
+          : checkoutUncertain
+          ? "We could not confirm the checkout response. Your basket is saved. Check your existing payment confirmation or contact customer support before retrying this same basket."
           : ready
-          ? "Continue as a guest. Stripe will collect your email, UK delivery details and payment. NovaPharm independently verifies the order total and payment before fulfilment."
+          ? (consumerAccess() ? "Continue with your verified account. Stripe will collect required delivery and payment details." : "Continue as a guest. Stripe will collect your email, UK delivery details and payment.") + " NovaPharm verifies the order total and payment before fulfilment."
           : "Your Bag is saved. Checkout is temporarily unavailable; no card details are collected here.";
         checkout.onclick = async () => {
-          if (!ready) return;
+          if (!ready || checkoutInFlight) return;
           const terms = container.querySelector("[data-nx-consumer-terms]");
           if (!terms || !terms.checked) {
             explanation.textContent = "Accept the UK consumer and manufacturer delivery terms before checkout.";
             return;
           }
-          checkout.disabled = true;
+          checkoutInFlight = true;
+          render();
           explanation.textContent = "Verifying your order securely…";
           try {
             const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
@@ -294,8 +304,9 @@ function runStore(data) {
             emitRetailFunnelEvent("begin_checkout");
             window.location.assign(url.href);
           } catch {
-            explanation.textContent = "Checkout is not available. No payment was taken. Your bag is still saved.";
-            checkout.disabled = false;
+            checkoutUncertain = true;
+            checkoutInFlight = false;
+            render();
           }
         };
       };
@@ -303,11 +314,14 @@ function runStore(data) {
       const query = new URLSearchParams(window.location.search);
       const returnedOrder = query.get("order_id");
       if (query.get("checkout") === "return" && /^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(returnedOrder || "")) {
+        // Lock checkout before the first asynchronous verification can race readiness.
+        awaitingOrder = returnedOrder;
+        render();
         const status = async (attempt = 0) => {
           try {
             const r = await fetch(CHECKOUT_API_ORIGIN + "/status/" + encodeURIComponent(returnedOrder),{mode:"cors",credentials:"omit",cache:"no-store"});
             const result = r.ok ? await r.json() : null;
-            const outcome = checkoutReturnOutcome(result);
+            const outcome = checkoutReturnOutcome(result?.orderId === returnedOrder ? result : null);
             if (outcome === "paid") {
               confirmedOrder = returnedOrder;
               awaitingOrder = "";
