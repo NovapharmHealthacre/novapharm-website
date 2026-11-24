@@ -28,6 +28,8 @@ class InlinePackaging(unittest.TestCase):
         orig = old["Resources"]["DirectoryFunction"]["Properties"]
         self.assertEqual({k:v for k,v in f.items() if k not in ("Code","Handler")}, {k:v for k,v in orig.items() if k not in ("Code","Handler")})
         self.assertEqual(f["Handler"], "index.handler")
+        self.assertNotIn("ReservedConcurrentExecutions", f)
+        self.assertEqual(f["Timeout"], 20)
         code = f["Code"]["ZipFile"]
         self.assertEqual(hashlib.sha256(code.encode()).hexdigest(), t["Metadata"]["CustomerDirectorySourceSHA256"])
         self.assertNotIn("def mint(", code)
