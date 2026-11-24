@@ -294,6 +294,7 @@ function runStore(data) {
       review.addEventListener("click", () => summary.focus({preventScroll:true}));
       bagCount.insertAdjacentElement("afterend", review);
       let promoSupported = false;
+      let accountPromoSupported = false;
       let promoQuote = null;
       let restoredAttemptBlocked = false;
       try {
@@ -360,9 +361,13 @@ function runStore(data) {
         promoStatus.textContent = "Checking your promotional code…";
         render();
         try {
-          const response = await fetch(CHECKOUT_API_ORIGIN + "/quote", {
+          const accountToken = accountPromoSupported ? consumerAccess() : null;
+          const quoteHeaders = {"content-type":"application/json"};
+          if (accountToken) quoteHeaders.authorization = "Bearer " + accountToken;
+          const quotePath = accountToken ? "/account/quote" : "/quote";
+          const response = await fetch(CHECKOUT_API_ORIGIN + quotePath, {
             method:"POST", mode:"cors", credentials:"omit",
-            headers:{"content-type":"application/json"},
+            headers:quoteHeaders,
             body:JSON.stringify({lines:bag,promo_code:code}), cache:"no-store"
           });
           const quote = response.ok ? await response.json() : null;
@@ -665,6 +670,7 @@ function runStore(data) {
           const v=r.ok?await r.json():null;
           approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true && v?.origin === "novapharmhealthcare.com";
           promoSupported = v?.promotion_preview_supported === true;
+          accountPromoSupported = v?.account_promotion_preview_supported === true;
         } catch { approvedRelease=false; }
         render();
       })();
