@@ -56,10 +56,11 @@ test("both corporate navigation variants expose aria-current while protecting ex
     assert.match(source, /rel=\{isPortal \? "nofollow" : undefined\}/);
     assert.match(source, /href=\{isPortal \? portalOrigin : href\}/);
   }
+  assert.match(header, /const publicNavigation = navigation\.filter\(\(\[, href\]\) => href !== "\/news-insights\/"\)/);
   assert.match(desktop, /usePathname\(\)/);
   assert.match(mobile, /usePathname\(\)/);
-  assert.match(header, /<DesktopNavigation items=\{navigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
-  assert.match(header, /<MobileNavigation items=\{navigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
+  assert.match(header, /<DesktopNavigation items=\{publicNavigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
+  assert.match(header, /<MobileNavigation items=\{publicNavigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
   assert.match(css, /\.desktop-nav a\[aria-current\]::after\s*\{\s*right:\s*0;/);
   assert.match(css, /\.mobile-menu nav a\[aria-current\]\s*\{[^}]*text-decoration:\s*underline/);
 });

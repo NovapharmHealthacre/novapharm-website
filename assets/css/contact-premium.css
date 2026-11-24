@@ -348,61 +348,7 @@
   line-height: 1.6;
 }
 .np-contact-reference-safety a { color: #465d81; }
-.np-contact-reference-footer {
-  padding: 35px 0 38px;
-  background: #F8F7F3;
-}
-.np-contact-reference-footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 36px;
-}
-.np-contact-reference-footer strong {
-  display: block;
-  font-family: inherit;
-  color: #0B0B0E;
-  font-size: 19px;
-  letter-spacing: 0;
-  line-height: 1.4;
-}
-.np-contact-reference-footer p,
-.np-contact-reference-footer small {
-  display: block;
-  margin: 4px 0 0;
-  color: #62646a;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.np-contact-reference-footer small { font-size: 14px; }
-.np-contact-reference-footer nav {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding-top: 10px;
-}
-.np-contact-reference-footer nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: #64676d;
-  font-size: 14px;
-  text-decoration: none;
-}
-.np-contact-reference-footer nav a:hover { color: #0B0B0E; text-decoration: underline; }
-
-/* Do not show two unrelated footers on this deliberately standalone page. */
-body:has(.np-contact-reference) .site-footer:not(.np-contact-reference-footer) { display: none; }
-body:has(.np-contact-reference) .site-header {
-  min-height: 52px;
-  background: #FFFFFF;
-  box-shadow: none;
-  border-bottom: 1px solid #DEDCD5;
-}
-body:has(.np-contact-reference) .site-header .header-inner { min-height: 52px; }
-body:has(.np-contact-reference) .site-header .site-nav a { font-weight: 500; }
-body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { font-weight: 700; }
+/* Contact inherits the global site header and footer; no local chrome override. */
 
 @media (max-width: 700px) {
   .np-contact-reference-hero { padding: 75px 0 55px; }
@@ -415,8 +361,6 @@ body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { 
   .np-contact-reference .np-contact-reference-full { margin-top: 12px; }
   .np-contact-reference-actions { align-items: stretch; flex-direction: column; gap: 16px; }
   .np-contact-reference .np-contact-reference-submit { width: 100%; min-height: 46px; }
-  .np-contact-reference-footer-inner { flex-direction: column; gap: 22px; }
-  .np-contact-reference-footer nav { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .np-contact-reference .np-contact-reference-submit,

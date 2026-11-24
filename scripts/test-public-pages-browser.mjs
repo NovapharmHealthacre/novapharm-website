@@ -242,7 +242,10 @@ async function assertFooterHeadings(page, label) {
     }
     return { count: headings.length, sizes, overflow, overlaps };
   });
-  if (!footer) return; // Contact has a separate, intentionally compact footer.
+  if (!footer) {
+    assert.ok(!label.includes("/contact/"), `${label}: shared Contact footer must be visible`);
+    return;
+  }
   assert.equal(footer.count, 4, `${label}: expected four corporate footer headings`);
   assert.ok(footer.sizes.every((size) => size >= 12 && size <= 16),
     `${label}: footer headings must use compact typography, got ${footer.sizes}`);
@@ -688,7 +691,8 @@ for (const [engineName, browserType] of engines) {
               assert.equal(await draft.locator('input[name="country"]').count(), 1);
               assert.equal(await draft.locator('select[name="enquiryType"]').count(), 1);
               assert.equal(await draft.locator('textarea[name="message"]').count(), 1);
-              assert.ok(await page.locator(".np-contact-reference-footer").isVisible(), "contact's compact footer must be visible");
+              assert.ok(await page.locator("footer.site-footer.npd-footer").isVisible(), "Contact must show the shared corporate footer");
+              assert.equal(await page.locator("main footer").count(), 0, "Contact must not render a duplicate footer");
             }
 
             if (route.name === "leadership" || route.name === "leadership-girish") {
