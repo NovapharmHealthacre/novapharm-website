@@ -26,8 +26,26 @@ permissions:
   contents: read
 
 jobs:
+  pr-pure-white-source-acceptance:
+    # A PR cannot satisfy post-deployment custom-domain evidence. Validate
+    # the proposed source without mistaking today's live site for this PR.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Confirm proposed Pure White source and current Medicine hero
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '<meta name="theme-color" content="#FFFFFF">' index.html
+          grep -Fq 'Medicine. Where it needs to be' index.html
+          grep -Fq 'class="npd-apple-hero nph-earth-hero"' index.html
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' index.html
+          grep -Fq -- '--np-color-canvas: #FFFFFF' assets/css/novapharm.bundle.css
+
   live-origin-acceptance:
-    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 9
     steps:
@@ -50,7 +68,7 @@ jobs:
               if grep -Fq 'Medicine. Where it needs to be' /tmp/novapharm-restored-home.html \
                 && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/novapharm-restored-home.html \
                 && grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' /tmp/novapharm-restored-home.html \
-                && grep -Fq '<meta name="theme-color" content="#FBFAEF">' /tmp/novapharm-restored-home.html \
+                && grep -Fq '<meta name="theme-color" content="#FFFFFF">' /tmp/novapharm-restored-home.html \
                 && grep -Fq 'name="novapharm-source-sha" content="' /tmp/novapharm-restored-home.html \
                 && ! grep -Fq 'class="npd-hero npd-hero-media"' /tmp/novapharm-restored-home.html; then
                 successful=true
@@ -60,7 +78,7 @@ jobs:
             sleep 8
           done
           if [ "$successful" != true ]; then
-            echo "::error::Live homepage is missing the verified source receipt, Royal Mineral White browser metadata, approved Medicine headline or Earth hero."
+            echo "::error::Live homepage is missing the verified source receipt, Pure White browser metadata, approved Medicine headline or Earth hero."
             exit 1
           fi
           curl --fail --silent --show-error --location --max-time 20 \
@@ -76,4 +94,4 @@ jobs:
           done
           grep -Fq 'Contact NovaPharm' /tmp/novapharm-preserved-contact.html
           grep -Fq 'Nutraxin' /tmp/novapharm-preserved-products-nutraxin.html
-          echo "PASSED: released Medicine homepage, Royal Mineral White, source receipt, Earth media, CSS, Contact and Nutraxin routes verified live."
+          echo "PASSED: released Medicine homepage, Pure White, source receipt, Earth media, CSS, Contact and Nutraxin routes verified live."
