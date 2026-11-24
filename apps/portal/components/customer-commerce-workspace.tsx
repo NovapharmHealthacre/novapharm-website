@@ -33,6 +33,12 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
     const products = moduleMap.get("customer.products");
     const orders = moduleMap.get("customer.orders");
     const tracking = moduleMap.get("customer.delivery-tracking");
+    const quickTasks = [
+      { code: "customer.order-tracking", label: "Track an order", description: "Check the status of your order." },
+      { code: "customer.invoices", label: "Find invoices", description: "Access released billing records." },
+      { code: "customer.account", label: "Manage your account", description: "Review your business and contact details." },
+      { code: "customer.support", label: "Get support", description: "Find help with your account or order." },
+    ] as const;
     return <section className="unified-customer-hub customer-editorial-hub" aria-labelledby="customer-workspace-title">
       <div className="customer-editorial-hero">
         <p className="customer-editorial-eyebrow">CUSTOMER WORKSPACE</p>
@@ -43,6 +49,12 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
           {orders ? <a className="customer-action-secondary" href={orders.route}>View orders</a> : null}
         </div>
       </div>
+      <nav className="customer-quick-tasks" aria-label="Common customer tasks">
+        {quickTasks.map((task) => {
+          const module = moduleMap.get(task.code);
+          return module ? <a key={task.code} href={module.route}><strong>{task.label}</strong><span>{task.description}</span></a> : null;
+        })}
+      </nav>
       <section className="customer-editorial-feature-grid" aria-label="Customer services">
         <article className="customer-editorial-feature customer-editorial-products">
           <div className="customer-editorial-feature-copy">
@@ -64,10 +76,7 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
             <p>Find your orders, follow eligible deliveries and access returns in one secure workspace.</p>
             {orders ? <a href={orders.route}>Manage orders</a> : null}
           </div>
-          <div className="customer-editorial-delivery-detail" aria-hidden="true">
-            <span>ORDER</span><span>DISPATCH</span><span>DELIVERY</span>
-            <div className="customer-editorial-delivery-line" />
-          </div>
+          <p className="customer-editorial-delivery-detail">See confirmed delivery information in your order records.</p>
           {tracking ? <a className="customer-editorial-sub-link" href={tracking.route}>Delivery tracking</a> : null}
         </article>
       </section>
