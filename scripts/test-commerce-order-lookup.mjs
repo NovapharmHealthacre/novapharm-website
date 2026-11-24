@@ -64,3 +64,15 @@ test('order lookup explains next steps without inventing fulfilment and clears s
  assert.equal(requests,3);assert.equal(next.hidden,true);
  assert.equal(button.disabled,false);
 });
+
+
+test('both public footer generators retain customer self-service destinations',()=>{
+ for(const path of ['scripts/build-public-pages.mjs','scripts/apply-corporate-product-discipline.mjs']) {
+   const source=read(path);
+   const footer=source.split('function footer() {')[1]?.split('</footer>')[0];
+   assert.ok(footer,`Missing footer generator in ${path}`);
+   for(const href of ['/products/track/','/products/nutraxin/account/','mailto:support@novapharmhealthcare.com','/account-application/']) {
+     assert.ok(footer.includes(`href="${href}"`),`${path} loses ${href}`);
+   }
+ }
+});
