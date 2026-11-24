@@ -250,6 +250,82 @@ class ProductsPaymentTests(unittest.TestCase):
             self.assertEqual(API.handler(event,None)["statusCode"],422)
             self.assertFalse(WORKER.calls)
 
+    def test_privileges_discovery_only_verified_discoverable_grants(self):
+        from unittest.mock import patch
+        grant,prior,_=self.returning_fixture()
+        subject=DB.rows[grant]["customerSub"]["S"]
+        idx="CONSUMER#"+subject
+        DB.rows[idx]={"pk":{"S":idx},"sk":{"S":"ORDER#000000000001#"+prior},
+                      "orderId":{"S":prior},"customerSub":{"S":subject}}
+        policy=self.promotion_policy(audience="returning_account_once",campaign_id="RETURN-2026",
+                                     privilege_kind="second",discoverable=True)
+        token=self.consumer_token()
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            self.assertEqual(API.handler(self.event("/account/privileges"),None)["statusCode"],401)
+            other=self.consumer_token(subject="99999999-2222-4333-8444-555555555555")
+            denied=json.loads(API.handler(self.account_event("/account/privileges",token=other),None)["body"])
+            self.assertEqual(denied["offers"],[])
+            good=API.handler(self.account_event("/account/privileges",token=token),None)
+            self.assertEqual(good["statusCode"],200,good["body"])
+            data=json.loads(good["body"])
+            self.assertEqual(data["stage"],"one_paid_order")
+            self.assertEqual(data["offers"],[{"code":"TEST10","title":"Second purchase privilege",
+                "discountBps":1000,"minimumGrossMinor":1000}])
+            self.assertEqual(DB.rows[grant]["status"]["S"],"APPROVED")
+            self.assertFalse(WORKER.calls)
+            DB.rows[grant]["status"]={"S":"CLAIMED"}
+            self.assertEqual(json.loads(API.handler(self.account_event("/account/privileges",token=token),None)["body"])["offers"],[])
+
+    def test_welcome_privilege_requires_explicit_grant_and_no_recorded_paid_order(self):
+        import hashlib
+        from unittest.mock import patch
+        subject="consumer_11111111222243338444555555555555"
+        campaign="WELCOME-ONCE-V1"
+        digest=hashlib.sha256(json.dumps([campaign,subject],separators=(",",":")).encode()).hexdigest()
+        grant="PROMO_GRANT#"+digest
+        policy=self.promotion_policy(audience="first_account_once",campaign_id=campaign,
+                                     privilege_kind="welcome",discoverable=True)
+        token=self.consumer_token()
+        event=self.account_event("/account/privileges",token=token)
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
+            DB.rows[grant]={"pk":{"S":grant},"sk":{"S":"META"},"status":{"S":"APPROVED"},
+                "customerSub":{"S":subject},"campaignId":{"S":campaign},"promotionCode":{"S":"TEST10"},
+                "priorOrderId":{"S":"NONE"},"expiresAtUnix":{"N":str(int(time.time())+1800)}}
+            data=json.loads(API.handler(event,None)["body"])
+            self.assertEqual(data["stage"],"no_recorded_paid_orders")
+            self.assertEqual(data["offers"][0]["title"],"Welcome privilege")
+            prior="NUT-bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+            idx="CONSUMER#"+subject
+            DB.rows[idx]={"pk":{"S":idx},"sk":{"S":"ORDER#000000000001#"+prior},
+                          "orderId":{"S":prior},"customerSub":{"S":subject}}
+            DB.rows["ORDER#"+prior]={"customerSub":{"S":subject},"status":{"S":"PAID"},
+                "ownerCommercialPolicy":{"S":"nutraxin_uk_direct_v1"}}
+            self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
+
+    def test_birthday_privilege_requires_reviewed_occasion_and_current_year(self):
+        import hashlib
+        from unittest.mock import patch
+        grant,prior,_=self.returning_fixture()
+        row=DB.rows.pop(grant)
+        subject=row["customerSub"]["S"]
+        year=time.gmtime().tm_year
+        campaign="BIRTHDAY-"+str(year)
+        digest=hashlib.sha256(json.dumps([campaign,subject],separators=(",",":")).encode()).hexdigest()
+        grant="PROMO_GRANT#"+digest
+        row.update(pk={"S":grant},campaignId={"S":campaign})
+        DB.rows[grant]=row
+        policy=self.promotion_policy(audience="returning_account_once",campaign_id=campaign,
+                                     privilege_kind="birthday",occasion_year=year,discoverable=True)
+        event=self.account_event("/account/privileges",token=self.consumer_token())
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
+            row.update(occasionKind={"S":"birthday"},occasionReviewed={"BOOL":True},occasionYear={"N":str(year)})
+            self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"][0]["title"],"Birthday privilege")
+            row["occasionYear"]={"N":str(year-1)}
+            self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
+            self.assertFalse(WORKER.calls)
+
     def test_account_requires_valid_token_from_exact_consumer_pool(self):
         self.assertEqual(API.handler(self.account_event("/account/me"),None)["statusCode"],401)
         for token in [
