@@ -11,7 +11,7 @@ import re
 from dataclasses import asdict
 
 from gift_card_contract import (GiftCard, Redemption, issue, reserve, settle,
-                                refund, void_unused, reference, split_tender)
+                                refund, void_unused, reference, split_tender, freeze)
 
 DIGEST = re.compile(r"^[a-f0-9]{64}$")
 MAX_REDEMPTIONS = 500
@@ -147,12 +147,12 @@ class GiftLedger:
         # Evidence is a reference to independently checked payment/approval,
         # not proof by itself. Never accept this method directly from a browser.
         reference(evidence)
-        if action not in ("reserve", "capture", "release", "refund", "void"):
+        if action not in ("reserve", "capture", "release", "refund", "void", "freeze"):
             raise ValueError("unknown gift action")
-        if action != "void":
+        if action not in ("void", "freeze"):
             reference(order)
         elif order is not None or amount is not None or sale_total is not None:
-            raise ValueError("void has no order or tender")
+            raise ValueError("card suspension has no order or tender")
         if action != "reserve" and sale_total is not None:
             raise ValueError("sale total is only supplied at reservation")
         if action not in ("reserve", "refund") and amount is not None:
@@ -176,6 +176,8 @@ class GiftLedger:
             writes.append(self._put(tender))
         elif action == "void":
             updated = void_unused(card, expected_version)
+        elif action == "freeze":
+            updated = freeze(card, expected_version)
         else:
             tender = self._read("GIFT_TENDER#" + order)
             if tender is None or tender["cardDigest"]["S"] != digest:
@@ -197,6 +199,11 @@ class GiftLedger:
                 "cardDigest = :digest AND #status = :prior AND refundedMinor = :refund",
                 {":digest": S(digest), ":prior": S(prior_status), ":refund": N(prior_refunded)}))
             writes[-1]["Put"]["ExpressionAttributeNames"] = {"#status": "status"}
+        if action == "refund":
+            # Evidence must be the stable, independently verified refund approval
+            # ID, not a webhook delivery ID. Prevent crediting it twice.
+            writes.append(self._put({**key("GIFT_REFUND_EVIDENCE#" + evidence),
+                "cardDigest": S(digest), "orderReference": S(order), "amountMinor": N(amount)}))
         writes.append(self._put(self._card_row(digest, updated),
                                 "#version = :expected", {":expected": N(expected_version)}))
         writes[-1]["Put"]["ExpressionAttributeNames"] = {"#version":"version"}
