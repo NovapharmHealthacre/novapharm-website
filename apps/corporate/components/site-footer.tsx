@@ -2,7 +2,7 @@ import Link from "next/link";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { AppStoreAvailability } from "./app-store-availability";
-import { AppleFooterNavigation } from "./apple-footer-navigation";
+import { AppleFooterNavigation, CurrentFooterLink } from "./apple-footer-navigation";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";
 
@@ -53,7 +53,7 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
           </nav>
           <nav aria-label={interfaceLabel(locale, "Connect links")}>
             <AppleFooterNavigation label={interfaceLabel(locale, "Connect")}>
-              <Link href="/news-insights/">{interfaceLabel(locale, "Insights")}</Link>
+              <CurrentFooterLink href="/news-insights/">{interfaceLabel(locale, "Insights")}</CurrentFooterLink>
               <Link href="/contact/">{interfaceLabel(locale, "Contact")}</Link>
               <Link href="/account-application/">{interfaceLabel(locale, "Open a business account")}</Link>
               <a href={portalOrigin} rel="nofollow">{interfaceLabel(locale, "Secure Portal")}</a>
