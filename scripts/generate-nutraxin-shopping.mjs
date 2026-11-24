@@ -10,6 +10,11 @@ const check = process.argv.includes("--check");
 const retail = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
 const registered = JSON.parse(readFileSync(join(root, "docs/nutraxin-product-register.json"), "utf8"));
 const ukGtins = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-gtin-uk.json"), "utf8"));
+const ukSearch = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-search-intents.json"), "utf8"));
+assert.equal(ukSearch.market, "GB");
+assert.equal(ukSearch.products.length, 19);
+const intentBySku = new Map(ukSearch.products.map(x => [x.sku, x]));
+assert.equal(intentBySku.size, 19);
 assert.equal(ukGtins.market, "GB", "Only UK-assigned GTINs can be used in the GB Merchant feed");
 assert.equal(ukGtins.products.length, 19, "One GTIN evidence record required per UK Nutraxin SKU");
 const validEan13 = value => {
@@ -56,13 +61,10 @@ const catalogDescription = (p, ref) => {
     "ordering status on this product page. See the product label for full ingredients and directions.";
 };
 const shortDescription = (p, ref) => {
-  const first = clean(ref.formulation[0].name);
-  let text = p.name + " (" + p.pack + "). Food supplement featuring " + first +
-    ". UK price £" + money(p.retail_price_pence) + " at NovaPharm.";
-  if (text.length > 158) text = p.name + " (" + p.pack + "). Food supplement. UK price £" +
-    money(p.retail_price_pence) + " at NovaPharm.";
-  assert(text.length <= 160, "Metadata too long for " + p.sku);
-  return text;
+  const item = intentBySku.get(p.sku);
+  assert(item && item.slug === p.slug && ref.sku === p.sku, "Missing UK keyword mapping " + p.sku);
+  assert(item.metaDescription.length >= 70 && item.metaDescription.length <= 160);
+  return item.metaDescription;
 };
 // Search titles should keep the verified product identity and pack information
 // without repeating the Nutraxin brand. Never truncate a product name mid-word.
@@ -252,7 +254,8 @@ for (const product of registered.products) {
     ' <small>including UK VAT</small></p><p class="nx-merchant-availability">' +
     (inStock ? "Available to order online in the UK." :
       "Currently unavailable to order online. Contact us for availability.") +
-    '</p><p class="nx-merchant-regulatory-scope">Nutraxin food supplements have a separate UK consumer shopping journey. NovaPharm does not sell prescription medicines directly to patients. Regulated medicine supply is restricted to qualified businesses and remains subject to applicable authorisations.</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a></div>';
+    '</p><p class="nx-merchant-regulatory-scope">Nutraxin food supplements have a separate UK consumer shopping journey. NovaPharm does not sell prescription medicines directly to patients. Regulated medicine supply is restricted to qualified businesses and remains subject to applicable authorisations.</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a>' +
+    '<p class="nx-merchant-service"><a href="/contact/?enquiry=Nutraxin%20order%20support">Need help with a Nutraxin order?</a> · <a href="mailto:support@novapharmhealthcare.com">Email support</a> · <a href="/legal/returns/">Delivery &amp; returns</a></p></div>';
   if (html.includes('class="nx-merchant-offer"')) {
     html = html.replace(/<div class="nx-merchant-offer"[^>]*>[\s\S]*?<\/div>/, offer);
   } else {

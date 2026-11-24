@@ -1,0 +1,197 @@
+{
+  "version": "2026-11-23",
+  "market": "GB",
+  "notes": "Candidate UK search phrases, not measured keyword volumes or guaranteed rankings",
+  "products": [
+    {
+      "sku": "NUT-UK-VD3-T120",
+      "slug": "vitamin-d3-120-tablets",
+      "primaryQuery": "vitamin D3 tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin D3 UK",
+        "Nutraxin Vitamin D3 120 tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin D3 (120 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VD3-S30",
+      "slug": "vitamin-d3-spray-30ml",
+      "primaryQuery": "vitamin D3 oral spray UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin D3 Spray UK",
+        "Nutraxin Vitamin D3 Spray 30 ml"
+      ],
+      "metaDescription": "Nutraxin Vitamin D3 Spray (30 ml). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VD3K2-T120",
+      "slug": "vitamin-d3-k2-120-tablets",
+      "primaryQuery": "vitamin D3 K2 tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin D3 + K2 UK",
+        "Nutraxin Vitamin D3 + K2 120 tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin D3 + K2 (120 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VD3K2-S30",
+      "slug": "vitamin-d3-k2-spray-30ml",
+      "primaryQuery": "vitamin D3 K2 oral spray UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin D3 + K2 Spray UK",
+        "Nutraxin Vitamin D3 + K2 Spray 30 ml"
+      ],
+      "metaDescription": "Nutraxin Vitamin D3 + K2 Spray (30 ml). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VC1000-T30",
+      "slug": "vitamin-c-1000mg-30-tablets",
+      "primaryQuery": "vitamin C 1000mg tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin C 1000 mg UK",
+        "Nutraxin Vitamin C 1000 mg 30 tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin C 1000 mg (30 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VC500-C30",
+      "slug": "vitamin-c-500mg-chewable-30-tablets",
+      "primaryQuery": "vitamin C chewable 500mg UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin C 500 mg Chewable UK",
+        "Nutraxin Vitamin C 500 mg Chewable 30 chewable tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin C 500 mg Chewable (30 chewable tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VMAX-T60",
+      "slug": "vitamin-max-60-tablets",
+      "primaryQuery": "vitamin C D zinc tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin MAX C + D + Zinc UK",
+        "Nutraxin Vitamin MAX C + D + Zinc 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin MAX C + D + Zinc (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-VMAX-E15",
+      "slug": "vitamin-max-15-effervescent-tablets",
+      "primaryQuery": "vitamin C D zinc effervescent UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin MAX C + D + Zinc Effervescent UK",
+        "Nutraxin Vitamin MAX C + D + Zinc Effervescent 15 effervescent tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin MAX C + D + Zinc Effervescent (15 effervescent tablets). View pack details, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-MGCX-T60",
+      "slug": "magnesium-complex-60-tablets",
+      "primaryQuery": "magnesium complex vitamin B6 tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Magnesium Complex + Vitamin B6 UK",
+        "Nutraxin Magnesium Complex + Vitamin B6 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Magnesium Complex + Vitamin B6 (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-MGDL-T60",
+      "slug": "magnesium-daily-60-tablets",
+      "primaryQuery": "magnesium with D3 K2 and B6 UK",
+      "secondaryQueries": [
+        "Nutraxin Magnesium Daily UK",
+        "Nutraxin Magnesium Daily 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Magnesium Daily (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-MVE-T60",
+      "slug": "multivitamin-mineral-energy-60-tablets",
+      "primaryQuery": "multivitamin mineral energy tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Multivitamin Mineral Energy UK",
+        "Nutraxin Multivitamin Mineral Energy 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Multivitamin Mineral Energy (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-MVW-T60",
+      "slug": "womens-multivitamin-complex-60-tablets",
+      "primaryQuery": "womens multivitamin tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Women's Multivitamin Complex UK",
+        "Nutraxin Women's Multivitamin Complex 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Women's Multivitamin Complex (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-MVM-T60",
+      "slug": "mens-multivitamin-complex-60-tablets",
+      "primaryQuery": "mens multivitamin tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Men's Multivitamin Complex UK",
+        "Nutraxin Men's Multivitamin Complex 60 tablets"
+      ],
+      "metaDescription": "Nutraxin Men's Multivitamin Complex (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-CG-T30",
+      "slug": "collagen-gold-30-tablets",
+      "primaryQuery": "collagen tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Gold Quality Collagen UK",
+        "Nutraxin Gold Quality Collagen 30 tablets"
+      ],
+      "metaDescription": "Nutraxin Gold Quality Collagen (30 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-CG-S30",
+      "slug": "collagen-gold-30-sachets",
+      "primaryQuery": "collagen sachets UK",
+      "secondaryQueries": [
+        "Nutraxin Gold Quality Collagen Sachets UK",
+        "Nutraxin Gold Quality Collagen Sachets 30 sachets"
+      ],
+      "metaDescription": "Nutraxin Gold Quality Collagen Sachets (30 sachets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-CCX-T90",
+      "slug": "collagen-complex-90-tablets",
+      "primaryQuery": "collagen complex tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Collagen Complex UK",
+        "Nutraxin Collagen Complex 90 tablets"
+      ],
+      "metaDescription": "Nutraxin Collagen Complex (90 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-ART-T90",
+      "slug": "artoflex-90-tablets",
+      "primaryQuery": "Nutraxin Artoflex tablets UK",
+      "secondaryQueries": [
+        "Nutraxin Artoflex UK",
+        "Nutraxin Artoflex 90 tablets"
+      ],
+      "metaDescription": "Nutraxin Artoflex (90 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-LCAR-T60",
+      "slug": "l-carnitine-60-tablets",
+      "primaryQuery": "L-carnitine 700mg tablets UK",
+      "secondaryQueries": [
+        "Nutraxin L-Carnitine 700 mg UK",
+        "Nutraxin L-Carnitine 700 mg 60 tablets"
+      ],
+      "metaDescription": "Nutraxin L-Carnitine 700 mg (60 tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    },
+    {
+      "sku": "NUT-UK-B12-SL60",
+      "slug": "vitamin-b12-60-sublingual-tablets",
+      "primaryQuery": "vitamin B12 methylcobalamin sublingual UK",
+      "secondaryQueries": [
+        "Nutraxin Vitamin B12 Methylcobalamin UK",
+        "Nutraxin Vitamin B12 Methylcobalamin 60 sublingual tablets"
+      ],
+      "metaDescription": "Nutraxin Vitamin B12 Methylcobalamin (60 sublingual tablets). Explore the food supplement, catalogue ingredients, UK price and availability at NovaPharm."
+    }
+  ]
+}
