@@ -351,3 +351,18 @@ test("refresh restores original promo quote, or blocks a changed bag and identit
  assert.match(js,/!restoredAttemptBlocked/);
  assert.match(js,/returnedOrder === "NUT-"\+lastAttempt\.id/);
 });
+
+
+test("personal privileges follow manual promo and require account-specific server approval",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ const css=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ assert.ok(js.includes("promoSection.after(privileges)"));
+ assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/account/privileges"'));
+ assert.ok(js.includes('v?.account_privileges_supported === true'));
+ assert.ok(js.includes('token !== consumerAccess()'));
+ assert.ok(js.includes('privilegeList.replaceChildren()'));
+ assert.ok(js.includes('promoInput.value = offer.code'));
+ assert.ok(js.includes('void requestPromotion()'));
+ assert.ok(js.includes('No approved offers are available for this account right now.'));
+ assert.ok(css.includes(".nx-bag-privileges[hidden]"));
+});

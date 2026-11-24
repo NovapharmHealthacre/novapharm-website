@@ -106,7 +106,132 @@ def retail_promotion(pricing, raw_code, instant):
         not isinstance(floors, dict) or not floors or
         any(k not in PRODUCTS or type(v) is not int or v <= 0 for k,v in floors.items())):
         raise ValueError("promo_code_unavailable")
-    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum}
+    audience = campaign.get("audience", "public_reusable")
+    kind = campaign.get("privilege_kind", "return")
+    campaign_id = campaign.get("campaign_id")
+    if audience not in ("public_reusable", "returning_account_once", "first_account_once") or kind not in PRIVILEGE_TITLES:
+        raise ValueError("promo_code_unavailable")
+    if (audience == "first_account_once" and (kind != "welcome" or campaign_id != "WELCOME-ONCE-V1")) or (audience == "returning_account_once" and kind == "welcome"):
+        raise ValueError("promo_code_unavailable")
+    if audience == "public_reusable" and (kind not in ("return","seasonal") or campaign.get("discoverable") is True):
+        raise ValueError("promo_code_unavailable")
+    if kind == "birthday" and (campaign.get("occasion_year") != time.gmtime(instant).tm_year or campaign_id != "BIRTHDAY-"+str(campaign.get("occasion_year"))):
+        raise ValueError("promo_code_unavailable")
+    if audience != "public_reusable" and (not isinstance(campaign_id,str)
+        or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",campaign_id)):
+        raise ValueError("promo_code_unavailable")
+    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,
+            "audience":audience,"campaign_id":campaign_id,"kind":kind,
+            "occasion_year":campaign.get("occasion_year")}
+
+
+PRIVILEGE_TITLES={"welcome":"Welcome privilege","return":"Returning customer privilege",
+    "second":"Second purchase privilege","loyalty":"Established customer privilege",
+    "birthday":"Birthday privilege","replenishment":"Replenishment privilege",
+    "comeback":"Welcome back privilege","seasonal":"Seasonal privilege"}
+
+
+def account_purchase_stage(subject):
+    """Recorded direct-retail account orders only; guest history is unknown."""
+    refs=PAYMENT_DDB.query(TableName=PAYMENT_LEDGER_TABLE,
+        KeyConditionExpression="pk = :subject",
+        ExpressionAttributeValues={":subject":{"S":"CONSUMER#"+subject}},
+        ConsistentRead=True,ScanIndexForward=False,Limit=40)
+    if refs.get("LastEvaluatedKey") or not isinstance(refs.get("Items"),list):
+        return "unknown"
+    paid=0
+    pending=False
+    seen=set()
+    for ref in refs["Items"]:
+        oid=ref.get("orderId",{}).get("S","")
+        if not ORDER_ID.fullmatch(oid) or oid in seen or ref.get("customerSub")!={"S":subject}:
+            return "unknown"
+        seen.add(oid)
+        row=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+            Key={"pk":{"S":"ORDER#"+oid},"sk":{"S":"SUMMARY"}},ConsistentRead=True).get("Item") or {}
+        if row.get("customerSub")!={"S":subject} or row.get("ownerCommercialPolicy")!={"S":"nutraxin_uk_direct_v1"}:
+            return "unknown"
+        state=row.get("status",{}).get("S")
+        if state=="PAID":
+            paid+=1
+        elif state not in ("PAYMENT_FAILED","CHECKOUT_EXPIRED"):
+            pending=True
+    if paid==0:
+        return "unknown" if pending else "no_recorded_paid_orders"
+    return "one_paid_order" if paid==1 else "two_paid_orders" if paid==2 else "three_or_more_paid_orders"
+
+
+def returning_grant(promotion, subject, receipt, basket_hash):
+    """An account-bound, manually reviewed grant; never issued by this API.
+
+    A claim consumes the grant once when the durable order is created, not
+    when a browser previews it. An unpaid/expired claim remains held for
+    authorised reconciliation; do not automatically create a second credit.
+    """
+    if not isinstance(subject,str) or not re.fullmatch(r"consumer_[0-9a-f]{32}",subject):
+        raise ValueError("promo_code_unavailable")
+    campaign_id=promotion["campaign_id"]
+    digest=hashlib.sha256(json.dumps([campaign_id,subject],separators=(",",":")).encode()).hexdigest()
+    key={"pk":{"S":"PROMO_GRANT#"+digest},"sk":{"S":"META"}}
+    row=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,Key=key,
+                             ConsistentRead=True).get("Item") or {}
+    if (row.get("customerSub")!={"S":subject} or row.get("campaignId")!={"S":campaign_id}
+        or row.get("promotionCode")!={"S":promotion["code"]}):
+        raise ValueError("promo_code_unavailable")
+    state=row.get("status",{}).get("S")
+    if state=="CLAIMED" and receipt and row.get("claimedOrderId")=={"S":receipt} and row.get("claimedBasketHash")=={"S":basket_hash}:
+        return None
+    if state!="APPROVED":
+        raise ValueError("promo_code_unavailable")
+    prior_id=row.get("priorOrderId",{}).get("S","")
+    try:
+        expires=int(row.get("expiresAtUnix",{}).get("N",""))
+    except (ValueError,TypeError):
+        raise ValueError("promo_code_unavailable") from None
+    if expires<=now() or prior_id==receipt:
+        raise ValueError("promo_code_unavailable")
+    kind=promotion["kind"]
+    if promotion["audience"]=="first_account_once":
+        if prior_id!="NONE" or account_purchase_stage(subject)!="no_recorded_paid_orders":
+            raise ValueError("promo_code_unavailable")
+    else:
+        if not ORDER_ID.fullmatch(prior_id):
+            raise ValueError("promo_code_unavailable")
+        prior=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+            Key={"pk":{"S":"ORDER#"+prior_id},"sk":{"S":"SUMMARY"}},
+            ConsistentRead=True).get("Item") or {}
+        if (prior.get("customerSub")!={"S":subject} or prior.get("status")!={"S":"PAID"}
+            or prior.get("ownerCommercialPolicy")!={"S":"nutraxin_uk_direct_v1"}):
+            raise ValueError("promo_code_unavailable")
+        if kind in ("second","loyalty"):
+            expected="one_paid_order" if kind=="second" else "three_or_more_paid_orders"
+            if account_purchase_stage(subject)!=expected:
+                raise ValueError("promo_code_unavailable")
+    occasion=kind in ("birthday","replenishment","comeback","seasonal")
+    if occasion and (row.get("occasionKind")!={"S":kind} or row.get("occasionReviewed")!={"BOOL":True}):
+        raise ValueError("promo_code_unavailable")
+    if kind=="birthday" and row.get("occasionYear")!={"N":str(promotion["occasion_year"])}:
+        raise ValueError("promo_code_unavailable")
+    if receipt is None:
+        return None
+    claimed=dict(row,status={"S":"CLAIMED"},claimedOrderId={"S":receipt},
+                 claimedBasketHash={"S":basket_hash},claimedAtUnix={"N":str(now())})
+    # Compare every binding used to validate eligibility. The order/index
+    # and claim are written in one DynamoDB transaction.
+    condition="#state = :approved AND customerSub = :subject AND campaignId = :campaign AND promotionCode = :code AND priorOrderId = :prior AND expiresAtUnix = :expiry AND expiresAtUnix > :now"
+    values={":approved":{"S":"APPROVED"},":subject":{"S":subject},
+        ":campaign":{"S":campaign_id},":code":{"S":promotion["code"]},":prior":{"S":prior_id},
+        ":expiry":{"N":str(expires)},":now":{"N":str(now())}}
+    if occasion:
+        condition+=" AND occasionKind = :kind AND occasionReviewed = :reviewed"
+        values.update({":kind":{"S":kind},":reviewed":{"BOOL":True}})
+    if kind=="birthday":
+        condition+=" AND occasionYear = :year"
+        values[":year"]={"N":str(promotion["occasion_year"])}
+    return {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":claimed,
+        "ConditionExpression":condition,"ExpressionAttributeNames":{"#state":"status"},
+        "ExpressionAttributeValues":values}}
+
 
 
 def direct_checkout(event, customer_subject=None, preview=False):
@@ -170,6 +295,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
     net = 0
     gross = 0
     original_gross = 0
+    eligible_original_gross = 0
     for line in lines:
         if not isinstance(line, dict):
             return error(400, "invalid_order_line")
@@ -184,8 +310,10 @@ def direct_checkout(event, customer_subject=None, preview=False):
             return error(503, "invalid_seller_price")
         # Consumer catalogue, portal and Stripe all charge exactly the same
         # published unit price, including VAT rounded per unit.
-        original_gross += (unit + (unit * 20 + 50) // 100) * quantity
+        line_original_gross = (unit + (unit * 20 + 50) // 100) * quantity
+        original_gross += line_original_gross
         if promotion and sku in promotion["floors"]:
+            eligible_original_gross += line_original_gross
             discounted = unit - (unit * promotion["bps"]) // 10000
             # Reject the campaign rather than quietly exceeding its margin floor.
             if discounted < promotion["floors"][sku]:
@@ -199,7 +327,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         ordered.append({"sku": sku, "quantity": quantity,
                         "name": PRODUCTS[sku][0] + " (UK VAT included)",
                         "grossMinor": unit_gross * quantity})
-    if promotion and (original_gross < promotion["minimum"] or original_gross <= gross):
+    if promotion and (eligible_original_gross < promotion["minimum"] or original_gross <= gross or gross < 30):
         return error(422, "promo_code_not_applicable")
     tax = gross - net
     if tax < 0 or gross != net + tax:
@@ -210,8 +338,18 @@ def direct_checkout(event, customer_subject=None, preview=False):
     if promotion:
         basket_hash = hashlib.sha256(json.dumps({
             "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
-            "original":original_gross, "discounted":gross, "lines":ordered
+            "original":original_gross, "discounted":gross, "lines":ordered,
+            **({"campaignId":promotion["campaign_id"],"audience":promotion["audience"],"kind":promotion["kind"]} if promotion["audience"]!="public_reusable" else {})
         },sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    grant_write=None
+    if promotion and promotion["audience"]!="public_reusable":
+        try:
+            grant_write=returning_grant(promotion,customer_subject,
+                None if preview else "NUT-"+request_id,basket_hash)
+        except ValueError as exc:
+            return error(422,str(exc))
+        except ClientError:
+            return error(503,"promotion_eligibility_unavailable")
     if preview:
         return reply(200, {"currency":"GBP","originalGrossMinor":original_gross,
                           "discountGrossMinor":original_gross-gross,"totalGrossMinor":gross,
@@ -254,6 +392,9 @@ def direct_checkout(event, customer_subject=None, preview=False):
                      "promotionRevision":{"S":promotion["revision"]},
                      "preDiscountGrossMinor":{"N":str(original_gross)},
                      "discountGrossMinor":{"N":str(original_gross-gross)}})
+        if promotion["audience"]!="public_reusable":
+            item["promotionCampaignId"]={"S":promotion["campaign_id"]}
+    prior=None
     try:
         if customer_subject:
             # A consumer-only index item is created atomically with the order.
@@ -261,12 +402,24 @@ def direct_checkout(event, customer_subject=None, preview=False):
             index = {"pk":{"S":"CONSUMER#"+subject},
                      "sk":{"S":"ORDER#"+str(now()).zfill(12)+"#"+receipt},
                      "orderId":{"S":receipt},"customerSub":{"S":subject}}
-            PAYMENT_DDB.transact_write_items(TransactItems=[
-                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
-                        "ConditionExpression":"attribute_not_exists(pk)"}},
-                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
-                        "ConditionExpression":"attribute_not_exists(pk)"}}
-            ])
+            # If a previously claimed grant is retried, never create a fresh
+            # order in the absence of the original durable summary.
+            if promotion and promotion["audience"]!="public_reusable" and grant_write is None:
+                prior=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+                    Key={"pk":{"S":"ORDER#"+receipt},"sk":{"S":"SUMMARY"}},
+                    ConsistentRead=True).get("Item")
+                if not prior:
+                    return error(503,"promotion_reconciliation_required")
+            else:
+                writes=[
+                    {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
+                            "ConditionExpression":"attribute_not_exists(pk)"}},
+                    {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
+                            "ConditionExpression":"attribute_not_exists(pk)"}}
+                ]
+                if grant_write is not None:
+                    writes.append(grant_write)
+                PAYMENT_DDB.transact_write_items(TransactItems=writes)
         else:
             PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
                                 ConditionExpression="attribute_not_exists(pk)")
@@ -286,6 +439,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         # infrastructure condition, not proof that a buyer reused an ID.
         if not prior:
             return error(503, "order_creation_unavailable")
+    if prior:
         if (prior.get("customerSub") != item["customerSub"] or
             prior.get("basketHash") != item["basketHash"] or
             prior.get("quoteVersion") != item["quoteVersion"] or
@@ -395,6 +549,36 @@ def order_status(event, order_id):
                        "status":state if state in ("PAID","CHECKOUT_OPEN","PAYMENT_FAILED","CHECKOUT_EXPIRED","APPROVED_FOR_PAYMENT","OPENING_CHECKOUT") else "PROCESSING",
                        "paid":state=="PAID"})
 
+def account_privileges(customer):
+    """Discover only explicitly approved, discoverable, account-bound grants."""
+    if not SHOP_ENABLED:
+        return error(503,"privileges_unavailable")
+    subject=customer["subject"]
+    try:
+        stage=account_purchase_stage(subject)
+        pricing=json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
+        policy=pricing.get("retail_promotions")
+        campaigns=policy.get("campaigns",{}) if isinstance(policy,dict) and policy.get("enabled") is True else {}
+        if not isinstance(campaigns,dict) or len(campaigns)>12:
+            return error(503,"privileges_unavailable")
+        offers=[]
+        for code,campaign in campaigns.items():
+            if not isinstance(campaign,dict) or campaign.get("discoverable") is not True:
+                continue
+            try:
+                promo=retail_promotion(pricing,code,now())
+                if not promo or promo["audience"]=="public_reusable":
+                    continue
+                returning_grant(promo,subject,None,None)
+            except ValueError:
+                continue
+            offers.append({"code":promo["code"],"title":PRIVILEGE_TITLES[promo["kind"]],
+                "discountBps":promo["bps"],"minimumGrossMinor":promo["minimum"]})
+        return reply(200,{"coverage":"recorded_account_paid_orders_only","stage":stage,"offers":offers[:8]})
+    except (ClientError,ValueError,TypeError,KeyError):
+        return error(503,"privileges_unavailable")
+
+
 def handler(event, context):
     path = event.get("rawPath") or "/"
     method = (event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
@@ -405,8 +589,10 @@ def handler(event, context):
                            "payment_collection_active":SHOP_ENABLED,
                            "origin":"novapharmhealthcare.com",
                            "promotion_preview_supported":True,
+                           "account_promotion_preview_supported":True,
+                           "account_privileges_supported":True,
                            "checkout_path":"/products/nutraxin/bag/"})
-    if path in ("/account/me","/account/orders","/account/checkout"):
+    if path in ("/account/me","/account/orders","/account/checkout","/account/quote","/account/privileges"):
         customer=verified_consumer(event)
         if not customer:
             return error(401,"account_sign_in_required")
@@ -415,6 +601,10 @@ def handler(event, context):
                               "customer_type":"personal"})
         if path=="/account/orders" and method=="GET":
             return account_orders(customer)
+        if path=="/account/privileges" and method=="GET":
+            return account_privileges(customer)
+        if path=="/account/quote" and method=="POST":
+            return direct_checkout(event,customer["subject"],preview=True)
         if path=="/account/checkout" and method=="POST":
             return direct_checkout(event,customer["subject"])
         return error(405,"method_not_allowed")
