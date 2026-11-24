@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -206,4 +206,16 @@ test("an uncertain retry retains the in-memory idempotency key and reconciles al
  assert.match(js,/lastAttempt\?\.basket === basketId && lastAttempt\.mode === mode \? lastAttempt\.id/);
  assert.match(js,/result\?\.already_paid === true && result\?\.status === "PAID"/);
  assert.match(js,/BAG_URL \+ "\?checkout=return&order_id=" \+ encodeURIComponent\(result\.orderId\)/);
+});
+
+
+test("comparison limits selections to three unique canonical references",()=>{
+ const skus=catalogue.products.map(p=>p.sku);
+ assert.deepEqual(comparisonProducts([skus[0],skus[0],"UNKNOWN",skus[1],skus[2],skus[3]],catalogue).map(p=>p.sku),skus.slice(0,3));
+ assert.deepEqual(comparisonProducts(null,catalogue),[]);
+ assert.deepEqual(comparisonProducts(skus,{...catalogue,currency:"USD"}),[]);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/compare\.setAttribute\("aria-pressed", "false"\)/);
+ assert.match(js,/selected\.clear\(\)/);
+ assert.match(js,/This is not advice on suitability or treatment/);
 });
