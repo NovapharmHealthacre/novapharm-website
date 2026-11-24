@@ -77,6 +77,38 @@ def reply(status, body):
 def error(status, code):
     return reply(status, {"error":code})
 
+def retail_promotion(pricing, raw_code, instant):
+    """Only owner-approved, time-bounded, reusable retail campaigns.
+    Per-SKU net price floors include the owner's commercial cost policy.
+    No client supplied monetary values, unrestricted discounts or gift balance.
+    """
+    if raw_code is None or raw_code == "":
+        return None
+    if not isinstance(raw_code, str) or not re.fullmatch(r"[A-Za-z0-9_-]{3,32}", raw_code):
+        raise ValueError("invalid_promo_code")
+    code = raw_code.upper()
+    policy = pricing.get("retail_promotions")
+    if not isinstance(policy, dict) or policy.get("enabled") is not True:
+        raise ValueError("promo_code_unavailable")
+    campaigns = policy.get("campaigns")
+    campaign = campaigns.get(code) if isinstance(campaigns, dict) else None
+    if not isinstance(campaign, dict) or campaign.get("approved") is not True:
+        raise ValueError("promo_code_unavailable")
+    start, end = campaign.get("starts_at"), campaign.get("ends_at")
+    bps = campaign.get("discount_bps")
+    floors = campaign.get("sku_min_net_minor")
+    revision = campaign.get("revision")
+    minimum = campaign.get("minimum_gross_minor")
+    if (type(start) is not int or type(end) is not int or not start <= instant < end or
+        type(bps) is not int or not 1 <= bps <= 5000 or
+        type(minimum) is not int or minimum < 0 or
+        not isinstance(revision, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,48}", revision) or
+        not isinstance(floors, dict) or not floors or
+        any(k not in PRODUCTS or type(v) is not int or v <= 0 for k,v in floors.items())):
+        raise ValueError("promo_code_unavailable")
+    return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum}
+
+
 def direct_checkout(event, customer_subject=None):
     # Merchant owner authorised the existing 48-unit-tier price for 1-10000
     # units, 20% UK VAT and no separately charged UK shipping. This business
@@ -95,8 +127,13 @@ def direct_checkout(event, customer_subject=None):
         request_id = body.get("request_id")
         lines = body.get("lines")
         accepts = body.get("accept_terms")
+        promo_code = body.get("promo_code")
+        gift_card_code = body.get("gift_card_code")
     except (ValueError, AttributeError):
         return error(400, "invalid_basket")
+    # Never silently ignore a requested stored-value payment.
+    if gift_card_code is not None and gift_card_code != "":
+        return error(422, "gift_card_redemption_not_available")
     if accepts is not True:
         return error(400, "delivery_and_sale_terms_required")
     if not isinstance(request_id, str) or not re.fullmatch(
@@ -124,10 +161,15 @@ def direct_checkout(event, customer_subject=None):
         return error(503, "owner_price_policy_unavailable")
     if set(price_by_sku) != set(PRODUCTS):
         return error(503, "incomplete_retail_catalogue")
+    try:
+        promotion = retail_promotion(pricing, promo_code, now())
+    except ValueError as exc:
+        return error(422, str(exc))
     seen = set()
     ordered = []
     net = 0
     gross = 0
+    original_gross = 0
     for line in lines:
         if not isinstance(line, dict):
             return error(400, "invalid_order_line")
@@ -142,6 +184,13 @@ def direct_checkout(event, customer_subject=None):
             return error(503, "invalid_seller_price")
         # Consumer catalogue, portal and Stripe all charge exactly the same
         # published unit price, including VAT rounded per unit.
+        original_gross += (unit + (unit * 20 + 50) // 100) * quantity
+        if promotion and sku in promotion["floors"]:
+            discounted = unit - (unit * promotion["bps"]) // 10000
+            # Reject the campaign rather than quietly exceeding its margin floor.
+            if discounted < promotion["floors"][sku]:
+                return error(422, "promo_code_unavailable")
+            unit = discounted
         unit_gross = unit + (unit * 20 + 50) // 100
         net += unit * quantity
         gross += unit_gross * quantity
@@ -150,12 +199,19 @@ def direct_checkout(event, customer_subject=None):
         ordered.append({"sku": sku, "quantity": quantity,
                         "name": PRODUCTS[sku][0] + " (UK VAT included)",
                         "grossMinor": unit_gross * quantity})
+    if promotion and (original_gross < promotion["minimum"] or original_gross <= gross):
+        return error(422, "promo_code_not_applicable")
     tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
     basket_hash = hashlib.sha256(json.dumps(
         sorted((item["sku"], item["quantity"]) for item in ordered),
         separators=(",", ":")).encode()).hexdigest()
+    if promotion:
+        basket_hash = hashlib.sha256(json.dumps({
+            "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
+            "original":original_gross, "discounted":gross, "lines":ordered
+        },sort_keys=True,separators=(",",":")).encode()).hexdigest()
     receipt = "NUT-" + request_id
     subject = customer_subject or ("guest_" + request_id.replace("-", ""))
     quote_version = "ownerprice_v7_unitvat_" + basket_hash[:20]
@@ -186,6 +242,11 @@ def direct_checkout(event, customer_subject=None):
         "approvedLinesJson": {"S": json.dumps(ordered, separators=(",", ":"))},
         "ownerCommercialPolicy": {"S": "nutraxin_uk_direct_v1"}
     }
+    if promotion:
+        item.update({"promotionCode":{"S":promotion["code"]},
+                     "promotionRevision":{"S":promotion["revision"]},
+                     "preDiscountGrossMinor":{"N":str(original_gross)},
+                     "discountGrossMinor":{"N":str(original_gross-gross)}})
     try:
         if customer_subject:
             # A consumer-only index item is created atomically with the order.
