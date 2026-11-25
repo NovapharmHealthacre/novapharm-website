@@ -9,7 +9,7 @@ assert.equal(categories.length,5);
 const out = resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT || "artifacts/public-pages-browser","nutraxin-category-layout");
 mkdirSync(out,{recursive:true});
 const results=[], failures=[];
-const viewports=[{name:"desktop",width:1440,height:900},{name:"tablet",width:768,height:1024},{name:"mobile",width:390,height:844},{name:"print",width:794,height:1123}];
+const viewports=[{name:"desktop",width:1440,height:900},{name:"tablet",width:768,height:1024},{name:"mobile",width:390,height:844},{name:"small-mobile",width:320,height:720},{name:"print",width:794,height:1123}];
 for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
   const browser=await engine.launch({headless:true});
   try {
@@ -29,7 +29,7 @@ for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
           const rect=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
           return {overflow:document.documentElement.scrollWidth>innerWidth+3, columns:getComputedStyle(grid).gridTemplateColumns,cards:[...grid.querySelectorAll(".nx-category-card")].map(card=>{
             const image=card.querySelector("img"),copy=card.querySelector(".nx-category-copy"),link=card.querySelector(".nx-category-link"),visual=card.querySelector(".nx-category-visual");
-            return {card:rect(card),image:rect(image),visual:rect(visual),copy:rect(copy),link:rect(link),href:link.getAttribute("href"),fit:getComputedStyle(image).objectFit,loaded:image.complete&&image.naturalWidth>0,overflow:card.scrollWidth>card.clientWidth+3,breakInside:getComputedStyle(card).breakInside};
+            return {card:rect(card),image:rect(image),visual:rect(visual),copy:rect(copy),link:rect(link),href:link.getAttribute("href"),fit:getComputedStyle(image).objectFit,naturalRatio:image.naturalWidth/image.naturalHeight,loaded:image.complete&&image.naturalWidth>0,overflow:card.scrollWidth>card.clientWidth+3,breakInside:getComputedStyle(card).breakInside};
           })};
         });
         assert.equal(metrics.cards.length,category.products.length,label);
@@ -38,6 +38,7 @@ for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
           assert(c.loaded&&c.fit==="contain",label+" pack missing or cropped");
           assert(c.image.width>=(viewport.name==="print"?100:160),label+" narrow pack: "+c.image.width);
           assert(c.image.height>=90,label+" collapsed pack");
+          assert(Math.abs(Math.log(c.naturalRatio/(c.image.width/c.image.height)))<.12,label+" image element aspect ratio differs from source");
           assert(c.image.x>=c.visual.x-2&&c.image.right<=c.visual.right+2,label+" image spills outside visual");
           assert.equal(c.overflow,false,label+" card overflow");
           assert.equal(c.href,"/products/nutraxin/"+category.products[i]+"/",label+" wrong product link");
@@ -49,7 +50,7 @@ for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
             assert(c.link.height>=44,label+" CTA target too small");
           }
         }
-        if(viewport.name==="mobile")assert(metrics.cards[1].card.y>metrics.cards[0].card.y,label+" mobile must stack");
+        if(viewport.name==="mobile"||viewport.name==="small-mobile")assert(metrics.cards[1].card.y>metrics.cards[0].card.y,label+" mobile must stack");
         if(viewport.name==="desktop"||viewport.name==="tablet")assert(Math.abs(metrics.cards[1].card.y-metrics.cards[0].card.y)<4,label+" expected two columns");
         results.push({label,pass:true});
         if(viewport.name==="desktop"||viewport.name==="mobile")await page.screenshot({path:resolve(out,category.slug+"-"+engineName+"-"+viewport.name+".png"),fullPage:true});
@@ -59,7 +60,7 @@ for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
     await context.close();
   } finally {await browser.close();}
 }
-writeFileSync(resolve(out,"audit.json"),JSON.stringify({expected:40,passed:results.length,results,failures},null,2)+"\n");
-console.log(JSON.stringify({expected:40,passed:results.length,failures},null,2));
+writeFileSync(resolve(out,"audit.json"),JSON.stringify({expected:50,passed:results.length,results,failures},null,2)+"\n");
+console.log(JSON.stringify({expected:50,passed:results.length,failures},null,2));
 assert.equal(failures.length,0,"Category retail layout regression");
-assert.equal(results.length,40);
+assert.equal(results.length,50);
