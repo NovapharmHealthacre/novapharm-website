@@ -1,0 +1,63 @@
+name: Connective batch 02 archive integrity review
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/connective-batch02-integrity.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download completed original image batches
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: connective-batch02-part-*
+          path: review-input
+          run-id: 45537009006
+          github-token: ${{ github.token }}
+      - name: Verify every candidate and build compact review manifest
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib,re
+          root=pathlib.Path('review-input')
+          reports=sorted(root.rglob('report.json'))
+          assert len(reports)==5
+          rows=[]
+          seen=set()
+          count=0
+          for report in reports:
+              data=json.loads(report.read_text())
+              assert data['published']==0
+              for row in data['results']:
+                  gtin=row['gtin']
+                  assert re.fullmatch(r'[0-9]{13}',gtin) and gtin not in seen
+                  seen.add(gtin)
+                  assets=[]
+                  for asset in row['assets']:
+                      relative=pathlib.PurePosixPath(asset['path'])
+                      assert len(relative.parts)==2 and relative.parts[0]==gtin
+                      assert re.fullmatch(r'[1-8]\.(jpg|png|webp)',relative.parts[1])
+                      path=report.parent.joinpath(*relative.parts)
+                      assert path.is_file() and not path.is_symlink()
+                      payload=path.read_bytes()
+                      assert len(payload)==asset['bytes']
+                      assert hashlib.sha256(payload).hexdigest()==asset['sha256']
+                      count+=1
+                      assets.append({k:asset[k] for k in ('path','sourceImage','sha256','bytes')})
+                  rows.append({'gtin':gtin,'supplierName':row['supplierName'],'supplierPack':row['supplierPack'],'sourcePage':row['sourcePage'],'assets':assets,'archiveIntegrityVerified':True,'ukVariantConfirmed':False,'usageRightsConfirmed':False,'publicationApproved':False})
+          assert len(rows)==299 and count==628
+          out=pathlib.Path('review-output');out.mkdir()
+          (out/'batch02-integrity-manifest.json').write_text(json.dumps({'sourceRun':45537009006,'products':len(rows),'imagesVerified':count,'published':0,'results':rows},indent=2))
+          print(f'Verified {count} images across {len(rows)} products; no publication approval granted.')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: connective-batch02-integrity-manifest
+          path: review-output/
+          retention-days: 7
+          if-no-files-found: error
