@@ -240,3 +240,15 @@ test("Nutraxin Bag exposes return rights and support before payment", () => {
     assert(content.includes('data-nx-consumer-terms'), "Bag terms checkbox missing in " + path);
   }
 });
+
+
+test("UK generic discovery is visible and aligned with all 19 Shopping offers", () => {
+  for (const item of keywordMap.products) {
+    assert(item.secondaryQueries.length >= 8, item.sku);
+    assert(item.secondaryQueries.some(query => !query.toLowerCase().includes("nutraxin")), item.sku);
+    const html = read("products/nutraxin/" + item.slug + "/index.html");
+    assert.equal((html.match(/data-nutraxin-discovery="true"/g) || []).length, 1);
+    assert(parsed.find(p => p.id === item.sku).description.startsWith(item.discoveryCopy + " "));
+  }
+  assert(read("products/nutraxin/index.html").includes("Nutraxin Vitamins &amp; Supplements UK | NovaPharm"));
+});
