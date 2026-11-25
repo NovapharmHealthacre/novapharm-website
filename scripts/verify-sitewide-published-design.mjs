@@ -15,6 +15,21 @@ const products = [
 ];
 const routes = [...new Set([...PUBLIC_ROUTES, "/about/", "/technology/", "/news-insights/",
   "/products/nutraxin/", "/products/nutraxin/bag/",
+  "/distribution/", "/market-access/", "/markets/", "/services/", "/cro/",
+  "/regulatory-services/", "/trust-centre/", "/about/company/", "/about/governance/",
+  "/leadership/", "/leadership/vishal-chakravarty/", "/leadership/prabhakar-lahare/",
+  "/leadership/girish-achliya/", "/leadership/helly-panchal/", "/leadership/nishita-trivedi/",
+  "/careers/", "/investor-information/", "/partner-with-us/",
+  "/products/marketplace/", "/products/strategic-portfolio/", "/products/track/",
+  "/products/esco/", "/products/esco/bag/", "/products/nutraxin/order-request/",
+  "/account-application/", "/legal/", "/legal/privacy/", "/legal/terms/",
+  "/legal/cookies/", "/legal/modern-slavery/", "/legal/environment-carbon/",
+  "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+  "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+  "/news-insights/plpi-pharmaceutical-supply-resilience/",
+  "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+  "/news-insights/oncology-supply-chain-demand-forecasting/",
+  "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
   ...products.map(slug => "/products/nutraxin/" + slug + "/")])];
 const artifactMode = process.argv[2] === "--artifact";
 const artifactRoot = artifactMode ? resolve(process.argv[3] || "_site") : null;
