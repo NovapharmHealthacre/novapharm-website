@@ -119,6 +119,8 @@ function canonicalOrganization() {
       url: company.companiesHouseUrl
     },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
@@ -126,13 +128,14 @@ function canonicalOrganization() {
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug) })),
-    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
     ],
     knowsAbout: [
+      company.industry,
       "UK pharmaceutical market entry",
       "pharmaceutical sourcing resilience",
       "PLPI strategy",

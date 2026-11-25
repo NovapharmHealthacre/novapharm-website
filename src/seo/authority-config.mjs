@@ -118,7 +118,10 @@ export const canonicalEntities = Object.freeze([
     description: company.summary,
     image: `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`,
     role: "UK corporate entity preparing regulated B2B pharmaceutical market-entry, sourcing and distribution capabilities",
-    verifiedSources: [company.companiesHouseUrl, SITE_URL],
+    headquarters: company.headquarters,
+    industry: company.industry,
+    divisions: company.divisions.map(division => ({ name: division.name, url: `${SITE_URL}${division.path}`, id: `${SITE_URL}/#${division.id}` })),
+    verifiedSources: [company.companiesHouseUrl, SITE_URL, company.linkedinUrl],
     lastVerified: "2026-07-14"
   },
   ...leadership.map((person) => ({

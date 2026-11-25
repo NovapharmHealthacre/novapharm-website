@@ -23,6 +23,10 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   const org = orgs[0];
   assert.equal(org["@id"], origin + "/#organization");
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
+  assert.equal(org.location.name, "United Kingdom");
+  assert(org.knowsAbout.includes("Pharmaceuticals and Healthcare"));
+  assert.deepEqual(org.department.map(item => item.name), ["NovaPharm Intelligence", "NovaPharm Distribution"]);
+  assert.deepEqual(org.member.map(person => person.jobTitle), ["Chief Executive Officer", "Chief Operating Officer", "Chief Scientific Officer", "Chief Financial Officer"]);
   assert.equal(org.identifier.value, "16716501");
   assert.equal(org.telephone, "+44 7352 036605");
   assert.equal(org.email, "enquiries@novapharmhealthcare.com");
