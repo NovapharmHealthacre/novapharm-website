@@ -316,7 +316,7 @@ jobs:
           cache: npm
       - name: Prove default public website is noncollecting
         run: |
-          set -euo pipefail
+          set -Eeo pipefail
           trap 'echo "::error::Public artifact verification failed at shell line $LINENO" >&2' ERR
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-pages-monotonic-release.mjs
