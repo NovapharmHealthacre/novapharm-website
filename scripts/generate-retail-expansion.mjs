@@ -30,30 +30,59 @@ const selection=['vitamin-d3-120-tablets','magnesium-daily-60-tablets','collagen
 const picks=selection.map(slug=>{const p=products.find(p=>p.slug===slug);assert(p&&existsSync(file(p.image.slice(1))),'Gift reference image missing');return p;});
 const cards=picks.map(p=>'<article class="npr-card"><a href="/products/nutraxin/'+escape(p.slug)+'/"><img src="'+escape(p.image)+'" alt="'+escape(p.name)+'" width="480" height="480" loading="lazy"><h3>'+escape(p.name)+'</h3></a><p>'+escape(p.pack||'')+'</p><a href="/products/nutraxin/'+escape(p.slug)+'/">View product</a></article>').join('');
 page('/corporate-gifts/','Corporate gifting enquiries | NovaPharm Healthcare','Discuss considered corporate gifts and wellness selections with NovaPharm.',`<main id="main" class="npr-main"><section class="npr-hero npr-wrap"><div><p class="npr-kicker">NOVAPHARM / CORPORATE GIFTS</p><h1>Thoughtfully considered.</h1><p>Explore wellbeing-oriented gifts for colleagues, clients and special occasions. Discuss your requirements with our team.</p><a class="npr-action" href="/contact/?enquiry=Corporate%20gifting">Discuss corporate gifting</a></div><div class="npr-hero-media"><img src="${escape(picks[2].image)}" alt="${escape(picks[2].name)} original product packaging" width="480" height="480"></div></section><section class="npr-wrap npr-section"><h2>Consider the occasion.</h2><div class="npr-three"><article><h3>Colleagues and teams</h3><p>Discuss thoughtful selections for staff recognition and special occasions.</p></article><article><h3>Clients and partners</h3><p>Explore gift requirements for business relationships.</p></article><article><h3>Events and milestones</h3><p>Tell us your quantities, budget and preferred delivery dates.</p></article></div></section><section class="npr-wrap npr-section"><h2>Explore selected products.</h2><p>Individual product references, not preassembled gift kits. Suitability and availability must be confirmed.</p><div class="npr-grid">${cards}</div></section><section class="npr-wrap npr-section"><h2>How can we help?</h2><p>Packaging, pricing, delivery and any personalisation are agreed individually before an order is accepted. Food supplements are not suitable for everyone; review product information before selecting.</p><a class="npr-action" href="/contact/?enquiry=Corporate%20gifting">Make an enquiry</a></section></main>`);
+// Product media never reconstructs the packaging. Each view must be a verified
+// local manufacturer asset of the same product and pack variant.
+function isLocalPackImage(path) {
+ return typeof path==='string'&&/^\/assets\/media\/products\/[a-zA-Z0-9/_-]+\.(?:avif|webp|png|jpg)$/.test(path)&&existsSync(file(path.slice(1)));
+}
+function packImage(p,{eager=false}={}){
+ return '<div class="npr-pack-frame"><img src="'+escape(p.image)+'" alt="'+escape(p.name)+'" width="480" height="480" '+(eager?'fetchpriority="high"':'loading="lazy"')+' decoding="async"></div>';
+}
+function mediaGallery(p){
+ const primary={image:p.image,alt:p.name};
+ const views=[primary,...(p.gallery||[])];
+ return '<div class="npr-media-gallery" aria-label="Product photography">'+
+ views.map((view,index)=>'<figure class="npr-gallery-view"><a class="npr-image-link" href="'+escape(view.image)+'" aria-label="View larger image: '+escape(view.alt)+'"><img src="'+escape(view.image)+'" alt="'+escape(view.alt)+'" width="800" height="800" '+(index===0?'fetchpriority="high"':'loading="lazy"')+' decoding="async"></a><figcaption>'+escape(index===0?'View original pack photograph':view.alt)+'</figcaption></figure>').join('')+
+ '</div>';
+}
+function collectionCard(p,route){
+ return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></article>';
+}
 const input='src/content/approved-consumer-catalogue.json';
 if(existsSync(file(input))){
  const items=JSON.parse(read(input));
  assert(Array.isArray(items)&&items.length>0);
- const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved']);
+ const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved','pack','gallery']);
  const ids=new Set();
  for(const p of items){
   assert(Object.keys(p).every(k=>permitted.has(k)),'Private or unknown field in public catalogue');
   assert(typeof p.ean==='string'&&/^\d{8,14}$/.test(p.ean)&&!ids.has(p.ean),'Duplicate or invalid identifier');ids.add(p.ean);
   assert(p.identityConfirmed===true&&p.publicListingApproved===true&&p.imageRightsConfirmed===true,'Catalogue approval missing');
   assert([p.name,p.brand,p.category].every(x=>typeof x==='string'&&x.trim()));
-  assert(/^\/assets\/media\/products\/[a-zA-Z0-9/_-]+\.(?:avif|webp|png|jpg)$/.test(p.image)&&existsSync(file(p.image.slice(1))),'Approved pack photograph missing');
+  assert(isLocalPackImage(p.image),'Approved pack photograph missing');
+  if(p.pack!==undefined) assert(typeof p.pack==='string'&&p.pack.trim()&&p.pack.length<=120,'Invalid pack description');
+  if(p.gallery!==undefined){
+   assert(Array.isArray(p.gallery)&&p.gallery.length<=6,'Invalid product gallery');
+   const paths=new Set([p.image]);
+   for(const view of p.gallery){
+    assert(view&&Object.keys(view).every(k=>['image','alt','imageRightsConfirmed','variantConfirmed'].includes(k)),'Unexpected gallery field');
+    assert(view.imageRightsConfirmed===true&&view.variantConfirmed===true&&isLocalPackImage(view.image)&&!paths.has(view.image),'Gallery image is not approved or variant matched');
+    assert(typeof view.alt==='string'&&view.alt.trim()&&view.alt.length<=160,'Missing gallery alt text');
+    paths.add(view.image);
+   }
+  }
  }
  const routeFor=p=>'/products/health-and-wellbeing/'+p.ean+'/';
  for(const p of items){
   const route=routeFor(p);
   const related=items.filter(q=>q.ean!==p.ean&&q.category===p.category).slice(0,3);
   const enquiry='/contact/?enquiry='+encodeURIComponent('Product enquiry '+p.ean);
-  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap"><div class="npr-hero-media"><img src="'+escape(p.image)+'" alt="'+escape(p.name)+'" width="480" height="480"></div><div><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1><p>Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>Refer to the current manufacturer packaging for ingredients, directions and warnings. Verified product-specific information is required before online ordering.</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>'<article class="npr-card"><a href="'+routeFor(q)+'"><img src="'+escape(q.image)+'" alt="'+escape(q.name)+'" width="480" height="480" loading="lazy"><h3>'+escape(q.name)+'</h3></a></article>').join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
+  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap npr-detail-hero">'+mediaGallery(p)+'<div class="npr-detail-copy"><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1>'+(p.pack?'<p class="npr-detail-pack">'+escape(p.pack)+'</p>':'')+'<p class="npr-reference">Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>Refer to the current manufacturer packaging for ingredients, directions and warnings. Verified product-specific information is required before online ordering.</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>collectionCard(q,routeFor(q))).join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
   page(route,p.name+' | NovaPharm Healthcare','Explore this '+p.brand+' product reference and contact NovaPharm about availability.',detail);
  }
  const groups=[...new Set(items.map(p=>p.category))].sort();
- const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" id="category-'+i+'"><h2>'+escape(g)+'</h2><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>'<article class="npr-card"><a href="'+routeFor(p)+'"><img src="'+escape(p.image)+'" alt="'+escape(p.name)+'" width="480" height="480" loading="lazy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3></a><a href="'+routeFor(p)+'">View product</a></article>').join('')+'</div></section>').join('');
- page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>');
+ const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
+ page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Discover our collection by category. Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>');
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
 const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
