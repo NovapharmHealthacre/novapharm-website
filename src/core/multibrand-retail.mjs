@@ -2,7 +2,16 @@
 export const MAX_RETAIL_QUANTITY = 10000;
 export const MULTIBRAND_SCHEMA = "novapharm-multibrand-retail-v1";
 const eligibleClasses = new Set(["food_supplement","cosmetic","consumer_non_medicinal"]);
-const taxRates = new Set([0,500,2000]);
+export const DEFAULT_UK_VAT_BASIS_POINTS = 2000;
+const taxRates = new Set([0,500,DEFAULT_UK_VAT_BASIS_POINTS]);
+// Draft prices use the owner-selected standard 20% assumption; this is not tax approval.
+export function draftRetailPrice(netMinor, vatBasisPoints = DEFAULT_UK_VAT_BASIS_POINTS) {
+ if (!Number.isSafeInteger(netMinor) || netMinor < 1 || !taxRates.has(vatBasisPoints)) return null;
+ const vatMinor = Math.round(netMinor * vatBasisPoints / 10000);
+ const grossMinor = netMinor + vatMinor;
+ if (!Number.isSafeInteger(grossMinor)) return null;
+ return {netMinor, vatBasisPoints, vatMinor, grossMinor};
+}
 const safeText = (v) => typeof v === "string" && v.trim().length > 0 && v.length <= 300;
 const safeSku = (v) => typeof v === "string" && /^(?:NUT-UK-[A-Z0-9-]+|NP-CP-[0-9]{8,14})$/.test(v);
 export function validGtin(value) {
@@ -15,7 +24,7 @@ export function releasedOffer(p) {
  eligibleClasses.has(p.productClass) && p.identityConfirmed===true && p.imageRightsConfirmed===true &&
  p.ukRetailApproved===true && p.priceApproved===true && p.stockVerified===true && p.fulfilmentVerified===true &&
  p.orderingEnabled===true && Number.isSafeInteger(p.availableQuantity) && p.availableQuantity>0 &&
- taxRates.has(p.vatBasisPoints) && Number.isSafeInteger(p.netMinor) && p.netMinor>0 &&
+ p.vatTreatmentVerified===true && taxRates.has(p.vatBasisPoints) && Number.isSafeInteger(p.netMinor) && p.netMinor>0 &&
  Number.isSafeInteger(p.grossMinor) && p.grossMinor===p.netMinor+Math.round(p.netMinor*p.vatBasisPoints/10000) &&
  (p.sku.startsWith("NUT-UK-") || (validGtin(p.gtin)&&p.sku==="NP-CP-"+p.gtin));
 }
