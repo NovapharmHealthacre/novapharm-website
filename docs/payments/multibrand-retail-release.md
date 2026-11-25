@@ -19,3 +19,13 @@ New product pages use the existing shopping bag, guest/account checkout, promoti
 - Reorder and recurring replenishment are distinct release items: no recurring payment without explicit subscription terms, opt-in, price/frequency disclosure and cancellation controls.
 
 This is a draft implementation, not a live release or a claim that any supplier SKU has been approved.
+
+## Connective Pharma supplier-backed retail direction — 25 November 2026
+
+Owner reported an agreed collaborative supplier relationship, sufficient supplier stock and assistance sourcing customer orders, with prices to be negotiated. This supports a supplier-backed model rather than requiring NovaPharm to own all inventory before listing. It is not a verified SKU-level stock feed, approved selling price, unlimited quantity commitment or confirmed dispatch SLA.
+
+- Keep the standard Add to Bag and Buy now experience on approved offers; no separate Order now or preorder button. One existing customer bag and checkout.
+- Admit supplier-backed availability via dated, quantity-bounded evidence and seller delivery commitment using the existing verified offer contract. Retain stock and expiry checks at quote and checkout; no fabricated on-hand NovaPharm inventory.
+- Build indexable product references only after review of GTIN, UK retail eligibility, pack, rights, ingredients, directions and warnings. The generated canonical sitemap and page/structured-data registers include only admitted products. Product schema deliberately has no static offer, price or availability; merchant offers require independent price and availability release.
+- Historical image research: 395 of 451 supplier references matched, 802 original images collected according to the packshot review register. The approved catalogue input is not present on main at the start of this work. Promote only exact-pack images with documented publication rights and complete reviewed metadata.
+- Negotiate each retail offer in private; keep wholesale costs out of the public repository. Supplier-supported procurement does not change the existing Nutraxin coupon scope or authorise advertising spend.
