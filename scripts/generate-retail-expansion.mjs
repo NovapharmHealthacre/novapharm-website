@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { parse } from 'parse5';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { validGtin } from '../src/core/multibrand-retail.mjs';
 const root=process.cwd();
 const file=p=>resolve(root,p);
 const read=p=>readFileSync(file(p),'utf8');
@@ -11,8 +12,10 @@ const template=read('products/index.html');
 const originalMain=template.match(/<main\b[^>]*>[\s\S]*?<\/main>/);
 assert(originalMain,'Products shell missing');
 const base='https://novapharmhealthcare.com';
-function page(route,title,description,main){
- let html=template.replace(originalMain[0],()=>main);
+const catalogueSeo=[];
+const jsonLd=value=>'<script type="application/ld+json">'+JSON.stringify(value).replace(/</g,'\\u003c')+'</script>';
+function page(route,title,description,main,seo=null){
+ let html=template.replace(originalMain[0],()=>main).replace(/data-route="[^"]*"/, 'data-route="'+route+'"');
  html=html.replace(/<title>[\s\S]*?<\/title>/,'<title>'+escape(title)+'</title>');
  html=html.replace(/<link rel="canonical" href="[^"]*"/,'<link rel="canonical" href="'+base+route+'"');
  html=html.replace(/<link rel="alternate" hreflang="([^"]*)" href="[^"]*"/g,(_,lang)=>'<link rel="alternate" hreflang="'+escape(lang)+'" href="'+base+route+'"');
@@ -36,6 +39,11 @@ function page(route,title,description,main){
  let head=html.slice(0,headEnd);
  for(const [start,end] of ranges.sort((a,b)=>b[0]-a[0]))head=head.slice(0,start)+head.slice(end);
  head+='<meta property="og:title" content="'+escape(title)+'"><meta property="og:description" content="'+escape(description)+'"><meta property="og:url" content="'+base+route+'"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/css/retail-expansion.css">';
+ if(seo){
+  head+=jsonLd(seo.schema);
+  if(seo.image) head+='<meta property="og:image" content="'+escape(base+seo.image)+'"><meta property="og:image:alt" content="'+escape(seo.h1)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="'+escape(base+seo.image)+'">';
+  catalogueSeo.push({route,canonical:base+route,file:route.slice(1)+'index.html',title,description,h1:seo.h1,indexable:true,schemaTypes:[seo.schema['@type']],intendedCta:[]});
+ }
  if(route.startsWith('/products/health-and-wellbeing/')) head+='<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>';
  html=head+html.slice(headEnd);
  assert.equal((html.match(/<h1\b/g)||[]).length,1);
@@ -69,14 +77,19 @@ const input='src/content/approved-consumer-catalogue.json';
 if(existsSync(file(input))){
  const items=JSON.parse(read(input));
  assert(Array.isArray(items)&&items.length>0);
- const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved','pack','gallery']);
+ const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved','pack','gallery','productClass','description','ingredients','directions','warnings']);
  const ids=new Set();
  for(const p of items){
   assert(Object.keys(p).every(k=>permitted.has(k)),'Private or unknown field in public catalogue');
-  assert(typeof p.ean==='string'&&/^\d{8,14}$/.test(p.ean)&&!ids.has(p.ean),'Duplicate or invalid identifier');ids.add(p.ean);
+  assert(validGtin(p.ean)&&!ids.has(p.ean),'Duplicate or invalid GTIN checksum');ids.add(p.ean);
   assert(p.identityConfirmed===true&&p.publicListingApproved===true&&p.imageRightsConfirmed===true,'Catalogue approval missing');
   assert([p.name,p.brand,p.category].every(x=>typeof x==='string'&&x.trim()));
   assert(isLocalPackImage(p.image),'Approved pack photograph missing');
+  assert(['food_supplement','cosmetic','consumer_non_medicinal'].includes(p.productClass),'Non-eligible product class');
+  for(const key of ['description','ingredients','directions','warnings']){
+   assert(typeof p[key]==='string'&&p[key].trim().length>0&&p[key].length<=5000,'Missing reviewed product information: '+key);
+  }
+  assert(typeof p.pack==='string'&&p.pack.trim().length>0,'Verified pack size required');
   if(p.pack!==undefined) assert(typeof p.pack==='string'&&p.pack.trim()&&p.pack.length<=120,'Invalid pack description');
   if(p.gallery!==undefined){
    assert(Array.isArray(p.gallery)&&p.gallery.length<=6,'Invalid product gallery');
@@ -94,12 +107,34 @@ if(existsSync(file(input))){
   const route=routeFor(p);
   const related=items.filter(q=>q.ean!==p.ean&&q.category===p.category).slice(0,3);
   const enquiry='/contact/?enquiry='+encodeURIComponent('Product enquiry '+p.ean);
-  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap npr-detail-hero">'+mediaGallery(p)+'<div class="npr-detail-copy"><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1>'+(p.pack?'<p class="npr-detail-pack">'+escape(p.pack)+'</p>':'')+'<p class="npr-reference">Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>Refer to the current manufacturer packaging for ingredients, directions and warnings. Verified product-specific information is required before online ordering.</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>collectionCard(q,routeFor(q))).join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
-  page(route,p.name+' | NovaPharm Healthcare','Explore this '+p.brand+' product reference and contact NovaPharm about availability.',detail);
+  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap npr-detail-hero">'+mediaGallery(p)+'<div class="npr-detail-copy"><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1>'+(p.pack?'<p class="npr-detail-pack">'+escape(p.pack)+'</p>':'')+'<p class="npr-reference">Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>'+escape(p.description)+'</p><h3>Ingredients</h3><p>'+escape(p.ingredients)+'</p><h3>Directions</h3><p>'+escape(p.directions)+'</p><h3>Warnings</h3><p>'+escape(p.warnings)+'</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>collectionCard(q,routeFor(q))).join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
+  const description=p.description.replace(/\s+/g,' ').trim().slice(0,160);
+  page(route,p.name+' | NovaPharm Healthcare',description,detail,{h1:p.name,image:p.image,schema:{'@context':'https://schema.org','@type':'Product','@id':base+route+'#product',url:base+route,name:p.name,description:p.description,brand:{'@type':'Brand',name:p.brand},['gtin'+p.ean.length]:p.ean,image:[base+p.image,...(p.gallery||[]).map(v=>base+v.image)],category:p.category,sku:'NP-CP-'+p.ean}});
+  // No static Offer, price or availability: the authoritative checkout controls sales.
  }
  const groups=[...new Set(items.map(p=>p.category))].sort();
  const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
- page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Discover our collection by category. Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>');
+ page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Discover our collection by category. Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>',{h1:'Health and wellbeing.',schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
+}
+// Reconcile generated routes into canonical registers before CSS versioning and SHA stamping.
+if(catalogueSeo.length){
+ const registerPath='seo/generated/page-metadata-register.json';
+ const existing=JSON.parse(read(registerPath));
+ const prefix='/products/health-and-wellbeing/';
+ const retained=existing.filter(p=>!p.route.startsWith(prefix));
+ write(registerPath,JSON.stringify([...retained,...catalogueSeo],null,2)+'\n');
+ const structuredPath='seo/generated/structured-data-register.json';
+ const structured=JSON.parse(read(structuredPath)).filter(p=>!p.route.startsWith(prefix));
+ for(const p of catalogueSeo){
+  const type=p.schemaTypes[0];
+  structured.push({route:p.route,canonical:p.canonical,file:p.file,entities:[{id:p.canonical+(type==='Product'?'#product':'#webpage'),types:[type],name:p.h1==='Health and wellbeing.'?'Health and wellbeing':p.h1,mainEntity:null,publisher:null,author:null}]});
+ }
+ write(structuredPath,JSON.stringify(structured,null,2)+'\n');
+ let sitemap=read('sitemap.xml');
+ assert(sitemap.includes('</urlset>'),'Missing sitemap root');
+ sitemap=sitemap.replace(/<url>\s*<loc>https:\/\/novapharmhealthcare\.com\/products\/health-and-wellbeing\/[^<]*<\/loc>[\s\S]*?<\/url>/g,'');
+ sitemap=sitemap.replace('</urlset>',catalogueSeo.map(p=>'<url><loc>'+escape(p.canonical)+'</loc></url>').join('')+'</urlset>');
+ write('sitemap.xml',sitemap);
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
 const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
