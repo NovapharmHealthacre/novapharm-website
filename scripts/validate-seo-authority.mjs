@@ -35,6 +35,7 @@ const publicFiles = [
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`),
   ...nutraxinCategories.map((category) => `products/nutraxin/${category.slug}/index.html`),
+  "our-story/index.html",
   "products/esco/index.html"
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];

@@ -3374,7 +3374,8 @@
       "semanticPurpose": "owner-supplied-corporate-warehouse-editorial-photograph",
       "routes": [
         "/about/",
-        "/distribution/"
+        "/distribution/",
+        "/our-story/"
       ],
       "focalPoint": null,
       "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
@@ -3393,8 +3394,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 23,
+      "usageCount": 9,
+      "referenceCount": 24,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -3403,7 +3404,8 @@
         "scripts/apply-about-editorial.mjs",
         "scripts/apply-global-distribution-foundation.mjs",
         "scripts/test-global-distribution-foundation.mjs",
-        "scripts/validate-module-media-sanity.mjs"
+        "scripts/validate-module-media-sanity.mjs",
+        "src/content/our-story.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
@@ -3428,7 +3430,8 @@
       "provenanceRecord": null,
       "semanticPurpose": "optimized-responsive-corporate-warehouse-photo",
       "routes": [
-        "/about/"
+        "/about/",
+        "/our-story/"
       ],
       "focalPoint": null,
       "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
@@ -3447,13 +3450,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 5,
+      "usageCount": 5,
+      "referenceCount": 6,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs"
+        "scripts/apply-about-editorial.mjs",
+        "src/content/our-story.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
