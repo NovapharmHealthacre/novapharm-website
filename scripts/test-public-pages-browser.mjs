@@ -88,7 +88,7 @@ async function mockLocalReadiness(page, pathname) {
       });
     });
   }
-  const checkoutApi = pathname === "/products/nutraxin/bag/"
+  const checkoutApi = pathname.startsWith("/products/nutraxin/")
     ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
     : pathname.startsWith("/products/esco/")
       ? "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com/readiness"
