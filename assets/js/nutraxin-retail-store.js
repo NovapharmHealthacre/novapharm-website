@@ -983,7 +983,7 @@ async function init() {
     let offers=null,saved=[];
     try { saved=JSON.parse(localStorage.getItem(BAG_KEY)||"[]"); }catch{}
     // Preserve the original Nutraxin-only journey: no calls to an unreleased endpoint.
-    const needsExtra=path.startsWith(MULTIBRAND_URL)||saved.some?.(line=>CP_SKU.test(line?.sku||""))===true;
+    const needsExtra=path.startsWith(MULTIBRAND_URL)||(Array.isArray(saved)&&saved.some(line=>CP_SKU.test(line?.sku||"")));
     try {
       if(needsExtra){
       const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(2500)});
