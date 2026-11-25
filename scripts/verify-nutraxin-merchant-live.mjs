@@ -15,7 +15,7 @@ const catalogue = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-retai
 const header = expectedFeed.split("\n")[0].split("\t");
 const expectedHeader = ["id", "title", "description", "link", "image_link",
   "availability", "price", "condition", "brand", "gtin", "product_type",
-  "google_product_category", "shipping(country:price)"];
+  "google_product_category", "shipping(country:price)", "unit_pricing_measure", "unit_pricing_base_measure"];
 assert.deepEqual(header, expectedHeader);
 const rows = expectedFeed.replace(/\n$/, "").split("\n").slice(1).map((line) => {
   const cells = line.split("\t");
@@ -40,6 +40,16 @@ for (const row of rows) {
   assert.equal(row.gtin, gtinMap.get(row.id)?.gtin13, "Exact UK GTIN mismatch");
   assert.equal(row.google_product_category, "525", "Category must represent vitamins and supplements");
   assert.equal(row.availability, ready ? "in_stock" : "out_of_stock");
+  if (p.sku === "NUT-UK-VMAX-E15") {
+    assert.equal(row.unit_pricing_measure, "", "Unverified effervescent pack count must be withheld");
+    assert.equal(row.unit_pricing_base_measure, "");
+  } else {
+    const pack = p.pack.match(/^(\d+)\s+(ml|(?:chewable |sublingual )?tablets|sachets)$/i);
+    assert(pack, "Unrecognised pack for unit pricing: " + p.sku);
+    const volume = pack[2].toLowerCase() === "ml";
+    assert.equal(row.unit_pricing_measure, Number(pack[1]) + (volume ? "ml" : "ct"));
+    assert.equal(row.unit_pricing_base_measure, volume ? "100ml" : "1ct");
+  }
   assert.equal(row["shipping(country:price)"], "GB:" +
     (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
 }

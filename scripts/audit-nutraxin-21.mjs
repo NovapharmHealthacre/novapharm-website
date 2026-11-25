@@ -30,7 +30,7 @@ const gtins = new Map(gtinRegister.products.map(p => [p.sku, p]));
 const required = ["id", "title", "description", "link", "image_link", "availability",
   "price", "condition", "brand", "gtin", "product_type", "google_product_category",
   "shipping(country:price)"];
-assert.deepEqual(header, required, "Feed schema drift");
+assert.deepEqual(header, [...required, "unit_pricing_measure", "unit_pricing_base_measure"], "Feed schema drift");
 assert.equal(new Set(rows.map(x => x.id)).size, 19);
 assert.equal(gtinRegister.market, "GB");
 const allChecks = [
@@ -134,6 +134,17 @@ for (const row of rows) {
   check("required_attributes", sku, () => {
     assert(required.every(key => typeof row[key] === "string" && row[key].length > 0));
     assert(row.link.startsWith(origin + "/products/nutraxin/"));
+    if (sku === "NUT-UK-VMAX-E15") {
+      assert.equal(row.unit_pricing_measure, "");
+      assert.equal(row.unit_pricing_base_measure, "");
+      assert(ref.notes.some(note => note.includes("Pack mismatch")));
+    } else {
+      const pack = ref.packSize.match(/^(\d+)\s+(ml|(?:chewable |sublingual )?tablets|sachets)$/i);
+      assert(pack, "Unknown pack unit");
+      const volume = pack[2].toLowerCase() === "ml";
+      assert.equal(row.unit_pricing_measure, Number(pack[1]) + (volume ? "ml" : "ct"));
+      assert.equal(row.unit_pricing_base_measure, volume ? "100ml" : "1ct");
+    }
     assert.equal(row.condition, "new"); assert.equal(row.brand, "Nutraxin");
     assert.equal(row.availability, expectedStock);
     assert.equal(row["shipping(country:price)"],
