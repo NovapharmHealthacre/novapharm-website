@@ -41,7 +41,7 @@ function normalizePublicTheme(html, file) {
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
   if (route === "/" || route === "/about/company/") return "2026-11-22";
-  if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") return "2026-11-20";
+  if (route === "/products/nutraxin/" || route.startsWith("/products/nutraxin/")) return "2026-11-25";
   return ["/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
     ? "2026-11-10" : releaseDate;
 };
@@ -399,6 +399,7 @@ if (existsSync(nutraxinProductDirectory)) {
 // ESCO is generated before SEO enhancement, not stored as a checked-in HTML directory.
 // Its public collection page needs a canonical sitemap URL and consistent metadata.
 publicFiles.push("products/esco/index.html");
+publicFiles.push("our-story/index.html");
 publicFiles.push("account-application/index.html");
 
 const pageRecords = [];

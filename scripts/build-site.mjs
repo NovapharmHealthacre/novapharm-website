@@ -69,6 +69,9 @@ await import("./apply-products-editorial.mjs");
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
 
+// Keep Our Story discoverable in late-generated public footers before versioning.
+await import("./apply-our-story-footer.mjs");
+
 // Finalized static pages must all load the RTL layout bootstrap,
 // including late-generated commerce, Marketplace and regulated legal pages.
 // This MUST precede CSS URL versioning so both first and repeat builds hash

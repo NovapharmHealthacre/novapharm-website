@@ -51,7 +51,7 @@ const catalogueIngredients = (ref) => ref.formulation.map(item =>
 const catalogDescription = (p, ref) => {
   const ingredients = catalogueIngredients(ref);
   assert(ingredients.length, "No documented ingredients for " + p.sku);
-  return p.name + " is a food supplement supplied as " + p.pack +
+  return intentBySku.get(p.sku).discoveryCopy + " " + p.name + " is a food supplement supplied as " + p.pack +
     " (" + ref.dosageForm + "). The supplied product catalogue records " +
     ingredients.join("; ") + ". Composition is presented " + ref.servingText.toLowerCase() +
     ". The catalogue is a product information reference, not a substitute for " +
@@ -60,6 +60,8 @@ const catalogDescription = (p, ref) => {
     "before purchase or consumption. NovaPharm displays UK retail price and " +
     "ordering status on this product page. See the product label for full ingredients and directions.";
 };
+// Source-qualified discovery copy is visible, not a hidden keyword list.
+const discoverySection = (item) => '<section class="npd-section npd-nutraxin-answers" data-nutraxin-discovery="true"><div class="container"><h2>' + htmlAttribute(item.discoveryHeading) + '</h2><p>' + htmlAttribute(item.discoveryCopy) + '</p></div></section>';
 const shortDescription = (p, ref) => {
   const item = intentBySku.get(p.sku);
   assert(item && item.slug === p.slug && ref.sku === p.sku, "Missing UK keyword mapping " + p.sku);
@@ -163,7 +165,18 @@ const answerSection = (p, ref, inStock) => {
 };
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","google_product_category","shipping(country:price)"];
+// Derive count/volume from the exact governed pack, not an ingredient or serving amount.
+const unitPricing = product => {
+  // Manufacturer publisher lists 20 tablets while the governed catalogue lists 15.
+  // Do not publish a unit-price denominator until the physical sellable pack is verified.
+  if (product.sku === "NUT-UK-VMAX-E15") return ["", ""];
+  const match = product.packSize.match(/^(\d+)\s+(ml|(?:chewable |sublingual )?tablets|sachets)$/i);
+  assert(match, "Unrecognised unit pricing pack: " + product.sku);
+  const count = Number(match[1]);
+  assert(Number.isSafeInteger(count) && count > 0);
+  return match[2].toLowerCase() === "ml" ? [count + "ml", "100ml"] : [count + "ct", "1ct"];
+};
+const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","google_product_category","shipping(country:price)","unit_pricing_measure","unit_pricing_base_measure"];
 const lines = [header.join("\t")];
 let saleReady = 0;
 
@@ -191,7 +204,7 @@ for (const product of registered.products) {
     p.sku, feedTitle(p),
     description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
-    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, "525", ship
+    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, "525", ship, ...unitPricing(product)
   ].map(clean).join("\t"));
 
   const path = join(root, "products/nutraxin", p.slug, "index.html");
@@ -271,6 +284,12 @@ for (const product of registered.products) {
     assert(html.includes("</main>"), "Missing product main content: " + p.sku);
     html = html.replace("</main>", relatedProductsMarkup(p, product) + "</main>");
   }
+  const discovery = discoverySection(intentBySku.get(p.sku));
+  if (html.includes('data-nutraxin-discovery="true"')) {
+    html = html.replace(/<section[^>]*data-nutraxin-discovery="true"[^>]*>[\s\S]*?<\/section>/, discovery);
+  } else {
+    html = html.replace("</main>", discovery + "</main>");
+  }
   if (!html.includes('data-nutraxin-answers="true"')) {
     assert(html.includes("</main>"), "Missing product main content: " + p.sku);
     html = html.replace("</main>", answerSection(p, product, inStock) + "</main>");
@@ -293,6 +312,18 @@ for (const product of registered.products) {
   if (check) assert.equal(original, html, "Regenerate " + p.slug);
   else writeFileSync(path, html, "utf8");
 }
+// Consumer discovery metadata for the collection.
+const collectionPath = join(root, "products/nutraxin/index.html");
+const collectionOriginal = readFileSync(collectionPath, "utf8");
+const collectionTitle = "Nutraxin Vitamins & Supplements UK | NovaPharm";
+const collectionDescription = "Shop Nutraxin vitamins and supplements in the UK. Explore magnesium, vitamin C, vitamin D3, multivitamins, collagen and more at NovaPharm.";
+let collectionHtml = collectionOriginal.replace(/<title>[^<]*<\/title>/, "<title>" + htmlAttribute(collectionTitle) + "</title>");
+for (const [attribute, value] of [["name=\"description\"", collectionDescription], ["property=\"og:description\"", collectionDescription], ["name=\"twitter:description\"", collectionDescription], ["property=\"og:title\"", collectionTitle], ["name=\"twitter:title\"", collectionTitle]]) {
+  collectionHtml = collectionHtml.replace(new RegExp('(<meta ' + attribute + ' content=")[^"]*(">)'), (_, a, b) => a + htmlAttribute(value) + b);
+}
+collectionHtml = collectionHtml.replace(/<script type="application\/ld\+json">([^<]+)<\/script>/g, (tag, content) => { const json = JSON.parse(content); if (json["@type"] !== "WebPage") return tag; json.name = collectionTitle; json.description = collectionDescription; return '<script type="application/ld+json">' + JSON.stringify(json) + '</script>'; });
+if (check) assert.equal(collectionOriginal, collectionHtml, "Regenerate collection search metadata");
+else writeFileSync(collectionPath, collectionHtml, "utf8");
 const output = lines.join("\n") + "\n";
 const feed = join(root, "shopping/nutraxin-uk.tsv");
 if (check) assert.equal(readFileSync(feed, "utf8"), output, "Feed is stale");

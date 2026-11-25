@@ -28,11 +28,14 @@ const articles = readdirSync(join(root, "src/content/insights"))
   .map((file) => JSON.parse(source(`src/content/insights/${file}`)));
 const nutraxinProducts = JSON.parse(source("apps/corporate/data/nutraxin-product-register.json")).products;
 const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !retiredPublicFiles.has(`${slug}/index.html`) && !(publicOnly && slug === "account-application"));
+const nutraxinCategories = JSON.parse(source("assets/data/nutraxin-uk-category-intents.json")).categories;
 const publicFiles = [
   ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`),
+  ...nutraxinCategories.map((category) => `products/nutraxin/${category.slug}/index.html`),
+  "our-story/index.html",
   "products/esco/index.html"
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
@@ -89,6 +92,19 @@ for (const file of files) {
     if (value.endsWith("/") && !/^\/(portal|employee|admin|_secure|docs|api)\//.test(value)) linkedRoutes.add(value);
   }
   records.push({ file, route, canonical, title, description });
+}
+
+
+for (const category of nutraxinCategories) {
+  const file = "products/nutraxin/" + category.slug + "/index.html";
+  if (!existsSync(join(root, file))) continue;
+  const html = source(file);
+  const schema = parseSchemas(html, file);
+  if (schema.some(item => ["Product", "Offer"].includes(item["@type"]))) fail(file + " must not publish duplicate offers");
+  const list = schema.find(item => item["@type"] === "ItemList");
+  if (list?.numberOfItems !== category.products.length) fail(file + " item count mismatch");
+  if (!source("products/nutraxin/index.html").includes('href="/products/nutraxin/' + category.slug + '/"')) fail(file + " is not linked from Nutraxin collection");
+  for (const slug of category.products) if (!html.includes('href="/products/nutraxin/' + slug + '/"')) fail(file + " missing product link " + slug);
 }
 
 if (!unique(records.map((record) => record.title))) fail("public titles are not unique");

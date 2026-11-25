@@ -24,6 +24,7 @@ const output = resolve(process.argv[2] || "_site");
 const allowedTopLevelDirectories = new Set([
   ".well-known",
   "about",
+  "our-story",
   "account-application",
   "assets",
   "capabilities",
