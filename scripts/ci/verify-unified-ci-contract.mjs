@@ -15,11 +15,11 @@ const listDirs = (root, folder) => readdirSync(join(root, folder), { withFileTyp
 export function assertLegacyPublisherDisabled(workflow) {
   for (const job of ["build", "deploy"]) {
     // Split on job boundaries rather than accepting a disabled step or comment.
-    const lines = workflow.split("\\n");
+    const lines = workflow.split("\n");
     const start = lines.indexOf("  " + job + ":");
     assert.ok(start >= 0, "Missing retired legacy publishing job: " + job);
     const rest = lines.slice(start + 1);
-    const boundary = rest.findIndex(line => /^  [a-zA-Z0-9_-]+:\\s*$/.test(line));
+    const boundary = rest.findIndex(line => /^  [a-zA-Z0-9_-]+:\s*$/.test(line));
     const body = boundary < 0 ? rest : rest.slice(0, boundary);
     const conditions = body.filter(line => /^    if:/.test(line));
     assert.deepEqual(conditions, ["    if: ${{ false }}"], "Legacy publishing job must be disabled: " + job);
