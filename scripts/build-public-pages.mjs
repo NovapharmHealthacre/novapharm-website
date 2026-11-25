@@ -210,16 +210,18 @@ function organisationSchema() {
     },
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     areaServed: ["United Kingdom", "International"],
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
-    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug) })),
-    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
+    sameAs: [company.companiesHouseUrl, company.linkedinUrl],
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
     telephone: company.publicTelephone,
     email: company.publicEnquiriesEmail,
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
-    knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
+    knowsAbout: [company.industry, "UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
   };
 }
 
