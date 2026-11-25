@@ -14,6 +14,7 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { ourStoryBody, ourStoryMeta } from "../src/content/our-story.mjs";
 import { croContent } from "../src/content/cro-content.mjs";
 import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
@@ -32,7 +33,7 @@ const articles = readdirSync(articlesDirectory)
   .map((name) => JSON.parse(readFileSync(join(articlesDirectory, name), "utf8")))
   .sort((a, b) => b.published.localeCompare(a.published) || a.title.localeCompare(b.title));
 
-const publicRoutes = Object.keys(pageMeta);
+const publicRoutes = [...Object.keys(pageMeta), "our-story"];
 const siteUrl = company.siteUrl;
 const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
@@ -127,7 +128,7 @@ for (const article of articles) {
 }
 
 function primarySection(slug) {
-  if (slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
+  if (slug === "our-story" || slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
   if (slug.startsWith("news-insights/")) return "news-insights";
   if (slug.startsWith("technology/")) return "technology";
   return slug;
@@ -1109,6 +1110,7 @@ function buildSitemap() {
 export function buildPublicPages() {
   write("index.html", homePage());
   write("about/index.html", aboutPage());
+  write("our-story/index.html", documentShell({ meta: ourStoryMeta, slug: "our-story", body: ourStoryBody }).replace("</head>", '  <link rel="stylesheet" href="/assets/css/our-story.css">\n</head>'));
   write("about/company/index.html", companyPage());
   write("about/governance/index.html", governancePage());
   write("leadership/index.html", leadershipIndexPage());

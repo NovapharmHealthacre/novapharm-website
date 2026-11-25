@@ -398,6 +398,7 @@ if (existsSync(nutraxinProductDirectory)) {
 }
 // ESCO is generated before SEO enhancement, not stored as a checked-in HTML directory.
 // Its public collection page needs a canonical sitemap URL and consistent metadata.
+publicFiles.push("our-story/index.html");
 publicFiles.push("products/esco/index.html");
 publicFiles.push("account-application/index.html");
 

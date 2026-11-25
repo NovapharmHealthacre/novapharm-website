@@ -10,6 +10,7 @@ const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
   { path: "/capabilities/", name: "capabilities", required: "From evidence to access." },
   { path: "/contact/", name: "contact", required: "How can we help?" },
+  { path: "/our-story/", name: "our-story", required: "Different perspectives. A shared purpose." },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
@@ -77,6 +78,7 @@ let geometryRuns = 0;
 // Production APIs intentionally reject this test origin; never mock payment,
 // account, customer data, or authenticated business endpoints here.
 async function mockLocalReadiness(page, pathname) {
+  if (!["localhost", "127.0.0.1", "[::1]"].includes(new URL(baseUrl).hostname)) return;
   if (pathname === "/products/marketplace/") {
     // Public stock API rejects the CI localhost origin. Simulate an
     // unverifiable read-only result, never trusted warehouse evidence.
@@ -88,7 +90,7 @@ async function mockLocalReadiness(page, pathname) {
       });
     });
   }
-  const checkoutApi = pathname === "/products/nutraxin/bag/"
+  const checkoutApi = pathname.startsWith("/products/nutraxin/")
     ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
     : pathname.startsWith("/products/esco/")
       ? "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com/readiness"
@@ -575,6 +577,12 @@ for (const [engineName, browserType] of engines) {
                 `${engineName} ${viewport.name}: Products photography did not load`);
             }
 
+            if (route.name === "our-story") {
+              assert.equal(await page.locator("main h1").count(), 1);
+              assert.equal(await page.locator(".np-story-voice blockquote").count(), 4);
+              assert.ok(await page.locator(".np-story-voice").first().innerText().then(text => text.includes("We wanted")));
+              assert.ok(await page.locator("footer a[href='/our-story/']").count());
+            }
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
             await assertFooterHeadings(page, `${engineName} ${viewport.name} ${route.path}`);
             if (route.name === "home" && viewport.name !== "tablet-768") {
@@ -897,6 +905,7 @@ for (const [engineName, browserType] of engines) {
         "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
         "/products/nutraxin/womens-multivitamin-complex-60-tablets/"
       ]) {
+        await mockLocalReadiness(touchPage, route);
         const response = await touchPage.goto(route, { waitUntil: "networkidle", timeout: 30_000 });
         assert.equal(response?.status(), 200, `${engineName} touch ${route}: navigation failed`);
         await touchPage.locator("main").waitFor({ state: "visible", timeout: 15_000 });
