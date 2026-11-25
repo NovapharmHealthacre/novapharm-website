@@ -103,6 +103,8 @@ for (const category of nutraxinCategories) {
   if (schema.some(item => ["Product", "Offer"].includes(item["@type"]))) fail(file + " must not publish duplicate offers");
   const list = schema.find(item => item["@type"] === "ItemList");
   if (list?.numberOfItems !== category.products.length) fail(file + " item count mismatch");
+  if ((html.match(/<link\b[^>]*rel="stylesheet"[^>]*href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"[^>]*>/g) || []).length !== 1) fail(file + " must load exactly one category retail stylesheet");
+  if (!html.includes('class="npd-main nx-category-page"') || !html.includes('class="nx-category-grid"')) fail(file + " missing dedicated category retail layout");
   if (!source("products/nutraxin/index.html").includes('href="/products/nutraxin/' + category.slug + '/"')) fail(file + " is not linked from Nutraxin collection");
   for (const slug of category.products) if (!html.includes('href="/products/nutraxin/' + slug + '/"')) fail(file + " missing product link " + slug);
 }
