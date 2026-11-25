@@ -68,6 +68,7 @@ await import("./apply-products-editorial.mjs");
 // Generate one governed public search, then a cross-brand order-status lookup.
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
+await import("./generate-retail-expansion.mjs");
 
 // Finalized static pages must all load the RTL layout bootstrap,
 // including late-generated commerce, Marketplace and regulated legal pages.
