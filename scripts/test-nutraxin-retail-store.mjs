@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { bagDiscoveryProducts, comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { bagDiscoveryProducts, comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, mergeRetailOffers, merchantSaleReady, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -390,4 +390,13 @@ test("Klarna retail identification is readiness-gated and contains no credit cla
  assert.equal(domainTokens.some(forbiddenProviderToken),false,"No Stripe.js or direct Klarna domain is embedded in this retail module");
  const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
  assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
+});
+
+test("verified multi-brand offers share the bag and stale offers remain removable",()=>{
+ const sku="NP-CP-4006381333931";const p={sku,gtin:"4006381333931",name:"Fixture",pack:"30 tablets",brand:"Fixture",category:"Supplements",image:"/assets/media/products/fixture.webp",vatBasisPoints:2000,netMinor:1000,grossMinor:1200,availableQuantity:3};
+ const mixed=mergeRetailOffers(catalogue,{schema:"novapharm-retail-offers-v1",currency:"GBP",products:[p]});
+ assert.ok(catalogueIsSafe(mixed));assert.ok(merchantSaleReady(mixed.products.at(-1),mixed));
+ const lines=[{sku:catalogue.products[0].sku,quantity:1},{sku,quantity:2}];
+ assert.deepEqual(safeBasket(lines,mixed.products),lines);assert.equal(basketSubtotal(lines,mixed),3947);
+ const unavailable=mergeRetailOffers(catalogue,null,lines);assert.deepEqual(safeBasket(lines,unavailable.products),lines);assert.equal(basketSubtotal(lines,unavailable),null);assert.equal(merchantSaleReady(unavailable.products.at(-1),unavailable),false);
 });
