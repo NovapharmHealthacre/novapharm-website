@@ -921,34 +921,44 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
 }
 
 
-/* UK search-intent collections: product photographs are not numbered ledger icons.
-   Preserve their intrinsic aspect ratio and keep the product copy readable. */
-body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article {
-  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
-  align-items: center;
+/* Nutraxin category retail layout. Independent of the numbered B2B portfolio
+   grid (54px first track), scoped to the five public discovery pages. */
+.nx-category-page { color:#0B0B0E; background:#FFFFFF; }
+.nx-category-page .nx-category-collection { padding-block:clamp(32px,5vw,72px); }
+.nx-category-page .nx-category-collection h1 { max-width:24ch; font-size:clamp(2rem,4vw,3.4rem); line-height:1.12; letter-spacing:normal; }
+.nx-category-page .nx-category-collection h1 + p { max-width:72ch; line-height:1.6; color:#565A61; }
+.nx-category-page .nx-category-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(24px,4vw,56px); margin-top:clamp(28px,4vw,48px); }
+.nx-category-page .nx-category-card { display:flex; flex-direction:column; min-width:0; padding:0; border:0; background:#FFFFFF; }
+.nx-category-page .nx-category-visual { display:grid; place-items:center; box-sizing:border-box; min-width:0; padding:clamp(18px,3vw,36px); background:#F8F7F3; border-radius:16px; }
+.nx-category-page .nx-category-visual .npd-product-picture { display:block; width:min(100%,340px); max-width:100%; aspect-ratio:1 / 1; min-width:0; }
+.nx-category-page .nx-category-visual img { display:block; width:100%; height:100%; max-width:100%; object-fit:contain; object-position:center; }
+.nx-category-page .nx-category-copy { display:flex; flex-direction:column; align-items:flex-start; flex:1; min-width:0; padding-block:22px 28px; border-bottom:1px solid #DEDCD5; }
+.nx-category-page .nx-category-copy h2 { margin:0 0 8px; font-size:clamp(1.25rem,2.25vw,1.75rem); line-height:1.25; letter-spacing:normal; overflow-wrap:anywhere; }
+.nx-category-page .nx-category-copy h2 a { color:#0B0B0E; text-decoration:none; }
+.nx-category-page .nx-category-copy h2 a:hover { text-decoration:underline; }
+.nx-category-page .nx-category-copy p { margin:0 0 14px; font-size:1rem; line-height:1.55; color:#565A61; }
+.nx-category-page .nx-category-copy .nx-category-pack { color:#0B0B0E; font-weight:600; }
+.nx-category-page .nx-category-link { display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; min-height:44px; max-width:100%; margin-top:auto; padding:10px 18px; border:1px solid #0B0B0E; border-radius:4px; color:#FFFFFF; background:#0B0B0E; font-size:.95rem; font-weight:600; line-height:1.4; text-align:center; text-decoration:none; overflow-wrap:anywhere; }
+.nx-category-page .nx-category-link:hover { color:#0B0B0E; background:#FFFFFF; }
+.nx-category-page a:focus-visible { outline:3px solid #9D1B32; outline-offset:3px; }
+.nx-category-page .nx-category-guide { background:#FFFFFF; }
+.nx-category-page .nx-category-guide p { max-width:72ch; line-height:1.6; }
+@media (max-width:640px) {
+  .nx-category-page .nx-category-grid { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .nx-category-page .nx-category-copy { padding-block:18px 24px; }
+  .nx-category-page .nx-category-link { width:100%; }
 }
-body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article > div {
-  min-width: 0;
-}
-body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture {
-  display: block;
-  width: 100%;
-  max-width: 240px;
-}
-body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: center;
-}
-@media (max-width: 720px) {
-  body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-  body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture {
-    margin-inline: auto;
-  }
+@media print {
+  body:has(.nx-category-page) :is(.cookie-banner,.cookie-dialog) { display:none !important; }
+  .nx-category-page .nx-category-collection, .nx-category-page .nx-category-guide { padding:4mm 0; }
+  .nx-category-page .nx-category-collection h1 { font-size:20pt; max-width:none; }
+  .nx-category-page .nx-category-grid { display:block; margin-top:5mm; }
+  .nx-category-page .nx-category-card { display:grid; grid-template-columns:44mm minmax(0,1fr); align-items:start; gap:5mm; padding:3mm 0; break-inside:avoid; page-break-inside:avoid; border-bottom:1px solid #DEDCD5; }
+  .nx-category-page .nx-category-visual { width:44mm; padding:2mm; border-radius:2mm; }
+  .nx-category-page .nx-category-visual .npd-product-picture { width:100%; aspect-ratio:1 / 1; }
+  .nx-category-page .nx-category-visual img { width:100%; height:auto !important; max-height:40mm !important; object-fit:contain; }
+  .nx-category-page .nx-category-copy { padding:0; border:0; }
+  .nx-category-page .nx-category-copy h2 { font-size:13pt; line-height:1.25; }
+  .nx-category-page .nx-category-copy p { font-size:10pt; margin-bottom:2mm; }
+  .nx-category-page .nx-category-link { color:#0B0B0E !important; background:transparent !important; border:0; padding:0; min-height:0; width:auto; text-align:left; font-size:10pt; text-decoration:underline; }
 }
