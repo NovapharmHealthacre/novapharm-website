@@ -334,6 +334,60 @@ class ProductsPaymentTests(unittest.TestCase):
                 "ownerCommercialPolicy":{"S":"nutraxin_uk_direct_v1"}}
             self.assertEqual(json.loads(API.handler(event,None)["body"])["offers"],[])
 
+    def test_welcome10_automatic_quote_claim_and_replay(self):
+        from unittest.mock import patch
+        policy=self.promotion_policy(audience="first_account_once",
+            campaign_id="WELCOME-ONCE-V1",privilege_kind="welcome",
+            automatic_welcome=True,discoverable=True,minimum_gross_minor=4000)
+        data=json.loads(policy["Parameter"]["Value"])
+        campaigns=data["retail_promotions"]["campaigns"]
+        campaigns["WELCOME10"]=campaigns.pop("TEST10")
+        policy["Parameter"]["Value"]=json.dumps(data)
+        token=self.consumer_token()
+        basket=dict(self.basket(qty=4),promo_code="WELCOME10")
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            self.assertEqual(API.handler(self.event("/quote","POST",basket),None)["statusCode"],422)
+            small=dict(self.basket(qty=1),promo_code="WELCOME10")
+            self.assertEqual(API.handler(self.account_event("/account/quote","POST",small,token),None)["statusCode"],422)
+            offers=API.handler(self.account_event("/account/privileges",token=token),None)
+            self.assertEqual(json.loads(offers["body"])["offers"][0]["code"],"WELCOME10")
+            q=API.handler(self.account_event("/account/quote","POST",basket,token),None)
+            self.assertEqual(q["statusCode"],200,q["body"])
+            self.assertEqual(json.loads(q["body"])["discountGrossMinor"],432)
+            self.assertFalse(DB.rows)
+            self.assertFalse(WORKER.calls)
+            basket["basket_version"]=json.loads(q["body"])["basketVersion"]
+            event=self.account_event("/account/checkout","POST",basket,token)
+            self.assertEqual(API.handler(event,None)["statusCode"],200)
+            grants=[v for k,v in DB.rows.items() if k.startswith("PROMO_GRANT#")]
+            self.assertEqual(len(grants),1)
+            self.assertEqual(grants[0]["status"]["S"],"CLAIMED")
+            self.assertEqual(API.handler(event,None)["statusCode"],200)
+            duplicate=dict(basket,request_id="cccccccc-bbbb-4ccc-8ddd-eeeeeeeeeeee")
+            self.assertEqual(API.handler(self.account_event("/account/checkout","POST",duplicate,token),None)["statusCode"],422)
+            self.assertEqual(API.handler(self.account_event("/account/quote","POST",basket,token),None)["statusCode"],422)
+
+    def test_automatic_welcome_does_not_override_existing_paid_order(self):
+        from unittest.mock import patch
+        subject="consumer_11111111222243338444555555555555"
+        prior="NUT-bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        idx="CONSUMER#"+subject
+        DB.rows[idx]={"pk":{"S":idx},"sk":{"S":"ORDER#000000000001#"+prior},
+                      "orderId":{"S":prior},"customerSub":{"S":subject}}
+        DB.rows["ORDER#"+prior]={"customerSub":{"S":subject},"status":{"S":"PAID"},
+            "ownerCommercialPolicy":{"S":"nutraxin_uk_direct_v1"}}
+        policy=self.promotion_policy(audience="first_account_once",campaign_id="WELCOME-ONCE-V1",
+                                      privilege_kind="welcome",automatic_welcome=True)
+        data=json.loads(policy["Parameter"]["Value"])
+        campaigns=data["retail_promotions"]["campaigns"]
+        campaigns["WELCOME10"]=campaigns.pop("TEST10")
+        policy["Parameter"]["Value"]=json.dumps(data)
+        with patch.object(SSM,"get_parameter",return_value=policy):
+            result=API.handler(self.account_event("/account/quote","POST",
+                  dict(self.basket(),promo_code="WELCOME10"),self.consumer_token()),None)
+            self.assertEqual(result["statusCode"],422)
+            self.assertFalse(WORKER.calls)
+
     def test_birthday_privilege_requires_reviewed_occasion_and_current_year(self):
         import hashlib
         from unittest.mock import patch
