@@ -7,6 +7,10 @@ on:
       - "scripts/test-seo-pages-release-preflight.mjs"
       - "scripts/generate-nutraxin-shopping.mjs"
       - "scripts/stage-pages-artifact.mjs"
+      - "scripts/verify-sitewide-published-design.mjs"
+      - "scripts/verify-public-brand-source-live.mjs"
+      - "assets/data/nutraxin-uk-category-intents.json"
+      - ".github/workflows/publish-aws-contact-production.yml"
       - "src/seo/**"
       - "assets/data/nutraxin-retail-catalogue.json"
       - "docs/nutraxin-product-register.json"
@@ -44,7 +48,7 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Build a NON-PUBLISHED public candidate
         run: |
-          npm run build:public-only
+          PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           node scripts/stage-pages-artifact.mjs _site
       - name: Prove public-only candidate is blocked from downgrading contact
         run: |
@@ -59,6 +63,10 @@ jobs:
           node scripts/activate-contact-intake.mjs
           node scripts/verify-seo-pages-release-preflight.mjs _site
           cp audit/generated/nutraxin-seo-release-preflight.json audit/generated/nutraxin-seo-release-preflight-contact-preserving.json
+      - name: Run the identical production sitewide gate against the isolated candidate
+        run: |
+          node scripts/verify-sitewide-published-design.mjs --artifact _site "$(git rev-parse HEAD)"
+          node scripts/verify-nutraxin-merchant-live.mjs --local --artifact=_site
       - name: Upload read-only evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
