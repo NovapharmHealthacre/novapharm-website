@@ -17,6 +17,8 @@ function consumerAccess(){
  return null;
 }
 const SHOP_URL = "/products/nutraxin/";
+const MULTIBRAND_URL = "/products/health-and-wellbeing/";
+const CP_SKU = /^NP-CP-(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})$/;
 
 export function safeBasket(items, catalogueProducts) {
   const allowed = new Set(catalogueProducts.map((product) => product.sku));
@@ -34,16 +36,40 @@ export function safeBasket(items, catalogueProducts) {
 }
 
 export function catalogueIsSafe(data) {
-  if (!data || data.currency !== "GBP" || !Array.isArray(data.products) || data.products.length !== 19) return false;
+  if (!data || data.currency !== "GBP" || !Array.isArray(data.products) || (data.multibrand === true ? data.products.filter(p=>p?.sku?.startsWith("NUT-UK-")).length !== 19 : data.products.length !== 19)) return false;
   const seen = new Set();
   for (const p of data.products) {
-    if (!p || !/^NUT-UK-[A-Z0-9-]+$/.test(p.sku) || !/^[a-z0-9-]+$/.test(p.slug) ||
+    if (!p || !(/^NUT-UK-[A-Z0-9-]+$/.test(p.sku) || (data.multibrand === true && CP_SKU.test(p.sku))) || !/^[a-z0-9-]+$/.test(p.slug) ||
         typeof p.name !== "string" || p.name.length < 3 || typeof p.pack !== "string" || seen.has(p.sku)) return false;
     seen.add(p.sku);
   }
   return true;
 }
 
+export function mergeRetailOffers(base, response, saved = []) {
+  if (!catalogueIsSafe(base) || base.multibrand) throw new Error("Invalid base catalogue");
+  const extra = new Map();
+  if(response?.schema==="novapharm-retail-offers-v1" && response.currency==="GBP" && Array.isArray(response.products)){
+    for(const p of response.products){
+      if(!p || !CP_SKU.test(p.sku) || p.sku!=="NP-CP-"+p.gtin || extra.has(p.sku) ||
+         ![p.name,p.pack,p.brand,p.category].every(v=>typeof v==="string"&&v.length>0&&v.length<=90) ||
+         typeof p.image!=="string" || !/^\/assets\/media\/products\/[a-zA-Z0-9/_-]+\.(?:avif|webp|png|jpg)$/.test(p.image) ||
+         ![0,500,2000].includes(p.vatBasisPoints) || !Number.isSafeInteger(p.netMinor) || p.netMinor<1 ||
+         !Number.isSafeInteger(p.grossMinor) || p.grossMinor!==p.netMinor+Math.round(p.netMinor*p.vatBasisPoints/10000) ||
+         !Number.isSafeInteger(p.availableQuantity)||p.availableQuantity<1||p.availableQuantity>MAX_PER_SKU) continue;
+      extra.set(p.sku,{sku:p.sku,slug:p.gtin,name:p.name,pack:p.pack,range:p.category,brand:p.brand,image:p.image,
+        retail_net_pence:p.netMinor,retail_price_pence:p.grossMinor,vatBasisPoints:p.vatBasisPoints,
+        availableQuantity:p.availableQuantity,available_to_sell:true,ordering_enabled:true,retailOfferVerified:true});
+    }
+  }
+  // An unavailable or withdrawn item must never silently disappear from a saved mixed bag.
+  // Keep it removable, unpriced and unorderable until the authoritative offer returns.
+  for(const line of Array.isArray(saved)?saved:[]){
+    if(!line || !CP_SKU.test(line.sku) || extra.has(line.sku)) continue;
+    extra.set(line.sku,{sku:line.sku,slug:line.sku.slice(6),name:"Product currently unavailable",pack:"Reference "+line.sku.slice(6),range:"Unavailable",image:"",available_to_sell:false,ordering_enabled:false});
+  }
+  return extra.size?{...base,multibrand:true,products:[...base.products,...extra.values()]}:base;
+}
 export function publicPrice(product, data) {
   // Explicit owner-authorised guide display is separate from payment authorisation.
   const viewable = (data?.price_authority === "approved_consumer_retail" && data.payment_collection_enabled === true) ||
@@ -60,7 +86,7 @@ export function merchantSaleReady(product, data) {
     data?.checkout_enabled === true &&
     data?.payment_collection_enabled === true &&
     product?.ordering_enabled === true &&
-    product?.available_to_sell === true;
+    product?.available_to_sell === true && (!CP_SKU.test(product?.sku||"") || product.retailOfferVerified===true);
 }
 
 // Comparison is a transient, explicitly selected shortlist, not medical advice.
@@ -87,7 +113,8 @@ export function basketSubtotal(bag, data) {
     if (gross === null || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_PER_SKU) return null;
     if (data.price_authority === "approved_consumer_retail") {
       if (!Number.isSafeInteger(product.retail_net_pence) || product.retail_net_pence <= 0) return null;
-      if (gross !== product.retail_net_pence + Math.round(product.retail_net_pence * 20 / 100)) return null;
+      if (gross !== product.retail_net_pence + Math.round(product.retail_net_pence * (CP_SKU.test(product.sku)?product.vatBasisPoints:2000) / 10000)) return null;
+      if (CP_SKU.test(product.sku) && quantity>product.availableQuantity) return null;
     }
     // Same published per-unit gross in the public store, portal and worker.
     sum += gross * quantity;
@@ -118,7 +145,7 @@ function saveBag(items) {
   catch { /* Bag still works in this tab if storage is disabled. */ }
 }
 function count(items) { return items.reduce((sum, item) => sum + item.quantity, 0); }
-function productUrl(product) { return SHOP_URL + product.slug + "/"; }
+function productUrl(product) { return (CP_SKU.test(product.sku)?MULTIBRAND_URL:SHOP_URL) + product.slug + "/"; }
 function productPriceLabel(product, data) {
   const pence = publicPrice(product, data);
   return pence === null ? "Price pending" : formatGBP(pence);
@@ -247,11 +274,13 @@ function runStore(data) {
       return;
     }
     const existing = bag.find((item) => item.sku === sku);
+    if (CP_SKU.test(sku) && (existing?.quantity||0)+qty>productMap.get(sku).availableQuantity) { toast("Requested quantity is not available."); return false; }
     bag = safeBasket([...bag.filter((item) => item.sku !== sku), { sku, quantity: Math.min(MAX_PER_SKU, (existing?.quantity || 0) + qty) }], data.products);
     saveBag(bag);
     updateNav();
     toast("Added to bag. Review your selection when you're ready.");
     emitRetailFunnelEvent("add_to_cart");
+    return true;
   };
   const top = document.querySelector("main");
   if (!top) return;
@@ -259,6 +288,7 @@ function runStore(data) {
   const nav = make("nav", "nx-store-topbar");
   nav.setAttribute("aria-label", "Nutraxin shopping navigation");
   nav.append(anchor("Explore Nutraxin", SHOP_URL));
+  if(data.multibrand || window.location.pathname.startsWith(MULTIBRAND_URL)) nav.append(anchor("Health and wellbeing", MULTIBRAND_URL));
   const bagNav = anchor("Bag", BAG_URL, "nx-store-bag-link");
   const tally = make("span", null, String(count(bag)));
   tally.dataset.nxBagCount = "true";
@@ -501,7 +531,7 @@ function runStore(data) {
           if (!p) continue;
           const item = make("article", "nx-bag-item");
           const image = make("img");
-          image.src = p.image; image.alt = p.name + " pack"; image.loading = "lazy"; image.width = 96; image.height = 96;
+          if(p.image) image.src = p.image; else image.hidden=true; image.alt = p.name + " pack"; image.loading = "lazy"; image.width = 96; image.height = 96;
           const details = make("div");
           const name = make("h2", null, p.name);
           const pack = make("p", "nx-bag-pack", p.pack);
@@ -597,7 +627,7 @@ function runStore(data) {
         const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
           data.provisional_uk_delivery_cost_seller_funded === true;
         shipping.textContent = ready ? "Included · UK" : (ukDeliveryIncluded ? "£0.00 · UK only" : "Not confirmed");
-        tax.textContent = "20% UK VAT included";
+        tax.textContent = bag.some(line=>CP_SKU.test(line.sku))?"Applicable UK VAT included":"20% UK VAT included";
         promoSection.hidden = !promoSupported || !approvedRelease || !bag.length || !!confirmedOrder || !!awaitingOrder;
         privileges.hidden = promoSection.hidden || !privilegesSupported;
         const currentPrivilegeToken = consumerAccess();
@@ -772,6 +802,23 @@ function runStore(data) {
         if (privilegesSupported && consumerAccess() && bag.length) void loadPrivileges();
       })();
     }
+  } else if(path.startsWith(MULTIBRAND_URL) || path===MULTIBRAND_URL.slice(0,-1)){
+    for(const host of document.querySelectorAll("[data-npr-retail-sku]")){
+      const p=productMap.get(host.dataset.nprRetailSku);
+      if(!p || !merchantSaleReady(p,data) || publicPrice(p,data)===null) continue;
+      const panel=make("section","nx-store-panel");
+      panel.setAttribute("aria-label","Online ordering");
+      panel.append(make("p","nx-store-price",formatGBP(publicPrice(p,data))),make("p","nx-store-note",p.vatBasisPoints/100+"% UK VAT · UK delivery included"));
+      const options=make("div","nx-store-options");
+      const label=make("label","nx-store-qty-label","Quantity");
+      const qty=make("select","nx-store-qty");
+      for(let i=1;i<=Math.min(10,p.availableQuantity);i++){const opt=make("option",null,String(i));opt.value=String(i);qty.append(opt);}
+      label.append(qty);
+      const add=make("button","nx-store-add","Add to Bag");add.type="button";add.onclick=()=>put(p.sku,Number(qty.value));
+      const buy=make("button","nx-store-add nx-store-buy-now","Buy now");buy.type="button";buy.onclick=()=>{if(put(p.sku,Number(qty.value)))window.location.assign(BAG_URL);};
+      options.append(label,add,buy);panel.append(options);
+      host.replaceChildren(panel);
+    }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
     const selected = new Set();
     const compareButtons = new Map();
@@ -921,7 +968,7 @@ function mountGiftPreview(main) {
 async function init() {
   if (typeof document === "undefined") return;
   const path = window.location.pathname;
-  if (!path.startsWith(SHOP_URL) || path.startsWith(SHOP_URL + "order-request/")) return;
+  if ((!path.startsWith(SHOP_URL) && !path.startsWith(MULTIBRAND_URL)) || path.startsWith(SHOP_URL + "order-request/")) return;
   if (path === SHOP_URL + "gift-cards/" || path === SHOP_URL + "gift-cards") {
     const preview = document.querySelector("[data-nx-gift-preview]");
     if (preview) mountGiftPreview(preview);
@@ -933,7 +980,13 @@ async function init() {
     if (!response.ok) throw new Error("Catalogue unavailable");
     const catalogue = await response.json();
     if (!catalogueIsSafe(catalogue)) throw new Error("Unverified catalogue");
-    runStore(catalogue);
+    let offers=null,saved=[];
+    try { saved=JSON.parse(localStorage.getItem(BAG_KEY)||"[]"); }catch{}
+    try {
+      const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(2500)});
+      if(extra.ok) offers=await extra.json();
+    }catch{}
+    runStore(mergeRetailOffers(catalogue,offers,saved));
   } catch {
     // Fail closed: don't show invented prices or a misleading payment journey.
     const main = document.querySelector("main");
