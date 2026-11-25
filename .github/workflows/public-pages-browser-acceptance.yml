@@ -32,6 +32,9 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-nutraxin-category-layout-browser.mjs
+      - scripts/apply-corporate-product-discipline.mjs
+      - products/nutraxin/**
       - scripts/activate-contact-intake.mjs
       - scripts/managed-contact-layout.mjs
       - scripts/test-managed-contact-layout-browser.mjs
@@ -72,6 +75,9 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-nutraxin-category-layout-browser.mjs
+      - scripts/apply-corporate-product-discipline.mjs
+      - products/nutraxin/**
       - scripts/activate-contact-intake.mjs
       - scripts/managed-contact-layout.mjs
       - scripts/test-managed-contact-layout-browser.mjs
@@ -141,6 +147,11 @@ jobs:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
           PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
         run: node scripts/test-nutraxin-product-layout-browser.mjs
+      - name: Verify all five Nutraxin category pages on Chromium and WebKit (screen and print)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-nutraxin-category-layout-browser.mjs
       - name: Verify unboxed footer language picker on Chromium and WebKit at 320px, 390px and desktop
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
