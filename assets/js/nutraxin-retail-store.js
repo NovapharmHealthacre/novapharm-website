@@ -982,9 +982,13 @@ async function init() {
     if (!catalogueIsSafe(catalogue)) throw new Error("Unverified catalogue");
     let offers=null,saved=[];
     try { saved=JSON.parse(localStorage.getItem(BAG_KEY)||"[]"); }catch{}
+    // Preserve the original Nutraxin-only journey: no calls to an unreleased endpoint.
+    const needsExtra=path.startsWith(MULTIBRAND_URL)||saved.some?.(line=>CP_SKU.test(line?.sku||""))===true;
     try {
+      if(needsExtra){
       const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(2500)});
       if(extra.ok) offers=await extra.json();
+      }
     }catch{}
     runStore(mergeRetailOffers(catalogue,offers,saved));
   } catch {
