@@ -13,7 +13,12 @@ const products = [
   "vitamin-d3-spray-30ml", "vitamin-max-15-effervescent-tablets", "vitamin-max-60-tablets",
   "womens-multivitamin-complex-60-tablets"
 ];
-const routes = [...new Set([...PUBLIC_ROUTES, "/about/", "/technology/", "/news-insights/",
+// Category routes are discovery pages, not additional sellable product identities.
+const categories = ["magnesium", "vitamin-c", "vitamin-d", "multivitamins", "collagen"];
+const categoryRegister = JSON.parse(readFileSync(new URL("../assets/data/nutraxin-uk-category-intents.json", import.meta.url), "utf8"));
+assert.deepEqual(categoryRegister.categories.map(c => c.slug).sort(), [...categories].sort(), "Exactly the five approved category routes are required");
+assert.equal(new Set([...products, ...categories]).size, 24, "Product and category slugs must not overlap");
+const routes = [...new Set([...PUBLIC_ROUTES, "/about/", "/our-story/", "/technology/", "/news-insights/",
   "/products/nutraxin/", "/products/nutraxin/bag/",
   "/distribution/", "/market-access/", "/markets/", "/services/", "/cro/",
   "/regulatory-services/", "/trust-centre/", "/about/company/", "/about/governance/",
@@ -30,7 +35,7 @@ const routes = [...new Set([...PUBLIC_ROUTES, "/about/", "/technology/", "/news-
   "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
   "/news-insights/oncology-supply-chain-demand-forecasting/",
   "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
-  ...products.map(slug => "/products/nutraxin/" + slug + "/")])];
+  ...[...products, ...categories].map(slug => "/products/nutraxin/" + slug + "/")])];
 const artifactMode = process.argv[2] === "--artifact";
 const artifactRoot = artifactMode ? resolve(process.argv[3] || "_site") : null;
 const expected = artifactMode ? process.argv[4] : process.env.EXPECTED_SITEWIDE_SHA;
@@ -38,7 +43,18 @@ if (expected) assert.match(expected, /^[a-f0-9]{40}$/, "Exact source SHA require
 if (artifactMode) {
   const dirs = readdirSync(resolve(artifactRoot, "products/nutraxin"), { withFileTypes: true });
   const found = dirs.filter(d => d.isDirectory() && !["account","bag","gift-cards","order-request"].includes(d.name)).map(d => d.name).sort();
-  assert.deepEqual(found, [...products].sort(), "Exactly the 19 reviewed product routes are required");
+  // Check the entire discovered inventory, not just an allowlist filter.
+  // Extra directories, missing products or missing categories remain fatal.
+  assert.deepEqual(found, [...products, ...categories].sort(), "Exactly 19 reviewed products and five approved category routes are required");
+  for (const slug of products) {
+    const html = readFileSync(resolve(artifactRoot, "products/nutraxin", slug, "index.html"), "utf8");
+    assert(html.includes('"@type":"Product"'), "Missing product identity: " + slug);
+  }
+  for (const slug of categories) {
+    const html = readFileSync(resolve(artifactRoot, "products/nutraxin", slug, "index.html"), "utf8");
+    assert(html.includes('"@type":"ItemList"'), "Missing category identity: " + slug);
+    assert(!html.includes('"@type":"Product"'), "Category must not duplicate a sellable Product identity: " + slug);
+  }
   assert.ok(readFileSync(resolve(artifactRoot, "assets/css/novapharm.bundle.css"), "utf8").includes("--np-color-canvas: #FFFFFF"), "Approved white canvas is missing");
 }
 const nonce = Date.now();

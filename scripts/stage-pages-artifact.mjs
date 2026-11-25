@@ -92,6 +92,7 @@ const requiredPublicPaths = [
   "llms.txt",
   "assets",
   "capabilities/index.html",
+  "our-story/index.html",
   "cro/index.html",
   "distribution/index.html",
   "market-access/index.html",
