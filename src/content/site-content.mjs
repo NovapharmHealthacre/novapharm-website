@@ -391,6 +391,11 @@ export const pageMeta = Object.freeze({
     description: "Why NovaPharm exists, the UK pharmaceutical supply problem it is preparing to address, its mission, operating principles and international outlook.",
     eyebrow: "About NovaPharm"
   },
+  "our-story": {
+    title: "Our Story | NovaPharm Healthcare",
+    description: "Discover NovaPharm’s beginnings, purpose, approach to healthcare, and the perspectives behind our organisation.",
+    eyebrow: "Our story"
+  },
   "about/company": {
     title: "Company | NovaPharm Healthcare Ltd",
     description: "NovaPharm Healthcare Ltd company facts, active B2B development, three-pillar sourcing strategy and authorisation-dependent regulated wholesale status.",

@@ -14,6 +14,7 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { ourStoryBody } from "../src/content/our-story.mjs";
 import { croContent } from "../src/content/cro-content.mjs";
 import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
@@ -127,7 +128,7 @@ for (const article of articles) {
 }
 
 function primarySection(slug) {
-  if (slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
+  if (slug === "our-story" || slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
   if (slug.startsWith("news-insights/")) return "news-insights";
   if (slug.startsWith("technology/")) return "technology";
   return slug;
@@ -1109,6 +1110,7 @@ function buildSitemap() {
 export function buildPublicPages() {
   write("index.html", homePage());
   write("about/index.html", aboutPage());
+  write("our-story/index.html", documentShell({ meta: pageMeta["our-story"], slug: "our-story", body: ourStoryBody }).replace("</head>", '  <link rel="stylesheet" href="/assets/css/our-story.css">\n</head>'));
   write("about/company/index.html", companyPage());
   write("about/governance/index.html", governancePage());
   write("leadership/index.html", leadershipIndexPage());
