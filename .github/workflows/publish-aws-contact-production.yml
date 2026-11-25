@@ -543,6 +543,9 @@ jobs:
           ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
           ! grep -Fq 'type="password"' _site/portal/index.html
+      - name: Require complete sitewide design before any public artifact is uploaded
+        run: |
+          node scripts/verify-sitewide-published-design.mjs --artifact _site "$(git rev-parse HEAD)"
       - name: Bind staged shared stylesheet to deployment receipt
         id: public_css
         run: |
@@ -594,6 +597,18 @@ jobs:
           set -euo pipefail
           [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           node scripts/check-pages-monotonic-release.mjs
+      - name: Require Actions-only Pages source before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mode=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')
+          if [ "$mode" != workflow ]; then
+            echo "::error::Unsafe branch-based Pages publication. In Settings > Pages choose GitHub Actions as Source before releasing."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.cname' | grep -Fxq novapharmhealthcare.com
+          gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.https_enforced' | grep -Fxq true
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
@@ -602,6 +617,10 @@ jobs:
         with:
           ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           persist-credentials: false
+      - name: Verify all public design routes at exact deployed SHA
+        env:
+          EXPECTED_SITEWIDE_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-sitewide-published-design.mjs
       - name: Verify 19 live Product Offers and Google Shopping TSV
         env:
           GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}

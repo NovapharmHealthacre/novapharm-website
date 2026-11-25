@@ -12,6 +12,21 @@ const listDirs = (root, folder) => readdirSync(join(root, folder), { withFileTyp
   .filter(entry => entry.isDirectory() && !entry.name.startsWith("."))
   .map(entry => entry.name).sort();
 
+export function assertLegacyPublisherDisabled(workflow) {
+  for (const job of ["build", "deploy"]) {
+    // Split on job boundaries rather than accepting a disabled step or comment.
+    const lines = workflow.split("\n");
+    const start = lines.indexOf("  " + job + ":");
+    assert.ok(start >= 0, "Missing retired legacy publishing job: " + job);
+    const rest = lines.slice(start + 1);
+    const boundary = rest.findIndex(line => /^  [a-zA-Z0-9_-]+:\s*$/.test(line));
+    const body = boundary < 0 ? rest : rest.slice(0, boundary);
+    const conditions = body.filter(line => /^    if:/.test(line));
+    assert.deepEqual(conditions, ["    if: ${{ false }}"], "Legacy publishing job must be disabled: " + job);
+  }
+  assert.match(workflow, /validate-release:\s*\n    if: github.event_name == 'pull_request'/);
+}
+
 export function auditPolicy(root = REPO_ROOT, suppliedPolicy = null) {
   const policy = suppliedPolicy ?? JSON.parse(read(root, POLICY_FILE));
   assert.equal(policy.schemaVersion, 1, "Unknown CI policy schema");
@@ -69,7 +84,10 @@ export function auditPolicy(root = REPO_ROOT, suppliedPolicy = null) {
   }
   const publisher = read(root, ".github/workflows/pages-live-publish.yml");
   assert.match(publisher, /Prevent silent downgrade of a verified live contact service/);
-  assert.match(publisher, /if: github.event_name != 'pull_request'/);
+  // The branch-independent guarded AWS publisher is the sole production path.
+  // Keep the legacy PR-validation workflow, but require both legacy jobs to
+  // be unconditionally disabled. A renamed comment is not an executable gate.
+  assertLegacyPublisherDisabled(publisher);
   const contact = read(root, ".github/workflows/publish-aws-contact-production.yml");
   assert.match(contact, /Enforce separately approved customer-production or public-branding-only permissions/);
   // The former Contact-only step was deliberately expanded. Preserve the
@@ -78,6 +96,15 @@ export function auditPolicy(root = REPO_ROOT, suppliedPolicy = null) {
   assert.match(contact, /BRANDING_ONLY=true node scripts\/verify-public-branding-only-release\.mjs/);
   assert.match(contact, /Branding-only publishing denied; general customer signoff cannot authorize this scope/);
   assert.match(contact, /productionSignoff/);
+  assert.match(contact, /Require complete sitewide design before any public artifact is uploaded/);
+  assert.match(contact, /node scripts\/verify-sitewide-published-design\.mjs --artifact _site/);
+  assert.match(contact, /Require Actions-only Pages source before publication/);
+  assert.match(contact, /if \[ "\$mode" != workflow \]; then/);
+  assert.match(contact, /Verify all public design routes at exact deployed SHA/);
+  const monitor = read(root, ".github/workflows/verify-sitewide-published-design.yml");
+  assert.match(monitor, /workflow_run:/);
+  assert.match(monitor, /pages build and deployment/);
+  assert.match(monitor, /node scripts\/verify-sitewide-published-design\.mjs/);
   return { projects: requiredProjects.reduce((n, type) => n + policy.projects[type].length, 0), domains: domainNames.length, tests: allTests.size, references: coverage };
 }
 
