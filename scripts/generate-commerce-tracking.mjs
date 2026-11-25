@@ -59,3 +59,6 @@ writeFileSync(marketPath,market.replace('<a href="/products/esco/">Shop ESCO</a>
 assert(template.includes('class="npd-commerce-link"'));
 writeFileSync(productsPath,template.replace('href="/products/marketplace/">Search all 392 products</a>','href="/products/marketplace/">Search all 392 products</a><a href="/products/track/">Track an order</a>'),'utf8');
 console.log('Generated privacy-safe, unified Nutraxin and ESCO order-status lookup.');
+
+// Generate retail expansion before later shared footer, RTL and versioning passes.
+await import("./generate-retail-expansion.mjs");
