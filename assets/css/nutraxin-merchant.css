@@ -919,3 +919,36 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
     overflow-wrap:break-word;
   }
 }
+
+
+/* UK search-intent collections: product photographs are not numbered ledger icons.
+   Preserve their intrinsic aspect ratio and keep the product copy readable. */
+body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article {
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  align-items: center;
+}
+body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article > div {
+  min-width: 0;
+}
+body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+}
+body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 720px) {
+  body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list article {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  body[data-page="product-portfolio/nutraxin"]:is([data-route="/products/nutraxin/collagen/"],[data-route="/products/nutraxin/magnesium/"],[data-route="/products/nutraxin/multivitamins/"],[data-route="/products/nutraxin/vitamin-c/"],[data-route="/products/nutraxin/vitamin-d/"]) .npd-portfolio-list .npd-product-picture {
+    margin-inline: auto;
+  }
+}
