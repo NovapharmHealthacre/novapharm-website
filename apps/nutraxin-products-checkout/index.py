@@ -183,7 +183,11 @@ def retail_promotion(pricing, raw_code, instant, eligible_skus=None):
     if audience != "public_reusable" and (not isinstance(campaign_id,str)
         or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",campaign_id)):
         raise ValueError("promo_code_unavailable")
+    automatic_welcome = campaign.get("automatic_welcome") is True
+    if automatic_welcome and (code != "WELCOME10" or audience != "first_account_once" or kind != "welcome" or bps != 1000):
+        raise ValueError("promo_code_unavailable")
     return {"code":code,"revision":revision,"bps":bps,"floors":floors,"minimum":minimum,
+            "automatic_welcome":automatic_welcome,"ends_at":end,
             "audience":audience,"campaign_id":campaign_id,"kind":kind,
             "occasion_year":campaign.get("occasion_year")}
 
@@ -238,6 +242,21 @@ def returning_grant(promotion, subject, receipt, basket_hash):
     key={"pk":{"S":"PROMO_GRANT#"+digest},"sk":{"S":"META"}}
     row=PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,Key=key,
                              ConsistentRead=True).get("Item") or {}
+    # Only the explicitly enabled WELCOME10 campaign may create its own
+    # single-use claim. The quote never writes; the final claim is inserted
+    # atomically with the order using an absent-key condition.
+    if not row and promotion.get("automatic_welcome") is True:
+        if account_purchase_stage(subject)!="no_recorded_paid_orders":
+            raise ValueError("promo_code_unavailable")
+        if receipt is None:
+            return None
+        claimed={**key,"status":{"S":"CLAIMED"},"customerSub":{"S":subject},
+                 "campaignId":{"S":campaign_id},"promotionCode":{"S":promotion["code"]},
+                 "priorOrderId":{"S":"NONE"},"expiresAtUnix":{"N":str(promotion["ends_at"])},
+                 "claimedOrderId":{"S":receipt},"claimedBasketHash":{"S":basket_hash},
+                 "claimedAtUnix":{"N":str(now())}}
+        return {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":claimed,
+                       "ConditionExpression":"attribute_not_exists(pk)"}}
     if (row.get("customerSub")!={"S":subject} or row.get("campaignId")!={"S":campaign_id}
         or row.get("promotionCode")!={"S":promotion["code"]}):
         raise ValueError("promo_code_unavailable")
