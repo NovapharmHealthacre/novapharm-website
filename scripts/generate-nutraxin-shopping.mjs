@@ -165,7 +165,18 @@ const answerSection = (p, ref, inStock) => {
 };
 const htmlAttribute = value => String(value).replace(/&/g, "&amp;")
   .replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","google_product_category","shipping(country:price)"];
+// Derive count/volume from the exact governed pack, not an ingredient or serving amount.
+const unitPricing = product => {
+  // Manufacturer publisher lists 20 tablets while the governed catalogue lists 15.
+  // Do not publish a unit-price denominator until the physical sellable pack is verified.
+  if (product.sku === "NUT-UK-VMAX-E15") return ["", ""];
+  const match = product.packSize.match(/^(\d+)\s+(ml|(?:chewable |sublingual )?tablets|sachets)$/i);
+  assert(match, "Unrecognised unit pricing pack: " + product.sku);
+  const count = Number(match[1]);
+  assert(Number.isSafeInteger(count) && count > 0);
+  return match[2].toLowerCase() === "ml" ? [count + "ml", "100ml"] : [count + "ct", "1ct"];
+};
+const header = ["id","title","description","link","image_link","availability","price","condition","brand","gtin","product_type","google_product_category","shipping(country:price)","unit_pricing_measure","unit_pricing_base_measure"];
 const lines = [header.join("\t")];
 let saleReady = 0;
 
@@ -193,7 +204,7 @@ for (const product of registered.products) {
     p.sku, feedTitle(p),
     description,
     url, image, availability, money(p.retail_price_pence) + " GBP",
-    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, "525", ship
+    "new", "Nutraxin", gtin.gtin13, "Food Supplements > " + product.range, "525", ship, ...unitPricing(product)
   ].map(clean).join("\t"));
 
   const path = join(root, "products/nutraxin", p.slug, "index.html");
