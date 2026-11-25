@@ -46,7 +46,7 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 
 function globalSection(route) {
   if (route === "/") return "";
-  if (route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
+  if (route === "/our-story/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
   if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
@@ -74,7 +74,7 @@ const globalNavigation = [
 // remains usable as ordinary links without JavaScript.
 const megaNavigation = {
   company: [
-    ["Explore", [["Company overview", "/about/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Explore", [["Company overview", "/about/"], ["Our story", "/our-story/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
     ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
     ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
   ],
@@ -136,7 +136,7 @@ function footer() {
           <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
-        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
+        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/our-story/">Our story</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
         <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/products/track/">Check order status</a><a href="/products/nutraxin/account/">Personal orders &amp; account</a><a href="mailto:support@novapharmhealthcare.com">Customer support</a><a href="/trust-centre/">Trust centre</a></div>
@@ -820,6 +820,7 @@ for (const product of products) {
 }
 
 const familyRoutes = [
+  ["our-story/index.html", "/our-story/", "company"],
   ["about/company/index.html", "/about/company/", "company"],
   ["about/governance/index.html", "/about/governance/", "company"],
   ["leadership/index.html", "/leadership/", "company"],
