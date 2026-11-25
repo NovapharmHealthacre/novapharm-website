@@ -23,6 +23,7 @@ PRICES_PARAMETER = os.environ["PRICES_PARAMETER"]
 PAYMENT_LEDGER_TABLE = os.environ["PAYMENT_LEDGER_TABLE"]
 PRODUCTION_CHECKOUT_FUNCTION = os.environ["PRODUCTION_CHECKOUT_FUNCTION"]
 SHOP_ENABLED = os.environ.get("SHOP_ENABLED", "false") == "true"
+MULTIBRAND_ENABLED = os.environ.get("MULTIBRAND_ENABLED", "false") == "true"
 ALLOWED_ORIGINS = frozenset((
     "https://novapharmhealthcare.com",
     "https://www.novapharmhealthcare.com",
@@ -77,7 +78,69 @@ def reply(status, body):
 def error(status, code):
     return reply(status, {"error":code})
 
-def retail_promotion(pricing, raw_code, instant):
+def verified_retail_offer(row, instant):
+    """Allowlisted customer-facing fields only; private ledger approval is authoritative."""
+    try:
+        p=json.loads(row["offerJson"]["S"])
+        sku=row["sk"]["S"]
+        gtin=p["gtin"]
+        if not isinstance(gtin,str) or not re.fullmatch(r"(?:\d{8}|\d{12}|\d{13}|\d{14})",gtin):
+            return None
+        if (10-sum(int(c)*(3 if i%2==0 else 1) for i,c in enumerate(reversed(gtin[:-1])))%10)%10!=int(gtin[-1]):
+            return None
+        if sku!="NP-CP-"+gtin or p.get("sku")!=sku:
+            return None
+        if any(p.get(k) is not True for k in ("identityConfirmed","imageRightsConfirmed","ukRetailApproved","priceApproved","vatTreatmentVerified","stockVerified","fulfilmentVerified","orderingEnabled","sellerDeliveryCommitment","labelInformationVerified")):
+            return None
+        if p.get("productClass") not in ("food_supplement","cosmetic","consumer_non_medicinal"):
+            return None
+        if type(p.get("expiresAt")) is not int or not instant < p["expiresAt"] <= instant+31*86400:
+            return None
+        for key in ("name","pack","brand","category"):
+            if not isinstance(p.get(key),str) or not 1<=len(p[key])<=90 or any(ord(c)<32 for c in p[key]):
+                return None
+        if not isinstance(p.get("image"),str) or not re.fullmatch(r"/assets/media/products/[a-zA-Z0-9/_-]+\.(?:avif|webp|png|jpg)",p["image"]):
+            return None
+        net,vat,qty=p.get("netMinor"),p.get("vatBasisPoints"),p.get("availableQuantity")
+        if type(net) is not int or not 1<=net<=99999999 or type(vat) is not int or vat not in (0,500,2000) or type(qty) is not int or not 1<=qty<=10000:
+            return None
+        gross=net+(net*vat+5000)//10000
+        if gross>99999999 or p.get("grossMinor")!=gross:
+            return None
+        return {k:p[k] for k in ("sku","gtin","name","pack","brand","category","image","netMinor","vatBasisPoints","grossMinor","availableQuantity","productClass")}
+    except (KeyError,ValueError,TypeError,AttributeError):
+        return None
+
+def retail_offers(instant):
+    if not MULTIBRAND_ENABLED:
+        return {}
+    args={"TableName":PAYMENT_LEDGER_TABLE,"KeyConditionExpression":"pk = :subject",
+          "ExpressionAttributeValues":{":subject":{"S":"RETAIL#APPROVED"}},"ConsistentRead":True}
+    offers={}
+    for _ in range(10):
+        page=PAYMENT_DDB.query(**args)
+        for row in page.get("Items",[]):
+            offer=verified_retail_offer(row,instant)
+            if offer:
+                if offer["sku"] in offers:
+                    raise ValueError("duplicate_retail_offer")
+                offers[offer["sku"]]=offer
+        if not page.get("LastEvaluatedKey"):
+            return offers
+        args["ExclusiveStartKey"]=page["LastEvaluatedKey"]
+    raise ValueError("retail_catalogue_incomplete")
+
+def public_retail_offers(event):
+    if not SHOP_ENABLED or not MULTIBRAND_ENABLED or not valid_origin(event):
+        return error(503,"multibrand_not_active")
+    try:
+        # No costs, supplier terms, or customer records leave the ledger.
+        offers=retail_offers(now())
+        return reply(200,{"schema":"novapharm-retail-offers-v1","currency":"GBP","products":list(offers.values())})
+    except (ClientError,ValueError,TypeError):
+        return error(503,"retail_catalogue_unavailable")
+
+def retail_promotion(pricing, raw_code, instant, eligible_skus=None):
     """Only owner-approved, time-bounded, reusable retail campaigns.
     Per-SKU net price floors include the owner's commercial cost policy.
     No client supplied monetary values, unrestricted discounts or gift balance.
@@ -104,7 +167,7 @@ def retail_promotion(pricing, raw_code, instant):
         type(minimum) is not int or minimum < 0 or
         not isinstance(revision, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,48}", revision) or
         not isinstance(floors, dict) or not floors or
-        any(k not in PRODUCTS or type(v) is not int or v <= 0 for k,v in floors.items())):
+        any(k not in (eligible_skus if eligible_skus is not None else PRODUCTS) or type(v) is not int or v <= 0 for k,v in floors.items())):
         raise ValueError("promo_code_unavailable")
     audience = campaign.get("audience", "public_reusable")
     kind = campaign.get("privilege_kind", "return")
@@ -286,8 +349,20 @@ def direct_checkout(event, customer_subject=None, preview=False):
         return error(503, "owner_price_policy_unavailable")
     if set(price_by_sku) != set(PRODUCTS):
         return error(503, "incomplete_retail_catalogue")
+    # Only a mixed basket needs the extra ledger read. Existing Nutraxin orders
+    # retain their original price policy and do not depend on new catalogue records.
+    mixed=any(isinstance(line,dict) and isinstance(line.get("sku"),str) and line["sku"].startswith("NP-CP-") for line in lines)
+    extra={}
+    if mixed:
+        if not MULTIBRAND_ENABLED:
+            return error(422,"multibrand_not_active")
+        try:
+            extra=retail_offers(now())
+        except (ClientError,ValueError,TypeError):
+            return error(503,"retail_catalogue_unavailable")
+        price_by_sku.update({sku:p["netMinor"] for sku,p in extra.items()})
     try:
-        promotion = retail_promotion(pricing, promo_code, now())
+        promotion = retail_promotion(pricing, promo_code, now(), price_by_sku if mixed else None)
     except ValueError as exc:
         return error(422, str(exc))
     seen = set()
@@ -306,11 +381,15 @@ def direct_checkout(event, customer_subject=None, preview=False):
             return error(400, "invalid_sku_or_quantity")
         seen.add(sku)
         unit = price_by_sku[sku]
+        offer=extra.get(sku)
+        if offer and quantity>offer["availableQuantity"]:
+            return error(422,"quantity_unavailable")
+        vat_bps=offer["vatBasisPoints"] if offer else 2000
         if unit <= 0 or unit > 99999999:
             return error(503, "invalid_seller_price")
         # Consumer catalogue, portal and Stripe all charge exactly the same
         # published unit price, including VAT rounded per unit.
-        line_original_gross = (unit + (unit * 20 + 50) // 100) * quantity
+        line_original_gross = (unit + (unit * vat_bps + 5000) // 10000) * quantity
         original_gross += line_original_gross
         if promotion and sku in promotion["floors"]:
             eligible_original_gross += line_original_gross
@@ -319,13 +398,13 @@ def direct_checkout(event, customer_subject=None, preview=False):
             if discounted < promotion["floors"][sku]:
                 return error(422, "promo_code_unavailable")
             unit = discounted
-        unit_gross = unit + (unit * 20 + 50) // 100
+        unit_gross = unit + (unit * vat_bps + 5000) // 10000
         net += unit * quantity
         gross += unit_gross * quantity
         if gross > 99999999:
             return error(422, "basket_exceeds_stripe_payment_limit")
         ordered.append({"sku": sku, "quantity": quantity,
-                        "name": PRODUCTS[sku][0] + " (UK VAT included)",
+                        "name": (offer["name"] if offer else PRODUCTS[sku][0]) + " (UK VAT included)",
                         "grossMinor": unit_gross * quantity})
     if promotion and (eligible_original_gross < promotion["minimum"] or original_gross <= gross or gross < 30):
         return error(422, "promo_code_not_applicable")
@@ -335,6 +414,8 @@ def direct_checkout(event, customer_subject=None, preview=False):
     basket_hash = hashlib.sha256(json.dumps(
         sorted((item["sku"], item["quantity"]) for item in ordered),
         separators=(",", ":")).encode()).hexdigest()
+    if mixed:
+        basket_hash=hashlib.sha256(json.dumps({"basket":basket_hash,"lines":ordered,"net":net,"tax":tax},sort_keys=True,separators=(",",":")).encode()).hexdigest()
     if promotion:
         basket_hash = hashlib.sha256(json.dumps({
             "basket":basket_hash, "code":promotion["code"], "revision":promotion["revision"],
@@ -370,8 +451,8 @@ def direct_checkout(event, customer_subject=None, preview=False):
         "basketHash": {"S": basket_hash},
         "sellerApprovalReference": {"S": "owner_direct_sale_20261108"},
         "deliveryQuoteReference": {"S": "owner_uk_delivery_included_20261108"},
-        "taxAssessmentReference": {"S": "owner_uk_supplement_vat20_20261108"},
-        "fulfilmentApprovalReference": {"S": "owner_manufacturer_supply_20261108"},
+        "taxAssessmentReference": {"S": "verified_retail_product_vat_v1" if mixed else "owner_uk_supplement_vat20_20261108"},
+        "fulfilmentApprovalReference": {"S": "verified_retail_delivery_commitment_v1" if mixed else "owner_manufacturer_supply_20261108"},
         "approvedForPayment": {"BOOL": True},
         "stockReserved": {"BOOL": False},
         "sellerProductionCommitment": {"BOOL": True},
@@ -385,7 +466,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         "shippingGrossMinor": {"N": "0"},
         "totalGrossMinor": {"N": str(gross)},
         "approvedLinesJson": {"S": json.dumps(ordered, separators=(",", ":"))},
-        "ownerCommercialPolicy": {"S": "nutraxin_uk_direct_v1"}
+        "ownerCommercialPolicy": {"S": "multibrand_uk_direct_v1" if mixed else "nutraxin_uk_direct_v1"}
     }
     if promotion:
         item.update({"promotionCode":{"S":promotion["code"]},
@@ -542,7 +623,7 @@ def order_status(event, order_id):
             ConsistentRead=True).get("Item")
     except ClientError:
         return error(503, "payment_status_unavailable")
-    if not row or row.get("ownerCommercialPolicy") != {"S":"nutraxin_uk_direct_v1"}:
+    if not row or row.get("ownerCommercialPolicy") not in ({"S":"nutraxin_uk_direct_v1"},{"S":"multibrand_uk_direct_v1"}):
         return error(404, "order_not_found")
     state = row.get("status", {}).get("S", "AWAITING_STRIPE")
     return reply(200, {"orderId":order_id,
@@ -584,6 +665,8 @@ def handler(event, context):
     method = (event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     if method == "OPTIONS":
         return reply(204,{})
+    if method == "GET" and path == "/retail/offers":
+        return public_retail_offers(event)
     if method == "GET" and path == "/readiness":
         return reply(200, {"checkout_ready":SHOP_ENABLED,
                            "payment_collection_active":SHOP_ENABLED,
@@ -591,6 +674,7 @@ def handler(event, context):
                            "promotion_preview_supported":True,
                            "account_promotion_preview_supported":True,
                            "account_privileges_supported":True,
+                           "multibrand_supported":SHOP_ENABLED and MULTIBRAND_ENABLED,
                            "checkout_path":"/products/nutraxin/bag/"})
     if path in ("/account/me","/account/orders","/account/checkout","/account/quote","/account/privileges"):
         customer=verified_consumer(event)
