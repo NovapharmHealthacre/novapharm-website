@@ -65,9 +65,6 @@ await import("./apply-capabilities-editorial.mjs");
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
 
-// Generate the retail expansion from the completed Products shell.
-await import("./generate-retail-expansion.mjs");
-
 // Generate one governed public search, then a cross-brand order-status lookup.
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
@@ -76,6 +73,8 @@ await import("./generate-commerce-tracking.mjs");
 // including late-generated commerce, Marketplace and regulated legal pages.
 // This MUST precede CSS URL versioning so both first and repeat builds hash
 // the same complete stylesheet set, including standalone RTL assets.
+// Generate the retail expansion before finalizing public HTML artifacts.
+await import("./generate-retail-expansion.mjs");
 const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 finalizePublicRtlArtifacts();
 
