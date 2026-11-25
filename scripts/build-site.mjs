@@ -76,6 +76,8 @@ await import("./apply-our-story-footer.mjs");
 // including late-generated commerce, Marketplace and regulated legal pages.
 // This MUST precede CSS URL versioning so both first and repeat builds hash
 // the same complete stylesheet set, including standalone RTL assets.
+// Generate the retail expansion before finalizing public HTML artifacts.
+await import("./generate-retail-expansion.mjs");
 const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 finalizePublicRtlArtifacts();
 

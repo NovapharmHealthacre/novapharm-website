@@ -1,0 +1,39 @@
+name: Connective expanded packshot review batch 02
+on:
+  pull_request:
+    paths:
+      - "docs/retail/connective-batch02-gtins.json"
+      - "scripts/collect-connective-batch02.py"
+      - ".github/workflows/connective-batch02-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  collect:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        part: [0, 1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Retrieve discovery report from verified run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: connective-brand-discovery
+          path: review-input
+          run-id: 45533786866
+          github-token: ${{ github.token }}
+      - name: Collect review-only original packshot candidates
+        run: python3 scripts/collect-connective-batch02.py --part ${{ matrix.part }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: connective-batch02-part-${{ matrix.part }}
+          path: review-output/
+          retention-days: 7
+          if-no-files-found: error

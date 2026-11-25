@@ -122,6 +122,37 @@ class ProductsPaymentTests(unittest.TestCase):
         policy["retail_promotions"]={"enabled":True,"campaigns":{"TEST10":campaign}}
         return {"Parameter":{"Value":json.dumps(policy)}}
 
+    def test_multibrand_vat_and_checkout_gate(self):
+        from unittest.mock import patch
+        sku="NP-CP-4006381333931"
+        offer={"sku":sku,"gtin":"4006381333931","name":"Synthetic supplement","pack":"30 tablets",
+               "brand":"Synthetic brand","category":"Supplements","productClass":"food_supplement",
+               "image":"/assets/media/products/synthetic/pack.webp","netMinor":1000,
+               "vatBasisPoints":2000,"grossMinor":1200,"availableQuantity":4,
+               "expiresAt":int(time.time())+600,"supplierCost":111}
+        for k in ("identityConfirmed","imageRightsConfirmed","ukRetailApproved","priceApproved","vatTreatmentVerified","stockVerified","fulfilmentVerified","orderingEnabled","sellerDeliveryCommitment","labelInformationVerified"):
+            offer[k]=True
+        row={"sk":{"S":sku},"offerJson":{"S":json.dumps(offer)}}
+        basket=self.basket()
+        basket["lines"].append({"sku":sku,"quantity":2})
+        event=self.event("/checkout","POST",basket)
+        with patch.object(API,"MULTIBRAND_ENABLED",False):
+            self.assertEqual(API.direct_checkout(event)["statusCode"],422)
+        with patch.object(API,"MULTIBRAND_ENABLED",True),patch.object(DB,"query",return_value={"Items":[row]}):
+            published=json.loads(API.handler(self.event("/retail/offers"),None)["body"])
+            self.assertEqual(published["products"][0]["grossMinor"],1200)
+            self.assertNotIn("supplierCost",published["products"][0])
+            quote=json.loads(API.handler(self.event("/quote","POST",basket),None)["body"])
+            self.assertEqual(quote["totalGrossMinor"],3480)
+            self.assertEqual(quote["taxMinor"],580)
+            self.assertEqual(API.direct_checkout(event)["statusCode"],200)
+            record=DB.rows["ORDER#NUT-"+self.ID]
+            self.assertEqual(record["ownerCommercialPolicy"]["S"],"multibrand_uk_direct_v1")
+            self.assertEqual(record["totalGrossMinor"]["N"],"3480")
+            self.assertEqual(API.order_status(self.event("/status/NUT-"+self.ID),"NUT-"+self.ID)["statusCode"],200)
+        with patch.object(API,"MULTIBRAND_ENABLED",True),patch.object(DB,"query",return_value={"Items":[{"sk":{"S":sku},"offerJson":{"S":json.dumps({**offer,"vatTreatmentVerified":False})}}]}):
+            self.assertEqual(API.direct_checkout(event)["statusCode"],400)
+
     def test_promo_exact_server_total_and_replay(self):
         from unittest.mock import patch
         basket=dict(self.basket(),promo_code="test10")

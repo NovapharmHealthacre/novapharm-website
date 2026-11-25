@@ -9743,6 +9743,38 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   body[data-page="legal/privacy"] .np-privacy-primary-action { background: ButtonFace; color: ButtonText; }
 }
 
+
+/* Supplement comparison collections use product media, not numbered ledger rows. */
+.npd-portfolio-list.npd-nutraxin-category-list article {
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  align-items: center;
+}
+.npd-nutraxin-category-list article > div {
+  min-width: 0;
+}
+.npd-nutraxin-category-list .npd-product-picture {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+}
+.npd-nutraxin-category-list .npd-product-picture img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 720px) {
+  .npd-portfolio-list.npd-nutraxin-category-list article {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .npd-nutraxin-category-list .npd-product-picture {
+    margin-inline: auto;
+  }
+}
+
 /* Source: contact-premium.css */
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
