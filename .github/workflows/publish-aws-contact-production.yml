@@ -316,6 +316,8 @@ jobs:
           cache: npm
       - name: Prove default public website is noncollecting
         run: |
+          set -Eeo pipefail
+          trap 'echo "::error::Public artifact verification failed at shell line $LINENO" >&2' ERR
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
@@ -421,7 +423,7 @@ jobs:
           grep -Fq 'aspect-ratio:890/550' _site/assets/css/oncology-hope-v2.css
           grep -Fq 'transparent 8%,rgba(0,0,0,.5) 10%,#000 14%' _site/assets/css/oncology-hope-v2.css
           grep -Fq 'padding:22px 0 54px' _site/assets/css/oncology-hope-v2.css
-          node scripts/verify-nutraxin-merchant-live.mjs --local
+          node scripts/verify-nutraxin-merchant-live.mjs --local --artifact=_site
           test -s _site/shopping/nutraxin-uk.tsv
           cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
           jq -e '.enabled == true and .pool_id == "eu-north-1_SLNUKZypt" and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/" and .api_origin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com"' _site/assets/data/nutraxin-consumer-auth.json
@@ -466,7 +468,7 @@ jobs:
           test "$(tr -d '\r\n' < _site/da125ceca8032e01fc98782c388f894f.txt)" = 'da125ceca8032e01fc98782c388f894f'
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
-          grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' _site/products/nutraxin/index.html
+          grep -Fq 'Nutraxin Vitamins &amp; Supplements UK | NovaPharm' _site/products/nutraxin/index.html
           grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' _site/products/nutraxin/index.html
           grep -Fq '/assets/js/consent-analytics.js' _site/products/nutraxin/index.html
           ! grep -Fq 'www.googletagmanager.com' _site/products/nutraxin/index.html
@@ -800,7 +802,7 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" \
               "https://novapharmhealthcare.com/products/nutraxin/?marketing-$GITHUB_SHA-$attempt-$(date +%s)" \
               -o /tmp/novapharm-live-organic.html; then
-              if grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' /tmp/novapharm-live-organic.html \
+              if grep -Fq 'Nutraxin Vitamins &amp; Supplements UK | NovaPharm' /tmp/novapharm-live-organic.html \
                  && grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' /tmp/novapharm-live-organic.html \
                  && grep -Fq '/assets/js/consent-analytics.js' /tmp/novapharm-live-organic.html \
                  && ! grep -Fq 'www.googletagmanager.com' /tmp/novapharm-live-organic.html; then
