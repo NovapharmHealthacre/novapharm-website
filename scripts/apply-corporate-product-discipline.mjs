@@ -13,6 +13,10 @@ const register = validateNutraxinRegister({ repositoryRoot: root }).register;
 const products = [...register.products].sort((a, b) => a.catalogueOrder - b.catalogueOrder);
 const officialNutraxinReferences = JSON.parse(readFileSync(join(root, "apps/corporate/data/nutraxin-uk-links.json"), "utf8")).products;
 const expectedNutraxinSlugs = new Set(products.map((product) => product.slug));
+const categoryIntents = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-category-intents.json"), "utf8"));
+const productSearchIntents = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-search-intents.json"), "utf8"));
+const searchBySku = new Map(productSearchIntents.products.map(item => [item.sku, item]));
+const categoryForSlug = new Map(categoryIntents.categories.flatMap(category => category.products.map(slug => [slug, category])));
 if (Object.keys(officialNutraxinReferences).length !== expectedNutraxinSlugs.size ||
     Object.keys(officialNutraxinReferences).some((slug) => !expectedNutraxinSlugs.has(slug))) {
   throw new Error("Nutraxin external publisher references must map exactly to the 19 catalogue slugs.");
@@ -442,7 +446,7 @@ function nutraxinMain() {
   if (seen.size !== products.length || [...seen].some((slug) => !expectedNutraxinSlugs.has(slug))) {
     throw new Error(`Expected all ${products.length} Nutraxin catalogue cards; found ${seen.size}`);
   }
-  return rendered;
+  return rendered.replace('<section id="nx-featured"', "<section class=\"npd-section\" data-nutraxin-category-navigation=\"true\"><div class=\"container\"><h2>Shop by supplement type</h2><ul><li><a href=\"/products/nutraxin/magnesium/\">Magnesium supplements</a></li><li><a href=\"/products/nutraxin/vitamin-c/\">Vitamin C tablets and supplements</a></li><li><a href=\"/products/nutraxin/vitamin-d/\">Vitamin D and D3 + K2 supplements</a></li><li><a href=\"/products/nutraxin/multivitamins/\">Multivitamins and minerals</a></li><li><a href=\"/products/nutraxin/collagen/\">Collagen supplements</a></li><li><a href=\"/products/nutraxin/artoflex-90-tablets/\">Glucosamine, chondroitin and MSM</a></li><li><a href=\"/products/nutraxin/l-carnitine-60-tablets/\">L-carnitine</a></li><li><a href=\"/products/nutraxin/vitamin-b12-60-sublingual-tablets/\">Vitamin B12</a></li></ul></div></section>" + '<section id="nx-featured"');
 }
 
 function nutraxinBagMain() {
@@ -516,6 +520,15 @@ function nutraxinProductMain(product) {
     ? "The values below use current Nutraxin UK publisher corrections where expressly noted. The exact approved physical-pack label remains unverified."
     : "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.";
   return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Request business ordering access", `/contact/?enquiry=Pharmacy%20or%20wholesaler%20account&product=${encodeURIComponent(product.name)}&sku=${encodeURIComponent(product.sku)}`, "Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}<p class="npd-product-order-request"><a href="/products/nutraxin/order-request/?sku=${encodeURIComponent(product.sku)}">Select quantity for a business order request</a></p><div class="npd-publisher-action">${nutraxinOfficialReference(product.slug)}<p>External publisher information. Pack details, claims and availability require separate verification.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", compositionNote)}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
+}
+
+
+// Broad search intents belong on useful comparison pages, not duplicate product offers.
+function nutraxinCategoryMain(category) {
+  const items = category.products.map(slug => products.find(product => product.slug === slug));
+  if (items.some(item => !item) || items.length < 2) throw new Error("Invalid category " + category.slug);
+  const cards = items.map(item => '<article><div>' + productPicture(item) + '</div><div><h2><a href="/products/nutraxin/' + esc(item.slug) + '/">' + esc(item.name) + '</a></h2><p>' + esc(item.packSize) + '</p><p>' + esc(searchBySku.get(item.sku).discoveryCopy) + '</p><a class="npd-button npd-button-primary" href="/products/nutraxin/' + esc(item.slug) + '/">View product, price and availability</a></div></article>').join("");
+  return '<main id="main" class="npd-main"><nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">' + esc(category.heading) + '</span></div></nav><section class="npd-section"><div class="container"><p class="npd-eyebrow">NUTRAXIN / SUPPLEMENT COLLECTION</p><h1>' + esc(category.heading) + '</h1><p>' + esc(category.intro) + '</p><div class="npd-portfolio-list">' + cards + '</div></div></section><section class="npd-section npd-section-soft"><div class="container"><h2>Comparing the products</h2><p>' + esc(category.guide) + '</p><p>Food supplements are not substitutes for a varied, balanced diet and healthy lifestyle. Follow the final UK pack label. Product pages show current retail price and ordering status.</p><a href="/products/nutraxin/">Explore all Nutraxin supplements</a></div></section></main>';
 }
 
 function strategicPortfolioMain() {
@@ -744,8 +757,8 @@ materialize("products/index.html", "/products/", productsMain(), {
   description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
-  title: "Nutraxin UK Supplements | Explore 19 Products | NovaPharm",
-  description: "Discover 19 Nutraxin food supplements across six ranges. Explore original pack images, clear product details and build your Bag on the NovaPharm website."
+  title: "Nutraxin Vitamins & Supplements UK | NovaPharm",
+  description: "Shop Nutraxin vitamins and supplements in the UK. Explore magnesium, vitamin C, vitamin D3, multivitamins, collagen and more at NovaPharm."
 }, nutraxinTemplate);
 materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutraxinBagMain(), {
   title: "Your Bag | Nutraxin | NovaPharm Healthcare",
@@ -804,7 +817,7 @@ function nutraxinSearchTitle(product) {
 for (const product of products) {
   const route = `/products/nutraxin/${product.slug}/`;
   const title = nutraxinSearchTitle(product);
-  const description = `${product.name}, ${product.packSize}, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.`;
+  const description = searchBySku.get(product.sku).metaDescription;
   const productSchema = {
     "@context": "https://schema.org", "@id": `${siteUrl}${route}#product`, "@type": "Product",
     name: product.name, sku: product.sku, category: "Food supplement catalogue reference",
@@ -816,7 +829,22 @@ for (const product of products) {
       { "@type": "PropertyValue", name: "Public status", value: "Catalogue reference; availability not asserted" }
     ]
   };
-  materialize(`products/nutraxin/${product.slug}/index.html`, route, nutraxinProductMain(product), { title, description, schemas: [productSchema] }, nutraxinTemplate);
+  const category = categoryForSlug.get(product.slug);
+  const content = nutraxinProductMain(product).replace("</main>", category ? `<section class="npd-section"><div class="container"><h2>Explore the range</h2><a href="/products/nutraxin/${category.slug}/">${esc(category.heading)}</a></div></section></main>` : "</main>");
+  materialize(`products/nutraxin/${product.slug}/index.html`, route, content, { title, description, schemas: [productSchema] }, nutraxinTemplate);
+}
+
+
+for (const category of categoryIntents.categories) {
+  const route = "/products/nutraxin/" + category.slug + "/";
+  const canonical = siteUrl + route;
+  const title = category.heading + " UK | NovaPharm";
+  const schema = {
+    "@context": "https://schema.org", "@type": "ItemList", "@id": canonical + "#items",
+    name: category.heading, numberOfItems: category.products.length,
+    itemListElement: category.products.map((slug, index) => ({ "@type": "ListItem", position: index + 1, url: siteUrl + "/products/nutraxin/" + slug + "/" }))
+  };
+  materialize("products/nutraxin/" + category.slug + "/index.html", route, nutraxinCategoryMain(category), { title, description: category.description, schemas: [schema] }, nutraxinTemplate);
 }
 
 const familyRoutes = [
