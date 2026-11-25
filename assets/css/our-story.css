@@ -2,7 +2,7 @@
 .np-story{--story-ink:#0B0B0E;--story-soft:#F8F7F3;--story-rule:#DEDCD5;--story-accent:#9D1B32;background:#FFFFFF;color:var(--story-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.65}
 .np-story *{box-sizing:border-box}
 .np-story h1,.np-story h2,.np-story h3,.np-story p,.np-story blockquote{margin:0}
-.np-story h1,.np-story h2,.np-story h3{line-height:1.13;font-weight:550;letter-spacing:-.035em;text-wrap:balance}
+.np-story h1,.np-story h2,.np-story h3{line-height:1.13;font-weight:550;letter-spacing:normal;text-wrap:balance}
 .np-story h1{font-size:clamp(3rem,6vw,6rem)}
 .np-story h2{font-size:clamp(2rem,4vw,3.75rem)}
 .np-story h3{font-size:clamp(1.3rem,2.1vw,1.8rem)}
@@ -29,7 +29,7 @@
 .np-story-columns article:nth-child(2){border-color:#3D0B13}.np-story-columns article:nth-child(3){border-color:#2546D8}
 .np-story-voices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem}
 .np-story-voice{border-top:1px solid var(--story-rule);padding:2.2rem 0;display:grid;gap:1rem;align-content:start}
-.np-story-voice blockquote p{color:var(--story-ink);font-size:clamp(1.35rem,2.3vw,2.05rem);line-height:1.4;letter-spacing:-.02em}
+.np-story-voice blockquote p{color:var(--story-ink);font-size:clamp(1.35rem,2.3vw,2.05rem);line-height:1.4;letter-spacing:normal}
 .np-story-attribution span{display:block;font-size:.9rem}
 .np-story .np-story-draft,.np-story .np-story-review{font-size:.9rem;color:#55555B}
 .np-story-status{border-top:1px solid var(--story-rule);padding:2rem max(1.5rem,calc((100% - 850px)/2));display:grid;gap:.8rem}

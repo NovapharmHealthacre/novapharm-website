@@ -1,7 +1,7 @@
 {
   "version": "2026-11-25",
   "market": "GB",
-  "notes": "UK branded and non-brand keyword hypotheses, not measured volume or guaranteed rankings. Use relevant terms naturally; no keyword stuffing, unsubstantiated claims or competitor trademarks.",
+  "notes": "UK branded and non-brand keyword hypotheses, not measured volume or guaranteed rankings. Use relevant terms naturally; no keyword stuffing, unsubstantiated claims or competitor trademarks. Additional long-tail purchase and format queries are planning hypotheses; validate demand and landing-page relevance with Search Console. Do not inject lists into page metadata.",
   "products": [
     {
       "sku": "NUT-UK-VD3-T120",
@@ -15,7 +15,12 @@
         "vitamin d3 supplements",
         "cholecalciferol tablets",
         "buy vitamin d3 UK",
-        "vitamin d3 120 tablets"
+        "vitamin d3 120 tablets",
+        "vitamin d3 1000 iu",
+        "vitamin d3 1000iu tablets",
+        "vitamin d3 1000 iu uk",
+        "buy vitamin d tablets online",
+        "vitamin d3 tablets 120 pack"
       ],
       "metaDescription": "Shop Nutraxin vitamin D3 tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin D3 tablets",
@@ -33,7 +38,11 @@
         "vitamin d oral spray",
         "cholecalciferol spray",
         "vitamin d3 30ml",
-        "buy vitamin d spray UK"
+        "buy vitamin d spray UK",
+        "vitamin d3 spray 30 ml",
+        "buy vitamin d3 oral spray",
+        "vitamin d drops or spray",
+        "vitamin d spray supplements UK"
       ],
       "metaDescription": "Shop Nutraxin vitamin D3 oral spray at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin D3 oral spray",
@@ -51,7 +60,11 @@
         "vitamin d3 k2 supplement",
         "vitamin k2 mk7 tablets",
         "d3 k2 tablets 120",
-        "buy d3 k2 tablets UK"
+        "buy d3 k2 tablets UK",
+        "vitamin d3 plus k2 tablets",
+        "d3 with k2 mk7 tablets",
+        "vitamin d and vitamin k supplements",
+        "buy vitamin d3 and k2 online"
       ],
       "metaDescription": "Shop Nutraxin vitamin D3 and K2 tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin D3 and K2 tablets",
@@ -69,7 +82,11 @@
         "d3 and k2 oral spray",
         "vitamin k2 spray",
         "d3 k2 30ml",
-        "buy d3 k2 spray UK"
+        "buy d3 k2 spray UK",
+        "vitamin d3 plus k2 oral spray",
+        "vitamin d3 k2 spray 30 ml",
+        "buy vitamin d and k spray",
+        "vitamin d3 with k2 spray UK"
       ],
       "metaDescription": "Shop Nutraxin vitamin D3 and K2 spray at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin D3 and K2 oral spray",
@@ -88,7 +105,11 @@
         "vitamin c 1000mg",
         "ascorbic acid tablets",
         "vitamin c supplements UK",
-        "buy vitamin c tablets UK"
+        "buy vitamin c tablets UK",
+        "vitamin c 1000mg time release",
+        "time release vitamin c tablets",
+        "buy vitamin c 1000mg online",
+        "vitamin c 30 tablet pack"
       ],
       "metaDescription": "Shop Nutraxin vitamin C 1000 mg tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin C 1000 mg tablets",
@@ -106,7 +127,11 @@
         "vitamin c 500mg",
         "vitamin c chewable tablets",
         "500mg vitamin c tablets",
-        "buy chewable vitamin c UK"
+        "buy chewable vitamin c UK",
+        "vitamin c chewable 500mg UK",
+        "chewable ascorbic acid tablets",
+        "buy vitamin c chewables online",
+        "vitamin c chewable 30 tablets"
       ],
       "metaDescription": "Shop Nutraxin chewable vitamin C tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Chewable vitamin C 500 mg tablets",
@@ -124,7 +149,11 @@
         "vitamin c d zinc supplement",
         "vitamin c d3 zinc",
         "combination vitamin tablets",
-        "buy vitamin c d zinc UK"
+        "buy vitamin c d zinc UK",
+        "vitamin c vitamin d zinc combination",
+        "vitamin c d zinc 60 tablets",
+        "buy vitamin c and zinc tablets",
+        "vitamin c and vitamin d tablets UK"
       ],
       "metaDescription": "Shop Nutraxin vitamin C D and zinc tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Vitamin C, D and zinc tablets",
@@ -142,7 +171,11 @@
         "vitamin c zinc effervescent",
         "vitamin c soluble tablets",
         "vitamin c d zinc drink tablets",
-        "buy effervescent vitamins UK"
+        "buy effervescent vitamins UK",
+        "vitamin c d zinc soluble tablets",
+        "effervescent vitamin c and zinc UK",
+        "buy vitamin c effervescent online",
+        "vitamin c fizzy tablets"
       ],
       "metaDescription": "Explore Nutraxin vitamin C D and zinc effervescent tablets at NovaPharm UK. View pack details, ingredients, price and availability.",
       "discoveryHeading": "Vitamin C, D and zinc effervescent tablets",
@@ -163,7 +196,14 @@
         "magnesium bisglycinate complex",
         "magnesium citrate complex",
         "magnesium with b6",
-        "buy magnesium tablets UK"
+        "buy magnesium tablets UK",
+        "magnesium citrate bisglycinate malate taurate",
+        "four form magnesium complex",
+        "magnesium malate complex",
+        "magnesium taurate complex",
+        "magnesium complex 60 tablets",
+        "buy magnesium complex online UK",
+        "magnesium glycinate blend"
       ],
       "metaDescription": "Shop Nutraxin magnesium complex tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Four-form magnesium complex with vitamin B6",
@@ -182,7 +222,11 @@
         "magnesium with b6",
         "magnesium and vitamin d tablets",
         "magnesium combination supplements",
-        "buy magnesium with vitamin d UK"
+        "buy magnesium with vitamin d UK",
+        "magnesium with vitamin d3 k2",
+        "magnesium b6 d3 k2 tablets",
+        "magnesium daily 60 tablets",
+        "buy magnesium combination tablets UK"
       ],
       "metaDescription": "Shop Nutraxin magnesium with D3 K2 and B6 tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Magnesium tablets with vitamins D3, K2 and B6",
@@ -200,7 +244,11 @@
         "vitamins and minerals",
         "multivitamin mineral supplement",
         "adult multivitamin tablets",
-        "buy multivitamins UK"
+        "buy multivitamins UK",
+        "adult multivitamins and minerals UK",
+        "multivitamin mineral tablets 60",
+        "buy adult multivitamin online",
+        "daily multivitamin and minerals"
       ],
       "metaDescription": "Shop Nutraxin multivitamin and mineral tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Multivitamin and mineral tablets",
@@ -218,7 +266,11 @@
         "women's vitamins",
         "female multivitamin tablets",
         "women's daily multivitamin",
-        "buy women's multivitamin UK"
+        "buy women's multivitamin UK",
+        "multivitamin tablets for women UK",
+        "buy women's vitamins online",
+        "women's multivitamin 60 tablets",
+        "women's multivitamin and minerals"
       ],
       "metaDescription": "Shop Nutraxin women's multivitamin tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Multivitamin tablets for women",
@@ -236,7 +288,11 @@
         "men's vitamins",
         "male multivitamin tablets",
         "men's daily multivitamin",
-        "buy men's multivitamin UK"
+        "buy men's multivitamin UK",
+        "multivitamin tablets for men UK",
+        "buy men's vitamins online",
+        "men's multivitamin 60 tablets",
+        "men's multivitamin and minerals"
       ],
       "metaDescription": "Shop Nutraxin men's multivitamin tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Multivitamin tablets for men",
@@ -255,7 +311,11 @@
         "hydrolysed collagen tablets",
         "collagen with vitamin c",
         "collagen hyaluronic acid tablets",
-        "buy collagen tablets UK"
+        "buy collagen tablets UK",
+        "hydrolyzed collagen tablets UK",
+        "collagen and hyaluronic acid tablets",
+        "buy collagen tablets online",
+        "collagen 30 tablets"
       ],
       "metaDescription": "Shop Nutraxin hydrolysed collagen tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Hydrolysed collagen tablets",
@@ -273,7 +333,11 @@
         "hydrolysed collagen sachets",
         "collagen peptides sachets",
         "collagen with vitamin c",
-        "buy collagen sachets UK"
+        "buy collagen sachets UK",
+        "hydrolyzed collagen sachets UK",
+        "collagen peptides sachets UK",
+        "buy collagen sachets online",
+        "collagen 30 sachets"
       ],
       "metaDescription": "Shop Nutraxin hydrolysed collagen sachets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Hydrolysed collagen sachets",
@@ -292,7 +356,11 @@
         "type 1 2 3 collagen",
         "collagen with vitamin c",
         "collagen complex 90 tablets",
-        "buy collagen complex UK"
+        "buy collagen complex UK",
+        "multi type collagen complex UK",
+        "collagen blend tablets",
+        "buy collagen complex tablets online",
+        "collagen 90 tablets"
       ],
       "metaDescription": "Shop Nutraxin multi-type collagen complex tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Multi-type collagen complex tablets",
@@ -311,7 +379,12 @@
         "glucosamine supplements",
         "MSM tablets",
         "artroflex tablets",
-        "buy glucosamine chondroitin UK"
+        "buy glucosamine chondroitin UK",
+        "glucosamine and chondroitin with msm",
+        "glucosamine chondroitin tablets UK",
+        "buy glucosamine msm online",
+        "glucosamine complex 90 tablets",
+        "nutraxin artroflex UK"
       ],
       "metaDescription": "Explore Nutraxin glucosamine chondroitin and MSM tablets at NovaPharm UK. View pack details, ingredients, price and availability.",
       "discoveryHeading": "Glucosamine, chondroitin and MSM tablets",
@@ -329,7 +402,10 @@
         "carnitine supplement",
         "l carnitine 700mg",
         "l carnitine 60 tablets",
-        "buy l carnitine UK"
+        "buy l carnitine UK",
+        "buy l carnitine tablets online",
+        "l-carnitine supplement tablets",
+        "carnitine 60 tablet pack"
       ],
       "metaDescription": "Shop Nutraxin L-carnitine 700 mg tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "L-carnitine 700 mg tablets",
@@ -348,7 +424,11 @@
         "methylcobalamin",
         "sublingual b12",
         "methylcobalamin tablets",
-        "buy vitamin b12 UK"
+        "buy vitamin b12 UK",
+        "vitamin b12 methylcobalamin UK",
+        "methylcobalamin sublingual tablets",
+        "buy b12 tablets online",
+        "vitamin b12 60 sublingual tablets"
       ],
       "metaDescription": "Shop Nutraxin methylcobalamin vitamin B12 tablets at NovaPharm UK. View pack details, ingredients, current price and availability, and UK delivery information.",
       "discoveryHeading": "Sublingual methylcobalamin vitamin B12 tablets",

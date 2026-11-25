@@ -252,3 +252,27 @@ test("UK generic discovery is visible and aligned with all 19 Shopping offers", 
   }
   assert(read("products/nutraxin/index.html").includes("Nutraxin Vitamins &amp; Supplements UK | NovaPharm"));
 });
+
+
+test("Merchant unit prices use actual pack count or volume; unresolved pack is withheld", () => {
+  assert(heads.includes("unit_pricing_measure"));
+  assert(heads.includes("unit_pricing_base_measure"));
+  assert(lines.slice(1).every(line => line.split("\t").length === heads.length));
+  let published = 0;
+  for (const row of parsed) {
+    const ref = registered.products.find(p => p.sku === row.id);
+    assert(ref);
+    if (row.id === "NUT-UK-VMAX-E15") {
+      assert.equal(row.unit_pricing_measure, "");
+      assert.equal(row.unit_pricing_base_measure, "");
+      assert(ref.notes.some(note => note.includes("Pack mismatch")));
+      continue;
+    }
+    const number = Number(ref.packSize.split(" ")[0]);
+    const ml = ref.packSize.endsWith(" ml");
+    assert.equal(row.unit_pricing_measure, number + (ml ? "ml" : "ct"));
+    assert.equal(row.unit_pricing_base_measure, ml ? "100ml" : "1ct");
+    published++;
+  }
+  assert.equal(published, 18);
+});
