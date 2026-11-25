@@ -930,8 +930,8 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
 .nx-category-page .nx-category-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(24px,4vw,56px); margin-top:clamp(28px,4vw,48px); }
 .nx-category-page .nx-category-card { display:flex; flex-direction:column; min-width:0; padding:0; border:0; background:#FFFFFF; }
 .nx-category-page .nx-category-visual { display:grid; place-items:center; box-sizing:border-box; min-width:0; padding:clamp(18px,3vw,36px); background:#F8F7F3; border-radius:16px; }
-.nx-category-page .nx-category-visual .npd-product-picture { display:block; width:min(100%,340px); max-width:100%; aspect-ratio:1 / 1; min-width:0; }
-.nx-category-page .nx-category-visual img { display:block; width:100%; height:100%; max-width:100%; object-fit:contain; object-position:center; }
+.nx-category-page .nx-category-visual .npd-product-picture { display:grid; place-items:center; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); width:min(100%,340px); max-width:100%; aspect-ratio:1 / 1; min-width:0; min-height:0; }
+body[data-page="product-portfolio/nutraxin"] .nx-category-page .nx-category-visual .npd-product-picture img { display:block; width:auto !important; height:auto !important; max-width:100% !important; max-height:100% !important; min-width:0; min-height:0; object-fit:contain !important; object-position:center; }
 .nx-category-page .nx-category-copy { display:flex; flex-direction:column; align-items:flex-start; flex:1; min-width:0; padding-block:22px 28px; border-bottom:1px solid #DEDCD5; }
 .nx-category-page .nx-category-copy h2 { margin:0 0 8px; font-size:clamp(1.25rem,2.25vw,1.75rem); line-height:1.25; letter-spacing:normal; overflow-wrap:anywhere; }
 .nx-category-page .nx-category-copy h2 a { color:#0B0B0E; text-decoration:none; }
@@ -956,7 +956,7 @@ body[data-page="product-portfolio/nutraxin"] .npd-product-detail :is(a,button,se
   .nx-category-page .nx-category-card { display:grid; grid-template-columns:44mm minmax(0,1fr); align-items:start; gap:5mm; padding:3mm 0; break-inside:avoid; page-break-inside:avoid; border-bottom:1px solid #DEDCD5; }
   .nx-category-page .nx-category-visual { width:44mm; padding:2mm; border-radius:2mm; }
   .nx-category-page .nx-category-visual .npd-product-picture { width:100%; aspect-ratio:1 / 1; }
-  .nx-category-page .nx-category-visual img { width:100%; height:auto !important; max-height:40mm !important; object-fit:contain; }
+  body[data-page="product-portfolio/nutraxin"] .nx-category-page .nx-category-visual .npd-product-picture img { max-height:40mm !important; }
   .nx-category-page .nx-category-copy { padding:0; border:0; }
   .nx-category-page .nx-category-copy h2 { font-size:13pt; line-height:1.25; }
   .nx-category-page .nx-category-copy p { font-size:10pt; margin-bottom:2mm; }
