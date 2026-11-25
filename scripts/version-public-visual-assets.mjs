@@ -11,7 +11,8 @@ const requiredPages = new Map([
   ["index.html", []],
   ["capabilities/index.html", ["capabilities-editorial.css"]],
   ["oncology/index.html", ["oncology-editorial.css", "oncology-hope-v2.css"]],
-  ["products/index.html", ["products-editorial.css"]]
+  ["products/index.html", ["products-editorial.css"]],
+  ...JSON.parse(readFileSync("assets/data/nutraxin-uk-category-intents.json", "utf8")).categories.map(({slug}) => ["products/nutraxin/" + slug + "/index.html", ["nutraxin-merchant.css"]])
 ]);
 const semanticVersions = new Map([
   ["about/index.html:assets/css/about-editorial.css", "20261111-about-aa-contrast-v1"],

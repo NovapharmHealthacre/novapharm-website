@@ -712,6 +712,12 @@ function materialize(relative, route, main, metadata = null, template = null) {
   if (route === "/products/nutraxin/" && !html.includes('href="/assets/css/nutraxin-lineup.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-lineup.css">\n</head>');
   }
+  // A clean build starts from the legacy collection template, not from the
+  // checked-in category snapshot. Attach category styles explicitly.
+  if (categoryIntents.categories.some(category => route === "/products/nutraxin/" + category.slug + "/")) {
+    html = html.replace(/\s*<link\b[^>]*href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"[^>]*>/g, "");
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-merchant.css">\n</head>');
+  }
   if (route === "/technology/" && !html.includes('href="/assets/css/technology-intelligence.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/technology-intelligence.css">\n</head>');
   }

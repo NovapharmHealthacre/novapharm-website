@@ -23,6 +23,8 @@ for (const [engineName,engine] of [["chromium",chromium],["webkit",webkit]]) {
         await page.emulateMedia({media:viewport.name==="print"?"print":"screen"});
         const response=await page.goto(origin+"/products/nutraxin/"+category.slug+"/",{waitUntil:"load",timeout:20000});
         assert.equal(response.status(),200,label);
+        const stylesheet=await page.evaluate(()=>[...document.styleSheets].filter(s=>s.href&&new URL(s.href).pathname==="/assets/css/nutraxin-merchant.css").map(s=>s.href));
+        assert.equal(stylesheet.length,1,label+" category retail stylesheet did not load");
         await page.evaluate(async()=>{await document.fonts.ready; const imgs=[...document.querySelectorAll(".nx-category-card img")]; for(const img of imgs) img.loading="eager"; await Promise.all(imgs.map(img=>img.decode()));});
         const metrics=await page.evaluate(()=>{
           const grid=document.querySelector(".nx-category-grid");
