@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { parse } from 'parse5';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 const root=process.cwd();
@@ -17,7 +18,23 @@ function page(route,title,description,main){
  html=html.replace(/<link rel="alternate" hreflang="([^"]*)" href="[^"]*"/g,(_,lang)=>'<link rel="alternate" hreflang="'+escape(lang)+'" href="'+base+route+'"');
  html=html.replace(/<meta name="description" content="[^"]*"/,'<meta name="description" content="'+escape(description)+'"');
  const headEnd=html.indexOf('</head>');assert(headEnd>0);
- let head=html.slice(0,headEnd).replace(/<meta\s+(?:property|name)="(?:og:[^"]*|twitter:[^"]*)"[^>]*>\s*/g,'').replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g,'');
+ // Remove inherited metadata using parsed HTML node boundaries, not regex-based
+ // script stripping. Preserve the reviewed shell byte-for-byte otherwise.
+ const document=parse(html,{sourceCodeLocationInfo:true});
+ const headNode=document.childNodes.find(n=>n.nodeName==='html')?.childNodes.find(n=>n.nodeName==='head');
+ assert(headNode?.sourceCodeLocation?.endTag?.startOffset===headEnd,'Unexpected head boundary');
+ const ranges=[];
+ for(const node of headNode.childNodes){
+  const attrs=Object.fromEntries((node.attrs||[]).map(a=>[a.name,a.value]));
+  const social=node.nodeName==='meta'&&[attrs.property,attrs.name].some(v=>typeof v==='string'&&/^(?:og:|twitter:)/i.test(v));
+  const structured=node.nodeName==='script'&&attrs.type?.toLowerCase()==='application/ld+json';
+  if(social||structured){
+   const loc=node.sourceCodeLocation;assert(loc&&loc.startOffset>=0&&loc.endOffset<=headEnd,'Missing metadata source location');
+   ranges.push([loc.startOffset,loc.endOffset]);
+  }
+ }
+ let head=html.slice(0,headEnd);
+ for(const [start,end] of ranges.sort((a,b)=>b[0]-a[0]))head=head.slice(0,start)+head.slice(end);
  head+='<meta property="og:title" content="'+escape(title)+'"><meta property="og:description" content="'+escape(description)+'"><meta property="og:url" content="'+base+route+'"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/css/retail-expansion.css">';
  if(route.startsWith('/products/health-and-wellbeing/')) head+='<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>';
  html=head+html.slice(headEnd);
