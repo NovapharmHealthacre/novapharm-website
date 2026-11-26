@@ -88,6 +88,14 @@ test("approved catalogue emits crawlable product content and never fabricates an
    const pharmacyHtml=get("pharmacy-partners/index.html");
    assert(pharmacyHtml.includes('property="og:image"'));
    assert(pharmacyHtml.includes(socialSource.absoluteUrl));
+   const structured=JSON.parse(get("seo/generated/structured-data-register.json"));
+   assert.equal(structured.filter(p=>p.route==="/pharmacy-partners/").length,1);
+   assert.deepEqual(socials.find(p=>p.route==="/pharmacy-partners/"),{...socialSource,route:"/pharmacy-partners/",page:"https://novapharmhealthcare.com/pharmacy-partners/"});
+   for(const property of ["og:image","og:image:secure_url","og:image:type","og:image:width","og:image:height","og:image:alt"]){
+    assert.equal(pharmacyHtml.split('property="'+property+'"').length,2,property+" must occur exactly once");
+   }
+   assert(pharmacyHtml.includes('name="twitter:image" content="'+socialSource.absoluteUrl+'"'));
+   assert(pharmacyHtml.includes("<!-- page-specific-social-start -->"));
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });

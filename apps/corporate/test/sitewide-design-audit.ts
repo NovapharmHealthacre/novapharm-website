@@ -54,6 +54,10 @@ async function audit() {
             if(status!==200){findings.push({route,viewport:vp.name,detail:`HTTP ${status}`});continue;}
             await page.locator("main").waitFor({state:"visible",timeout:10000});
             await page.evaluate(()=>document.fonts.ready);
+            // Force native lazy images to load before inspection, including below-fold packs.
+            // Do not alter src/srcset, crop, markup or production loading behaviour.
+            await page.evaluate(()=>{for(const img of document.images)img.loading="eager";});
+            await page.waitForFunction(()=>[...document.images].every(img=>img.complete),{},{timeout:15000});
             if(showcase.has(route) && (vp.name==="desktop-1440" || ["/","/contact/","/oncology/"].includes(route))) {
               // A transient Chromium capture-protocol failure is not a design finding.
               // Keep the exact same full-page evidence requirement and fail after 3 attempts.
@@ -95,6 +99,16 @@ async function audit() {
               const header=document.querySelector(".site-header");
               const footer=document.querySelector(".site-footer");
               const h1s=[...document.querySelectorAll("h1")];
+              // CSS optimizers may shorten hex colours or serialize them as rgb().
+              // Resolve tokens as actual computed colours, not literal source strings.
+              const colourProbe=document.createElement("span");
+              colourProbe.style.cssText="position:absolute;visibility:hidden;pointer-events:none;";
+              colourProbe.style.backgroundColor="var(--np-color-canvas, rgb(1, 2, 3))";
+              colourProbe.style.color="var(--np-color-label, rgb(1, 2, 3))";
+              document.body.append(colourProbe);
+              const canvasColour=getComputedStyle(colourProbe).backgroundColor;
+              const labelColour=getComputedStyle(colourProbe).color;
+              colourProbe.remove();
               return {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
@@ -133,7 +147,15 @@ async function audit() {
                 width:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
-                brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
+                canvasColour,labelColour,
+                canvasToken:root.getPropertyValue("--np-color-canvas").trim(),
+                labelToken:root.getPropertyValue("--np-color-label").trim(),
+                reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+                brokenImages:[...document.images].filter(x=>x.naturalWidth===0).map(x=>x.currentSrc||x.getAttribute("src")||"(no source)"),
+                missingImageAlt:[...document.images].filter(x=>!x.hasAttribute("alt")).map(x=>x.currentSrc||x.getAttribute("src")||"(no source)"),
+                // Record actual image presentation for human crop/identity review; an
+                // automated test cannot decide whether a photograph is authentic.
+                imageEvidence:[...document.images].map(img=>{const css=getComputedStyle(img),box=img.getBoundingClientRect();return {src:img.currentSrc,alt:img.getAttribute("alt"),naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,renderedWidth:Math.round(box.width),renderedHeight:Math.round(box.height),objectFit:css.objectFit,objectPosition:css.objectPosition};}),
                 clippedControls:[...document.querySelectorAll("main form input:not([type=hidden]), main form select, main form textarea, main form button")]
                   .filter(el=>{if(el.closest('[aria-hidden="true"], .honeypot'))return false;const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
                     const b=el.getBoundingClientRect();return b.width>0&&b.height>0&&(b.left< -2||b.right>document.documentElement.clientWidth+2);})
@@ -180,6 +202,9 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
+            if(data.canvasColour!=="rgb(255, 255, 255)"||data.labelColour!=="rgb(11, 11, 14)")faults.push(`Approved Pure White / Sovereign Black computed colours differ: ${data.canvasColour} / ${data.labelColour}`);
+            if(!data.reducedMotion)faults.push("Reduced-motion browser preference was not applied");
+            if(data.missingImageAlt.length)faults.push(`Missing image alt attributes: ${data.missingImageAlt.slice(0,5).join(" / ")}`);
             if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");

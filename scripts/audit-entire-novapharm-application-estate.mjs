@@ -13,6 +13,8 @@ import { dirname, join } from "node:path";
 const sources = Object.freeze({
   pages: "apps/corporate/data/pages.ts",
   articles: "apps/corporate/data/articles.ts",
+  ourStory: "src/content/our-story.mjs",
+  nutraxinCategories: "assets/data/nutraxin-uk-category-intents.json",
   nutraxin: "apps/corporate/data/nutraxin-product-register.json",
   nutraxinRetail: "assets/data/nutraxin-retail-catalogue.json",
   esco: "assets/data/esco-catalogue.json",
@@ -83,6 +85,12 @@ export function buildEstateAudit() {
     add("corporate-page", page.slug || "home", sources.pages, "public-candidate",
       safeRoute(page.slug), { contentKind: page.type });
 
+  // The separately generated editorial route is not in the 32-page Next register.
+  assert.match(read(sources.ourStory), /export const ourStoryMeta\s*=/);
+  assert.match(read(sources.ourStory), /export const ourStoryBody\s*=/);
+  assert.ok(!pages.some(page=>page.slug==="our-story"), "Our Story moved into primary register; reconcile duplicate");
+  add("corporate-page", "our-story", sources.ourStory, "public-candidate", "/our-story/", {contentKind:"editorial", separateStaticGenerator:true});
+
   const articleImports = [...read(sources.articles).matchAll(
     /import\s+\w+\s+from\s+"\.\/insights\/([^"]+\.json)"/g)].map(m=>m[1]);
   assert.equal(articleImports.length,6,"Six canonical corporate article imports expected");
@@ -117,6 +125,19 @@ export function buildEstateAudit() {
         slug: product.slug, checkoutClaimFromRetailSource: Boolean(row?.ordering_enabled),
         warehouseStockAndPaymentAcceptedByThisAudit: false
       });
+  }
+
+  const categoryRegister = json(sources.nutraxinCategories);
+  assert.equal(categoryRegister.market,"GB");
+  assert.equal(categoryRegister.categories.length,5,"Nutraxin category register drift");
+  const categorySlugs = new Set();
+  for (const category of categoryRegister.categories) {
+    assert.match(category.slug,/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.ok(!categorySlugs.has(category.slug) && !nutraxinSlugs.has(category.slug),"Duplicate or product-conflicting category slug");
+    categorySlugs.add(category.slug);
+    assert.ok(Array.isArray(category.products) && category.products.length>0 && new Set(category.products).size===category.products.length);
+    assert.ok(category.products.every(slug=>nutraxinSlugs.has(slug)),"Unknown category product");
+    add("nutraxin-category",category.slug,sources.nutraxinCategories,"public-candidate","/products/nutraxin/"+category.slug+"/",{productSlugs:category.products,liveRouteVerified:false});
   }
 
   const esco = json(sources.esco);
@@ -244,7 +265,7 @@ export function buildEstateAudit() {
     intelligence: {total:22, sourceReadOnly:5, gated:17},
     distributionWms: {sourceWorkspaces:16, employeeRouteMapped:wmsLinked,
       externalIntegrationRequired:wmsNeedsIntegration, independent3plExecutionApproved: false},
-    commerce: {nutraxinSku:19, escoCatalogueReferences:373, marketplaceSourceCandidates:392},
+    commerce: {nutraxinSku:19, nutraxinCategoryPages:categorySlugs.size, escoCatalogueReferences:373, marketplaceSourceCandidates:392},
     ownerProductionSignoff:owner.productionSignoff,
     independentProductionAcceptanceClaimedByThisSourceAudit:0,
     errors:errors.length
