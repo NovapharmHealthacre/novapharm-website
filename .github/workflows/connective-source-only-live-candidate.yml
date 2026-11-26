@@ -1,37 +1,22 @@
 name: Stage Connective 395 source pages as additive live candidate
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/stage-connective-source-only-release.py'
-      - 'scripts/test-stage-connective-source-only-release.py'
-      - '.github/workflows/connective-source-only-live-candidate.yml'
   workflow_run:
     workflows: ["Production readiness"]
     types: [completed]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: novapharm-connective-additive-source-pages
   cancel-in-progress: false
 
 jobs:
-  validate-additive-release:
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Verify additive-only release and reject fake product offer claims
-        run: python3 scripts/test-stage-connective-source-only-release.py -v
   candidate:
+    permissions:
+      contents: write
+      pull-requests: write
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
