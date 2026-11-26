@@ -9,7 +9,7 @@ test("public contact matches the approved compact reference but never submits to
   assert.match(markup, /Let(?:&#x27;|&#39;|')s talk\./);
   assert.match(markup, /How can we help\?/);
   assert.match(markup, /np-contact-reference-hero/);
-  assert.match(markup, /np-contact-reference-footer/);
+  assert.doesNotMatch(markup, /<footer\b/, "Contact content must inherit the application layout footer");
   assert.match(markup, /data-email-enquiry-form/);
   assert.match(markup, /action="mailto:vishal@novapharmhealthcare\.com"/);
   assert.match(markup, /Open email draft/);

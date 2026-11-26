@@ -157,7 +157,7 @@ test("iOS accessibility and iPad smoke tests have explicit, non-skippable eviden
   assert.match(workflow, /content_size accessibility-extra-extra-extra-large/);
   assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmNativeUITests/);
   assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmAccessibilityUITests/);
-  assert.match(read("native/novapharm-intelligence-ios/App/NovaTheme.swift"), /traits\.userInterfaceStyle == \.dark/);
+  assert.match(read("native/novapharm-intelligence-ios/App/NovaTheme.swift"), /trait\.userInterfaceStyle == \.dark/);
   assert.match(workflow, /if: \$\{\{ always\(\) && steps\.native_build\.outcome == 'success' \}\}/);
   assert.match(workflow, /No iPad Simulator available; iPad acceptance remains blocked/);
   assert.match(workflow, /novapharm-ipad-simulator\.png/);
@@ -166,38 +166,18 @@ test("iOS accessibility and iPad smoke tests have explicit, non-skippable eviden
 });
 
 
-test("NovaPharm preserves corporate red while both semantic control tints exceed 4.5:1", () => {
+test("Intelligence retains approved Ultramarine and Pure White with accessible adaptive tint", () => {
   const theme = read("native/novapharm-intelligence-ios/App/NovaTheme.swift");
-  assert.match(theme, /static let brandRed = Color\(red: 227\.0 \/ 255, green: 18\.0 \/ 255, blue: 11\.0 \/ 255\)/);
-  assert.match(theme, /traits\.userInterfaceStyle == \.dark/);
-  const tintLight = [217, 19, 13];
-  const tintDark = [255, 145, 137];
-  const groupedLight = [242, 242, 247];
-  const groupedDark = [44, 44, 46];
-  const selectedTabDark = [64, 64, 65];
-  const linear = value => {
-    const normalized = value / 255;
-    return normalized <= 0.04045 ? normalized / 12.92
-      : Math.pow((normalized + 0.055) / 1.055, 2.4);
-  };
-  const luminance = rgb => rgb.map(linear).reduce((a, x, i) =>
-    a + x * [0.2126, 0.7152, 0.0722][i], 0);
-  const contrast = (a, b) => {
-    const la = luminance(a), lb = luminance(b);
-    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
-  };
-  assert.match(theme, /red: 217\.0 \/ 255, green: 19\.0 \/ 255, blue: 13\.0 \/ 255/);
-  assert.match(theme, /red: 255\.0 \/ 255, green: 145\.0 \/ 255, blue: 137\.0 \/ 255/);
-  assert.ok(contrast(tintLight, groupedLight) >= 4.5);
-  assert.ok(contrast(tintLight, [255,255,255]) >= 4.5);
-  assert.ok(contrast(tintDark, groupedDark) >= 4.5);
-  assert.ok(contrast(tintDark, selectedTabDark) >= 4.5,
-    "Selected-tab background must preserve contrast for normal-size text");
-  assert.ok(contrast(tintDark, [28,28,30]) >= 4.5);
-  assert.ok(contrast([227,18,11], groupedLight) < 4.5,
-    "Never use the unadapted corporate red as light grouped-background small text");
+  assert.match(theme, /red: 37\.0 \/ 255, green: 70\.0 \/ 255, blue: 216\.0 \/ 255/);
+  assert.match(theme, /red: 168\.0 \/ 255, green: 184\.0 \/ 255, blue: 255\.0 \/ 255/);
+  assert.match(theme, /UIColor\(red: 1, green: 1, blue: 1, alpha: 1\)/);
+  assert.match(theme, /red: 248\.0 \/ 255, green: 247\.0 \/ 255, blue: 243\.0 \/ 255/);
+  const linear = v => { const n=v/255; return n<=0.04045?n/12.92:((n+0.055)/1.055)**2.4; };
+  const luminance = rgb => rgb.map(linear).reduce((a,x,i)=>a+x*[0.2126,0.7152,0.0722][i],0);
+  const contrast = (a,b) => { const x=luminance(a),y=luminance(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); };
+  for (const surface of [[255,255,255],[248,247,243],[242,242,247]]) assert.ok(contrast([37,70,216],surface)>=4.5);
+  for (const surface of [[44,44,46],[64,64,65],[28,28,30]]) assert.ok(contrast([168,184,255],surface)>=4.5);
 });
-
 
 test("public GitHub must not publish private Swift Simulator or accessibility artifacts", () => {
   const workflow = read(".github/workflows/nova-ios-swift-native.yml");

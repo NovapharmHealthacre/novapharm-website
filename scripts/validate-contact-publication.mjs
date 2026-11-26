@@ -9,7 +9,8 @@ assert.match(html, /<main id="main" class="npd-main np-contact np-contact-refere
 assert.match(html, /Let&#39;s talk\./);
 assert.match(html, /How can we help\?/);
 assert.match(html, /np-contact-reference-form/);
-assert.match(html, /np-contact-reference-footer/);
+assert.equal((html.match(/<footer class="site-footer npd-footer"/g) || []).length, 1, "Exactly one shared corporate footer required");
+assert.doesNotMatch(html, /np-contact-reference-footer/, "Contact must not replace the global footer");
 assert.match(html, /yellowcard\.mhra\.gov\.uk/);
 assert.match(html, /legal\/privacy\//);
 

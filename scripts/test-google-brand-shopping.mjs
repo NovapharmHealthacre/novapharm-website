@@ -23,7 +23,21 @@ test("homepage publishes one coherent legal corporate identity and verified publ
   const org = orgs[0];
   assert.equal(org["@id"], origin + "/#organization");
   assert.equal(org.legalName, "NOVAPHARM HEALTHCARE LTD");
+  assert.equal(org.location.name, "United Kingdom");
+  assert(org.knowsAbout.includes("Pharmaceuticals and Healthcare"));
+  assert.deepEqual(org.department.map(item => item.name), ["NovaPharm Intelligence", "NovaPharm Distribution"]);
+  assert.deepEqual(org.member.map(person => person.jobTitle), ["Chief Executive Officer", "Chief Operating Officer", "Chief Scientific Officer", "Chief Financial Officer"]);
   assert.equal(org.identifier.value, "16716501");
+  assert.equal(org.telephone, "+44 7352 036605");
+  assert.equal(org.email, "enquiries@novapharmhealthcare.com");
+  assert.equal(org.contactPoint.telephone, org.telephone);
+  assert.equal(org.contactPoint.email, org.email);
+  assert.deepEqual(org.founder.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare"]);
+  assert.deepEqual(org.member.map(person => person.name), ["Vishal Chakravarty", "Prabhakar Vitthal Lahare", "Dr Girish Shantilal Achliya", "Dr Helly Panchal"]);
+  assert.equal(new Set(org.member.map(person => person["@id"])).size, 4, "Each statutory director must have a unique profile identity");
+  assert.equal(org.member.filter(person => person.image).length, 3, "Only approved leadership portraits can enter the corporate identity graph");
+  assert.equal(org.member.find(person => person.name === "Dr Helly Panchal").image, undefined, "Do not fabricate a portrait for Dr Helly");
+  assert(org.founder.every(person => org.member.some(member => member.name === person.name)), "Founders are a documented subset of the directors");
   assert.deepEqual(org.sameAs, [companiesHouse, linkedIn, "https://www.wikidata.org/wiki/Q137660644"]);
   const approvedLogoAsset = ["assets", "brand", "pwa-icon-512.png"].join("/");
   assert.equal(org.logo["@id"], origin + "/#logo");
@@ -49,6 +63,12 @@ test("public company-facts page names the same UK organization and links genuine
   assert.equal(page?.url, origin + "/about/company/");
   assert.match(html, /NOVAPHARM HEALTHCARE LTD/);
   assert.match(html, /16716501/);
+  assert.match(html, /enquiries@novapharmhealthcare\.com/);
+  assert.match(html, /\+44 7352 036605/);
+  assert.match(html, /Prabhakar Vitthal Lahare/);
+  assert.match(html, /Board of directors/);
+  assert.match(html, /Dr Girish Shantilal Achliya/);
+  assert.match(html, /Dr Helly Panchal/);
   assert.match(html, /data-company-identity-links/);
   assert(html.includes('href="https://www.linkedin.com/company/novapharm-healthcare/"'), "Exact company LinkedIn href missing");
   assert(html.includes('href="https://www.wikidata.org/wiki/Q137660644"'), "Exact Wikidata href missing");
@@ -74,6 +94,12 @@ test("the actual Next.js corporate website uses the same Knowledge Panel entity 
   assert.equal(home.logo.width, 512);
   assert.equal(home.logo.height, 512);
   assert.equal(home.identifier.value, "16716501");
+  assert(seoSource.includes("publicEnquiriesEmail") && seoSource.includes("publicTelephone"), "Next.js contact should match company source");
+  assert(seoSource.includes('"prabhakar-lahare"'), "Next.js founder graph includes Prabhakar");
+  assert(seoSource.includes('"girish-achliya"') && seoSource.includes('"helly-panchal"'), "Next.js board graph must include both scientific directors");
+  assert(rendererSource.includes("data-board-directors") && rendererSource.includes("Dr Girish Shantilal Achliya") && rendererSource.includes("Dr Helly Panchal"), "Next.js must visibly link all four directors");
+  assert(!read("scripts/build-public-pages.mjs").includes('streetAddress: company.registeredStreet'), "Legacy generator must not republish a residential address in public Organization schema");
+  assert(rendererSource.includes("publicEnquiriesEmail") && rendererSource.includes("publicTelephone"), "Visible corporate contact");
   assert(!home.address, "Registered residential address must remain absent from public Organization schema");
 });
 
@@ -82,18 +108,32 @@ test("corporate sitemap dates stay aligned with the two published November ident
   const sitemap = read("sitemap.xml");
   for (const pathname of ["/", "/about/company/"]) {
     assert(
-      sitemap.includes(`<loc>${origin}${pathname}</loc><lastmod>2026-11-20</lastmod>`),
+      sitemap.includes(`<loc>${origin}${pathname}</loc><lastmod>2026-11-22</lastmod>`),
       `Static sitemap date missing for ${pathname}`,
     );
   }
   const generator = read("scripts/enhance-seo-authority.mjs");
-  assert(generator.includes('if (route === "/" || route === "/about/company/") return "2026-11-20";'),
+  assert(generator.includes('if (route === "/" || route === "/about/company/") return "2026-11-22";'),
     "The actual public sitemap generator must preserve the two November identity lastmod dates");
   const source = read("apps/corporate/app/sitemap.ts");
-  assert(source.includes('const corporateIdentityDate = new Date("2026-11-20T00:00:00Z");'),
+  assert(source.includes('const corporateIdentityDate = new Date("2026-11-22T00:00:00Z");'),
     "Next.js sitemap identity modification date must match the approved release");
   assert(source.includes('lastModified: slug === "" || slug === "about/company" ? corporateIdentityDate : contentDate'),
     "The Next.js sitemap must update only the two edited corporate URLs");
+});
+
+test("one canonical host is published across source sitemaps and robots", () => {
+  assert.equal(read("CNAME").trim(), "novapharmhealthcare.com");
+  for (const file of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xml"]) {
+    const xml = read(file);
+    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+    assert(urls.length > 0, "Sitemap has no URLs: " + file);
+    assert(urls.every(url => url.startsWith(origin + "/")), "Non-canonical host in " + file);
+    assert(!xml.includes("<loc>https://www.novapharmhealthcare.com/"), "www URL conflicts with apex canonical: " + file);
+  }
+  const robots = read("robots.txt");
+  assert(robots.includes("Sitemap: " + origin + "/sitemap.xml"));
+  assert(!robots.includes("Sitemap: https://www.novapharmhealthcare.com/"));
 });
 
 test("all 19 consumer product pages have a working storefront module and internally consistent Offers", () => {
@@ -118,6 +158,9 @@ test("all 19 consumer product pages have a working storefront module and interna
     assert(!(structured.additionalProperty || []).some(v => v.name === "Public status" && /not asserted/i.test(v.value)),
       "Contradictory availability signal: " + p.slug);
     assert(html.includes('data-merchant-sku="' + p.sku + '"'), "Visible retail offer missing: " + p.slug);
+    assert(html.includes('class="nx-merchant-shop-link" href="/products/nutraxin/"'), "Crawlable shopping link missing: " + p.slug);
+    assert(html.includes("Nutraxin food supplements have a separate UK consumer shopping journey."), "Retail/medicine scope must be clear: " + p.slug);
+    assert(!html.includes("This website is for corporate and qualified B2B information only."), "Legacy conflicting B2B-only notice: " + p.slug);
   }
 });
 
@@ -145,4 +188,37 @@ test("the 19-row Google Merchant feed stays aligned with the approved consumer c
       (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
     assert.equal(row.brand, "Nutraxin");
   }
+});
+
+
+test("corporate founder and author graph reuses Vishal's canonical personal Person identity", () => {
+  const canonicalPersonId = "https://vishal.novapharmhealthcare.com/#person";
+  const leadershipPath = "leadership/vishal-chakravarty/index.html";
+  const html = read(leadershipPath);
+  const nodes = scripts(html);
+  const person = nodes.find(node => node["@type"] === "Person");
+  const profile = nodes.find(node => node["@type"] === "ProfilePage");
+  const homepage = scripts(read("index.html"));
+  const organisation = homepage.find(node =>
+    (Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]]).includes("Organization"));
+  assert.equal(person?.["@id"], canonicalPersonId, "Corporate Person must not compete with personal identity");
+  assert.equal(person?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(person?.mainEntityOfPage?.["@id"], "https://vishal.novapharmhealthcare.com/about/#profile");
+  assert.equal(person?.worksFor?.["@id"], origin + "/#organization");
+  assert.equal(profile?.url, origin + "/leadership/vishal-chakravarty/", "Company page keeps its own page URL");
+  assert.equal(profile?.mainEntity?.["@id"], canonicalPersonId);
+  assert(html.includes('href="https://vishal.novapharmhealthcare.com/about/"'), "The personal profile must be linked visibly");
+  assert.deepEqual(organisation?.founder?.map(node => node["@id"]), [
+    canonicalPersonId,
+    origin + "/leadership/prabhakar-lahare/#person",
+  ]);
+  assert.deepEqual(organisation?.member?.map(node => node["@id"]), [
+    canonicalPersonId,
+    origin + "/leadership/prabhakar-lahare/#person",
+    origin + "/leadership/girish-achliya/#person",
+    origin + "/leadership/helly-panchal/#person",
+  ]);
+  assert.equal(organisation?.founder?.[0]?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(organisation?.member?.[0]?.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(organisation?.member?.[1]?.url, origin + "/leadership/prabhakar-lahare/");
 });

@@ -1,0 +1,252 @@
+{
+  "schema": "novapharm-connective-image-candidate-v1",
+  "reviewedOn": "2026-11-25",
+  "sourceScope": "Public supplier product references matched to supplied GTIN and pack description; image bytes and usage rights not verified",
+  "products": [
+    {
+      "gtin": "5021265222001",
+      "brand": "Vitabiotics",
+      "name": "Wellwoman capsules",
+      "pack": "30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/501/vitabiotics_wellwoman_vit_min_cap",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5021265247318",
+      "brand": "Vitabiotics",
+      "name": "Wellteen Her tablets",
+      "pack": "30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/492/vitabiotics_wellteen_her_tab",
+      "candidateImage": "https://www.connectivepharma.co.uk/userfiles/images/52/e6/74/81/bd60cbe048ee6ced77707730.png",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5021265246656",
+      "brand": "Vitabiotics",
+      "name": "Wellkid multivitamin liquid 4–12 years",
+      "pack": "150ml",
+      "sourcePage": "https://www.connectivepharma.com/en/product/479/vitabiotics_wellkid_m_vit_liquid_4_12yrs",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5021265243372",
+      "brand": "Vitabiotics",
+      "name": "Ultra Vitamin D3 1000 IU tablets",
+      "pack": "96",
+      "sourcePage": "https://www.connectivepharma.com/en/product/470/vitabiotics_ultra_vitamin_d_d3_1000_iu_tablet",
+      "candidateImage": "https://www.connectivepharma.co.uk/userfiles/images/f4/ac/d6/11/6834b84c26a8dbc4e96b7372.png",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5021265242344",
+      "brand": "Vitabiotics",
+      "name": "Pregnacare Conception Him & Her",
+      "pack": "60S",
+      "sourcePage": "https://www.connectivepharma.com/en/product/450/vitabiotics_pregnacare_conception_him_her",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5065010569027",
+      "brand": "Minadex",
+      "name": "Multivitamin liquid",
+      "pack": "150",
+      "sourcePage": "https://www.connectivepharma.com/en/product/138/minadex_multivitamin_syrup",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5060072606437",
+      "brand": "Equazen",
+      "name": "Jelly drops",
+      "pack": "60 Jelly Drops",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7283/equazen_jelly",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5012335003309",
+      "brand": "Seven Seas",
+      "name": "One-a-day capsules",
+      "pack": "120",
+      "sourcePage": "https://www.connectivepharma.com/en/product/166/seven_seas_one_a_day_capsules",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5012335850606",
+      "brand": "Seven Seas",
+      "name": "Max strength cod liver oil liquid",
+      "pack": "300ml",
+      "sourcePage": "https://www.connectivepharma.com/en/product/162/seven_seas_omega_3_fish_oil_plus_cod_liver_oil_max_strength_with_vitamins_d_and_vitamin_e",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5012335851108",
+      "brand": "Seven Seas",
+      "name": "Max strength capsules",
+      "pack": "60",
+      "sourcePage": "https://www.connectivepharma.com/en/product/160/seven_seas_cod_liver_oil_max_strength_omega_3_fish_oil_vitamin_d_60_capsule",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4006309024453",
+      "brand": "Floradix",
+      "name": "Artichoke",
+      "pack": "200ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7431/floradix_artichoke_200ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8700216356619",
+      "brand": "Seven Seas",
+      "name": "Max strength cod liver oil liquid",
+      "pack": "450ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7707/seven_seas_omega_3_fish_oil_plus_cod_liver_oil_max_strength_450ml_liquid_with_vitamins_d_and_e",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040043870",
+      "brand": "Sebamed",
+      "name": "Baby gentle wash",
+      "pack": "200ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7591/sebamed_baby_gentle_wash_200ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8700216433280",
+      "brand": "Seven Seas",
+      "name": "Jointcare Essential",
+      "pack": "30 CAPS",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7684/seven_seas_jonitcare_essential_30_caps",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8700216181587",
+      "brand": "Seven Seas",
+      "name": "Pregnancy vitamins",
+      "pack": "28+28",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7708/seven_seas_pregnancy_vitamins_with_omega_3_dha_and_advanced_folic_acid",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040003188",
+      "brand": "Sebamed",
+      "name": "Clear Face mattifying cream",
+      "pack": "50ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7570/sebamed_clear_face_mattifying_cream_50ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040126276",
+      "brand": "Sebamed",
+      "name": "Everyday shampoo",
+      "pack": "1L",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7573/sebamed_everyday_shampoo_1l",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8006540687383",
+      "brand": "Seven Seas",
+      "name": "Omega-3 and multivitamins woman",
+      "pack": "30+30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/6689/seven_seas_omega_3_multivitamins_woman_30_day_60_capsules_tablets_duo_pack",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8006540158920",
+      "brand": "Seven Seas",
+      "name": "Omega-3 extra strength",
+      "pack": "30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/6684/seven_seas_omega_3_fish_oil_extra_strength_with_vitamin_d_30_capsules",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8006540157978",
+      "brand": "Seven Seas",
+      "name": "Omega-3 and magnesium",
+      "pack": "30+30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/6681/seven_seas_omega_3_fish_oil_magnesium_with_vitamin_d_30_day_duo_pack",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "5012335792104",
+      "brand": "Seven Seas",
+      "name": "Multivitamins capsules",
+      "pack": "90",
+      "sourcePage": "https://www.connectivepharma.com/en/product/164/seven_seas_multivitamins_capsules",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "8006540158951",
+      "brand": "Seven Seas",
+      "name": "Omega-3 max strength",
+      "pack": "30",
+      "sourcePage": "https://www.connectivepharma.com/en/product/6683/seven_seas_omega_3_fish_oil_max_strength_with_vitamin_d_30_capsules",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040120465",
+      "brand": "Sebamed",
+      "name": "Baby cream extra soft",
+      "pack": "50ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7597/sebamed_baby_cream_extra_soft_50ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040898104",
+      "brand": "Sebamed",
+      "name": "Anti-dry revitalizing shampoo",
+      "pack": "200ml",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7601/sebamed_anti_dry_revitalizing_shampoo_200ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040146168",
+      "brand": "Sebamed",
+      "name": "Anti-ageing Q10 firming body lotion",
+      "pack": "200ML",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7607/sebamed_anti_ageing_q10_firming_body_lotion_200ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040167934",
+      "brand": "Sebamed",
+      "name": "Anti-dry night intensive cream",
+      "pack": "50ml",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7603/sebamed_anti_dry_night_intensive_cream_50ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    },
+    {
+      "gtin": "4103040167347",
+      "brand": "Sebamed",
+      "name": "Baby diaper rash cream",
+      "pack": "100ml",
+      "sourcePage": "https://www.connectivepharma.com/en/product/7596/sebamed_baby_diaper_rash_cream_100ml",
+      "usageRightsConfirmed": false,
+      "visualVariantConfirmed": false
+    }
+  ]
+}

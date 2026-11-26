@@ -135,14 +135,14 @@ a:hover { color: var(--brand-2); }
   min-height: 48px;
   border-radius: 4px;
   border-color: var(--line-strong);
-  background: #fff;
+  background: var(--surface);
 }
 
 .field textarea { min-height: 156px; }
 
 .field label { font-size: 14px; }
 
-.table-wrap { background: #fff; }
+.table-wrap { background: var(--surface); }
 
 .sr-only {
   position: absolute;

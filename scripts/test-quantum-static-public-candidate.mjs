@@ -33,18 +33,29 @@ test("Pages allowlist, provenance stamp, and RTL inventory include exactly the c
   assert.doesNotMatch(stage, /^\s*"quantum-research",\s*$/m, "Quantum directory must never be bulk-copied");
   assert.ok(stage.includes('"quantum-research/index.html"'));
   assert.ok(stamp.includes('"quantum-research/index.html"'));
-  assert.ok(stamp.includes("noindex, nofollow"));
+  const pinned = read("scripts/lib/stamp-pinned-public-html.mjs");
+  assert.ok(stamp.includes('stampPinnedPublicHtml(root, "quantum-research/index.html", sha, { mustBeNoindex: true })'),
+    "Quantum provenance must retain the reviewed noindex gate");
+  assert.ok(pinned.includes("noindex, nofollow"),
+    "Shared descriptor stamper must reject quantum pages without noindex");
   assert.doesNotMatch(stamp, /existsSync\(researchCandidatePath\)/,
     "Quantum provenance source must be read without a check/read race");
   assert.ok(stage.includes("Quantum public candidate provenance mismatch"));
   assert.ok(stage.includes('/<form' + String.fromCharCode(92) + 'b|data-login-form'), "form detection must use a regex word boundary");
-  assert.ok(stamp.includes('researchCandidate.replace(/' + String.fromCharCode(92) + 's*<meta'), "repeat build must clean previous SHA");
+  assert.ok(pinned.includes('html = html.replace(/' + String.fromCharCode(92) + 's*<meta'),
+    "repeat build must clean previous SHA on the pinned descriptor");
 });
 test("standalone public candidate has no inline code, paid SDK or external runtime",()=>{
   const css=read("assets/css/quantum-research.css");
   assert.ok(css.includes(".nq-grid"));
   assert.ok(html.includes('href="/assets/css/quantum-research.css"'));
-  assert.doesNotMatch(html,/<script\b/i); // only the normal release builder may inject RTL bootstrap
+  // Source HTML is script-free. The approved public builder may inject one
+  // exact, local RTL accessibility bootstrap; arbitrary/inline code remains forbidden.
+  const approvedRtl = '<script src="/assets/js/rtl-localization.js"></script>';
+  const scripts = html.match(/<script\b[\s\S]*?<\/script>/gi) ?? [];
+  assert.ok(scripts.length <= 1, "At most one reviewed RTL bootstrap may be present");
+  for (const script of scripts) assert.equal(script, approvedRtl, "Unexpected inline/external quantum script");
+  assert.doesNotMatch(html.replace(approvedRtl, ""), /<script\b/i, "Unknown quantum script tag");
   assert.doesNotMatch(html,/\/assets\/brand\/favicon\.svg/, "Existing root favicon fallback needs no duplicate inventory reference");
   assert.doesNotMatch(html, /https:\/\/(?!quantumai\.google\/|novapharmhealthcare\.com\/)/);
 });

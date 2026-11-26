@@ -16,6 +16,22 @@
   },
   "assets": [
     {
+      "path": "creative-assets/brand/intelligence-regal-ultramarine/02_web_transparent/dark/novapharm-intelligence-dark-4096w.webp",
+      "type": "owner-supplied-intelligence-source-pack-master-not-for-publication",
+      "source": "Owner-supplied NovaPharm Intelligence Regal Ultramarine 2026 approved 195-member ZIP SHA-256 bb59275dc020eff267f7e4e8bddb9404615af8248fbc8b02b0faec93cfcba22c. Regenerated losslessly from matching approved 4096w PNG; read audit/brand/intelligence-dark-webp-source-repair-20261123.json for exact original and repaired hashes.",
+      "licence": "Owner-authorised NovaPharm Intelligence identity source artwork; non-public archival source only; not a production artwork release or third-party photo.",
+      "generated": false,
+      "modified": true,
+      "dimensions": "4096x708 pixels, lossless WebP VP8L with alpha",
+      "optimisedVariants": [],
+      "pageUsage": [],
+      "altText": null,
+      "caption": "Original Intelligence dark-surface logo source variant, reconstructed losslessly from approved PNG; not yet published.",
+      "technicalStatus": "source-only exact approved RGBA and SHA-256 8113196ea9fdf06a20870627bb7bf0dd20dbb372429c802d57244b823144a7f3 verified; no production asset activation",
+      "ownerApproval": "Owner-supplied approved original source pack; independent source-integrity and release review pending",
+      "provenanceRecord": "audit/brand/intelligence-dark-webp-source-repair-20261123.json"
+    },
+    {
       "path": "assets/media/portal/npi-human-portrait-approved.webp",
       "type": "owner-approved-original-editorial-portal-photograph",
       "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
@@ -489,7 +505,8 @@
       ],
       "pageUsage": [
         "/about/",
-        "/distribution/"
+        "/distribution/",
+        "/our-story/"
       ],
       "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
       "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
@@ -508,7 +525,8 @@
         "assets/media/about/novapharm-warehouse-original.jpg"
       ],
       "pageUsage": [
-        "/about/"
+        "/about/",
+        "/our-story/"
       ],
       "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
       "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",

@@ -1,21 +1,28 @@
 import SwiftUI
 
-/// Original NovaPharm identity, with an accessible brighter red in Dark Mode.
-/// The light brand is #E3120B; the dark adaptation #FF9189 offers a stronger
-/// distinction from system dark grouped backgrounds and preserves brand character.
-/// System text/surfaces remain dynamic for contrast, appearance and legibility.
+/// NovaPharm Intelligence Regal Ultramarine; preserve system semantic surfaces.
 enum NovaTheme {
-    /// Preserve the exact NovaPharm corporate red for identity artwork and large graphics.
-    static let brandRed = Color(red: 227.0 / 255, green: 18.0 / 255, blue: 11.0 / 255)
-
-    /// Small interactive labels need >=4.5:1 against both white and grouped light surfaces.
-    /// #D9130D passes on #F2F2F7 whereas the brand red #E3120B is only ~4.32:1.
-    static let accent = Color(uiColor: UIColor { traits in
-        if traits.userInterfaceStyle == .dark {
-            return UIColor(red: 255.0 / 255, green: 145.0 / 255, blue: 137.0 / 255, alpha: 1)
-        }
-        return UIColor(red: 217.0 / 255, green: 19.0 / 255, blue: 13.0 / 255, alpha: 1)
+    static let accent = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor(red: 168.0 / 255, green: 184.0 / 255, blue: 255.0 / 255, alpha: 1)
+            : UIColor(red: 37.0 / 255, green: 70.0 / 255, blue: 216.0 / 255, alpha: 1)
     })
-    static let surface = Color(uiColor: .secondarySystemGroupedBackground)
-    static let background = Color(uiColor: .systemGroupedBackground)
+    // Sovereign Black on light backgrounds; system-provided readable label in dark.
+    static let primaryInk = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor.label
+            : UIColor(red: 11.0 / 255, green: 11.0 / 255, blue: 14.0 / 255, alpha: 1)
+    })
+    // Owner-approved Pure White (#FFFFFF) and Royal Porcelain White
+    // (#F8F7F3) for the light appearance. Native dark materials remain dynamic.
+    static let surface = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor.secondarySystemGroupedBackground
+            : UIColor(red: 248.0 / 255, green: 247.0 / 255, blue: 243.0 / 255, alpha: 1)
+    })
+    static let background = Color(uiColor: UIColor { trait in
+        trait.userInterfaceStyle == .dark
+            ? UIColor.systemGroupedBackground
+            : UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+    })
 }

@@ -1,23 +1,29 @@
 export const designTokens = Object.freeze({
   colour: Object.freeze({
     midnight: "#0d1b2a",
-    warmWhite: "#fbfaf8",
+    warmWhite: "#FFFFFF",
+    porcelainWhite: "#F8F7F3",
+    porcelainStone: "#DEDCD5",
+    controlBorder: "#86868B",
     charcoal: "#1b2028",
     coolGrey: "#667085",
-    silver: "#d8dde4",
+    silver: "#DEDCD5",
     pharmaceuticalBlue: "#eaf3f8",
-    novapharmRed: "#E3120B",
-    novapharmRedText: "#B30E09",
+    sovereignBlack: "#0B0B0E",
+    novapharmRed: "#9D1B32",
+    novapharmRedText: "#68101F",
+    distributionGarnet: "#3D0B13",
+    intelligenceUltramarine: "#2546D8",
     focus: "#0b69ff"
   }),
   materials: Object.freeze({
     navigation: Object.freeze({
-      solid: "#ffffff",
-      translucent: "rgba(255, 255, 255, 0.94)",
-      separator: "rgba(17, 24, 32, 0.12)",
+      solid: "#FFFFFF",
+      translucent: "rgba(251, 250, 239, 0.94)",
+      separator: "rgba(11, 11, 14, 0.12)",
       blurredOnlyWhenSupported: true
     }),
-    content: Object.freeze({ canvas: "#ffffff", grouped: "#f5f5f7", effect: "opaque" }),
+    content: Object.freeze({ canvas: "#FFFFFF", grouped: "#F8F7F3", effect: "opaque" }),
     accessibility: Object.freeze({
       reducedTransparencyAttribute: "data-np-transparency=reduce",
       motion: "prefers-reduced-motion",
@@ -26,10 +32,10 @@ export const designTokens = Object.freeze({
     })
   }),
   typography: Object.freeze({
-    uiFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    compactFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
+    uiFamily: "-apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', sans-serif",
+    compactFamily: "-apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif",
     monoFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-    editorialFamily: "ui-serif, 'Iowan Old Style', Charter, Georgia, serif",
+    editorialFamily: "'New York', 'Iowan Old Style', Charter, Georgia, serif",
     body: "1rem",
     caption: "0.875rem",
     lead: "clamp(1.125rem, 1.6vw, 1.375rem)",

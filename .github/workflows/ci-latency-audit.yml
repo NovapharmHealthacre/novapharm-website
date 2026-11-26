@@ -1,0 +1,54 @@
+name: CI latency telemetry (read-only)
+
+# Manual diagnostic only. Do not add a pull_request trigger: this is a
+# bottleneck-measurement tool, not another required merge gate.
+on:
+  workflow_dispatch:
+    inputs:
+      sample_runs:
+        description: Recent completed PR workflow runs to inspect
+        required: false
+        type: choice
+        default: "25"
+        options:
+          - "10"
+          - "25"
+          - "50"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: novapharm-ci-latency-readonly
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    name: Read-only job queue and execution latency report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout diagnostic source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Verify sampling calculations
+        run: node --test scripts/test-ci-latency-audit.mjs
+      - name: Sample job start and finish times without altering other runs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CI_AUDIT_LIMIT: ${{ inputs.sample_runs || '25' }}
+        run: node scripts/ci/ci-latency-audit.mjs
+      - name: Preserve short diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci-latency-readonly-report
+          path: artifacts/ci-performance/
+          if-no-files-found: warn
+          retention-days: 7

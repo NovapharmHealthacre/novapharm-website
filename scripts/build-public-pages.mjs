@@ -14,7 +14,9 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { ourStoryBody, ourStoryMeta } from "../src/content/our-story.mjs";
 import { croContent } from "../src/content/cro-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
 import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
@@ -31,7 +33,7 @@ const articles = readdirSync(articlesDirectory)
   .map((name) => JSON.parse(readFileSync(join(articlesDirectory, name), "utf8")))
   .sort((a, b) => b.published.localeCompare(a.published) || a.title.localeCompare(b.title));
 
-const publicRoutes = Object.keys(pageMeta);
+const publicRoutes = [...Object.keys(pageMeta), "our-story"];
 const siteUrl = company.siteUrl;
 const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
@@ -126,7 +128,7 @@ for (const article of articles) {
 }
 
 function primarySection(slug) {
-  if (slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
+  if (slug === "our-story" || slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
   if (slug.startsWith("news-insights/")) return "news-insights";
   if (slug.startsWith("technology/")) return "technology";
   return slug;
@@ -164,7 +166,7 @@ function footer() {
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/oncology/">Oncology continuity</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
-        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
+        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/products/track/">Check order status</a><a href="/products/nutraxin/account/">Personal orders &amp; account</a><a href="mailto:support@novapharmhealthcare.com">Customer support</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/trust-centre/">Trust centre</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
       <div class="footer-notices">
@@ -209,20 +211,18 @@ function organisationSchema() {
     },
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.registeredStreet,
-      addressLocality: "Feltham",
-      addressRegion: "England",
-      postalCode: company.registeredPostcode,
-      addressCountry: "GB"
-    },
     areaServed: ["United Kingdom", "International"],
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
-    founder: { "@id": `${siteUrl}/leadership/vishal-chakravarty/#person` },
-    knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
+    sameAs: [company.companiesHouseUrl, company.linkedinUrl],
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
+    knowsAbout: [company.industry, "UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
   };
 }
 
@@ -335,7 +335,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml">
   <link rel="icon" href="/assets/brand/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
-  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
+  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#9D1B32">
   <link rel="manifest" href="/manifest.webmanifest">
   <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
@@ -512,7 +512,7 @@ function companyPage() {
   const slug = "about/company";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "A UK B2B pharmaceutical business in regulated preparation.", company.summary, slug, { parent: { name: "About", href: "/about/" } })}
-  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
+  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div><div><dt>Founders</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a> and <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a></dd></div><div><dt>Board of directors</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a>, <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a>, <a href="/leadership/girish-achliya/">Dr Girish Shantilal Achliya</a>, <a href="/leadership/helly-panchal/">Dr Helly Panchal</a></dd></div><div><dt>UK business telephone</dt><dd><a href="tel:+447352036605">${company.publicTelephone}</a></dd></div><div><dt>Business enquiries email</dt><dd><a href="mailto:${company.publicEnquiriesEmail}">${company.publicEnquiriesEmail}</a></dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Sourcing model", "Diversified by design, qualified product by product.")}<div class="grid grid-3">${sourcingPillars.map((pillar) => `<article class="card"><span class="status-label">${pillar.status}</span><h3>${pillar.title}</h3><p>${pillar.text}</p></article>`).join("")}</div></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
@@ -546,14 +546,14 @@ function profilePage(profile) {
     eyebrow: profile.title
   };
   const canonical = absoluteUrl(routePath(slug));
-  const personId = `${canonical}#person`;
+  const personId = personIdForSlug(profile.slug);
   const person = {
     "@context": "https://schema.org",
     "@id": personId,
     "@type": "Person",
     name: profile.name,
     jobTitle: profile.schemaTitle,
-    url: canonical,
+    url: personUrlForSlug(profile.slug),
     ...(profile.image ? { image: absoluteUrl(profile.image) } : {}),
     description: profile.summary,
     worksFor: { "@id": organisationId },
@@ -567,7 +567,7 @@ function profilePage(profile) {
   schemas.push(person);
   schemas[2].mainEntity = { "@id": personId };
   const body = `<section class="profile-hero profile-hero-v3"><div class="profile-hero-media">${leaderVisual(profile, true)}</div><div class="container profile-hero-content">${breadcrumb([{ name: "Home", href: "/" }, { name: "Leadership", href: "/leadership/" }, { name: profile.displayName }])}<span class="eyebrow">${esc(profile.title)}</span><h1>${esc(profile.displayName)}</h1><p>${esc(profile.summary)}</p><span class="governance-badge">${esc(profile.governance)}</span></div></section>
-  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
+  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.slug === "vishal-chakravarty" ? `<p><a class="text-link" href="https://vishal.novapharmhealthcare.com/about/">Personal profile, evidence and published work</a></p>` : ""}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
   ${finalCta("Discuss a qualified pharmaceutical partnership.")}`;
   return documentShell({ meta, slug, body, options: { schemas } });
 }
@@ -1110,6 +1110,7 @@ function buildSitemap() {
 export function buildPublicPages() {
   write("index.html", homePage());
   write("about/index.html", aboutPage());
+  write("our-story/index.html", documentShell({ meta: ourStoryMeta, slug: "our-story", body: ourStoryBody }).replace("</head>", '  <link rel="stylesheet" href="/assets/css/our-story.css">\n</head>'));
   write("about/company/index.html", companyPage());
   write("about/governance/index.html", governancePage());
   write("leadership/index.html", leadershipIndexPage());
@@ -1159,8 +1160,8 @@ export function buildPublicPages() {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#E3120B",
+    background_color: "#FFFFFF",
+    theme_color: "#9D1B32",
     icons: [
       { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/assets/brand/pwa-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

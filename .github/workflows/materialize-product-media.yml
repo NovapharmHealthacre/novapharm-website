@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: product-media-${{ github.event.pull_request.number || github.ref }}
@@ -25,8 +25,9 @@ jobs:
       - name: Check out candidate branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
 
       - name: Use Node 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -68,31 +69,10 @@ jobs:
           npm run security:scan
           node scripts/test-static-public-source-safety.mjs
 
-      - name: Commit only validated media to the candidate branch
+      - name: Assert media materialisation never writes any GitHub source or live asset
         shell: bash
-        env:
-          TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
-          git add -- creative-assets/image-asset-register.json assets/media/products
-          if git diff --cached --quiet; then
-            echo "Licensed media is already materialised and current."
-            exit 0
-          fi
-
-          while IFS= read -r path; do
-            [ -z "$path" ] && continue
-            case "$path" in
-              creative-assets/image-asset-register.json|assets/media/products/*)
-                ;;
-              *)
-                echo "::error file=$path::Refusing to commit a non-media path from product-media materialisation."
-                exit 1
-                ;;
-            esac
-          done < <(git diff --cached --name-only)
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Add validated licensed product photography"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          echo "Validated licensed product media in the ephemeral CI runner."
+          echo "No source commits, branch pushes, PR mutation, release, or public image artifact upload is permitted."
+          echo "Approved changes must be committed on a separately reviewed candidate branch."

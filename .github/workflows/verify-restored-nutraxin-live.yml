@@ -8,6 +8,13 @@ on:
   workflow_dispatch:
   # Read-only rollback checks after successful GitHub Pages publications.
   deployment_status:
+  # Fallback for GitHub's branch-published Pages workflow, which may not emit
+  # a deployment_status event to this repository's Actions workflows.
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
   schedule:
     - cron: "31 4 * * *"
 
@@ -16,7 +23,7 @@ permissions:
 
 jobs:
   verify-live-nutraxin:
-    if: ${{ github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages') }}
+    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

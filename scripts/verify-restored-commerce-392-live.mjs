@@ -1,4 +1,5 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { validateCommerceSitemap } from "./lib/verified-commerce-sitemap.mjs";
 
 const origin="https://novapharmhealthcare.com";
 const stamp=Date.now();
@@ -81,6 +82,17 @@ await Promise.all([
   check("/products/esco/","text/html",html=>{
     assert(html.includes("data-esco-catalogue")&&(html.match(/data-esco-entry/g)||[]).length===373,"373-product ESCO missing");
   }),
+  check("/products/esco/bag/","text/html",html=>{
+    assert(html.includes("data-esco-bag-items")&&html.includes("Your ESCO Bag"),"ESCO Bag markup missing");
+    assert(canonicalTagMatches(html,"/products/esco/bag/"),"ESCO Bag canonical missing or wrong");
+    assert(openGraphTagMatches(html,"/products/esco/bag/"),"ESCO Bag social URL inherited from Products");
+    const robots=html.match(/<meta\b[^>]*\sname=["']robots["'][^>]*>/gi)||[];
+    assert(robots.length===1,"ESCO Bag must have exactly one robots directive");
+    assert(/\scontent=["']noindex,\s*follow["']/.test(robots[0]),"ESCO Bag must be noindex, follow");
+    assert(!/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i.test(html),"ESCO Bag inherited Products WebPage structured data");
+    assert(html.includes('<meta property="og:title" content="Your ESCO Bag | NovaPharm">'),"ESCO Bag inherited public Products social title");
+    assert(!html.includes('data-order-payment-card')&&!html.includes('data-customer-address'),"ESCO Bag must not embed private customer details");
+  }),
   check("/products/marketplace/","text/html",html=>{
     assert(html.includes('data-commerce-marketplace')&&html.includes("Everything, together."),"New marketplace template missing");
     assert((html.match(/class="mp-source-index-link"/g)||[]).length===392,"392 product search links not published");
@@ -98,11 +110,13 @@ await Promise.all([
     assert(!html.includes("data-order-payment-card")&&!html.includes("data-customer-address"),"Customer data must not be embedded");
   }),
   check("/sitemap.xml","xml",xml=>{
-    assert((xml.match(/<loc>/g)||[]).length===61,"Published sitemap must contain 61 indexable routes");
-    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'),"392-product Marketplace missing from sitemap");
-    assert(xml.includes('<loc>https://novapharmhealthcare.com/products/esco/</loc>'),"373-reference ESCO collection missing from sitemap");
-    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>'),"Private-reference tracking must not be in sitemap");
-    assert(!xml.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>'),"Customer bag must not be in sitemap");
+    const canonicalRegister=JSON.parse(readFileSync(new URL("../seo/generated/page-metadata-register.json",import.meta.url),"utf8"));
+    const verified=validateCommerceSitemap(xml,canonicalRegister);
+    const exactUrls=new Set(verified.canonicals);
+    assert(exactUrls.has("https://novapharmhealthcare.com/products/marketplace/"),"392-product Marketplace missing from sitemap");
+    assert(exactUrls.has("https://novapharmhealthcare.com/products/esco/"),"373-reference ESCO collection missing from sitemap");
+    assert(!exactUrls.has("https://novapharmhealthcare.com/products/track/"),"Private-reference tracking must not be in sitemap");
+    assert(!exactUrls.has("https://novapharmhealthcare.com/products/esco/bag/"),"Customer bag must not be in sitemap");
   }),
   check("/assets/data/commerce-marketplace.json","application/json",body=>{
     const j=JSON.parse(body);
