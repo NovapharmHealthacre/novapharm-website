@@ -4,21 +4,24 @@
 **Applies to:** \`apps/corporate\` public Next.js application and its published corporate pages.  
 **Does not apply automatically to:** separate secure portal, NOVA Intelligence application, or founder site.
 
+
+**Owner-approved brand correction — 22 November 2026.** This source candidate uses Pure White \`#FFFFFF\` as the primary canvas, Royal Porcelain White \`#F8F7F3\` as the secondary surface, Sovereign Black \`#0B0B0E\` as default text and Porcelain Stone \`#DEDCD5\` for decorative hairlines only. Essential form/control boundaries retain a stronger accessible border. Values are enforced against \`config/brand-neutrals.json\` in the colour contract. Historic screenshot counts below are *not* acceptance evidence for this new release.
+
 ## Reference principles
 - Apple Human Interface Guidelines: clarity, hierarchy, familiarity, adaptability, craft, accessibility and purposeful colour.
 - Apple.com: simple global navigation, calm page rhythm, generous whitespace, original visual storytelling, minimal copy above the fold, text-forward controls.
 - NovaPharm: authorised official logo, original and appropriately governed medicine imagery, accurate current regulatory operating status. No Apple trademarks, proprietary Apple typography or unlicensed imagery.
 
-## Implemented foundation
+## Source-level design foundation (release candidate; not yet published)
 | Contract | Source of truth | Design |
 |---|---|---|
-| Ink | \`--nph-ink\` | \`#111113\` |
+| Ink | \`--nph-ink\` | \`#0B0B0E\` |
 | Canvas | \`--nph-canvas\` | \`#FFFFFF\` |
-| Soft surface | \`--nph-silver\` | \`#F5F5F7\` |
-| Information/body | \`--nph-body\` / \`--nph-muted\` | \`#424248\` / \`#595961\` |
-| Hairlines | \`--nph-line\` | \`#D9D9DF\` |
+| Soft surface | \`--nph-silver\` | \`#F8F7F3\` |
+| Information/body | \`--nph-body\` / \`--nph-muted\` | \`#0B0B0E\` / \`#595961\` |
+| Hairlines | \`--nph-line\` | \`#DEDCD5\` |
 | Action links and focus | \`--nph-link\` | \`#0066CC\` |
-| NovaPharm accent | \`--nph-accent\` | \`#B51C1A\`, restrained |
+| NovaPharm accent | \`--nph-accent\` | \`#9D1B32\`, restrained |
 | Deep editorial chapters | \`--nph-deep\` | \`#0A101A\` |
 | Type | \`--nph-system\` | Licensed platform/system sans-serif fallback |
 | Card curvature | \`--nph-radius\` | 22px |

@@ -77,6 +77,7 @@ for (const file of files) {
     "assets/css/novapharm.bundle.css",
     "assets/css/oncology-editorial.css",
     "assets/css/oncology-hope-v2.css",
+    "assets/css/our-story.css",
     "assets/css/products-editorial.css"
   ]);
   for (const match of source.matchAll(/\bletter-spacing\s*:\s*(-(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)/giu)) {

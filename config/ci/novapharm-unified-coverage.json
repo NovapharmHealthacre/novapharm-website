@@ -211,7 +211,9 @@
         "integrations/sharepoint",
         "config/ci/ruleset-proposals/website-main.json",
         "config/ci/ruleset-proposals/website-gh-pages-phase1.json",
-        "docs/release/github-ruleset-import-runbook.md"
+        "docs/release/github-ruleset-import-runbook.md",
+        "scripts/verify-sitewide-published-design.mjs",
+        ".github/workflows/verify-sitewide-published-design.yml"
       ],
       "tests": [
         "scripts/test-ci-workflow-security-inventory.mjs",
@@ -239,6 +241,7 @@
     "pages-live-publish.yml",
     "public-pages-browser-acceptance.yml",
     "publish-aws-contact-production.yml",
-    "supply-chain.yml"
+    "supply-chain.yml",
+    "verify-sitewide-published-design.yml"
   ]
 }

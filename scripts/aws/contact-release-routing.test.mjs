@@ -1375,6 +1375,59 @@ test("UK Wales cross-border source-only PR #1111 cannot trigger unrelated AWS Co
     "public AWS dispatcher and publisher must agree on all exact-path exemptions regardless of order");
 });
 
+test("approved public image audit #1010 remains source-only, never a Contact release", () => {
+  const auditFiles = [
+    ".github/workflows/all-published-images-parity.yml",
+    "scripts/audit-public-image-alt-presence.mjs",
+    "scripts/audit-published-images-parity.mjs",
+    "scripts/test-public-image-alt-presence.mjs",
+    "scripts/test-published-images-parity.mjs",
+  ];
+  const neutralReleaseControls = [
+    ".github/workflows/dispatch-approved-aws-contact-release.yml",
+    ".github/workflows/publish-aws-contact-production.yml",
+    "scripts/aws/contact-release-routing.test.mjs",
+  ];
+  const supportingDocumentation = "docs/data/uk-source-only-publication-routing-20261122.md";
+  const publicChanges = [
+    "contact/index.html",
+    "assets/js/contact-production.js",
+    "products/nutraxin/index.html",
+    "scripts/build-site.mjs",
+    "assets/css/novapharm.bundle.css",
+  ];
+  const classifierSets = [];
+  for (const name of ["dispatch-approved-aws-contact-release.yml", "publish-aws-contact-production.yml"]) {
+    const workflow = get(name);
+    const start = workflow.indexOf('case "$changed" in');
+    assert.ok(start >= 0, name + ": missing changed-file classifier");
+    const rawPattern = workflow.slice(start).split("\n")[1].trim();
+    assert.ok(rawPattern.endsWith(")"), name + ": unbounded classifier");
+    const patterns = rawPattern.slice(0, -1).split("|");
+    const isSourceOnly = file => patterns.some(pattern =>
+      pattern === file || (pattern.endsWith("/*") && file.startsWith(pattern.slice(0, -1))));
+    for (const path of auditFiles) {
+      assert.ok(patterns.includes(path), name + ": missing exact audit path " + path);
+      assert.equal(isSourceOnly(path), true);
+    }
+    const shouldSkip = changed =>
+      changed.length > 0 && changed.some(isSourceOnly) &&
+      changed.every(path => isSourceOnly(path) || neutralReleaseControls.includes(path));
+    assert.equal(shouldSkip(auditFiles), true, name + ": audit-only commit must not publish AWS Contact");
+    assert.equal(shouldSkip([...auditFiles, ...neutralReleaseControls, supportingDocumentation]), true,
+      name + ": reviewed source-only routing repair must not publish Contact");
+    assert.equal(shouldSkip(neutralReleaseControls), false, name + ": control-only change is not exempt");
+    assert.equal(shouldSkip([]), false, name + ": empty changes must not be exempt");
+    for (const path of publicChanges) {
+      assert.equal(isSourceOnly(path), false, name + ": public path must retain publication gate " + path);
+      assert.equal(shouldSkip([...auditFiles, path]), false, name + ": mixed public changes must retain gate");
+    }
+    classifierSets.push(patterns);
+  }
+  assert.deepEqual([...classifierSets[0]].sort(), [...classifierSets[1]].sort(),
+    "AWS dispatcher and publisher must have matching exact source scopes");
+});
+
 test("FDA Lambda source-only ZIP files never independently dispatch public site publishing", () => {
   const paths = [
     "src/core/regulatory/fda-aws-lambda-entry.mjs",

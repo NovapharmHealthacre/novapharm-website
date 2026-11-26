@@ -13,12 +13,20 @@ test("the source census covers all twelve app directories and five native projec
 });
 
 test("every registered corporate page, article, consumer SKU and ESCO reference is represented",()=>{
-  assert.equal(audit.summary.byKind["corporate-page"],32);
+  assert.equal(audit.summary.byKind["corporate-page"],33);
+  const story=audit.records.find(x=>x.kind==="corporate-page"&&x.id==="our-story");
+  assert.equal(story?.route,"/our-story/");
+  assert.equal(story?.separateStaticGenerator,true);
+  assert.equal(audit.summary.byKind["nutraxin-category"],5);
+  assert.equal(audit.summary.commerce.nutraxinCategoryPages,5);
+  const categories=audit.records.filter(x=>x.kind==="nutraxin-category");
+  assert.deepEqual(categories.map(x=>x.id).sort(),["collagen","magnesium","multivitamins","vitamin-c","vitamin-d"]);
+  assert.ok(categories.every(x=>x.liveRouteVerified===false&&x.productSlugs.length>0));
   assert.equal(audit.summary.byKind["corporate-article"],6);
   assert.equal(audit.summary.byKind["nutraxin-sku"],19);
   assert.equal(audit.summary.byKind["esco-reference"],373);
   assert.equal(audit.summary.commerce.marketplaceSourceCandidates,392);
-  assert.equal(audit.summary.distinctSourceRecords,539);
+  assert.equal(audit.summary.distinctSourceRecords,545);
   const registered = audit.records.filter(x=>x.kind==="nutraxin-sku");
   assert.equal(new Set(registered.map(x=>x.route)).size,19);
   assert.ok(registered.every(x=>x.warehouseStockAndPaymentAcceptedByThisAudit===false));
@@ -56,8 +64,8 @@ test("all sixteen WMS blueprint workspaces preserve existing role routes and blo
   assert.ok(wms.filter(x=>x.linkedEmployeeModule).every(x=>x.route?.startsWith("/employee/")));
 });
 
-test("all 539 source rows explicitly refuse to infer production or human accessibility acceptance",()=>{
-  assert.equal(audit.records.length,539);
+test("all 545 source rows explicitly refuse to infer production or human accessibility acceptance",()=>{
+  assert.equal(audit.records.length,545);
   assert.ok(audit.records.every(x=>x.independentProductionEvidence===null));
   assert.ok(audit.records.every(x=>x.accessibilityAndSecurityApproval===null));
   assert.ok(audit.records.every(x=>x.ownerReleaseApproval===null));
@@ -67,7 +75,7 @@ test("all 539 source rows explicitly refuse to infer production or human accessi
 });
 
 test("each original source record has unique key and a raw source digest",()=>{
-  assert.equal(new Set(audit.records.map(x=>x.kind+":"+x.id)).size,539);
+  assert.equal(new Set(audit.records.map(x=>x.kind+":"+x.id)).size,545);
   assert.ok(Object.keys(audit.sourceSha256).length>=10);
   assert.ok(Object.values(audit.sourceSha256).every(s=>/^[0-9a-f]{64}$/.test(s)));
 });
