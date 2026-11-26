@@ -79,7 +79,10 @@ class StageTests(unittest.TestCase):
     def test_refuses_fake_checkout_and_price_in_staged_pages(self):
         page = self.site / 'products/health-and-wellbeing/1000000000000/index.html'
         page.write_text(page.read_text()+'data-npr-retail-sku="NP-CP-1000000000000"')
-        with self.assertRaisesRegex(AssertionError,'Unverified offer leaked'):
+        with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
+            module.stage(self.site,self.live)
+        page.write_text(page.read_text().replace('data-npr-retail-sku="NP-CP-1000000000000"', 'invalid-secondary-attribute', 1))
+        with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
             module.stage(self.site,self.live)
 
 if __name__=='__main__': unittest.main()
