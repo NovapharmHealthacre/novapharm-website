@@ -37,6 +37,28 @@ struct NovaCountryDirectoryView: View {
         return Self.worldwideExtension.filter { query.isEmpty || $0.code.localizedCaseInsensitiveContains(query) || $0.name.localizedCaseInsensitiveContains(query) }
     }
 
+    private static let whoAuthorityLeads: [String: String] = [
+        "AF": "Afghanistan Food and Drug Authority",
+        "AO": "ARMED",
+        "BB": "Barbados Drug Service",
+        "BY": "Ministry of Health pharmaceutical inspection department",
+        "BJ": "ABRP",
+        "BT": "Drug Regulatory Authority",
+        "BN": "Department of Pharmaceutical Services",
+        "BF": "ANRP",
+        "BI": "ABREMA",
+        "NI": "Ministry of Health medical supplies standardisation directorate",
+        "SB": "Ministry of Health and Medical Services pharmacy services",
+        "SD": "National Medicines and Poisons Board",
+        "SR": "Ministry of Health",
+        "SY": "Ministry of Health pharmaceutical affairs directorate",
+        "TG": "Public Health pharmacies and laboratories directorate",
+        "TT": "Ministry of Health chemistry, food and drugs division",
+        "TM": "Medical Products Registration and State Quality Control Centre",
+        "VE": "Instituto Nacional de Higiene Rafael Rangel",
+        "XK": "Kosovo drug regulatory authority (historical UNMIK entry)"
+    ]
+
     private static let worldwideExtension: [(code: String, name: String)] = [
         ("AF", "Afghanistan"),
         ("AX", "Åland Islands"),
@@ -246,7 +268,7 @@ struct NovaCountryDirectoryView: View {
                         let entry = additionalWorldwide[index]
                         VStack(alignment: .leading, spacing: 4) {
                             Text(entry.name).font(.body.weight(.semibold))
-                            Text(entry.code + " · Authority and dataset discovery required · No live feed").font(.caption).foregroundStyle(.secondary)
+                            Text(entry.code + " · " + (Self.whoAuthorityLeads[entry.code].map { "WHO-listed research lead: " + $0 + " · Dataset verification required" } ?? "Authority and dataset discovery required") + " · No live feed").font(.caption).foregroundStyle(.secondary)
                         }.accessibilityIdentifier("novapharm.worldwide." + entry.code)
                     }
                 }

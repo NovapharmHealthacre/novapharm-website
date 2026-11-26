@@ -6,6 +6,8 @@ on:
       - 'docs/intelligence/worldwide-jurisdiction-scope-20261126.json'
       - 'scripts/test-intelligence-worldwide-jurisdiction-scope.mjs'
       - 'src/core/intelligence-pl-nfz-dictionary.mjs'
+      - 'src/core/intelligence-sg-hsa-company-licences.mjs'
+      - 'scripts/test-intelligence-sg-hsa-company-licences.mjs'
       - 'scripts/test-intelligence-global-integration-execution.mjs'
       - 'apps/portal/components/country-source-coverage.tsx'
       - 'native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx'
@@ -21,4 +23,4 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - run: node --test scripts/test-intelligence-global-integration-execution.mjs scripts/test-intelligence-worldwide-jurisdiction-scope.mjs
+      - run: node --test scripts/test-intelligence-global-integration-execution.mjs scripts/test-intelligence-worldwide-jurisdiction-scope.mjs scripts/test-intelligence-sg-hsa-company-licences.mjs

@@ -16,7 +16,8 @@
     "additionalOperationalCodes": 1,
     "existingResearchScopes": 101,
     "newResearchScopes": 149,
-    "customerLive": 0
+    "customerLive": 0,
+    "newAuthorityResearchLeads": 19
   },
   "jurisdictions": [
     {
@@ -30,7 +31,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Afghanistan Food and Drug Authority",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "AX",
@@ -43,7 +49,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AL",
@@ -56,7 +63,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DZ",
@@ -69,7 +77,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AS",
@@ -82,7 +91,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AD",
@@ -95,7 +105,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AO",
@@ -108,7 +119,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "ARMED",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "AI",
@@ -121,7 +137,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AQ",
@@ -134,7 +151,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AG",
@@ -147,7 +165,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AR",
@@ -160,7 +179,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AM",
@@ -173,7 +193,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AW",
@@ -186,7 +207,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AU",
@@ -199,7 +221,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AT",
@@ -212,7 +235,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AZ",
@@ -225,7 +249,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BS",
@@ -238,7 +263,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BH",
@@ -251,7 +277,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BD",
@@ -264,7 +291,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BB",
@@ -277,7 +305,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Barbados Drug Service",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BY",
@@ -290,7 +323,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health pharmaceutical inspection department",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BE",
@@ -303,7 +341,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BZ",
@@ -316,7 +355,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BJ",
@@ -329,7 +369,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "ABRP",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BM",
@@ -342,7 +387,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BT",
@@ -355,7 +401,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Drug Regulatory Authority",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BO",
@@ -368,7 +419,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BA",
@@ -381,7 +433,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BW",
@@ -394,7 +447,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BV",
@@ -407,7 +461,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BR",
@@ -420,7 +475,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IO",
@@ -433,7 +489,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VG",
@@ -446,7 +503,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BN",
@@ -459,7 +517,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Department of Pharmaceutical Services",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BG",
@@ -472,7 +535,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BF",
@@ -485,7 +549,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "ANRP",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "BI",
@@ -498,7 +567,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "ABREMA",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "KH",
@@ -511,7 +585,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CM",
@@ -524,7 +599,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CA",
@@ -537,7 +613,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CV",
@@ -550,7 +627,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BQ",
@@ -563,7 +641,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KY",
@@ -576,7 +655,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CF",
@@ -589,7 +669,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TD",
@@ -602,7 +683,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CL",
@@ -615,7 +697,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CN",
@@ -628,7 +711,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CX",
@@ -641,7 +725,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CC",
@@ -654,7 +739,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CO",
@@ -667,7 +753,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KM",
@@ -680,7 +767,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CG",
@@ -693,7 +781,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CD",
@@ -706,7 +795,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CK",
@@ -719,7 +809,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CR",
@@ -732,7 +823,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CI",
@@ -745,7 +837,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HR",
@@ -758,7 +851,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CU",
@@ -771,7 +865,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CW",
@@ -784,7 +879,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CY",
@@ -797,7 +893,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CZ",
@@ -810,7 +907,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DK",
@@ -823,7 +921,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DJ",
@@ -836,7 +935,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DM",
@@ -849,7 +949,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DO",
@@ -862,7 +963,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "EC",
@@ -875,7 +977,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "EG",
@@ -888,7 +991,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SV",
@@ -901,7 +1005,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GQ",
@@ -914,7 +1019,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ER",
@@ -927,7 +1033,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "EE",
@@ -940,7 +1047,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SZ",
@@ -953,7 +1061,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ET",
@@ -966,7 +1075,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FK",
@@ -979,7 +1089,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FO",
@@ -992,7 +1103,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FJ",
@@ -1005,7 +1117,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FI",
@@ -1018,7 +1131,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FR",
@@ -1031,7 +1145,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GF",
@@ -1044,7 +1159,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PF",
@@ -1057,7 +1173,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TF",
@@ -1070,7 +1187,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GA",
@@ -1083,7 +1201,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GM",
@@ -1096,7 +1215,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GE",
@@ -1109,7 +1229,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "DE",
@@ -1122,7 +1243,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GH",
@@ -1135,7 +1257,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GI",
@@ -1148,7 +1271,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GR",
@@ -1161,7 +1285,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GL",
@@ -1174,7 +1299,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GD",
@@ -1187,7 +1313,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GP",
@@ -1200,7 +1327,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GU",
@@ -1213,7 +1341,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GT",
@@ -1226,7 +1355,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GG",
@@ -1239,7 +1369,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GN",
@@ -1252,7 +1383,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GW",
@@ -1265,7 +1397,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GY",
@@ -1278,7 +1411,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HT",
@@ -1291,7 +1425,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HM",
@@ -1304,7 +1439,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HN",
@@ -1317,7 +1453,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HK",
@@ -1330,7 +1467,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "HU",
@@ -1343,7 +1481,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IS",
@@ -1356,7 +1495,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IN",
@@ -1369,7 +1509,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ID",
@@ -1382,7 +1523,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IR",
@@ -1395,7 +1537,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IQ",
@@ -1408,7 +1551,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IE",
@@ -1421,7 +1565,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IM",
@@ -1434,7 +1579,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IL",
@@ -1447,7 +1593,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "IT",
@@ -1460,7 +1607,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "JM",
@@ -1473,7 +1621,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "JP",
@@ -1486,7 +1635,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "JE",
@@ -1499,7 +1649,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "JO",
@@ -1512,7 +1663,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KZ",
@@ -1525,7 +1677,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KE",
@@ -1538,7 +1691,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KI",
@@ -1551,7 +1705,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "XK",
@@ -1564,7 +1719,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Kosovo drug regulatory authority (historical UNMIK entry)",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "KW",
@@ -1577,7 +1737,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KG",
@@ -1590,7 +1751,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LA",
@@ -1603,7 +1765,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LV",
@@ -1616,7 +1779,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LB",
@@ -1629,7 +1793,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LS",
@@ -1642,7 +1807,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LR",
@@ -1655,7 +1821,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LY",
@@ -1668,7 +1835,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LI",
@@ -1681,7 +1849,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LT",
@@ -1694,7 +1863,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LU",
@@ -1707,7 +1877,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MO",
@@ -1720,7 +1891,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MG",
@@ -1733,7 +1905,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MW",
@@ -1746,7 +1919,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MY",
@@ -1759,7 +1933,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MV",
@@ -1772,7 +1947,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ML",
@@ -1785,7 +1961,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MT",
@@ -1798,7 +1975,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MH",
@@ -1811,7 +1989,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MQ",
@@ -1824,7 +2003,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MR",
@@ -1837,7 +2017,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MU",
@@ -1850,7 +2031,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "YT",
@@ -1863,7 +2045,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MX",
@@ -1876,7 +2059,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "FM",
@@ -1889,7 +2073,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MD",
@@ -1902,7 +2087,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MC",
@@ -1915,7 +2101,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MN",
@@ -1928,7 +2115,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ME",
@@ -1941,7 +2129,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MS",
@@ -1954,7 +2143,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MA",
@@ -1967,7 +2157,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MZ",
@@ -1980,7 +2171,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MM",
@@ -1993,7 +2185,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NA",
@@ -2006,7 +2199,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NR",
@@ -2019,7 +2213,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NP",
@@ -2032,7 +2227,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NL",
@@ -2045,7 +2241,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NC",
@@ -2058,7 +2255,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NZ",
@@ -2071,7 +2269,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NI",
@@ -2084,7 +2283,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health medical supplies standardisation directorate",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "NE",
@@ -2097,7 +2301,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NG",
@@ -2110,7 +2315,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NU",
@@ -2123,7 +2329,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NF",
@@ -2136,7 +2343,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KP",
@@ -2149,7 +2357,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MK",
@@ -2162,7 +2371,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MP",
@@ -2175,7 +2385,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "NO",
@@ -2188,7 +2399,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "OM",
@@ -2201,7 +2413,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PK",
@@ -2214,7 +2427,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PW",
@@ -2227,7 +2441,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PS",
@@ -2240,7 +2455,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PA",
@@ -2253,7 +2469,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PG",
@@ -2266,7 +2483,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PY",
@@ -2279,7 +2497,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PE",
@@ -2292,7 +2511,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PH",
@@ -2305,7 +2525,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PN",
@@ -2318,7 +2539,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PL",
@@ -2331,7 +2553,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PT",
@@ -2344,7 +2567,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PR",
@@ -2357,7 +2581,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "QA",
@@ -2370,7 +2595,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "RE",
@@ -2383,7 +2609,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "RO",
@@ -2396,7 +2623,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "RU",
@@ -2409,7 +2637,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "RW",
@@ -2422,7 +2651,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "WS",
@@ -2435,7 +2665,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SM",
@@ -2448,7 +2679,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ST",
@@ -2461,7 +2693,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SA",
@@ -2474,7 +2707,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SN",
@@ -2487,7 +2721,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "RS",
@@ -2500,7 +2735,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SC",
@@ -2513,7 +2749,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SL",
@@ -2526,7 +2763,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SG",
@@ -2539,7 +2777,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SX",
@@ -2552,7 +2791,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SK",
@@ -2565,7 +2805,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SI",
@@ -2578,7 +2819,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SB",
@@ -2591,7 +2833,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health and Medical Services pharmacy services",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "SO",
@@ -2604,7 +2851,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ZA",
@@ -2617,7 +2865,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GS",
@@ -2630,7 +2879,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KR",
@@ -2643,7 +2893,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SS",
@@ -2656,7 +2907,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ES",
@@ -2669,7 +2921,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LK",
@@ -2682,7 +2935,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "BL",
@@ -2695,7 +2949,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SH",
@@ -2708,7 +2963,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "KN",
@@ -2721,7 +2977,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "LC",
@@ -2734,7 +2991,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "MF",
@@ -2747,7 +3005,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "PM",
@@ -2760,7 +3019,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VC",
@@ -2773,7 +3033,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SD",
@@ -2786,7 +3047,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "National Medicines and Poisons Board",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "SR",
@@ -2799,7 +3065,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "SJ",
@@ -2812,7 +3083,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SE",
@@ -2825,7 +3097,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "CH",
@@ -2838,7 +3111,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "SY",
@@ -2851,7 +3125,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health pharmaceutical affairs directorate",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "TW",
@@ -2864,7 +3143,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TJ",
@@ -2877,7 +3157,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TZ",
@@ -2890,7 +3171,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TH",
@@ -2903,7 +3185,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TL",
@@ -2916,7 +3199,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TG",
@@ -2929,7 +3213,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Public Health pharmacies and laboratories directorate",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "TK",
@@ -2942,7 +3231,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TO",
@@ -2955,7 +3245,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TT",
@@ -2968,7 +3259,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Ministry of Health chemistry, food and drugs division",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "TN",
@@ -2981,7 +3277,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TR",
@@ -2994,7 +3291,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TM",
@@ -3007,7 +3305,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Medical Products Registration and State Quality Control Centre",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "TC",
@@ -3020,7 +3323,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "TV",
@@ -3033,7 +3337,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "UM",
@@ -3046,7 +3351,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VI",
@@ -3059,7 +3365,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "UG",
@@ -3072,7 +3379,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "UA",
@@ -3085,7 +3393,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "AE",
@@ -3098,7 +3407,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "GB",
@@ -3111,7 +3421,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "US",
@@ -3124,7 +3435,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "UY",
@@ -3137,7 +3449,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "UZ",
@@ -3150,7 +3463,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VU",
@@ -3163,7 +3477,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VA",
@@ -3176,7 +3491,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "VE",
@@ -3189,7 +3505,12 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": {
+        "name": "Instituto Nacional de Higiene Rafael Rangel",
+        "reference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
+        "classification": "WHO certification-directory lead; current national remit and dataset access unverified"
+      }
     },
     {
       "code": "VN",
@@ -3202,7 +3523,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "WF",
@@ -3215,7 +3537,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "EH",
@@ -3228,7 +3551,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "YE",
@@ -3241,7 +3565,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ZM",
@@ -3254,7 +3579,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     },
     {
       "code": "ZW",
@@ -3267,7 +3593,8 @@
       "authorityDiscoveryReference": "https://www.who.int/teams/regulation-prequalification/regulation-and-safety/regulatory-convergence-networks/certification-scheme/contacts",
       "authorityVerified": false,
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "authorityLead": null
     }
   ]
 }

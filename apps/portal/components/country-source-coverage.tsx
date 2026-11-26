@@ -117,7 +117,7 @@ export function CountrySourceCoverage() {
           </article>
         ))}
       </div>
-      {extraMatches.length > 0 && <details className={styles.details} open={query.trim() ? true : undefined}><summary>Additional worldwide research jurisdictions ({extraMatches.length})</summary><ul>{extraMatches.map((entry) => <li key={entry.code}><strong>{entry.displayName} · {entry.code}</strong><span>Authority and dataset discovery required · No live feed</span></li>)}</ul></details>}
+      {extraMatches.length > 0 && <details className={styles.details} open={query.trim() ? true : undefined}><summary>Additional worldwide research jurisdictions ({extraMatches.length})</summary><ul>{extraMatches.map((entry) => <li key={entry.code}><strong>{entry.displayName} · {entry.code}</strong><span>{entry.authorityLead ? `WHO-listed research lead: ${entry.authorityLead.name} · Dataset verification required` : "Authority and dataset discovery required"} · No live feed</span></li>)}</ul></details>}
       {!matches.length && !extraMatches.length && <p className={styles.empty}>No countries match this search. No result is inferred or fabricated.</p>}
       {visible.length < matches.length &&
         <button className={styles.more} type="button" onClick={() => setVisibleLimit((n) => n + 32)}>Show more countries</button>}

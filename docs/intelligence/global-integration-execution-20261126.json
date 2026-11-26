@@ -11,7 +11,8 @@
     "regionalGlobalSourceCandidates": 12,
     "reviewedAdapterSources": 11,
     "reviewedNationalAdapterCountries": 6,
-    "customerLiveCountries": 0
+    "customerLiveCountries": 0,
+    "reviewedOfflineCandidateCountries": 1
   },
   "countries": [
     {
@@ -2074,12 +2075,24 @@
       "domains": "Registered therapeutic products, suppliers and licensed pharmacies",
       "referenceUrl": "https://developers.data.gov.sg/datasets?agencies=Health+Sciences+Authority+%28HSA%29&resultId=d_767279312753558cbf19d48344577084",
       "verifiedSourceCodeIds": [
-        "sg-hsa-products"
+        "sg-hsa-products",
+        "sg-hsa-company-licences"
       ],
       "engineeringState": "adapter-source-candidate",
       "next": "Verify exact dataset contract, rights, staging and authenticated API",
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "additionalDatasetCandidates": [
+        {
+          "sourceId": "sg-hsa-company-licences",
+          "publisher": "HSA",
+          "datasetId": "d_bf50ce0f3f42f69d7acd50635afa62da",
+          "referenceUrl": "https://data.gov.sg/datasets/d_bf50ce0f3f42f69d7acd50635afa62da/view",
+          "domain": "establishment-licensing",
+          "rightsState": "publisher open data licence stated; exact commercial/AI use not independently approved",
+          "liveResponseVerified": false
+        }
+      ]
     },
     {
       "candidateKey": "asia-pacific-malaysia-npra-kkmnow",
@@ -2231,9 +2244,12 @@
       "referenceUrl": "https://data.pbs.gov.au/document/91327.html",
       "verifiedSourceCodeIds": [],
       "engineeringState": "adapter-not-assessed",
-      "next": "Implement and test documented API contract",
+      "next": "Existing offline JSON/CSV schedule validators; verify actual publisher schema, shared quota, permitted live access and staging",
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "offlineCandidateIds": [
+        "au-pbs-schedules"
+      ]
     },
     {
       "candidateKey": "oceania-new-zealand-medsafe-nzulm",
