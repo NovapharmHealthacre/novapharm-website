@@ -79,7 +79,7 @@ test('ESCO marketplace deep-links to selected Bag-ready product with separate pa
  assert(esco.includes('known.has(directProductId)'));
  assert(esco.includes('openProductDetails(directProductId)'));
  assert(esco.includes('NovaPharm internal SKU NP-ESCO-'));
- assert(products.includes('Shop ESCO'));
+ assert(products.includes('href="/products/esco/"'));
 });
 
 test('search engines can discover every product reference without executing JavaScript',()=>{

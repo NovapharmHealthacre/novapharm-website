@@ -166,13 +166,13 @@ assert.match(contactCss, /np-contact-reference-submit/);
 assert.match(contactCss, /@media \(max-width: 700px\)/);
 
 const products = text("products/index.html");
-const approvedCollections = ["np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"];
-const collectionPositions = approvedCollections.map((marker) => products.indexOf(marker));
+const approvedCollections = ['href="/products/nutraxin/"','href="/products/health-and-wellbeing/"','href="/products/esco/"','href="/products/strategic-portfolio/"'];
+const collectionPositions = approvedCollections.map((marker) => products.slice(products.indexOf('id="np-products-collections"')).indexOf(marker));
 assert.ok(collectionPositions.every((pos) => pos >= 0) &&
   collectionPositions.every((pos, i) => i === 0 || pos > collectionPositions[i - 1]),
   "approved Products experience must present Nutraxin, ESCO and pharmaceutical portfolio as one ordered story");
-assert.match(products, /<h1 id="np-products-title">Different products\.<br>One purpose\.<\/h1>/);
-assert.match(products, /Food Supplement Portfolio Review/, "genuine Nutraxin catalogue provenance remains present");
+assert.match(products, /<h1 id="np-products-title">Carefully selected\.<br>For the everyday\.<\/h1>/);
+assert.match(products, /data-photo-mode="original-packshot"/, "genuine product photography remains present");
 assert.match(products, /href="\/products\/nutraxin\/"/);
 assert.match(products, /href="\/products\/strategic-portfolio\/"/);
 assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
