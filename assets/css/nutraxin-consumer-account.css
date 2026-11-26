@@ -60,7 +60,7 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#FFFFFF;colo
 .nx-account-nav-links{flex-shrink:0}.nx-account-nav-links a{color:#0B0B0E}
 .nx-account-main{width:100%;max-width:680px;padding:56px 28px 36px;flex:1}
 .nx-account-eyebrow{margin-bottom:14px}
-.nx-account-main h1{font-size:clamp(34px,5.4vw,52px);font-weight:600;letter-spacing:-.035em;margin-bottom:14px}
+.nx-account-main h1{font-size:clamp(34px,5.4vw,52px);font-weight:600;letter-spacing:normal;margin-bottom:14px}
 .nx-account-intro{font-size:17px;margin-bottom:26px;color:#54545A}
 .nx-account-panel{max-width:480px;margin-inline:auto;padding:24px 28px;border-radius:12px;border:1px solid #DEDCD5;box-shadow:none}
 .nx-account-primary-actions{display:grid;gap:12px;margin:0 0 16px}
