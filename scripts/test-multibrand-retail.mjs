@@ -52,6 +52,13 @@ test("approved catalogue emits crawlable product content and never fabricates an
    const result=run();assert.equal(result.status,0,result.stdout+result.stderr);
    const html=get(route);
    assert(html.includes('data-npr-retail-sku="NP-CP-4006381333931"'));
+   const collection=get("products/health-and-wellbeing/index.html");
+   assert(collection.includes('data-npr-collection-query'));
+   assert(collection.includes('data-npr-collection-section'));
+   assert(collection.includes('data-npr-retail-sku="NP-CP-4006381333931"'));
+   assert(collection.includes('connective-collection-search.js'));
+   const landing=get("products/index.html");
+   assert(landing.includes('href="/products/health-and-wellbeing/"'));
    assert(html.includes("Fixture warnings"));
    const schema=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
    assert.equal(schema.gtin13,approved.ean);assert.equal(schema["@type"],"Product");
@@ -61,6 +68,13 @@ test("approved catalogue emits crawlable product content and never fabricates an
    assert.equal(register.length,2);assert(register.some(p=>p.file===route));
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test("Connective collection search normalizes names and terms",async()=>{
+ const {matchesCollectionProduct}=await import("../assets/js/connective-collection-search.js");
+ assert(matchesCollectionProduct("Vitabiotics Ultra Vitamin D 96 Tablets","vitamin d"));
+ assert(matchesCollectionProduct("Salus Floradix Herb Tea","  FLORADIX  "));
+ assert(!matchesCollectionProduct("Vitabiotics Original","Vicks"));
 });
 
 test("Connective private intake projection self-test", async()=>{
