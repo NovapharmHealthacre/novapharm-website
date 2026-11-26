@@ -61,7 +61,21 @@ test("Apple-inspired customer overview retains governed navigation and real prod
     assert.match(component, new RegExp(image.replaceAll(".", "\\.")));
     assert.match(assets, new RegExp(image.replaceAll(".", "\\.")));
   }
-  assert.doesNotMatch(component, /<iframe|data:image\/svg|https?:\/\//);
+  // Preserve the default deny policy while explicitly permitting only these
+  // exact NovaPharm consumer shop handoff links. No arbitrary external URL is valid.
+  const authorisedRetailLinks = [
+    "https://novapharmhealthcare.com/products/health-and-wellbeing/",
+    "https://novapharmhealthcare.com/products/nutraxin/",
+    "https://novapharmhealthcare.com/products/nutraxin/bag/",
+  ];
+  for (const url of authorisedRetailLinks) {
+    assert.ok(component.includes(`href="${url}"`), "Expected authorised retail destination");
+  }
+  const withoutAllowedHandoffs = authorisedRetailLinks.reduce(
+    (text, url) => text.replaceAll(`href="${url}"`, 'href="/approved-retail-handoff/"'),
+    component,
+  );
+  assert.doesNotMatch(withoutAllowedHandoffs, /<iframe|data:image\/svg|https?:\/\//);
 });
 
 
