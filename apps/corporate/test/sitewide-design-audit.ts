@@ -99,6 +99,16 @@ async function audit() {
               const header=document.querySelector(".site-header");
               const footer=document.querySelector(".site-footer");
               const h1s=[...document.querySelectorAll("h1")];
+              // CSS optimizers may shorten hex colours or serialize them as rgb().
+              // Resolve tokens as actual computed colours, not literal source strings.
+              const colourProbe=document.createElement("span");
+              colourProbe.style.cssText="position:absolute;visibility:hidden;pointer-events:none;";
+              colourProbe.style.backgroundColor="var(--np-color-canvas, rgb(1, 2, 3))";
+              colourProbe.style.color="var(--np-color-label, rgb(1, 2, 3))";
+              document.body.append(colourProbe);
+              const canvasColour=getComputedStyle(colourProbe).backgroundColor;
+              const labelColour=getComputedStyle(colourProbe).color;
+              colourProbe.remove();
               return {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
@@ -137,6 +147,7 @@ async function audit() {
                 width:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
+                canvasColour,labelColour,
                 canvasToken:root.getPropertyValue("--np-color-canvas").trim(),
                 labelToken:root.getPropertyValue("--np-color-label").trim(),
                 reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -191,7 +202,7 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
-            if(data.canvasToken.toUpperCase()!=="#FFFFFF"||data.labelToken.toUpperCase()!=="#0B0B0E")faults.push("Approved Pure White / Sovereign Black tokens missing");
+            if(data.canvasColour!=="rgb(255, 255, 255)"||data.labelColour!=="rgb(11, 11, 14)")faults.push(`Approved Pure White / Sovereign Black computed colours differ: ${data.canvasColour} / ${data.labelColour}`);
             if(!data.reducedMotion)faults.push("Reduced-motion browser preference was not applied");
             if(data.missingImageAlt.length)faults.push(`Missing image alt attributes: ${data.missingImageAlt.slice(0,5).join(" / ")}`);
             if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
