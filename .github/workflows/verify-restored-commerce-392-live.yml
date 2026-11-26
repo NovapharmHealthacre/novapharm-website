@@ -7,6 +7,7 @@ on:
       - scripts/lib/verified-commerce-sitemap.mjs
       - scripts/test-verified-commerce-sitemap.mjs
       - assets/data/nutraxin-uk-category-intents.json
+      - src/content/our-story.mjs
       - seo/generated/page-metadata-register.json
       - sitemap.xml
       - .github/workflows/verify-restored-commerce-392-live.yml
