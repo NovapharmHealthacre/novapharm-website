@@ -19,6 +19,41 @@ const confirmed=(e,now,limitMs)=>{
  const t=time(e.observedAt);
  return Number.isFinite(t)&&t<=now+5*60_000&&now-t<=limitMs;
 };
+// Private price draft generated from the original supplier workbook by exact
+// GTIN. Never treat a quoted purchase price or assumed VAT as an approved offer.
+export function applyPrivatePriceDraft(intake,draft){
+ assert(Array.isArray(intake)&&draft?.schema==="novapharm-private-connective-price-draft-v1"&&draft.currency==="GBP"&&Array.isArray(draft.records),"Invalid private price draft");
+ const byGtin=new Map();
+ for(const p of draft.records){
+  assert(p&&validGtin(p.gtin)&&p.sku==="NP-CP-"+p.gtin&&!byGtin.has(p.gtin),"Invalid or duplicate price draft identity");
+  assert(["TRADE_COLUMN_MATCHED","UNIT_PRICE_MARKUP_APPROVED","UNIT_PRICE_ONLY_REVIEW","MISSING_QUOTE"].includes(p.pricingStatus),"Unknown price draft status");
+  const priced=p.pricingStatus==="TRADE_COLUMN_MATCHED"||p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED";
+  assert(priced?safeInteger(p.proposedNetMinor,1,99999999):p.proposedNetMinor===null,"Invalid draft selling price");
+  if(p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED"){
+   assert(p.markupBasisPoints===1500&&safeInteger(p.quotedUnitMinor,1,99999999),"Invalid owner-approved quote markup");
+   assert(p.proposedNetMinor===Math.floor((p.quotedUnitMinor*11500+5000)/10000),"Quote markup must be exactly 15 percent, rounded to pence");
+  }
+  byGtin.set(p.gtin,p);
+ }
+ return intake.map(r=>{
+  assert(r&&validGtin(r.gtin)&&r.sku==="NP-CP-"+r.gtin&&byGtin.has(r.gtin),"Retail intake not matched to private price draft");
+  const p=byGtin.get(r.gtin);
+  // Preserve the original Trade amount or the owner's explicitly authorised
+  // 15% unit-cost markup. Never infer a price when neither is supplied.
+  const priced=p.pricingStatus==="TRADE_COLUMN_MATCHED"||p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED";
+  const netMinor=priced?p.proposedNetMinor:r.netMinor;
+  if(priced&&r.netMinor!=null)
+   assert(r.netMinor===netMinor,"Reviewed net amount conflicts with selected selling price: "+r.sku);
+  const reviewedVat=r.evidence?.vat?.confirmed===true&&[0,500,2000].includes(r.vatBasisPoints);
+  const grossMinor=reviewedVat&&safeInteger(netMinor,1,99999999)
+   ?netMinor+Math.floor((netMinor*r.vatBasisPoints+5000)/10000):null;
+  if(grossMinor!==null&&r.grossMinor!=null)
+   assert(r.grossMinor===grossMinor,"Reviewed gross amount conflicts with calculated VAT-inclusive price: "+r.sku);
+  // This join is not an approval. The existing offer gate independently checks
+  // product info, current evidence, VAT, fulfilment, price approval and expiry.
+  return {...r,netMinor:netMinor??null,grossMinor};
+ });
+}
 function localPackImage(root,product,record){
  try{
   const re=new RegExp("^/assets/media/products/connective/"+record.gtin+"/front-(480|800|1600)\\.webp$");
@@ -117,6 +152,31 @@ function selfTest(){
  }
  assert.equal(prepareOffers([rec],[], ".",n,()=>true).offers.length,0);
  assert.throws(()=>prepareOffers([rec,rec],[p],".",n,()=>true));
+ const priceDraft={schema:"novapharm-private-connective-price-draft-v1",currency:"GBP",records:[{gtin:g,sku:rec.sku,pricingStatus:"TRADE_COLUMN_MATCHED",proposedNetMinor:500}]};
+ const joined=applyPrivatePriceDraft([{...backed,netMinor:undefined,grossMinor:undefined}],priceDraft);
+ assert.equal(joined[0].netMinor,500);assert.equal(joined[0].grossMinor,600);
+ assert.equal(prepareOffers(joined,[p],".",n,()=>true).offers.length,1);
+ const missingVat=applyPrivatePriceDraft([{...backed,grossMinor:undefined,evidence:{...backed.evidence,vat:{confirmed:false}}}],priceDraft);
+ assert.equal(missingVat[0].grossMinor,null);
+ assert.equal(prepareOffers(missingVat,[p],".",n,()=>true).offers.length,0);
+ const unitOnly={...priceDraft,records:[{gtin:g,sku:rec.sku,pricingStatus:"UNIT_PRICE_ONLY_REVIEW",proposedNetMinor:null,privateSupplierCostPence:100}]};
+ const noPrice=applyPrivatePriceDraft([{...backed,netMinor:undefined,grossMinor:undefined}],unitOnly);
+ assert.equal(noPrice[0].netMinor,null);
+ assert.equal(prepareOffers(noPrice,[p],".",n,()=>true).offers.length,0);
+ assert.throws(()=>applyPrivatePriceDraft([{...rec,netMinor:499}],priceDraft));
+ assert.throws(()=>applyPrivatePriceDraft([rec],{...priceDraft,records:[...priceDraft.records,...priceDraft.records]}));
+ assert.throws(()=>applyPrivatePriceDraft([rec],{...priceDraft,records:[]}));
+ const markupDraft={...priceDraft,records:[{gtin:g,sku:rec.sku,pricingStatus:"UNIT_PRICE_MARKUP_APPROVED",quotedUnitMinor:99,markupBasisPoints:1500,proposedNetMinor:114}]};
+ const marked=applyPrivatePriceDraft([{...backed,netMinor:undefined,grossMinor:undefined}],markupDraft);
+ assert.equal(marked[0].netMinor,114);assert.equal(marked[0].grossMinor,137);
+ const markedOffer=JSON.parse(prepareOffers(marked,[p],".",n,()=>true).offers[0].offerJson.S);
+ assert.equal(markedOffer.grossMinor,137);assert(!("quotedUnitMinor" in markedOffer));assert(!("markupBasisPoints" in markedOffer));
+ for(const change of [{markupBasisPoints:1400},{proposedNetMinor:113},{quotedUnitMinor:0}]){
+  assert.throws(()=>applyPrivatePriceDraft([rec],{...markupDraft,records:[{...markupDraft.records[0],...change}]}));
+ }
+ const zeroRated=applyPrivatePriceDraft([{...backed,vatBasisPoints:0,grossMinor:undefined}],priceDraft);
+ assert.equal(zeroRated[0].grossMinor,500);
+ assert.equal(prepareOffers(zeroRated,[p],".",n,()=>true).offers.length,1);
  console.log("Connective private offer admission self-test passed");
 }
 if(process.argv[1]&&import.meta.url===new URL("file://"+resolve(process.argv[1])).href){
@@ -129,7 +189,13 @@ if(process.argv[1]&&import.meta.url===new URL("file://"+resolve(process.argv[1])
   assert(!input.startsWith(root+sep),"Private intake must be outside the repository");
   const catalogue=JSON.parse(readFileSync(value("--catalogue"),"utf8"));
   const parsed=JSON.parse(readFileSync(input,"utf8"));
-  const {offers,blocked,requested}=prepareOffers(parsed.records,catalogue,root);
+  let records=parsed.records;
+  if(value("--price-draft")){
+   const pricePath=realpathSync(value("--price-draft"));
+   assert(pricePath!==root&&!pricePath.startsWith(root+sep),"Private price draft must be outside the repository");
+   records=applyPrivatePriceDraft(records,JSON.parse(readFileSync(pricePath,"utf8")));
+  }
+  const {offers,blocked,requested}=prepareOffers(records,catalogue,root);
   console.log(JSON.stringify({mode:args.includes("--commit")?"preflight":"dry-run",requested,approved:offers.length,blocked},null,2));
   if(args.includes("--commit")){
    assert(blocked.length===0&&offers.length>0&&offers.length<=25,"Only fully approved batches of 1–25 products may be committed atomically");

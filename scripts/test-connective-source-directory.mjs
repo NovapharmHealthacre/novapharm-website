@@ -31,32 +31,47 @@ test('395-source directory generator creates one searchable source page per GTIN
     const html=f.read(`products/health-and-wellbeing/${p.ean}/index.html`);
     assert(html.includes(p.ean));
     assert(html.includes('name="robots" content="noindex, follow"'));
+    assert.equal((html.match(/data-npr-retail-sku=/g)||[]).length,1);
     assert(html.includes('data-npr-retail-sku="NP-CP-'+p.ean+'"'));
     assert(html.includes('data-npr-order-notice'));
     assert(html.includes('/assets/js/nutraxin-retail-store.js'));
     assert(!html.includes('"offers"'));
     assert(!html.includes('availableQuantity'));
     assert(!html.includes('netMinor'));
-    assert(html.includes(p.supplierProductUrl));
+    assert(!html.includes('href="'+p.supplierProductUrl+'"'));
+    assert(!html.includes('Supplier product information'));
+    assert(!html.includes('href="'+p.manufacturerProductUrl+'"'));
+    assert(html.includes('href="/products/nutraxin/bag/"'));
+    assert(html.includes('href="/products/health-and-wellbeing/"'));
     assert(html.includes('Full ingredients, directions, warnings'));
    }
    assert.equal((f.read('products/index.html').match(/data-npr-source-collection/g)||[]).length,1);
   }
  }finally{f.dispose();}
 });
-test('approved catalogue is authoritative: reference generator never overwrites approved product pages',()=>{
+test('approved catalogue pages and checkout remain authoritative during partial activation',()=>{
  const f=fixture();
  try{
-  const result=f.run();assert.equal(result.status,0,result.stderr);
-  const before=f.read(`products/health-and-wellbeing/${p1.ean}/index.html`);
-  f.put('src/content/approved-consumer-catalogue.json','[]');
-  const stillSource=f.run();assert.equal(stillSource.status,0,stillSource.stderr);
-  assert(f.exists('products/health-and-wellbeing/index.html'));
-  assert.equal(f.read(`products/health-and-wellbeing/${p1.ean}/index.html`),before);
-  // Only a populated approved catalogue may suppress source fallbacks.
+  const detail='products/health-and-wellbeing/'+p1.ean+'/index.html';
+  const approvedHtml='<main><h1>Approved detail</h1><div data-npr-retail-sku="NP-CP-'+p1.ean+'">Approved checkout</div></main>';
+  f.put(detail,approvedHtml);
+  f.put('products/health-and-wellbeing/index.html','<main><h1>Approved collection</h1><article class="npr-card">Approved product</article><script type="module" src="/assets/js/nutraxin-retail-store.js"></script></main>');
   f.put('src/content/approved-consumer-catalogue.json',JSON.stringify([{ean:p1.ean}]));
-  const skipped=f.run();assert.equal(skipped.status,0,skipped.stderr);
-  assert.equal(f.read(`products/health-and-wellbeing/${p1.ean}/index.html`),before);
+  for(let i=0;i<2;i++){
+   const result=f.run();assert.equal(result.status,0,result.stderr);
+   assert.equal(f.read(detail),approvedHtml);
+   const collection=f.read('products/health-and-wellbeing/index.html');
+   assert.equal((collection.match(/class="npr-card"/g)||[]).length,2);
+   assert.equal((collection.match(/data-npr-additional-reference/g)||[]).length,1);
+   assert(collection.includes('nutraxin-retail-store.js'));
+   const remaining=f.read('products/health-and-wellbeing/'+p2.ean+'/index.html');
+   assert.equal((remaining.match(/data-npr-retail-sku=/g)||[]).length,1);
+   assert(remaining.includes('data-npr-retail-sku="NP-CP-'+p2.ean+'"'));
+   assert(remaining.includes('data-npr-order-notice'));
+   assert(remaining.includes('/assets/js/nutraxin-retail-store.js'));
+   assert(!remaining.includes('"offers"'));
+   assert(!remaining.includes('href="'+p2.supplierProductUrl+'"'));
+  }
  }finally{f.dispose();}
 });
 test('source catalogue rejects unsafe external links and invalid GTIN rather than publishing them',()=>{
