@@ -27,7 +27,7 @@ def without_offer_bridge(text: str, gtin: str) -> str:
     mount = f'<div data-npr-retail-sku="NP-CP-{gtin}"></div>'
     script = '<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>'
     mark = ' data-npr-order-notice'
-    assert text.count(mount) == 1 and text.count(script) == 1 and text.count(mark) == 1, 'Missing or repeated exact live-offer mount'
+    assert text.count(mount) == 1 and text.count('data-npr-retail-sku') == 1 and text.count(script) == 1 and text.count(mark) == 1, 'Missing or repeated exact live-offer mount'
     return text.replace(mount, '', 1).replace(script, '', 1).replace(mark, '', 1)
 
 
