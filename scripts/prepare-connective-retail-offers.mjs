@@ -26,19 +26,24 @@ export function applyPrivatePriceDraft(intake,draft){
  const byGtin=new Map();
  for(const p of draft.records){
   assert(p&&validGtin(p.gtin)&&p.sku==="NP-CP-"+p.gtin&&!byGtin.has(p.gtin),"Invalid or duplicate price draft identity");
-  assert(["TRADE_COLUMN_MATCHED","UNIT_PRICE_ONLY_REVIEW","MISSING_QUOTE"].includes(p.pricingStatus),"Unknown price draft status");
-  assert(p.pricingStatus==="TRADE_COLUMN_MATCHED"?safeInteger(p.proposedNetMinor,1,99999999):p.proposedNetMinor===null,"Invalid draft selling price");
+  assert(["TRADE_COLUMN_MATCHED","UNIT_PRICE_MARKUP_APPROVED","UNIT_PRICE_ONLY_REVIEW","MISSING_QUOTE"].includes(p.pricingStatus),"Unknown price draft status");
+  const priced=p.pricingStatus==="TRADE_COLUMN_MATCHED"||p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED";
+  assert(priced?safeInteger(p.proposedNetMinor,1,99999999):p.proposedNetMinor===null,"Invalid draft selling price");
+  if(p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED"){
+   assert(p.markupBasisPoints===1500&&safeInteger(p.quotedUnitMinor,1,99999999),"Invalid owner-approved quote markup");
+   assert(p.proposedNetMinor===Math.floor((p.quotedUnitMinor*11500+5000)/10000),"Quote markup must be exactly 15 percent, rounded to pence");
+  }
   byGtin.set(p.gtin,p);
  }
  return intake.map(r=>{
   assert(r&&validGtin(r.gtin)&&r.sku==="NP-CP-"+r.gtin&&byGtin.has(r.gtin),"Retail intake not matched to private price draft");
   const p=byGtin.get(r.gtin);
-  // For explicitly priced Trade rows, preserve the workbook amount and refuse
-  // accidental overrides. A separate reviewed price may be supplied for
-  // unit-price-only or missing-quote rows; no cost-based guess is substituted.
-  const netMinor=p.pricingStatus==="TRADE_COLUMN_MATCHED"?p.proposedNetMinor:r.netMinor;
-  if(p.pricingStatus==="TRADE_COLUMN_MATCHED"&&r.netMinor!=null)
-   assert(r.netMinor===netMinor,"Reviewed net amount conflicts with selected Trade price: "+r.sku);
+  // Preserve the original Trade amount or the owner's explicitly authorised
+  // 15% unit-cost markup. Never infer a price when neither is supplied.
+  const priced=p.pricingStatus==="TRADE_COLUMN_MATCHED"||p.pricingStatus==="UNIT_PRICE_MARKUP_APPROVED";
+  const netMinor=priced?p.proposedNetMinor:r.netMinor;
+  if(priced&&r.netMinor!=null)
+   assert(r.netMinor===netMinor,"Reviewed net amount conflicts with selected selling price: "+r.sku);
   const reviewedVat=r.evidence?.vat?.confirmed===true&&[0,500,2000].includes(r.vatBasisPoints);
   const grossMinor=reviewedVat&&safeInteger(netMinor,1,99999999)
    ?netMinor+Math.floor((netMinor*r.vatBasisPoints+5000)/10000):null;
@@ -161,6 +166,14 @@ function selfTest(){
  assert.throws(()=>applyPrivatePriceDraft([{...rec,netMinor:499}],priceDraft));
  assert.throws(()=>applyPrivatePriceDraft([rec],{...priceDraft,records:[...priceDraft.records,...priceDraft.records]}));
  assert.throws(()=>applyPrivatePriceDraft([rec],{...priceDraft,records:[]}));
+ const markupDraft={...priceDraft,records:[{gtin:g,sku:rec.sku,pricingStatus:"UNIT_PRICE_MARKUP_APPROVED",quotedUnitMinor:99,markupBasisPoints:1500,proposedNetMinor:114}]};
+ const marked=applyPrivatePriceDraft([{...backed,netMinor:undefined,grossMinor:undefined}],markupDraft);
+ assert.equal(marked[0].netMinor,114);assert.equal(marked[0].grossMinor,137);
+ const markedOffer=JSON.parse(prepareOffers(marked,[p],".",n,()=>true).offers[0].offerJson.S);
+ assert.equal(markedOffer.grossMinor,137);assert(!("quotedUnitMinor" in markedOffer));assert(!("markupBasisPoints" in markedOffer));
+ for(const change of [{markupBasisPoints:1400},{proposedNetMinor:113},{quotedUnitMinor:0}]){
+  assert.throws(()=>applyPrivatePriceDraft([rec],{...markupDraft,records:[{...markupDraft.records[0],...change}]}));
+ }
  const zeroRated=applyPrivatePriceDraft([{...backed,vatBasisPoints:0,grossMinor:undefined}],priceDraft);
  assert.equal(zeroRated[0].grossMinor,500);
  assert.equal(prepareOffers(zeroRated,[p],".",n,()=>true).offers.length,1);
