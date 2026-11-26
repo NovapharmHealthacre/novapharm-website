@@ -181,7 +181,7 @@ if(catalogueSeo.length){
  write('sitemap.xml',sitemap);
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
-const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
+const catalogueLink=approvedCatalogue.length>0?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
 const connectiveLanding=approvedCatalogue.length>0?(()=>{const approved=approvedCatalogue;const hero=approved[0];return '<section class="np-products-panel np-products-panel-nutraxin" aria-labelledby="np-products-connective-title"><div class="np-products-wrap np-products-panel-inner"><div class="np-products-panel-copy"><p class="np-products-kicker">Health and wellbeing</p><h2 id="np-products-connective-title">Find what works for you.</h2><p class="np-products-panel-lead">Explore '+approved.length+' UK product references across trusted wellbeing brands.</p><a class="np-products-link" href="/products/health-and-wellbeing/">Explore products <span aria-hidden="true">›</span></a></div><div class="np-products-panel-art np-products-panel-art-nutraxin"><img src="'+escape(hero.image)+'" alt="'+escape(hero.name)+' original product pack" width="700" height="700" loading="lazy" decoding="async"></div></div></section>';})():'';
 const landing='<section class="npr-wrap npr-section" aria-label="More from NovaPharm"><h2>Explore more.</h2><div class="npr-categories">'+giftLink+catalogueLink+'<a href="/pharmacy-partners/">Pharmacy partners</a></div></section>';
 write('products/index.html',template.replace(originalMain[0],()=>originalMain[0].replace('</main>',connectiveLanding+landing+'</main>')).replace('</head>','<link rel="stylesheet" href="/assets/css/retail-expansion.css"></head>'));
