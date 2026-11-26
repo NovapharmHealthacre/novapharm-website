@@ -31,7 +31,7 @@ This importer is the **payment-offer** release gate, not permission to publish a
 
 - The importer projects only customer-safe \`offerJson\` fields. It never writes supplier quotes, margin thresholds, source references or wholesale costs into the public API response.
 - Stock is bounded and expires; no unverified assumption of unlimited stock. Product class cannot be a medicine.
-- For the initial seven Vitabiotics records, proposed prices exist privately; no SKU has documented full evidence. The \`src/content/approved-consumer-catalogue.json\` file is not yet present on main. Dry-run fails closed until the public catalogue and evidence exist.
+- For the initial seven Vitabiotics records, proposed prices exist privately; no SKU has documented full evidence. The \`src/content/approved-consumer-catalogue.json\` file is now present on main as an empty fail-closed array; source research for all 395 GTINs is separately recorded in `src/content/connective-consumer-research.json` (seven manufacturer-online information records, zero approved pack/rights assertions). Dry-run fails closed until the public catalogue and evidence exist.
 - The importer writes only \`RETAIL#APPROVED\` items; it neither opens Stripe sessions nor changes Lambda flags.
 - Immediate feature rollback: restore \`MULTIBRAND_ENABLED=false\` while keeping original order and payment records intact.
 
