@@ -1,0 +1,22 @@
+name: Validate Connective add-only Pages publication
+on:
+  pull_request:
+    paths:
+      - 'scripts/stage-connective-source-only-release.py'
+      - 'scripts/test-stage-connective-source-only-release.py'
+      - '.github/workflows/connective-source-only-live-candidate.yml'
+      - '.github/workflows/connective-additive-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-additive-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test additive-only staging against a preserved live-site fixture
+        run: python3 scripts/test-stage-connective-source-only-release.py -v
