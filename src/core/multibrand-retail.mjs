@@ -22,7 +22,8 @@ export function validGtin(value) {
 export function releasedOffer(p) {
  return !!p && safeSku(p.sku) && safeText(p.name) && safeText(p.pack) &&
  eligibleClasses.has(p.productClass) && p.identityConfirmed===true && p.imageRightsConfirmed===true &&
- p.ukRetailApproved===true && p.priceApproved===true && p.stockVerified===true && p.fulfilmentVerified===true &&
+ p.ukRetailApproved===true && p.priceApproved===true && p.fulfilmentVerified===true &&
+ (p.supplyModel==="supplier_backed" ? (p.stockVerified===false && p.supplierBackedOrdering===true && p.orderingCapacityOnly===true) : p.stockVerified===true) &&
  p.orderingEnabled===true && Number.isSafeInteger(p.availableQuantity) && p.availableQuantity>0 &&
  p.vatTreatmentVerified===true && taxRates.has(p.vatBasisPoints) && Number.isSafeInteger(p.netMinor) && p.netMinor>0 &&
  Number.isSafeInteger(p.grossMinor) && p.grossMinor===p.netMinor+Math.round(p.netMinor*p.vatBasisPoints/10000) &&

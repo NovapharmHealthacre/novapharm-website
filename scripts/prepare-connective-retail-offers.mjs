@@ -46,9 +46,19 @@ export function prepareOffers(intake,publicCatalogue,root,now=Date.now(),verifyI
   if(!p||!classes.has(p.productClass)||p.productClass!==r.productClass)reasons.push("eligible product class");
   if(!p||!["name","brand","category","pack"].every(k=>text(p[k],90)&&p[k]===r[k]))reasons.push("exact pack identity");
   if(!p||!verifyImage(root,p,r))reasons.push("approved pack image checksum");
+  // Supplier-backed capacity is distinct from checked warehouse stock.
+  const supplierBacked=r.supplyModel==="supplier_backed";
+  if(r.supplyModel!==undefined&&!["supplier_backed","stock_verified"].includes(r.supplyModel))reasons.push("supply model");
   for(const key of approvalKeys){
-   // Stock must have been checked in the past 48 hours; prices and seller commitments within 30 days.
-   if(!confirmed(r.evidence?.[key],now,key==="stock"?48*3600_000:30*86400_000))reasons.push(key+" evidence");
+   const evidence=r.evidence?.[key];
+   if(key==="stock"&&supplierBacked){
+    // No invented 48-hour physical stock snapshot for supplier-assisted orders.
+    // A named owner/supplier-backed ordering attestation remains mandatory.
+    if(evidence?.confirmed!==true||!text(evidence.reference,200)||!text(evidence.reviewedBy,120))
+     reasons.push("supplier-backed supply attestation");
+   } else if(!confirmed(evidence,now,key==="stock"?48*3600_000:30*86400_000)){
+    reasons.push(key+" evidence");
+   }
   }
   if(!safeInteger(r.availableQuantity,1,10000))reasons.push("bounded stock quantity");
   if(!safeInteger(r.vatBasisPoints,0,2000)||![0,500,2000].includes(r.vatBasisPoints))reasons.push("VAT rate");
@@ -57,17 +67,21 @@ export function prepareOffers(intake,publicCatalogue,root,now=Date.now(),verifyI
    ?r.netMinor+Math.floor((r.netMinor*r.vatBasisPoints+5000)/10000):null;
   if(!safeInteger(r.grossMinor,1,99999999)||r.grossMinor!==expected)reasons.push("VAT-inclusive price reconciliation");
   if(!safeInteger(r.expiresAt,Math.floor(now/1000)+1,Math.floor(now/1000)+31*86400))reasons.push("time-bounded offer expiry");
-  const stockObserved=time(r.evidence?.stock?.observedAt);
-  if(!Number.isFinite(stockObserved)||!Number.isSafeInteger(r.expiresAt)||
-     r.expiresAt*1000>stockObserved+48*3600_000)reasons.push("offer outlives stock evidence");
+  if(!supplierBacked){
+   const stockObserved=time(r.evidence?.stock?.observedAt);
+   if(!Number.isFinite(stockObserved)||!Number.isSafeInteger(r.expiresAt)||
+      r.expiresAt*1000>stockObserved+48*3600_000)reasons.push("offer outlives stock evidence");
+  }
   if(reasons.length){blocked.push({sku:"NP-CP-"+r.gtin,reasons});continue;}
   // Only projected, customer-safe fields are written. Supplier costs and evidence are never exposed.
   const offer={sku:r.sku,gtin:r.gtin,name:p.name,brand:p.brand,category:p.category,pack:p.pack,
    image:p.image,productClass:p.productClass,netMinor:r.netMinor,vatBasisPoints:r.vatBasisPoints,
    grossMinor:r.grossMinor,availableQuantity:r.availableQuantity,expiresAt:r.expiresAt,
    identityConfirmed:true,imageRightsConfirmed:true,ukRetailApproved:true,priceApproved:true,
-   vatTreatmentVerified:true,stockVerified:true,fulfilmentVerified:true,orderingEnabled:true,
-   sellerDeliveryCommitment:true,labelInformationVerified:true};
+   vatTreatmentVerified:true,stockVerified:!supplierBacked,fulfilmentVerified:true,orderingEnabled:true,
+   sellerDeliveryCommitment:true,labelInformationVerified:true,
+   supplyModel:supplierBacked?"supplier_backed":"stock_verified",
+   orderingCapacityOnly:supplierBacked,supplierBackedOrdering:supplierBacked};
   offers.push({pk:{S:"RETAIL#APPROVED"},sk:{S:r.sku},offerJson:{S:JSON.stringify(offer)}});
  }
  return {offers,blocked,requested:intake.length};
@@ -82,6 +96,17 @@ function selfTest(){
  const evidence=Object.fromEntries(approvalKeys.map(k=>[k,{confirmed:true,reference:"synthetic_"+k,reviewedBy:"Test reviewer",observedAt:stamp}]));
  const p={ean:g,name:"Fixture supplement",brand:"Fixture",category:"Vitamins",pack:"30 tablets",productClass:"food_supplement",identityConfirmed:true,imageRightsConfirmed:true,publicListingApproved:true,image:"/assets/media/products/connective/"+g+"/front-800.webp"};
  const rec={gtin:g,sku:"NP-CP-"+g,name:p.name,brand:p.brand,category:p.category,pack:p.pack,productClass:p.productClass,image:p.image,imageSha256:"a".repeat(64),availableQuantity:4,vatBasisPoints:2000,netMinor:500,grossMinor:600,expiresAt:Math.floor(n/1000)+3600,evidence,privateSupplierCostPence:100};
+ // A supplier-backed offer requires an identified supplier arrangement, but
+ // does not require a warehouse snapshot within 48 hours.
+ const backed={...rec,supplyModel:"supplier_backed",expiresAt:Math.floor(n/1000)+72*3600,
+  evidence:{...evidence,stock:{confirmed:true,reference:"supplier-backed-attestation",reviewedBy:"Test reviewer"}}};
+ const supplierResult=prepareOffers([backed],[p],".",n,()=>true);
+ assert.equal(supplierResult.offers.length,1);
+ const supplierOffer=JSON.parse(supplierResult.offers[0].offerJson.S);
+ assert.equal(supplierOffer.supplyModel,"supplier_backed");
+ assert.equal(supplierOffer.stockVerified,false);
+ assert.equal(supplierOffer.orderingCapacityOnly,true);
+ assert.equal(prepareOffers([{...backed,evidence:{...backed.evidence,stock:{confirmed:false,reference:"unverified",reviewedBy:"Test reviewer"}}}],[p],".",n,()=>true).offers.length,0);
  const good=prepareOffers([rec],[p],".",n,()=>true);
  assert.equal(good.offers.length,1);assert.equal(good.blocked.length,0);
  const projection=JSON.parse(good.offers[0].offerJson.S);
