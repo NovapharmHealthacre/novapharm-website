@@ -1,6 +1,6 @@
-// A verified Pages artifact may deploy after main advances only when doing so
-// cannot roll back an already-successful published artifact. Fail closed if
-// ancestry or GitHub Pages deployment evidence cannot be established.
+// Production publication requires the exact current main commit, not merely
+// an ancestor, plus forward-only lineage from the last successful release.
+// Fail closed when either current-main or deployment evidence is unavailable.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { evaluateBrandingOnlyRelease, gitBlobSha, REVIEWED_CONTACT_BLOBS } from "./verify-public-branding-only-release.mjs";
@@ -19,7 +19,7 @@ export const BRAND_ONLY_AUTHORIZATION_ANCHOR = "26432d4ac2c53a8a39b6701fa77bccda
 
 export function canShip({publishedSha, candidateSha, mainSha, publishedToCandidate, candidateToMain, legacyBridgeVerified = false}) {
   if (![publishedSha, candidateSha, mainSha].every(s => typeof s === "string" && SHA.test(s))) return false;
-  return COMPARE_OK.has(candidateToMain) &&
+  return candidateSha === mainSha && candidateToMain === "identical" &&
     (COMPARE_OK.has(publishedToCandidate) ||
      (publishedToCandidate === "unrelated" &&
       publishedSha === REVIEWED_LEGACY_PAGES_SHA &&
@@ -115,6 +115,8 @@ async function main() {
   const ref = github("repos/" + repo + "/git/ref/heads/main");
   const mainSha = ref?.object?.sha || "";
   if (!SHA.test(mainSha)) throw new Error("Cannot resolve current main SHA");
+
+  if (candidateSha !== mainSha) throw new Error("Stale Pages candidate; rebuild from current main: candidate=" + candidateSha + " main=" + mainSha);
 
   const deployments = github("repos/" + repo + "/deployments?environment=github-pages&per_page=100");
   if (!Array.isArray(deployments) || !deployments.length) throw new Error("No successful Pages history to prove non-rollback");
