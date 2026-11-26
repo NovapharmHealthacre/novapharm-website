@@ -31,7 +31,10 @@ test('395-source directory generator creates one searchable source page per GTIN
     const html=f.read(`products/health-and-wellbeing/${p.ean}/index.html`);
     assert(html.includes(p.ean));
     assert(html.includes('name="robots" content="noindex, follow"'));
-    assert(!html.includes('data-npr-retail-sku'));
+    assert.equal((html.match(/data-npr-retail-sku=/g)||[]).length,1);
+    assert(html.includes('data-npr-retail-sku="NP-CP-'+p.ean+'"'));
+    assert(html.includes('data-npr-order-notice'));
+    assert(html.includes('/assets/js/nutraxin-retail-store.js'));
     assert(!html.includes('"offers"'));
     assert(!html.includes('availableQuantity'));
     assert(!html.includes('netMinor'));
@@ -62,7 +65,11 @@ test('approved catalogue pages and checkout remain authoritative during partial 
    assert.equal((collection.match(/data-npr-additional-reference/g)||[]).length,1);
    assert(collection.includes('nutraxin-retail-store.js'));
    const remaining=f.read('products/health-and-wellbeing/'+p2.ean+'/index.html');
-   assert(!remaining.includes('data-npr-retail-sku'));
+   assert.equal((remaining.match(/data-npr-retail-sku=/g)||[]).length,1);
+   assert(remaining.includes('data-npr-retail-sku="NP-CP-'+p2.ean+'"'));
+   assert(remaining.includes('data-npr-order-notice'));
+   assert(remaining.includes('/assets/js/nutraxin-retail-store.js'));
+   assert(!remaining.includes('"offers"'));
    assert(!remaining.includes('href="'+p2.supplierProductUrl+'"'));
   }
  }finally{f.dispose();}

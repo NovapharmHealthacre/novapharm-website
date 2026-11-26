@@ -19,7 +19,7 @@ class StageTests(unittest.TestCase):
         for gtin in range(1000000000000,1000000000395):
             path = self.site / f'products/health-and-wellbeing/{gtin}/index.html'
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(f'<meta name="robots" content="noindex, follow">{gtin} Full ingredients, directions, warnings', encoding='utf-8')
+            path.write_text(f'<meta name="robots" content="noindex, follow">{gtin} <p data-npr-order-notice>Full ingredients, directions, warnings</p><div data-npr-retail-sku="NP-CP-{gtin}"></div><script type="module" src="/assets/js/nutraxin-retail-store.js"></script>', encoding='utf-8')
         collection = self.site / 'products/health-and-wellbeing/index.html'
         collection.write_text('<meta name="robots" content="index, follow"><input data-npr-collection-query>'+('class="npr-card"'*395), encoding='utf-8')
         for asset in module.ASSETS:
@@ -56,10 +56,33 @@ class StageTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'Existing published path changed'):
             module.stage(self.site, self.live)
 
+    def test_exact_existing_page_receives_only_inert_offer_bridge(self):
+        path = self.live / 'products/health-and-wellbeing/1000000000000/index.html'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        source = (self.site / 'products/health-and-wellbeing/1000000000000/index.html').read_text()
+        path.write_text(module.without_offer_bridge(source, '1000000000000'))
+        previous = path.read_text()
+        report = module.stage(self.site, self.live)
+        self.assertEqual(report['existingDetailsUpgraded'], 1)
+        self.assertEqual(path.read_text(), source)
+        self.assertEqual(module.without_offer_bridge(path.read_text(), '1000000000000'), previous)
+        self.assertEqual((self.live / 'products/nutraxin/index.html').read_text(), 'This is the live Nutraxin checkout')
+
+    def test_unrelated_existing_live_change_remains_protected(self):
+        path = self.live / 'products/health-and-wellbeing/1000000000000/index.html'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        source = (self.site / 'products/health-and-wellbeing/1000000000000/index.html').read_text()
+        path.write_text(module.without_offer_bridge(source, '1000000000000') + '<!-- unrelated modification -->')
+        with self.assertRaisesRegex(AssertionError, 'Existing published path changed'):
+            module.stage(self.site, self.live)
+
     def test_refuses_fake_checkout_and_price_in_staged_pages(self):
         page = self.site / 'products/health-and-wellbeing/1000000000000/index.html'
         page.write_text(page.read_text()+'data-npr-retail-sku="NP-CP-1000000000000"')
-        with self.assertRaisesRegex(AssertionError,'Unverified offer leaked'):
+        with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
+            module.stage(self.site,self.live)
+        page.write_text(page.read_text().replace('data-npr-retail-sku="NP-CP-1000000000000"', ''))
+        with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
             module.stage(self.site,self.live)
 
 if __name__=='__main__': unittest.main()
