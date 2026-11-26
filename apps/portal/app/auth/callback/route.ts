@@ -20,6 +20,7 @@ import {
   checkInternalPilotUnenrolled,
   createInternalPilotMfaCookie,
 } from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
+import { requestIntelligenceSubscriptionCheckout } from "../../../lib/intelligence-stripe-checkout-handoff";
 
 export const dynamic = "force-dynamic";
 
@@ -68,11 +69,13 @@ function safeIdentityErrorCode(error: unknown): string {
   return typeof code === "string" && safeIdentityErrorCodes.has(code) ? code : "unclassified";
 }
 
-function resultPage(verified: boolean, approved = false, registeredButUnattested = false, founderProviderOnly = false, founderSessionActive = false): NextResponse {
-  const title = founderSessionActive ? "Founder workspace ready" : approved ? "Business account connected" : verified ? "Identity verified"
+function resultPage(verified: boolean, approved = false, registeredButUnattested = false, founderProviderOnly = false, founderSessionActive = false, checkoutUnavailable = false): NextResponse {
+  const title = checkoutUnavailable ? "Secure payment is not available" : founderSessionActive ? "Founder workspace ready" : approved ? "Business account connected" : verified ? "Identity verified"
     : founderProviderOnly ? "Cognito sign-in confirmed"
     : registeredButUnattested ? "Authenticator active" : "Sign-in could not be completed";
-  const message = founderSessionActive
+  const message = checkoutUnavailable
+    ? "Your verified sign-in was successful, but subscription Checkout is unavailable. No payment has been taken and no customer access has been granted."
+    : founderSessionActive
     ? "Your founder identity has been verified and a time-limited private workspace session is active. You can review the Medicines Terminal workspace catalogue. Research data, customer accounts, subscriptions and restricted actions remain protected by independent approval controls."
     : approved
     ? "Your organisation, customer seat, subscription and secure session are verified. Continue to your account. Medicine datasets and research features remain restricted to separately accepted source rights."
@@ -86,7 +89,7 @@ function resultPage(verified: boolean, approved = false, registeredButUnattested
   // Fixed server-authored markup: no user-controlled values or identity tokens are rendered.
   const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${founderSessionActive ? "/founder" : verified || founderProviderOnly ? "/" : "/auth/customer/start"}">${founderSessionActive ? "Open the Medicines Terminal" : verified ? "Return to the Medicines Terminal" : founderProviderOnly ? "Return to the Intelligence overview" : "Start a new secure sign-in"}</a></section></main></body></html>`;
   return new NextResponse(document, {
-    status: founderSessionActive || verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
+    status: checkoutUnavailable ? 503 : founderSessionActive || verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
     headers: { ...securityHeaders, "Content-Type": "text/html; charset=utf-8" },
   });
 }
@@ -418,7 +421,24 @@ export async function GET(request: NextRequest): Promise<Response> {
         const approved = request.nextUrl.hostname === "intelligence.novapharmhealthcare.com"
           ? await activateApprovedCustomerSession(idToken)
           : null;
-        response = resultPage(true, approved !== null);
+        // This optional handoff is separately gated from existing live Stripe
+        // links. A signed plan selection alone cannot create a subscription.
+        const requestedCheckout = !approved && Boolean(transaction.requestedPlan && transaction.requestedCycle);
+        const checkoutUrl = requestedCheckout
+          ? await requestIntelligenceSubscriptionCheckout({
+              idToken, plan: transaction.requestedPlan, cycle: transaction.requestedCycle,
+            })
+          : null;
+        if (checkoutUrl) {
+          // Hosted payment is not evidence of invoice reconciliation or access.
+          response = NextResponse.redirect(checkoutUrl, { status: 303 });
+          response.headers.set("Cache-Control", "no-store");
+          response.headers.set("Referrer-Policy", "no-referrer");
+          response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+        } else {
+          response = resultPage(true, approved !== null, false, false, false,
+            requestedCheckout && process.env["NPI_SUBSCRIPTION_CHECKOUT_HANDOFF_ENABLED"] === "true");
+        }
         if (approved) {
           response.cookies.set({
             name: "__Host-npi_session",
