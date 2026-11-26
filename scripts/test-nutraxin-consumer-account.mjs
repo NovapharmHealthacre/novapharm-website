@@ -168,3 +168,18 @@ test("verified personal customers can refresh orders and copy a reference withou
  assert.match(js,/showOrders\(null\);status\("Refreshing your orders/);
  assert.match(js,/accountOrderReference\.test\(o\.orderId\)/);
 });
+
+
+test("retail account surfaces Google, passkeys, registration and guest support without collecting credentials",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ const css=read("assets/css/nutraxin-consumer-account.css");
+ for(const action of ["signin","google","passkey","signup","recover","enrol-passkey"])assert.ok(html.includes("data-nx-account-"+action));
+ assert.match(html,/Care, without complications\./);
+ assert.match(html,/novapharm-healthcare-logo\.svg/);
+ assert.match(css,/\.nx-account-foot\{[^}]*#F8F7F3/);
+ assert.ok(js.includes('mode==="enrol-passkey"?"/passkeys/add"'));
+ assert.ok(js.includes('url.searchParams.set("identity_provider","Google")'));
+ assert.ok(js.includes('url.searchParams.set("prompt","login")'));
+ assert.doesNotMatch(html,/type="password"|client_secret/);
+});
