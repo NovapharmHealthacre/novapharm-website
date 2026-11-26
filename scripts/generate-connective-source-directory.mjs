@@ -58,7 +58,7 @@ function metadataPage(shell, route, title, description, main, {indexable=false, 
     const structured=node.nodeName==='script' &&
       attrs.type?.toLowerCase()==='application/ld+json';
     const marker=node.nodeName==='#comment' &&
-      /^\\s*page-specific-social-(?:start|end)\\s*$/.test(node.data||'');
+      /^\s*page-specific-social-(?:start|end)\s*$/.test(node.data||'');
     if(social||structured||marker) {
       const loc=node.sourceCodeLocation;
       assert(loc&&Number.isSafeInteger(loc.startOffset)&&Number.isSafeInteger(loc.endOffset)&&
