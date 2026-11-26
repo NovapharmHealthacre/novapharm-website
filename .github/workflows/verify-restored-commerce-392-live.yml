@@ -6,6 +6,10 @@ on:
       - scripts/verify-restored-commerce-392-live.mjs
       - scripts/lib/verified-commerce-sitemap.mjs
       - scripts/test-verified-commerce-sitemap.mjs
+      - assets/data/nutraxin-uk-category-intents.json
+      - src/content/our-story.mjs
+      - seo/generated/page-metadata-register.json
+      - sitemap.xml
       - .github/workflows/verify-restored-commerce-392-live.yml
   workflow_dispatch:
   # Successful Pages deployments trigger a fresh read-only custom-domain check.
