@@ -1,0 +1,103 @@
+{
+  "schema": "novapharm.connective-regulated-review.v1",
+  "reviewedOn": "2026-11-26",
+  "siteCheckoutScope": "NONE_OF_THESE_TEN_MAY_BE_ADMITTED_UNDER_FOOD_SUPPLEMENT_CHECKOUT",
+  "officialResearchSources": [
+    "https://www.vicks.co.uk/products",
+    "https://medicine-seller-register.mhra.gov.uk/",
+    "https://www.gov.uk/guidance/register-for-the-distance-selling-logo"
+  ],
+  "disclaimer": "Category is research classification, not licensing/registration or permission to sell. No prices approved; physical current packs, exact UK regulatory status and VAT still require verification.",
+  "products": [
+    {
+      "gtin": "5000174012620",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products/decongestants/vicks-sinex-micromist-nasal-spray",
+      "review": "Oxymetazoline decongestant; match licence and GSL requirements",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "5000174929591",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "VapoRub 100g; check UK authorisation and current pack",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "5011321311664",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products/decongestants/vicks-sinex-soother-nasal-spray",
+      "review": "Oxymetazoline decongestant; check licence and age directions",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "5011321365353",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "VapoRub 50g exact-pack match remains unresolved",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "5013965704666",
+      "classification": "medical_device_manufacturer_confirmed",
+      "evidence": "https://www.vicks.co.uk/products/early-cold-treatments/vicks-first-defence-nasal-spray",
+      "review": "Vicks identifies First Defence as a medical device; exact UK pack and device compliance remain unverified",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "8006540616048",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "Vicks inhaler; review licensed presentation and applicable selling channel",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "8700216480444",
+      "classification": "medicinal_product_review",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "VapoRub applicator; check exact marketing status and pack",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "8700216487009",
+      "classification": "medical_device_manufacturer_confirmed",
+      "evidence": "https://www.vicks.co.uk/products/decongestants/vicks-sinex-natura-nasal-spray",
+      "review": "Vicks identifies Sinex Natura as a medical device; exact UK variant to verify",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "8700216909273",
+      "classification": "saline_device_candidate_unverified",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "Sinex Strong Saline 120ml, match current UK pack and device status",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    },
+    {
+      "gtin": "8700216909488",
+      "classification": "saline_device_candidate_unverified",
+      "evidence": "https://www.vicks.co.uk/products",
+      "review": "Sinex Gentle Saline 120ml, match current UK pack and device status",
+      "saleAuthorised": false,
+      "checkoutAdmitted": false,
+      "exactCurrentPackVerified": false
+    }
+  ]
+}
