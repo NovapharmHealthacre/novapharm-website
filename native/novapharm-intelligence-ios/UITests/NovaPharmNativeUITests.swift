@@ -100,11 +100,11 @@ final class NovaPharmNativeUITests: XCTestCase {
         XCTAssertTrue(candidates.exists)
         XCTAssertTrue(count.waitForExistence(timeout: 10),
             "Country filter must expose its accessible count")
-        XCTAssertTrue(count.label.contains("101"),
-            "Unfiltered directory must report all 101 offline scopes")
+        XCTAssertTrue(count.label.contains("250"),
+            "Unfiltered directory must report all 250 worldwide offline jurisdictions")
         research.tap()
-        XCTAssertTrue(count.label.contains("24"),
-            "Research coverage must identify exactly 24 geography-only scopes")
+        XCTAssertTrue(count.label.contains("173"),
+            "Research coverage must identify 24 original and 149 additional discovery-only jurisdictions")
         XCTAssertTrue(app.buttons["novapharm.country.BW"].waitForExistence(timeout: 10),
             "Botswana is a geography-only research scope")
         XCTAssertFalse(app.buttons["novapharm.country.DZ"].exists,
