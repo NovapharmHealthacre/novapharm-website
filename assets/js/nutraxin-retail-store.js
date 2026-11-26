@@ -257,7 +257,8 @@ export function restoreCheckoutAttempt(record, bag, mode) {
 function runStore(data) {
   // Source-only pages remain visually unchanged until the private AWS ledger
   // returns this exact SKU with a price/fulfilment-approved retail offer.
-  if (window.location.pathname.startsWith(MULTIBRAND_URL)) {
+  const collectionView = window.location.pathname === MULTIBRAND_URL || window.location.pathname === MULTIBRAND_URL.slice(0, -1);
+  if (window.location.pathname.startsWith(MULTIBRAND_URL) && !collectionView) {
     const sku = document.querySelector('[data-npr-retail-sku]')?.dataset.nprRetailSku;
     if (!sku || !merchantSaleReady(data.products.find(p => p.sku === sku), data)) return;
   }
@@ -826,7 +827,9 @@ function runStore(data) {
       const add=make("button","nx-store-add","Add to Bag");add.type="button";add.onclick=()=>put(p.sku,Number(qty.value));
       const buy=make("button","nx-store-add nx-store-buy-now","Buy now");buy.type="button";buy.onclick=()=>{if(put(p.sku,Number(qty.value)))window.location.assign(BAG_URL);};
       options.append(label,add,buy);panel.append(options);
+      const detailLink = host.querySelector('a.npr-card-action[href^="/products/health-and-wellbeing/"]');
       host.replaceChildren(panel);
+      if (detailLink) host.append(detailLink);
       host.closest('main')?.querySelector('[data-npr-order-notice]')?.setAttribute('hidden', '');
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
