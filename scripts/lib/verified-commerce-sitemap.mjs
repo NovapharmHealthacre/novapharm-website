@@ -46,7 +46,7 @@ function locsFromSitemap(xml) {
     const canonical=body.slice(5,locEnd);
     const lastmod=body.slice(locEnd+6);
     if(!lastmod.startsWith("<lastmod>") || !lastmod.endsWith("</lastmod>"))
-      throw Error("Missing sitemap lastmod");
+      throw Error("Missing sitemap lastmod for "+canonical.slice(0,120)+"; observed="+lastmod.slice(0,150));
     const date=lastmod.slice(9,-10);
     if(!fullDate(date) || body!=="<loc>"+canonical+"</loc><lastmod>"+date+"</lastmod>")
       throw Error("Malformed sitemap canonical or modification date");
