@@ -4,6 +4,7 @@ on:
     types: [opened, synchronize]
     paths:
       - "scripts/materialize-connective-owner-photos.py"
+      - "scripts/programme/generate-image-inventory.mjs"
       - ".github/workflows/connective-owner-photo-assets.yml"
 permissions:
   contents: write
@@ -42,13 +43,18 @@ jobs:
           /tmp/npr-image-env/bin/pip install --disable-pip-version-check Pillow==12.3.0
       - name: Check original evidence and build 395 WebP derivatives
         run: /tmp/npr-image-env/bin/python scripts/materialize-connective-owner-photos.py
+      - name: Refresh governed media inventory with the new owner-authorised image sources
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run images:inventory
+          npm run images:inventory:validate
       - name: Commit candidates only on this working PR branch
         env:
           TARGET_BRANCH: ${{ github.head_ref }}
         run: |
           git config user.name "novapharm-release-bot"
           git config user.email "release-bot@users.noreply.github.com"
-          git add -- assets/media/products/connective docs/retail/connective-395-owner-photo-candidates.json
+          git add -- assets/media/products/connective docs/retail/connective-395-owner-photo-candidates.json audit/generated/image-inventory.json
           if git diff --cached --quiet; then
             echo "All candidate images already staged"
           else
