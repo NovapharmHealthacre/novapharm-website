@@ -13,12 +13,12 @@ test("current main and candidate exactly match", () => {
 test("publishing the already live build is safe but a rollback is not", () => {
   assert.equal(canShip({publishedSha:b,candidateSha:b,mainSha:b,publishedToCandidate:"identical",candidateToMain:"identical"}),true);
   assert.equal(canShip({publishedSha:b,candidateSha:b,mainSha:c,publishedToCandidate:"identical",candidateToMain:"ahead"}),false);
-  assert.equal(canShip({publishedSha:c,candidateSha:b,mainSha:c,publishedToCandidate:"behind",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:c,candidateSha:b,mainSha:b,publishedToCandidate:"behind",candidateToMain:"identical"}),false);
 });
 test("diverged history, missing deployment and unknown comparisons fail closed", () => {
-  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"diverged",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:b,publishedToCandidate:"diverged",candidateToMain:"identical"}),false);
   assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"behind"}),false);
-  assert.equal(canShip({publishedSha:"",candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:"",candidateSha:b,mainSha:b,publishedToCandidate:"ahead",candidateToMain:"identical"}),false);
   assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:undefined}),false);
 });
 
