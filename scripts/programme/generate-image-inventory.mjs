@@ -745,6 +745,9 @@ if (process.argv.includes("--check")) {
         if (diagnostics >= 24) break;
       }
       if (!diagnostics) {
+        console.error("Media inventory diagnostic: stored summary=", JSON.stringify(currentReport.summary), "generated summary=", JSON.stringify(report.summary));
+        console.error("Media inventory diagnostic: stored assets=", currentReport.assets?.length, "generated assets=", report.assets.length);
+        console.error("Media inventory diagnostic: first divergent ordering index=", report.assets.findIndex((asset, index) => asset.path !== currentReport.assets?.[index]?.path));
         console.error("Media inventory report summary, structure, or asset ordering differs from regenerated source");
       }
       console.error("Image inventory authoritative fields are stale. Run npm run images:inventory and review the resulting provenance gaps.");
