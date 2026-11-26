@@ -19,5 +19,7 @@
     "5021265243372",
     "5021265249282",
     "5021265249305"
-  ]
+  ],
+  "publicationAttempt": 2,
+  "publicationFix": "Correct multiline jq filters, preserve exact seven-offer gate"
 }
