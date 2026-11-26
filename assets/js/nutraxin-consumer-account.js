@@ -51,7 +51,7 @@ async function beginLogin(config,mode){
  const state=randomUrlSafe();
  const verifier=randomUrlSafe(48);
  sessionStorage.setItem(PKCE_KEY,JSON.stringify({state,verifier,startedAt:Date.now()}));
- const path=mode==="signup"?"/signup":mode==="recover"?"/forgotPassword":"/oauth2/authorize";
+ const path=mode==="signup"?"/signup":mode==="recover"?"/forgotPassword":mode==="enrol-passkey"?"/passkeys/add":"/oauth2/authorize";
  const url=new URL(path,"https://"+config.cognito_domain);
  url.searchParams.set("response_type","code");
  url.searchParams.set("client_id",config.client_id);
@@ -60,6 +60,8 @@ async function beginLogin(config,mode){
  url.searchParams.set("state",state);
  url.searchParams.set("code_challenge",await sha256(verifier));
  url.searchParams.set("code_challenge_method","S256");
+ if(mode==="google")url.searchParams.set("identity_provider","Google");
+ if(mode==="passkey")url.searchParams.set("identity_provider","COGNITO");
  window.location.assign(url.href);
 }
 async function completeCallback(config,query){
@@ -134,12 +136,16 @@ async function showAuthenticated(config,v){
  showOrders(orders);
  status("Signed in securely.");
  const refresh=document.querySelector("[data-nx-account-refresh]");if(refresh)refresh.disabled=false;
+ const enrol=document.querySelector("[data-nx-account-enrol-passkey]");if(enrol)enrol.disabled=false;
 }
 async function init(){
  const signIn=document.querySelector("[data-nx-account-signin]");
  const signUp=document.querySelector("[data-nx-account-signup]");
  const recover=document.querySelector("[data-nx-account-recover]");
  const signOut=document.querySelector("[data-nx-account-signout]");
+ const google=document.querySelector("[data-nx-account-google]");
+ const passkey=document.querySelector("[data-nx-account-passkey]");
+ const enrol=document.querySelector("[data-nx-account-enrol-passkey]");
  if(!signIn||!signUp||!recover||!signOut)return;
  let config;
  try{const r=await fetch(CONFIG_URL,{cache:"no-store",credentials:"omit"});config=await r.json();}
@@ -150,6 +156,9 @@ async function init(){
  }
  signIn.disabled=false;signUp.disabled=false;recover.disabled=false;
  signIn.onclick=()=>{void beginLogin(config,"signin").catch(()=>status("Unable to start sign-in."));};
+ if(google){google.disabled=false;google.onclick=()=>{void beginLogin(config,"google").catch(()=>status("Unable to start Google sign-in. Please try email instead."));};}
+ if(passkey){passkey.disabled=false;passkey.onclick=()=>{void beginLogin(config,"passkey").catch(()=>status("Unable to start passkey sign-in. Please try email instead."));};}
+ if(enrol)enrol.onclick=()=>{if(!loadSession())return status("Sign in with email before setting up a passkey.");void beginLogin(config,"enrol-passkey").catch(()=>status("Unable to open passkey setup. Please sign in with email and try again."));};
  signUp.onclick=()=>{void beginLogin(config,"signup").catch(()=>status("Unable to start registration."));};
  recover.onclick=()=>{void beginLogin(config,"recover").catch(()=>status("Unable to start password recovery."));};
  signOut.onclick=()=>{
@@ -183,6 +192,6 @@ async function init(){
   document.querySelector("[data-nx-account-private]").hidden=true;
   status(e.message);
  }
- else status("Sign in or create your account with a verified email address. Guest checkout is still available.");
+ else status("");
 }
 if(typeof document!=="undefined")void init();
