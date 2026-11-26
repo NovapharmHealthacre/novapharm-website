@@ -1,0 +1,29 @@
+name: Portal customer mobile DOM stability
+on:
+  pull_request:
+    paths:
+      - 'apps/portal/components/dashboard.tsx'
+      - 'apps/portal/components/customer-commerce-workspace.tsx'
+      - 'apps/portal/components/module-presentations.module.css'
+      - 'scripts/test-portal-customer-dom-order.mjs'
+      - '.github/workflows/portal-customer-dom-stability.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/portal/components/dashboard.tsx'
+      - 'apps/portal/components/customer-commerce-workspace.tsx'
+      - 'apps/portal/components/module-presentations.module.css'
+      - 'scripts/test-portal-customer-dom-order.mjs'
+      - '.github/workflows/portal-customer-dom-stability.yml'
+permissions:
+  contents: read
+jobs:
+  customer-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-portal-customer-dom-order.mjs

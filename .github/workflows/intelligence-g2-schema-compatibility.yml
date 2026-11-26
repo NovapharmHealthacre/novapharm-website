@@ -1,0 +1,54 @@
+name: Intelligence G2 unique schema compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'src/data/atlas-private-medicine-rights-index.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-private-medicine-rights-index.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - '.github/workflows/intelligence-g2-schema-compatibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/data/atlas-private-medicine-rights-index.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-private-medicine-rights-index.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - '.github/workflows/intelligence-g2-schema-compatibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-unique-schema:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Validate syntax and fail-closed schema contracts
+        run: |
+          node --check src/data/atlas-private-medicine-rights-index.mjs
+          node --check src/data/atlas-private-medicine-rights.mjs
+          node --check src/data/atlas-g2-unique-index-migration.mjs
+          node --test \
+            scripts/test-atlas-private-medicine-rights-index.mjs \
+            scripts/test-atlas-private-medicine-rights.mjs \
+            scripts/test-atlas-g2-unique-index-migration.mjs \
+            scripts/test-atlas-medicine-g2-atomic-store.mjs
+      - name: Release boundary remains source-only
+        run: |
+          echo "Schema consistency and synthetic transaction contracts only."
+          echo "No production Atlas connection, privileged user, source grant, medicine writes, or customer activation."

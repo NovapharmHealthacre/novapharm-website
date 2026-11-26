@@ -1,0 +1,26 @@
+name: Vitabiotics manufacturer official packshot review
+on:
+  pull_request:
+    paths:
+      - "docs/retail/vitabiotics-image-review-gtins.json"
+      - "scripts/collect-vitabiotics-candidates.py"
+      - ".github/workflows/vitabiotics-packshot-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Reconcile public manufacturer barcode data and collect variant image candidates
+        run: python3 scripts/collect-vitabiotics-candidates.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: vitabiotics-packshot-review
+          path: review-output/vitabiotics/
+          retention-days: 7
+          if-no-files-found: error

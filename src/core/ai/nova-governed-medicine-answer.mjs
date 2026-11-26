@@ -14,6 +14,9 @@ const WORKSPACE = /^[a-z0-9][a-z0-9_-]{2,63}$/u;
 const REVISION = /^[A-Za-z0-9._:-]{1,128}$/u;
 const SHA256 = /^[a-f0-9]{64}$/u;
 const CITATION = /\[source:([A-Za-z0-9][A-Za-z0-9._:/-]{1,127})\]/gu;
+// Conservative claim filter: models may copy only numbers visible in the cited
+// source text. This is NOT semantic entailment or independent fact validation.
+const NUMERIC_TOKEN = /(?<![\p{L}\p{N}])[-+]?\d[\d,]*(?:\.\d+)?%?(?![\p{L}\p{N}])/gu;
 const MAX_SOURCES = 8;
 const PURPOSE = "external_ai_medicine_answer";
 
@@ -95,8 +98,21 @@ function verifiedModelCitations(text, evidence) {
     if (/\[\s*source\s*:/iu.test(line) && !/\[source:/u.test(line)) throw blocked("nova_answer_unverifiable", 502);
     const ids = [...line.matchAll(CITATION)].map(match => match[1]);
     if (ids.length === 0 || ids.some(id => !sources.has(id))) throw blocked("nova_answer_unverifiable", 502);
+    const claim = line.replace(CITATION, "").trim();
+    if (claim.includes("[source:") || /https?:\/\/|www\./iu.test(claim)) {
+      throw blocked("nova_answer_unverifiable", 502);
+    }
+    // A valid record ID alone is not evidence that the cited passage supports
+    // an invented quantity. Exact token matching is intentionally fail-closed;
+    // derived figures must come from a separately audited analytical tool.
+    const citedNumericTokens = new Set(ids.flatMap(id => {
+      const source = sources.get(id);
+      return (`${source.title} ${source.passage}`.match(NUMERIC_TOKEN) ?? []);
+    }));
+    if ((claim.match(NUMERIC_TOKEN) ?? []).some(token => !citedNumericTokens.has(token))) {
+      throw blocked("nova_answer_unverifiable", 502);
+    }
     for (const id of ids) cited.add(id);
-    if (line.replace(CITATION, "").includes("[source:")) throw blocked("nova_answer_unverifiable", 502);
   }
   return [...cited].sort().map(id => {
     const row = sources.get(id);

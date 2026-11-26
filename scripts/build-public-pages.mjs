@@ -14,7 +14,9 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { ourStoryBody, ourStoryMeta } from "../src/content/our-story.mjs";
 import { croContent } from "../src/content/cro-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "../src/seo/person-identity.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
 import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
@@ -22,6 +24,8 @@ import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platfo
 const root = resolve(process.cwd());
 const platformMode = resolvePlatformMode();
 const platformCapabilities = getPlatformCapabilities(platformMode);
+// Public-only pages cannot promise account creation or a working application.
+const accountCtaLabel = platformCapabilities.accountApplication ? "Apply for a business account" : "Discuss account eligibility";
 const nutraxinCatalogue = validateNutraxinRegister({ repositoryRoot: root }).register;
 const articlesDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articlesDirectory)
@@ -29,7 +33,7 @@ const articles = readdirSync(articlesDirectory)
   .map((name) => JSON.parse(readFileSync(join(articlesDirectory, name), "utf8")))
   .sort((a, b) => b.published.localeCompare(a.published) || a.title.localeCompare(b.title));
 
-const publicRoutes = Object.keys(pageMeta);
+const publicRoutes = [...Object.keys(pageMeta), "our-story"];
 const siteUrl = company.siteUrl;
 const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
@@ -81,7 +85,9 @@ function productCategoryMedia(category) {
 
 function nutraxinProductMedia(product, eager = false, sizes = "(max-width: 640px) 86vw, (max-width: 1040px) 44vw, 28vw") {
   const base = `/assets/media/products/nutraxin/${product.imageBase}`;
-  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const width = product.imageBase === "collagen-gold-30-tablets" ? 980 : 700;
+  const height = product.imageBase === "collagen-gold-30-tablets" ? 654 : 700;
+  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="${width}" height="${height}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function nutraxinProductCard(product, eager = false) {
@@ -122,7 +128,7 @@ for (const article of articles) {
 }
 
 function primarySection(slug) {
-  if (slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
+  if (slug === "our-story" || slug.startsWith("about/") || slug === "leadership" || slug.startsWith("leadership/")) return "about";
   if (slug.startsWith("news-insights/")) return "news-insights";
   if (slug.startsWith("technology/")) return "technology";
   return slug;
@@ -140,10 +146,10 @@ function header(slug = "") {
         <span class="nav-toggle-lines" aria-hidden="true"><i></i><i></i></span><span class="sr-only">Open navigation</span>
       </button>
       <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${navigation.map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
+        ${navigation.filter(([label]) => label !== "Secure Portal").map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
         <a class="nav-search" href="/search/" data-ai-search-open>Search <kbd>Ctrl K</kbd></a>
         <a class="nav-portal" href="https://portal.novapharmhealthcare.com/">Secure portal</a>
-        <a class="btn btn-primary nav-cta" href="/account-application/">Open an account</a>
+        <a class="btn btn-primary nav-cta" href="/account-application/">${esc(accountCtaLabel)}</a>
       </nav>
     </div>
   </header>`;
@@ -160,7 +166,7 @@ function footer() {
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/oncology/">Oncology continuity</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
-        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
+        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/products/track/">Check order status</a><a href="/products/nutraxin/account/">Personal orders &amp; account</a><a href="mailto:support@novapharmhealthcare.com">Customer support</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/trust-centre/">Trust centre</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
       <div class="footer-notices">
@@ -205,20 +211,18 @@ function organisationSchema() {
     },
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: company.registeredStreet,
-      addressLocality: "Feltham",
-      addressRegion: "England",
-      postalCode: company.registeredPostcode,
-      addressCountry: "GB"
-    },
     areaServed: ["United Kingdom", "International"],
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
-    founder: { "@id": `${siteUrl}/leadership/vishal-chakravarty/#person` },
-    knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
+    sameAs: [company.companiesHouseUrl, company.linkedinUrl],
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${siteUrl}${person.image}` } : {}) })),
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
+    knowsAbout: [company.industry, "UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
   };
 }
 
@@ -321,7 +325,7 @@ function head(meta, slug = "", options = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#E3120B">
+  <meta name="theme-color" content="#FFFFFF">
   <title>${esc(meta.title)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="robots" content="${options.robots || "index, follow, max-snippet:-1, max-image-preview:large"}">
@@ -331,8 +335,9 @@ function head(meta, slug = "", options = {}) {
   <link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml">
   <link rel="icon" href="/assets/brand/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
-  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
+  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#9D1B32">
   <link rel="manifest" href="/manifest.webmanifest">
+  <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
   <meta property="og:site_name" content="NovaPharm Healthcare">
@@ -356,7 +361,7 @@ function documentShell({ meta, slug = "", body, options = {} }) {
   return `${head(meta, slug, options)}
 <body data-page="${slug || "home"}">
 ${header(slug)}
-<main id="main">${body}</main>
+<main id="main" lang="en-GB" data-np-untranslated>${body}</main>
 ${footer()}
 ${aiSearchDialog()}
 ${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}
@@ -394,7 +399,7 @@ function regulatoryNotice() {
 }
 
 function finalCta(title = "Build the next pharmaceutical partnership with NovaPharm.") {
-  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">Open an account</a></div></div></section>`;
+  return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">${esc(accountCtaLabel)}</a></div></div></section>`;
 }
 
 function leaderVisual(profile, eager = false, sizes = eager ? "(max-width: 760px) 100vw, 50vw" : "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px") {
@@ -507,7 +512,7 @@ function companyPage() {
   const slug = "about/company";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "A UK B2B pharmaceutical business in regulated preparation.", company.summary, slug, { parent: { name: "About", href: "/about/" } })}
-  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
+  <section class="section"><div class="container facts-layout"><dl class="company-facts"><div><dt>Legal name</dt><dd>${company.legalName}</dd></div><div><dt>Company number</dt><dd>${company.companyNumber}</dd></div><div><dt>Status</dt><dd>${company.status}</dd></div><div><dt>Incorporated</dt><dd>15 September 2025</dd></div><div><dt>Registered location</dt><dd>${company.location}</dd></div><div><dt>Market</dt><dd>United Kingdom, with planned international development</dd></div><div><dt>Founders</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a> and <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a></dd></div><div><dt>Board of directors</dt><dd><a href="/leadership/vishal-chakravarty/">Vishal Chakravarty</a>, <a href="/leadership/prabhakar-lahare/">Prabhakar Vitthal Lahare</a>, <a href="/leadership/girish-achliya/">Dr Girish Shantilal Achliya</a>, <a href="/leadership/helly-panchal/">Dr Helly Panchal</a></dd></div><div><dt>UK business telephone</dt><dd><a href="tel:+447352036605">${company.publicTelephone}</a></dd></div><div><dt>Business enquiries email</dt><dd><a href="mailto:${company.publicEnquiriesEmail}">${company.publicEnquiriesEmail}</a></dd></div></dl><div><h2>Business model</h2><p>NovaPharm is preparing pharmaceutical trading, licensing and wholesale distribution capabilities supported by a three-pillar sourcing model, outsourced pharmaceutical logistics, quality governance and a digital B2B platform.</p>${regulatoryNotice()}<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a></div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Sourcing model", "Diversified by design, qualified product by product.")}<div class="grid grid-3">${sourcingPillars.map((pillar) => `<article class="card"><span class="status-label">${pillar.status}</span><h3>${pillar.title}</h3><p>${pillar.text}</p></article>`).join("")}</div></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
@@ -541,14 +546,14 @@ function profilePage(profile) {
     eyebrow: profile.title
   };
   const canonical = absoluteUrl(routePath(slug));
-  const personId = `${canonical}#person`;
+  const personId = personIdForSlug(profile.slug);
   const person = {
     "@context": "https://schema.org",
     "@id": personId,
     "@type": "Person",
     name: profile.name,
     jobTitle: profile.schemaTitle,
-    url: canonical,
+    url: personUrlForSlug(profile.slug),
     ...(profile.image ? { image: absoluteUrl(profile.image) } : {}),
     description: profile.summary,
     worksFor: { "@id": organisationId },
@@ -562,7 +567,7 @@ function profilePage(profile) {
   schemas.push(person);
   schemas[2].mainEntity = { "@id": personId };
   const body = `<section class="profile-hero profile-hero-v3"><div class="profile-hero-media">${leaderVisual(profile, true)}</div><div class="container profile-hero-content">${breadcrumb([{ name: "Home", href: "/" }, { name: "Leadership", href: "/leadership/" }, { name: profile.displayName }])}<span class="eyebrow">${esc(profile.title)}</span><h1>${esc(profile.displayName)}</h1><p>${esc(profile.summary)}</p><span class="governance-badge">${esc(profile.governance)}</span></div></section>
-  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
+  <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.slug === "vishal-chakravarty" ? `<p><a class="text-link" href="https://vishal.novapharmhealthcare.com/about/">Personal profile, evidence and published work</a></p>` : ""}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
   ${finalCta("Discuss a qualified pharmaceutical partnership.")}`;
   return documentShell({ meta, slug, body, options: { schemas } });
 }
@@ -807,7 +812,7 @@ function partnersPage() {
   ${mediaStory({ src: "/assets/media/editorial/partnership-pathway.svg", alt: "Five controlled stages in a pharmaceutical partnership pathway", kicker: "Qualified collaboration", title: "The route from introduction to launch should be visible.", text: "Strategic fit, evidence, due diligence, agreement, implementation and review are treated as explicit stages. No organisation is presented as a partner until permission and scope are confirmed.", reverse: true })}
   <section class="section"><div class="container">${sectionHeading("Partner ecosystem", "Who NovaPharm is designed to work with.")}<div class="partner-type-grid partner-type-grid-large">${partnerTypes.map((type) => `<span>${esc(type)}</span>`).join("")}</div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Partner journey", "Ten controlled stages from first conversation to ongoing review.")}<ol class="partner-journey">${partnerJourney.map((step, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(step)}</strong></li>`).join("")}</ol></div></section>
-  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>Open a business account</strong></a></div></section>
+  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/oncology/"><span>Oncology</span><strong>Review the continuity architecture</strong></a><a href="/account-application/"><span>Customers</span><strong>${esc(accountCtaLabel)}</strong></a></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
 }
@@ -924,8 +929,10 @@ function contactPage() {
 function accountApplicationPage() {
   const slug = "account-application";
   const meta = {
-    title: "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-    description: "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    title: platformCapabilities.accountApplication ? "Apply for a Pharmaceutical Customer Account | NovaPharm Healthcare" : "Business Account Eligibility | NovaPharm Healthcare",
+    description: platformCapabilities.accountApplication
+      ? "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow."
+      : "Learn how NovaPharm assesses business account eligibility. The public-only website cannot accept formal applications or private documents.",
     eyebrow: "Customer onboarding"
   };
   if (!platformCapabilities.accountApplication) {
@@ -990,7 +997,12 @@ function policyMeta(details = policyDetails) {
 
 function policyPage(slug, title, intro, content) {
   const meta = pageMeta[slug];
-  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout"><aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside><article class="legal-content">${content}</article></div></section>`;
+  const aside = `<aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside>`;
+  const article = `<article class="legal-content">${content}</article>`;
+  // Privacy choices and the short overview must come first in keyboard and
+  // screen-reader reading order, not only in a CSS visual reordering.
+  const policyBody = slug === "legal/privacy" ? article + aside : aside + article;
+  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout">${policyBody}</div></section>`;
   return documentShell({ meta, slug, body, options: { pageType: "WebPage" } });
 }
 
@@ -1027,11 +1039,11 @@ function privacyPage() {
 
 function cookiesPage() {
   return policyPage("legal/cookies", "Cookie and storage notice", "NovaPharm uses only the technologies listed below. Non-essential categories remain off unless the visitor makes an affirmative choice.", `
-    <section><h2>1. Current register</h2><div class="table-wrap" role="region" aria-label="Cookie and browser storage register" tabindex="0"><table><thead><tr><th>Name</th><th>Type and provider</th><th>Purpose</th><th>Duration</th><th>Consent or activation</th></tr></thead><tbody><tr><td><code>np_csrf</code></td><td>First-party cookie; NovaPharm</td><td>Prevents forged form and portal requests</td><td>1 hour</td><td>Strictly necessary</td></tr><tr><td><code>np_session</code></td><td>First-party cookie; NovaPharm</td><td>Maintains an authenticated, role-scoped secure session</td><td>30 minutes of inactivity or 8 hours absolute, with earlier logout/revocation</td><td>Strictly necessary for the requested portal</td></tr><tr><td><code>np_cookie_consent</code></td><td>First-party local storage; NovaPharm</td><td>Remembers consent version, selected categories, timestamp and a random preference-record identifier</td><td>180 days</td><td>Necessary to remember the visitor's choice</td></tr><tr><td><code>novapharm-public-ai</code></td><td>First-party IndexedDB; NovaPharm</td><td>Optionally caches the approved local semantic retrieval asset and public-content embeddings so a visitor can reuse private on-device search</td><td>Until the visitor uses Clear optional cache, the browser removes it or site data are cleared</td><td>Created only after the visitor explicitly enables private semantic retrieval; no query or answer is stored</td></tr></tbody></table></div></section>
-    <section><h2>2. Categories</h2><p>Strictly necessary technologies support security, forms and an authenticated portal. Preference storage remembers the choices a visitor asks the site to retain. Analytics and marketing are separate optional categories. The current production candidate contains no enabled analytics, advertising, social pixel or marketing tag, and no such tool may be added without updating this register, completing a transfer and privacy review, and honouring the saved category choice.</p></section>
-    <section><h2>3. Your choices</h2><p>The first layer offers equally accessible controls to accept all, reject non-essential technologies or manage categories. Optional boxes are off by default. Use <button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button> at any time to change or withdraw a choice. Rejecting optional categories does not block ordinary public content.</p></section>
-    <section><h2>4. Evidence and transfers</h2><p>The preference record stays in the browser and is not used for unrelated tracking. It contains no name, email or portal data. Current first-party cookies do not themselves initiate an international transfer. Any future third-party analytics or marketing provider requires a documented recipient, purpose, duration and transfer assessment before activation.</p></section>
-    <section><h2>5. Audit method</h2><p>The release audit checks application source and generated response headers, and automated tests assert that optional categories default to off and remain off after rejection. Browser inspection of cookies, local storage and network requests remains a required preview and production acceptance step. The approach follows the ICO's final April 2026 <a href="https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/">guidance on storage and access technologies</a>. NovaPharm does not rely on a statistical-purpose exception in this release; optional analytics remains absent and off.</p></section>`);
+    <section><h2>1. Current register</h2><div class="table-wrap" role="region" aria-label="Cookie and browser storage register" tabindex="0"><table><thead><tr><th>Name</th><th>Type and provider</th><th>Purpose</th><th>Duration</th><th>Consent or activation</th></tr></thead><tbody><tr><td><code>np_csrf</code></td><td>First-party cookie; NovaPharm</td><td>Prevents forged form and portal requests</td><td>1 hour</td><td>Strictly necessary</td></tr><tr><td><code>np_session</code></td><td>First-party cookie; NovaPharm</td><td>Maintains an authenticated, role-scoped secure session</td><td>30 minutes of inactivity or 8 hours absolute, with earlier logout/revocation</td><td>Strictly necessary for the requested portal</td></tr><tr><td><code>np_cookie_consent</code></td><td>First-party local storage; NovaPharm</td><td>Remembers consent version, selected categories, timestamp and a random preference-record identifier</td><td>180 days</td><td>Necessary to remember the visitor's choice</td></tr><tr><td><code>np_locale</code></td><td>First-party cookie; NovaPharm</td><td>Remembers an explicitly selected interface language and Arabic/Hebrew right-to-left layout preview. Does not track activity or grant access.</td><td>Up to 365 days after selection</td><td>Functional preference set only when the visitor chooses an interface language; not an optional analytics or marketing cookie</td></tr><tr><td><code>novapharm-public-ai</code></td><td>First-party IndexedDB; NovaPharm</td><td>Optionally caches the approved local semantic retrieval asset and public-content embeddings so a visitor can reuse private on-device search</td><td>Until the visitor uses Clear optional cache, the browser removes it or site data are cleared</td><td>Created only after the visitor explicitly enables private semantic retrieval; no query or answer is stored</td></tr><tr><td><code>_ga</code>, <code>_ga_*</code></td><td>First-party analytics cookies; Google Analytics 4 (Google)</td><td>Measure public-page visits and coarse, consented interactions. No customer identifiers, order details, medical information or ad personalisation are sent by NovaPharm custom events.</td><td>Configured up to 90 days, subject to shorter browser limits</td><td>Only if the analytics provider is explicitly activated and you affirmatively select Analytics; withdraw via Cookie settings</td></tr></tbody></table></div></section>
+    <section><h2>2. Categories</h2><p>Strictly necessary technologies support security, forms and an authenticated portal. Preference storage remembers the choices a visitor asks the site to retain. The <code>np_locale</code> cookie is set only when the visitor selects an interface language; Arabic and Hebrew currently provide an RTL layout preview, not fully translated clinical, legal or commercial content. Changing language does not change account permissions. Analytics is an optional category; marketing tracking is currently unavailable and requires a new choice before any future activation. Google Analytics 4 is available as an optional public-site measurement service. Its tag does not load unless a visitor affirmatively selects Analytics. Rejecting or withdrawing that choice blocks site-initiated measurement. Advertising pixels and marketing tags remain disabled. Google processing and transfer safeguards remain subject to governance review; choosing Analytics is optional.</p></section>
+    <section><h2>3. Your choices</h2><p>The first layer offers controls to accept optional analytics, reject non-essential technologies or manage categories. Optional boxes are off by default. Use <button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button> at any time to change or withdraw a choice. Rejecting optional categories does not block ordinary public content.</p></section>
+    <section><h2>4. Evidence and transfers</h2><p>The preference record stays in the browser and is not used for unrelated tracking. It contains no name, email or portal data. First-party security and consent records do not themselves initiate a Google transfer. If Google Analytics 4 is enabled after the required review and you consent, public-site measurement data may be processed by Google and transferred internationally under the applicable Google data-protection terms. Check Google's current terms, transfer safeguards and configured event-data retention before enabling the release.</p></section>
+    <section><h2>5. Audit method</h2><p>The release audit checks application source and generated response headers, and automated tests assert that optional categories default to off and remain off after rejection. Browser inspection of cookies, local storage and network requests remains a required preview and production acceptance step. The approach follows the ICO's final April 2026 <a href="https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/">guidance on storage and access technologies</a>. NovaPharm does not rely on a statistical-purpose exception: optional Google Analytics 4 remains off unless the owner approves the release and the visitor gives consent.</p></section>`);
 }
 
 function termsPage() {
@@ -1072,7 +1084,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {
@@ -1098,6 +1110,7 @@ function buildSitemap() {
 export function buildPublicPages() {
   write("index.html", homePage());
   write("about/index.html", aboutPage());
+  write("our-story/index.html", documentShell({ meta: ourStoryMeta, slug: "our-story", body: ourStoryBody }).replace("</head>", '  <link rel="stylesheet" href="/assets/css/our-story.css">\n</head>'));
   write("about/company/index.html", companyPage());
   write("about/governance/index.html", governancePage());
   write("leadership/index.html", leadershipIndexPage());
@@ -1127,7 +1140,7 @@ export function buildPublicPages() {
   write("legal/modern-slavery/index.html", modernSlaveryPage());
   write("legal/environment-carbon/index.html", environmentPage());
   write("404.html", errorPage("404", "Page not found", "The page may have moved, or the address may be incorrect."));
-  write("500.html", errorPage("500", "Service unavailable", "NovaPharm's secure service is temporarily unavailable. Please try again later."));
+  write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable. Try again later or go to the home page."));
   write("service-unavailable/index.html", errorPage("503", "Service temporarily unavailable", "The secure NovaPharm service is not ready to accept this request."));
   write("contact.html", redirectPage("Contact", "/contact/"));
   write("company-profile/index.html", redirectPage("Company", "/about/company/"));
@@ -1147,8 +1160,8 @@ export function buildPublicPages() {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#E3120B",
+    background_color: "#FFFFFF",
+    theme_color: "#9D1B32",
     icons: [
       { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/assets/brand/pwa-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

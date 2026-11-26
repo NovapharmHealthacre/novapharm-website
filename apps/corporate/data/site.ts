@@ -2,16 +2,26 @@ export const company = Object.freeze({
   name: "NovaPharm Healthcare",
   legalName: "NOVAPHARM HEALTHCARE LTD",
   companyNumber: "16716501",
+  publicTelephone: "+44 7352 036605",
+  publicEnquiriesEmail: "enquiries@novapharmhealthcare.com",
   incorporated: "2025-09-15",
   status: "Active",
   location: "Feltham, England",
+  headquarters: "United Kingdom",
+  industry: "Pharmaceuticals and Healthcare",
+  customerSupportEmail: "support@novapharmhealthcare.com",
+  linkedinUrl: "https://www.linkedin.com/company/novapharm-healthcare/",
+  divisions: Object.freeze([
+    { id: "intelligence", name: "NovaPharm Intelligence", path: "/technology/" },
+    { id: "distribution", name: "NovaPharm Distribution", path: "/distribution/" }
+  ]),
   registeredAddress: "Flat 72 Archer Court, 21 High Street, Feltham, England, TW13 4AG",
   registeredStreet: "Flat 72 Archer Court, 21 High Street",
   registeredPostcode: "TW13 4AG",
   siteUrl: "https://novapharmhealthcare.com",
   companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501",
   officersUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501/officers",
-  summary: "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
+  summary: "NovaPharm Healthcare is a UK-based pharmaceutical and healthcare company focused on pharmaceutical market access, nutraceuticals, medical devices and healthcare intelligence, and developing regulated wholesale distribution capabilities subject to applicable authorisations.",
   purpose: "NovaPharm combines regulatory intelligence, diversified sourcing, quality-led distribution planning and digital supply-chain infrastructure to improve medicine availability, resilience, transparency and operational efficiency.",
   regulatoryNotice: "NovaPharm Healthcare is active in corporate, product, partnership and commercial-development work. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.",
   medicalDisclaimer: "Pharmaceutical services, medicine sourcing and regulated supply programmes are intended for qualified business audiences and remain subject to the required authorisations. Nutraxin food supplements have a separate UK consumer shopping journey, subject to product information and order terms. NovaPharm does not provide medical advice or sell prescription medicines directly to patients. Seek advice from a healthcare professional for medical concerns."
@@ -110,17 +120,17 @@ export const leadership = Object.freeze([
     slug: "helly-panchal",
     name: "Dr Helly Kamlesh Panchal",
     displayName: "Dr Helly Panchal",
-    title: "Chief Medical Director",
-    schemaTitle: "Chief Medical Director",
+    title: "Chief Financial Officer",
+    schemaTitle: "Chief Financial Officer",
     governance: "Statutory director",
     initials: "HP",
     image: null,
     imageAlt: null,
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments",
     sameAs: ["https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments"],
-    summary: "Dr Helly supports NovaPharm's technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
+    summary: "Dr Helly serves as Chief Financial Officer and a statutory director of NovaPharm Healthcare.",
     biography: [
-      "Dr Helly contributes to the board's evaluation of development opportunities and technically differentiated pharmaceutical products.",
+      "Dr Helly serves on the board of directors as Chief Financial Officer.",
       "Her public profile is intentionally conservative. NovaPharm does not publish unverified qualifications, employers, publications, years of experience or achievements.",
       "An approved professional portrait and any expanded biography will be added only after formal company approval."
     ],
@@ -373,7 +383,7 @@ export const insightCategories = Object.freeze(["All", "Regulatory", "Supply cha
 export const pageMeta = Object.freeze({
   "": {
     title: "NovaPharm Healthcare | UK Pharmaceutical Distribution Strategy",
-    description: "NovaPharm Healthcare is a UK-based, compliance-first B2B pharmaceutical company preparing oncology, specialty, PLPI sourcing and quality-led distribution capabilities.",
+    description: "NovaPharm Healthcare is a UK-based pharmaceutical and healthcare company focused on pharmaceutical market access, nutraceuticals, medical devices and healthcare intelligence, and developing regulated wholesale distribution capabilities subject to applicable authorisations.",
     eyebrow: "UK pharmaceutical company"
   },
   "about": {

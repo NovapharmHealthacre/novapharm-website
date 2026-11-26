@@ -1,0 +1,35 @@
+declare const styles: Readonly<{
+  actions: string;
+  brand: string;
+  categories: string;
+  category: string;
+  categoryCopy: string;
+  categoryCount: string;
+  categoryDescription: string;
+  categoryDetails: string;
+  categoryImage: string;
+  categoryIntro: string;
+  categorySummary: string;
+  eyebrow: string;
+  footer: string;
+  hero: string;
+  heroContent: string;
+  heroLead: string;
+  heroPhotography: string;
+  module: string;
+  moduleBody: string;
+  modules: string;
+  page: string;
+  primaryAction: string;
+  primaryNav: string;
+  readiness: string;
+  readinessCount: string;
+  requirementsTitle: string;
+  secondaryAction: string;
+  sectionHeader: string;
+  session: string;
+  siteHeader: string;
+  workspaceSection: string;
+}>;
+
+export default styles;

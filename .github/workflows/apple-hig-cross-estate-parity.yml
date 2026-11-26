@@ -1,0 +1,35 @@
+name: Apple HIG cross-estate parity
+on:
+  pull_request:
+    paths:
+      - "apps/status/**"
+      - "apps/technology/**"
+      - "apps/corporate/app/layout.tsx"
+      - "apps/portal/app/layout.tsx"
+      - "apps/founder/app/layout.tsx"
+      - "assets/css/novapharm-apple-27-web-adaptation.css"
+      - "scripts/test-apple-27-cross-estate-parity.mjs"
+      - ".github/workflows/apple-hig-cross-estate-parity.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/status/**"
+      - "apps/technology/**"
+      - "scripts/test-apple-27-cross-estate-parity.mjs"
+      - ".github/workflows/apple-hig-cross-estate-parity.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cross-estate-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Validate all five applications and their design boundaries
+        run: node --test scripts/test-apple-27-cross-estate-parity.mjs

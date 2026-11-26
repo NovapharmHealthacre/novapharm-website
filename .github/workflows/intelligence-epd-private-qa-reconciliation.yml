@@ -1,0 +1,32 @@
+name: Intelligence private EPD quarantine receipt acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-epd-private-qa-reconciliation.mjs'
+      - 'scripts/test-intelligence-epd-private-qa-reconciliation.mjs'
+      - '.github/workflows/intelligence-epd-private-qa-reconciliation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/intelligence-epd-private-qa-reconciliation.mjs'
+      - 'scripts/test-intelligence-epd-private-qa-reconciliation.mjs'
+      - '.github/workflows/intelligence-epd-private-qa-reconciliation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  quarantine-receipt:
+    name: Fail-closed private source QA (no data, customer or billing access)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - run: |
+          set -euo pipefail
+          node --check src/core/intelligence-epd-private-qa-reconciliation.mjs
+          node --test scripts/test-intelligence-epd-private-qa-reconciliation.mjs

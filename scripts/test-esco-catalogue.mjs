@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { applyEscoBagMetadata, ESCO_BAG_CANONICAL, ESCO_BAG_TITLE, ESCO_BAG_DESCRIPTION } from "./esco-bag-metadata.mjs";
 const data=JSON.parse(readFileSync("assets/data/esco-catalogue.json","utf8"));
 const entries=data.categories.flatMap(x=>x.entries);
 test("source index has exactly 373 distinct ESCO references across 12 supplier categories",()=>{
@@ -108,37 +109,28 @@ test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP asse
   assert.match(generator,/Original product concept/);
 });
 
-test("owner-declared 10000 per catalogue reference is planning stock, not verified fulfillment or a buy button",async()=>{
+test("ESCO public guides preserve 373 prices without internal cost or margin disclosure",async()=>{
   const {guideFor}=await import("./esco-merchandising.mjs");
-  const all=data.categories.flatMap(category=>category.entries.map(item=>({...item, category:category.name})));
+  const all=data.categories.flatMap(category=>category.entries.map(item=>({...item,category:category.name})));
   assert.equal(all.length,373);
-  const declaredUnits=all.reduce((sum,item)=>{
+  assert.equal(Object.hasOwn(data,"targetGrossMargin"),false);
+  let declaredUnits=0;
+  for(const item of all){
     const price=guideFor(item);
+    assert.ok(Number.isFinite(price.guidePriceExVatGbp)&&price.guidePriceExVatGbp>0);
     assert.equal(price.ownerDeclaredStockUnits,10000);
     assert.equal(price.stockVerified,false);
     assert.equal(price.availableToPromiseUnits,null);
-    assert.equal(price.inventoryEvidence,'OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED');
+    assert.equal(price.inventoryEvidence,"OWNER_DECLARATION_NOT_WAREHOUSE_RECONCILED");
     assert.equal(price.checkoutEligible,false);
     assert.equal(price.priceApprovedForCheckout,false);
-    assert.equal(price.unitEconomics.grossMarginTarget,0.25);
-    assert.equal(price.unitEconomics.assumptionsOnly,true);
-    assert.equal(price.unitEconomics.grossProfitProven,false);
-    assert.equal(price.unitEconomics.actualSupplierCostKnown,false);
-    assert.equal(price.unitEconomics.actualFreightKnown,false);
-    assert.equal(price.unitEconomics.actualPaymentFeesKnown,false);
-    assert.equal(price.unitEconomics.actualStorageChargesKnown,false);
-    assert.ok(price.unitEconomics.maximumSupplierAndInboundCostGbp>=0);
-    const cap=Math.round(price.guidePriceExVatGbp*0.75*100)/100;
-    assert.ok(Math.abs(price.unitEconomics.maximumTotalVariableCostGbp-cap)<=0.01);
-    const modeled=price.unitEconomics;
-    const remaining=Math.round((modeled.maximumTotalVariableCostGbp-
-      modeled.illustrativeOutboundDeliveryAllocationGbp-
-      modeled.illustrativeCardFeeAllocationGbp-
-      modeled.illustrativeThreeMonthStorageReserveGbp)*100)/100;
-    assert.equal(modeled.maximumSupplierAndInboundCostGbp,Math.max(0,remaining));
-    return sum + price.ownerDeclaredStockUnits;
-  },0);
+    for(const privateKey of ["unitEconomics","maximumFullyLandedCostFor25PercentMarginGbp","supplierCost","targetGrossMargin"])
+      assert.equal(Object.hasOwn(price,privateKey),false,"Private key in public guide: "+privateKey);
+    declaredUnits+=price.ownerDeclaredStockUnits;
+  }
   assert.equal(declaredUnits,3730000);
+  const generator=readFileSync("scripts/esco-merchandising.mjs","utf8");
+  assert.doesNotMatch(generator,/costEnvelopeForIllustration|unitEconomicsAssumptions|TARGET_GROSS_MARGIN_FRACTION|maximumSupplierAndInboundCostGbp/);
   const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   assert.match(builder,/10,000 units per catalogue reference/);
   assert.match(builder,/warehouse-verified available stock/);
@@ -264,8 +256,9 @@ test("ESCO hero and product details stay in separate responsive grid tracks",()=
 test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
- assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\) && item\.quantity <= MAX_CARD_QTY\)/);
- assert.match(bag,/quoteOnly = paymentServiceReady/);
+ assert.match(bag,/function paymentPartition\(lines\)/);
+ assert.match(bag,/approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)/);
+ assert.match(bag,/quoteOnly:lines\.filter\(item => !payableIds\.has\(item\.id\)\)/);
  assert.match(bag,/product and delivery confirmation before payment/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
  assert.match(shop,/get\("availability"\) === "ready"/);
@@ -292,7 +285,7 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
  assert.match(bag,/checkoutButton\.hidden = !eligible/);
- assert.match(bag,/orderRequestForm\.hidden = eligible \|\| !lines\.length/);
+ assert.match(bag,/orderRequestForm\.hidden = quoteOnly\.length === 0/);
  assert.match(bag,/Contact product support/);
  assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
@@ -309,4 +302,67 @@ test("ESCO discovery page keeps only the compact navigation Bag, not an oversize
   assert.ok(interaction.includes("topBagCount.textContent"));
   assert.ok(builder.includes("/products/esco/bag/"));
   assert.match(css,/\.esco-page \.esco-shop-mini-bag\[hidden\]\s*\{\s*display: none !important;/);
+});
+
+test("Apple HIG ESCO search is inline, scoped, keyboard-ready and free of private history",()=>{
+  const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  const js=readFileSync("assets/js/esco-catalogue.js","utf8");
+  assert.match(generator,/id="esco-search"[^\n]*type="search"/);
+  assert.match(generator,/aria-controls="esco-catalogue-results"/);
+  assert.match(generator,/aria-describedby="esco-search-scope"/);
+  assert.match(generator,/esco-search-icon/);
+  assert.match(generator,/data-esco-reset-filters/);
+  assert.match(generator,/id="esco-search-scope"/);
+  assert.match(css,/\.esco-search-scope/);
+  assert.match(js,/input\?\.addEventListener\("input", apply\)/);
+  assert.doesNotMatch(js,/searchHistory|recentSearch|searchTermsStorage/);
+});
+
+test("ESCO Bag has one noindex directive, its own social identity and no Products structured data", () => {
+  const original = [
+    '<head><title>Products | NovaPharm</title>',
+    '<meta name="description" content="Public Products overview">',
+    '<meta name="robots" content="index, follow, max-snippet:-1">',
+    '<link rel="canonical" href="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:url" content="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:title" content="Products | NovaPharm">',
+    '<meta property="og:description" content="Public Products overview">',
+    '<meta name="twitter:title" content="Products | NovaPharm">',
+    '<meta name="twitter:description" content="Public Products overview">',
+    '<script type="application/ld+json">{"@type":"WebPage","url":"https://novapharmhealthcare.com/products/"}</script>',
+    '</head>',
+  ].join("");
+  const output = applyEscoBagMetadata(original);
+  assert.equal((output.match(/<meta name="robots"/g)||[]).length,1);
+  assert.match(output,/<meta name="robots" content="noindex, follow">/);
+  assert.ok(output.includes('<link rel="canonical" href="'+ESCO_BAG_CANONICAL+'">'));
+  assert.ok(output.includes('<meta property="og:url" content="'+ESCO_BAG_CANONICAL+'">'));
+  assert.ok(output.includes('<meta property="og:title" content="'+ESCO_BAG_TITLE+'">'));
+  assert.ok(output.includes('<meta name="twitter:description" content="'+ESCO_BAG_DESCRIPTION+'">'));
+  assert.doesNotMatch(output,/application\/ld\+json/);
+  assert.doesNotMatch(output,/Public Products overview/);
+  assert.doesNotMatch(output,/content="index, follow/);
+  assert.match(original,/Public Products overview/);
+  const builder = readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  assert.ok(builder.includes("bagPage=applyEscoBagMetadata(bagPage);"));
+  assert.doesNotMatch(builder,/bagPage=bagPage\.replace\('<\/head>','<meta name="robots"/);
+});
+
+test("ESCO Bag metadata build fails closed on incomplete or downgraded templates", () => {
+  assert.throws(() => applyEscoBagMetadata("<head><title>Missing metadata</title></head>"),/missing required metadata/);
+  const source=[
+    "<head><title>Products</title>",
+    '<meta name="description" content="Products">',
+    '<meta name="robots" content="index, follow">',
+    '<link rel="canonical" href="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:url" content="https://novapharmhealthcare.com/products/">',
+    '<meta property="og:title" content="Products">',
+    '<meta property="og:description" content="Products">',
+    '<meta name="twitter:title" content="Products">',
+    '<meta name="twitter:description" content="Products">',
+    '<meta name="robots" content="index, follow">',
+    "</head>"
+  ].join("");
+  assert.throws(() => applyEscoBagMetadata(source),/duplicate or incorrect public indexing metadata/);
 });

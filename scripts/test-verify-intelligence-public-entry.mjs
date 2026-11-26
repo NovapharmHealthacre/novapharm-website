@@ -59,6 +59,30 @@ test("any anonymous private API success or redirect fails closed",async()=>{
   await assert.rejects(()=>verifyIntelligencePublicEntry({fetchImpl:h.fetchImpl}),/not_iam_protected/u);
  }
 });
+test("current governed account registration copy is a valid public entry, without access grants", async () => {
+  const html = '<h1>Understand the medicine</h1><p>Create a business account</p>' +
+    '<p>Subscription checkout and medicines access become available only after organisation approval.</p>' +
+    '<a href="/auth/customer/start">Sign in</a>';
+  const h = mock({
+    [origin + "/"]: () => new Response(html, { status: 200 }),
+    [origin + login]: () => new Response(null, {
+      status: 302,
+      headers: { location: redirect.toString(), "set-cookie": cookie.replace("Max-Age=300", "Max-Age=900") },
+    }),
+  });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
+test("excessive PKCE cookie lifetime is never treated as a secure sign-in", async () => {
+  const h = mock({
+    [origin + login]: () => new Response(null, {
+      status: 302,
+      headers: { location: redirect.toString(), "set-cookie": cookie.replace("Max-Age=300", "Max-Age=1800") },
+    }),
+  });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /secure_identity_start_not_available/u);
+});
 test("missing PKCE, insecure transaction cookie and wrong Cognito redirect fail",async()=>{
  const bad=new URL(redirect);bad.searchParams.delete("code_challenge");
  for(const [location,setCookie] of [
@@ -80,4 +104,33 @@ test("corporate link, invitation caveat and callback denial are required",async(
   const h=mock(overrides);
   await assert.rejects(()=>verifyIntelligencePublicEntry({fetchImpl:h.fetchImpl}));
  }
+});
+
+test("approved human portal copy retains secure identity and registration contracts", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Your business email, password and verification are handled by NovaPharm secure identity provider.</p>' +
+    '<a href="/auth/customer/start">Sign in securely</a><a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
+
+test("direct Cognito PASSWORD + TOTP sign-in card is a valid guarded public entry", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
+    '<a href="/auth/customer/start?mode=reset">Forgot your password?</a>' +
+    '<a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
+
+test("uncontrolled direct Cognito card without recovery cannot pass public entry", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
+    '<a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
 });

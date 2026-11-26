@@ -9,7 +9,11 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     background_color: "#ffffff",
-    theme_color: "#E3120B",
+    theme_color: "#9D1B32",
+    shortcuts: [
+      { name: "Browse Products", short_name: "Products", description: "Explore NovaPharm public product ranges", url: "/products/" },
+      { name: "Contact NovaPharm", short_name: "Contact", description: "Send a public business enquiry", url: "/contact/" },
+    ],
     icons: [
       { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/assets/brand/pwa-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

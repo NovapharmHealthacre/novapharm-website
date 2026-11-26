@@ -1,0 +1,31 @@
+name: NovaPharm Intelligence GBP review-only pricing
+on:
+  pull_request:
+    paths:
+      - 'docs/intelligence/gbp-pricing-owner-review-20261112.json'
+      - 'docs/intelligence/GBP_SUBSCRIPTION_TAX_OWNER_REVIEW_20261112.md'
+      - 'scripts/test-intelligence-gbp-pricing-review.mjs'
+      - 'src/content/technology-intelligence.html'
+      - 'technology/index.html'
+      - 'assets/js/intelligence-pricing.js'
+      - 'scripts/test-intelligence-technology-page.mjs'
+      - '.github/workflows/intelligence-gbp-pricing-review.yml'
+permissions:
+  contents: read
+jobs:
+  review-only-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Preserve GBP-only preview and no payment activation
+        run: node --test scripts/test-intelligence-gbp-pricing-review.mjs
+      - name: Install pinned dependencies for the deterministic public build
+        run: npm ci --ignore-scripts
+      - name: Build deterministic public pages before published-output assertions
+        run: npm run build:public-only
+      - name: Verify public three-plan card functionality
+        run: node scripts/test-intelligence-technology-page.mjs

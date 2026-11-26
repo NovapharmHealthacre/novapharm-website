@@ -44,6 +44,7 @@ jobs:
     environment: ${{ inputs.target == 'staging' && 'azure-staging' || 'azure-production' }}
     env:
       EXPECTED_SHA: ${{ inputs.expected_sha }}
+      NOVAPHARM_MAPKIT_JS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ inputs.target == 'staging' && vars.AZURE_STAGING_RESOURCE_GROUP || vars.AZURE_PRODUCTION_RESOURCE_GROUP }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -72,7 +73,7 @@ jobs:
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
       TARGET_SLOT: ${{ inputs.target == 'production-candidate' && 'candidate' || '' }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.expected_sha }}
           fetch-depth: 0
@@ -160,7 +161,7 @@ jobs:
             az deployment group what-if \
               --resource-group "$AZURE_RESOURCE_GROUP" \
               --name "novapharm-unified-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}" \
-              --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
+              --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA" mapKitJsToken="$NOVAPHARM_MAPKIT_JS_TOKEN"
           else
             echo "The isolated resource group does not exist. The subscription-level definition and compiled template passed validation; no resource was created in what-if mode."
           fi
@@ -173,7 +174,7 @@ jobs:
           az deployment group create \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$deployment" \
-            --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
+            --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA" mapKitJsToken="$NOVAPHARM_MAPKIT_JS_TOKEN"
           applications=$(az deployment group show \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$deployment" \
@@ -185,6 +186,8 @@ jobs:
         if: inputs.action == 'deploy'
         env:
           NEXT_PUBLIC_ENTRA_LOGIN_ENABLED: ${{ vars.NOVAPHARM_ENABLE_ENTRA_AUTH }}
+          # GitHub environment-scoped public Maps token; never an Apple private signing key.
+          NEXT_PUBLIC_APPLE_MAPS_TOKEN: ${{ vars.NOVAPHARM_MAPKIT_JS_TOKEN }}
         run: |
           set -euo pipefail
           npm ci --ignore-scripts
@@ -199,7 +202,7 @@ jobs:
           (cd artifacts/azure-zips && sha256sum -- ./*.zip > SHA256SUMS)
       - name: Upload signed-by-digest release evidence
         if: inputs.action == 'deploy'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: unified-azure-release-${{ inputs.expected_sha }}
           path: |

@@ -1,20 +1,22 @@
 @layer base {
 :root {
-    --ink: #0b0d10;
+    --ink: #0B0B0E;
     --ink-soft: #171a1f;
-    --paper: #f4f1ea;
-    --paper-bright: #fbfaf7;
-    --mist: #e8e7e3;
+    --paper: #FFFFFF;
+    --paper-bright: #F8F7F3;
+    --mist: #EDEBE5;
     --line: rgba(11, 13, 16, 0.17);
     --line-light: rgba(255, 255, 255, 0.2);
     --red: #b5212d;
     --red-deep: #8f1721;
     --red-bright: #ef4a52;
-    --white: #ffffff;
+    --white: #FFFFFF;
     --muted: #61656b;
     --muted-light: #b8bbc0;
-    --sans: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Baskerville, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --serif: "New York", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     --shell: min(1480px, calc(100vw - 72px));
     --header: 88px;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -53,4 +55,53 @@
     transition: transform .2s ease;
   }
   .skip-link:focus { transform: translateY(0); }
+
+  /* Typography roles preserve the technology site's own editorial presentation. */
+  :where(code, kbd, samp, pre, [data-typography="mono"]) {
+    font-family: var(--mono);
+    font-variant-ligatures: none;
+  }
+  :where(table, .metric-value, .data-value, [data-numeric]) {
+    font-variant-numeric: tabular-nums;
+  }
+  :where(.dense-table, .operational-table, [data-typography="compact"]) {
+    font-family: var(--compact);
+  }
+  :where(.editorial-pullquote, [data-typography="editorial"]) {
+    font-family: var(--serif);
+    font-optical-sizing: auto;
+  }
+  :where(input, select, textarea, button) {
+    font-family: var(--sans);
+    font-synthesis: none;
+  }
+}
+@layer base {
+  :root {
+    --np-type-body-size: 1rem;
+    --np-type-caption-size: 0.875rem;
+    --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+    --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+    --np-type-reading-leading: 1.65;
+    --np-type-interface-leading: 1.45;
+    --np-type-measure: 68ch;
+  }
+  body, :where(main, article, section) { font-optical-sizing: auto; }
+  :where(h1, h2, h3, h4) { font-optical-sizing: auto; overflow-wrap: break-word; }
+  :where(.prose, .article-body, [data-typography="reading"]) :where(p, li, dd) {
+    max-width: var(--np-type-measure);
+    line-height: var(--np-type-reading-leading);
+  }
+  :where(figcaption, .source-note, [data-typography="caption"]) {
+    font-size: var(--np-type-caption-size);
+    line-height: var(--np-type-interface-leading);
+  }
+  :where(table) :where(th, td) { font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+  @media (max-width: 640px) {
+    :where(main, article, h1, h2, h3, p, li) {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+  }
 }

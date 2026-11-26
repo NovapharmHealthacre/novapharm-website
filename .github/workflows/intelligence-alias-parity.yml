@@ -1,0 +1,30 @@
+name: Intelligence Lambda alias parity release guard
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/aws/check-intelligence-alias-parity.mjs'
+      - 'scripts/aws/check-intelligence-alias-parity.test.mjs'
+      - '.github/workflows/intelligence-alias-parity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/aws/check-intelligence-alias-parity.mjs'
+      - 'scripts/aws/check-intelligence-alias-parity.test.mjs'
+      - '.github/workflows/intelligence-alias-parity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alias-parity-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Fail-closed release parity fixture tests
+        run: node --test scripts/aws/check-intelligence-alias-parity.test.mjs

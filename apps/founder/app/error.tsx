@@ -17,7 +17,7 @@ export default function ErrorPage({
     <section className="utility-page" role="alert">
       <p className="eyebrow">Service interruption</p>
       <h1>This page could not be opened.</h1>
-      <p>Please try once more. No private information has been exposed.</p>
+      <p>Try again. If you just submitted information, check whether it was received before sending it again.</p>
       <button className="button button-primary" type="button" onClick={reset}>
         Try again
       </button>

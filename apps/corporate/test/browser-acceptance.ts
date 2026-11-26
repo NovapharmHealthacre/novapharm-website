@@ -171,7 +171,21 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     if (response.status() >= 400 && !response.request().isNavigationRequest()) failedResources.push(`${response.status()} ${response.url()}`);
   });
 
-  const response = await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  // WebKit can intermittently stall or report an internal navigation error
+  // on a busy CI runner. Retry that navigation once; never skip the page
+  // or any security, visual, keyboard or accessibility assertions.
+  let response: Awaited<ReturnType<Page["goto"]>> = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      response = await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+      break;
+    } catch (error) {
+      if (engine !== "webkit" || attempt === 1 || !(error instanceof Error) ||
+          !(/Timeout.*exceeded/.test(error.message) ||
+            /WebKit encountered an internal error/.test(error.message))) throw error;
+      console.warn(`webkit: retrying transient navigation failure for ${viewport.name} ${route}`);
+    }
+  }
   assert.ok(response, `${engine} ${route}: no navigation response`);
   const expectedStatus = route === "/acceptance-not-found/" ? 404 : 200;
   assert.equal(response.status(), expectedStatus, `${engine} ${route}: unexpected response status`);
@@ -180,11 +194,56 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.match(response.headers()["x-robots-tag"] ?? "", /noindex/, `${engine} ${route}: validation response is indexable`);
 
   await page.locator("main").waitFor({ state: "visible" });
+  if (route === "/" && (viewport.name === "desktop-1440" || viewport.name === "mobile-390")) {
+    // Real keyboard bypass: verify first Tab, visible focus and a focusable
+    // main landmark in Chromium/WebKit without claiming live production proof.
+    const bypass = page.getByRole("link", { name: "Skip to main content" });
+    assert.equal(await bypass.count(), 1, `${engine} ${viewport.name}: missing corporate skip link`);
+    await page.keyboard.press("Tab");
+    assert.equal(await bypass.evaluate((el) => el === document.activeElement), true,
+      `${engine} ${viewport.name}: first Tab must reach the skip link`);
+    await page.waitForFunction(() => {
+      const link = document.querySelector<HTMLAnchorElement>(".skip-link");
+      if (!link || document.activeElement !== link) return false;
+      const rect = link.getBoundingClientRect();
+      const style = getComputedStyle(link);
+      return rect.width >= 44 && rect.height >= 44 &&
+        rect.left >= 0 && rect.top >= 0 &&
+        rect.right <= innerWidth && rect.bottom <= innerHeight &&
+        style.visibility === "visible" && Number(style.opacity) > 0.95;
+    }, null, { timeout: 2500 });
+    await page.keyboard.press("Enter");
+    assert.equal(await page.evaluate(() => document.activeElement?.id), "main-content",
+      `${engine} ${viewport.name}: Enter must move focus to main content`);
+  }
   await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
-  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.png$/, `${engine} ${route}: unofficial header logo`);
+  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg$/, `${engine} ${route}: header must render the approved Healthcare SVG logo`);
+
+  const navigationPresentation = await page.evaluate(() => {
+    const header = document.querySelector("header.site-header");
+    if (!header) return null;
+    const styling = getComputedStyle(header);
+    return { height: Math.round(header.getBoundingClientRect().height), background: styling.backgroundColor };
+  });
+  assert.equal(navigationPresentation?.height, 52, `${engine} ${viewport.name} ${route}: expected compact 52px Apple-style web navigation`);
+  assert.equal(navigationPresentation?.background, "rgb(23, 23, 25)",
+    `${engine} ${viewport.name} ${route}: expected dark charcoal navigation material`);
+  if (viewport.width > 1300) {
+    assert.equal(await page.locator("header .desktop-nav").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: desktop navigation missing`);
+    if (route === "/" && viewport.name === "desktop-1440") {
+      const navInk = await page.locator('header .desktop-nav > a[href="/about/"]').evaluate(
+        (anchor) => getComputedStyle(anchor).color);
+      assert.equal(navInk, "rgb(214, 214, 218)",
+        `${engine}: editorial homepage desktop navigation must use legible light ink on charcoal`);
+    }
+  } else {
+    assert.equal(await page.locator("header .mobile-menu summary").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: responsive navigation trigger missing`);
+  }
 
   const keyViewport = viewport.name === "desktop-1440" || viewport.name === "mobile-390";
   if (keyViewport) {
@@ -270,8 +329,13 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
       });
       screenshotCaptured = true;
     } catch (error) {
-      if (attempt === 3 || !/captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
-      console.warn(`${engine} ${viewport.name} ${route}: transient screenshot failure on attempt ${attempt}; retrying the same capture`);
+      // Screenshot timeouts are also transient on overloaded CI renderers.
+      // Retry only the capture, never an accessibility/layout/security assertion.
+      // Exhausting the three bounded attempts still fails the entire job.
+      const reason = error instanceof Error ? error.message : String(error);
+      const retriableCaptureFailure = /captureScreenshot|Unable to capture screenshot|page\.screenshot:\s*Timeout \d+ms exceeded/i.test(reason);
+      if (attempt === 3 || !retriableCaptureFailure) throw error;
+      console.warn(`${engine} ${viewport.name} ${route}: screenshot capture attempt ${attempt} failed (${reason.split("\n")[0]}); retrying the same capture`);
       await page.waitForTimeout(500 * attempt);
     }
   }
@@ -303,7 +367,9 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await banner.getByRole("button", { name: "Reject non-essential" }).click();
   await banner.waitFor({ state: "hidden" });
   const storedConsent = await page.evaluate(() => JSON.parse(localStorage.getItem("np_cookie_consent") ?? "null"));
-  assert.deepEqual(storedConsent.categories, { preferences: false, analytics: false, marketing: false }, `${engine}: rejection was not preserved`);
+  assert.deepEqual(storedConsent.categories, { necessary: true, preferences: false, analytics: false, marketing: false }, `${engine}: rejection was not preserved`);
+  assert.equal(storedConsent.version, "2026-11-15-v1.3", `${engine}: consent must use the active shared schema`);
+  assert.match(storedConsent.id, /^[a-f0-9-]{16,64}$/i, `${engine}: consent must carry a valid random record id`);
   assert.deepEqual(await page.context().cookies(), [], `${engine}: non-essential cookies were set after rejection`);
   await page.getByRole("button", { name: "Cookie settings" }).click();
   await dialog.waitFor({ state: "visible" });
@@ -319,10 +385,43 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
+  // Desktop links must keep their ordinary browser destinations even when
+  // pointer or keyboard focus has opened a preview directory.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [section, destination] of [
+    ["company", "/about/"], ["capabilities", "/capabilities/"],
+    ["distribution", "/distribution/"], ["oncology", "/oncology/"],
+    ["products", "/products/"], ["intelligence", "/technology/"],
+  ]) {
+    await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+    const trigger = page.locator(`header .desktop-nav > a[data-mega-trigger="${section}"]`);
+    const panel = page.locator(`header [data-mega-panel="${section}"]`);
+    await trigger.hover();
+    await panel.waitFor({ state: "visible" });
+    await trigger.click();
+    await page.waitForURL(`${baseUrl}${destination}`);
+    assert.equal(await page.locator("header.site-header.npd-header").count(), 1);
+    assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1);
+  }
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+  const companyTrigger = page.locator('header .desktop-nav > a[data-mega-trigger="company"]');
+  const companyPanel = page.locator('header [data-mega-panel="company"]');
+  await companyTrigger.focus();
+  await companyTrigger.press("ArrowDown");
+  await companyPanel.locator("a").first().waitFor({ state: "visible" });
+  await companyPanel.locator("a:focus").waitFor({ state: "attached" });
+  await page.keyboard.press("Escape");
+  await companyPanel.waitFor({ state: "hidden" });
+  assert.equal(await companyTrigger.evaluate((element) => document.activeElement === element), true);
+  await companyTrigger.press("Enter");
+  await page.waitForURL(`${baseUrl}/about/`);
+  await page.setViewportSize({ width: 390, height: 844 });
+
   await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
-  assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");
+  assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1, "shared Contact footer missing");
+  assert.equal(await page.locator("main footer").count(), 0, "Contact must not have a second footer");
   if (process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true") {
     assert.equal(await page.locator("form.contact-form").count(), 1, "verified managed contact form required");
     await page.getByLabel("Full name").fill("Validation User");
@@ -365,10 +464,10 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
       });
       await context.addInitScript(() => {
         localStorage.setItem("np_cookie_consent", JSON.stringify({
-          version: "2026-07-v2",
-          categories: { preferences: false, analytics: false, marketing: false },
-          timestamp: "2026-07-30T00:00:00.000Z",
-          preferenceId: "browser-acceptance",
+          version: "2026-11-15-v1.3",
+          categories: { necessary: true, preferences: false, analytics: false, marketing: false },
+          timestamp: new Date().toISOString(),
+          id: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
         }));
       });
       try {
@@ -465,8 +564,8 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
       const visibleNavigationLinks = page.locator('header nav a:visible');
       assert.deepEqual(
         await visibleNavigationLinks.allTextContents(),
-        navigation.map(([label]) => label),
-        `${name}: scriptless primary navigation does not match the governed seven-destination architecture`,
+        navigation.filter(([, href]) => href !== "/news-insights/").map(([label]) => label === "NovaPharm Intelligence" ? "Intelligence" : label),
+        `${name}: scriptless primary navigation does not match the uniform eight-destination architecture`,
       );
       const layout = await page.evaluate(() => ({
         viewportWidth: document.documentElement.clientWidth,
@@ -485,6 +584,72 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
   }
 }
 
+async function runRtlPreflight(name: string, browserType: BrowserType): Promise<void> {
+  const browser = await browserType.launch({ headless: true });
+  try {
+    for (const locale of ["ar", "he"] as const) {
+      for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 800 }]) {
+        const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
+        try {
+          await context.addCookies([{ name: "np_locale", value: locale, url: baseUrl, sameSite: "Lax" }]);
+          const page = await context.newPage();
+          const response = await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+          assert.equal(response?.status(), 200, `${name}: RTL homepage failed to load`);
+          assert.equal(await page.locator("html").getAttribute("dir"), "rtl", `${name}: missing RTL direction for ${locale}`);
+          assert.equal(await page.locator("html").getAttribute("lang"), locale, `${name}: missing document language`);
+          assert.equal(await page.locator("main").getAttribute("lang"), "en-GB", "untranslated article marked as local-language copy");
+          const selectName = locale === "ar" ? "معاينة اللغة واتجاه العرض" : "תצוגה מקדימה של שפה וכיוון";
+          const control = page.getByRole("combobox", { name: selectName });
+          assert.equal(await control.inputValue(), locale, `${name}: selected preference not restored`);
+          const translatedCompany = locale === "ar" ? "الشركة" : "החברה";
+          // Both menu variants stay in the DOM; one is intentionally hidden at
+          // each breakpoint. Use DOM text checks instead of accessible-role
+          // queries (which omit display:none navigation on the other viewport).
+          const translatedNav = page.locator(".desktop-nav a").filter({ hasText: translatedCompany });
+          assert.equal(await translatedNav.count(), 1, `${name}: ${locale} corporate desktop link not translated`);
+          const translatedMobileNav = page.locator("details.mobile-menu nav a").filter({ hasText: translatedCompany });
+          assert.equal(await translatedMobileNav.count(), 1, `${name}: ${locale} mobile menu link not translated`);
+
+          const widths = await page.evaluate(() => ({
+            document: document.documentElement.scrollWidth,
+            viewport: document.documentElement.clientWidth,
+          }));
+          assert.ok(widths.document <= widths.viewport + 1,
+            `${name}: ${locale} RTL horizontal overflow ${widths.document} > ${widths.viewport}`);
+          const imageTransform = await page.locator(".brand img").first().evaluate((img) =>
+            getComputedStyle(img).transform);
+          assert.ok(imageTransform === "none" || imageTransform === "matrix(1, 0, 0, 1, 0, 0)",
+            `${name}: ${locale} logo must never be mirrored`);
+
+          await Promise.all([
+            page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+            control.selectOption("en-GB"),
+          ]);
+          // WebKit can report DOMContentLoaded before the final document/locale
+          // transition has settled. Keep the cookie and document assertions;
+          // do not weaken the RTL acceptance or silently retry a broken switch.
+          const resetCookie = (await context.cookies(baseUrl)).find((cookie) => cookie.name === "np_locale");
+          assert.equal(resetCookie?.value, "en-GB", `${name}: language switch did not persist English preference`);
+          await page.waitForFunction(
+            () => document.documentElement.getAttribute("dir") === "ltr" &&
+              document.documentElement.getAttribute("lang") === "en-GB",
+            undefined,
+            { timeout: 10_000 },
+          );
+          assert.equal(await page.locator("html").getAttribute("dir"), "ltr", "switcher did not restore English direction");
+          assert.equal(await page.locator("html").getAttribute("lang"), "en-GB", "switcher did not restore English document language");
+          await page.close();
+        } finally {
+          await context.close();
+        }
+      }
+    }
+    console.log(`${name}: Arabic/Hebrew RTL locale, overflow, brand and reset preflight passed`);
+  } finally {
+    await browser.close();
+  }
+}
+
 function markdownReport(generatedAt: string): string {
   return `# Corporate browser acceptance\n\n- Generated: ${generatedAt}\n- Candidate: local standalone Node production artifact\n- Engines: Chromium and WebKit\n- Canonical routes: ${canonicalRoutes.length}\n- Viewports: ${viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${accessibilityRuns}\n- High-density product-media runs: ${highDensityRuns}\n- Scriptless-navigation runs: ${noJavaScriptRuns}\n- Serious or critical findings: ${findings.length}\n- Search indexing: disabled with meta robots and X-Robots-Tag during validation\n- Data: synthetic and non-confidential only\n`;
 }
@@ -493,6 +658,8 @@ await fs.rm(artifactRoot, { recursive: true, force: true });
 await fs.mkdir(artifactRoot, { recursive: true });
 try {
   await startServer();
+  await runRtlPreflight("chromium", chromium);
+  await runRtlPreflight("webkit", webkit);
   await runInteractionPreflight("chromium", chromium);
   await runInteractionPreflight("webkit", webkit);
   await runCraftPreflight("chromium", chromium);

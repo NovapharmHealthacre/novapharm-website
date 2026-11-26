@@ -1,18 +1,28 @@
 :root {
   color-scheme: only light;
-  --bg: #f3f5f4;
-  --surface: #ffffff;
-  --surface-2: #e9eeec;
-  --surface-3: #dce6e2;
-  --paper: #fbfcfb;
-  --ink: #111820;
-  --text: #354149;
+  --np-brand-black: #0B0B0E;
+  --np-brand-white-primary: #FFFFFF;
+  --np-brand-white-secondary: #F8F7F3;
+  --np-brand-divider: #DEDCD5;
+  font-optical-sizing: auto;
+  /* Owner-approved Royal neutrals */
+  --np-white-primary: #FFFFFF;
+  --np-white-secondary: #F8F7F3;
+  --np-black-default: #0B0B0E;
+  --np-divider-subtle: #DEDCD5;
+  --bg: #FFFFFF;
+  --surface: #F8F7F3;
+  --surface-2: #F8F7F3;
+  --surface-3: #EDEBE5;
+  --paper: #FFFFFF;
+  --ink: #0B0B0E;
+  --text: #0B0B0E;
   --muted: #657078;
-  --line: #ccd5d2;
+  --line: #DEDCD5;
   --line-strong: #aebbb7;
-  --brand: #E3120B;
-  --brand-2: #B30E09;
-  --brand-text: #B30E09;
+  --brand: #9D1B32;
+  --brand-2: #68101F;
+  --brand-text: #68101F;
   --navy: #101c27;
   --forest: #29584c;
   --teal: #477a76;
@@ -23,8 +33,22 @@
   --shadow: 0 24px 64px rgba(17, 24, 32, 0.10);
   --shadow-soft: 0 12px 34px rgba(17, 24, 32, 0.07);
   --radius: 6px;
-  --font: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
-  --serif: Charter, "Iowan Old Style", Baskerville, Georgia, serif;
+  /* Licensed system-font rendering: do not self-host downloaded Apple fonts. */
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  /* Semantic roles, derived from Apple's HIG principles for web reflow. */
+  --np-type-body-size: 1.0625rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
+  --font: var(--np-type-ui);
+  --serif: var(--np-type-editorial);
   --container: 1320px;
   --measure: 760px;
   --space-1: 0.5rem;

@@ -1,0 +1,83 @@
+name: RTL live public layout-preview proof
+
+on:
+  pull_request:
+    paths:
+      - scripts/verify-live-rtl-origin.mjs
+      - scripts/test-live-rtl-origin.mjs
+      - .github/workflows/rtl-live-origin-acceptance.yml
+  workflow_run:
+    workflows:
+      - Publish verified AWS-backed contact form
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: novapharm-rtl-public-live-proof
+  cancel-in-progress: true
+
+jobs:
+  verify-source:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out proposed verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Require isolated fail-closed public acceptance fixtures
+        run: node --test scripts/test-live-rtl-origin.mjs
+  confirm-contact-deployment:
+    # A successful workflow_run can be a scope-only no-op; inspect actual release jobs.
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      published: ${{ steps.receipt.outputs.published }}
+    steps:
+      - name: Require both AWS Contact build and production deploy receipts
+        id: receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN/jobs?per_page=100")"
+          if printf '%s' "$receipts" | jq -e '([.jobs[] | select(.name == "build-and-verify" and .conclusion == "success")] | length) == 1 and ([.jobs[] | select(.name == "deploy" and .conclusion == "success")] | length) == 1' > /dev/null; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "Actual Contact publication completed. Independent RTL proof is required."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "No successful Contact build+deploy receipt; RTL production proof is not triggered."
+          fi
+
+  verify-public:
+    needs: confirm-contact-deployment
+    # Manual proof is intentional; only a real Contact deploy triggers automatic proof.
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || needs.confirm-contact-deployment.outputs.published == 'true') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current default branch with verifiable release ancestry
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Require tested RTL foundation in the current source history
+        run: git merge-base --is-ancestor 37980381f02e67ad83874770c096cb4e2d93414e HEAD
+      - name: Check live verifier fails closed on missing or downgraded evidence
+        run: node --test scripts/test-live-rtl-origin.mjs
+      - name: Verify published public RTL origin without modifying production
+        run: node scripts/verify-live-rtl-origin.mjs

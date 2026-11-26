@@ -1,6 +1,7 @@
 """Private reconciliation observer regression tests with no real credentials."""
 import importlib.util
 import pathlib
+import re
 import unittest
 
 SOURCE = pathlib.Path(__file__).resolve().parents[1] / "infra/aws/intelligence-billing-reconciliation-observer.py"
@@ -33,14 +34,14 @@ def example(kind="invoice.paid"):
         },
         ("invoices", INVOICE): {
             "object": "invoice", "id": INVOICE, "livemode": True, "status": "paid",
-            "customer": CUSTOMER, "subscription": SUB, "amount_paid": 2499900,
-            "currency": "inr",
+            "customer": CUSTOMER, "subscription": SUB, "amount_paid": 19900,
+            "currency": "gbp",
         },
         ("subscriptions", SUB): {
             "object": "subscription", "id": SUB, "livemode": True, "status": "active",
             "customer": CUSTOMER, "latest_invoice": INVOICE,
             "items": {"data": [{"price": {
-                "id": "price_1Ua7M92U9Y3sX5I2tVhCoFaq", "currency": "inr"
+                "id": "price_1Uati52U9Y3sX5I2RJuYixR9", "currency": "gbp"
             }, "quantity": 1}]},
         },
     }
@@ -54,6 +55,24 @@ class ObserverTests(unittest.TestCase):
             x = receipt()
             x[field] = value
             self.assertFalse(M.approved_quarantine(x))
+
+    def test_gbp_catalog_parity_and_legacy_inr_denial(self):
+        server_catalog = SOURCE.parents[2] / "src/core/intelligence-live-stripe-catalog.mjs"
+        js_ids = set(re.findall(r"price_[A-Za-z0-9]{12,}", server_catalog.read_text(encoding="utf-8")))
+        self.assertEqual(len(js_ids), 5)
+        self.assertEqual(M.APPROVED_PRICES, js_ids)
+        data = example()
+        data["invoices", INVOICE]["currency"] = "inr"
+        self.assertEqual(M.classify_event(receipt(), lambda r, i: data[r, i], lambda _: None),
+                         "paid_invoice_not_verified")
+        data = example()
+        data["subscriptions", SUB]["items"]["data"][0]["price"]["currency"] = "inr"
+        self.assertEqual(M.classify_event(receipt(), lambda r, i: data[r, i], lambda _: None),
+                         "subscription_or_price_not_verified")
+        data = example()
+        data["subscriptions", SUB]["items"]["data"][0]["price"]["id"] = "price_1Ua7M92U9Y3sX5I2tVhCoFaq"
+        self.assertEqual(M.classify_event(receipt(), lambda r, i: data[r, i], lambda _: None),
+                         "subscription_or_price_not_verified")
 
     def test_paid_event_is_not_a_grant(self):
         data = example()

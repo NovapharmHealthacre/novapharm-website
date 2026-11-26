@@ -1,0 +1,64 @@
+/*
+ * NovaPharm web symbol contract, adapted from Apple's HIG principles.
+ * Geometry is independent, web-licensed artwork; do not host SF Symbols assets.
+ * Opt in with .np-symbol, preserving existing branded logos and illustrations.
+ */
+:root {
+  --np-symbol-small: .875rem;
+  --np-symbol-medium: 1.125rem;
+  --np-symbol-large: 1.5rem;
+  --np-symbol-positive: var(--np-color-success, #17613f);
+  --np-symbol-warning: var(--np-color-warning, #855600);
+  --np-symbol-critical: var(--np-color-destructive, #a8202a);
+  --np-symbol-focus: var(--np-color-focus, #0b69ff);
+}
+svg.np-symbol {
+  display: inline-block;
+  inline-size: var(--np-symbol-medium);
+  block-size: var(--np-symbol-medium);
+  flex: none;
+  vertical-align: -.125em;
+  color: inherit;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: center;
+}
+svg.np-symbol[data-scale="small"] { inline-size: var(--np-symbol-small); block-size: var(--np-symbol-small); }
+svg.np-symbol[data-scale="large"] { inline-size: var(--np-symbol-large); block-size: var(--np-symbol-large); }
+svg.np-symbol[data-weight="light"] { stroke-width: 1.5; }
+svg.np-symbol[data-weight="strong"] { stroke-width: 2.25; }
+svg.np-symbol[data-tone="positive"] { color: var(--np-symbol-positive); }
+svg.np-symbol[data-tone="warning"] { color: var(--np-symbol-warning); }
+svg.np-symbol[data-tone="critical"] { color: var(--np-symbol-critical); }
+svg.np-symbol[data-tone="accent"] { color: var(--np-color-accent-strong, var(--nph-accent, var(--brand, #68101F))); }
+svg.np-symbol[data-variant="filled"] [data-symbol-enclosure] { fill: currentColor; }
+svg.np-symbol[data-variant="filled"] [data-symbol-center] { stroke: var(--np-symbol-inverse, #fff); }
+/* Match functional icons to text, never to a separately hardcoded icon colour. */
+:where(a, button, label) > svg.np-symbol { vertical-align: middle; }
+.np-icon-control {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  touch-action: manipulation;
+}
+.np-icon-control:focus-visible {
+  outline: 3px solid var(--np-symbol-focus);
+  outline-offset: 2px;
+}
+.np-icon-control:disabled { cursor: not-allowed; }
+/* Deliberate feedback only: a pending refresh may rotate; no perpetual decoration. */
+svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
+@keyframes np-symbol-working { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  svg.np-symbol--busy { animation: none; }
+}
+@media (forced-colors: active) {
+  svg.np-symbol { color: CanvasText; forced-color-adjust: auto; }
+  .np-icon-control:focus-visible { outline-color: Highlight; }
+}

@@ -93,10 +93,16 @@ test("server Python remains parsable without importing boto3",()=>{
 test("Bag markup remains exactly matched to generator, including account entry",()=>{
  const html=read("products/nutraxin/bag/index.html");
  const source=read("scripts/apply-corporate-product-discipline.mjs");
- const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const rtlPublished=html.includes('<script src="/assets/js/rtl-localization.js"></script>');
+ const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag(?: lang="en-GB" data-np-untranslated)?>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const actual=generator?.split("  return \`")[1]?.split("\`;")[0];
- assert.equal(actual,expected);
+ assert.ok(expected, "RTL release must retain the canonical Bag landmark and its English-language boundary");
+ const approved=rtlPublished
+   ? actual?.replace('data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>')
+   : actual;
+ assert.equal(expected,approved,
+   "Checked-in and finalized Bag HTML must match their authorized generator states");
  assert.match(expected,/\/products\/nutraxin\/account\//);
 });
 
@@ -112,4 +118,68 @@ test("password recovery stays with Cognito Managed Login and never exposes passw
  assert.doesNotMatch(html,/type="password"|autocomplete="new-password"|client_secret/);
  assert.ok(html.includes('href="/account-application/"'));
  assert.doesNotMatch(html,/data-admin-approve|data-business-role|data-wholesale-order/);
+});
+
+test("consumer onboarding is optional, role-bound and privacy-discoverable",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const css=read("assets/css/nutraxin-consumer-account.css");
+ const publicPanel=html.split('data-nx-account-public>')[1]?.split('data-nx-account-private')[0];
+ const privatePanel=html.split('data-nx-account-private hidden>')[1]?.split('data-nx-account-status')[0];
+ assert.ok(publicPanel?.includes("<details class=\"nx-account-help\">"));
+ assert.ok(privatePanel?.includes("<details class=\"nx-account-help\">"));
+ assert.match(publicPanel,/You can browse products and use the guest bag without registering/);
+ assert.match(publicPanel,/email and complete any required security checks/i);
+ assert.match(privatePanel,/privacy and data-rights information/);
+ assert.match(html,/href="#main">Skip to account content/);
+ assert.match(css,/\.nx-account-help summary:focus-visible/);
+ assert.match(css,/\.nx-skip-link:focus/);
+ assert.doesNotMatch(publicPanel,/data-admin-approve|data-wholesale-order|navigator\.credentials/);
+ const portal=read("portal/index.html");
+ assert.match(portal,/<details class="portal-account-help">/);
+ assert.match(portal,/This public website never asks for a portal username/);
+ const business=read("account-application/index.html");
+ const siteGenerator=read("scripts/apply-corporate-product-discipline.mjs");
+ const siteStyles=read("assets/css/corporate-product-discipline.css");
+ assert.match(business,/<details class="npd-account-guidance">/);
+ assert.match(siteGenerator,/<details class="npd-account-guidance">/);
+ assert.match(siteStyles,/\.npd-account-guidance summary:focus-visible/);
+});
+
+
+test("customer account provides guest recovery and human-readable order states",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ assert.match(html,/href="\/products\/track\/"/);
+ assert.match(html,/mailto:support@novapharmhealthcare\.com/);
+ assert.match(js,/PAID:"Payment confirmed"/);
+ assert.match(js,/Object\.hasOwn\(orderStatusLabels,o\.status\)/);
+ assert.doesNotMatch(js,/state\.textContent=o\.status/);
+});
+
+
+test("verified personal customers can refresh orders and copy a reference without putting it into a URL",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ assert.match(html,/data-nx-account-refresh disabled/);
+ assert.match(js,/await showAuthenticated\(config,session\)/);
+ assert.match(js,/refresh\.disabled=true/);
+ assert.match(js,/navigator\.clipboard\.writeText\(o\.orderId\)/);
+ assert.match(js,/Payment confirmed\. Delivery details require separate shipping confirmation/);
+ assert.match(js,/showOrders\(null\);status\("Refreshing your orders/);
+ assert.match(js,/accountOrderReference\.test\(o\.orderId\)/);
+});
+
+
+test("retail account surfaces Google, passkeys, registration and guest support without collecting credentials",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ const css=read("assets/css/nutraxin-consumer-account.css");
+ for(const action of ["signin","google","passkey","signup","recover","enrol-passkey"])assert.ok(html.includes("data-nx-account-"+action));
+ assert.match(html,/Care, without complications\./);
+ assert.match(html,/novapharm-healthcare-logo\.svg/);
+ assert.match(css,/\.nx-account-foot\{[^}]*#F8F7F3/);
+ assert.ok(js.includes('mode==="enrol-passkey"?"/passkeys/add"'));
+ assert.ok(js.includes('url.searchParams.set("identity_provider","Google")'));
+ assert.ok(js.includes('url.searchParams.set("prompt","login")'));
+ assert.doesNotMatch(html,/type="password"|client_secret/);
 });

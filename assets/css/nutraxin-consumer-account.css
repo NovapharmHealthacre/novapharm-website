@@ -1,21 +1,21 @@
 /* Nutraxin consumer account. Original, restrained product-first visual system. */
-:root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f5f5f7;color:#1d1d1f}
+:root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#FFFFFF;color:#0B0B0E}
 *{box-sizing:border-box}body{margin:0;font-size:16px;line-height:1.5}a{color:inherit}
-.nx-account-nav{background:#fff;border-bottom:1px solid #e7e7e9}
+.nx-account-nav{background:#FFFFFF;border-bottom:1px solid #DEDCD5}
 .nx-account-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1120px;margin:auto;padding:18px 28px}
 .nx-account-brand{text-decoration:none;font-size:18px;font-weight:650;letter-spacing:normal}
 .nx-account-nav-links{display:flex;gap:25px}.nx-account-nav-links a{font-size:13px;text-decoration:none;color:#4b4b50}
-.nx-account-nav-links a:focus-visible,.nx-account-link:focus-visible,.nx-account-button:focus-visible{outline:3px solid #b5b5be;outline-offset:4px}
+.nx-account-nav-links a:focus-visible,.nx-account-link:focus-visible,.nx-account-button:focus-visible{outline:3px solid #0B0B0E;outline-offset:4px}
 .nx-account-main{max-width:720px;padding:86px 28px 108px;margin:auto;text-align:center}
-.nx-account-eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:700;color:#8f1820;margin:0 0 16px}
+.nx-account-eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:700;color:#9D1B32;margin:0 0 16px}
 .nx-account-main h1{font-weight:650;font-size:clamp(40px,7vw,66px);letter-spacing:normal;line-height:1.05;margin:0 0 22px}
 .nx-account-intro{font-size:19px;line-height:1.6;letter-spacing:normal;color:#56565c;margin:0 auto 40px;max-width:540px}
-.nx-account-panel{border:1px solid #e6e6e9;border-radius:24px;background:#fff;box-shadow:0 20px 65px rgba(13,13,22,.06);padding:44px 40px;text-align:left}
+.nx-account-panel{border:1px solid #DEDCD5;border-radius:24px;background:#FFFFFF;box-shadow:none;padding:44px 40px;text-align:left}
 .nx-account-panel h2{font-size:25px;line-height:1.2;letter-spacing:normal;margin:0 0 12px}
 .nx-account-panel p{color:#5e5e62;font-size:15px;margin:0 0 20px}
 .nx-account-actions{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0 15px}
-.nx-account-button{border:1px solid #161617;border-radius:999px;padding:12px 22px;background:#161617;color:#fff;font:inherit;font-size:14px;font-weight:650;cursor:pointer;min-height:48px}
-.nx-account-button.secondary{background:#fff;color:#161617}
+.nx-account-button{border:1px solid #0B0B0E;border-radius:999px;padding:12px 22px;background:#0B0B0E;color:#FFFFFF;font:inherit;font-size:14px;font-weight:650;cursor:pointer;min-height:48px}
+.nx-account-button.secondary{background:#FFFFFF;color:#0B0B0E}
 .nx-account-button:disabled{opacity:.48;cursor:not-allowed}
 .nx-account-status{font-size:13px;line-height:1.5;color:#55565a;min-height:22px}
 .nx-account-panel [hidden]{display:none!important}
@@ -23,7 +23,86 @@
 .nx-account-order{display:flex;justify-content:space-between;gap:15px;padding:16px 0;border-top:1px solid #eee;font-size:13px}
 .nx-account-order strong{font-weight:600;overflow-wrap:anywhere}.nx-account-order span{color:#545458}
 .nx-account-foot{margin:24px 0 0;color:#6d6d72;font-size:12px;text-align:center}
-.nx-account-link{color:#1655a4;text-underline-offset:3px}
+.nx-account-link{color:#0B0B0E;text-underline-offset:3px}
 .nx-account-footer{text-align:center;padding:28px;color:#6e6e72;font-size:12px}
 @media(max-width:560px){.nx-account-nav-inner{padding:17px 18px}.nx-account-nav-links{gap:14px}.nx-account-main{padding:63px 18px 75px}.nx-account-panel{padding:28px 22px;border-radius:20px}.nx-account-actions{flex-direction:column}.nx-account-button{width:100%}.nx-account-intro{font-size:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Optional, contextual account help; accessible without authentication. */
+.nx-skip-link{position:absolute;inset-inline-start:18px;top:-100px;padding:12px 18px;z-index:99;background:#FFFFFF;color:#0B0B0E}
+.nx-skip-link:focus{top:12px;outline:3px solid #0B0B0E}
+.nx-account-help{border:1px solid #DEDCD5;border-radius:14px;margin:22px 0 16px;text-align:start;background:#FFFFFF}
+.nx-account-help summary{cursor:pointer;min-height:48px;padding:15px 17px;font-weight:600;color:#0B0B0E}
+.nx-account-help summary:focus-visible,.nx-account-help a:focus-visible{outline:3px solid #0B0B0E;outline-offset:3px}
+.nx-account-help-body{padding:0 18px 18px;color:#55565e;font-size:14px;line-height:1.65}
+.nx-account-help-body p{font-size:14px;line-height:1.65;margin:10px 0}
+.nx-account-help-body ol{padding-inline-start:20px;margin:10px 0}
+.nx-account-help-body li+li{margin-top:7px}
+.nx-account-help-body a{color:#0B0B0E;text-underline-offset:3px}
+
+/* Personal customer orders: clear hierarchy, accessible actions, no progress inferred. */
+.nx-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:24px}
+.nx-order-heading h2{margin:0}
+.nx-account-order{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:20px 0;border-color:#DEDCD5;font-size:14px}
+.nx-account-order strong{color:#0B0B0E;overflow-wrap:anywhere}
+.nx-account-order span{font-weight:600;color:#0B0B0E}
+.nx-account-order .nx-order-guidance{margin:0;color:#54545A;font-size:14px;line-height:1.6}
+.nx-order-copy{justify-self:start;border:1px solid #DEDCD5;border-radius:8px;background:#FFFFFF;color:#9D1B32;font:inherit;min-height:44px;padding:8px 12px;cursor:pointer}
+.nx-order-copy:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.nx-order-help{margin-top:16px!important}
+.nx-account-panel .nx-refresh-orders{min-height:44px}
+
+/* NovaPharm customer account: approved white-first palette and quiet hierarchy. */
+body{min-height:100vh;display:flex;flex-direction:column;background:#FFFFFF;color:#0B0B0E}
+.nx-account-nav-inner{max-width:1200px;padding:18px 28px}
+.nx-account-brand{display:inline-flex;align-items:center;min-width:0}
+.nx-account-brand img{display:block;width:clamp(150px,25vw,240px);height:auto}
+.nx-account-nav-links{flex-shrink:0}.nx-account-nav-links a{color:#0B0B0E}
+.nx-account-main{width:100%;max-width:680px;padding:56px 28px 36px;flex:1}
+.nx-account-eyebrow{margin-bottom:14px}
+.nx-account-main h1{font-size:clamp(34px,5.4vw,52px);font-weight:600;letter-spacing:normal;margin-bottom:14px}
+.nx-account-intro{font-size:17px;margin-bottom:26px;color:#54545A}
+.nx-account-panel{max-width:480px;margin-inline:auto;padding:24px 28px;border-radius:12px;border:1px solid #DEDCD5;box-shadow:none}
+.nx-account-primary-actions{display:grid;gap:12px;margin:0 0 16px}
+.nx-account-button{border-radius:9px;min-height:48px;font-size:15px;font-weight:550;background:#0B0B0E;border-color:#0B0B0E}
+.nx-account-button.secondary{border-color:#DEDCD5;color:#0B0B0E;background:#FFFFFF}
+.nx-account-button:not(:disabled):hover{background:#303033}
+.nx-account-button.secondary:not(:disabled):hover{background:#F8F7F3}
+.nx-account-method-note{font-size:13px!important;line-height:1.55;color:#54545A!important;margin:0 0 12px!important;text-align:center}
+.nx-account-text-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px}
+.nx-account-text-button{background:none;border:0;padding:8px;color:#0B0B0E;font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:3px;min-height:44px;cursor:pointer}
+.nx-account-text-button:disabled{opacity:.48;cursor:not-allowed}
+.nx-account-text-button:focus-visible,.nx-account-nav a:focus-visible{outline:2px solid #0B0B0E;outline-offset:3px}
+.nx-account-status{margin:12px 0 0!important;min-height:0;text-align:center;font-size:13px!important}
+.nx-account-status:empty{display:none}
+.nx-account-foot{max-width:480px;margin:24px auto 0;padding-top:22px;border-top:1px solid #DEDCD5;color:#54545A;font-size:14px}
+.nx-account-foot h2{color:#0B0B0E;font-size:17px;font-weight:600;margin:0 0 7px}
+.nx-account-foot p{margin:7px 0}
+.nx-account-foot a,.nx-account-footer a{color:#0B0B0E;text-underline-offset:3px}
+.nx-account-footer{border-top:1px solid #DEDCD5;padding:18px 20px;background:#FFFFFF}
+.nx-account-security{padding:16px 0;border-block:1px solid #DEDCD5;margin:16px 0}
+.nx-account-security h3{margin:0 0 6px;font-size:17px;font-weight:600}
+.nx-account-security p{margin:0 0 10px}
+@media(max-width:560px){.nx-account-main{padding:38px 18px 28px}.nx-account-nav-inner{padding:14px 18px;gap:12px}.nx-account-nav-links{gap:12px}.nx-account-panel{padding:20px 18px}.nx-account-intro{margin-bottom:20px}.nx-account-text-actions{gap:0 8px}.nx-account-footer{padding:14px 18px}}
+
+/* Approved Aesop meets Apple account refinement: a quiet, unboxed entry and a porcelain service band. */
+.nx-account-main{padding:42px 24px 32px;max-width:760px}
+.nx-account-main h1{font-size:clamp(36px,5vw,54px);margin-bottom:12px}
+.nx-account-intro{margin-bottom:26px}
+.nx-account-panel{max-width:440px;border:0;border-radius:0;padding:0 16px;background:#FFFFFF}
+.nx-account-primary-actions{gap:12px;margin-bottom:14px}
+.nx-account-button{border-radius:6px;min-height:52px;transition:background-color .18s ease,border-color .18s ease}
+.nx-account-button.secondary{border-color:#DEDCD5}
+.nx-account-create{width:100%;border-color:#0B0B0E!important}
+.nx-account-new{display:flex;align-items:center;gap:14px;color:#54545A;font-size:13px;margin:22px 0 14px;white-space:nowrap}
+.nx-account-new::before,.nx-account-new::after{content:"";height:1px;background:#DEDCD5;flex:1}
+.nx-account-text-actions{margin-top:6px}
+.nx-account-help{margin:6px 0 0;border:0;border-top:1px solid #DEDCD5;border-radius:0}
+.nx-account-help summary{font-size:14px;padding:12px 0;min-height:44px;text-align:center}
+.nx-account-foot{width:100%;max-width:none;margin:0;padding:26px 20px 30px;background:#F8F7F3;border-top:1px solid #DEDCD5;text-align:center}
+.nx-account-foot h2{font-size:20px;font-weight:600}
+.nx-account-guest-links{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;margin:10px auto 0;max-width:720px}
+.nx-account-guest-links a{display:inline-flex;align-items:center;min-height:44px}
+.nx-account-footer{padding:16px 20px}
+@media(max-width:560px){.nx-account-main{padding:32px 18px 24px}.nx-account-panel{padding:0 4px}.nx-account-guest-links{gap:0 16px}.nx-account-foot{padding:22px 18px}}
+@media(prefers-reduced-motion:reduce){.nx-account-button{transition:none}}

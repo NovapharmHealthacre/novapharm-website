@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out the exact source under review
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
@@ -54,11 +54,23 @@ jobs:
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
 
+      - name: Verify responsive repairs and content-bound CSS publication
+        run: |
+          node --test scripts/test-apple-hig-census.mjs
+          node --test scripts/test-contact-focus-contrast.mjs
+          node --test scripts/test-public-motion-preferences.mjs
+          node --test scripts/test-corporate-responsive-repairs.mjs
+          node --test scripts/test-public-visual-versioning.mjs
+
       - name: Build the deterministic public-only visual release
         run: npm run build:public-only
 
+      - name: Census every generated static HTML page for HIG source hygiene
+        run: node scripts/audit-website-hig-source.mjs
+
       - name: Validate the public implementation
         run: |
+          node --test scripts/test-insights-shared-navigation.mjs
           npm run visual:validate
           npm run visual:modules
           npm run test:owner-corrections:public-only

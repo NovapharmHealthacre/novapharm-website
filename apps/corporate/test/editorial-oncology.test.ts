@@ -72,7 +72,17 @@ test("Next.js Oncology stylesheet remains exactly in sync with the approved stat
     .replaceAll('body[data-page="oncology"] main.npoc-page', ".npoc-page")
     .replaceAll('body[data-page="oncology"] .npoc-page', ".npoc-page")
     .replace(/body\[data-page="oncology"\] \.site-header\.npd-header[^{]*\{[^}]*\}\s*/g, "");
-  assert.ok(css.includes(matchingNextSelectors), "Next.js must inherit the exact owner-approved Oncology visual contract");
+  const referenceMarker = "/* Owner reference SS2 | 12 November 2026 | full-width hero and three-card composition */";
+  const matchedSections = matchingNextSelectors.split(referenceMarker);
+  assert.equal(matchedSections.length, 2, "Authoritative static Oncology CSS must have one SS2 refinement block");
+  assert.ok(
+    css.includes(matchedSections[0].trimEnd()),
+    "Next.js must preserve the complete original owner-approved Oncology visual contract",
+  );
+  assert.ok(
+    css.includes(referenceMarker + matchedSections[1].trimEnd()),
+    "Next.js must preserve every rule of the new owner-reference hero and three-card refinement",
+  );
   assert.match(component, /A Hope for\{" "\}<br \/>Tomorrow\./);
   assert.doesNotMatch(component, /Oncology demands|oncology-vial-handling/);
 });

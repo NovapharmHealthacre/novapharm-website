@@ -1,0 +1,22 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "App.tsx",
+    "ProtectedFdaGateway.ts",
+    "NativeFdaOidcCore.ts",
+    "index.ts",
+    "../../apps/portal/data/intelligence-workspaces.ts",
+    "../../apps/portal/data/nova-ml-modules.ts",
+    "../../docs/intelligence/global-pharma-sources-20261117.json",
+    "CountryDirectoryScreen.tsx",
+    "../../docs/intelligence/country-101-client-catalog-20261118.json",
+    "ScienceResearchMobile.tsx",
+    "../../docs/intelligence/science-research-capabilities-20261118.json",
+    "../../docs/intelligence/openai-science-methods-20261118.json"
+  ]
+}

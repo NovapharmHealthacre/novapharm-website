@@ -1,0 +1,42 @@
+name: Portal mobile DOM-order and Lighthouse safety contracts
+on:
+  pull_request:
+    paths:
+      - 'apps/portal/components/dashboard.tsx'
+      - 'apps/portal/components/customer-commerce-workspace.tsx'
+      - 'apps/portal/components/module-presentations.module.css'
+      - 'apps/portal/app/**'
+      - 'scripts/test-portal-customer-dom-order.mjs'
+      - 'scripts/lighthouse-transient-navigation.mjs'
+      - 'scripts/test-lighthouse-transient-navigation.mjs'
+      - '.github/workflows/portal-mobile-dom-order-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/portal/components/dashboard.tsx'
+      - 'apps/portal/components/customer-commerce-workspace.tsx'
+      - 'apps/portal/components/module-presentations.module.css'
+      - 'apps/portal/app/**'
+      - 'scripts/test-portal-customer-dom-order.mjs'
+      - 'scripts/lighthouse-transient-navigation.mjs'
+      - 'scripts/test-lighthouse-transient-navigation.mjs'
+      - '.github/workflows/portal-mobile-dom-order-contract.yml'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  source-acceptance:
+    name: Authenticated portal mobile DOM and Lighthouse retry source gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Verify the customer hub precedes its visual heading and contains no protected fetch
+        run: node --test scripts/test-portal-customer-dom-order.mjs
+      - name: Verify Lighthouse retries only missing navigation traces without relaxing audits
+        run: node --test scripts/test-lighthouse-transient-navigation.mjs

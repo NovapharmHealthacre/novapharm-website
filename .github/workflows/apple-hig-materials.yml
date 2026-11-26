@@ -1,0 +1,38 @@
+name: Apple HIG Materials web contract
+
+on:
+  pull_request:
+    paths:
+      - "assets/css/novapharm-hig-materials.css"
+      - "assets/css/novapharm.css"
+      - "assets/css/novapharm.bundle.css"
+      - "apps/**/app/layout.tsx"
+      - "packages/design-system/src/**"
+      - "scripts/build-css-bundle.mjs"
+      - "apps/nutraxin-customer-api/index.py"
+      - "scripts/test-apple-hig-materials.mjs"
+      - ".github/workflows/apple-hig-materials.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/css/novapharm-hig-materials.css"
+      - "assets/css/novapharm.bundle.css"
+      - "packages/design-system/src/**"
+      - "apps/nutraxin-customer-api/index.py"
+      - "scripts/test-apple-hig-materials.mjs"
+jobs:
+  materials-contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "22"
+      - name: Verify semantics, fallbacks and app wiring
+        run: node scripts/test-apple-hig-materials.mjs
+      - name: Check regenerated CSS bundle matches source
+        run: |
+          node scripts/build-css-bundle.mjs
+          git diff --exit-code -- assets/css/novapharm.bundle.css

@@ -1,0 +1,55 @@
+name: Apple HIG Typography web contract
+
+on:
+  pull_request:
+    paths:
+      - "assets/css/**"
+      - "apps/**/*.css"
+      - "packages/design-system/src/**"
+      - "packages/design-system/test/**"
+      - "scripts/test-official-typography-contract.mjs"
+      - "scripts/build-css-bundle.mjs"
+      - "docs/design/novapharm-typography.md"
+      - "package.json"
+      - ".github/workflows/apple-hig-typography.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/css/**"
+      - "apps/**/*.css"
+      - "packages/design-system/src/**"
+      - "packages/design-system/test/**"
+      - "scripts/test-official-typography-contract.mjs"
+      - "scripts/build-css-bundle.mjs"
+      - "docs/design/novapharm-typography.md"
+      - "package.json"
+      - ".github/workflows/apple-hig-typography.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-hig-typography-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typography-contract:
+    name: Typography roles, legibility and CSS parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Enforce cross-estate, zoom and font-licensing contract
+        run: node scripts/test-official-typography-contract.mjs
+      - name: Verify reproducible public typography bundle
+        run: |
+          node scripts/build-css-bundle.mjs
+          git diff --exit-code -- assets/css/novapharm.bundle.css

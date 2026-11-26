@@ -14,9 +14,9 @@ export function activateAccountRequestHtml(html, origin) {
   }
   const live = `<div class="npd-managed-control npd-account-request-panel">
   <div class="npd-account-request-heading">
-    <p class="npd-eyebrow">01 / Request access</p>
-    <h2>Start with your business.</h2>
-    <p>A simple first step. Tell us who you are, receive a reference and let our team review eligibility. No password, payment or licence upload is requested here.</p>
+    <p class="npd-eyebrow">01 / Business interest</p>
+    <h2>Register business interest</h2>
+    <p>Share basic business details for eligibility review. No password, payment or licence upload is requested here.</p>
   </div>
   <form data-live-account-request-form data-api-origin="${origin}" autocomplete="on">
     <div class="npd-account-request-grid">
@@ -35,9 +35,9 @@ export function activateAccountRequestHtml(html, origin) {
       <label>Company number <span>(optional)</span><input name="companyNumber" type="text" maxlength="40" autocomplete="off"></label>
     </div>
     <div class="npd-account-request-trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
-    <label class="npd-account-request-consent"><input type="checkbox" name="privacyAcknowledgement" value="yes" required><span>I have read the <a href="/legal/privacy/#business-enquiries">business enquiry privacy notice</a>. I agree to being contacted about this account request, not marketing.</span></label>
+    <label class="npd-account-request-consent"><input type="checkbox" name="privacyAcknowledgement" value="yes" required><span>I have read the <a href="/legal/privacy/#business-enquiries">business enquiry privacy notice</a>. I agree to being contacted about this business enquiry, not marketing.</span></label>
     <label class="npd-account-request-consent"><input type="checkbox" name="safetyConfirmation" value="yes" required><span>I confirm I have not included patient information, an adverse-event report or other confidential documents.</span></label>
-    <button class="npd-button npd-button-primary npd-account-request-submit" type="submit">Request a business account</button>
+    <button class="npd-button npd-button-primary npd-account-request-submit" type="submit">Register business interest</button>
     <p class="npd-account-request-status" data-account-request-status role="status" aria-live="polite"></p>
   </form>
   <p class="npd-account-request-footnote">Submissions are stored in NovaPharm's encrypted AWS business enquiry inbox for up to 30 days. A request does not activate a trading account, establish credit terms, authorise regulated-medicine supply or permit ordering. Following review, eligible applicants will be invited to complete secure verification and account activation.</p>
@@ -45,8 +45,8 @@ export function activateAccountRequestHtml(html, origin) {
 </div>`;
   const revised = html.slice(0, start) + live + html.slice(end + "</div>".length);
   const out = revised
-    .replace("An account is approved through evidence, not created by a public form.", "Your NovaPharm account starts here.")
-    .replace("NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access.", "Request a business account in minutes. Our team reviews eligibility before regulated trading, access or ordering is enabled.")
+    .replace("An account is approved through evidence, not created by a public form.", "Register interest in a business account.")
+    .replace("NovaPharm separates business interest, qualification, private evidence, review, approval, identity provisioning and portal access.", "Tell us about your business. NovaPharm reviews eligibility before any private application invitation. Registering interest does not create an account or grant portal access.")
     .replace("</head>", '<link rel="stylesheet" href="/assets/css/account-request.css"></head>')
     .replace("</body>", '<script src="/assets/js/account-request-production.js" defer></script></body>');
   if (!out.includes('data-live-account-request-form') ||
@@ -55,6 +55,9 @@ export function activateAccountRequestHtml(html, origin) {
       !out.includes('data-api-origin="' + origin + '"') ||
       !out.includes('src="/assets/js/account-request-production.js"') ||
       out.includes("No application data is collected here.") ||
+      !out.includes("Register interest in a business account.") ||
+      !out.includes("Register business interest</button>") ||
+      out.includes("Your NovaPharm account starts here.") ||
       out.includes('type="password"') || out.includes('type="file"')) {
     throw Error("Account request release transformation failed review");
   }

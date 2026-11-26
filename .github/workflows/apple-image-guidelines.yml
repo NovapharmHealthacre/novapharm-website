@@ -1,0 +1,59 @@
+name: Apple HIG image presentation contract
+
+on:
+  pull_request:
+    paths:
+      - 'assets/css/sitewide-layout-integrity.css'
+      - 'assets/css/products-editorial.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-apple-image-guidelines.mjs'
+      - 'scripts/validate-apple-image-estate.mjs'
+      - 'index.html'
+      - 'about/**'
+      - 'capabilities/**'
+      - 'leadership/**'
+      - 'oncology/**'
+      - 'products/**'
+      - '.github/workflows/apple-image-guidelines.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/css/sitewide-layout-integrity.css'
+      - 'assets/css/products-editorial.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-apple-image-guidelines.mjs'
+      - 'scripts/validate-apple-image-estate.mjs'
+      - 'index.html'
+      - 'about/**'
+      - 'capabilities/**'
+      - 'leadership/**'
+      - 'oncology/**'
+      - 'products/**'
+      - '.github/workflows/apple-image-guidelines.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  image-layout-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Install locked dependencies for the complete image inventory
+        run: npm ci --ignore-scripts
+      - name: Verify image layout, intrinsic proportions and product containment
+        run: node --test scripts/test-apple-image-guidelines.mjs
+      - name: Audit all public image placements and raster asset metadata
+        run: node scripts/validate-apple-image-estate.mjs
+      - name: Preserve estate-wide audit evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-image-estate-${{ github.sha }}
+          path: artifacts/apple-images/estate-audit.json
+          if-no-files-found: warn
+          retention-days: 14

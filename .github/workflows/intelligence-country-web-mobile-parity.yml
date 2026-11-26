@@ -1,0 +1,50 @@
+name: Intelligence 101-country web iOS Android source-candidate parity
+
+on:
+  pull_request:
+    paths:
+      - 'docs/intelligence/global-pharma-sources-20261117.json'
+      - 'docs/intelligence/country-101-scope-proposal-20261118.json'
+      - 'docs/intelligence/country-101-client-catalog-20261118.json'
+      - 'docs/intelligence/owner-national-pharma-source-brief-20261120.json'
+      - 'docs/intelligence/country-101-new-24-publisher-research-20261118.json'
+      - 'scripts/test-intelligence-24-publisher-research.mjs'
+      - 'src/core/intelligence-country-101-proposed-ledger.mjs'
+      - 'scripts/generate-intelligence-country-client-catalog.mjs'
+      - 'scripts/test-intelligence-country-client-catalog.mjs'
+      - 'apps/portal/components/country-source-coverage.tsx'
+      - 'apps/portal/components/country-source-coverage.module.css'
+      - 'apps/portal/components/country-source-coverage.module.css.d.ts'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'native/novapharm-intelligence-mobile/App.tsx'
+      - 'native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx'
+      - '.github/workflows/intelligence-country-web-mobile-parity.yml'
+      - 'scripts/aws/contact-release-routing.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cross-platform-source-candidates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    name: 101 countries consistent across protected web and offline iOS Android
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Validate immutable candidate catalogue without network or data admission
+        run: |
+          node --check scripts/generate-intelligence-country-client-catalog.mjs
+          node --check scripts/test-intelligence-country-client-catalog.mjs
+          node --check scripts/test-intelligence-24-publisher-research.mjs
+          node scripts/generate-intelligence-country-client-catalog.mjs --check
+          node --test scripts/test-intelligence-country-client-catalog.mjs scripts/test-intelligence-24-publisher-research.mjs scripts/test-intelligence-country-101-proposed-ledger.mjs scripts/aws/contact-release-routing.test.mjs

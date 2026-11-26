@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
+import { personIdForSlug, VISHAL_PERSON_ID } from "../src/seo/person-identity.mjs";
 import {
   INDEXNOW_KEY,
   ORGANIZATION_ID,
@@ -27,11 +28,14 @@ const articles = readdirSync(join(root, "src/content/insights"))
   .map((file) => JSON.parse(source(`src/content/insights/${file}`)));
 const nutraxinProducts = JSON.parse(source("apps/corporate/data/nutraxin-product-register.json")).products;
 const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !retiredPublicFiles.has(`${slug}/index.html`) && !(publicOnly && slug === "account-application"));
+const nutraxinCategories = JSON.parse(source("assets/data/nutraxin-uk-category-intents.json")).categories;
 const publicFiles = [
   ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`),
+  ...nutraxinCategories.map((category) => `products/nutraxin/${category.slug}/index.html`),
+  "our-story/index.html",
   "products/esco/index.html"
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
@@ -90,6 +94,21 @@ for (const file of files) {
   records.push({ file, route, canonical, title, description });
 }
 
+
+for (const category of nutraxinCategories) {
+  const file = "products/nutraxin/" + category.slug + "/index.html";
+  if (!existsSync(join(root, file))) continue;
+  const html = source(file);
+  const schema = parseSchemas(html, file);
+  if (schema.some(item => ["Product", "Offer"].includes(item["@type"]))) fail(file + " must not publish duplicate offers");
+  const list = schema.find(item => item["@type"] === "ItemList");
+  if (list?.numberOfItems !== category.products.length) fail(file + " item count mismatch");
+  if ((html.match(/<link\b[^>]*rel="stylesheet"[^>]*href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"[^>]*>/g) || []).length !== 1) fail(file + " must load exactly one category retail stylesheet");
+  if (!html.includes('class="npd-main nx-category-page"') || !html.includes('class="nx-category-grid"')) fail(file + " missing dedicated category retail layout");
+  if (!source("products/nutraxin/index.html").includes('href="/products/nutraxin/' + category.slug + '/"')) fail(file + " is not linked from Nutraxin collection");
+  for (const slug of category.products) if (!html.includes('href="/products/nutraxin/' + slug + '/"')) fail(file + " missing product link " + slug);
+}
+
 if (!unique(records.map((record) => record.title))) fail("public titles are not unique");
 if (!unique(records.map((record) => record.description))) fail("public descriptions are not unique");
 if (!unique(records.map((record) => record.canonical))) fail("public canonical URLs are not unique");
@@ -107,9 +126,10 @@ for (const person of leadership) {
   const schemas = parseSchemas(source(file), file);
   const profile = schemas.find((schema) => schema["@type"] === "ProfilePage");
   const personSchema = schemas.find((schema) => schema["@type"] === "Person");
-  const personId = `${SITE_URL}/leadership/${person.slug}/#person`;
+  const personId = personIdForSlug(person.slug);
   if (profile?.mainEntity?.["@id"] !== personId) fail(`${file} ProfilePage does not identify its canonical Person`);
   if (personSchema?.["@id"] !== personId || personSchema?.name !== person.displayName) fail(`${file} Person entity uses an inconsistent name or id`);
+  if (person.slug === "vishal-chakravarty" && personSchema?.["@id"] !== VISHAL_PERSON_ID) fail("Vishal must reuse the personal canonical Person identifier");
   if (personSchema?.worksFor?.["@id"] !== ORGANIZATION_ID) fail(`${file} Person entity is not connected to NovaPharm`);
   if (person.image && typeof personSchema?.image !== "object") fail(`${file} lacks an ImageObject for the approved portrait`);
 }
@@ -126,7 +146,7 @@ for (const article of articles) {
   const articleSchema = articleSchemas[0];
   if (articleSchema.publisher?.["@id"] !== ORGANIZATION_ID) fail(`${file} article publisher is not NovaPharm`);
   const leader = leadership.find((person) => person.displayName === article.author || person.name === article.author);
-  const expectedAuthorId = leader ? `${SITE_URL}/leadership/${leader.slug}/#person` : EDITORIAL_TEAM_ID;
+  const expectedAuthorId = leader ? personIdForSlug(leader.slug) : EDITORIAL_TEAM_ID;
   if (articleSchema.author?.["@id"] !== expectedAuthorId) fail(`${file} structured author does not match the visible byline`);
   if (!articleSchema.datePublished || !articleSchema.dateModified) fail(`${file} lacks accurate publication dates`);
   if (!articleSchema.wordCount || !articleSchema.timeRequired) fail(`${file} lacks article depth metadata`);
@@ -135,16 +155,31 @@ for (const article of articles) {
 }
 
 const robots = source("robots.txt");
-for (const crawler of ["Googlebot", "Bingbot", "OAI-SearchBot", "GPTBot", "Google-Extended"]) {
+for (const crawler of ["Googlebot", "Bingbot", "OAI-SearchBot", "Claude-SearchBot", "PerplexityBot", "Applebot", "GPTBot", "Google-Extended"]) {
   if (!robots.includes(`User-agent: ${crawler}`)) fail(`robots.txt lacks an explicit ${crawler} policy`);
 }
 if (!/User-agent: OAI-SearchBot[\s\S]*?Allow: \//.test(robots)) fail("OAI-SearchBot is not allowed to discover public content");
+for (const crawler of ["Claude-SearchBot", "PerplexityBot", "Applebot"]) {
+  const rule = new RegExp("User-agent: " + crawler + "\\nAllow: /\\n");
+  if (!rule.test(robots)) fail(crawler + " cannot discover public content");
+}
 if (!/User-agent: GPTBot[\s\S]*?Disallow: \//.test(robots)) fail("GPTBot training policy is not explicitly separated");
 for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xml"]) {
   if (!existsSync(join(root, sitemap))) fail(`missing ${sitemap}`);
   if (!robots.includes(`Sitemap: ${SITE_URL}/${sitemap}`)) fail(`robots.txt does not reference ${sitemap}`);
 }
 
+const aiGuide = source("llms.txt");
+for (const url of [SITE_URL + "/", SITE_URL + "/products/nutraxin/",
+  SITE_URL + "/sitemap.xml", SITE_URL + "/legal/"]) {
+  if (!aiGuide.includes(url)) fail("llms.txt missing canonical public source " + url);
+}
+if (/(?:\/portal\/|\/admin\/|\/api\/|\/docs\/)/.test(aiGuide)) {
+  fail("llms.txt must not expose protected routes");
+}
+if (!/does not guarantee indexing, inclusion, ranking or endorsement/.test(aiGuide)) {
+  fail("llms.txt must not claim guaranteed AI visibility");
+}
 const escoCollection = source("products/esco/index.html");
 const escoSchemas = parseSchemas(escoCollection, "products/esco/index.html");
 const escoEntity = escoSchemas.find((schema) => schema["@type"] === "CollectionPage");

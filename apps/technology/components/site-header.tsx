@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import { Brand } from "@/components/brand";
 import { ArrowUpRight, Close, Menu } from "@/components/icons";
 import { navigation } from "@/data/site";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
-export function SiteHeader() {
+export function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openedAtPath, setOpenedAtPath] = useState(pathname);
@@ -35,18 +36,18 @@ export function SiteHeader() {
     <header className={`site-header${darkHeroAtTop ? " has-dark-hero" : ""}${scrolled ? " is-scrolled" : ""}`}>
       <div className="site-header__inner shell">
         <Brand />
-        <nav className="site-header__nav" aria-label="Primary navigation">
+        <nav className="site-header__nav" aria-label={interfaceLabel(locale, "Primary navigation")}>
           {navigation.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href);
             return (
               <Link className={active ? "is-active" : ""} href={item.href as Route} key={item.href}>
-                {item.label}
+                {interfaceLabel(locale, item.label)}
               </Link>
             );
           })}
         </nav>
         <Link className="header-cta" href="/contact">
-          Start a conversation
+          {interfaceLabel(locale, "Start a conversation")}
           <ArrowUpRight />
         </Link>
         <button
@@ -54,7 +55,7 @@ export function SiteHeader() {
           type="button"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
-          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+          aria-label={interfaceLabel(locale, menuOpen ? "Close navigation" : "Open navigation")}
           onClick={() => {
             setOpenedAtPath(pathname);
             setOpen((value) => !value);
@@ -79,12 +80,12 @@ export function SiteHeader() {
                 {navigation.map((item, index) => (
                   <Link href={item.href as Route} key={item.href} onClick={() => setOpen(false)}>
                     <span>0{index + 1}</span>
-                    {item.label}
+                    {interfaceLabel(locale, item.label)}
                   </Link>
                 ))}
               </nav>
               <Link className="mobile-menu__cta" href="/contact" onClick={() => setOpen(false)}>
-                <span>Bring us the decision</span>
+                <span>{interfaceLabel(locale, "Bring us the decision")}</span>
                 <ArrowUpRight />
               </Link>
               <div className="mobile-menu__meta">

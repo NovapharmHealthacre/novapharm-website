@@ -23,12 +23,15 @@ EVENT_RE = re.compile(r"^evt_[A-Za-z0-9]{8,}$")
 INVOICE_RE = re.compile(r"^in_[A-Za-z0-9]{6,}$")
 CUSTOMER_RE = re.compile(r"^cus_[A-Za-z0-9]{6,}$")
 SUB_RE = re.compile(r"^sub_[A-Za-z0-9]{6,}$")
+# Approved GBP Price IDs verified in LIVE Stripe; no transactional rights follow.
+# This module is observation-only; never grants customer access.
+# Keep the allowlist synced with src/core/intelligence-live-stripe-catalog.mjs.
 APPROVED_PRICES = {
-    "price_1Ua7M92U9Y3sX5I2tVhCoFaq",
-    "price_1Ua7NF2U9Y3sX5I2NFDDO3WE",
-    "price_1Ua7MB2U9Y3sX5I2UL1Ljxeb",
-    "price_1Ua7NH2U9Y3sX5I2bx8WI6wO",
-    "price_1Ua7MD2U9Y3sX5I2v7MQm0HS",
+    "price_1Uati52U9Y3sX5I2RJuYixR9",
+    "price_1UatiF2U9Y3sX5I2mv1a22VN",
+    "price_1UatiH2U9Y3sX5I2Pyqz3SpW",
+    "price_1UatiJ2U9Y3sX5I2CfJFkUnC",
+    "price_1UatiL2U9Y3sX5I2gktsrNl5",
 }
 WATCHED_TYPES = frozenset({
     "invoice.paid", "invoice.payment_failed",
@@ -162,7 +165,7 @@ def classify_event(item, fetch, lookup_owner, now_epoch=None):
     subscription_id = invoice_subscription(paid)
     if (paid.get("id") != invoice_id or paid.get("object") != "invoice" or
             paid.get("livemode") is not True or paid.get("status") != "paid" or
-            paid.get("currency") != "inr" or
+            paid.get("currency") != "gbp" or
             type(paid.get("amount_paid")) is not int or paid["amount_paid"] <= 0 or
             not CUSTOMER_RE.fullmatch(str(customer_id or "")) or
             not SUB_RE.fullmatch(str(subscription_id or ""))):
@@ -179,7 +182,7 @@ def classify_event(item, fetch, lookup_owner, now_epoch=None):
             subscription.get("status") != "active" or latest != invoice_id or
             not isinstance(line, dict) or line.get("quantity") != 1 or
             price_id not in APPROVED_PRICES or
-            not isinstance(price, dict) or price.get("currency") != "inr"):
+            not isinstance(price, dict) or price.get("currency") != "gbp"):
         return "subscription_or_price_not_verified"
 
     # Owner binding is a unique, independently accepted row in our own ledger;

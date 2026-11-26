@@ -26,6 +26,19 @@ await fs.access(path.join(releaseRoot, "api", "database", "azure", "005_portal_g
 await fs.access(path.join(releaseRoot, "api", "node_modules", "@azure", "identity", "package.json"));
 await fs.access(path.join(releaseRoot, "api", "node_modules", "@azure", "abort-controller", "package.json"));
 
+// The packaged API imports this static research reference at server startup.
+// It must exactly match the reviewed repository JSON and be the only permitted
+// first-party docs file in the API artifact.
+const apiScienceDocs = path.join(releaseRoot, "api", "docs", "intelligence");
+const scienceReference = "openai-science-methods-20261118.json";
+assert.deepEqual(await fs.readdir(apiScienceDocs), [scienceReference],
+  "API release must carry only the approved static Science reference.");
+assert.deepEqual(
+  await fs.readFile(path.join(apiScienceDocs, scienceReference)),
+  await fs.readFile(path.join(root, "docs", "intelligence", scienceReference)),
+  "Packaged Science catalogue must exactly match the source under review.",
+);
+
 async function runNodeCheck(file) {
   await new Promise((resolve, reject) => {
     const child = spawn(process.execPath, ["--check", file], { cwd: root, stdio: ["ignore", "pipe", "pipe"] });

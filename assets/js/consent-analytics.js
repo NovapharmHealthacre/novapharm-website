@@ -1,5 +1,37 @@
 import { CONSENT_STORAGE_KEY, parseConsent } from "./cookie-consent.js";
 
+// Privacy allowlist: only reviewed public Nutraxin product-detail pages may be
+// measured after consent. New SKUs require an explicit review and test.
+// Keep in sync with assets/data/nutraxin-retail-catalogue.json.
+const APPROVED_OTHER_PRODUCT_PATHS = new Set([
+  "/products/",
+  "/products/strategic-portfolio/",
+  "/products/marketplace/",
+  "/products/esco/"
+]);
+
+export const APPROVED_NUTRAXIN_PRODUCT_PATHS = new Set([
+  "/products/nutraxin/vitamin-d3-120-tablets/",
+  "/products/nutraxin/vitamin-d3-spray-30ml/",
+  "/products/nutraxin/vitamin-d3-k2-120-tablets/",
+  "/products/nutraxin/vitamin-d3-k2-spray-30ml/",
+  "/products/nutraxin/vitamin-c-1000mg-30-tablets/",
+  "/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
+  "/products/nutraxin/vitamin-max-60-tablets/",
+  "/products/nutraxin/vitamin-max-15-effervescent-tablets/",
+  "/products/nutraxin/magnesium-complex-60-tablets/",
+  "/products/nutraxin/magnesium-daily-60-tablets/",
+  "/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
+  "/products/nutraxin/womens-multivitamin-complex-60-tablets/",
+  "/products/nutraxin/mens-multivitamin-complex-60-tablets/",
+  "/products/nutraxin/collagen-gold-30-tablets/",
+  "/products/nutraxin/collagen-gold-30-sachets/",
+  "/products/nutraxin/collagen-complex-90-tablets/",
+  "/products/nutraxin/artoflex-90-tablets/",
+  "/products/nutraxin/l-carnitine-60-tablets/",
+  "/products/nutraxin/vitamin-b12-60-sublingual-tablets/"
+]);
+
 // No provider is loaded without both a verified ID in the public document
 // and a currently valid, affirmative analytics choice in this browser.
 export function validGa4Id(id) {
@@ -8,8 +40,17 @@ export function validGa4Id(id) {
 
 export function publicAnalyticsRoute(pathname) {
   const path = String(pathname || "");
+  if (path === "/pharmacy-partners/") return true;
   if (!/^\/(?:$|about\/|capabilities\/|services\/|regulatory-services\/|cro\/|oncology\/|products\/|partner-with-us\/|technology\/|news-insights\/|leadership\/)/.test(path)) return false;
-  if (/^\/products\/nutraxin\/(?:order-request|checkout|account|confirmation)\//.test(path)) return false;
+  // Product analytics are allowed only on reviewed public informational pages.
+  // Baskets, accounts, payments, tracking, all nested and future unreviewed
+  // commerce routes fail closed rather than inheriting a blanket /products/ rule.
+  if (path.startsWith("/products/")) {
+    if (path.startsWith("/products/nutraxin/")) {
+      return path === "/products/nutraxin/" || APPROVED_NUTRAXIN_PRODUCT_PATHS.has(path);
+    }
+    return APPROVED_OTHER_PRODUCT_PATHS.has(path);
+  }
   return !/(?:\/portal\/|\/admin\/|\/employee\/|\/account-application\/|\/contact\/)/.test(path);
 }
 
@@ -111,7 +152,7 @@ function initialiseAnalytics() {
       });
     }
     send("page_view", { page_title: location.pathname.startsWith("/products/nutraxin/") ? "Nutraxin product information" : document.title });
-    if (/^\/products\/nutraxin\/(?!bag\/|order-request\/)[a-z0-9-]+\/$/.test(location.pathname)) {
+    if (APPROVED_NUTRAXIN_PRODUCT_PATHS.has(location.pathname)) {
       send("view_item", { item_category: "food_supplements" });
     }
   };

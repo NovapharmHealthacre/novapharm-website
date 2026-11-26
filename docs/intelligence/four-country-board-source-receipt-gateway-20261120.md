@@ -1,0 +1,52 @@
+# Board-only official pharmaceutical source receipt gateway — 20 November 2026
+
+**Engineering stage:** source-code candidate for protected internal review only. Not a licensed feed, customer search, medicine ingestion, national coverage certification, clinical source or released iOS/Android feature.
+
+## Scope
+
+The existing Node API GET `/api/v1/intelligence/sources/official/public-live-probe?sourceId=<fixed-source-id>` can now dispatch an **existing bounded source probe** for one of four fixed publisher records:
+
+| Exact sourceId | Publisher | What is observed | Required follow-up |
+| --- | --- | --- | --- |
+| `us-fda-drugsfda` | US FDA / openFDA | One Drugs@FDA source-native application schema, hash/time receipt | Published terms and third-party exclusions |
+| `sg-hsa-registered-products` | Singapore HSA via data.gov.sg | One registration identifier, hash/time receipt | Dataset licence, API terms, permitted commercial/AI use |
+| `ca-health-canada-dpd` | Health Canada DPD | One fixed DIN `00326925`, hash/time receipt | Source-specific rights, native drug identity and import QA |
+| `es-aemps-cima` | Spain AEMPS CIMA | One fixed registration `51347`, hash/time receipt | Attribution/reuse terms, source version and identity QA |
+
+Publisher reference code: `src/core/intelligence-official-live-pharma-probes.mjs`, `src/core/intelligence-canada-dpd-public-live-probe.mjs` and `src/core/intelligence-es-cima-public-live-probe.mjs`.
+
+## Mandatory security and operational controls
+
+- The Node endpoint performs **server-side board-scope authentication**, then checks `NPI_OFFICIAL_PUBLIC_SOURCE_PROBE_ENABLED === "true"`. The flag is not enabled or provisioned by this PR.
+- Exact source IDs are checked *before* rate limiting (two authorised requests per minute) and before an outbound publisher request. Unlisted/invalid IDs do not create requests.
+- All publisher URLs are fixed inside the existing adapters. Each uses HTTPS, bounded streaming, fixed record identity, timeouts, no redirects/credentials and response schema verification.
+- A successful endpoint response is **receipt metadata only**. Original prescribing, medicine or product rows remain in transient memory and are not exposed in the receipt or persisted.
+- The Next.js gateway permits only the exact `v1/intelligence/sources/official/public-live-probe` path and **GET** before any upstream URL is constructed. The Node API separately enforces the board session.
+- Both gateway and backend return no-store responses; no public data fetch is added to Expo iOS/Android or the country-source directory.
+- Unexpected publisher errors fail closed as sanitised 503 responses. A successful source HTTP observation is not a production connection.
+- `config/intelligence/owner-production-constraints.json` remains **unchanged**: no new paid infrastructure, licence purchase, unapproved medicine admission, customer billing/access or portal cutover; `productionSignoff: not_granted`.
+
+## Acceptance and rollback
+
+The CI should execute `node --test scripts/test-intelligence-official-live-pharma-server-gate.mjs` and preexisting official publisher adapter/security tests, followed by secure portal browser and role acceptance. Verify exact SHA, CI results and approved privileges before any source-code merge. Restore the previous gateway and Node route source blobs to roll back this optional source-review path. No independent legal/source-rights acceptance or production endpoint deployment has occurred.
+
+**Not in scope:** an AWS API Gateway/Lambda change, publisher raw-data storage in SharePoint or MongoDB, clinical terminology reconciliation, signed iOS/Android builds, activating environment flags, or declaring customer-live national integrations.
+
+
+## Official publisher rights pre-screen — 20 November 2026
+
+**Classification: internal research only / not an approved NovaPharm source licence.** This review references official published publisher descriptions and usage terms available on 20 November 2026. It does **not** assert that NovaPharm has accepted specific terms, secured third-party intellectual property rights, signed a rights receipt, ingested data, reconciled national medicines, or independently verified live production. The owner production constraints remain unchanged, and this section must never be used as a feature-flag, ingestion or customer-publication permission.
+
+| Gateway source ID | Dataset and official references | Publisher evidence / scope | Remaining controlled acceptance |
+| --- | --- | --- | --- |
+| `us-fda-drugsfda` | [Drugs@FDA collection](https://open.fda.gov/data/drugsfda/), [openFDA data licence](https://open.fda.gov/license/), [openFDA Terms](https://open.fda.gov/terms/) | Publisher describes Drugs@FDA as FDA-approved US human medicinal product information. openFDA data are generally unrestricted / public-domain and CC0, **subject to service terms, third-party rights and content exclusions**. The separate GMDN device terminology exception does not establish any licence for other datasets. | Pin endpoint, response-field subset, product/application identity, attribution/provenance, access limits, re-use exceptions, and the effective terms version; seek legal/Quality approval for commercial redistribution or AI use of the exact fields. No clinical decisions based solely on this source. |
+| `sg-hsa-registered-products` | [HSA therapeutic products dataset](https://data.gov.sg/datasets/d_767279312753558cbf19d48344577084/view), [Singapore Open Data Licence v1.0](https://developers.data.gov.sg/open-data-licence), [data.gov.sg API guidance](https://guide.data.gov.sg/developer-guide/api-overview) | Exact dataset ID `d_767279312753558cbf19d48344577084` is published by HSA with personal/commercial use indicated under the Open Data Licence. Licence requires conspicuous source attribution and a licence URL; it excludes certain third-party rights, personal data, patent/trademark/design rights, and government endorsement. Dataset licence and general website content terms are **not interchangeable**. | Preserve dataset ID, release/update date and retrieval time; approve retained fields, attribution wording, onward sublicensing, AI-usage assumptions, API credentials/rate limits and changed terms. Preserve native Singapore registration identifiers. |
+| `ca-health-canada-dpd` | [Health Canada DPD dataset](https://open.canada.ca/data/en/dataset/bf55e42a-63cb-4556-bfd8-44f26e5a36fe), [DPD API guide](https://health-products.canada.ca/api/documentation/dpd-documentation-en.html), [Open Government Licence — Canada](https://open.canada.ca/en/open-government-licence-canada/) | The specific DPD dataset catalogue identifies Health Canada as publisher and lists Open Government Licence — Canada, which allows commercial use subject to terms, attribution and exclusions. The DPD API uses source-native Drug Identification Numbers (DINs); the probe uses fixed DIN `00326925`. This is a product-registration observation, not inventory, wholesale availability or a UK authorization. | Capture official catalogue/terms revision and attribution, specific API field rights, manufacturer/third-party attachments, DIN/state identity, source refresh and corrections, and review of any exclusions. Do not assume all Canadian drug terminology shares the same licence. |
+| `es-aemps-cima` | [AEMPS open data page](https://sede.aemps.gob.es/datos-abiertos/), [official CIMA REST API v1.23 documentation](https://www.aemps.gob.es/apps/cima/docs/CIMA_REST_API.pdf), [Spanish reuse guidance](https://datos.gob.es/es/preguntas-frecuentes) | AEMPS lists CIMA REST and nomenclator resources among publicly reusable information. The documented fixed GET `/cima/rest/medicamento?nregistro=51347` returns medicine JSON. Spanish public-sector reuse guidance describes source citation, update-date acknowledgement where available and no implied government endorsement. **REST metadata must be assessed separately from product leaflet / technical-document text, images and bulk nomenclator rights.** | Verify exact CIMA metadata permission, current AEMPS legal notice, citation text, dated source/version, product/pack national identifiers, attachments and secondary content exclusions; document commercial/AI reuse decision independently. |
+| UK source-only companion (not routed through the four-country endpoint) | [NHSBSA EPD with SNOMED dataset](https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code), [May 2026 resource](https://opendata.nhsbsa.net/dataset/906115a6-4155-44be-8b81-f8e83cebfb84/resource/004d6f4e-9881-4312-82dc-094f9a543885) | PR #913 pins a **metadata-only** inspection of `EPD_SNOMED_202605`, not CSV ingestion and not automatic selection of the latest month. NHSBSA's publisher page specifies a copyright acknowledgement; SNOMED CT/BNF/dm+d nomenclature may entail separate rights. EPD prescribing activity is not stock or price availability. | Identify the approved period, attribution, SNOMED/BNF rights and exclusions; verify official current-month resource separately; require written approval before any row-level ingestion, terminology translation or customer exposure. |
+
+### Rights-decision evidence required before progressing any source
+
+For **each** source, a named independent rights decision-maker must approve and archive an immutable, access-controlled receipt covering: exact publisher and versioned source ID, approved fields and intended use (research, customer redistribution and AI separately), terms URL and effective date, attribution text, jurisdictional/third-party exclusions, retention and sublicensing rights, approval time, expiry/revocation process, and the reviewer identity. Engineering must then validate an authentic bounded source snapshot, original national product IDs, rejection/quarantine behavior, protected tenant authorization, rollback, and a separately signed customer release decision. Missing evidence means **not approved / not admitted / not customer-live**.
+
+**Status after PR #920 source merge:** code-level gateway routing merged; publisher-rights approvals not evidenced here; no change to `productionSignoff: not_granted`. The separate independent security issue #928 remains open until a reviewer records findings against the merged tree. GitHub CI and official terms pages alone do not satisfy that review. AWS live-resource discovery previously encountered an explicit Organizations SCP deny; do not infer that API Gateway/Lambda cutover occurred. 

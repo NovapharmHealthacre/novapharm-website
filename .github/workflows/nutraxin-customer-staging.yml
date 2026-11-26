@@ -4,6 +4,8 @@ on:
     paths:
       - "apps/nutraxin-customer-api/**"
       - "infra/aws/nutraxin-customer-staging-stack.json"
+      - "scripts/aws/nutraxin_cfn_drift_guard.py"
+      - "scripts/aws/test_nutraxin_cfn_drift_guard.py"
       - ".github/workflows/nutraxin-customer-staging.yml"
   workflow_dispatch:
 permissions:
@@ -14,9 +16,13 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout exact source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - name: Fail closed on CloudFormation drift-guard regression (offline only)
+        run: python3 -m unittest scripts/aws/test_nutraxin_cfn_drift_guard.py -v
+      - name: Verify repository inline Lambda code remains in sync
+        run: python3 scripts/aws/nutraxin_cfn_drift_guard.py
       - name: Validate Python source
         run: python3 -m py_compile apps/nutraxin-customer-api/index.py apps/nutraxin-customer-api/test_portal_contract.py
       - name: Verify authorization, pricing and fail-closed order semantics

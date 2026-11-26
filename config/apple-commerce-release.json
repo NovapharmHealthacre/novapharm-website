@@ -1,0 +1,51 @@
+{
+  "$comment": "Non-production Apple commerce and trademark controls. This file is evidence of a release hold, not StoreKit integration or authority to publish Apple artwork.",
+  "schemaVersion": 1,
+  "reviewedOn": "2026-11-19",
+  "sourceArchive": {
+    "name": "apple-in-app-purchase-brand.zip",
+    "sha256": "f20c8dcbf6baedb10d288f26552e4fe6b3c2277296569c1e64be792cad78df1d",
+    "inspectedAssets": 888,
+    "localizations": 48,
+    "artworkCommittedToRepository": false,
+    "artworkPublicationApproved": false
+  },
+  "nativeDigitalCommerce": {
+    "status": "not-integrated",
+    "appStoreConnectProducts": [],
+    "subscriptionGroupIds": [],
+    "storeKitPurchaseFlowVerified": false,
+    "transactionAndEntitlementVerificationAccepted": false,
+    "restoreAndRefundFlowsAccepted": false,
+    "appStoreServerNotificationsAccepted": false,
+    "signedDeviceAcceptance": false,
+    "enableConsumerPurchases": false
+  },
+  "regionalAlternativePayments": {
+    "BR": {
+      "enabled": false,
+      "entitlementVerified": false,
+      "externalPurchaseApiVerified": false
+    },
+    "EU": {
+      "enabled": false,
+      "entitlementVerified": false,
+      "externalPurchaseApiVerified": false
+    },
+    "JP": {
+      "enabled": false,
+      "entitlementVerified": false,
+      "externalPurchaseApiVerified": false
+    }
+  },
+  "marketing": {
+    "iapMarkInUse": false,
+    "nativeStoreListingsApproved": false,
+    "nativeAppPreviewsApproved": false
+  },
+  "approval": {
+    "ownerProductionSignoff": "not_granted",
+    "independentQualitySecurityReview": "not_recorded",
+    "appStoreReviewApproval": "not_established"
+  }
+}

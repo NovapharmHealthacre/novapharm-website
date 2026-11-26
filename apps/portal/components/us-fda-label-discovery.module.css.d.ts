@@ -1,5 +1,6 @@
 declare const styles: Readonly<{
   boundary: string;
+  clear: string;
   card: string;
   cards: string;
   discovery: string;

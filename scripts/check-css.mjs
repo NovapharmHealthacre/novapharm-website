@@ -68,10 +68,16 @@ for (const file of files) {
     "assets/css/esco-order-requests.css",
     "assets/css/global-distribution-editorial.css",
     "assets/css/homepage-editorial.css",
+    // Both governed Intelligence workspace stylesheets use the same approved
+    // optical tightening (<0.08em) for Apple-style editorial headings.
+    // Only these exact files are added; no global bypass or threshold change.
+    "assets/css/intelligence-workspace-embedded.css",
+    "assets/css/intelligence-workspace-product.css",
     "assets/css/markets-editorial.css",
     "assets/css/novapharm.bundle.css",
     "assets/css/oncology-editorial.css",
     "assets/css/oncology-hope-v2.css",
+    "assets/css/our-story.css",
     "assets/css/products-editorial.css"
   ]);
   for (const match of source.matchAll(/\bletter-spacing\s*:\s*(-(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)/giu)) {

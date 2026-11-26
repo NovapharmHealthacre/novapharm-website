@@ -1,9 +1,9 @@
 /**
  * NovaPharm Intelligence live Stripe Billing product and price registry.
  *
- * Catalog records exist and were ACTIVATED in the UK LIVE Stripe account
- * on 11 November 2026: all three products and five recurring INR prices.
- * Catalog activation is NOT paid customer checkout acceptance. This module
+ * Catalog records exist and were CREATED and later ACTIVATED in the UK LIVE Stripe account
+ * on 12 November 2026: all three products and five recurring GBP prices (active catalogue, but Checkout, payment and access remain gated).
+ * Active Stripe Price objects are NOT paid customer checkout acceptance. This module
  * never creates a Checkout Session, charges money, validates customer identity
  * or grants entitlement.
  * IDs are not secrets. Credentials and webhook signing keys must never be
@@ -18,8 +18,8 @@ const plans = {
     description: "Up to 25 governed searches per month; subject to source rights.",
     monthlySearchLimit: 25,
     prices: {
-      monthly: { id: "price_1Ua7M92U9Y3sX5I2tVhCoFaq", amountMinor: 2499900, interval: "month" },
-      annual: { id: "price_1Ua7NF2U9Y3sX5I2NFDDO3WE", amountMinor: 25499000, interval: "year" },
+      monthly: { id: "price_1Uati52U9Y3sX5I2RJuYixR9", amountMinor: 19900, interval: "month" },
+      annual: { id: "price_1UatiF2U9Y3sX5I2mv1a22VN", amountMinor: 203000, interval: "year" },
     },
   },
   professional: {
@@ -27,8 +27,8 @@ const plans = {
     description: "Up to 250 governed searches per month; source-limited premium views.",
     monthlySearchLimit: 250,
     prices: {
-      monthly: { id: "price_1Ua7MB2U9Y3sX5I2UL1Ljxeb", amountMinor: 8999900, interval: "month" },
-      annual: { id: "price_1Ua7NH2U9Y3sX5I2bx8WI6wO", amountMinor: 91799000, interval: "year" },
+      monthly: { id: "price_1UatiH2U9Y3sX5I2Pyqz3SpW", amountMinor: 69900, interval: "month" },
+      annual: { id: "price_1UatiJ2U9Y3sX5I2CfJFkUnC", amountMinor: 713000, interval: "year" },
     },
   },
   enterprise: {
@@ -36,7 +36,7 @@ const plans = {
     description: "Indicative from-price only; individually signed scope, quota and contract required.",
     monthlySearchLimit: null,
     prices: {
-      monthly: { id: "price_1Ua7MD2U9Y3sX5I2v7MQm0HS", amountMinor: 35000000, interval: "month", contractOnly: true },
+      monthly: { id: "price_1UatiL2U9Y3sX5I2gktsrNl5", amountMinor: 279900, interval: "month", contractOnly: true },
     },
   },
 };
@@ -97,7 +97,7 @@ export function selectIntelligenceCheckoutPrice({
   return Object.freeze({
     allowed: true,
     code: "catalog_price_selected",
-    currency: "inr",
+    currency: "gbp",
     taxBehavior: "exclusive",
     interval: entry.interval,
     productId: plans[plan].productId,

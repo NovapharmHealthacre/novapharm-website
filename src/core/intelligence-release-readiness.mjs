@@ -1,5 +1,8 @@
 import { all, nowIso, one } from "../data/database.mjs";
 import { internalAiGatewayStatus } from "./ai/ai-gateway.mjs";
+import { capabilityRequirements, sharedCapabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
+import scienceMethods from "../../docs/intelligence/openai-science-methods-20261118.json" with { type: "json" };
+import { SCIENCE_READINESS_BOUNDARY } from "./intelligence-science-research-principles.mjs";
 
 function requireExecutive(context) {
   if (!context?.accessScopes?.includes("board") && !context?.accessScopes?.includes("admin")) {
@@ -59,6 +62,31 @@ export async function intelligenceReleaseReadiness(context, environment = proces
       modelGateway: "not-production-certified",
       limitations: ["No authorised NOVA model deployment or governed source-to-answer acceptance is certified by this endpoint."],
     },
+    science: {
+      ...SCIENCE_READINESS_BOUNDARY,
+      status: "research_design_only",
+      designedWorkflows: 6,
+      canonicalWorkspacesCovered: 22,
+      reviewedExternalResearchReferences: scienceMethods.sourceCount,
+      cataloguedTransferableResearchMethods: scienceMethods.scientificMethodologyCount,
+      discoveryIndexes: scienceMethods.discoveryIndexCount,
+      scientificFindingsIndependentlyReproduced: false,
+      researchEvidenceDossierTemplateDefined: true,
+      scientificDossierStagesRequired: scienceMethods.claimIntegrityPolicy.requiredStages,
+      scientificDossierStagesIndependentlyVerified: 0,
+      publisherClaimsVerified: false,
+      sourceRetractionsOrCorrectionsChecked: false,
+      continuousScienceFeedConnected: false,
+      modelConnected: false,
+      newScienceDataIngested: false,
+      gptRosalindResearchApiApprovalVerified: false,
+      restrictedResearchModelCustomerUsePermitted: false,
+      limitations: [
+        "Scientific research catalogue and safety principles do not constitute data rights, verified scientific output or a model connection.",
+        "GPT-Rosalind API access, if separately granted, is for approved internal research workflows only; public/customer-facing app use is outside the current approval scope.",
+        "Every workspace requires source-rights, provenance, independent scientific validation and qualified human review before release."
+      ]
+    },
     forecasting: {
       persistedValueCount: Number(forecastValues?.total || 0),
       productionApproved: false,
@@ -68,6 +96,16 @@ export async function intelligenceReleaseReadiness(context, environment = proces
       intendedAnalyticalWorkspaces: 22,
       productionOperational: false,
       limitations: ["Navigable views are not equivalent to accepted data services, licensed country coverage or deployed models."],
+    },
+    unifiedCapabilities: {
+      contract: "novapharm.intelligence.unified-capability-readiness.v1",
+      proofStore: "not_connected_to_independently_verified_runtime_proofs",
+      customerReleaseApproved: false,
+      groups: Object.entries(capabilityRequirements).map(([id, specific]) => ({
+        id, productionCertified: false,
+        status: "independent_production_acceptance_required",
+        requiredEvidence: [...sharedCapabilityRequirements, ...specific]
+      }))
     },
     production: {
       status: "not-certified",
