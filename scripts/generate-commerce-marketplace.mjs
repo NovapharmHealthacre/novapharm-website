@@ -175,6 +175,6 @@ const target=join(root,'products/marketplace/index.html');mkdirSync(dirname(targ
 const callToAction='<section class="npd-commerce-link" aria-label="Unified product search"><p>ONE SEARCH. BOTH PORTFOLIOS.</p><h2>Explore the complete catalogue.</h2><a href="/products/marketplace/">Search all 392 products</a></section>';
 let productsIndex=template;
 assert(!productsIndex.includes('class="npd-commerce-link"'));
-productsIndex=productsIndex.replace('</main>',callToAction+'</main>');
+if(!productsIndex.includes('data-nps-quick')) productsIndex=productsIndex.replace('</main>',callToAction+'</main>');
 writeFileSync(site,productsIndex,'utf8');
 console.log('Generated governed 392-product marketplace with Nutraxin and ESCO portfolio entry.');

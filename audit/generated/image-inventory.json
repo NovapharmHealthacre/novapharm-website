@@ -4565,12 +4565,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 5,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "assets/data/esco-model-photo-map.json",
         "products/index.html",
-        "scripts/apply-products-editorial.mjs",
         "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
@@ -5465,12 +5464,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 5,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "assets/data/esco-model-photo-map.json",
         "products/index.html",
-        "scripts/apply-products-editorial.mjs",
         "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
@@ -14235,18 +14233,16 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 9,
-      "referenceCount": 16,
+      "usageCount": 7,
+      "referenceCount": 13,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "creative-assets/module-media-asset-register.json",
         "products/index.html",
-        "scripts/apply-products-editorial.mjs",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml",
-        "src/content/products-editorial.html"
+        "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -16343,11 +16339,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "docs/retail/connective-395-owner-photo-candidates.json",
-        "products/index.html"
+        "products/index.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-074",
@@ -19489,11 +19486,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "docs/retail/connective-395-owner-photo-candidates.json",
-        "products/index.html"
+        "products/index.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -21270,13 +21268,14 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/retail/connective-395-owner-photo-candidates.json",
         "docs/retail/connective-next-six-consumer-source-evidence.json",
         "products/index.html",
-        "src/content/approved-consumer-catalogue.json"
+        "src/content/approved-consumer-catalogue.json",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -31611,8 +31610,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 13,
+      "usageCount": 9,
+      "referenceCount": 15,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
@@ -31621,7 +31620,8 @@
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -31666,8 +31666,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 13,
+      "usageCount": 9,
+      "referenceCount": 15,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
@@ -31676,7 +31676,8 @@
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-144",
@@ -31721,8 +31722,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 12,
+      "usageCount": 8,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -31730,7 +31731,8 @@
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-145",
@@ -31775,8 +31777,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 12,
+      "usageCount": 8,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -31784,7 +31786,8 @@
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-144",
@@ -31829,8 +31832,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 10,
-      "referenceCount": 27,
+      "usageCount": 11,
+      "referenceCount": 29,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -31841,7 +31844,8 @@
         "products/nutraxin/index.html",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-145",
@@ -32136,8 +32140,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 13,
+      "usageCount": 8,
+      "referenceCount": 16,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
@@ -32145,7 +32149,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-148",
@@ -32191,8 +32196,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 13,
+      "usageCount": 8,
+      "referenceCount": 16,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
@@ -32200,7 +32205,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-149",
@@ -32246,15 +32252,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 12,
+      "usageCount": 7,
+      "referenceCount": 15,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-148",
@@ -32300,15 +32307,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 12,
+      "usageCount": 7,
+      "referenceCount": 15,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-149",
@@ -32354,8 +32362,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 9,
-      "referenceCount": 26,
+      "usageCount": 10,
+      "referenceCount": 29,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "infra/aws/nutraxin-payment-notifications-production.json",
@@ -32365,7 +32373,8 @@
         "products/nutraxin/magnesium/index.html",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-148",
@@ -33940,8 +33949,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 12,
+      "usageCount": 9,
+      "referenceCount": 15,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
@@ -33950,7 +33959,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -33996,8 +34006,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 12,
+      "usageCount": 9,
+      "referenceCount": 15,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
@@ -34006,7 +34016,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-159",
@@ -34052,8 +34063,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 11,
+      "usageCount": 8,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -34061,7 +34072,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-160",
@@ -34107,8 +34119,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 9,
-      "referenceCount": 13,
+      "usageCount": 10,
+      "referenceCount": 16,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
@@ -34118,7 +34130,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-159",
@@ -34164,7 +34177,7 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 15,
+      "usageCount": 14,
       "referenceCount": 45,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
@@ -34176,7 +34189,6 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
-        "scripts/apply-products-editorial.mjs",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
@@ -35241,8 +35253,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 8,
+      "referenceCount": 10,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
@@ -35250,7 +35262,8 @@
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -35294,15 +35307,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-168",
@@ -35346,15 +35360,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-169",
@@ -35398,15 +35413,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-168",
@@ -35450,8 +35466,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 9,
-      "referenceCount": 19,
+      "usageCount": 10,
+      "referenceCount": 20,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "infra/aws/nutraxin-payment-notifications-production.json",
@@ -35461,7 +35477,8 @@
         "products/nutraxin/vitamin-max-60-tablets/index.html",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-169",

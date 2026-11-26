@@ -222,7 +222,7 @@ if (!existsSync(path(sourceFile))) {
   let overview = read('products/index.html');
   overview = overview.replace(/<section\b[^>]*data-npr-source-collection[^>]*>[\s\S]*?<\/section>/gi, '');
   // The approved generator already inserted its own collection entry.
-  if (!approvedIds.size) {
+  if (!approvedIds.size && !overview.includes('data-nps-quick')) {
   const firstWithManufacturer=products.find(p=>p.manufacturerProductUrl&&p.supplierImageUrl)||products.find(p=>p.supplierImageUrl);
   const heroMedia=firstWithManufacturer?`<div class="np-products-panel-art np-products-panel-art-nutraxin"><img src="${escapeHtml(firstWithManufacturer.supplierImageUrl)}" alt="${escapeHtml(firstWithManufacturer.name)} product photograph" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="700" height="700"></div>`:'';
   const panel=`<section class="np-products-panel np-products-panel-nutraxin" data-npr-source-collection aria-labelledby="np-connective-heading"><div class="np-products-wrap np-products-panel-inner"><div class="np-products-panel-copy">`+
