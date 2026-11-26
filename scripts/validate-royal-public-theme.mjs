@@ -35,6 +35,7 @@ const expectedCanonicalFiles = new Set([
     .map((name) => "news-insights/" +
       JSON.parse(read("src/content/insights/" + name)).slug + "/index.html"),
   "our-story/index.html",
+  "pharmacy-partners/index.html",
   "products/esco/index.html",
   "account-application/index.html"
 ]);
@@ -55,7 +56,7 @@ assert.deepEqual([...registeredFiles].sort(), [...expectedCanonicalFiles].sort()
 // These three commercial routes are generated before SEO enhancement. Their
 // inclusion prevents a shallow but numerically sufficient canonical index.
 const registeredRoutes = new Set(register.map((page) => page.route));
-for (const route of ["/distribution/", "/market-access/", "/markets/", "/our-story/"]) {
+for (const route of ["/distribution/", "/market-access/", "/markets/", "/our-story/", "/pharmacy-partners/"]) {
   assert.ok(registeredRoutes.has(route), "Required public commercial route absent from SEO register: " + route);
 }
 
