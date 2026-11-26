@@ -160,8 +160,8 @@ export function CountryDirectoryScreen() {
       keyExtractor={(country) => country.iso2}
       renderItem={({ item }) => <CountryCard country={item} wide={twoColumns} styles={styles} />}
       ListHeaderComponent={header}
-      ListEmptyComponent={!extraMatches.length ? <Text style={styles.empty}>No matching countries. No data is inferred.</Text> : null}
-      ListFooterComponent={extraMatches.length ? <View style={styles.header}><Pressable style={styles.action} accessibilityRole="button" accessibilityState={{expanded: showWorldwide || !!query.trim()}} onPress={() => setShowWorldwide(!showWorldwide)}><Text style={styles.actionText}>Additional worldwide research ({extraMatches.length})</Text></Pressable>{(showWorldwide || !!query.trim()) && extraMatches.map((entry) => <View key={entry.code} style={styles.source}><Text style={styles.publisher}>{entry.displayName} · {entry.code}</Text><Text style={styles.sourceText}>{entry.authorityLead ? `WHO-listed research lead: ${entry.authorityLead.name} · Dataset verification required` : "Authority and dataset discovery required"} · No live feed</Text></View>)}</View> : null}
+      ListEmptyComponent={!extraMatches.length ? <Text style={styles.empty}>No matching countries. No data is inferred.</Text>  : undefined}
+      ListFooterComponent={extraMatches.length ? <View style={styles.header}><Pressable style={styles.action} accessibilityRole="button" accessibilityState={{expanded: showWorldwide || !!query.trim()}} onPress={() => setShowWorldwide(!showWorldwide)}><Text style={styles.actionText}>Additional worldwide research ({extraMatches.length})</Text></Pressable>{(showWorldwide || !!query.trim()) && extraMatches.map((entry) => <View key={entry.code} style={styles.source}><Text style={styles.publisher}>{entry.displayName} · {entry.code}</Text><Text style={styles.sourceText}>{entry.authorityLead ? `WHO-listed research lead: ${entry.authorityLead.name} · Dataset verification required` : "Authority and dataset discovery required"} · No live feed</Text></View>)}</View>  : undefined}
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
       initialNumToRender={8}
