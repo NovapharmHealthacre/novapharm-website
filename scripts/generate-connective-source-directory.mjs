@@ -93,8 +93,12 @@ function metadataPage(shell, route, title, description, main, {indexable=false, 
   write(route.slice(1)+'index.html', html);
 }
 
-if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
-  console.log('Reference-directory fallback not needed: source absent or verified catalogue takes precedence');
+const approvedCatalogue = existsSync(path(approvedFile)) ? JSON.parse(read(approvedFile)) : [];
+assert(Array.isArray(approvedCatalogue), 'Approved consumer catalogue must be an array');
+// An empty approved list is not an approved product release: retain the
+// existing source-linked pages, rather than breaking their collection route.
+if (!existsSync(path(sourceFile)) || approvedCatalogue.length > 0) {
+  console.log('Reference-directory fallback not needed: source absent or nonempty verified catalogue takes precedence');
 } else {
   const data = JSON.parse(read(sourceFile));
   assert(data.schema === 'novapharm-connective-source-references-v1' && Array.isArray(data.products), 'Unknown source catalogue schema');
