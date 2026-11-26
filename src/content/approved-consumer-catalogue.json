@@ -110,5 +110,37 @@
     "identityConfirmed": true,
     "imageRightsConfirmed": true,
     "publicListingApproved": true
+  },
+  {
+    "ean": "5060062999488",
+    "brand": "Lansinoh",
+    "name": "Lansinoh Feeding Bottle 160ml",
+    "category": "Baby feeding",
+    "pack": "160ml",
+    "productClass": "consumer_non_medicinal",
+    "image": "/assets/media/products/connective/5060062999488/front-800.webp",
+    "description": "160ml wide-neck plastic feeding bottle with NaturalWave silicone teat and protective cap. Manufacturer product code 75820.",
+    "ingredients": "Materials: polypropylene bottle and silicone teat. This is a non-food feeding accessory.",
+    "directions": "Before first use, wash and sterilise the disassembled components in boiling water for five minutes; cool and rinse. Assemble the teat and screw collar firmly. Wash each component after feeding with warm soapy water, rinse and clean before reuse. Refer to the manufacturer's instructions for suitable sterilising methods.",
+    "warnings": "Use only with adult supervision. Check liquid temperature before feeding. Never use the teat as a pacifier; prolonged sucking may contribute to tooth decay. Keep unused components away from children. Inspect and gently pull the teat in every direction before use; discard damaged or weakened components. Replace the teat as instructed. Avoid harsh chemicals, prolonged disinfectant exposure, direct heat and sunlight. Do not microwave human milk or heat a sealed bottle. Remove packaging and retain instructions.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
+  },
+  {
+    "ean": "5060062999518",
+    "brand": "Lansinoh",
+    "name": "Lansinoh Feeding Bottle 240ml",
+    "category": "Baby feeding",
+    "pack": "240ml",
+    "productClass": "consumer_non_medicinal",
+    "image": "/assets/media/products/connective/5060062999518/front-800.webp",
+    "description": "240ml wide-neck plastic feeding bottle with NaturalWave silicone teat and protective cap. Manufacturer product code 75840.",
+    "ingredients": "Materials: polypropylene bottle and silicone teat. This is a non-food feeding accessory.",
+    "directions": "Before first use, wash and sterilise the disassembled components in boiling water for five minutes; cool and rinse. Assemble the teat and screw collar firmly. Wash each component after feeding with warm soapy water, rinse and clean before reuse. Refer to the manufacturer's instructions for suitable sterilising methods.",
+    "warnings": "Use only with adult supervision. Check liquid temperature before feeding. Never use the teat as a pacifier; prolonged sucking may contribute to tooth decay. Keep unused components away from children. Inspect and gently pull the teat in every direction before use; discard damaged or weakened components. Replace the teat as instructed. Avoid harsh chemicals, prolonged disinfectant exposure, direct heat and sunlight. Do not microwave human milk or heat a sealed bottle. Remove packaging and retain instructions.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
   }
 ]

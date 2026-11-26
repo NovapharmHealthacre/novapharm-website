@@ -25239,10 +25239,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-lansinoh-consumer-source-evidence-20261126.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -25276,10 +25278,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-lansinoh-consumer-source-evidence-20261126.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,

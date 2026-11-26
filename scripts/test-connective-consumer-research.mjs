@@ -38,7 +38,7 @@ test("the first manufacturer-backed consumer listing carries exact source, image
   const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
   const proof=JSON.parse(readFileSync("docs/retail/connective-first-live-consumer-source-evidence.json","utf8"));
   const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
-  assert.equal(approved.length,7);
+  assert(approved.length>=7, 'Original seven approved products must remain present');
   assert.equal(proof.gtin,"5021265243372");
   const p=approved[0],photo=photos.products.find(x=>x.gtin===p.ean);
   const ref=src.products.find(x=>x.ean===p.ean);
@@ -79,12 +79,12 @@ test("next six official Vitabiotics listings have exact manufacturer source, own
  const evidence=JSON.parse(readFileSync("docs/retail/connective-next-six-consumer-source-evidence.json","utf8"));
  const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
  assert.equal(evidence.products.length,6);
- assert.equal(approved.length,7);
+ assert(approved.length>=7, 'Original seven approved products must remain present');
  const photoBy=new Map(photos.products.map(p=>[p.gtin,p]));
  const sourceBy=new Map(src.products.map(p=>[p.ean,p]));
  const manufacturerBy=new Map(online.products.map(p=>[p.ean,p]));
  const admitted=new Set(approved.map(p=>p.ean));
- assert.equal(admitted.size,7);
+ assert.equal(admitted.size,approved.length);
  for(const proof of evidence.products){
   const p=approved.find(item=>item.ean===proof.gtin);
   const photo=photoBy.get(proof.gtin),ref=sourceBy.get(proof.gtin),label=manufacturerBy.get(proof.gtin);
@@ -112,5 +112,33 @@ test("next six official Vitabiotics listings have exact manufacturer source, own
   assert.equal(validated.approved.length,1);
   assert.equal(validated.blocked.length,0);
   assert.deepEqual(validated.approved[0],p);
+ }
+});
+
+test("two source-verified Lansinoh feeding-bottle listings retain exact image and barcode evidence",()=>{
+ const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
+ const evidence=JSON.parse(readFileSync("docs/retail/connective-lansinoh-consumer-source-evidence-20261126.json","utf8"));
+ const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
+ assert.equal(evidence.schema,"novapharm-connective-source-review-v1");
+ assert.equal(evidence.products.length,2);
+ assert.equal(evidence.physicalPackInspected,false);
+ for(const [gtin,pack,code] of [["5060062999488","160ml",75820],["5060062999518","240ml",75840]]){
+   const p=approved.find(x=>x.ean===gtin),proof=evidence.products.find(x=>x.gtin===gtin);
+   const source=src.products.find(x=>x.ean===gtin),photo=photos.products.find(x=>x.gtin===gtin);
+   assert(p&&proof&&source&&photo&&validGtin(gtin));
+   assert.equal(proof.productCode,code);
+   assert.equal(p.pack,pack);
+   assert.equal(p.name,source.name);
+   assert.equal(p.productClass,"consumer_non_medicinal");
+   assert.equal(p.image,photo.localImage);
+   assert.equal(proof.imageSha256,photo.sha256);
+   assert.equal(proof.image,p.image);
+   assert.equal(proof.physicalPackInspected,false);
+   assert.equal(proof.ownerPhotoUseAuthorised,true);
+   assert.equal(p.imageRightsConfirmed,true);
+   assert.equal(p.publicListingApproved,true);
+   assert.equal(p.identityConfirmed,true);
+   for(const key of ["description","ingredients","directions","warnings"])assert(p[key].length>30);
+   for(const key of ["netMinor","grossMinor","retailPrice","vatBasisPoints","privateSupplierCost"])assert(!Object.hasOwn(p,key));
  }
 });
