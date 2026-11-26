@@ -14,6 +14,8 @@ const BASE="https://novapharmhealthcare.com";
 export const GENERATED_INDEXABLE_ROUTES=Object.freeze([
   "/distribution/","/market-access/","/markets/",
   "/products/esco/","/products/marketplace/",
+  // Editorial route generated from src/content/our-story.mjs (PR #1200).
+  "/our-story/",
   ...NUTRAXIN_CATEGORY_ROUTES
 ]);
 function validRoute(route) {
