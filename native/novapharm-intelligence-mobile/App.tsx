@@ -3,8 +3,9 @@
  * No HTTP, credentials, customer records or source facts are included.
  * Existing web workspace states and global source candidates remain non-live.
  */
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
+  BackHandler,
   FlatList,
   Platform,
   Pressable,
@@ -29,6 +30,7 @@ import { USFdaSourcePreviewScreen } from "./USFdaSourcePreviewScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
 import { PrivateOperationsPreviewScreen } from "./PrivateOperationsPreviewScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
+import { mobileBackDestination, moreDetailScreens } from "./preview-navigation";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
@@ -205,6 +207,7 @@ export default function App() {
   const twoColumns = width >= 760 && !largeText;
   const [screen, setScreen] = useState<Screen>("overview");
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [selectedOperationsModule, setSelectedOperationsModule] = useState<string | null>(null);
   const [syntheticExample, setSyntheticExample] = useState<ReturnType<typeof inspectSyntheticFeature> | null>(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
@@ -221,8 +224,30 @@ export default function App() {
 
   const changeScreen = (value: Screen) => {
     setSelectedWorkspace(null);
+    setSelectedOperationsModule(null);
     setScreen(value);
   };
+
+  // Android Back returns from a preview detail before it can exit the app.
+  // On top-level tabs the system retains normal Back behavior.
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      const destination = mobileBackDestination(
+        screen, selectedWorkspace !== null, selectedOperationsModule !== null
+      );
+      if (destination === null) return false;
+      if (destination === "operations-module-list") {
+        setSelectedOperationsModule(null);
+        return true;
+      }
+      setSelectedWorkspace(null);
+      setSelectedOperationsModule(null);
+      setScreen(destination);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [screen, selectedWorkspace, selectedOperationsModule]);
 
   const notice = (
     <View style={styles.notice}>
@@ -275,6 +300,17 @@ export default function App() {
         <Text style={styles.appTitle} accessibilityRole="header">Intelligence</Text>
         <Text style={styles.appSubtitle}>Global pharmaceutical research</Text>
       </View>
+
+      {moreDetailScreens.has(screen) && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back to More"
+          style={styles.backToMore}
+          onPress={() => changeScreen("more")}
+        >
+          <Text style={styles.backText}>Back to More</Text>
+        </Pressable>
+      )}
 
       {screen === "countries" ? (
         <CountryDirectoryScreen />
@@ -378,8 +414,8 @@ export default function App() {
           {screen === "fda" && <USFdaSourcePreviewScreen darkMode={darkMode} />}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
-          {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} />}
-          {screen === "distribution-preview" && <PrivateOperationsPreviewScreen area="distribution" darkMode={darkMode} />}
+          {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} selectedId={selectedOperationsModule} onSelectedIdChange={setSelectedOperationsModule} />}
+          {screen === "distribution-preview" && <PrivateOperationsPreviewScreen area="distribution" darkMode={darkMode} selectedId={selectedOperationsModule} onSelectedIdChange={setSelectedOperationsModule} />}
           {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
             const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
             if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
@@ -602,6 +638,7 @@ function createStyles(palette: MobilePalette) {
   regionLabelSelected: { color: palette.canvas },
   noResults: { fontSize: 14, color: palette.secondary, lineHeight: 22, marginTop: 16 },
   back: { minHeight: 44, alignSelf: "flex-start", justifyContent: "center", marginBottom: 15 },
+  backToMore: { minHeight: 48, paddingHorizontal: 24, justifyContent: "center", alignItems: "flex-start", borderBottomWidth: 1, borderColor: palette.border },
   backText: { color: palette.primary, fontSize: 16, fontWeight: "600" },
   requirement: { borderBottomWidth: 1, borderColor: palette.border, paddingVertical: 11 },
   endSpacing: { height: 24 },

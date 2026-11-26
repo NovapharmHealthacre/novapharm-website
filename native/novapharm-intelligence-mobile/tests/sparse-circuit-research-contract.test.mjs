@@ -32,7 +32,14 @@ test("mobile sparse-circuit candidate is static, nonclinical, unconnected and un
   assert.match(app,/No model weights, pharmaceutical data, patient imagery, external requests/);
   assert.match(readme,/It \*\*does not\*\* load a trained model/);
   assert.match(readme,/not a shipped mobile feature/);
-  assert.doesNotMatch(app,/\bfetch\s*\(|XMLHttpRequest|AsyncStorage|SecureStore|WebView|useEffect\s*\(|MLModel\.prediction|model\.predict/);
+  assert.doesNotMatch(app,/\bfetch\s*\(|XMLHttpRequest|AsyncStorage|SecureStore|WebView|MLModel\.prediction|model\.predict/);
+  // Only the explicit navigation effect is allowed; no model/network side effects.
+  const effects = [...app.matchAll(/\buseEffect\s*\(/g)];
+  assert.equal(effects.length, 1, "Unexpected second effect added to the offline candidate");
+  assert.match(app, /if \(Platform\.OS !== "android"\) return;/);
+  assert.match(app, /BackHandler\.addEventListener\("hardwareBackPress"/);
+  assert.match(app, /return \(\) => subscription\.remove\(\);/);
+  assert.match(app, /}, \[screen, selectedWorkspace, selectedOperationsModule\]\);/);
 });
 
 test("release remains separately denied in the canonical governance source",()=>{
