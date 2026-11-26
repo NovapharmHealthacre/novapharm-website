@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import directory from "../../../docs/intelligence/country-101-client-catalog-20261118.json";
 import ownerNationalBrief from "../../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import integrationPlan from "../../../docs/intelligence/global-integration-execution-20261126.json";
+import worldwide from "../../../docs/intelligence/worldwide-jurisdiction-scope-20261126.json";
 import styles from "./country-source-coverage.module.css";
 
 type Filter = "all" | "candidate" | "research";
@@ -32,16 +33,17 @@ export function CountrySourceCoverage() {
     });
   }, [filter, query]);
   const visible = matches.slice(0, visibleLimit);
+  const extraMatches = worldwide.jurisdictions.filter((entry) => !entry.existingCountryCatalogue && filter !== "candidate" && `${entry.displayName} ${entry.code}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
 
   return (
     <section className={styles.root} aria-labelledby="country-source-coverage-heading">
       <header className={styles.header}>
         <p className={styles.eyebrow}>Global source evidence</p>
-        <h2 id="country-source-coverage-heading">101-country research coverage</h2>
+        <h2 id="country-source-coverage-heading">Worldwide jurisdiction research coverage</h2>
         <p>Country research is not a pharmaceutical data integration. This view contains official-publisher references and candidate metadata only; no medicine records, licensed feeds or customer-live country access.</p>
       </header>
       <dl className={styles.metrics}>
-        <div><dt>National scope</dt><dd>{summary.distinctNationalCountries}</dd></div>
+        <div><dt>Worldwide jurisdictions</dt><dd>{worldwide.summary.jurisdictions}</dd></div>
         <div><dt>Countries with source candidates</dt><dd>{summary.registeredNationalCountries}</dd></div>
         <div><dt>Source discovery still required</dt><dd>{summary.addedResearchOnlyNationalCountries}</dd></div>
         <div><dt>Customer-live countries</dt><dd>{summary.customerLiveNationalCountries}</dd></div>
@@ -67,7 +69,7 @@ export function CountrySourceCoverage() {
         </label>
       </div>
       <p className={styles.resultCount} aria-live="polite">
-        Showing {visible.length} of {matches.length} matching countries. No customer-live feeds.
+        Showing {visible.length} of {matches.length} existing research entries; {extraMatches.length} additional worldwide matches. No customer-live feeds.
       </p>
       <div className={styles.grid}>
         {visible.map((country) => (
@@ -115,7 +117,8 @@ export function CountrySourceCoverage() {
           </article>
         ))}
       </div>
-      {!matches.length && <p className={styles.empty}>No countries match this search. No result is inferred or fabricated.</p>}
+      {extraMatches.length > 0 && <details className={styles.details} open={query.trim() ? true : undefined}><summary>Additional worldwide research jurisdictions ({extraMatches.length})</summary><ul>{extraMatches.map((entry) => <li key={entry.code}><strong>{entry.displayName} · {entry.code}</strong><span>Authority and dataset discovery required · No live feed</span></li>)}</ul></details>}
+      {!matches.length && !extraMatches.length && <p className={styles.empty}>No countries match this search. No result is inferred or fabricated.</p>}
       {visible.length < matches.length &&
         <button className={styles.more} type="button" onClick={() => setVisibleLimit((n) => n + 32)}>Show more countries</button>}
       <p className={styles.footer}>Registry dated {directory.asOf}; owner-supplied national source brief dated {ownerNationalBrief.asOf}. References, source claims and API availability are unverified. No clinical, commercial or medicine-data rights have been granted.</p>

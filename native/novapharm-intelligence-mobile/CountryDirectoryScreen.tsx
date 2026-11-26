@@ -8,6 +8,7 @@ import { FlatList, Linking, Pressable, StyleSheet, Text, TextInput, useColorSche
 import catalogue from "../../docs/intelligence/country-101-client-catalog-20261118.json";
 import ownerNationalBrief from "../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import integrationPlan from "../../docs/intelligence/global-integration-execution-20261126.json";
+import worldwide from "../../docs/intelligence/worldwide-jurisdiction-scope-20261126.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 
 type Country = (typeof catalogue.countries)[number];
@@ -115,13 +116,15 @@ export function CountryDirectoryScreen() {
     });
   }, [filter, query]);
 
+  const extraMatches = worldwide.jurisdictions.filter((entry) => !entry.existingCountryCatalogue && filter !== "with-sources" && `${entry.displayName} ${entry.code}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+  const [showWorldwide, setShowWorldwide] = useState(false);
   const header = (
     <View style={styles.header}>
       <Text style={styles.eyebrow}>Global source evidence</Text>
-      <Text style={styles.title} accessibilityRole="header">101 countries</Text>
+      <Text style={styles.title} accessibilityRole="header">Worldwide research</Text>
       <Text style={styles.explanation}>77 countries with publisher candidates and owner-supplied research requirements. 24 more require source discovery. No pharmaceutical feeds or commercial reuse rights have been approved.</Text>
       <View style={styles.metrics}>
-        <View style={styles.metric}><Text style={styles.number}>101</Text><Text style={styles.metricLabel}>Research scope</Text></View>
+        <View style={styles.metric}><Text style={styles.number}>{worldwide.summary.jurisdictions}</Text><Text style={styles.metricLabel}>Research jurisdictions</Text></View>
         <View style={styles.metric}><Text style={styles.number}>77</Text><Text style={styles.metricLabel}>With candidate source</Text></View>
         <View style={styles.metric}><Text style={styles.number}>24</Text><Text style={styles.metricLabel}>Source discovery needed</Text></View>
         <View style={styles.metric}><Text style={styles.number}>0</Text><Text style={styles.metricLabel}>Customer-live</Text></View>
@@ -143,7 +146,7 @@ export function CountryDirectoryScreen() {
           </Pressable>
         ))}
       </View>
-      <Text style={styles.counter} accessibilityLiveRegion="polite">{countries.length} matching countries · no customer-live feeds</Text>
+      <Text style={styles.counter} accessibilityLiveRegion="polite">{countries.length} existing research matches · {extraMatches.length} additional worldwide matches · no customer-live feeds</Text>
     </View>
   );
 
@@ -157,7 +160,8 @@ export function CountryDirectoryScreen() {
       keyExtractor={(country) => country.iso2}
       renderItem={({ item }) => <CountryCard country={item} wide={twoColumns} styles={styles} />}
       ListHeaderComponent={header}
-      ListEmptyComponent={<Text style={styles.empty}>No matching countries. No data is inferred.</Text>}
+      ListEmptyComponent={!extraMatches.length ? <Text style={styles.empty}>No matching countries. No data is inferred.</Text> : null}
+      ListFooterComponent={extraMatches.length ? <View style={styles.header}><Pressable style={styles.action} accessibilityRole="button" accessibilityState={{expanded: showWorldwide || !!query.trim()}} onPress={() => setShowWorldwide(!showWorldwide)}><Text style={styles.actionText}>Additional worldwide research ({extraMatches.length})</Text></Pressable>{(showWorldwide || !!query.trim()) && extraMatches.map((entry) => <View key={entry.code} style={styles.source}><Text style={styles.publisher}>{entry.displayName} · {entry.code}</Text><Text style={styles.sourceText}>Authority and dataset discovery required · No live feed</Text></View>)}</View> : null}
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
       initialNumToRender={8}
