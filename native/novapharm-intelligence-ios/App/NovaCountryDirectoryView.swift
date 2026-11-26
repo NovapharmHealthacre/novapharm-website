@@ -305,7 +305,7 @@ private struct NovaCountryDetailView: View {
                     .foregroundStyle(.secondary)
             }
             Section("Backend integration planning") {
-                Text(["CA", "PL", "SG", "ES", "GB", "US"].contains(country.iso2) ? "Backend adapter source candidate exists; not a live feed" : "Adapter implementation or verification outstanding")
+                Text(["CA", "PL", "PT", "SG", "ES", "GB", "US"].contains(country.iso2) ? "Backend adapter source candidate exists; not a live feed" : "Adapter implementation or verification outstanding")
                     .font(.subheadline)
             }
             Section("Safety and release requirements") {

@@ -9,8 +9,8 @@
     "additionalResearch": 19,
     "nationalSourceCandidates": 89,
     "regionalGlobalSourceCandidates": 12,
-    "reviewedAdapterSources": 11,
-    "reviewedNationalAdapterCountries": 6,
+    "reviewedAdapterSources": 12,
+    "reviewedNationalAdapterCountries": 7,
     "customerLiveCountries": 0,
     "reviewedOfflineCandidateCountries": 1
   },
@@ -760,7 +760,7 @@
       "sourceKeys": [
         "europe-portugal-infarmed-sns-transparencia"
       ],
-      "adapterSourceCandidateCount": 0,
+      "adapterSourceCandidateCount": 1,
       "next": "Verify each national dataset and implement missing access",
       "customerLive": false
     },
@@ -1466,9 +1466,14 @@
       "referenceUrl": "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service",
       "verifiedSourceCodeIds": [],
       "engineeringState": "adapter-not-assessed",
-      "next": "Implement and test documented API contract",
+      "next": "Publisher onboarding required before FHIR service access; confirm agreement, exact FHIR profiles and terms",
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "accessEvidence": {
+        "referenceUrl": "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/how-to-access-the-fhir-service",
+        "accessState": "publisher-onboarding-required",
+        "credentialsAcquired": false
+      }
     },
     {
       "candidateKey": "europe-finland-fimea",
@@ -1566,11 +1571,29 @@
       "mode": "API/Download",
       "domains": "Medicine expenditure and dispensing data",
       "referenceUrl": "https://transparencia.sns.gov.pt/",
-      "verifiedSourceCodeIds": [],
-      "engineeringState": "adapter-not-assessed",
-      "next": "Implement and test documented API contract",
+      "verifiedSourceCodeIds": [
+        "pt-sns-dataset-metadata"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify real catalog metadata response, field-level schemas, reuse rights, aggregate records and staging",
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "additionalDatasetCandidates": [
+        {
+          "sourceId": "pt-sns-dataset-metadata",
+          "datasetId": "despesa-com-medicamentos-no-ambulatorio-sns",
+          "referenceUrl": "https://transparencia.sns.gov.pt/explore/assets/despesa-com-medicamentos-no-ambulatorio-sns/",
+          "domain": "outpatient-public-medicine-expenditure",
+          "liveResponseVerified": false
+        },
+        {
+          "sourceId": "pt-sns-dataset-metadata",
+          "datasetId": "evolucao-da-dispensa-de-medicamentos",
+          "referenceUrl": "https://transparencia.sns.gov.pt/explore/assets/evolucao-da-dispensa-de-medicamentos/",
+          "domain": "public-medicine-dispensing",
+          "liveResponseVerified": false
+        }
+      ]
     },
     {
       "candidateKey": "europe-hungary-nngyk-ogyei",
@@ -1824,9 +1847,14 @@
       "referenceUrl": "https://health-products.canada.ca/api/canada-vigilance/",
       "verifiedSourceCodeIds": [],
       "engineeringState": "adapter-not-assessed",
-      "next": "Implement and test documented API contract",
+      "next": "Review documented Canada Vigilance API and de-identification, report deduplication, provenance and reuse before ingesting; never infer causality or incidence",
       "productionAccepted": false,
-      "customerLive": false
+      "customerLive": false,
+      "accessEvidence": {
+        "referenceUrl": "https://health-products.canada.ca/api/documentation/cvp-documentation-en.html",
+        "accessState": "documented-api-response-unverified",
+        "credentialsAcquired": false
+      }
     },
     {
       "candidateKey": "north-america-mexico-cofepris",
