@@ -33,7 +33,7 @@ test("approved catalogue emits crawlable product content and never fabricates an
  try{
   put("products/index.html",shell);
   put(image.slice(1),"synthetic test asset");
-  const products=["vitamin-d3-120-tablets","magnesium-daily-60-tablets","collagen-gold-30-sachets"].map(slug=>({slug,image,name:"Fixture",pack:"30 tablets"}));
+  const products=["vitamin-d3-120-tablets","magnesium-daily-60-tablets","collagen-gold-30-sachets","magnesium-complex-60-tablets","vitamin-d3-k2-120-tablets","vitamin-c-1000mg-30-tablets"].map(slug=>({slug,image,name:"Fixture",pack:"30 tablets",retail_price_pence:2400}));
   put("assets/data/nutraxin-retail-catalogue.json",JSON.stringify({products}));
   put("seo/generated/page-metadata-register.json","[]");
   put("seo/generated/structured-data-register.json","[]");
