@@ -4566,7 +4566,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 4,
-      "referenceCount": 6,
+      "referenceCount": 5,
       "usageFiles": [
         "assets/data/esco-model-photo-map.json",
         "products/index.html",
@@ -5466,7 +5466,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 4,
-      "referenceCount": 6,
+      "referenceCount": 5,
       "usageFiles": [
         "assets/data/esco-model-photo-map.json",
         "products/index.html",
@@ -14236,7 +14236,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 9,
-      "referenceCount": 18,
+      "referenceCount": 16,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
@@ -16343,10 +16343,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "products/index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-074",
@@ -19488,10 +19489,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "products/index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -21268,11 +21270,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/retail/connective-395-owner-photo-candidates.json",
         "docs/retail/connective-next-six-consumer-source-evidence.json",
+        "products/index.html",
         "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
@@ -31595,7 +31598,9 @@
       "registeredAltText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Gold Quality Collagen box and 30-tablet bottle"
+        "Nutraxin Gold Quality Collagen",
+        "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
+        "Nutraxin Gold Quality Collagen, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -31606,12 +31611,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 11,
+      "usageCount": 8,
+      "referenceCount": 13,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
@@ -31647,7 +31653,9 @@
       "registeredAltText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Gold Quality Collagen box and 30-tablet bottle"
+        "Nutraxin Gold Quality Collagen",
+        "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
+        "Nutraxin Gold Quality Collagen, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -31658,12 +31666,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 11,
+      "usageCount": 8,
+      "referenceCount": 13,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
@@ -31699,7 +31708,9 @@
       "registeredAltText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Gold Quality Collagen box and 30-tablet bottle"
+        "Nutraxin Gold Quality Collagen",
+        "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
+        "Nutraxin Gold Quality Collagen, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -31710,11 +31721,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 12,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
@@ -31750,7 +31762,9 @@
       "registeredAltText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Gold Quality Collagen box and 30-tablet bottle"
+        "Nutraxin Gold Quality Collagen",
+        "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
+        "Nutraxin Gold Quality Collagen, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -31761,11 +31775,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 12,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
@@ -31801,7 +31816,9 @@
       "registeredAltText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Gold Quality Collagen box and 30-tablet bottle"
+        "Nutraxin Gold Quality Collagen",
+        "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
+        "Nutraxin Gold Quality Collagen, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -31812,12 +31829,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 9,
-      "referenceCount": 25,
+      "usageCount": 10,
+      "referenceCount": 27,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "infra/aws/nutraxin-payment-notifications-production.json",
+        "products/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/collagen/index.html",
         "products/nutraxin/index.html",
@@ -32104,22 +32122,26 @@
       "registeredAltText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Magnesium Complex + Vitamin B6",
+        "Nutraxin Magnesium Complex + Vitamin B6, original pack",
         "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 13,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
@@ -32155,22 +32177,26 @@
       "registeredAltText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Magnesium Complex + Vitamin B6",
+        "Nutraxin Magnesium Complex + Vitamin B6, original pack",
         "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 13,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
@@ -32206,21 +32232,25 @@
       "registeredAltText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Magnesium Complex + Vitamin B6",
+        "Nutraxin Magnesium Complex + Vitamin B6, original pack",
         "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 12,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
@@ -32256,21 +32286,25 @@
       "registeredAltText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Magnesium Complex + Vitamin B6",
+        "Nutraxin Magnesium Complex + Vitamin B6, original pack",
         "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 12,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
@@ -32306,22 +32340,26 @@
       "registeredAltText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Magnesium Complex + Vitamin B6",
+        "Nutraxin Magnesium Complex + Vitamin B6, original pack",
         "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 23,
+      "usageCount": 9,
+      "referenceCount": 26,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "infra/aws/nutraxin-payment-notifications-production.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "products/nutraxin/magnesium/index.html",
@@ -33888,23 +33926,27 @@
       "registeredAltText": "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle"
+        "Nutraxin Vitamin D3",
+        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
+        "Nutraxin Vitamin D3 1000 IU, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 8,
+      "referenceCount": 12,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
@@ -33940,23 +33982,27 @@
       "registeredAltText": "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle"
+        "Nutraxin Vitamin D3",
+        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
+        "Nutraxin Vitamin D3 1000 IU, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 8,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
@@ -33992,22 +34038,26 @@
       "registeredAltText": "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle"
+        "Nutraxin Vitamin D3",
+        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
+        "Nutraxin Vitamin D3 1000 IU, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 11,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
@@ -34043,24 +34093,28 @@
       "registeredAltText": "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle"
+        "Nutraxin Vitamin D3",
+        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
+        "Nutraxin Vitamin D3 1000 IU, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 9,
+      "referenceCount": 13,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
@@ -34096,11 +34150,14 @@
       "registeredAltText": "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle"
+        "Nutraxin Vitamin D3",
+        "Nutraxin Vitamin D3 1000 IU box and 120-tablet bottle",
+        "Nutraxin Vitamin D3 1000 IU, original pack"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [
+        "eager",
         "lazy"
       ],
       "observedFetchPriority": [
@@ -34108,7 +34165,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 15,
-      "referenceCount": 44,
+      "referenceCount": 45,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -35172,6 +35229,7 @@
       "registeredAltText": "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Vitamin MAX C + D + Zinc",
         "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle"
       ],
       "observedCaptions": [],
@@ -35183,11 +35241,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
@@ -35223,6 +35282,7 @@
       "registeredAltText": "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Vitamin MAX C + D + Zinc",
         "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle"
       ],
       "observedCaptions": [],
@@ -35234,10 +35294,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
@@ -35273,6 +35334,7 @@
       "registeredAltText": "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Vitamin MAX C + D + Zinc",
         "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle"
       ],
       "observedCaptions": [],
@@ -35284,10 +35346,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
@@ -35323,6 +35386,7 @@
       "registeredAltText": "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Vitamin MAX C + D + Zinc",
         "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle"
       ],
       "observedCaptions": [],
@@ -35334,10 +35398,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
@@ -35373,6 +35438,7 @@
       "registeredAltText": "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
+        "Nutraxin Vitamin MAX C + D + Zinc",
         "Nutraxin Vitamin MAX C, D and Zinc box and 60-tablet bottle"
       ],
       "observedCaptions": [],
@@ -35384,11 +35450,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 18,
+      "usageCount": 9,
+      "referenceCount": 19,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "infra/aws/nutraxin-payment-notifications-production.json",
+        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
