@@ -13,6 +13,7 @@ const originalMain=template.match(/<main\b[^>]*>[\s\S]*?<\/main>/);
 assert(originalMain,'Products shell missing');
 const base='https://novapharmhealthcare.com';
 const catalogueSeo=[];
+const catalogueSocial=[];
 const jsonLd=value=>'<script type="application/ld+json">'+JSON.stringify(value).replace(/</g,'\\u003c')+'</script>';
 function page(route,title,description,main,seo=null){
  let html=template.replace(originalMain[0],()=>main).replace(/data-route="[^"]*"/, 'data-route="'+route+'"');
@@ -41,7 +42,23 @@ function page(route,title,description,main,seo=null){
  head+='<meta property="og:title" content="'+escape(title)+'"><meta property="og:description" content="'+escape(description)+'"><meta property="og:url" content="'+base+route+'"><meta property="og:type" content="website"><link rel="stylesheet" href="/assets/css/retail-expansion.css">';
  if(seo){
   head+=jsonLd(seo.schema);
-  if(seo.image) head+='<meta property="og:image" content="'+escape(base+seo.image)+'"><meta property="og:image:alt" content="'+escape(seo.h1)+'"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="'+escape(base+seo.image)+'">';
+  // Every approved product/collection has a complete single-image provenance
+  // register and social markup, not just an OG image. Retain a distinct WebPage
+  // entity alongside Product/CollectionPage so search and accessibility checks
+  // can evaluate the same canonical route without misclassifying its offering.
+  head+=jsonLd({'@context':'https://schema.org','@type':'WebPage','@id':base+route+'#webpage',url:base+route,name:title,description});
+  if(seo.image){
+   assert(isLocalPackImage(seo.image),'Approved social photograph missing');
+   const image={route,page:base+route,url:seo.image,absoluteUrl:base+seo.image,
+    type:seo.image.endsWith('.webp')?'image/webp':seo.image.endsWith('.png')?'image/png':'image/jpeg',
+    width:800,height:800,alt:seo.h1};
+   catalogueSocial.push(image);
+   const properties=['image','image:secure_url','image:type','image:width','image:height','image:alt'];
+   const vals=[image.absoluteUrl,image.absoluteUrl,image.type,image.width,image.height,image.alt];
+   const tags=properties.map((property,i)=>'<meta property="og:'+property+'" content="'+escape(vals[i])+'">').join('');
+   head+='<!-- page-specific-social-start -->'+tags+'<!-- page-specific-social-end -->'
+     +'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="'+escape(image.absoluteUrl)+'">';
+  }
   catalogueSeo.push({route,canonical:base+route,file:route.slice(1)+'index.html',title,description,h1:seo.h1,indexable:true,schemaTypes:[seo.schema['@type']],intendedCta:[]});
  }
  if(route.startsWith('/products/health-and-wellbeing/')) head+='<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>';
@@ -118,7 +135,7 @@ if(approvedCatalogue.length>0){
  }
  const groups=[...new Set(items.map(p=>p.category))].sort();
  const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" data-npr-collection-section id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
- page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Explore '+items.length+' approved products. Add to Bag and Buy Now appear with the current verified retail offer; all payments use NovaPharm secure Stripe checkout.</p><div class="npr-collection-search"><label for="npr-collection-search">Search products</label><input id="npr-collection-search" type="search" autocomplete="off" placeholder="Search product, brand or range" data-npr-collection-query><p data-npr-collection-status role="status" aria-live="polite">Showing '+items.length+' products</p></div><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'<p class="npr-wrap npr-no-results" data-npr-collection-empty hidden>No products match your search. Try a different name or category.</p></main>',{h1:'Health and wellbeing.',schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
+ page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Explore '+items.length+' approved products. Add to Bag and Buy Now appear with the current verified retail offer; all payments use NovaPharm secure Stripe checkout.</p><div class="npr-collection-search"><label for="npr-collection-search">Search products</label><input id="npr-collection-search" type="search" autocomplete="off" placeholder="Search product, brand or range" data-npr-collection-query><p data-npr-collection-status role="status" aria-live="polite">Showing '+items.length+' products</p></div><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'<p class="npr-wrap npr-no-results" data-npr-collection-empty hidden>No products match your search. Try a different name or category.</p></main>',{h1:'Health and wellbeing.',image:items[0].image,schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
 }
 
  // Pharmacy acquisition offer: public illustrative quotes only, no supplier costs,
@@ -170,9 +187,22 @@ if(catalogueSeo.length){
  const structured=JSON.parse(read(structuredPath)).filter(p=>!p.route.startsWith(prefix)&&p.route!==pharmacyRoute);
  for(const p of catalogueSeo){
   const type=p.schemaTypes[0];
-  structured.push({route:p.route,canonical:p.canonical,file:p.file,entities:[{id:p.canonical+(type==='Product'?'#product':'#webpage'),types:[type],name:p.h1==='Health and wellbeing.'?'Health and wellbeing':p.h1,mainEntity:null,publisher:null,author:null}]});
+  structured.push({route:p.route,canonical:p.canonical,file:p.file,entities:[
+   {id:p.canonical+'#webpage',types:['WebPage'],name:p.h1,mainEntity:null,publisher:null,author:null},
+   {id:p.canonical+(type==='Product'?'#product':'#webpage'),types:[type],name:p.h1==='Health and wellbeing.'?'Health and wellbeing':p.h1,mainEntity:null,publisher:null,author:null}
+  ]});
  }
  write(structuredPath,JSON.stringify(structured,null,2)+'\n');
+ const imagePath='seo/generated/social-image-register.json';
+ const priorImages=JSON.parse(read(imagePath));
+ // Pharmacy Partners has its own reviewed and exact registered Nutraxin pack
+ // image. Preserve it, rather than replacing its dimensions and source with a
+ // new generic retail image record.
+ const retailSocial=catalogueSocial.filter(p=>p.route.startsWith(prefix));
+ assert(retailSocial.length===catalogueSeo.filter(p=>p.route.startsWith(prefix)).length,
+  'Every approved retail route requires its own exact product social photograph');
+ const retainedImages=priorImages.filter(p=>!p.route.startsWith(prefix));
+ write(imagePath,JSON.stringify([...retainedImages,...retailSocial],null,2)+'\n');
  let sitemap=read('sitemap.xml');
  assert(sitemap.includes('</urlset>'),'Missing sitemap root');
  sitemap=sitemap.replace(/<url>\s*<loc>https:\/\/novapharmhealthcare\.com\/products\/health-and-wellbeing\/[^<]*<\/loc>[\s\S]*?<\/url>/g,'');
