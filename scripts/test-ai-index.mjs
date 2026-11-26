@@ -8,19 +8,32 @@ const knowledgeRaw = read("assets/ai/company-knowledge-index.json");
 const manifest = JSON.parse(read("assets/ai/company-source-manifest.json"));
 const knowledge = JSON.parse(knowledgeRaw);
 
-assert.equal(manifest.approvedSourceCount, 30);
+// The approved corpus grows with published articles and page migrations.
+// Validate provenance and a meaningful minimum instead of a stale fixed 2026 count.
+assert.equal(manifest.approvedSourceCount, manifest.sources.length);
+assert.ok(manifest.approvedSourceCount >= 20, "Expected meaningful public evidence coverage");
 assert.equal(manifest.chunkCount, knowledge.chunks.length);
 assert.equal(manifest.corpusHash, knowledge.corpusHash);
-assert.ok(knowledge.chunks.length >= 300);
+// Retired, noindex and restricted routes must never be padded into the index to
+// satisfy a fixed chunk count. Require meaningful density per approved source.
+assert.ok(
+  knowledge.chunks.length >= manifest.approvedSourceCount * 8,
+  "Expected at least eight deterministic evidence chunks per included public source on average"
+);
 assert.ok(Object.keys(knowledge.keywordIndex.postings).length > 500);
-for (const required of ["page-home", "page-cro", "page-oncology", "page-technology-ai-governance", "leader-vishal-chakravarty"]) {
+for (const required of ["page-home", "page-cro", "page-oncology", "page-products", "leader-vishal-chakravarty"]) {
   assert.ok(manifest.sources.some((source) => source.id === required), required);
 }
+for (const retired of ["page-technology-ai-governance", "page-search"]) {
+  assert.ok(!manifest.sources.some((source) => source.id === retired), `Retired public AI route must not enter research: ${retired}`);
+}
+const blockedSegments = new Set(["portal", "employee", "admin", "board", "docs", "api", "contact", "account-application", "legal"]);
 for (const source of manifest.sources) {
   assert.match(source.url, /^https:\/\/novapharmhealthcare\.com\//);
   assert.ok(source.sourceHash);
   assert.ok(source.blockCount > 0);
-  assert.doesNotMatch(source.url, /\/(?:portal|employee|admin|board|docs|api)\//);
+  assert.ok(new URL(source.url).pathname.split("/").every((part) => !blockedSegments.has(part)), source.url);
+  assert.ok(source.file.split("/").every((part) => !blockedSegments.has(part)), source.file);
 }
 for (const chunk of knowledge.chunks) {
   assert.ok(chunk.contentHash && chunk.sourceUrl && chunk.sourceTitle && chunk.heading && chunk.text);
