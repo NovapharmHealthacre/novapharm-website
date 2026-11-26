@@ -22,6 +22,15 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def without_offer_bridge(text: str, gtin: str) -> str:
+    """Only an inert exact-GTIN mount may distinguish staged from live HTML."""
+    mount = f'<div data-npr-retail-sku="NP-CP-{gtin}"></div>'
+    script = '<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>'
+    mark = ' data-npr-order-notice'
+    assert text.count(mount) == 1 and text.count(script) == 1 and text.count(mark) == 1, 'Missing or repeated exact live-offer mount'
+    return text.replace(mount, '', 1).replace(script, '', 1).replace(mark, '', 1)
+
+
 def stage(site: Path, live: Path) -> dict:
     site, live = site.resolve(), live.resolve()
     assert site.is_dir() and live.is_dir(), 'Expected checked-out public site and published gh-pages tree'
@@ -41,15 +50,25 @@ def stage(site: Path, live: Path) -> dict:
         assert re.fullmatch(r'\d{13}', gtin), f'Invalid GTIN path: {gtin}'
         text = page.read_text()
         assert gtin in text and '<meta name="robots" content="noindex, follow">' in text
-        assert 'data-npr-retail-sku' not in text and '"offers"' not in text, 'Unverified offer leaked into public page'
-        assert 'Full ingredients, directions, warnings' in text, 'Product disclosure missing'
+        without_offer_bridge(text, gtin)
+        assert all(k not in text for k in ('"offers"', 'grossMinor', 'netMinor', 'Add to Bag', 'Buy now')), 'Unverified offer leaked into public page'
+        assert ('Full ingredients, directions, warnings' in text or "Manufacturer's online product information" in text), 'Product disclosure missing'
     # Never overwrite an existing public page with an older main artifact.
     added = []
+    updated = []
     for source in pages:
         relative = source.relative_to(site)
         target = live / relative
         if target.exists():
-            assert target.is_file() and sha(target) == sha(source), f'Existing published path changed: {relative}'
+            assert target.is_file(), f'Existing published path changed: {relative}'
+            if sha(target) == sha(source):
+                continue
+            assert source != collection, f'Existing published collection changed: {relative}'
+            previous = target.read_text()
+            candidate = source.read_text()
+            assert without_offer_bridge(candidate, source.parent.name) == previous, f'Existing published path changed: {relative}'
+            target.write_text(candidate)
+            updated.append(str(relative))
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target)
@@ -86,9 +105,12 @@ def stage(site: Path, live: Path) -> dict:
         'productPages': len(detail_pages),
         'collectionPages': 1,
         'newPaths': len(added),
+        'existingDetailsUpgraded': len(updated),
         'newSharedAssets': [str(p) for p in ASSETS if str(p) in added],
         'productsLandingChanged': MARKER not in before,
         'checkoutChanged': False,
+        'offerLedgerChanged': False,
+        'paidCheckoutActivated': False,
         'sourcePricingPublished': False,
         'outcome': 'staged_candidate_not_live',
     }
