@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "ean": "5021265243372",
+    "brand": "Vitabiotics",
+    "name": "Ultra Vitamin D 1000IU",
+    "category": "Vitamin D",
+    "pack": "96 Tablets",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5021265243372/front-800.webp",
+    "description": "Vitabiotics vitamin D3 food supplement. Each tablet supplies 25 micrograms (1,000 IU) vitamin D3, equivalent to 500% of the UK nutrient reference value. Original 96-tablet pack.",
+    "ingredients": "Maltodextrin; bulking agent: microcrystalline cellulose; vitamin D3 (cholecalciferol, antioxidant DL-alpha tocopherol); tablet coating (hydroxypropylmethylcellulose, isomalt, medium-chain triglycerides, calcium carbonate colouring); anti-caking agents: silicon dioxide, stearic acid and magnesium stearate.",
+    "directions": "Adults: one tablet daily with the main meal. Swallow with water or a cold drink. Do not chew. Do not exceed the recommended daily intake.",
+    "warnings": "Food supplement; not a substitute for a varied and balanced diet or healthy lifestyle. Not suitable for children. Consult a doctor or pharmacist before use if pregnant, breastfeeding, under medical supervision, experiencing epilepsy, or concerned about allergies. Produced at a site that may handle nuts. Store in a dry place below 25°C, out of sight and reach of children.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
+  }
+]
