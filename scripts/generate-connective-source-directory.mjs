@@ -167,8 +167,8 @@ if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
     const route=collectionRoute+p.ean+'/';
     const label=manufacturerInfo.get(p.ean);
     const labelNotice=label
-      ? `<p class="npr-reference">Manufacturer's online product information, reviewed 26 November 2026. The exact current UK pack label and allergen emphasis are not yet certified. Ordering remains unavailable until final verification.</p>`
-      : `<p class="npr-reference">Full ingredients, directions, warnings and final ordering terms must be confirmed on this page before checkout is available.</p>`;
+      ? `<p class="npr-reference" data-npr-order-notice>Manufacturer's online product information, reviewed 26 November 2026. The exact current UK pack label and allergen emphasis are not yet certified. Ordering remains unavailable until final verification.</p>`
+      : `<p class="npr-reference" data-npr-order-notice>Full ingredients, directions, warnings and final ordering terms must be confirmed on this page before checkout is available.</p>`;
     const labelDetails=label
       ? `<section class="npr-wrap npr-section npr-source-manufacturer-details" aria-labelledby="manufacturer-info-heading"><h2 id="manufacturer-info-heading">Manufacturer information</h2>`+
         `<h3>Ingredient reference</h3><p>${escapeHtml(label.ingredients)}</p>`+
@@ -192,9 +192,9 @@ if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
       `<p>Pack: ${escapeHtml(p.pack)} · Brand: ${escapeHtml(p.brand)} · GTIN: ${escapeHtml(p.ean)}</p>`+
       `<p>Source information is provided for product identification; no unverified price or stock is displayed.</p>`+
       `<a href="${collectionRoute}" class="npr-card-action">Explore more products <span aria-hidden="true">→</span></a></section>`+
-      labelDetails+`</main>`;
+      labelDetails+`<div data-npr-retail-sku="NP-CP-${escapeHtml(p.ean)}"></div></main>`;
     const schema={'@context':'https://schema.org','@type':'Product','@id':baseUrl+route+'#product',name:p.name,gtin13:p.ean,brand:{'@type':'Brand',name:p.brand},url:baseUrl+route};
-    metadataPage(shell, route, `${p.name} | NovaPharm Healthcare`, `${p.brand} ${p.name}. ${p.pack}. Source-backed UK product reference.`,main,{schema});
+    metadataPage(shell, route, `${p.name} | NovaPharm Healthcare`, `${p.brand} ${p.name}. ${p.pack}. Source-backed UK product reference.`,main,{script:'/assets/js/nutraxin-retail-store.js',schema});
   }
   let overview = read('products/index.html');
   overview = overview.replace(/<section\b[^>]*data-npr-source-collection[^>]*>[\s\S]*?<\/section>/gi, '');
