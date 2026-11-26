@@ -225,3 +225,11 @@
 .customer-related-tasks ul{display:flex;flex-wrap:wrap;gap:0 20px;list-style:none;margin:0;padding:0}
 .customer-related-tasks a{display:inline-flex;align-items:center;min-height:44px;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
 .customer-related-tasks a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+
+/* Approved cross-estate consumer shopping navigation; no portal payment capture. */
+.unified-customer-hub .customer-editorial-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-block:22px 14px}
+.unified-customer-hub .customer-editorial-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 20px;border:1px solid #DEDCD5;border-radius:999px;font-size:.94rem;font-weight:600;line-height:1.35;text-decoration:none}
+.unified-customer-hub .customer-editorial-actions .customer-action-primary{background:#0B0B0E;color:#FFFFFF;border-color:#0B0B0E}
+.unified-customer-hub .customer-editorial-actions .customer-action-secondary{background:#FFFFFF;color:#0B0B0E}
+.unified-customer-hub .customer-editorial-actions a:focus-visible{outline:3px solid #2546D8;outline-offset:3px}
+.unified-customer-hub .unified-collection-card a{color:#0B0B0E;font-size:.9rem;font-weight:600;text-underline-offset:3px}
