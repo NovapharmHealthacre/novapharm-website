@@ -66,6 +66,7 @@ let portalOutput = "";
 let screenshots = 0;
 let axeRuns = 0;
 const findings: Finding[] = [];
+const visualEvidence: Array<{ label: string; fontFamily: string; canvas: string; ink: string; reducedMotion: boolean; images: number; missingAlt: number }> = [];
 
 async function waitForResponse(url: string, expectedStatus = 200): Promise<void> {
   const deadline = Date.now() + 30_000;
@@ -230,7 +231,21 @@ function axeDetail(violation: Readonly<{ help: string; nodes: readonly Readonly<
 }
 
 async function inspectLayout(page: Page, label: string): Promise<void> {
-  const layout = await page.evaluate(() => ({
+  const layout = await page.evaluate(() => {
+    const probe = document.createElement("span");
+    probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none";
+    probe.style.backgroundColor = "var(--np-color-canvas, rgb(1, 2, 3))";
+    probe.style.color = "var(--np-color-label, rgb(1, 2, 3))";
+    document.body.append(probe);
+    const canvas = getComputedStyle(probe).backgroundColor;
+    const ink = getComputedStyle(probe).color;
+    probe.remove();
+    return ({
+    canvas, ink,
+    fontFamily: getComputedStyle(document.body).fontFamily,
+    reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+    images: document.images.length,
+    missingAlt: [...document.images].filter(image => !image.hasAttribute("alt")).length,
     viewportWidth: document.documentElement.clientWidth,
     documentWidth: document.documentElement.scrollWidth,
     layoutVersion: getComputedStyle(document.documentElement).getPropertyValue("--np-layout-contract").trim(),
@@ -251,7 +266,14 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
       document.body.innerText.includes("The string did not match the expected pattern") ||
       document.body.innerText.includes("Secure portal backend is not active on this static host yet") ||
       document.body.innerText.includes("Internal Server Error"),
-  }));
+    });
+  });
+  visualEvidence.push({label, fontFamily:layout.fontFamily, canvas:layout.canvas, ink:layout.ink, reducedMotion:layout.reducedMotion, images:layout.images, missingAlt:layout.missingAlt});
+  assert.equal(layout.canvas, "rgb(255, 255, 255)", `${label}: approved canvas colour`);
+  assert.equal(layout.ink, "rgb(11, 11, 14)", `${label}: approved ink colour`);
+  assert.match(layout.fontFamily, /apple-system|system-ui/i, `${label}: platform typography`);
+  assert.equal(layout.reducedMotion, true, `${label}: reduced-motion preference`);
+  assert.equal(layout.missingAlt, 0, `${label}: images without alt attributes`);
   assert.equal(layout.layoutVersion, "1", `${label}: shared Apple HIG layout CSS was not loaded`);
   assert.equal(layout.unboundedGrids, 0, `${label}: metrics grid extends outside the viewport`);
   assert.equal(layout.unboundedTables, 0, `${label}: data table is not bounded to its own scrolling region`);
@@ -950,6 +972,8 @@ try {
     visibleInformationalModuleCount: visiblePortalModules.length,
     screenshots,
     axeRuns,
+    visualEvidence,
+    visualEvidenceScope: "Rendered synthetic module checks; not independent live deployment or human image approval",
     seriousOrCriticalAccessibilityFindings: findings,
     data: "synthetic and non-confidential only",
     indexing: "disabled",
