@@ -100,7 +100,7 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
     return <section className="unified-customer-hub" aria-labelledby="customer-collections-title">
       <p className="unified-customer-eyebrow">NOVAPHARM / AUTHORISED CATALOGUE</p>
       <h2 id="customer-collections-title">One catalogue. Multiple collections.</h2>
-      <p>Nutraxin and ESCO Anand are collections within My Products, not separate shopping accounts or ordering applications. Your authenticated catalogue below is the authority for available products and account-specific terms.</p>
+      <p>NovaPharm keeps its account-specific trade catalogue separate from consumer retail shopping. Use the approved retail collections below to purchase eligible products through the existing secure NovaPharm checkout.</p>
       <div className="unified-collection-grid">
         <div className="unified-collection-card">
           <strong>Nutraxin</strong>
@@ -108,12 +108,23 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
           <p>Product eligibility, approved retail or trade pricing, and fulfilment must be verified before checkout.</p>
         </div>
         <div className="unified-collection-card">
+          <strong>Connective Pharma</strong>
+          <span>Approved Vitabiotics and wellbeing products</span>
+          <p>Shop eligible consumer supplements with current retail prices and supplier-backed availability confirmed at checkout.</p>
+          <a href="https://novapharmhealthcare.com/products/health-and-wellbeing/">Explore Connective products</a>
+        </div>
+        <div className="unified-collection-card">
           <strong>ESCO Anand</strong>
           <span>Medical and surgical supply references</span>
           <p>Catalogue references alone do not establish account prices, UK product authorisation, stock or order acceptance.</p>
         </div>
       </div>
-      <p className="unified-customer-release-note">The current portal release is read-only. Order and payment controls remain unavailable until the common transactional service passes its documented checks.</p>
+      <div className="customer-editorial-actions" aria-label="Approved retail shopping">
+        <a className="customer-action-primary" href="https://novapharmhealthcare.com/products/health-and-wellbeing/">Shop approved wellbeing products</a>
+        <a className="customer-action-secondary" href="https://novapharmhealthcare.com/products/nutraxin/">Shop Nutraxin</a>
+        <a className="customer-action-secondary" href="https://novapharmhealthcare.com/products/nutraxin/bag/">View shopping bag</a>
+      </div>
+      <p className="unified-customer-release-note">Retail orders and card payments use NovaPharm’s existing verified consumer checkout; they are not collected inside this workspace. Account-specific trade ordering in the portal remains read-only until its own transactional service is released. Product prices and availability are confirmed by the retail checkout service, not this page.</p>
     </section>;
   }
   return null;
