@@ -37,6 +37,11 @@ test("approved catalogue emits crawlable product content and never fabricates an
   put("assets/data/nutraxin-retail-catalogue.json",JSON.stringify({products}));
   put("seo/generated/page-metadata-register.json","[]");
   put("seo/generated/structured-data-register.json","[]");
+  // Synthetic social evidence for the exact representative pharmacy pack.
+  // Production generation must still fail if its governed source is missing.
+  const packRoute="/products/nutraxin/magnesium-complex-60-tablets/";
+  const socialPack={route:packRoute,page:"https://novapharmhealthcare.com"+packRoute,url:image,type:"image/webp",width:800,height:800,alt:"Synthetic pack reference",absoluteUrl:"https://novapharmhealthcare.com"+image};
+  put("seo/generated/social-image-register.json",JSON.stringify([socialPack]));
   put("sitemap.xml",'<urlset><url><loc>https://novapharmhealthcare.com/products/</loc></url></urlset>');
   const path="src/content/approved-consumer-catalogue.json";
   const route="products/health-and-wellbeing/4006381333931/index.html";
@@ -65,7 +70,20 @@ test("approved catalogue emits crawlable product content and never fabricates an
    assert(!Object.hasOwn(schema,"offers"));
    assert.equal(get("sitemap.xml").split("<loc>https://novapharmhealthcare.com/products/health-and-wellbeing/4006381333931/</loc>").length,2);
    const register=JSON.parse(get("seo/generated/page-metadata-register.json"));
-   assert.equal(register.length,2);assert(register.some(p=>p.file===route));
+   assert.equal(register.length,3);assert(register.some(p=>p.file===route));
+   const pharmacyRoute="/pharmacy-partners/";
+   assert.equal(register.filter(p=>p.route===pharmacyRoute).length,1);
+   const structured=JSON.parse(get("seo/generated/structured-data-register.json"));
+   assert.equal(structured.filter(p=>p.route===pharmacyRoute).length,1);
+   const social=JSON.parse(get("seo/generated/social-image-register.json"));
+   assert.equal(social.filter(p=>p.route===pharmacyRoute).length,1);
+   assert.deepEqual(social.find(p=>p.route===pharmacyRoute),{...socialPack,route:pharmacyRoute,page:"https://novapharmhealthcare.com"+pharmacyRoute});
+   const pharmacy=get("pharmacy-partners/index.html");
+   for(const property of ["og:image","og:image:secure_url","og:image:type","og:image:width","og:image:height","og:image:alt"]){
+    assert.equal(pharmacy.split('property="'+property+'"').length,2,property+" must occur exactly once");
+   }
+   assert(pharmacy.includes('name="twitter:image" content="'+socialPack.absoluteUrl+'"'));
+   assert(pharmacy.includes("<!-- page-specific-social-start -->"));
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
