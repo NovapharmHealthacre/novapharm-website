@@ -213,7 +213,7 @@ struct NovaCountryDirectoryView: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("novapharm.countries.coverage-filter")
-                LabeledContent("Matching jurisdictions", value: "\(visibleCountries.count + additionalWorldwide.count)")
+                LabeledContent("Matching countries", value: "\(visibleCountries.count + additionalWorldwide.count)")
                     .accessibilityIdentifier("novapharm.countries.count")
             }
             ForEach(regions, id: \.self) { region in
@@ -242,7 +242,8 @@ struct NovaCountryDirectoryView: View {
             }
             if !additionalWorldwide.isEmpty {
                 Section("Additional worldwide research") {
-                    ForEach(additionalWorldwide, id: \.code) { entry in
+                    ForEach(additionalWorldwide.indices, id: \.self) { index in
+                        let entry = additionalWorldwide[index]
                         VStack(alignment: .leading, spacing: 4) {
                             Text(entry.name).font(.body.weight(.semibold))
                             Text(entry.code + " · Authority and dataset discovery required · No live feed").font(.caption).foregroundStyle(.secondary)

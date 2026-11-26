@@ -122,11 +122,11 @@ export function CountryDirectoryScreen() {
     <View style={styles.header}>
       <Text style={styles.eyebrow}>Global source evidence</Text>
       <Text style={styles.title} accessibilityRole="header">Worldwide research</Text>
-      <Text style={styles.explanation}>77 countries with publisher candidates and owner-supplied research requirements. 24 more require source discovery. No pharmaceutical feeds or commercial reuse rights have been approved.</Text>
+      <Text style={styles.explanation}>77 countries with publisher candidates and owner-supplied research requirements. 173 worldwide jurisdictions require further source discovery. No pharmaceutical feeds or commercial reuse rights have been approved.</Text>
       <View style={styles.metrics}>
         <View style={styles.metric}><Text style={styles.number}>{worldwide.summary.jurisdictions}</Text><Text style={styles.metricLabel}>Research jurisdictions</Text></View>
         <View style={styles.metric}><Text style={styles.number}>77</Text><Text style={styles.metricLabel}>With candidate source</Text></View>
-        <View style={styles.metric}><Text style={styles.number}>24</Text><Text style={styles.metricLabel}>Source discovery needed</Text></View>
+        <View style={styles.metric}><Text style={styles.number}>{catalogue.summary.addedResearchOnlyNationalCountries + worldwide.summary.newResearchScopes}</Text><Text style={styles.metricLabel}>Source discovery needed</Text></View>
         <View style={styles.metric}><Text style={styles.number}>0</Text><Text style={styles.metricLabel}>Customer-live</Text></View>
       </View>
       <View style={styles.notice}>

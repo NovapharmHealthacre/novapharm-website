@@ -45,12 +45,12 @@ export function CountrySourceCoverage() {
       <dl className={styles.metrics}>
         <div><dt>Worldwide jurisdictions</dt><dd>{worldwide.summary.jurisdictions}</dd></div>
         <div><dt>Countries with source candidates</dt><dd>{summary.registeredNationalCountries}</dd></div>
-        <div><dt>Source discovery still required</dt><dd>{summary.addedResearchOnlyNationalCountries}</dd></div>
+        <div><dt>Jurisdictions needing source discovery</dt><dd>{summary.addedResearchOnlyNationalCountries + worldwide.summary.newResearchScopes}</dd></div>
         <div><dt>Customer-live countries</dt><dd>{summary.customerLiveNationalCountries}</dd></div>
       </dl>
       <div className={styles.notice} role="note">
         <strong>Source release not approved</strong>
-        <p>All 101 discovery sources across national, EU/EEA and global groups still require independent rights review and accepted ingestion. The 24 additional national research scopes have zero registered medicine datasets. Regulatory listings must not be presented as current stock, sales or prescribing.</p>
+        <p>All 101 discovery sources across national, EU/EEA and global groups still require independent rights review and accepted ingestion. The 24 original research-only scopes and 149 newly added geographic scopes have no registered medicine datasets. Regulatory listings must not be presented as current stock, sales or prescribing.</p>
       </div>
       <div className={styles.controls}>
         <label>
