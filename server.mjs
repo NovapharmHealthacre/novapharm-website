@@ -1053,13 +1053,15 @@ export async function handleRequest(request, response) {
     }
 
     if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe" && request.method === "GET") {
-      if (!await rateLimit(request, "nhsbsa-private-source-probe", 4, 60 * 1000)) {
-        return json(response, 429, { error: "Publisher source-review rate limit reached." });
-      }
+      // Do not consume the board's scarce publisher quota for an anonymous,
+      // non-board, or disabled request. Mirror the four-country source gate.
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
       if (process.env.NPI_NHSBSA_PRIVATE_API_PROBE_ENABLED !== "true") {
         return json(response, 503, { error: "Private official-source review has not been activated." });
+      }
+      if (!await rateLimit(request, "nhsbsa-private-source-probe", 4, 60 * 1000)) {
+        return json(response, 429, { error: "Publisher source-review rate limit reached." });
       }
       json(response, 200, await inspectNhsbsaEpdPrivateApi({
         period: url.searchParams.get("period"),

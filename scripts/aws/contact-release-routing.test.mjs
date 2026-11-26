@@ -1126,10 +1126,11 @@ test("four-country receipt router is an exact-blob private change, never blanket
   const reviewedOriginal = "4c7afb1c4b46f241cdfcaa722d0123a8d6becb2b";
   const reviewedCandidate = "98a874fd012599583401b01724acf22f0d73da51";
   const reviewedExtended = "0a9cf537732113aacf3e444e9efefaa47fb2d9e2";
+  const authFirstCandidate = "d5ef3268868fb957e1288f8636edf6dd162d5cb1";
   const server = readFileSync("server.mjs");
   const currentBlob = createHash("sha1")
     .update("blob " + server.length + "\0").update(server).digest("hex");
-  assert.equal(currentBlob, reviewedExtended, "Board-only server source review requires fresh sign-off on changes");
+  assert.equal(currentBlob, authFirstCandidate, "Board-only server source review requires fresh sign-off on changes");
 
   const privateChanges = [
     "apps/portal/app/gateway/[...path]/route.ts",
@@ -1170,7 +1171,7 @@ test("four-country receipt router is an exact-blob private change, never blanket
     }
     assert.equal(classified("server.mjs"), false, "Shared server must never have a blanket private exemption");
     const serverCase = content.match(/server\.mjs\)\s*\n([\s\S]*?)\n\s*;;/)?.[1] || "";
-    assert.ok(serverCase.includes(reviewedOriginal) && serverCase.includes(reviewedCandidate) && serverCase.includes(reviewedExtended),
+    assert.ok(serverCase.includes(reviewedOriginal) && serverCase.includes(reviewedCandidate) && serverCase.includes(reviewedExtended) && serverCase.includes(authFirstCandidate),
       file + " must pin both exact reviewed blobs");
     assert.match(serverCase, /server_sha/);
     assert.match(serverCase, /original_blob/);
