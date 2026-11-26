@@ -35,6 +35,19 @@ test("approved catalogue emits crawlable product content and never fabricates an
   put(image.slice(1),"synthetic test asset");
   const products=["vitamin-d3-120-tablets","magnesium-daily-60-tablets","collagen-gold-30-sachets","magnesium-complex-60-tablets","vitamin-d3-k2-120-tablets","vitamin-c-1000mg-30-tablets"].map(slug=>({slug,image,name:"Fixture",pack:"30 tablets",retail_price_pence:2400}));
   put("assets/data/nutraxin-retail-catalogue.json",JSON.stringify({products}));
+  // The pharmacy generator requires the approved Nutraxin product social
+  // register; this is synthetic test evidence, never a production image release.
+  const socialSource={
+    route:"/products/nutraxin/magnesium-complex-60-tablets/",
+    page:"https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/",
+    url:image,
+    type:"image/webp",
+    width:800,
+    height:800,
+    alt:"Fixture product photograph",
+    absoluteUrl:"https://novapharmhealthcare.com"+image
+  };
+  put("seo/generated/social-image-register.json",JSON.stringify([socialSource]));
   put("seo/generated/page-metadata-register.json","[]");
   put("seo/generated/structured-data-register.json","[]");
   put("sitemap.xml",'<urlset><url><loc>https://novapharmhealthcare.com/products/</loc></url></urlset>');
@@ -65,7 +78,16 @@ test("approved catalogue emits crawlable product content and never fabricates an
    assert(!Object.hasOwn(schema,"offers"));
    assert.equal(get("sitemap.xml").split("<loc>https://novapharmhealthcare.com/products/health-and-wellbeing/4006381333931/</loc>").length,2);
    const register=JSON.parse(get("seo/generated/page-metadata-register.json"));
-   assert.equal(register.length,2);assert(register.some(p=>p.file===route));
+   assert.equal(register.length,3); // Product, collection and pharmacy landing page.
+   assert(register.some(p=>p.file===route));
+   assert(register.some(p=>p.route==="/products/health-and-wellbeing/"));
+   assert(register.some(p=>p.route==="/pharmacy-partners/"));
+   const socials=JSON.parse(get("seo/generated/social-image-register.json"));
+   assert.equal(socials.filter(p=>p.route==="/pharmacy-partners/").length,1);
+   assert.equal(socials.find(p=>p.route==="/pharmacy-partners/").url,image);
+   const pharmacyHtml=get("pharmacy-partners/index.html");
+   assert(pharmacyHtml.includes('property="og:image"'));
+   assert(pharmacyHtml.includes(socialSource.absoluteUrl));
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
