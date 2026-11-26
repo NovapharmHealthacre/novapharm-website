@@ -81,7 +81,7 @@ class StageTests(unittest.TestCase):
         page.write_text(page.read_text()+'data-npr-retail-sku="NP-CP-1000000000000"')
         with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
             module.stage(self.site,self.live)
-        page.write_text(page.read_text().replace('data-npr-retail-sku="NP-CP-1000000000000"', 'invalid-secondary-attribute', 1))
+        page.write_text(page.read_text().replace('data-npr-retail-sku="NP-CP-1000000000000"', ''))
         with self.assertRaisesRegex(AssertionError,'Missing or repeated exact live-offer mount'):
             module.stage(self.site,self.live)
 
