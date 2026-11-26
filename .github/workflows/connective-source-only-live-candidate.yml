@@ -108,17 +108,17 @@ jobs:
           echo "changes=true" >> "$GITHUB_OUTPUT"
           echo "branch=$name" >> "$GITHUB_OUTPUT"
 
-      - name: Open reviewed Pages-only PR without deploying unrelated site files
+      - name: Publish additive candidate branch for an authorised PR
         if: steps.changes.outputs.changes == 'true'
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           CANDIDATE_BRANCH: ${{ steps.changes.outputs.branch }}
+          BASE_BRANCH: gh-pages
         run: |
           set -euo pipefail
-          gh pr create --repo "$GITHUB_REPOSITORY" --head "$CANDIDATE_BRANCH" --base gh-pages \
-            --title "Publish 395 Connective browse-only product pages (additive-only)" \
-            --body "Add-only release: 395 source-backed product pages, searchable brand collection, two scoped assets, and one link on the live Products page. The existing gh-pages homepage, header, footer, customer account, Nutraxin checkout, AK Online Service, prices and all other live paths are unchanged. No payment offers or unverified availability are published. This branch is based on the current gh-pages commit, not a stale main snapshot. Review and merge only after public site checks pass."
+          echo "GitHub Actions cannot open pull requests when repository settings forbid it." >> "$GITHUB_STEP_SUMMARY"
+          echo "Use the GitHub-connected owner account to open a PR from **$CANDIDATE_BRANCH** into **$BASE_BRANCH**." >> "$GITHUB_STEP_SUMMARY"
+          echo "Review and merge after validation. This workflow never force-pushes, bypasses PR review, or deploys the Pages branch directly." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Keep public release evidence available for audit
         if: always()
