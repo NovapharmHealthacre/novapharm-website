@@ -57,6 +57,9 @@ export function prepareOffers(intake,publicCatalogue,root,now=Date.now(),verifyI
    ?r.netMinor+Math.floor((r.netMinor*r.vatBasisPoints+5000)/10000):null;
   if(!safeInteger(r.grossMinor,1,99999999)||r.grossMinor!==expected)reasons.push("VAT-inclusive price reconciliation");
   if(!safeInteger(r.expiresAt,Math.floor(now/1000)+1,Math.floor(now/1000)+31*86400))reasons.push("time-bounded offer expiry");
+  const stockObserved=time(r.evidence?.stock?.observedAt);
+  if(!Number.isFinite(stockObserved)||!Number.isSafeInteger(r.expiresAt)||
+     r.expiresAt*1000>stockObserved+48*3600_000)reasons.push("offer outlives stock evidence");
   if(reasons.length){blocked.push({sku:"NP-CP-"+r.gtin,reasons});continue;}
   // Only projected, customer-safe fields are written. Supplier costs and evidence are never exposed.
   const offer={sku:r.sku,gtin:r.gtin,name:p.name,brand:p.brand,category:p.category,pack:p.pack,
@@ -83,7 +86,7 @@ function selfTest(){
  assert.equal(good.offers.length,1);assert.equal(good.blocked.length,0);
  const projection=JSON.parse(good.offers[0].offerJson.S);
  assert.equal(projection.sku,rec.sku);assert(!("privateSupplierCostPence" in projection));
- for(const change of [{availableQuantity:0},{grossMinor:601},{vatBasisPoints:1500},{productClass:"medicine"},{evidence:{...evidence,stock:{...evidence.stock,confirmed:false}}},{imageSha256:"bad"}]){
+ for(const change of [{availableQuantity:0},{expiresAt:Math.floor(n/1000)+72*3600},{grossMinor:601},{vatBasisPoints:1500},{productClass:"medicine"},{evidence:{...evidence,stock:{...evidence.stock,confirmed:false}}},{imageSha256:"bad"}]){
   const test=prepareOffers([{...rec,...change}],[p],".",n,(root,prod,row)=>/^[a-f0-9]{64}$/.test(row.imageSha256));
   assert.equal(test.offers.length,0);
  }
