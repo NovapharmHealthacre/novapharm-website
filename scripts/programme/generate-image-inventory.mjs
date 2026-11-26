@@ -500,6 +500,42 @@ for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/o
   });
 }
 
+// Each Connective owner-authorised pack photograph has exact source SHA256
+// provenance. This is photo ownership and identity evidence, not a label or
+// regulated-product retail approval.
+if (existsSync(path.join(root, "docs/retail/connective-395-owner-photo-candidates.json"))) {
+  const photos = await json("docs/retail/connective-395-owner-photo-candidates.json");
+  if (photos.schema !== "novapharm-connective-owner-photos-v1" ||
+      photos.originalImagesVerified !== 802 || photos.localImagesPrepared !== 395 ||
+      !Array.isArray(photos.products) || photos.products.length !== 395 ||
+      photos.paymentOffersAdmitted !== 0) {
+    throw new Error("Unexpected Connective photograph provenance contract");
+  }
+  const seen = new Set();
+  for (const record of photos.products) {
+    if (!/^\d{13}$/.test(record.gtin) || seen.has(record.gtin) ||
+        record.localImage !== "/assets/media/products/connective/"+record.gtin+"/front-800.webp" ||
+        !/^[a-f0-9]{64}$/.test(record.sha256) ||
+        record.ownerPhotoUsageAuthorised !== true || record.visuallyCurrentPackVerified !== false ||
+        record.mandatoryLabelConfirmed !== false || record.paidCheckoutApproved !== false) {
+      throw new Error("Unverified or malformed Connective image source");
+    }
+    seen.add(record.gtin);
+    addRegistryRecord(registry, record.localImage, {
+      id: "connective-owner-photo:"+record.gtin,
+      source: "Checksum-verified archived supplier/manufacturer candidate image: "+record.originalSource+
+        " (original SHA256 "+record.originalSha256+")",
+      licence: "NovaPharm owner-authorised use of product photograph; third-party rights not independently validated",
+      altText: "Supplier original photograph of "+record.gtin+" candidate pack",
+      semanticPurpose: "Authentic manufacturer/supplier product-photo candidate for matching GTIN",
+      pageUsage: [],
+      reviewStatus: "owner-authorised-image; exact current UK packaging and full label pending",
+      technicalStatus: "sha256-verified-original-derived-webp",
+      provenanceRecord: "docs/retail/connective-395-owner-photo-candidates.json#"+record.gtin
+    });
+  }
+}
+
 const routeByAssetId = new Map();
 for (const module of modulePageRegister.modules ?? []) {
   for (const assetId of [module.heroAsset, module.secondaryAsset].filter(Boolean)) {
