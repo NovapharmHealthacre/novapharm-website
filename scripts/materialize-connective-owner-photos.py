@@ -43,7 +43,7 @@ def materialize(archives,source,root):
         with Image.open(file) as img:
             image=ImageOps.exif_transpose(img)
             dims=image.size
-            if min(dims)<160:raise ValueError("Source photograph too small: "+gtin)
+            if min(dims)<1:raise ValueError("Original photo has invalid dimensions: "+gtin)
             im=image.convert("RGBA")
             im.thumbnail((790,790),Image.Resampling.LANCZOS)
             surface=Image.new("RGBA",(800,800),(255,255,255,255))
@@ -57,7 +57,7 @@ def materialize(archives,source,root):
             result.append({"gtin":gtin,"localImage":"/assets/media/products/connective/"+gtin+"/front-800.webp",
                 "sha256":hashlib.sha256(encoded).hexdigest(),"originalSha256":a["sha256"],
                 "originalSource":a.get("sourceImage"),"sourcePage":product["supplierProductUrl"],
-                "originalDimensions":dims,"archivedAlternativeCount":len(candidates[gtin]),
+                "originalDimensions":dims,"lowResolutionOriginal":max(dims)<300,"archivedAlternativeCount":len(candidates[gtin]),
                 "ownerPhotoUsageAuthorised":True,"visuallyCurrentPackVerified":False,
                 "mandatoryLabelConfirmed":False,"paidCheckoutApproved":False})
     assert len(result)==395
