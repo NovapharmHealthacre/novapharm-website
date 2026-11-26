@@ -84,3 +84,25 @@ body{min-height:100vh;display:flex;flex-direction:column;background:#FFFFFF;colo
 .nx-account-security h3{margin:0 0 6px;font-size:17px;font-weight:600}
 .nx-account-security p{margin:0 0 10px}
 @media(max-width:560px){.nx-account-main{padding:38px 18px 28px}.nx-account-nav-inner{padding:14px 18px;gap:12px}.nx-account-nav-links{gap:12px}.nx-account-panel{padding:20px 18px}.nx-account-intro{margin-bottom:20px}.nx-account-text-actions{gap:0 8px}.nx-account-footer{padding:14px 18px}}
+
+/* Approved Aesop meets Apple account refinement: a quiet, unboxed entry and a porcelain service band. */
+.nx-account-main{padding:42px 24px 32px;max-width:760px}
+.nx-account-main h1{font-size:clamp(36px,5vw,54px);margin-bottom:12px}
+.nx-account-intro{margin-bottom:26px}
+.nx-account-panel{max-width:440px;border:0;border-radius:0;padding:0 16px;background:#FFFFFF}
+.nx-account-primary-actions{gap:12px;margin-bottom:14px}
+.nx-account-button{border-radius:6px;min-height:52px;transition:background-color .18s ease,border-color .18s ease}
+.nx-account-button.secondary{border-color:#DEDCD5}
+.nx-account-create{width:100%;border-color:#0B0B0E!important}
+.nx-account-new{display:flex;align-items:center;gap:14px;color:#54545A;font-size:13px;margin:22px 0 14px;white-space:nowrap}
+.nx-account-new::before,.nx-account-new::after{content:"";height:1px;background:#DEDCD5;flex:1}
+.nx-account-text-actions{margin-top:6px}
+.nx-account-help{margin:6px 0 0;border:0;border-top:1px solid #DEDCD5;border-radius:0}
+.nx-account-help summary{font-size:14px;padding:12px 0;min-height:44px;text-align:center}
+.nx-account-foot{width:100%;max-width:none;margin:0;padding:26px 20px 30px;background:#F8F7F3;border-top:1px solid #DEDCD5;text-align:center}
+.nx-account-foot h2{font-size:20px;font-weight:600}
+.nx-account-guest-links{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;margin:10px auto 0;max-width:720px}
+.nx-account-guest-links a{display:inline-flex;align-items:center;min-height:44px}
+.nx-account-footer{padding:16px 20px}
+@media(max-width:560px){.nx-account-main{padding:32px 18px 24px}.nx-account-panel{padding:0 4px}.nx-account-guest-links{gap:0 16px}.nx-account-foot{padding:22px 18px}}
+@media(prefers-reduced-motion:reduce){.nx-account-button{transition:none}}
