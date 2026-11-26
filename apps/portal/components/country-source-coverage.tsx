@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import directory from "../../../docs/intelligence/country-101-client-catalog-20261118.json";
-import ownerNationalBrief from "../../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import integrationPlan from "../../../docs/intelligence/global-integration-execution-20261126.json";
+import ownerNationalBrief from "../../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import worldwide from "../../../docs/intelligence/worldwide-jurisdiction-scope-20261126.json";
 import styles from "./country-source-coverage.module.css";
 
