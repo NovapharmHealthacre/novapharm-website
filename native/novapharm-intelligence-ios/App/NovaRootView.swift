@@ -208,6 +208,13 @@ private struct ModuleDetailView: View {
 private struct SavedModulesView: View {
     @Query(sort: \OfflineBookmark.createdAt, order: .reverse) private var saved: [OfflineBookmark]
 
+    // A bookmarked source module may be retired between unsigned preview builds.
+    // Keep local bookmarks untouched, but never render a blank Saved screen
+    // when none of their identities exist in the current source catalogue.
+    private var displayableSaved: [NovaWorkspace] {
+        saved.compactMap { NovaCatalog.lookup(id: $0.workspaceID) }
+    }
+
     var body: some View {
         List {
             Section {
@@ -215,14 +222,18 @@ private struct SavedModulesView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            ForEach(saved, id: \.workspaceID) { bookmark in
-                if let module = NovaCatalog.lookup(id: bookmark.workspaceID) {
-                    NavigationLink(module.title) { ModuleDetailView(module: module) }
-                        .accessibilityIdentifier("novapharm.saved.\(module.id)")
-                }
+            ForEach(displayableSaved) { module in
+                NavigationLink(module.title) { ModuleDetailView(module: module) }
+                    .accessibilityIdentifier("novapharm.saved.\(module.id)")
             }
-            if saved.isEmpty {
-                ContentUnavailableView("No saved modules", systemImage: "bookmark", description: Text("Save shortcuts from a module's details."))
+            if displayableSaved.isEmpty {
+                if saved.isEmpty {
+                    ContentUnavailableView("No saved modules", systemImage: "bookmark",
+                        description: Text("Save shortcuts from a module's details."))
+                } else {
+                    ContentUnavailableView("Saved shortcuts unavailable", systemImage: "bookmark.slash",
+                        description: Text("Your previously saved module shortcuts aren't in this preview. No account or medicine records are affected."))
+                }
             }
         }
         .navigationTitle("Saved")
