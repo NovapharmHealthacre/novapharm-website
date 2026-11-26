@@ -1,4 +1,5 @@
 import test from "node:test";
+import "./test-connective-source-directory.mjs";
 import assert from "node:assert/strict";
 import {draftRetailPrice,validGtin,releasedOffer,validateRetailManifest,quoteRetailBasket,checkoutLines} from "../src/core/multibrand-retail.mjs";
 const now=100000;
