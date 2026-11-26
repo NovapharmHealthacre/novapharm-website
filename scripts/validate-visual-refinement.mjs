@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero nph-earth-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero npi-hero--editorial"' : name === "nutraxin" ? 'class="nx-hero"' : name === "capabilities" ? 'class="npd-hero ncap-hero"' : name === "products" ? 'class="np-products-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero nph-earth-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero npi-hero--editorial"' : name === "nutraxin" ? 'class="nx-hero"' : name === "capabilities" ? 'class="npd-hero ncap-hero"' : name === "products" ? 'class="nps-wrap nps-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -70,7 +70,7 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
   [pages.technology, 'class="npi-roadmap-grid"', "Intelligence product development roadmap"],
   [pages.technology, 'class="npi-provenance-list"', "Intelligence evidence provenance taxonomy"],
-  [pages.products, "Different products.", "Approved three-collection Products hero"],
+  [pages.products, "Carefully selected.", "Approved luxury Products hero"],
   [pages.products, 'href="/products/esco/"', "Products canonical ESCO route"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
@@ -130,15 +130,12 @@ if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governanc
 const nutraxinProducts = (pages.nutraxin.match(/class="nx-product-card"/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
 
-const collectionPanels = [
-  '<section class="np-products-panel np-products-panel-nutraxin"',
-  '<section class="np-products-panel np-products-panel-esco"',
-  '<section class="np-products-panel np-products-panel-pharma"'
-];
-const panelPositions = collectionPanels.map((marker) => pages.products.indexOf(marker));
+const collectionPanels = ['href="/products/nutraxin/"','href="/products/health-and-wellbeing/"','href="/products/esco/"','href="/products/strategic-portfolio/"'];
+const collections = pages.products.slice(pages.products.indexOf('id="np-products-collections"'));
+const panelPositions = collectionPanels.map((marker) => collections.indexOf(marker));
 if (panelPositions.some((position) => position < 0) ||
     panelPositions.some((position, index) => index > 0 && position <= panelPositions[index - 1])) {
-  failures.push("Products hierarchy: approved Nutraxin, ESCO and pharmaceutical collections must appear in order.");
+  failures.push("Products hierarchy: approved consumer and professional collections must appear in order.");
 }
 
 for (const prohibited of [

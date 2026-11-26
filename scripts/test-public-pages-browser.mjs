@@ -19,7 +19,7 @@ const routes = [
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Medicine is complex." },
-  { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
+  { path: "/products/", name: "products-overview", required: "Carefully selected. For the everyday." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
   { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },
   { path: "/products/nutraxin/bag/", name: "nutraxin-bag", required: "Your Bag." },
@@ -537,44 +537,21 @@ for (const [engineName, browserType] of engines) {
             }
 
             if (route.name === "products-overview") {
-              assert.equal(await page.locator(".np-products-hero h1").count(), 1,
-                `${engineName} ${viewport.name}: approved Products headline missing`);
-              for (const routeHref of ["/products/nutraxin/", "/products/esco/", "/products/strategic-portfolio/"]) {
-                assert.ok(await page.locator(`.np-products-collections a[href="${routeHref}"]`).count() >= 1,
-                  `${engineName} ${viewport.name}: approved collection navigation missing: ${routeHref}`);
+              const label = engineName + " " + viewport.name + " Products";
+              assert.equal(await page.locator(".nps-hero h1").count(),1,label+": approved luxury hero missing");
+              for (const routeHref of ["/products/nutraxin/","/products/esco/","/products/strategic-portfolio/","/products/health-and-wellbeing/","/products/marketplace/","/products/track/"]) {
+                assert.ok(await page.locator(`main a[href="${routeHref}"]`).count() >= 1,label+": destination missing: "+routeHref);
               }
-              assert.equal(await page.locator(".np-products-stage-item").count(), 3,
-                `${engineName} ${viewport.name}: three-source product hero incomplete`);
-              const productsLayout = await page.evaluate(() => {
-                const heroActions = document.querySelector(".np-products-hero-actions");
-                const cta = document.querySelector(".npd-commerce-link");
-                const ctaStyle = cta ? getComputedStyle(cta) : null;
-                const photos = [...document.querySelectorAll(".np-products-stage-item img, .np-products-panel-art img")];
-                return {
-                  heroActionsDisplay: heroActions ? getComputedStyle(heroActions).display : "",
-                  heroActionLinks: heroActions?.querySelectorAll("a").length ?? 0,
-                  catalogueLink: Boolean(heroActions?.querySelector('a[href="/products/marketplace/"]')),
-                  ctaActions: cta?.querySelectorAll("a").length ?? 0,
-                  ctaPaddingTop: ctaStyle ? Number.parseFloat(ctaStyle.paddingTop) : 0,
-                  ctaWidth: cta?.getBoundingClientRect().width ?? 0,
-                  viewportWidth: document.documentElement.clientWidth,
-                  photosLoaded: photos.length >= 7 && photos.every((img) => img.complete && img.naturalWidth > 0)
-                };
-              });
-              assert.equal(productsLayout.heroActionsDisplay, "flex",
-                `${engineName} ${viewport.name}: Products hero actions are misaligned`);
-              assert.equal(productsLayout.heroActionLinks, 2,
-                `${engineName} ${viewport.name}: two Products hero actions required`);
-              assert.ok(productsLayout.catalogueLink,
-                `${engineName} ${viewport.name}: unified catalogue not discoverable from hero`);
-              assert.equal(productsLayout.ctaActions, 2,
-                `${engineName} ${viewport.name}: unified search and order tracking missing`);
-              assert.ok(productsLayout.ctaPaddingTop >= 32,
-                `${engineName} ${viewport.name}: commerce CTA styling not loaded`);
-              assert.ok(productsLayout.ctaWidth > 200 && productsLayout.ctaWidth <= productsLayout.viewportWidth + 1,
-                `${engineName} ${viewport.name}: commerce CTA extends beyond viewport`);
-              assert.ok(productsLayout.photosLoaded,
-                `${engineName} ${viewport.name}: Products photography did not load`);
+              assert.equal(await page.locator(".nps-shelf-hero img").count(),3,label+": original hero photographs missing");
+              assert.equal(await page.locator(".nps-product").count(),4,label+": featured products missing");
+              for(const img of await page.locator(".nps-shelf img, .nps-packshot img, .nps-white-gallery img").all()){
+                await img.scrollIntoViewIfNeeded();
+                await img.evaluate(async el=>{await el.decode();});
+                assert.ok(await img.evaluate(el=>el.complete&&el.naturalWidth>0),label+": image failed to load");
+              }
+              const geometry=await page.evaluate(()=>[...document.querySelectorAll(".nps-hero-art,.nps-packshot,.nps-art")].every(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.left>=-1&&r.right<=document.documentElement.clientWidth+1;}));
+              assert.ok(geometry,label+": product media exceeds viewport");
+              assert.equal(await page.locator("[data-nps-bag-link]").count(),1,label+": shared Bag link missing");
             }
 
             if (route.name === "our-story") {
