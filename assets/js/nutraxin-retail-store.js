@@ -986,7 +986,7 @@ async function init() {
     const needsExtra=path.startsWith(MULTIBRAND_URL)||(Array.isArray(saved)&&saved.some(line=>CP_SKU.test(line?.sku||"")));
     try {
       if(needsExtra){
-      const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(2500)});
+      const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(9000)});
       if(extra.ok) offers=await extra.json();
       }
     }catch{}
