@@ -331,3 +331,139 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
   }
   .np-products-page .np-products-esco-trolley { right: 0; }
 }
+
+/* NovaPharm Store editorial redesign. Scoped to the Products landing only. */
+body[data-route="/products/"] .np-store{background:#FFFFFF;color:#0B0B0E;overflow:clip}
+.np-store .nps-wrap{width:min(1440px,calc(100% - 96px));margin-inline:auto;min-width:0}
+.np-store :is(h1,h2,h3,p){overflow-wrap:normal;word-break:normal;hyphens:none}
+.np-store .nps-kicker{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#555459;margin:0 0 12px}
+.np-store .nps-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:40px;padding-block:64px}
+.np-store .nps-hero-copy{min-width:0}
+.np-store .nps-hero h1{font-size:clamp(36px,4.2vw,64px);line-height:1.08;letter-spacing:-.045em;font-weight:600;margin:0 0 20px;text-wrap:balance;color:#0B0B0E}
+.np-store .nps-hero-copy>p:not(.nps-kicker){font-size:18px;line-height:1.55;max-width:48ch;color:#525156;margin:0 0 24px}
+.np-store .nps-hero-art{background:#F8F7F3;display:flex;align-items:center;justify-content:center;min-width:0;aspect-ratio:5/4;padding:24px}
+.np-store .nps-hero-art img{width:33.333%;height:auto;min-width:0;object-fit:contain;mix-blend-mode:multiply}
+.np-store .nps-button,.np-store .nps-outline{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;font-size:15px;font-weight:550;line-height:1.4;text-decoration:none;border:1px solid #0B0B0E;transition:background-color .2s,color .2s}
+.np-store .nps-button{background:#0B0B0E;color:#FFFFFF}
+.np-store .nps-button:hover{background:#9D1B32;border-color:#9D1B32}
+.np-store .nps-outline{color:#0B0B0E;background:#FFFFFF;width:100%;margin-top:auto}
+.np-store .nps-product a:hover .nps-outline{background:#0B0B0E;color:#FFFFFF}
+.np-store h2{font-size:clamp(27px,3vw,40px);line-height:1.16;letter-spacing:-.035em;font-weight:600;color:#0B0B0E;margin:0 0 24px}
+.np-store .nps-discovery{padding-block:24px 48px}
+.np-store .nps-search-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.np-store .nps-search-links a{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #DEDCD5;padding:16px;min-height:52px;color:#0B0B0E;text-decoration:none;font-size:16px}
+.np-store .nps-nav{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px}
+.np-store .nps-nav a,.np-store .nps-services a{color:#0B0B0E;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;font-size:15px}
+.np-store :is(.nps-nav,.nps-services,.nps-search-links) a:hover{text-decoration:underline;text-underline-offset:4px}
+.np-store .nps-editorial{background:#F8F7F3;padding-block:64px;scroll-margin-top:90px}
+.np-store .nps-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 28px}
+.np-store :is(.nps-collection,.nps-product){min-width:0}
+.np-store :is(.nps-collection,.nps-product) a{display:flex;flex-direction:column;height:100%;color:#0B0B0E;text-decoration:none}
+.np-store .nps-art{display:flex;align-items:center;justify-content:center;aspect-ratio:16/10;background:#FFFFFF;padding:24px;gap:12px;margin-bottom:18px;overflow:hidden}
+.np-store .nps-art img{display:block;width:100%;height:100%;max-width:100%;object-fit:contain;min-width:0;mix-blend-mode:multiply}
+.np-store .nps-art img:only-child{width:100%}
+.np-store .nps-art img:not(:only-child){width:calc(50% - 6px)}
+.np-store .nps-art.nps-pharma{padding:0}
+.np-store .nps-art.nps-pharma img{object-fit:cover;mix-blend-mode:normal}
+.np-store h3{font-size:clamp(17px,2vw,25px);font-weight:600;line-height:1.25;margin:0 0 8px;color:#0B0B0E;letter-spacing:-.015em}
+.np-store :is(.nps-collection,.nps-product) p:not(.nps-kicker){font-size:15px;color:#525156;line-height:1.5;margin:0 0 16px}
+.np-store .nps-link{color:#9D1B32;font-size:15px;font-weight:550;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.np-store a:hover .nps-link,.np-store a.nps-link:hover{text-decoration:underline;text-underline-offset:4px}
+.np-store .nps-featured,.np-store .nps-brands{padding-block:56px}
+.np-store .nps-products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-bottom:20px}
+.np-store .nps-product img{width:100%;height:auto;aspect-ratio:1;object-fit:contain;background:#FFFFFF;margin-bottom:16px}
+.np-store .nps-product h3{font-size:17px}
+.np-store .nps-product .nps-kicker{font-size:11px;margin-bottom:8px}
+.np-store .nps-brands{border-top:1px solid #DEDCD5}
+.np-store .nps-approach{text-align:center}
+.np-store .nps-approach p:not(.nps-kicker){color:#525156;font-size:17px;line-height:1.5}
+.np-store .nps-services{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;text-align:center;padding-block:28px;border-bottom:1px solid #DEDCD5}
+.np-store .nps-services a{justify-content:center}
+.np-store .nps-qualification{font-size:13px;line-height:1.6;color:#525156;padding-block:24px 36px}
+.np-store a:focus-visible{outline:2px solid #9D1B32;outline-offset:4px}
+@media(max-width:900px){.np-store .nps-wrap{width:calc(100% - 56px)}.np-store .nps-hero{gap:24px;padding-block:40px}.np-store .nps-products{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.np-store .nps-wrap{width:calc(100% - 36px)}.np-store .nps-hero{grid-template-columns:minmax(0,1fr);padding-block:32px;gap:24px}.np-store .nps-hero h1{font-size:clamp(32px,8.5vw,40px)}.np-store .nps-hero-art{aspect-ratio:5/3;padding:12px}.np-store .nps-search-links,.np-store .nps-grid{grid-template-columns:minmax(0,1fr)}.np-store .nps-grid{gap:28px}.np-store .nps-art{padding:12px}.np-store .nps-products{gap:16px}.np-store .nps-editorial,.np-store .nps-featured,.np-store .nps-brands{padding-block:36px}.np-store .nps-services{grid-template-columns:repeat(2,minmax(0,1fr))}.np-store .nps-outline{padding-inline:8px}}
+@media(prefers-reduced-motion:reduce){.np-store *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+@media print{.np-store .nps-wrap{width:100%}.np-store .nps-hero{padding-block:20px;gap:16px}.np-store .nps-hero h1{font-size:32px}.np-store .nps-editorial,.np-store .nps-featured,.np-store .nps-brands{padding-block:20px}.np-store .nps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.np-store .nps-products{grid-template-columns:repeat(4,minmax(0,1fr))}.np-store :is(.nps-collection,.nps-product){break-inside:avoid}.np-store .nps-art{padding:8px}.np-store .nps-services{padding-block:12px}}
+
+/* Photography standards: source pack pixels remain unchanged.
+   Editorial compositions use matte surfaces; retail cards stay pure white.
+   No invented packaging, hue filters, gradients, masks or levitation. */
+.np-store .nps-editorial-stage{position:relative;isolation:isolate;display:grid;align-items:end;background:#F8F7F3;padding:0;overflow:hidden}
+.np-store .nps-editorial-stage::before{content:"";position:absolute;inset:0 0 22%;background:#F8F7F3;z-index:-2}
+.np-store .nps-editorial-stage::after{content:"";position:absolute;inset:auto 0 0;height:22%;background:#DEDCD5;z-index:-1}
+.np-store .nps-shelf{display:flex;align-items:flex-end;justify-content:center;width:100%;padding:0 6% 14%;gap:0;min-width:0}
+.np-store .nps-shelf picture{display:block;flex:1 1 0;min-width:0;max-width:46%;line-height:0}
+.np-store .nps-shelf img{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:contain;mix-blend-mode:normal;filter:none;max-width:100%;max-height:none}
+.np-store .nps-shelf-hero picture:nth-child(1){flex:.86}
+.np-store .nps-shelf-hero picture:nth-child(2){flex:1.05}
+.np-store .nps-shelf-hero picture:nth-child(3){flex:1}
+.np-store .nps-shelf-nutraxin{padding-bottom:14%;gap:3%}
+.np-store .nps-white-gallery{background:#FFFFFF;gap:0;padding:5%;align-items:center}
+.np-store .nps-white-gallery img:not(:only-child){width:33.333%;height:100%;object-fit:contain;mix-blend-mode:normal;filter:none}
+.np-store .nps-equipment-gallery img:not(:only-child){width:50%}
+.np-store .nps-equipment-gallery img:first-child{clip-path:inset(1px)}
+.np-store .nps-professional-art{background:#F8F7F3;border:1px solid #DEDCD5;align-items:center;justify-content:flex-start;padding:8%}
+.np-store .nps-professional-art div{max-width:100%}
+.np-store .nps-professional-art p{font-size:12px!important;text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px!important}
+.np-store .nps-professional-art span{display:block;font-size:clamp(27px,4vw,56px);line-height:1.05;letter-spacing:-.04em;font-weight:550}
+.np-store .nps-packshot{display:grid;place-items:center;aspect-ratio:1;background:#FFFFFF;margin-bottom:16px}
+.np-store .nps-packshot picture{display:grid;place-items:center;width:100%;height:100%}
+.np-store .nps-packshot img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;mix-blend-mode:normal;filter:none;margin:0}
+@media(max-width:640px){.np-store .nps-editorial-stage{padding:0}.np-store .nps-shelf{padding-inline:5%}.np-store .nps-professional-art{padding:8%}}
+@media print{.np-store .nps-editorial-stage,.np-store .nps-professional-art{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+/* Luxury storefront: use the existing NovaPharm design tokens, not a second font system. */
+body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif);background:#FFFFFF;color:#0B0B0E}
+.np-store :is(h1,h2,h3,button,input,dialog){font-family:inherit}
+.np-store .nps-wrap{width:min(1440px,calc(100% - clamp(36px,10vw,160px)))}
+.np-store [hidden]{display:none!important}
+.np-store .nps-shop-nav{display:flex;align-items:center;gap:12px 28px;flex-wrap:wrap;min-height:56px;border-bottom:1px solid #DEDCD5}
+.np-store .nps-shop-nav a{font-size:13px;color:#0B0B0E;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;gap:4px}
+.np-store .nps-shop-nav a:nth-last-child(2){margin-inline-start:auto}
+.np-store .nps-shop-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.np-store .nps-hero{gap:clamp(20px,4vw,64px);padding-block:clamp(32px,5vw,80px)}
+.np-store .nps-hero h1{font-size:clamp(36px,4.5vw,68px);font-weight:550;line-height:1.11;letter-spacing:-.045em}
+.np-store .nps-hero-art{aspect-ratio:5/4}
+.np-store .nps-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:2%;padding:0 5% 15%}
+.np-store .nps-shelf-nutraxin{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 14% 15%}
+.np-store .nps-shelf picture{position:relative;width:100%;max-width:none;aspect-ratio:1;display:block}
+.np-store .nps-shelf img,.np-store .nps-packshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;transform-origin:top left;transform:translate(var(--nx-pack-x,0%),var(--nx-pack-y,0%)) scale(var(--nx-pack-scale,1));filter:none}
+.np-store .nps-packshot{position:relative;overflow:hidden;width:100%;aspect-ratio:1;margin:0 0 16px;background:#FFFFFF}
+.np-store .nps-packshot picture{position:absolute;inset:0}
+.np-store .nps-service-line{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;border-block:1px solid #DEDCD5;padding-block:16px;color:#424245;font-size:13px}
+.np-store .nps-service-line a{color:#0B0B0E}
+.np-store .nps-discovery{padding-block:48px 0}
+.np-store .nps-local-search{display:flex;border:1px solid #DEDCD5;min-height:54px;margin-bottom:12px}
+.np-store .nps-local-search input{min-width:0;flex:1;border:0;padding:12px 16px;background:#FFFFFF;color:#0B0B0E;font-size:16px}
+.np-store .nps-local-search button,.np-store .nps-quiet,.np-store .nps-dialog-head button{border:0;background:none;color:#0B0B0E;min-height:44px;padding:8px 12px;text-decoration:underline;text-underline-offset:4px;font-size:14px;cursor:pointer}
+.np-store .nps-search-links a{font-size:14px}
+.np-store .nps-product{display:flex;flex-direction:column}
+.np-store .nps-product>a{height:auto;flex:1}
+.np-store .nps-product h3{font-size:17px;line-height:1.3}
+.np-store .nps-product-actions{display:grid;gap:4px}
+.np-store .nps-product-actions a{height:auto}
+.np-store .nps-price{font-size:17px!important;font-weight:550;color:#0B0B0E!important;margin:0 0 8px!important;font-variant-numeric:tabular-nums}
+.np-store button.nps-outline{background:#FFFFFF;color:#0B0B0E;cursor:pointer}
+.np-store button.nps-outline:hover:not(:disabled){background:#0B0B0E;color:#FFFFFF}
+.np-store button.nps-outline:disabled{opacity:.6;cursor:not-allowed}
+.np-store .nps-product-actions .nps-quiet{justify-self:center}
+.np-store .nps-dialog{border:1px solid #DEDCD5;background:#FFFFFF;color:#0B0B0E;width:min(720px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:clamp(20px,4vw,40px);overflow:auto}
+.np-store .nps-dialog::backdrop{background:rgba(11,11,14,.35)}
+.np-store .nps-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
+.np-store .nps-dialog-head h2,.np-store .nps-dialog-head p{margin:0}
+.np-store .nps-drawer{margin:0 0 0 auto;height:100dvh;max-height:100dvh;width:min(460px,100%);max-width:100%;border:0;border-inline-start:1px solid #DEDCD5}
+.np-store .nps-drawer>.nps-button{width:100%;margin-top:24px}
+.np-store .nps-drawer>.nps-quiet{display:block;margin:12px auto}
+.np-store .nps-bag-row{display:grid;grid-template-columns:84px minmax(0,1fr);gap:16px;border-bottom:1px solid #DEDCD5;padding:18px 0}
+.np-store .nps-bag-row img{width:84px;height:84px;object-fit:contain}
+.np-store .nps-bag-row h3{font-size:16px}
+.np-store .nps-bag-row button{min-width:44px;min-height:44px;background:#FFFFFF;border:1px solid #DEDCD5;color:#0B0B0E}
+.np-store .nps-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:center}
+.np-store .nps-quick-grid img{width:100%;aspect-ratio:1;object-fit:contain}
+.np-store .nps-quick-grid p{margin:12px 0}
+.np-store .nps-quick-grid .nps-button{width:100%;cursor:pointer}
+.np-store :is(button,input):focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.np-store #nps-essentials,.np-store #nps-professional{scroll-margin-top:90px}
+@media(max-width:640px){.np-store .nps-shop-nav{gap:2px 14px}.np-store .nps-shop-nav a:nth-last-child(2){margin-inline-start:0}.np-store .nps-hero h1{font-size:clamp(32px,8.5vw,40px)}.np-store .nps-hero-art{aspect-ratio:5/3}.np-store .nps-service-line{gap:8px;flex-direction:column}.np-store .nps-quick-grid{grid-template-columns:1fr}.np-store .nps-quick-grid img{max-height:220px}.np-store .nps-discovery{padding-block:32px 0}.np-store .nps-product h3{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.np-store *{animation:none!important;transition:none!important}}
