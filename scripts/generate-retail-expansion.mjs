@@ -116,15 +116,43 @@ if(existsSync(file(input))){
  const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
  page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Discover our collection by category. Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>',{h1:'Health and wellbeing.',schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
 }
+
+ // Pharmacy acquisition offer: public illustrative quotes only, no supplier costs,
+ // stock assertions, or changes to the authoritative checkout.
+ const pharmacyRoute='/pharmacy-partners/';
+ const pharmacyOffers=[
+ ['magnesium-complex-60-tablets',811],
+ ['vitamin-d3-k2-120-tablets',811],
+ ['vitamin-c-1000mg-30-tablets',633],
+ ['vitamin-d3-120-tablets',633]
+ ].map(([slug,trade])=>{
+  const p=products.find(x=>x.slug===slug);
+  assert(p&&Number.isInteger(p.retail_price_pence)&&existsSync(file(p.image.slice(1))),'Pharmacy offer reference missing');
+  const net=p.retail_price_pence/1.2;
+  assert(trade<net,'Pharmacy offer has no gross profit');
+  return {...p,trade,profit:net-trade,por:(net-trade)/net*100};
+ });
+ const pounds=p=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(p/100);
+ const totals=pharmacyOffers.reduce((a,p)=>({trade:a.trade+12*p.trade,retail:a.retail+12*p.retail_price_pence}),{trade:0,retail:0});
+ const totalProfit=totals.retail/1.2-totals.trade;
+ const combinedPor=100*totalProfit/(totals.retail/1.2);
+ const maxPor=Math.max(...pharmacyOffers.map(p=>p.por));
+ const quote='mailto:trade@novapharmhealthcare.com?subject=NovaPharm%20pharmacy%20trade%20quote&body=Please%20confirm%20current%20trade%20terms%20for%20my%20pharmacy.%0A%0APharmacy%20name%3A%0ABranches%3A%0APostcode%3A%0APreferred%20collection%3A';
+ const offerCards=pharmacyOffers.map(p=>'<article class="npp-product"><a href="/products/nutraxin/'+escape(p.slug)+'/"><img src="'+escape(p.image)+'" alt="'+escape(p.name)+' original pack" width="480" height="480" loading="lazy"><h3>'+escape(p.name)+'</h3></a><p>'+escape(p.pack)+'</p><strong class="npp-figure">'+p.por.toFixed(1)+'% POR</strong><dl><div><dt>Illustrative retail incl. VAT</dt><dd>'+pounds(p.retail_price_pence)+'</dd></div><div><dt>Indicative trade ex. VAT</dt><dd>'+pounds(p.trade)+'</dd></div><div><dt>Gross profit per sale</dt><dd>'+pounds(p.profit)+'</dd></div></dl></article>').join('');
+ const pharmacyMain='<main id="main" class="npr-main npp-main"><section class="npr-wrap npp-hero"><div><p class="npr-kicker">NOVAPHARM / PHARMACY PARTNERS</p><h1>Make every sale worth more.</h1><p class="npp-lead">A considered Nutraxin trade collection, designed to help UK pharmacies evaluate their retail returns.</p><a class="npr-action" href="'+quote+'" data-cta-id="pharmacy-request-quote">Request a trade quote</a> <a class="npp-secondary" href="#pharmacy-prices">Explore the numbers</a></div><div class="npp-stat"><p>Illustrative profit on return</p><strong>Up to '+maxPor.toFixed(1)+'%</strong><p>On selected products at the illustrated retail prices. Subject to confirmed trade terms.</p></div></section><section class="npr-wrap npp-section" id="pharmacy-prices"><p class="npr-kicker">THE COMMERCIAL COLLECTION</p><h2>Know your numbers.</h2><p>Four selected food supplements. Real pack imagery and transparent indicative trade economics.</p><div class="npp-grid">'+offerCards+'</div></section><section class="npp-band"><div class="npr-wrap npp-section"><p class="npr-kicker">48 MIXED UNITS / 12 OF EACH PRODUCT</p><h2>The Pharmacy Profit Collection.</h2><div class="npp-metrics"><div><span>Indicative investment ex. VAT</span><strong>'+pounds(totals.trade)+'</strong></div><div><span>Potential retail sales incl. VAT</span><strong>'+pounds(totals.retail)+'</strong></div><div><span>Potential gross profit</span><strong>'+pounds(totalProfit)+'</strong></div><div><span>Combined POR</span><strong>'+combinedPor.toFixed(1)+'%</strong></div></div><p>Ask about a smaller 24-unit mixed trial. Stock, freight, shelf life, VAT treatment and final commercial terms are confirmed before an order is accepted.</p><a class="npr-action" href="'+quote+'" data-cta-id="pharmacy-starter-quote">Request the starter collection quote</a></div></section><section class="npr-wrap npp-section" id="pharmacy-calculator"><p class="npr-kicker">YOUR BUSINESS / YOUR NUMBERS</p><h2>Compare your potential returns.</h2><p>Compare margin scenarios at the same retail price and sales volume. No information leaves your browser.</p><div class="npp-calc" data-pharmacy-calculator><div class="npp-inputs"><label>Retail price incl. VAT (£)<input data-npp="retail" type="number" min="0" max="10000" step="0.01" value="18.38"></label><label>Current supplier POR (%)<input data-npp="current" type="number" min="0" max="100" step="0.1" value="38"></label><label>Illustrative NovaPharm POR (%)<input data-npp="proposed" type="number" min="0" max="100" step="0.1" value="47.1"></label><label>Monthly units per branch<input data-npp="units" type="number" min="0" max="100000" step="1" value="100"></label><label>Branches<input data-npp="branches" type="number" min="1" max="10000" step="1" value="1"></label></div><div class="npp-results" aria-live="polite"><p>Current monthly gross profit <output data-npp="old">£582.03</output></p><p>Proposed monthly gross profit <output data-npp="new">£721.42</output></p><p>Annual gross profit difference <output data-npp="difference">£1,672.58</output></p></div><noscript><p>Enable JavaScript to adjust the illustrated comparison.</p></noscript></div><p class="npp-note">All scenarios assume 20% VAT, full-price sell-through and equal sales volumes; gross profit excludes pharmacy operating costs, discounts and freight. Pharmacies independently set their retail prices. Figures are not guarantees or binding quotes.</p></section><section class="npp-band"><div class="npr-wrap npp-section"><p class="npr-kicker">WORK WITH NOVAPHARM</p><h2>A partnership built for pharmacy.</h2><p>Request a product-level trade price list, current stock confirmation and suitable ordering arrangements for your business.</p><div class="npp-actions"><a class="npr-action" href="'+quote+'" data-cta-id="pharmacy-full-price-list">Request our trade price list</a><a class="npp-secondary" href="/account-application/" data-cta-id="pharmacy-business-account">Business account enquiry</a><a class="npp-secondary" href="/products/nutraxin/">View the Nutraxin range</a></div><p class="npp-note">For qualified UK pharmacy businesses. Food supplements only. Product recommendations should be based on customer suitability and professional judgement.</p></div></section></main>';
+ page(pharmacyRoute,'UK Pharmacy Trade Partners | NovaPharm Healthcare','Explore indicative Nutraxin pharmacy trade pricing, gross profit and a flexible mixed-unit collection for UK pharmacy businesses.',pharmacyMain,{h1:'Make every sale worth more.',image:pharmacyOffers[0].image,schema:{'@context':'https://schema.org','@type':'WebPage','@id':base+pharmacyRoute+'#webpage',url:base+pharmacyRoute,name:'Make every sale worth more.',description:'Illustrative UK pharmacy trade economics for selected food supplements.'}});
+ const pharmacyFile='pharmacy-partners/index.html';
+ write(pharmacyFile,read(pharmacyFile).replace('</head>','<link rel="stylesheet" href="/assets/css/pharmacy-partners.css"><script type="module" src="/assets/js/pharmacy-partners.js"></script></head>'));
+
 // Reconcile generated routes into canonical registers before CSS versioning and SHA stamping.
 if(catalogueSeo.length){
  const registerPath='seo/generated/page-metadata-register.json';
  const existing=JSON.parse(read(registerPath));
  const prefix='/products/health-and-wellbeing/';
- const retained=existing.filter(p=>!p.route.startsWith(prefix));
+ const retained=existing.filter(p=>!p.route.startsWith(prefix)&&p.route!==pharmacyRoute);
  write(registerPath,JSON.stringify([...retained,...catalogueSeo],null,2)+'\n');
  const structuredPath='seo/generated/structured-data-register.json';
- const structured=JSON.parse(read(structuredPath)).filter(p=>!p.route.startsWith(prefix));
+ const structured=JSON.parse(read(structuredPath)).filter(p=>!p.route.startsWith(prefix)&&p.route!==pharmacyRoute);
  for(const p of catalogueSeo){
   const type=p.schemaTypes[0];
   structured.push({route:p.route,canonical:p.canonical,file:p.file,entities:[{id:p.canonical+(type==='Product'?'#product':'#webpage'),types:[type],name:p.h1==='Health and wellbeing.'?'Health and wellbeing':p.h1,mainEntity:null,publisher:null,author:null}]});
@@ -133,11 +161,12 @@ if(catalogueSeo.length){
  let sitemap=read('sitemap.xml');
  assert(sitemap.includes('</urlset>'),'Missing sitemap root');
  sitemap=sitemap.replace(/<url>\s*<loc>https:\/\/novapharmhealthcare\.com\/products\/health-and-wellbeing\/[^<]*<\/loc>[\s\S]*?<\/url>/g,'');
+ sitemap=sitemap.replace(/<url>\s*<loc>https:\/\/novapharmhealthcare\.com\/pharmacy-partners\/<\/loc>[\s\S]*?<\/url>/g,'');
  sitemap=sitemap.replace('</urlset>',catalogueSeo.map(p=>'<url><loc>'+escape(p.canonical)+'</loc></url>').join('')+'</urlset>');
  write('sitemap.xml',sitemap);
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
 const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
-const landing='<section class="npr-wrap npr-section" aria-label="More from NovaPharm"><h2>Explore more.</h2><div class="npr-categories">'+giftLink+catalogueLink+'</div></section>';
+const landing='<section class="npr-wrap npr-section" aria-label="More from NovaPharm"><h2>Explore more.</h2><div class="npr-categories">'+giftLink+catalogueLink+'<a href="/pharmacy-partners/">Pharmacy partners</a></div></section>';
 write('products/index.html',template.replace(originalMain[0],()=>originalMain[0].replace('</main>',landing+'</main>')).replace('</head>','<link rel="stylesheet" href="/assets/css/retail-expansion.css"></head>'));
 console.log('Retail expansion generated; new consumer catalogue requires separately approved identity and licensed imagery.');
