@@ -119,11 +119,11 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
           <p>Catalogue references alone do not establish account prices, UK product authorisation, stock or order acceptance.</p>
         </div>
       </div>
-      <div className="customer-editorial-actions" aria-label="Approved retail shopping">
+      <nav className="customer-editorial-actions" aria-label="Approved retail shopping">
         <a className="customer-action-primary" href="https://novapharmhealthcare.com/products/health-and-wellbeing/">Shop approved wellbeing products</a>
         <a className="customer-action-secondary" href="https://novapharmhealthcare.com/products/nutraxin/">Shop Nutraxin</a>
         <a className="customer-action-secondary" href="https://novapharmhealthcare.com/products/nutraxin/bag/">View shopping bag</a>
-      </div>
+      </nav>
       <p className="unified-customer-release-note">Retail orders and card payments use NovaPharm’s existing verified consumer checkout; they are not collected inside this workspace. Account-specific trade ordering in the portal remains read-only until its own transactional service is released. Product prices and availability are confirmed by the retail checkout service, not this page.</p>
     </section>;
   }
