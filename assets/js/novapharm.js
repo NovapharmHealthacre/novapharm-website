@@ -428,3 +428,32 @@ for (const directory of document.querySelectorAll(
     directory.dataset.npAppleFooter = "enhanced";
   }
 }
+
+
+// Connective public catalogue: mount only the existing, server-authorised
+// retail bridge on exact product-reference routes. This code never supplies a
+// price, stock quantity, Stripe key, order or payment request.
+(function mountConnectiveLiveOffer() {
+  const match = /^\/products\/health-and-wellbeing\/([0-9]{13})\/?$/.exec(window.location.pathname);
+  if (!match) return;
+  const gtin = match[1];
+  const canonical = "https://novapharmhealthcare.com/products/health-and-wellbeing/" + gtin + "/";
+  if (document.querySelector('link[rel="canonical"]')?.getAttribute("href") !== canonical) return;
+  const main = document.querySelector("main.npr-main");
+  if (!main || !main.textContent.includes("GTIN " + gtin)) return;
+  // Future generated source pages include the mount and module themselves.
+  if (main.querySelector("[data-npr-retail-sku]") ||
+      document.querySelector('script[src="/assets/js/nutraxin-retail-store.js"]')) return;
+  const notice = [...main.querySelectorAll("p.npr-reference")].find(p =>
+    p.textContent.startsWith("Full ingredients, directions, warnings and final ordering terms") ||
+    p.textContent.startsWith("Manufacturer's online product information, reviewed 26 November 2026."));
+  if (!notice) return;
+  notice.setAttribute("data-npr-order-notice", "");
+  const host = document.createElement("div");
+  host.setAttribute("data-npr-retail-sku", "NP-CP-" + gtin);
+  main.append(host);
+  const module = document.createElement("script");
+  module.type = "module";
+  module.src = "/assets/js/nutraxin-retail-store.js";
+  document.body.append(module);
+})();
