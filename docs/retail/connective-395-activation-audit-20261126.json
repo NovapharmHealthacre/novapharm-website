@@ -13,10 +13,11 @@
     "publicCatalogue": 16,
     "approvedOfferLedger": 7,
     "stagedOffers": 9,
-    "grossPriceCandidate": 373,
-    "missingGrossPriceCandidate": 22,
+    "grossPriceCandidate": 384,
+    "missingGrossPriceCandidate": 11,
     "STAGED_NOT_CHARGEABLE": 9,
-    "VAT_OR_PRICE_REVIEW": 12,
+    "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE": 11,
+    "VAT_OR_PRICE_REVIEW": 1,
     "RESEARCH_PENDING_NO_PAYMENT": 357,
     "REGULATED_MEDICINE_OR_DEVICE_REVIEW": 10,
     "APPROVED_LEDGER_OFFER": 7
@@ -25,7 +26,7 @@
     "A retail price candidate is not approval to accept payment.",
     "Staged products must not become chargeable without matching public catalogue publication and checkout verification.",
     "Ten Vicks medicine/device-review SKUs stay blocked from ordinary retail checkout pending product-specific legal classification.",
-    "The twelve missing-price Floradix teas require their beverage-versus-medicinal VAT treatment confirmed per product.",
+    "Eleven matched Salus herbal teas now have provisional £1.65 / 0% beverage VAT candidates and manufacturer product-page information; payment remains denied pending exact UK pack and tax review. St John's Wort remains in explicit hold.",
     "Products awaiting manufacturer label and pack data must not be represented as fully verified.",
     "This audit contains no private supplier cost, customer data or payment credentials."
   ],
@@ -64,13 +65,13 @@
       "name": "Floradix Anise, Fennel, Carraway 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7430/floradix_anise_fennel_carraway_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/anise-fennel-caraway-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013072",
@@ -92,13 +93,13 @@
       "name": "Floradix Mate 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7446/floradix_mate_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/mate-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013119",
@@ -120,13 +121,13 @@
       "name": "Floradix Nettlewort 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7449/floradix_nettlewort_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/nettle-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013157",
@@ -148,13 +149,13 @@
       "name": "Floradix Mistletoe 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7447/floradix_mistletoe_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/mistletoe-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013171",
@@ -162,13 +163,13 @@
       "name": "Floradix Sage 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7452/floradix_sage_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/sage-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013188",
@@ -176,13 +177,13 @@
       "name": "Floradix Yarrow 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7478/floradix_yarrow_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/yarrow-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013195",
@@ -190,13 +191,13 @@
       "name": "Floradix Hawthorn 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7437/floradix_hawthorn_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/hawthorn-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013201",
@@ -204,13 +205,13 @@
       "name": "Floradix Horsetail 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7440/floradix_horsetail_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/horsetail-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013270",
@@ -218,13 +219,13 @@
       "name": "Floradix Lemon Verbena 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7444/floradix_lemon_verbena_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/lemon-verbena-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148013294",
@@ -232,13 +233,13 @@
       "name": "Floradix Dandelion 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7434/floradix_dandelion_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/dandelion-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148017018",
@@ -358,13 +359,13 @@
       "name": "Floradix Thyme 15 Bags",
       "pack": "15",
       "productClassReview": "routine_class_review",
-      "priceCandidateGrossPence": null,
-      "vatReview": "HERBAL_TEA_REVIEW",
-      "manufacturerResearchStatus": "Supplier catalogue source only (web not confirmed)",
-      "manufacturerOnlineEvidencePresent": false,
+      "priceCandidateGrossPence": 165,
+      "vatReview": "PROVISIONAL_ZERO_RATE_HERBAL_BEVERAGE_VERIFY_FINAL_HMRC_VFOOD7700",
+      "manufacturerResearchStatus": "OFFICIAL_UK_MANUFACTURER_BEVERAGE_PAGE_CHECKED_GTIN_NOT_PRINTED_ON_WEB",
+      "manufacturerOnlineEvidencePresent": true,
       "productSource": "https://www.connectivepharma.com/en/product/7476/floradix_thyme_15_bags",
-      "manufacturerSource": null,
-      "readiness": "VAT_OR_PRICE_REVIEW"
+      "manufacturerSource": "https://floradix.co.uk/product/thyme-herbal-teabags/",
+      "readiness": "HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE"
     },
     {
       "gtin": "4004148047039",
