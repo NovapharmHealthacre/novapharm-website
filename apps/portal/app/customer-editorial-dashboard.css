@@ -100,7 +100,7 @@
   border-top:1px solid #d1d1d6
 }
 .customer-editorial-dashboard .customer-editorial-delivery-line{position:absolute;top:-2px;left:0;width:34%;height:3px;background:#b5121f}
-.customer-editorial-dashboard .customer-editorial-sub-link{position:absolute;right:6%;bottom:64px;color:#66666c;text-decoration:underline;text-underline-offset:4px;font-size:.8rem}
+.customer-editorial-dashboard .customer-editorial-sub-link{align-self:flex-end;margin:0 24px 24px auto;color:#54545a;text-decoration:underline;text-underline-offset:4px;font-size:.85rem;z-index:1}
 .customer-editorial-dashboard .customer-editorial-index{padding:54px 4px 8px}
 .customer-editorial-dashboard .customer-editorial-index>h2{margin:0 0 25px;font-size:clamp(1.8rem,2.4vw,2.7rem);letter-spacing:-.045em}
 .customer-editorial-dashboard .customer-editorial-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(25px,4.2vw,70px)}
@@ -195,3 +195,41 @@
   .customer-editorial-dashboard .user-summary button,
   .customer-editorial-dashboard .user-summary .icon-command{padding:6px 8px;font-size:.7rem}
 }
+
+/* Customer-first shortcuts: real routes, no simulated account or shipment data. */
+.customer-quick-tasks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 28px}
+.customer-quick-tasks>a{display:flex;flex-direction:column;gap:7px;min-width:0;padding:18px 16px;border:1px solid #DEDCD5;border-radius:12px;background:#F8F7F3;color:#0B0B0E;text-decoration:none;line-height:1.4;overflow-wrap:anywhere}
+.customer-quick-tasks>a strong{font-size:1rem;font-weight:650}
+.customer-quick-tasks>a span{font-size:.85rem;color:#54545a}
+.customer-quick-tasks>a:hover strong{text-decoration:underline;text-underline-offset:3px}
+.customer-login-services{display:grid;gap:0;margin:14px 0;padding:0;border-top:1px solid #DEDCD5}
+.customer-login-services h3{margin:16px 0 6px;font-size:1rem;font-weight:650;color:#0B0B0E}
+.customer-login-services>a{display:flex;align-items:center;min-height:44px;padding:8px 0;border-bottom:1px solid #DEDCD5;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.customer-login-services>a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+@media(max-width:850px){.customer-quick-tasks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.customer-quick-tasks{grid-template-columns:1fr}}
+
+/* Consistent customer navigation on subpages; existing full module menu remains available. */
+.customer-section-nav{background:#FFFFFF;border-bottom:1px solid #DEDCD5;padding:8px clamp(16px,3vw,36px)}
+.customer-section-nav .customer-primary-nav{display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;min-width:0}
+.customer-section-nav .customer-primary-nav a{display:inline-flex;align-items:center;min-height:44px;padding:4px 0;border-bottom:2px solid transparent;color:#0B0B0E;text-decoration:none;font-size:.9rem}
+.customer-section-nav .customer-primary-nav a[aria-current="page"]{border-bottom-color:#9D1B32;font-weight:650}
+.customer-section-nav .customer-primary-nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.customer-section-nav .customer-primary-nav a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.customer-editorial-dashboard .customer-primary-nav{flex-wrap:wrap;gap:4px clamp(12px,1.6vw,24px)}
+.customer-editorial-dashboard .customer-primary-nav a{min-height:44px;display:flex;align-items:center}
+@media(max-width:850px){.customer-editorial-dashboard .customer-primary-nav{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}}
+
+.customer-related-tasks{order:2;background:#F8F7F3;border:1px solid #DEDCD5;border-radius:12px;padding:12px 16px;margin-block:8px 16px;color:#0B0B0E;min-width:0}
+.customer-related-tasks p{font-weight:600;margin:0 0 4px}
+.customer-related-tasks ul{display:flex;flex-wrap:wrap;gap:0 20px;list-style:none;margin:0;padding:0}
+.customer-related-tasks a{display:inline-flex;align-items:center;min-height:44px;color:#9D1B32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.customer-related-tasks a:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+
+/* Approved cross-estate consumer shopping navigation; no portal payment capture. */
+.unified-customer-hub .customer-editorial-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-block:22px 14px}
+.unified-customer-hub .customer-editorial-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 20px;border:1px solid #DEDCD5;border-radius:999px;font-size:.94rem;font-weight:600;line-height:1.35;text-decoration:none}
+.unified-customer-hub .customer-editorial-actions .customer-action-primary{background:#0B0B0E;color:#FFFFFF;border-color:#0B0B0E}
+.unified-customer-hub .customer-editorial-actions .customer-action-secondary{background:#FFFFFF;color:#0B0B0E}
+.unified-customer-hub .customer-editorial-actions a:focus-visible{outline:3px solid #2546D8;outline-offset:3px}
+.unified-customer-hub .unified-collection-card a{color:#0B0B0E;font-size:.9rem;font-weight:600;text-underline-offset:3px}

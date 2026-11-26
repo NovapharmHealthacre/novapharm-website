@@ -50,7 +50,10 @@ def prepare_evidence(rows):
         # The owner approved base unit amounts excluding delivery; the delivery
         # figures in this draft are UNVERIFIED sensitivity allocations.
         base = pence(row["owner_approved_catalogue_unit_price_ex_vat_gbp"])
-        delivery = pence(row["illustrative_delivery_budget_gbp"])
+        # Optional hypothetical delivery allocation is never a charge authority.
+        # An intentionally blank field means *unknown*, not GBP 0.00.
+        unverified_delivery = str(row.get("illustrative_delivery_budget_gbp") or "").strip()
+        delivery = pence(unverified_delivery) if unverified_delivery else None
         records.append({
             "catalogue_id": row["catalogue_id"],
             "internal_novapharm_sku": "NP-ESCO-" + row["catalogue_id"][-4:],
@@ -64,9 +67,10 @@ def prepare_evidence(rows):
             "specification_evidence_ref": "",
             "merchant_base_price_pence": base,
             "illustrative_delivery_budget_pence": delivery,
-            "suggested_delivered_price_pence": base + delivery,
+            "suggested_delivered_price_pence": base + delivery if delivery is not None else None,
             "final_uk_delivered_selling_price_pence": None,
-            "pricing_basis": "OWNER_BASE_APPROVED_DELIVERY_ESTIMATED",
+            "pricing_basis": ("OWNER_BASE_APPROVED_DELIVERY_ESTIMATED" if delivery is not None
+                              else "OWNER_BASE_APPROVED_DELIVERY_UNVERIFIED"),
             "merchant_price_signoff_ref": "",
             "supplier_rights_evidence_ref": "",
             "warehouse_stock_evidence_ref": "",

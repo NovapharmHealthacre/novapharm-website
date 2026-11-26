@@ -1,7 +1,7 @@
 # NovaPharm Healthcare — Logo Asset Pack
 
 ## Authoritative colour
-Primary red has been normalised to **Economist Red #E3120B** (RGB 227, 18, 11).
+Primary red has been normalised to **Royal Cochineal Crimson #9D1B32** (RGB 157, 27, 50).
 
 ## Master artwork
 Use `01_master_vector/novapharm-healthcare-primary-red.svg` as the default digital master. It is path-based, so it does not depend on an installed font and is resolution-independent.

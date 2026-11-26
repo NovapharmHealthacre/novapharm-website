@@ -2,10 +2,10 @@ import { randomUUID } from "node:crypto";
 import { all, audit, nowIso, one, run, transaction, upsert } from "../../data/database.mjs";
 import { sharePointFolderPath, sharePointFolderPlan as mappedSharePointFolderPlan } from "../../core/sharepoint-mapping.mjs";
 import { GraphClient, hasSharePointCredentials, sharePointConfigFromEnv } from "./graph-client.mjs";
-import { documentStore } from "../../storage/document-store.mjs";
+import { classifySharePointSyncFailure, preflightSharePointSyncPayload } from "./sync-error-policy.mjs";
 
-async function markBlocked(eventId, code) {
-  await run("UPDATE integration_events SET status = 'blocked', last_error_code = ?, next_attempt_at = ? WHERE id = ?", code, new Date(Date.now() + 15 * 60_000).toISOString(), eventId);
+async function markBlocked(eventId, code, attemptCount) {
+  await run("UPDATE integration_events SET status = 'blocked', attempt_count = ?, last_error_code = ?, next_attempt_at = ? WHERE id = ?", attemptCount, code, new Date(Date.now() + 15 * 60_000).toISOString(), eventId);
 }
 
 async function markRetry(eventId, code, attemptCount) {
@@ -13,50 +13,73 @@ async function markRetry(eventId, code, attemptCount) {
   await run("UPDATE integration_events SET status = 'retrying', attempt_count = ?, last_error_code = ?, next_attempt_at = ? WHERE id = ?", attemptCount, code, new Date(Date.now() + delay * 60_000).toISOString(), eventId);
 }
 
+/** Block is terminal until an explicitly authorised operator requeues an event. */
+async function recordFailure(event, error, result) {
+  const disposition = classifySharePointSyncFailure(error?.code);
+  const attempts = (event.attempt_count || 0) + 1;
+  if (disposition.action === "block") {
+    await markBlocked(event.id, disposition.code, attempts);
+    result.blocked += 1;
+  } else {
+    await markRetry(event.id, disposition.code, attempts);
+    result.failed += 1;
+  }
+  await audit({
+    actor: "sharepoint_sync", action: "integration.failed",
+    entityType: event.aggregate_type, entityId: event.aggregate_id,
+    details: { eventId: event.id, errorCode: disposition.code, attempt: attempts, disposition: disposition.action }
+  });
+}
+
 export async function processSharePointEvents({ limit = 20 } = {}) {
   const config = sharePointConfigFromEnv();
   const events = await all(`SELECT * FROM integration_events
-    WHERE destination_system = 'sharepoint' AND status IN ('pending', 'retrying', 'blocked') AND next_attempt_at <= ?
+    WHERE destination_system = 'sharepoint' AND status IN ('pending', 'retrying') AND next_attempt_at <= ?
     ORDER BY created_at LIMIT ?`, nowIso(), limit);
 
   if (!events.length) return { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+
+  const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+  const candidates = [];
+  for (const event of events) {
+    const verdict = preflightSharePointSyncPayload(event.payload_json);
+    if (verdict.code) {
+      result.processed += 1;
+      await recordFailure(event, { code: verdict.code }, result);
+    } else {
+      candidates.push({ event, payload: verdict.payload });
+    }
+  }
+
+  // A batch consisting only of denied uploads or malformed events never
+  // authenticates to Microsoft Graph, discovers the site or reads files.
+  if (!candidates.length) return result;
   if (!hasSharePointCredentials(config)) {
-    for (const event of events) await markBlocked(event.id, "sharepoint_credentials_missing");
-    return { processed: events.length, succeeded: 0, blocked: events.length, failed: 0 };
+    for (const { event } of candidates) {
+      result.processed += 1;
+      await recordFailure(event, { code: "sharepoint_credentials_missing" }, result);
+    }
+    return result;
   }
 
   const graph = new GraphClient(config);
-  const site = await graph.site();
-  const drive = await graph.drive(site.id);
-  const result = { processed: 0, succeeded: 0, blocked: 0, failed: 0 };
+  let site;
+  let drive;
+  try {
+    site = await graph.site();
+    drive = await graph.drive(site.id);
+  } catch (error) {
+    for (const { event } of candidates) {
+      result.processed += 1;
+      await recordFailure(event, error, result);
+    }
+    return result;
+  }
 
-  for (const event of events) {
+  for (const { event, payload } of candidates) {
     result.processed += 1;
-    const payload = JSON.parse(event.payload_json);
     try {
-      let item;
-      if (payload.operation === "ensure_entity_folder") {
-        item = await graph.ensureFolder(drive.id, sharePointFolderPath(payload));
-      } else if (payload.operation === "upload_document") {
-        await graph.ensureFolder(drive.id, payload.folderPath);
-        const document = await one("SELECT * FROM documents WHERE id = ?", payload.documentId);
-        if (!document) throw Object.assign(new Error("Document metadata no longer exists."), { code: "document_missing" });
-        if (documentStore.requiresMalwareScan && document.security_status !== "clean") {
-          throw Object.assign(new Error("Document has not passed malware scanning."), { code: "document_not_cleared" });
-        }
-        item = await graph.uploadSmallFile(drive.id, payload.folderPath, document.file_name, await documentStore.read(document.storage_path), document.content_type);
-        await graph.updateListItemFields(drive.id, item.id, {
-          NovaPharmDocumentNumber: document.document_number,
-          NovaPharmDocumentClass: document.document_class,
-          NovaPharmLifecycleStatus: document.lifecycle_status,
-          NovaPharmEntityType: payload.entityType,
-          NovaPharmEntityId: payload.entityId,
-          NovaPharmChecksum: document.checksum_sha256,
-          NovaPharmRetentionClass: document.retention_class
-        });
-      } else {
-        throw Object.assign(new Error("Unsupported SharePoint operation."), { code: "unsupported_operation" });
-      }
+      const item = await graph.ensureFolder(drive.id, sharePointFolderPath(payload));
 
       await transaction(async () => {
         const existing = await one("SELECT id, created_at FROM sharepoint_links WHERE site_id = ? AND drive_id = ? AND item_id = ?", site.id, drive.id, item.id);
@@ -81,10 +104,7 @@ export async function processSharePointEvents({ limit = 20 } = {}) {
       });
       result.succeeded += 1;
     } catch (error) {
-      const attempts = event.attempt_count + 1;
-      await markRetry(event.id, error.code || "sharepoint_sync_failed", attempts);
-      await audit({ actor: "sharepoint_sync", action: "integration.failed", entityType: event.aggregate_type, entityId: event.aggregate_id, details: { eventId: event.id, errorCode: error.code || "sharepoint_sync_failed", attempt: attempts } });
-      result.failed += 1;
+      await recordFailure(event, error, result);
     }
   }
   return result;

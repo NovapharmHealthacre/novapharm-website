@@ -1,0 +1,27 @@
+name: Connective official product image candidate review
+on:
+  pull_request:
+    paths:
+      - "docs/retail/connective-image-candidates.json"
+      - "scripts/collect-connective-image-candidates.py"
+      - ".github/workflows/connective-image-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Collect original supplier packshot candidates
+        run: python3 scripts/collect-connective-image-candidates.py
+      - name: Upload review-only candidate bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: connective-packshot-review
+          path: review-output/connective-images/
+          retention-days: 7
+          if-no-files-found: error

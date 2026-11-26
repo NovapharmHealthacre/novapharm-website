@@ -28,10 +28,11 @@ assert.match(master, /collagen-gold-30-tablets\.png"[^>]*width="980" height="654
 assert.match(page, /collagen-gold-30-tablets\.png"[^>]*width="980" height="654"/,
   "Published Collagen Gold 30 tablets pack must preserve real raster ratio");
 assert.ok(master.includes("Wellness, without the noise.") && page.includes("Wellness, without the noise."), "The Nutraxin product-led message must be published");
-const organicTitle = "Nutraxin UK Supplements | Explore 19 Products | NovaPharm";
-assert.ok(page.includes(`<title>${organicTitle}</title>`), "Nutraxin must have accurate consumer-facing organic search title");
+const organicTitle = "Nutraxin Vitamins & Supplements UK | NovaPharm";
+const organicDescription = "Shop Nutraxin vitamins and supplements in the UK. Explore magnesium, vitamin C, vitamin D3, multivitamins, collagen and more at NovaPharm.";
+assert.ok(page.includes(`<title>${organicTitle.replaceAll("&", "&amp;")}</title>`), "Nutraxin must have accurate consumer-facing organic search title");
 assert.ok(page.includes(`"name":"${organicTitle}"`), "Nutraxin structured WebPage name must agree with its search title");
-assert.ok(page.includes("Discover 19 Nutraxin food supplements across six ranges."), "Nutraxin must publish its accurate consumer collection meta description");
+assert.ok(page.includes(`<meta name="description" content="${organicDescription}">`) && page.includes(`"description":"${organicDescription}"`), "Nutraxin must publish its accurate consumer collection meta description");
 assert.ok(!page.includes("qualified B2B catalogue evaluation"), "Nutraxin retail collection metadata must not describe catalogue-only B2B evaluation");
 assert.ok(master.includes('href="#nx-range-overview">Shop the collection</a>'), "Nutraxin shopping must remain within Products");
 assert.ok(master.includes('href="/products/nutraxin/bag/">Your Bag</a>'), "Nutraxin on-site Bag must remain accessible");

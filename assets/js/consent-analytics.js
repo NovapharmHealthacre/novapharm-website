@@ -40,6 +40,7 @@ export function validGa4Id(id) {
 
 export function publicAnalyticsRoute(pathname) {
   const path = String(pathname || "");
+  if (path === "/pharmacy-partners/") return true;
   if (!/^\/(?:$|about\/|capabilities\/|services\/|regulatory-services\/|cro\/|oncology\/|products\/|partner-with-us\/|technology\/|news-insights\/|leadership\/)/.test(path)) return false;
   // Product analytics are allowed only on reviewed public informational pages.
   // Baskets, accounts, payments, tracking, all nested and future unreviewed

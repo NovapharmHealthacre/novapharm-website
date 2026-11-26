@@ -244,4 +244,33 @@ final class NovaMLAppleTests: XCTestCase {
         ))
     }
 
+    func testQuantumReceiptIsReadOnlyAndRejectsForgedReleaseFlags() throws {
+        let base: [String: Any] = [
+            "schemaVersion": "npi.quantum-research.v1",
+            "experimentId": "bell-1234567890abcdef", "method": "bell-sampling",
+            "engine": "cirq-local-simulator", "qubits": 2, "shots": 64, "seed": 42,
+            "noiseModel": "ideal", "counts": ["00": 31, "01": 0, "10": 0, "11": 33],
+            "inputSha256": String(repeating: "a", count: 64),
+            "codeSha256": String(repeating: "b", count: 64),
+            "calibrationId": NSNull(), "simulatedOnly": true,
+            "hardwareMeasured": false, "independentlyVerified": false,
+            "dataRightsApproved": false, "productionApproved": false,
+            "customerVisible": false, "clinicalUsePermitted": false
+        ]
+        let valid = try NovaQuantumResearchReader.decodeForResearchDisplay(
+            JSONSerialization.data(withJSONObject: base))
+        XCTAssertEqual(valid.shots, 64)
+        XCTAssertFalse(valid.productionApproved)
+        for key in ["productionApproved", "customerVisible", "clinicalUsePermitted", "hardwareMeasured", "independentlyVerified"] {
+            var invalid = base
+            invalid[key] = true
+            XCTAssertThrowsError(try NovaQuantumResearchReader.decodeForResearchDisplay(
+                JSONSerialization.data(withJSONObject: invalid)))
+        }
+        var injected = base
+        injected["patientName"] = "private"
+        XCTAssertThrowsError(try NovaQuantumResearchReader.decodeForResearchDisplay(
+            JSONSerialization.data(withJSONObject: injected)))
+    }
+
 }

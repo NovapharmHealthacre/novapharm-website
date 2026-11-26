@@ -14,6 +14,8 @@ on:
       - 'assets/js/**'
       - 'packages/design-system/**'
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-na-disposition-review-packet-20261120.md'
+      - 'scripts/test-hig-na-disposition-review-packet.mjs'
       - 'docs/design/apple-hig-attachment-evidence-20261118.json'
       - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
       - 'scripts/test-apple-hig-attachment-audit.mjs'
@@ -21,6 +23,8 @@ on:
       - 'apps/portal/app/globals.css'
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
+      - 'scripts/test-hig-independent-review-authenticity.mjs'
+      - 'scripts/test-portal-keyboard-bypass.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
   workflow_dispatch:
     inputs:
@@ -38,19 +42,32 @@ jobs:
   source-contracts:
     name: HIG 172 topics, portal target sizes and mobile readable forms
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Verify Portal keyboard bypass source and browser regression contracts
+        run: node --test scripts/test-portal-keyboard-bypass.mjs
+      - name: Independently verify any claimed GitHub HIG approvals
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node --test scripts/test-hig-independent-review-authenticity.mjs
+      - name: Check all 28 proposed N/A rationales and pending dispositions
+        run: node --test scripts/test-hig-na-disposition-review-packet.mjs
+      - name: Check native iOS/Android readable controls and consent state
+        run: node --test native/novapharm-intelligence-mobile/tests/hig-native-readable-controls.test.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs
       - run: node --test scripts/test-apple-hig-attachment-audit.mjs
       - name: Preserve 172-topic HIG production acceptance gaps (not a compliance certificate)
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-production-audit-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/172-topic-gap-ledger.json
@@ -60,6 +77,8 @@ jobs:
   public-html-sample:
     name: Read-only public HTML and rendered sampling (not HIG compliance)
     if: github.event_name == 'pull_request'
+    env:
+      HIG_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     # The PR may be source-only while an unrelated public deployment is stale,
     # unavailable or still awaiting signoff. Observe without turning this
     # evidence-only job into a publishing or implementation acceptance gate.
@@ -69,11 +88,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
-      - name: Sample four immutable public routes via read-only HTML GET
+      - name: Sample six fixed public routes via read-only HTML GET
         env:
           HIG_SAMPLE_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
@@ -81,13 +100,13 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit
-      - name: Inspect three fixed public origins in Chromium/WebKit; no form submission
+      - name: Inspect six fixed public routes in Chromium/WebKit; no form submission
         env:
           HIG_RENDER_PUBLIC_ORIGIN: '1'
         run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Preserve observed origin/provenance gaps, including failures
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-public-html-sample-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/public-origin-sample.json
@@ -96,7 +115,7 @@ jobs:
 
       - name: Preserve public rendered keyboard/axe receipts and screenshots
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-public-rendered-${{ github.sha }}
           path: artifacts/apple-hig-production-audit/rendered-public/
@@ -111,7 +130,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
@@ -119,7 +138,7 @@ jobs:
         run: HIG_VERIFY_LIVE_LINKS=1 node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - name: Preserve the full URL-health evidence (including failures)
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-hig-210-link-reachability-${{ github.sha }}
           path: artifacts/apple-hig-link-health/report.json

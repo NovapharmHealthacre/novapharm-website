@@ -18,6 +18,24 @@
     "trainingAccess": false
   },
   {
+    "crawler": "Claude-SearchBot",
+    "purpose": "Claude search discovery of public pages",
+    "publicAccess": true,
+    "trainingAccess": false
+  },
+  {
+    "crawler": "PerplexityBot",
+    "purpose": "Perplexity search discovery of public pages",
+    "publicAccess": true,
+    "trainingAccess": false
+  },
+  {
+    "crawler": "Applebot",
+    "purpose": "Apple Search and Siri discovery of public pages",
+    "publicAccess": true,
+    "trainingAccess": null
+  },
+  {
     "crawler": "GPTBot",
     "purpose": "Potential OpenAI model improvement",
     "publicAccess": false,

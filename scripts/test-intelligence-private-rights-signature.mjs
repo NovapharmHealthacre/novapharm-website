@@ -9,6 +9,7 @@ import {
 import {
   createAtlasPrivateMedicineRightsVerifier
 } from "../src/data/atlas-private-medicine-rights.mjs";
+import { medicineRightsUniqueIndexSpec } from "../src/data/atlas-private-medicine-rights-index.mjs";
 
 const now=Date.parse("2026-11-14T04:00:00Z");
 const sha=c=>c.repeat(64);
@@ -158,16 +159,15 @@ test("real signature proof can feed the Atlas rights reader without inventing a 
   const s=signer();
   const original=s.claim();
   s.updateClaim({...original,grantDigestSha256:digest});
-  const key={
-    workspace_id:1,source_id:1,source_version:1,
-    resource_id:1,resource_sha256:1,rights_revision:1
-  };
+  const key=medicineRightsUniqueIndexSpec.keys;
   const db={
     databaseName:"novapharm_intelligence_production",
     collection:name=>{
       assert.equal(name,"npi_source_rights");
       return {
-        listIndexes:()=>({toArray:async()=>[{key,unique:true}]}),
+        listIndexes:()=>({toArray:async()=>[{
+          name:medicineRightsUniqueIndexSpec.name,key,unique:true
+        }]}),
         find:()=>({limit:()=>({toArray:async()=>[g]})})
       };
     }

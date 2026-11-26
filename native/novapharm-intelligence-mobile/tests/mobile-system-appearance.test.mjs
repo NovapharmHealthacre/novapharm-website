@@ -11,6 +11,7 @@ const pkg = JSON.parse(read("native/novapharm-intelligence-mobile/package.json")
 const app = read("native/novapharm-intelligence-mobile/App.tsx");
 const form = read("native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx");
 const maps = read("native/novapharm-intelligence-mobile/MapsResearchScreen.tsx");
+const countryScreen = read("native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx");
 const tokens = read("native/novapharm-intelligence-mobile/appearance.ts");
 
 function paletteOf(name) {
@@ -125,4 +126,59 @@ test("Science offline research honours iOS/Android system light and dark appeara
   assert.match(science, /color: color\.ink/);
   assert.match(science, /color: color\.secondary/);
   assert.doesNotMatch(science, /fetch\(|client_secret|access_token|AsyncStorage|SecureStore/);
+});
+
+
+test("101-country iOS/Android directory tracks system light and dark appearance", () => {
+  assert.match(app, /<CountryDirectoryScreen\s*\/>/);
+  assert.match(countryScreen, /useColorScheme\(\) === "dark"/);
+  assert.match(countryScreen, /darkMode \? mobileDarkPalette : mobileLightPalette/);
+  assert.match(countryScreen, /useMemo\(\(\) => createStyles\(palette\), \[darkMode\]\)/);
+  assert.match(countryScreen, /function createStyles\(palette: MobilePalette\)/);
+  assert.match(countryScreen, /<CountryCard country=\{item\} wide=\{twoColumns\} styles=\{styles\} \/>/);
+  assert.match(countryScreen, /placeholderTextColor=\{palette\.tertiary\}/);
+  assert.match(countryScreen, /selectedText: \{ color: palette\.canvas \}/);
+  assert.match(countryScreen, /actionText: \{[^}]*color: palette\.accent/);
+  assert.match(tokens, /mobileLightPalette/);
+  assert.match(tokens, /mobileDarkPalette/);
+});
+
+test("country cards use shared semantic colours with no light-only surfaces or network activation", () => {
+  for (const role of ["canvas", "grouped", "border", "primary", "secondary", "tertiary", "accent"]) {
+    assert.ok(countryScreen.includes("palette." + role), "Missing shared role " + role);
+  }
+  assert.doesNotMatch(countryScreen, /#[A-Fa-f0-9]{6}\b/, "Do not hardcode light-only country colours");
+  assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|SecureStore|AsyncStorage|access_token|client_secret|Authorization:/i);
+  assert.match(countryScreen, /country-101-client-catalog-20261118\.json/);
+  assert.match(countryScreen, /No live medicine records/);
+  assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
+  assert.match(countryScreen, /keyExtractor=\{\(country\) => country\.iso2\}/);
+});
+
+
+test("large accessibility text reflows the 101-country list into one column without clipping filter labels", () => {
+  assert.match(countryScreen, /const \{ width, fontScale \} = useWindowDimensions\(\)/);
+  assert.match(countryScreen, /const largeText = fontScale >= 1\.4/);
+  assert.match(countryScreen, /const twoColumns = width >= 760 && !largeText/);
+  assert.match(countryScreen, /key=\{twoColumns \? "country-wide" : "country-narrow"\}/);
+  assert.match(countryScreen, /numColumns=\{twoColumns \? 2 : 1\}/);
+  assert.match(countryScreen, /filters: \{ flexDirection: "row", flexWrap: "wrap"/);
+  assert.match(countryScreen, /filter: \{ flexGrow: 1, minWidth: 92/);
+  assert.match(countryScreen, /minHeight: 48, borderRadius: 9/);
+  assert.match(countryScreen, /search: \{[^}]*fontSize: 17/);
+  assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
+  assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|access_token|client_secret/i);
+});
+
+
+test("iOS and Android maps hand-off transmits coordinates, never an optional local reference label", () => {
+  assert.match(maps, /Platform\.OS === "android"/);
+  assert.match(maps, /buildAndroidMapUrl\(lat, lon\)/);
+  assert.match(maps, /https:\/\/maps\.apple\.com\/\?ll=/);
+  assert.doesNotMatch(maps, /&q=\$\{encodeURIComponent\(safeLabel\)\}/);
+  assert.doesNotMatch(maps, /[&?]q=\$\{encodeURIComponent\(safeLabel\)\}/);
+  assert.match(maps, /optional reference label stays local and is not included in the link/);
+  assert.match(maps, /const safeLabel = label\.trim\(\)\.slice\(0, 80\) \|\| "Reference location"/);
+  assert.match(maps, /setStatus\("Opened " \+ safeLabel \+/);
+  assert.doesNotMatch(maps, /fetch\(|navigator\.geolocation|expo-location|AsyncStorage|SecureStore|client_secret/);
 });

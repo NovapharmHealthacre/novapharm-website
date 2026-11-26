@@ -32,6 +32,12 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-nutraxin-category-layout-browser.mjs
+      - scripts/apply-corporate-product-discipline.mjs
+      - products/nutraxin/**
+      - scripts/activate-contact-intake.mjs
+      - scripts/managed-contact-layout.mjs
+      - scripts/test-managed-contact-layout-browser.mjs
       - scripts/test-intelligence-accessibility-browser.mjs
       - assets/js/intelligence-workspace-*.js
       - scripts/test-public-sitemap-geometry.mjs
@@ -69,6 +75,12 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-nutraxin-category-layout-browser.mjs
+      - scripts/apply-corporate-product-discipline.mjs
+      - products/nutraxin/**
+      - scripts/activate-contact-intake.mjs
+      - scripts/managed-contact-layout.mjs
+      - scripts/test-managed-contact-layout-browser.mjs
       - scripts/test-intelligence-accessibility-browser.mjs
       - assets/js/intelligence-workspace-*.js
       - scripts/test-public-sitemap-geometry.mjs
@@ -79,6 +91,12 @@ on:
 permissions:
   contents: read
 
+# PR-only supersession prevents stale commits competing for runner slots.
+# Each main push and manual dispatch has a unique group: no cancellation there.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   rendered-public-estate:
     runs-on: ubuntu-24.04
@@ -88,7 +106,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - name: Check out exact public release source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Trust exact checkout for release provenance
@@ -114,11 +132,26 @@ jobs:
         run: |
           node scripts/ci/public-pages-static-server.mjs --bind 127.0.0.1 > /tmp/novapharm-public-server.log 2>&1 &
           echo $! > /tmp/novapharm-public-server.pid
+      - name: Verify rendered managed Contact (isolated local fixture, Chromium and WebKit)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-managed-contact-layout-browser.mjs
       - name: Audit every public sitemap route and commerce shell geometry
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
           PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
         run: node scripts/test-public-sitemap-geometry.mjs
+      - name: Verify all 19 Nutraxin detail pages on Chromium and WebKit (desktop, tablet, mobile, print)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-nutraxin-product-layout-browser.mjs
+      - name: Verify all five Nutraxin category pages on Chromium and WebKit (screen and print)
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-nutraxin-category-layout-browser.mjs
       - name: Verify unboxed footer language picker on Chromium and WebKit at 320px, 390px and desktop
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
@@ -135,7 +168,7 @@ jobs:
         run: node scripts/test-intelligence-accessibility-browser.mjs
       - name: Upload rendered evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: public-pages-browser-${{ github.sha }}
           path: |

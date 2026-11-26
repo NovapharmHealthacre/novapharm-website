@@ -25,6 +25,14 @@ on:
       - scripts/build-site.mjs
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
+      - scripts/stamp-public-release-provenance.mjs
+      - scripts/normalise-official-public-brand-metadata.mjs
+      - scripts/test-official-public-brand-metadata.mjs
+      - scripts/verify-public-brand-source-live.mjs
+      - scripts/test-public-brand-source-live.mjs
+      - scripts/test-quantum-static-public-candidate.mjs
+      - quantum-research/index.html
+      - assets/css/quantum-research.css
       - scripts/test-static-public-source-safety.mjs
       - scripts/validate-module-media-sanity.mjs
       - scripts/validate-visual-refinement.mjs
@@ -52,7 +60,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out proposed release
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Use Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -68,6 +76,8 @@ jobs:
 
       - name: Build and validate the public artifact
         run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm run build:public-only
           npm run test:owner-corrections:public-only
           npm run validate:domain
@@ -100,7 +110,7 @@ jobs:
       PAGES_ADMIN_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
     steps:
       - name: Check out approved source
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Use Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -139,7 +149,10 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build corrected public output
-        run: npm run build:public-only
+        run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
+          npm run build:public-only
 
       - name: Validate owner corrections and public release artifact
         run: |
@@ -328,6 +341,36 @@ jobs:
           done
           echo "PUBLIC RELEASE NOT CONFIRMED: custom domain does not serve the new Intelligence navigation and terminal modules" >&2
           exit 1
+
+      - name: Verify exact quantum reference publication and noindex on custom domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            release_key="${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}"
+            if curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                "$LIVE_ORIGIN/quantum-research/?source=${release_key}" \
+                -o /tmp/novapharm-quantum-live.html \
+              && curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                "$LIVE_ORIGIN/assets/css/quantum-research.css?source=${release_key}" \
+                -o /tmp/novapharm-quantum-live.css \
+              && grep -Fq '<meta name="novapharm-source-sha" content="'"${GITHUB_SHA}"'">' /tmp/novapharm-quantum-live.html \
+              && grep -Fq '<meta name="robots" content="noindex, nofollow">' /tmp/novapharm-quantum-live.html \
+              && grep -Fq 'No live quantum hardware' /tmp/novapharm-quantum-live.html \
+              && grep -Fq '.nq-grid' /tmp/novapharm-quantum-live.css \
+              && ! grep -Eiq '(<form([[:space:]>])|data-login-form|data-contact-form|data-account-application|type="password"|type="file")' /tmp/novapharm-quantum-live.html; then
+              echo "Verified noindex quantum research route and CSS at exact source ${GITHUB_SHA}."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Quantum research route missing, stale, indexable, or unsafe on the custom domain." >&2
+          exit 1
+
+      - name: Verify exact SHA, official browser colours and retained Contact B2B form on six live routes
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Mark publication successful
         if: success()

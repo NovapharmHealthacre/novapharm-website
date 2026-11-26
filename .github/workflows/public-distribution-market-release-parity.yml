@@ -1,0 +1,64 @@
+name: Validate public distribution and market routes after build
+
+on:
+  pull_request:
+    paths:
+      - scripts/test-distribution-market-build-parity.mjs
+      - scripts/build-site.mjs
+      - scripts/build-public-pages.mjs
+      - scripts/enhance-seo-authority.mjs
+      - scripts/apply-global-distribution-foundation.mjs
+      - scripts/apply-markets-editorial.mjs
+      - src/content/site-content.mjs
+      - apps/corporate/data/pages.ts
+      - sitemap.xml
+      - .github/workflows/public-distribution-market-release-parity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build public candidate and inspect three neglected commercial routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install locked dependencies without postinstall scripts
+        run: npm ci --ignore-scripts
+      - name: Generate public-only reviewed artifact WITHOUT publishing
+        run: npm run build:public-only
+      - name: Verify commercial pages, canonical metadata, sitemap and 19 SKUs
+        run: node --test scripts/test-distribution-market-build-parity.mjs
+      - name: Verify public packaging does not expose protected services
+        run: |
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+      - name: Preserve nonpublic source-validation report
+        if: always()
+        run: |
+          mkdir -p artifacts/distribution-market
+          {
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'event=%s\n' "$GITHUB_EVENT_NAME"
+            printf 'scope=public-build-only-no-deployment\n'
+            printf 'owner_release_signoff=not_granted\n'
+          } > artifacts/distribution-market/checkpoint.txt
+      - name: Upload source-only validation context
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: distribution-market-build-parity-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/distribution-market/checkpoint.txt
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,100 @@
+{
+  "schema": "novapharm.apple-hig.source-to-runtime-scope.v1",
+  "auditedOn": "2026-11-20",
+  "repository": "NovapharmHealthacre/novapharm-website",
+  "sourceSnapshotSha": "3ef2f47a1ac5b692e719323cf83b19fac2be92c8",
+  "scope": "Source tree evidence only. No deployed route, authenticated session, physical-device accessibility, signed native build or independent release approval is implied.",
+  "nextPages": {
+    "source": "apps/*/(src/)app/**/page.{tsx,jsx,ts,js}",
+    "sourcePageFiles": 27,
+    "dynamicCatchAllSources": [
+      "apps/corporate/app/[[...slug]]/page.tsx",
+      "apps/portal/app/[[...slug]]/page.tsx"
+    ],
+    "warning": "27 source page files are NOT 27 user-facing URL routes: catch-all pages may render many registered entries; the standalone quantum research source is a separately identified, unverified candidate.",
+    "standaloneResearchRoutes": [
+      {
+        "route": "/quantum-research/",
+        "source": "apps/corporate/app/quantum-research/page.tsx",
+        "access": "public_candidate"
+      }
+    ]
+  },
+  "corporate": {
+    "pageRegister": "apps/corporate/data/pages.ts",
+    "declaredPageDefinitions": 32,
+    "articleRegister": "apps/corporate/data/articles.ts",
+    "articleImportReferences": 6,
+    "nutraxinRegister": "apps/corporate/data/nutraxin-product-register.json",
+    "nutraxinProducts": 19,
+    "evidenceBoundary": "Public page definitions and catalogue entries are source inventory. Deployed URL/SHA, page-specific HIG browser/a11y acceptance and product rights are unverified."
+  },
+  "portal": {
+    "moduleRegister": "packages/portal-contracts/src/module-catalog.json",
+    "declaredModules": 54,
+    "visibleInNavigation": 48,
+    "hiddenUntilDependencies": 6,
+    "areas": {
+      "customer": 18,
+      "employee": 13,
+      "executive": 18,
+      "admin": 5
+    },
+    "routeImplementation": "apps/portal/app/[[...slug]]/page.tsx",
+    "intelligenceCatalogue": "apps/portal/data/intelligence-workspaces.ts",
+    "intelligenceWorkspaces": 22,
+    "sourceLabeledReadOnly": 5,
+    "sourceLabeledGated": 17,
+    "evidenceBoundary": "Source module visibility or 'existing-read-only' catalogue state is NOT authenticated production availability. Server-side role/session/tenant, MFA and clinical data rights require explicit protected-user acceptance."
+  },
+  "native": {
+    "appleSwiftPackage": "native/novapharm-intelligence-apple/Package.swift",
+    "appleProductType": "Swift library candidate, not signed iOS app",
+    "androidBuild": "native/novapharm-intelligence-android/app/build.gradle.kts",
+    "androidManifest": "native/novapharm-intelligence-android/app/src/main/AndroidManifest.xml",
+    "androidPackage": "com.novapharm.intelligence.research",
+    "androidVersion": "0.1.0-research",
+    "expoConfig": "native/novapharm-intelligence-mobile/app.json",
+    "expoProductVersion": "0.1.0",
+    "expoHasProductionIOSBundleId": false,
+    "expoHasProductionAndroidPackage": false,
+    "evidenceBoundary": "Source and debug builds cannot prove signed, installed, published, authorized or physically tested iOS/Android products."
+  },
+  "production": {
+    "constraints": "config/intelligence/owner-production-constraints.json",
+    "requiredSignoff": "not_granted",
+    "acceptedProductionHigTopics": 0,
+    "acceptedOutOfScopeHigTopics": 0,
+    "thirdPartySourceRightsVerified": false,
+    "physicalVoiceOverTalkBackAccepted": false,
+    "exactLiveProtectedDeploymentReceiptsAccepted": false,
+    "signedNativeDistributionReceiptsAccepted": false
+  },
+  "acceptancePriority": [
+    {
+      "area": "Corporate public web",
+      "required": "Expanded catch-all URL manifest; deployed HTML SHA; screenshots; WebKit/Chromium; 320px to 400% reflow; keyboard and assistive technology; colour, content, error and consent tests",
+      "state": "pending"
+    },
+    {
+      "area": "Protected Portal/Intelligence",
+      "required": "Actual route + role/tenant matrix; authorized staging accounts; MFA and session testing; no patient or medicine rights assumption; real user journey screenshots and safe logs",
+      "state": "pending"
+    },
+    {
+      "area": "Native iOS",
+      "required": "App bundle identity, entitlement, signed IPA or controlled TestFlight release; iPhone/iPad matrix, VoiceOver, text size, dark mode, orientation, permission and authentication checks",
+      "state": "pending"
+    },
+    {
+      "area": "Native Android",
+      "required": "Signed APK/AAB with eligible release identity; device/API matrix, TalkBack, font scaling, dark mode, navigation, edge-to-edge, session/permission tests",
+      "state": "pending"
+    },
+    {
+      "area": "Independent acceptance",
+      "required": "Authorized Quality/Security reviewer checks each platform evidence and N/A decision; owner signs off only after rights, release receipts and rollback evidence",
+      "state": "pending"
+    }
+  ]
+}

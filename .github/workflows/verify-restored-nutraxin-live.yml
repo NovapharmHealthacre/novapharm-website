@@ -1,0 +1,45 @@
+name: Verify 19 Nutraxin public pages after restoration
+
+on:
+  pull_request:
+    paths:
+      - scripts/verify-restored-nutraxin-live.mjs
+      - .github/workflows/verify-restored-nutraxin-live.yml
+  workflow_dispatch:
+  # Read-only rollback checks after successful GitHub Pages publications.
+  deployment_status:
+  # Fallback for GitHub's branch-published Pages workflow, which may not emit
+  # a deployment_status event to this repository's Actions workflows.
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
+  schedule:
+    - cron: "31 4 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-nutraxin:
+    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Verify actual public Nutraxin restoration against GitHub Pages release
+        run: node scripts/verify-restored-nutraxin-live.mjs
+      - name: Preserve diagnostic report even if production drift exists
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: nutraxin-live-restoration-verification
+          path: artifacts/site-restoration/nutraxin-post-release.json
+          if-no-files-found: warn
+          retention-days: 14

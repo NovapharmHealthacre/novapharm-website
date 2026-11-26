@@ -6,14 +6,14 @@
  * Intentionally does not target managed portal/authentication interfaces.
  */
 :root {
-  --nph-canvas: #ffffff;
-  --nph-silver: #f5f5f7;
-  --nph-ink: #111113;
-  --nph-body: #424248;
+  --nph-canvas: #FFFFFF;
+  --nph-silver: #F8F7F3;
+  --nph-ink: #0B0B0E;
+  --nph-body: #0B0B0E;
   --nph-muted: #595961;
-  --nph-line: #d9d9df;
+  --nph-line: #DEDCD5;
   --nph-link: #0066cc;
-  --nph-accent: #e3120b;
+  --nph-accent: #9D1B32;
   --nph-deep: #0a101a;
   --nph-radius: 22px;
   --nph-max: 1200px;
@@ -39,7 +39,7 @@
   --white: var(--nph-canvas);
   --navy: var(--nph-deep);
   --red: var(--nph-accent);
-  --red-dark: #b30e09;
+  --red-dark: #68101F;
   --focus: var(--nph-link);
   --apple-ink: var(--nph-ink);
   --apple-muted: var(--nph-muted);
@@ -47,7 +47,7 @@
   --apple-soft: var(--nph-silver);
   --apple-white: var(--nph-canvas);
   --pharma-red: var(--nph-accent);
-  --pharma-red-dark: #b30e09;
+  --pharma-red-dark: #68101F;
   --header: 64px;
   --shell: var(--nph-max);
   --shadow: 0 18px 58px rgba(12, 20, 34, .08);
@@ -124,6 +124,7 @@ a { text-underline-offset: .24em; }
   padding-block: 14px;
 }
 .desktop-nav a::after { height: 1px; bottom: 7px; background: var(--nph-accent); }
+.desktop-nav a[aria-current]::after { right: 0; }
 .mobile-menu summary {
   border-radius: 999px;
   border-color: var(--nph-line);
@@ -144,6 +145,7 @@ a { text-underline-offset: .24em; }
 }
 .mobile-menu nav a:hover { color: var(--nph-link); }
 .mobile-menu nav a:focus-visible { background: var(--nph-silver); }
+.mobile-menu nav a[aria-current] { background: var(--nph-silver); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
 
 .button,
 .button-primary,
@@ -663,3 +665,10 @@ main [id] { scroll-margin-top: calc(var(--header) + 24px); }
   align-items: center;
   min-block-size: 44px;
 }
+
+/* Royal neutrals: Porcelain Stone is decorative, not a form/control outline.
+ * Controls use the independently contrast-tested strong semantic separator. */
+:root { --nph-control-line: var(--np-color-separator-strong, #86868B); }
+.mobile-menu summary,
+.button-light,
+.button-quiet { border-color: var(--nph-control-line); }

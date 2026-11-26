@@ -1,0 +1,11 @@
+.section { padding: clamp(24px, 5vw, 64px); background: #ffffff; color: #0b0b0e; }
+.section h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); letter-spacing: -0.035em; }
+.section p { max-width: 76ch; line-height: 1.6; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; }
+.section button, .section input { font: inherit; min-height: 44px; padding: 10px 16px; border: 1px solid #5b5b60; border-radius: 8px; background: #fff; color: #0b0b0e; }
+.section button:focus-visible, .section input:focus-visible, .table:focus-visible { outline: 3px solid #2546d8; outline-offset: 3px; }
+.section label { display: grid; gap: 8px; max-width: 30rem; }
+.source { margin-top: 28px; border-top: 1px solid #dedcd5; }
+.table { overflow-x: auto; }
+.table table { border-collapse: collapse; width: 100%; text-align: left; }
+.table th, .table td { padding: 12px; border-bottom: 1px solid #dedcd5; vertical-align: top; }

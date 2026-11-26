@@ -25,14 +25,82 @@ import { MultimodalReviewScreen } from "./MultimodalReviewScreen";
 import { CLIP_MOBILE_RELEASE } from "./clip-research";
 import { MapsResearchScreen } from "./MapsResearchScreen";
 import { CountryDirectoryScreen } from "./CountryDirectoryScreen";
+import { USFdaSourcePreviewScreen } from "./USFdaSourcePreviewScreen";
 import { ScienceResearchMobile } from "./ScienceResearchMobile";
+import { PrivateOperationsPreviewScreen } from "./PrivateOperationsPreviewScreen";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 type MobilePalette = Readonly<Record<keyof typeof mobileLightPalette, string>>;
 import { modelMicroscopeInspectionStages, novaMlAlignmentResearchMethods, novaMlSparseResearchMethod, novaMlSparseCircuitAssurance, novaMlWorkspaceCatalogue } from "../../apps/portal/data/nova-ml-modules";
 
-type Screen = "overview" | "workspaces" | "sources" | "more" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account";
+type Screen = "overview" | "workspaces" | "sources" | "more" | "fda" | "review" | "research" | "inspect" | "maps" | "countries" | "visual" | "science" | "account" | "customer-portal-preview" | "distribution-preview";
 type Workspace = (typeof intelligenceWorkspaceCatalogue)[number];
 type Source = (typeof sourceRegister.sources)[number];
+
+type MobileAuthGate = Readonly<{
+  id: string;
+  title: string;
+  acceptance: string;
+  state: "not_verified";
+}>;
+
+const gates: ReadonlyArray<MobileAuthGate> = Object.freeze([
+  {
+    id: "native-identities",
+    title: "Native application identity",
+    acceptance: "Approved iOS bundle ID, Android application ID and controlled signing identities.",
+    state: "not_verified" as const
+  },
+  {
+    id: "public-native-oidc-client",
+    title: "Dedicated mobile Cognito client",
+    acceptance: "Separate native public client with no client secret and app-specific callback ownership.",
+    state: "not_verified" as const
+  },
+  {
+    id: "browser-pkce-callback",
+    title: "System-browser PKCE",
+    acceptance: "Authorization code with S256, independently bound state/nonce and verified native callback.",
+    state: "not_verified" as const
+  },
+  {
+    id: "mfa",
+    title: "Verified MFA",
+    acceptance: "Device-tested MFA enrollment, challenge, timeout, and recovery for the intended user population.",
+    state: "not_verified" as const
+  },
+  {
+    id: "secure-revocable-session",
+    title: "Secure revocable sessions",
+    acceptance: "Hardware-backed storage policy, token rotation, expiry, remote revocation and logout verification.",
+    state: "not_verified" as const
+  },
+  {
+    id: "tenant-and-source-rights",
+    title: "Tenant and pharmaceutical data rights",
+    acceptance: "Server-enforced tenant ownership, medicine identity and per-country source-use grants.",
+    state: "not_verified" as const
+  },
+  {
+    id: "privacy-observability",
+    title: "Privacy and security evidence",
+    acceptance: "No tokens in logs, encrypted diagnostic handling, device loss and failure-mode acceptance.",
+    state: "not_verified" as const
+  },
+  {
+    id: "signed-device-and-owner-review",
+    title: "Signed beta and release approval",
+    acceptance: "Independent iOS/Android device tests, accessibility review and explicit owner release signoff.",
+    state: "not_verified" as const
+  }
+].map((gate) => Object.freeze(gate)));
+
+const mobileAuthReadiness = Object.freeze({
+  status: "blocked" as const,
+  canSignIn: false as const,
+  customerDataEnabled: false as const,
+  gates
+});
+
 
 const workspaceGroups = [...new Set(intelligenceWorkspaceCatalogue.map((item) => item.group))];
 const sourceRegions = ["All regions", ...new Set(sourceRegister.sources.map((item) => item.region))];
@@ -110,7 +178,7 @@ function Navigation({ selected, onSelect, largeText }: { selected: Screen; onSel
   return (
     <View style={[styles.navigation, largeText && styles.navigationLarge]} accessibilityRole="tablist">
       {tabs.map((tab) => {
-        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account"));
+        const active = selected === tab.screen || (tab.screen === "more" && (selected === "review" || selected === "research" || selected === "inspect" || selected === "maps" || selected === "visual" || selected === "countries" || selected === "science" || selected === "account" || selected === "fda" || selected === "customer-portal-preview" || selected === "distribution-preview"));
         return (
           <Pressable
             key={tab.screen}
@@ -283,13 +351,16 @@ export default function App() {
               <SectionHeading title="More" detail="Additional research and access previews. Nothing here enables clinical, commercial or customer operations." />
               {([
                 { screen: "countries", label: "Countries", detail: "101 national research scopes and unapproved source references" },
+                { screen: "fda", label: "US FDA sources", detail: "Five offline source types; no mobile API access" },
                 { screen: "review", label: "Evidence review", detail: "Offline multimodal research and identity-conflict checks" },
                 { screen: "research", label: "Nova ML research", detail: "Unverified methods and native-model prerequisites" },
                 { screen: "inspect", label: "Model Microscope", detail: "Synthetic interpretability research; no live model inspection" },
                 { screen: "maps", label: "Maps and location", detail: "Offline source-reference coordinates; external maps only" },
                 { screen: "visual", label: "Visual research", detail: "Disabled CLIP candidate: no model inference or approved image catalogue" },
                 { screen: "science", label: "Science research", detail: "Offline evidence and scientific-method review; no live model or medicine data" },
-                { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" }
+                { screen: "account", label: "Enterprise access", detail: "Authentication requirements; sign-in is not enabled" },
+                { screen: "customer-portal-preview", label: "Customer Portal", detail: "Private module navigation; no live orders, invoices or customer data" },
+                { screen: "distribution-preview", label: "Distribution", detail: "Offline WMS module map; no live batches, picking or dispatch" }
               ] as const).map((item) => (
                 <Pressable
                   key={item.screen}
@@ -304,8 +375,11 @@ export default function App() {
               ))}
             </>
           )}
+          {screen === "fda" && <USFdaSourcePreviewScreen darkMode={darkMode} />}
           {screen === "review" && <MultimodalReviewScreen darkMode={darkMode} />}
           {screen === "maps" && <MapsResearchScreen darkMode={darkMode} />}
+          {screen === "customer-portal-preview" && <PrivateOperationsPreviewScreen area="customer-portal" darkMode={darkMode} />}
+          {screen === "distribution-preview" && <PrivateOperationsPreviewScreen area="distribution" darkMode={darkMode} />}
           {screen === "science" && <ScienceResearchMobile onOpenWorkspace={(slug) => {
             const workspace = intelligenceWorkspaceCatalogue.find((item) => item.slug === slug);
             if (workspace) { setSelectedWorkspace(workspace); setScreen("workspaces"); }
@@ -459,6 +533,15 @@ export default function App() {
                 <Text style={styles.description}>A reviewed mobile Cognito authorization-code and PKCE flow, MFA, tenant scoping, secure storage, revocation and signed release are required.</Text>
                 <Text style={styles.meta}>No credentials, JWTs or private customer/medicine records are collected by this preview.</Text>
               </View>
+              <SectionHeading title="Mobile login acceptance" detail="The AWS web client does not establish mobile sign-in readiness. All eight gates remain unverified." />
+              {mobileAuthReadiness.gates.map((gate) => (
+                <View key={gate.id} style={styles.requirement} accessible
+                  accessibilityLabel={gate.title + ". Not verified. " + gate.acceptance}>
+                  <Text style={styles.cardTitle}>{gate.title} · Not verified</Text>
+                  <Text style={styles.description}>{gate.acceptance}</Text>
+                </View>
+              ))}
+              <Text style={styles.meta}>Readiness checklist only. No login SDK, credential capture, permissions or customer access is enabled.</Text>
               <SectionHeading title="Private access controls" />
               {["A verified person and tenant", "Source-specific rights and country", "Independent data admission", "Session expiry and revocation", "Complete auditing and rollback"].map((item) => (
                 <View style={styles.requirement} key={item}><Text style={styles.description}>{item}</Text></View>

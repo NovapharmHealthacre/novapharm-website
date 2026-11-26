@@ -6,6 +6,8 @@ on:
       - "scripts/generate-nutraxin-shopping.mjs"
       - "scripts/test-nutraxin-merchant.mjs"
       - "scripts/verify-nutraxin-merchant-live.mjs"
+      - "scripts/audit-nutraxin-21.mjs"
+      - "assets/data/nutraxin-gtin-uk.json"
       - ".github/workflows/publish-aws-contact-production.yml"
       - "scripts/build-site.mjs"
       - "products/nutraxin/**"
@@ -19,7 +21,7 @@ jobs:
   validate-merchant-source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -30,3 +32,38 @@ jobs:
           node scripts/generate-nutraxin-shopping.mjs --check
           node --test scripts/test-nutraxin-merchant.mjs
           node scripts/verify-nutraxin-merchant-live.mjs --local
+      - name: Independent 21-check Nutraxin source audit
+        env:
+          NUTRAXIN_AUDIT_REPORT: /tmp/nutraxin-source-21.json
+        run: node scripts/audit-nutraxin-21.mjs
+      - name: Preserve 21-check source evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: nutraxin-source-21-checks
+          path: /tmp/nutraxin-source-21.json
+          if-no-files-found: warn
+  audit-deployed-merchant:
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate-merchant-source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Verify deployed feed and all 19 live landing pages
+        env:
+          NUTRAXIN_AUDIT_REPORT: /tmp/nutraxin-live-21.json
+        run: |
+          node scripts/audit-nutraxin-21.mjs --live
+          node scripts/verify-nutraxin-merchant-live.mjs
+      - name: Preserve post-deployment evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: nutraxin-production-21-checks
+          path: /tmp/nutraxin-live-21.json
+          if-no-files-found: warn

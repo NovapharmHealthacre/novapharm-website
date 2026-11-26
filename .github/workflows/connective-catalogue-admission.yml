@@ -1,0 +1,107 @@
+name: Connective catalogue admission evidence
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/connective-catalogue-admission.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: connective-packshot-review
+          path: review/batch01
+          run-id: 45533367019
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: connective-brand-discovery
+          path: review/discovery
+          run-id: 45533786866
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: connective-batch02-part-*
+          path: review/batch02
+          run-id: 45537009006
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: vitabiotics-packshot-review
+          path: review/vitabiotics
+          run-id: 45545185102
+          github-token: ${{ github.token }}
+      - name: Create consolidated GTIN and image evidence import register
+        run: |
+          python3 - <<'PY'
+          import csv, hashlib, json, pathlib, re
+          from collections import defaultdict
+          root = pathlib.Path('review')
+          out = pathlib.Path('admission')
+          out.mkdir()
+          def load(path):
+              return json.loads(path.read_text())
+          def valid_gtin(g):
+              return isinstance(g,str) and bool(re.fullmatch(r'(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})',g)) and (10-sum(int(c)*(3 if i%2==0 else 1) for i,c in enumerate(reversed(g[:-1])))%10)%10==int(g[-1])
+          discovery=defaultdict(list)
+          for row in load(root/'discovery/report.json')['results']:
+              if row.get('status')=='supplier_identity_candidate' and valid_gtin(row.get('gtin')):
+                  discovery[row['gtin']].append({k:row.get(k) for k in ('name','pack','sourcePage')})
+          initial={r['gtin']:r for r in load(pathlib.Path('docs/retail/connective-image-candidates.json'))['products']}
+          reports=[root/'batch01/report.json',*sorted((root/'batch02').rglob('report.json')),root/'vitabiotics/report.json']
+          assert len(reports)==7, 'Expected all original candidate batches'
+          records={}
+          count=0
+          for report in reports:
+              data=load(report)
+              assert data['published']==0
+              for row in data['results']:
+                  if not row.get('assets'): continue
+                  g=row['gtin']
+                  assert valid_gtin(g), 'Invalid image-matched GTIN'
+                  manufacturer=row.get('candidates',[])
+                  facts=([{'name':x.get('name'),'pack':x.get('variant'),'sourcePage':x.get('sourcePage')} for x in manufacturer] if manufacturer else
+                         [{'name':row.get('supplierName'),'pack':row.get('supplierPack'),'sourcePage':row.get('sourcePage')}] if row.get('supplierName') else
+                         [{'name':initial[g].get('name'),'pack':initial[g].get('pack'),'sourcePage':row.get('sourcePage')}] if g in initial else discovery[g])
+                  facts=[x for x in facts if x.get('name') and x.get('pack') and x.get('sourcePage')]
+                  assets=[]
+                  for asset in row['assets']:
+                      p=pathlib.PurePosixPath(asset['path'])
+                      assert len(p.parts)==2 and p.parts[0]==g and re.fullmatch(r'(?:[1-8]|candidate)\.(?:jpg|jpeg|png|webp)',p.parts[1])
+                      file=report.parent.joinpath(*p.parts)
+                      assert file.is_file() and not file.is_symlink()
+                      raw=file.read_bytes()
+                      assert len(raw)==asset['bytes'] and hashlib.sha256(raw).hexdigest()==asset['sha256']
+                      assets.append({k:asset[k] for k in ('sourceImage','sha256','bytes','path')})
+                      count+=1
+                  item=records.setdefault(g,{'gtin':g,'sku':'NP-CP-'+g,'identityCandidates':[],'imageCandidates':[],'ownerRolloutApproved':True,'ukPackVerified':False,'imageRightsConfirmed':False,'publicListingApproved':False,'productClass':None,'description':None,'ingredients':None,'directions':None,'warnings':None,'approvedRetailPriceGBP':None,'availableQuantity':None,'dispatchCommitment':None,'orderingEnabled':False})
+                  item['identityCandidates'].extend(facts)
+                  item['imageCandidates'].extend({**a,'archive':str(report.relative_to(root))} for a in assets)
+          assert count==802, f'Unexpected archived image count: {count}'
+          assert len(records)==395, f'Unexpected unique product count: {len(records)}'
+          items=sorted(records.values(),key=lambda r:r['gtin'])
+          for item in items:
+              item['identityCandidates']=list({json.dumps(x,sort_keys=True):x for x in item['identityCandidates']}.values())
+          (out/'catalogue-admission-register.json').write_text(json.dumps({'products':len(items),'originalImagesVerified':count,'published':0,'records':items},indent=2)+'\n')
+          fields=['gtin','sku','candidate_name','candidate_pack','source_page','image_count','uk_pack_verified','image_rights_confirmed','public_listing_approved','product_class','description','ingredients','directions','warnings','retail_price_gbp','available_quantity','dispatch_commitment','ordering_enabled']
+          with (out/'catalogue-admission-register.csv').open('w',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
+              for item in items:
+                  identity=item['identityCandidates'][0] if len(item['identityCandidates'])==1 else {}
+                  w.writerow({'gtin':item['gtin'],'sku':item['sku'],'candidate_name':identity.get('name'),'candidate_pack':identity.get('pack'),'source_page':identity.get('sourcePage'),'image_count':len(item['imageCandidates']),'uk_pack_verified':False,'image_rights_confirmed':False,'public_listing_approved':False,'ordering_enabled':False})
+          print(f'Verified {count} original images across {len(items)} product references; no publication or payment activation.')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: connective-catalogue-admission-register
+          path: admission/
+          retention-days: 30
+          if-no-files-found: error

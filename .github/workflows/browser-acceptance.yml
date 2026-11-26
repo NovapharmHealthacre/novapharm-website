@@ -30,7 +30,7 @@ jobs:
           - founder
           - status
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       # The official Playwright container runs as root while actions/checkout
@@ -47,7 +47,7 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci --ignore-scripts --prefer-offline
       # Fail closed unless the locked test runner and both preinstalled browsers match.
       # All application, portal, Lighthouse and authentication acceptance steps remain mandatory.
       - name: Verify pinned Playwright image and bundled browsers
@@ -59,7 +59,7 @@ jobs:
         run: npm run ${{ matrix.application }}:test:browser
       - name: Upload rendered acceptance evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ matrix.application }}-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/${{ matrix.application }}-browser
@@ -76,7 +76,7 @@ jobs:
       options: --shm-size=1gb
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       # The official Playwright container runs as root while actions/checkout
@@ -93,12 +93,14 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci --ignore-scripts --prefer-offline
       # Fail closed unless the locked test runner and both preinstalled browsers match.
       # All application, portal, Lighthouse and authentication acceptance steps remain mandatory.
       - name: Verify pinned Playwright image and bundled browsers
         run: |
           node -e "const fs=require('node:fs'); const p=require('playwright/package.json'); const b=require('playwright'); if(p.version!=='1.61.1') process.exit(1); for(const engine of [b.chromium,b.webkit]) { const file=engine.executablePath(); if(!fs.existsSync(file)) {console.error('Missing browser '+file); process.exit(1);} }"
+      - name: Confirm protected Portal browser artifacts require private repository access
+        run: node --test scripts/test-protected-portal-artifact-privacy.mjs
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
@@ -107,9 +109,9 @@ jobs:
         run: node --test scripts/test-lighthouse-transient-navigation.mjs
       - name: Run portal Lighthouse acceptance
         run: npm run portal:test:lighthouse
-      - name: Upload protected-portal acceptance evidence
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - name: Upload protected-portal acceptance evidence (private repositories only)
+        if: ${{ always() && github.event.repository.private }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: portal-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
@@ -117,6 +119,10 @@ jobs:
             artifacts/portal-lighthouse
           if-no-files-found: error
           retention-days: 7
+      - name: Protect role-boundary traces in public repositories
+        if: ${{ always() && !github.event.repository.private }}
+        run: |
+          echo "::notice::Public repository: protected Portal screenshots, traces and Lighthouse evidence are not uploaded."
 
   backend-workflows:
     name: Contact, account, upload and authentication workflows
@@ -128,7 +134,7 @@ jobs:
       options: --shm-size=1gb
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       # The official Playwright container runs as root while actions/checkout
@@ -145,7 +151,7 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci --ignore-scripts --prefer-offline
       # Fail closed unless the locked test runner and both preinstalled browsers match.
       # All application, portal, Lighthouse and authentication acceptance steps remain mandatory.
       - name: Verify pinned Playwright image and bundled browsers

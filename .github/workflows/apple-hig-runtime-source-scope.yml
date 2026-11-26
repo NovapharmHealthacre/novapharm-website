@@ -1,0 +1,92 @@
+name: Apple HIG source route and native scope inventory
+
+on:
+  pull_request:
+    paths:
+      - 'apps/corporate/app/**'
+      - 'apps/corporate/data/**'
+      - 'apps/portal/app/**'
+      - 'apps/portal/data/**'
+      - 'apps/founder/app/**'
+      - 'apps/status/app/**'
+      - 'apps/technology/app/**'
+      - 'packages/portal-contracts/**'
+      - 'native/novapharm-intelligence-apple/**'
+      - 'native/novapharm-intelligence-android/**'
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'config/intelligence/owner-production-constraints.json'
+      - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
+      - 'scripts/test-apple-hig-runtime-source-scope.mjs'
+      - 'scripts/hig-owner-release-state.mjs'
+      - 'scripts/test-hig-owner-release-state.mjs'
+      - 'scripts/test-apple-hig-route-topic-plan.mjs'
+      - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
+      - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
+      - '.github/workflows/apple-hig-runtime-source-scope.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/corporate/app/**'
+      - 'apps/corporate/data/**'
+      - 'apps/portal/app/**'
+      - 'apps/portal/data/**'
+      - 'apps/founder/app/**'
+      - 'apps/status/app/**'
+      - 'apps/technology/app/**'
+      - 'packages/portal-contracts/**'
+      - 'native/novapharm-intelligence-apple/**'
+      - 'native/novapharm-intelligence-android/**'
+      - 'native/novapharm-intelligence-mobile/**'
+      - 'config/intelligence/owner-production-constraints.json'
+      - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-runtime-source-scope-20261120.json'
+      - 'scripts/test-apple-hig-runtime-source-scope.mjs'
+      - 'scripts/hig-owner-release-state.mjs'
+      - 'scripts/test-hig-owner-release-state.mjs'
+      - 'scripts/test-apple-hig-route-topic-plan.mjs'
+      - 'scripts/test-apple-hig-516-platform-acceptance-plan.mjs'
+      - 'scripts/render-apple-hig-route-acceptance-candidates.mjs'
+      - '.github/workflows/apple-hig-runtime-source-scope.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-hig-source-scope-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-scope-contract:
+    name: HIG route/native source scope (not production acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Use pinned Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Validate source-scope contract syntax
+        run: node --check scripts/test-apple-hig-runtime-source-scope.mjs
+      - name: Check future release signoff claims and reject unauthorized customer activation
+        run: node --test scripts/test-hig-owner-release-state.mjs
+      - name: Validate route and native source inventory, no network or cloud accounts
+        run: node --test scripts/test-apple-hig-runtime-source-scope.mjs
+      - name: Generate source-only critical HIG route-topic QA plan
+        run: node --test scripts/test-apple-hig-route-topic-plan.mjs
+      - name: Generate 516 evidence-empty web/iOS/Android HIG acceptance slots
+        run: node --test scripts/test-apple-hig-516-platform-acceptance-plan.mjs
+      - name: Preserve unverified source route acceptance candidates for independent review
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apple-hig-route-source-candidates-${{ github.sha }}
+          path: |
+            artifacts/apple-hig-production-audit/source-route-candidates.json
+            artifacts/apple-hig-production-audit/source-route-topic-plan.json
+            artifacts/apple-hig-production-audit/516-platform-acceptance-plan.json
+          if-no-files-found: warn
+          retention-days: 30

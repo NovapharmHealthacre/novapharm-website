@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { ourStoryBody } from "../src/content/our-story.mjs";
+assert.equal((ourStoryBody.match(/<h1\b/g)||[]).length,1);
+assert.equal((ourStoryBody.match(/<blockquote>/g)||[]).length,4);
+assert.equal((ourStoryBody.match(/pending individual approval/g)||[]).length,4);
+assert.match(ourStoryBody,/Regulated wholesale supply has not commenced/);
+const css=readFileSync("assets/css/our-story.css","utf8");
+assert.match(css,/#FFFFFF/);assert.match(css,/#F8F7F3/);assert.match(css,/@media\(max-width:760px\)/);
+for(const slug of ["vishal-chakravarty","prabhakar-lahare","girish-achliya","helly-panchal"]) assert.match(ourStoryBody,new RegExp("/leadership/"+slug+"/"));
+console.log("Our Story source contract passed; executive statements remain pending approval.");

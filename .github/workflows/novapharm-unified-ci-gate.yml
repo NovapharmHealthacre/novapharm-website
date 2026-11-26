@@ -1,0 +1,63 @@
+name: NovaPharm unified cross-estate CI gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-unified-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Policy coverage and invariant verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact proposed source (never publish)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify tested commit identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Validate every registered project and release invariant
+        run: node --test scripts/test-unified-ci-policy.mjs && node scripts/ci/verify-unified-ci-contract.mjs
+      - name: Guard optimized CI against skipped or weakened required checks
+        run: node --test scripts/test-ci-acceleration-contract.mjs scripts/test-ci-latency-audit.mjs
+
+  # These TWO exact-head contexts are independently required by protected main.
+  # Parallel execution only removes scheduling latency; either failed check blocks merge.
+  contracts:
+    name: Cross-estate regulated, AI, Google, Apple and native contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact proposed source (never publish)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install reproducible checked-in dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --prefer-offline
+      - name: Generate full and public-only local build fixtures without publishing
+        run: npm run build && npm run build:public-only
+      - name: Run all registered cross-estate regression contracts
+        run: node scripts/ci/verify-unified-ci-contract.mjs --run
