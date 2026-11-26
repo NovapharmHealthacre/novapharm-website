@@ -1,0 +1,24 @@
+name: ASTRA offline research plan contract
+on:
+  pull_request:
+    paths:
+      - 'src/core/ai/astra-research-plan.mjs'
+      - 'scripts/test-astra-research-plan.mjs'
+      - '.github/workflows/astra-offline-research-plan.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/ai/astra-research-plan.mjs'
+      - 'scripts/test-astra-research-plan.mjs'
+      - '.github/workflows/astra-offline-research-plan.yml'
+permissions:
+  contents: read
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: node --test scripts/test-astra-research-plan.mjs
