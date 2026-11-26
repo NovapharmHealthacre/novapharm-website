@@ -1,0 +1,36 @@
+# Connective Pharma: private retail offer activation
+
+This importer is the **payment-offer** release gate, not permission to publish a supplier photograph. All eligible SKUs remain in scope regardless of commercial margin. Evidence must be factual; owner-wide rollout approval does not prove individual tax treatment, stock quantities, pack labels, seller dispatch or commercial image rights.
+
+## Required order
+
+1. Promote exact-pack authorised photography and complete, reviewed UK product information via \`scripts/compile-connective-approved-catalogue.mjs\` to \`src/content/approved-consumer-catalogue.json\`. Publish and verify these exact images; do not place supplier trade workbooks in Git.
+2. In a private directory **outside** the repository, create an input JSON with \`{"records":[...]}\`. Each item must have:
+   - \`gtin\`, \`sku\` (\`NP-CP-<GTIN>\`), \`name\`, \`brand\`, \`pack\`, \`category\`, \`productClass\`, \`image\`, \`imageSha256\` matching the approved public catalogue and local image.
+   - \`netMinor\`, \`vatBasisPoints\` (0/500/2000), \`grossMinor\` calculated using per-unit VAT rounding, \`availableQuantity\` (1–10,000), and \`expiresAt\` (future Unix seconds, no more than 31 days ahead).
+   - \`evidence\` with keys \`retailAuthority\`, \`retailPrice\`, \`vat\`, \`stock\`, \`fulfilment\`, \`sellerDelivery\`, \`ordering\`. Every key contains \`confirmed:true\`, a real \`reference\`, \`reviewedBy\` and \`observedAt\` UTC timestamp of the format \`YYYY-MM-DDTHH:MM:SSZ\`. Stock must have been checked within 48 hours; other evidence within 30 days. A quote is not a live availability report.
+3. Run dry-run:
+   \`\`\`
+   node scripts/prepare-connective-retail-offers.mjs --root . \
+     --catalogue src/content/approved-consumer-catalogue.json \
+     --input /private/novapharm/offers.json
+   \`\`\`
+4. After independent review of each evidence record and checkout acceptance, commit a batch **of at most 25 products** atomically using an authorised CloudShell/account:
+   \`\`\`
+   node scripts/prepare-connective-retail-offers.mjs --root . \
+     --catalogue src/content/approved-consumer-catalogue.json \
+     --input /private/novapharm/offers.json --commit \
+     --table novapharm-production-nutraxin-payment-ledger \
+     --expected-account <YOUR_12_DIGIT_AWS_ACCOUNT_ID>
+   \`\`\`
+   This uses \`sts get-caller-identity\` and DynamoDB \`TransactWriteItems\` with conditional create-only writes. An existing offer cannot be overwritten by this path.
+5. Confirm \`RETAIL#APPROVED\` records were admitted by the production offer verifier. Perform guest/account mixed basket, VAT reconciliation, safe stock failure, stripe sandbox/production-controlled acceptance, webhook, order status, refunds and transactional email checks. Finally enable \`MULTIBRAND_ENABLED\` in a reviewed release change; do **not** change \`SHOP_ENABLED\`.
+6. Verify public product URLs, canonical metadata, sitemap, Google Search Console and Merchant Center before listing these SKUs for advertising.
+
+## Safeguards
+
+- The importer projects only customer-safe \`offerJson\` fields. It never writes supplier quotes, margin thresholds, source references or wholesale costs into the public API response.
+- Stock is bounded and expires; no unverified assumption of unlimited stock. Product class cannot be a medicine.
+- For the initial seven Vitabiotics records, proposed prices exist privately; no SKU has documented full evidence. The \`src/content/approved-consumer-catalogue.json\` file is not yet present on main. Dry-run fails closed until the public catalogue and evidence exist.
+- The importer writes only \`RETAIL#APPROVED\` items; it neither opens Stripe sessions nor changes Lambda flags.
+- Immediate feature rollback: restore \`MULTIBRAND_ENABLED=false\` while keeping original order and payment records intact.
