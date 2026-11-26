@@ -13,11 +13,13 @@ const registerFile = "seo/generated/page-metadata-register.json";
 const bundle = "assets/css/novapharm.bundle.css";
 const defaultVersion = "20261111-forensic-design-v3";
 const logo = '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare"></picture>';
+const categorySlugs = ["magnesium", "vitamin-c", "vitamin-d", "multivitamins", "collagen"];
 const required = new Map([
   ["index.html", []],
   ["capabilities/index.html", ["capabilities-editorial.css"]],
   ["oncology/index.html", ["oncology-editorial.css", "oncology-hope-v2.css"]],
-  ["products/index.html", ["products-editorial.css"]]
+  ["products/index.html", ["products-editorial.css"]],
+  ...categorySlugs.map(slug => [`products/nutraxin/${slug}/index.html`, ["nutraxin-merchant.css"]])
 ]);
 const semantic = new Map([
   ["about-editorial.css", "20261111-about-aa-contrast-v1"],
@@ -83,6 +85,11 @@ function fixture(t) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const records = ["/", "/capabilities/", "/oncology/", "/products/", "/about/", "/contact/", "/products/nutraxin/item-one/"]
     .map(route => ({ route, canonical: `https://novapharmhealthcare.com${route}`, file: route === "/" ? "index.html" : `${route.slice(1)}index.html` }));
+  write(root, "assets/data/nutraxin-uk-category-intents.json", JSON.stringify({categories: categorySlugs.map(slug => ({slug}))}));
+  for (const slug of categorySlugs) {
+    const route = "/products/nutraxin/" + slug + "/";
+    records.push({ route, canonical: "https://novapharmhealthcare.com" + route, file: route.slice(1) + "index.html" });
+  }
   write(root, registerFile, JSON.stringify(records));
   for (const route of ["/products/esco/bag/", "/products/marketplace/", "/products/track/"]) {
     records.push({ route, canonical: `https://novapharmhealthcare.com${route}`, file: `${route.slice(1)}index.html` });
@@ -114,7 +121,7 @@ test("versions every canonical page and stylesheet, preserving semantic labels a
   write(root, "not-canonical.html", '<link rel="stylesheet" href="/assets/css/do-not-read.css">');
   const before = snapshots(root, records);
   const cssBefore = [...styles].map(file => readFileSync(join(root, file)));
-  assert.match(passed(run(root)), /Versioned 20 public CSS links across 10 canonical pages/);
+  assert.match(passed(run(root)), /Versioned 30 public CSS links across 15 canonical pages/);
   for (const [i, record] of records.entries()) {
     const html = read(root, record.file);
     assert.equal(maskCssHrefs(html), maskCssHrefs(before[i]), record.file);
@@ -190,9 +197,9 @@ test("source-location edits preserve quotes, case, whitespace, CRLF, comments, s
 test("CLI --check is read-only and build-site-style import retains publication side effects", t => {
   const { root, records } = fixture(t);
   const before = snapshots(root, records);
-  assert.match(passed(run(root, { check: true })), /Checked .*10 pages would change/);
+  assert.match(passed(run(root, { check: true })), /Checked .*15 pages would change/);
   assert.deepEqual(snapshots(root, records), before);
-  assert.match(passed(run(root, { importMode: true })), /Versioned .*10 pages changed/);
+  assert.match(passed(run(root, { importMode: true })), /Versioned .*15 pages changed/);
   assert.notDeepEqual(snapshots(root, records), before);
   const after = snapshots(root, records);
   assert.match(passed(run(root, { check: true })), /0 pages would change/);
@@ -310,7 +317,7 @@ function independentThemeFixture(t) {
 test("independent-theme retail canonical pages need no shared bundle or corporate header", t => {
   const { root, records, record, stylesheet } = independentThemeFixture(t);
   const before = read(root, record.file);
-  assert.match(passed(run(root)), /Versioned 21 public CSS links across 11 canonical pages/);
+  assert.match(passed(run(root)), /Versioned 31 public CSS links across 16 canonical pages/);
   const after = read(root, record.file);
   assert.equal(maskCssHrefs(after), maskCssHrefs(before));
   assert.ok(!after.includes("novapharm.bundle.css"));
@@ -513,7 +520,7 @@ test("commerce pages already present in a later SEO register are not duplicated"
   const { root, records } = fixture(t);
   editRegister(root, () => records);
   const originalRegister = read(root, registerFile);
-  assert.match(passed(run(root)), /Versioned 20 public CSS links across 10 canonical pages/);
+  assert.match(passed(run(root)), /Versioned 30 public CSS links across 15 canonical pages/);
   assert.equal(read(root, registerFile), originalRegister);
   assert.match(passed(run(root)), /0 pages changed/);
 });

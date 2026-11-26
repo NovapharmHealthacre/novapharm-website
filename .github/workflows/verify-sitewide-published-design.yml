@@ -1,0 +1,26 @@
+name: Verify sitewide public design after Pages releases
+
+on:
+  workflow_run:
+    workflows: [pages build and deployment, Publish verified AWS-backed contact form]
+    types: [completed]
+  deployment_status:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live:
+    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'gh-pages'))) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Verify consistent source receipts, Pure White, shared chrome and Contact security
+        run: node scripts/verify-sitewide-published-design.mjs

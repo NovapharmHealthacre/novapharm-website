@@ -49,6 +49,8 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/verify-public-brand-source-live.mjs'
+      - 'scripts/test-public-brand-source-live.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
       # The Apple-27-informed web foundation is part of the shipped public CSS.
@@ -117,6 +119,11 @@ on:
         description: Verified eu-north-1 AWS HTTP API origin, HTTPS without a path
         type: string
         required: true
+      branding_only:
+        description: Manually authorize only a separately signed public branding release; no customer activation
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -124,8 +131,8 @@ permissions:
   id-token: write
   deployments: read
 
-# Exact-main verification precedes build; a verified artifact may publish later
-# only when last successful Pages deployment and current main prove forward ancestry.
+# Builds may be queued from a reviewed ancestor, but production publication
+# requires exact current main and forward ancestry from the last live release.
 concurrency:
   # v3 isolates the guarded AWS-backed publisher from stale v2 Pages recovery locks.
   # Preserve one active/one pending publisher, independent forward-only ancestry
@@ -145,17 +152,56 @@ jobs:
         with:
           fetch-depth: 2
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_sha || github.sha }}
-      - name: Enforce owner-approved contact-production permission
+      - name: Enforce separately approved customer-production or public-branding-only permissions
         id: owner_hold
         shell: bash
+        # Dispatch inputs must enter the shell as environment variables, never
+        # via raw GitHub expression interpolation inside executable Bash.
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          BRANDING_ONLY_REQUESTED: ${{ inputs.branding_only }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
         run: |
           set -euo pipefail
-          # Fail closed: no approved owner sign-off, no AWS health, dispatch or Pages publish.
-          if jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+          # Never let a branding-only dispatch inherit a broader customer release.
+          # This branch must pass the separate exact-SHA, pinned-Contact, denied-
+          # customer-permissions contract even if general customer signoff changes.
+          if [ "$BRANDING_ONLY_REQUESTED" = "true" ]; then
+            if [ "$RELEASE_EVENT" = "workflow_dispatch" ] && \
+                 BRANDING_ONLY=true node scripts/verify-public-branding-only-release.mjs; then
+              echo "hold=false" >> "$GITHUB_OUTPUT"
+              echo "Scoped static branding publishing approved; protected customer services remain disabled."
+            else
+              echo "hold=true" >> "$GITHUB_OUTPUT"
+              echo "Branding-only publishing denied; general customer signoff cannot authorize this scope."
+            fi
+          elif jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
+            # Preserve the existing ordinary customer-production gate verbatim.
             echo "hold=false" >> "$GITHUB_OUTPUT"
+          elif [ "$RELEASE_EVENT" = "push" ] && \
+               jq -e --slurpfile catalogue src/content/approved-consumer-catalogue.json \
+                 '.schema == "novapharm.retail-owner-release.v1" and .approval == "granted" and
+                  .scope == "seven-existing-supplier-backed-food-supplement-offers-only" and
+                  .checkoutApiOrigin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com" and
+                  .allowExistingRetailPaymentCollection == true and
+                  .allowPortalCustomerAccess == false and .allowMedicinesCheckout == false and
+                  .allowExternalEmail == false and .allowNewInfrastructure == false and
+                  ((.approvedGtins | sort) == ($catalogue[0] | map(select(.productClass == "food_supplement" and .publicListingApproved == true and .imageRightsConfirmed == true) | .ean) | sort)) and
+                  (.approvedGtins | length) == 7' config/retail/approved-connective-checkout-release-20261126.json >/dev/null 2>&1 && \
+               jq -e '.productionSignoff == "not_granted" and
+                 (.productionPermissions | to_entries | all(.value == false))' \
+                  config/intelligence/owner-production-constraints.json >/dev/null 2>&1 && \
+               git diff --name-only HEAD^ HEAD | grep -Fxq 'config/retail/approved-connective-checkout-release-20261126.json' && \
+               ! git diff --name-only HEAD^ HEAD | grep -Ev \
+                 '^(config/retail/approved-connective-checkout-release-20261126\.json|\.github/workflows/publish-aws-contact-production\.yml)$'; then
+            # Single approved retail site release; all unrelated customer, email,
+            # portal, medicine and new-infrastructure permissions remain denied.
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+            echo "Exact seven-product retail storefront release approved independently of private Intelligence and portal production."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
-            echo "Contact production is on hold: explicit owner sign-off and public access permission are absent."
+            echo "Production on hold: no scoped storefront, branding-only or general customer release authorization is present."
           fi
       - name: Exclude Nova ML-only changes from unrelated public AWS contact publication
         id: classify
@@ -181,7 +227,7 @@ jobs:
             [ -n "$changed" ] || continue
             found_change=true
             case "$changed" in
-              apps/portal/*|.github/workflows/intelligence-country-release-gates.yml|docs/intelligence/77-country-101-source-complete-register-20261118.md|docs/intelligence/country-101-release-gates-20261118.md|scripts/render-intelligence-country-release-ledger.mjs|scripts/test-intelligence-country-release-ledger.mjs|src/core/intelligence-country-iso-identifiers.mjs|src/core/intelligence-country-markdown-cell.mjs|src/core/intelligence-country-release-ledger.mjs|src/core/intelligence-country-source-baseline.mjs|src/core/intelligence-enterprise-readiness.mjs|scripts/audit-intelligence-enterprise-readiness.mjs|scripts/test-intelligence-enterprise-readiness.mjs|docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md|.github/workflows/intelligence-enterprise-readiness.yml|docs/design/apple-hig-attachment-evidence-20261118.json|docs/design/apple-hig-source-and-attachment-audit-20261118.md|scripts/test-apple-hig-attachment-audit.mjs|native/novapharm-intelligence-mobile/MapsResearchScreen.tsx|native/novapharm-intelligence-mobile/appearance.ts|native/novapharm-intelligence-mobile/app.json|native/novapharm-intelligence-mobile/package.json|native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs|docs/design/apple-hig-172-topic-acceptance-register.json|docs/design/apple-hig-172-topic-adoption-20261118.md|docs/design/apple-hig-three-platform-adoption-20261118.md|native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx|native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs|scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs|.github/workflows/apple-hig-cross-platform-detail.yml|.github/workflows/browser-acceptance.yml|.github/workflows/corporate-live-full-acceptance.yml|scripts/test-corporate-live-publication-gate.mjs|.github/workflows/intelligence-global-101-onboarding.yml|docs/intelligence/global-101-source-integration-matrix-20261118.md|scripts/test-intelligence-global-intake-workflow.mjs|scripts/test-intelligence-global-source-gateway.mjs|scripts/test-intelligence-global-source-onboarding.mjs|src/core/intelligence-global-evidence-contract.mjs|src/core/intelligence-global-intake-quality.mjs|src/core/intelligence-global-intake-workflow.mjs|src/core/intelligence-global-source-gateway.mjs|src/core/intelligence-global-source-onboarding.mjs|native/novapharm-intelligence-apple/*|src/ai/compute-admission.mjs|scripts/test-nova-compute-admission.mjs|scripts/test-nova-infrastructure-integration.mjs|native/novapharm-intelligence-android/*|docs/architecture/deep-learning-infrastructure-20261118.md|docs/ai-system-card.md|docs/ai-risk-register.md|.github/workflows/nova-ml-infrastructure-contract.yml|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/intelligence-global-mobile-contracts.yml|.github/workflows/nova-ml-alignment-research.yml|.github/workflows/nova-ml-l0-sparsity.yml|docs/ai-dependency-and-model-sbom.json|docs/ai-model-register.json|docs/ai-use-case-register.json|docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md|docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md|native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs|native/novapharm-intelligence-mobile/tsconfig.json|packages/medicines-intelligence/src/l0-sparsity.ts|packages/medicines-intelligence/test/l0-sparsity.test.ts|scripts/test-nova-alignment-governance.mjs|scripts/test-nova-alignment-research.mjs|scripts/test-nova-l0-governance.mjs|src/core/ai/nova-alignment-research.mjs|tooling/python/nova_l0_sparsity.py|tooling/python/test_nova_l0_sparsity.py|.github/workflows/nova-ml-native-apple.yml|.github/workflows/nova-ml-private-ingress-acceptance.yml|.github/workflows/intelligence-sparse-circuit-assurance.yml|.github/workflows/intelligence-sparse-transformer-experiment.yml|.github/workflows/nova-sparse-circuit-android.yml|docs/architecture/nova-scientific-intelligence-programme.md|docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md|docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md|docs/intelligence/npi-sparse-circuit-summary-v1.schema.json|native/novapharm-intelligence-mobile/App.tsx|native/novapharm-intelligence-mobile/README.md|native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs|scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json|scripts/research/tiny-sparse-transformer-experiment.py|scripts/research/toy-sparse-circuit-intervention.mjs|scripts/research/validate-trained-sparse-transformer-report.mjs|scripts/test-intelligence-sparse-circuit-assurance.mjs|scripts/test-intelligence-sparse-circuit-cross-platform.mjs|scripts/test-intelligence-sparse-circuit-toy-intervention.mjs|scripts/test-intelligence-sparse-circuit-upstream-governance.mjs|scripts/test-intelligence-trained-sparse-transformer-report.mjs|src/ai/model-registry.mjs|src/core/ai/model-registry.mjs|src/core/intelligence-sparse-circuit-assurance.mjs|.github/workflows/intelligence-global-secondary-source-contracts.yml|docs/intelligence/global-secondary-source-api-contracts-20261118.md|scripts/test-intelligence-global-secondary-source-gateway.mjs|scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs|src/core/intelligence-global-secondary-source-gateway.mjs|src/core/intelligence-singapore-hsa-bulk-candidate.mjs|.github/workflows/intelligence-official-live-pharma-probes.yml|docs/intelligence/official-live-pharma-probes-20261118.md|.github/workflows/intelligence-uk-nhsbsa-epd-snomed-resource-probe.yml|docs/intelligence/uk-nhsbsa-epd-snomed-resource-probe-20261120.md|scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|scripts/run-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-quarantine.mjs|scripts/test-intelligence-official-live-pharma-server-gate.mjs|src/core/intelligence-official-live-pharma-probes.mjs|.github/workflows/intelligence-es-cima-public-live-probe.yml|docs/intelligence/spain-cima-official-live-probe-20261118.md|scripts/run-intelligence-es-cima-public-live-probe.mjs|scripts/test-intelligence-es-cima-live-quarantine.mjs|scripts/test-intelligence-es-cima-public-live-probe.mjs|src/core/intelligence-es-cima-public-live-probe.mjs|.github/workflows/intelligence-canada-dpd-public-live-source.yml|docs/intelligence/canada-dpd-public-live-source-20261118.md|scripts/run-intelligence-canada-dpd-public-live-probe.mjs|scripts/test-intelligence-canada-dpd-public-live-probe.mjs|src/core/intelligence-canada-dpd-public-live-probe.mjs|.github/workflows/intelligence-clip-research-contract.yml|docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md|docs/intelligence/visual-search-cross-platform-contract.json|scripts/test-intelligence-visual-search.mjs|services/clip/*|src/core/intelligence-visual-search.mjs|.github/workflows/imdf-venue-evidence-preflight.yml|docs/maps/imdf-venue-preflight-20261119.md|scripts/imdf/venue-preflight.mjs|scripts/imdf/venue-preflight.test.mjs|native/novapharm-intelligence-mobile/clip-research.ts|native/novapharm-intelligence-mobile/tests/clip-contract.test.mjs|native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs|docs/intelligence/country-101-new-24-publisher-research-20261118.json|scripts/test-intelligence-24-publisher-research.mjs|.github/workflows/intelligence-country-web-mobile-parity.yml|docs/intelligence/country-101-client-catalog-20261118.json|scripts/generate-intelligence-country-client-catalog.mjs|scripts/test-intelligence-country-client-catalog.mjs|native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx|src/core/intelligence-country-101-proposed-ledger.mjs|scripts/test-intelligence-country-101-proposed-ledger.mjs|scripts/render-intelligence-country-101-proposed-ledger.mjs|.github/workflows/intelligence-country-101-scope-audit.yml|docs/intelligence/country-101-scope-proposal-20261118.json|docs/intelligence/country-101-scope-proposal-20261118.md|scripts/test-intelligence-country-101-scope-proposal.mjs|.github/workflows/intelligence-science-research-contracts.yml|docs/intelligence/openai-science-integration-20261118.md|docs/intelligence/openai-science-methods-20261118.json|docs/intelligence/science-research-capabilities-20261118.json|native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx|scripts/package-unified-estate.mjs|scripts/test-intelligence-22-workspace-readiness.mjs|scripts/test-intelligence-readiness.mjs|scripts/test-intelligence-science-evidence-dossier.mjs|scripts/test-intelligence-science-methodology.mjs|scripts/test-intelligence-science-research.mjs|scripts/test-unified-release-artifacts.mjs|src/core/intelligence-22-workspace-readiness.mjs|src/core/intelligence-release-readiness.mjs|src/core/intelligence-science-evidence-dossier.mjs|src/core/intelligence-science-methodology.mjs|src/core/intelligence-science-research-contract.mjs|src/core/intelligence-science-research-principles.mjs|.github/workflows/intelligence-model-microscope.yml|docs/ai-model-licence-review.md|docs/intelligence/model-microscope-inspection-v1.schema.json|docs/intelligence/model-microscope-research-to-product-20261118.md|native/novapharm-intelligence-mobile/metro.config.cjs|scripts/test-nova-model-microscope-end-to-end.mjs|scripts/test-nova-model-microscope-signed-evidence.mjs|scripts/test-nova-model-microscope-synthetic-reference.mjs|scripts/test-nova-model-microscope.mjs|src/core/ai/model-microscope-signed-evidence.mjs|src/core/ai/model-microscope-synthetic-reference.d.mts|src/core/ai/model-microscope-synthetic-reference.mjs|src/core/ai/model-microscope.mjs|native/novapharm-intelligence-mobile/package-lock.json|native/novapharm-intelligence-mobile/android-map-url.ts|native/novapharm-intelligence-mobile/tests/mobile-android-maps.test.mjs|native/novapharm-intelligence-storekit/*|docs/intelligence/four-country-board-source-receipt-gateway-20261120.md|.github/workflows/intelligence-openfda-extended-evidence.yml|src/core/regulatory/openfda-evidence.mjs|scripts/test-openfda-evidence.mjs|scripts/run-openfda-four-source-smoke.mjs|scripts/test-openfda-evidence-wiring.mjs|docs/intelligence/us-openfda-extended-evidence-20261121.md|apps/portal/components/us-fda-evidence.tsx|apps/portal/components/us-fda-evidence.module.css|apps/portal/components/us-fda-evidence.module.css.d.ts|apps/portal/components/medicines-intelligence.tsx|.github/workflows/native-fda-offline-contracts.yml|native/novapharm-intelligence-ios/App/NovaRootView.swift|native/novapharm-intelligence-ios/App/USFdaSourceCatalog.swift|native/novapharm-intelligence-ios/App/USFdaSourcePreviewView.swift|native/novapharm-intelligence-ios/CoreTests/NovaFDASourceContractTests.swift|native/novapharm-intelligence-ios/Package.swift|native/novapharm-intelligence-mobile/USFdaSourcePreviewScreen.tsx|scripts/test-native-fda-source-parity.mjs|src/core/regulatory/fda-private-http-handler.mjs|scripts/test-fda-private-http-handler.mjs|config/intelligence/us-fda-governance-source-manifest.json|src/core/regulatory/fda-data-admission.mjs|scripts/test-fda-governance-admission.mjs|native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts|scripts/test-fda-native-gateway.mjs|native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift|native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift|native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift|infra/aws/fda-private-api-release-plan-20261121.json|scripts/test-fda-private-release-plan.mjs|.github/workflows/intelligence-fda-cross-platform-contracts.yml|docs/intelligence/fda-six-gate-production-acceptance-20261121.md|infra/aws/fda-private-jwt-route.cfn.json|native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts|scripts/test-fda-native-oidc-core.mjs|.github/workflows/uk-four-nation-source-metadata.yml|.github/workflows/uk-national-source-archive-preflight.yml|.github/workflows/uk-nhsbsa-mapping-metadata-only.yml|.github/workflows/uk-preview-source-identity-rights.yml|docs/data/nhsbsa-source-registry.md|docs/data/uk-devolved-csv-quality-gate.md|docs/data/uk-four-nation-source-acceptance-20261121.md|docs/data/uk-national-source-archive-preflight.md|docs/data/uk-preview-source-identity-rights-gate.md|docs/data/uk-source-only-publication-routing-20261122.md|packages/medicines-intelligence/src/resource-discovery.ts|packages/medicines-intelligence/src/source-registry.ts|packages/medicines-intelligence/test/source-contracts.test.ts|scripts/data/discover-medicines-sources.ts|scripts/data/verify-uk-national-source-archive.mjs|scripts/data/verify-uk-private-backfill-file-batch.mjs|scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|scripts/run-uk-four-nation-source-metadata.mjs|scripts/test-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|scripts/test-uk-bnf-snomed-reference-quality.mjs|scripts/test-uk-devolved-csv-quality.mjs|scripts/test-uk-four-nation-backfill-candidate.mjs|scripts/test-uk-four-nation-source-metadata.mjs|scripts/test-uk-medicine-metric-comparability.mjs|scripts/test-uk-national-source-archive-preflight.mjs|scripts/test-uk-preview-source-identity-rights-gate.mjs|scripts/test-uk-private-backfill-file-batch.mjs|scripts/test-uk-wales-gp-zip-inventory.mjs|src/core/intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|src/core/uk-bnf-snomed-reference-quality.mjs|src/core/uk-devolved-csv-quality.mjs|src/core/uk-four-nation-backfill-candidate.mjs|src/core/uk-four-nation-source-metadata.mjs|src/core/uk-medicine-metric-comparability.mjs|src/core/uk-national-source-archive-preflight.mjs|src/core/uk-preview-source-identity-rights-gate.mjs|src/core/uk-private-backfill-file-batch.mjs|src/core/uk-wales-gp-zip-inventory.mjs|.github/workflows/uk-wales-cross-border-dispensing-scope.yml|docs/data/uk-wales-cross-border-dispensing-scope.md|scripts/test-uk-wales-dispensing-cross-border-scope.mjs|src/core/uk-wales-dispensing-cross-border-scope.mjs)
+              apps/portal/*|.github/workflows/intelligence-country-release-gates.yml|docs/intelligence/77-country-101-source-complete-register-20261118.md|docs/intelligence/country-101-release-gates-20261118.md|scripts/render-intelligence-country-release-ledger.mjs|scripts/test-intelligence-country-release-ledger.mjs|src/core/intelligence-country-iso-identifiers.mjs|src/core/intelligence-country-markdown-cell.mjs|src/core/intelligence-country-release-ledger.mjs|src/core/intelligence-country-source-baseline.mjs|src/core/intelligence-enterprise-readiness.mjs|scripts/audit-intelligence-enterprise-readiness.mjs|scripts/test-intelligence-enterprise-readiness.mjs|docs/intelligence/ENTERPRISE_RELEASE_READINESS_20261118.md|.github/workflows/intelligence-enterprise-readiness.yml|docs/design/apple-hig-attachment-evidence-20261118.json|docs/design/apple-hig-source-and-attachment-audit-20261118.md|scripts/test-apple-hig-attachment-audit.mjs|native/novapharm-intelligence-mobile/MapsResearchScreen.tsx|native/novapharm-intelligence-mobile/appearance.ts|native/novapharm-intelligence-mobile/app.json|native/novapharm-intelligence-mobile/package.json|native/novapharm-intelligence-mobile/tests/mobile-system-appearance.test.mjs|docs/design/apple-hig-172-topic-acceptance-register.json|docs/design/apple-hig-172-topic-adoption-20261118.md|docs/design/apple-hig-three-platform-adoption-20261118.md|native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx|native/novapharm-intelligence-mobile/tests/apple-hig-navigation.test.mjs|scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs|.github/workflows/apple-hig-cross-platform-detail.yml|.github/workflows/browser-acceptance.yml|.github/workflows/corporate-live-full-acceptance.yml|scripts/test-corporate-live-publication-gate.mjs|.github/workflows/intelligence-global-101-onboarding.yml|docs/intelligence/global-101-source-integration-matrix-20261118.md|scripts/test-intelligence-global-intake-workflow.mjs|scripts/test-intelligence-global-source-gateway.mjs|scripts/test-intelligence-global-source-onboarding.mjs|src/core/intelligence-global-evidence-contract.mjs|src/core/intelligence-global-intake-quality.mjs|src/core/intelligence-global-intake-workflow.mjs|src/core/intelligence-global-source-gateway.mjs|src/core/intelligence-global-source-onboarding.mjs|native/novapharm-intelligence-apple/*|src/ai/compute-admission.mjs|scripts/test-nova-compute-admission.mjs|scripts/test-nova-infrastructure-integration.mjs|native/novapharm-intelligence-android/*|docs/architecture/deep-learning-infrastructure-20261118.md|docs/ai-system-card.md|docs/ai-risk-register.md|.github/workflows/nova-ml-infrastructure-contract.yml|docs/design/novapharm-apple-machine-learning-adaptation-20261116.md|scripts/test-nova-ml-apple-adaptation.mjs|scripts/nova-ml-private-ingress.mjs|scripts/test-nova-ml-private-ingress.mjs|.github/workflows/apple-hig-machine-learning.yml|.github/workflows/intelligence-global-mobile-contracts.yml|.github/workflows/nova-ml-alignment-research.yml|.github/workflows/nova-ml-l0-sparsity.yml|docs/ai-dependency-and-model-sbom.json|docs/ai-model-register.json|docs/ai-use-case-register.json|docs/intelligence/L0_SPARSE_ML_CROSS_PLATFORM_20261118.md|docs/intelligence/NOVA_AI_ALIGNMENT_RESEARCH_20261118.md|native/novapharm-intelligence-mobile/tests/mobile-nova-ml-contract.test.mjs|native/novapharm-intelligence-mobile/tsconfig.json|packages/medicines-intelligence/src/l0-sparsity.ts|packages/medicines-intelligence/test/l0-sparsity.test.ts|scripts/test-nova-alignment-governance.mjs|scripts/test-nova-alignment-research.mjs|scripts/test-nova-l0-governance.mjs|src/core/ai/nova-alignment-research.mjs|tooling/python/nova_l0_sparsity.py|tooling/python/test_nova_l0_sparsity.py|.github/workflows/nova-ml-native-apple.yml|.github/workflows/nova-ml-private-ingress-acceptance.yml|.github/workflows/intelligence-sparse-circuit-assurance.yml|.github/workflows/intelligence-sparse-transformer-experiment.yml|.github/workflows/nova-sparse-circuit-android.yml|docs/architecture/nova-scientific-intelligence-programme.md|docs/intelligence/SPARSE_CIRCUIT_RESEARCH_INTEGRATION_20261118.md|docs/intelligence/SPARSE_CIRCUIT_UPSTREAM_SOURCE_REVIEW_20261118.md|docs/intelligence/npi-sparse-circuit-summary-v1.schema.json|native/novapharm-intelligence-mobile/App.tsx|native/novapharm-intelligence-mobile/README.md|native/novapharm-intelligence-mobile/tests/sparse-circuit-research-contract.test.mjs|scripts/research/fixtures/trained-sparse-transformer-observed-local-run.json|scripts/research/tiny-sparse-transformer-experiment.py|scripts/research/toy-sparse-circuit-intervention.mjs|scripts/research/validate-trained-sparse-transformer-report.mjs|scripts/test-intelligence-sparse-circuit-assurance.mjs|scripts/test-intelligence-sparse-circuit-cross-platform.mjs|scripts/test-intelligence-sparse-circuit-toy-intervention.mjs|scripts/test-intelligence-sparse-circuit-upstream-governance.mjs|scripts/test-intelligence-trained-sparse-transformer-report.mjs|src/ai/model-registry.mjs|src/core/ai/model-registry.mjs|src/core/intelligence-sparse-circuit-assurance.mjs|.github/workflows/intelligence-global-secondary-source-contracts.yml|docs/intelligence/global-secondary-source-api-contracts-20261118.md|scripts/test-intelligence-global-secondary-source-gateway.mjs|scripts/test-intelligence-singapore-hsa-bulk-candidate.mjs|src/core/intelligence-global-secondary-source-gateway.mjs|src/core/intelligence-singapore-hsa-bulk-candidate.mjs|.github/workflows/intelligence-official-live-pharma-probes.yml|docs/intelligence/official-live-pharma-probes-20261118.md|.github/workflows/intelligence-uk-nhsbsa-epd-snomed-resource-probe.yml|docs/intelligence/uk-nhsbsa-epd-snomed-resource-probe-20261120.md|scripts/run-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|scripts/test-intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|src/core/intelligence-uk-nhsbsa-epd-snomed-resource-probe.mjs|scripts/run-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-probes.mjs|scripts/test-intelligence-official-live-pharma-quarantine.mjs|scripts/test-intelligence-official-live-pharma-server-gate.mjs|src/core/intelligence-official-live-pharma-probes.mjs|.github/workflows/intelligence-es-cima-public-live-probe.yml|docs/intelligence/spain-cima-official-live-probe-20261118.md|scripts/run-intelligence-es-cima-public-live-probe.mjs|scripts/test-intelligence-es-cima-live-quarantine.mjs|scripts/test-intelligence-es-cima-public-live-probe.mjs|src/core/intelligence-es-cima-public-live-probe.mjs|.github/workflows/intelligence-canada-dpd-public-live-source.yml|docs/intelligence/canada-dpd-public-live-source-20261118.md|scripts/run-intelligence-canada-dpd-public-live-probe.mjs|scripts/test-intelligence-canada-dpd-public-live-probe.mjs|src/core/intelligence-canada-dpd-public-live-probe.mjs|.github/workflows/intelligence-clip-research-contract.yml|docs/intelligence/OPENAI_CLIP_CROSS_PLATFORM_RESEARCH_20261118.md|docs/intelligence/visual-search-cross-platform-contract.json|scripts/test-intelligence-visual-search.mjs|services/clip/*|src/core/intelligence-visual-search.mjs|.github/workflows/imdf-venue-evidence-preflight.yml|docs/maps/imdf-venue-preflight-20261119.md|scripts/imdf/venue-preflight.mjs|scripts/imdf/venue-preflight.test.mjs|native/novapharm-intelligence-mobile/clip-research.ts|native/novapharm-intelligence-mobile/tests/clip-contract.test.mjs|native/novapharm-intelligence-mobile/tests/mobile-contract.test.mjs|docs/intelligence/country-101-new-24-publisher-research-20261118.json|scripts/test-intelligence-24-publisher-research.mjs|.github/workflows/intelligence-country-web-mobile-parity.yml|docs/intelligence/country-101-client-catalog-20261118.json|scripts/generate-intelligence-country-client-catalog.mjs|scripts/test-intelligence-country-client-catalog.mjs|native/novapharm-intelligence-mobile/CountryDirectoryScreen.tsx|src/core/intelligence-country-101-proposed-ledger.mjs|scripts/test-intelligence-country-101-proposed-ledger.mjs|scripts/render-intelligence-country-101-proposed-ledger.mjs|.github/workflows/intelligence-country-101-scope-audit.yml|docs/intelligence/country-101-scope-proposal-20261118.json|docs/intelligence/country-101-scope-proposal-20261118.md|scripts/test-intelligence-country-101-scope-proposal.mjs|.github/workflows/intelligence-science-research-contracts.yml|docs/intelligence/openai-science-integration-20261118.md|docs/intelligence/openai-science-methods-20261118.json|docs/intelligence/science-research-capabilities-20261118.json|native/novapharm-intelligence-mobile/ScienceResearchMobile.tsx|scripts/package-unified-estate.mjs|scripts/test-intelligence-22-workspace-readiness.mjs|scripts/test-intelligence-readiness.mjs|scripts/test-intelligence-science-evidence-dossier.mjs|scripts/test-intelligence-science-methodology.mjs|scripts/test-intelligence-science-research.mjs|scripts/test-unified-release-artifacts.mjs|src/core/intelligence-22-workspace-readiness.mjs|src/core/intelligence-release-readiness.mjs|src/core/intelligence-science-evidence-dossier.mjs|src/core/intelligence-science-methodology.mjs|src/core/intelligence-science-research-contract.mjs|src/core/intelligence-science-research-principles.mjs|.github/workflows/intelligence-model-microscope.yml|docs/ai-model-licence-review.md|docs/intelligence/model-microscope-inspection-v1.schema.json|docs/intelligence/model-microscope-research-to-product-20261118.md|native/novapharm-intelligence-mobile/metro.config.cjs|scripts/test-nova-model-microscope-end-to-end.mjs|scripts/test-nova-model-microscope-signed-evidence.mjs|scripts/test-nova-model-microscope-synthetic-reference.mjs|scripts/test-nova-model-microscope.mjs|src/core/ai/model-microscope-signed-evidence.mjs|src/core/ai/model-microscope-synthetic-reference.d.mts|src/core/ai/model-microscope-synthetic-reference.mjs|src/core/ai/model-microscope.mjs|native/novapharm-intelligence-mobile/package-lock.json|native/novapharm-intelligence-mobile/android-map-url.ts|native/novapharm-intelligence-mobile/tests/mobile-android-maps.test.mjs|native/novapharm-intelligence-storekit/*|docs/intelligence/four-country-board-source-receipt-gateway-20261120.md|.github/workflows/intelligence-openfda-extended-evidence.yml|src/core/regulatory/openfda-evidence.mjs|scripts/test-openfda-evidence.mjs|scripts/run-openfda-four-source-smoke.mjs|scripts/test-openfda-evidence-wiring.mjs|docs/intelligence/us-openfda-extended-evidence-20261121.md|apps/portal/components/us-fda-evidence.tsx|apps/portal/components/us-fda-evidence.module.css|apps/portal/components/us-fda-evidence.module.css.d.ts|apps/portal/components/medicines-intelligence.tsx|.github/workflows/native-fda-offline-contracts.yml|native/novapharm-intelligence-ios/App/NovaRootView.swift|native/novapharm-intelligence-ios/App/USFdaSourceCatalog.swift|native/novapharm-intelligence-ios/App/USFdaSourcePreviewView.swift|native/novapharm-intelligence-ios/CoreTests/NovaFDASourceContractTests.swift|native/novapharm-intelligence-ios/Package.swift|native/novapharm-intelligence-mobile/USFdaSourcePreviewScreen.tsx|scripts/test-native-fda-source-parity.mjs|src/core/regulatory/fda-private-http-handler.mjs|scripts/test-fda-private-http-handler.mjs|config/intelligence/us-fda-governance-source-manifest.json|src/core/regulatory/fda-data-admission.mjs|scripts/test-fda-governance-admission.mjs|native/novapharm-intelligence-mobile/ProtectedFdaGateway.ts|scripts/test-fda-native-gateway.mjs|native/novapharm-intelligence-ios/App/ProtectedFdaGateway.swift|native/novapharm-intelligence-ios/App/CognitoFDAAuthSession.swift|native/novapharm-intelligence-ios/CoreTests/NovaFDAProtectedGatewayContractTests.swift|infra/aws/fda-private-api-release-plan-20261121.json|scripts/test-fda-private-release-plan.mjs|.github/workflows/intelligence-fda-cross-platform-contracts.yml|docs/intelligence/fda-six-gate-production-acceptance-20261121.md|infra/aws/fda-private-jwt-route.cfn.json|native/novapharm-intelligence-mobile/NativeFdaOidcCore.ts|scripts/test-fda-native-oidc-core.mjs|.github/workflows/uk-four-nation-source-metadata.yml|.github/workflows/uk-national-source-archive-preflight.yml|.github/workflows/uk-nhsbsa-mapping-metadata-only.yml|.github/workflows/uk-preview-source-identity-rights.yml|docs/data/nhsbsa-source-registry.md|docs/data/uk-devolved-csv-quality-gate.md|docs/data/uk-four-nation-source-acceptance-20261121.md|docs/data/uk-national-source-archive-preflight.md|docs/data/uk-preview-source-identity-rights-gate.md|docs/data/uk-source-only-publication-routing-20261122.md|packages/medicines-intelligence/src/resource-discovery.ts|packages/medicines-intelligence/src/source-registry.ts|packages/medicines-intelligence/test/source-contracts.test.ts|scripts/data/discover-medicines-sources.ts|scripts/data/verify-uk-national-source-archive.mjs|scripts/data/verify-uk-private-backfill-file-batch.mjs|scripts/run-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|scripts/run-uk-four-nation-source-metadata.mjs|scripts/test-intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|scripts/test-uk-bnf-snomed-reference-quality.mjs|scripts/test-uk-devolved-csv-quality.mjs|scripts/test-uk-four-nation-backfill-candidate.mjs|scripts/test-uk-four-nation-source-metadata.mjs|scripts/test-uk-medicine-metric-comparability.mjs|scripts/test-uk-national-source-archive-preflight.mjs|scripts/test-uk-preview-source-identity-rights-gate.mjs|scripts/test-uk-private-backfill-file-batch.mjs|scripts/test-uk-wales-gp-zip-inventory.mjs|src/core/intelligence-uk-nhsbsa-bnf-snomed-metadata-probe.mjs|src/core/uk-bnf-snomed-reference-quality.mjs|src/core/uk-devolved-csv-quality.mjs|src/core/uk-four-nation-backfill-candidate.mjs|src/core/uk-four-nation-source-metadata.mjs|src/core/uk-medicine-metric-comparability.mjs|src/core/uk-national-source-archive-preflight.mjs|src/core/uk-preview-source-identity-rights-gate.mjs|src/core/uk-private-backfill-file-batch.mjs|src/core/uk-wales-gp-zip-inventory.mjs|.github/workflows/uk-wales-cross-border-dispensing-scope.yml|docs/data/uk-wales-cross-border-dispensing-scope.md|scripts/test-uk-wales-dispensing-cross-border-scope.mjs|src/core/uk-wales-dispensing-cross-border-scope.mjs|.github/workflows/all-published-images-parity.yml|scripts/audit-public-image-alt-presence.mjs|scripts/audit-published-images-parity.mjs|scripts/test-public-image-alt-presence.mjs|scripts/test-published-images-parity.mjs)
                 found_ml=true
                 ;;
               server.mjs)
@@ -290,12 +336,16 @@ jobs:
           cache: npm
       - name: Prove default public website is noncollecting
         run: |
+          set -Eeo pipefail
+          trap 'echo "::error::Public artifact verification failed at shell line $LINENO" >&2' ERR
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           npm run validate
+          node scripts/verify-live-official-brand.mjs --source-only
           python3 scripts/validate-public-sitemaps.py
           node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only
@@ -393,7 +443,7 @@ jobs:
           grep -Fq 'aspect-ratio:890/550' _site/assets/css/oncology-hope-v2.css
           grep -Fq 'transparent 8%,rgba(0,0,0,.5) 10%,#000 14%' _site/assets/css/oncology-hope-v2.css
           grep -Fq 'padding:22px 0 54px' _site/assets/css/oncology-hope-v2.css
-          node scripts/verify-nutraxin-merchant-live.mjs --local
+          node scripts/verify-nutraxin-merchant-live.mjs --local --artifact=_site
           test -s _site/shopping/nutraxin-uk.tsv
           cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
           jq -e '.enabled == true and .pool_id == "eu-north-1_SLNUKZypt" and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/" and .api_origin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com"' _site/assets/data/nutraxin-consumer-auth.json
@@ -438,7 +488,7 @@ jobs:
           test "$(tr -d '\r\n' < _site/da125ceca8032e01fc98782c388f894f.txt)" = 'da125ceca8032e01fc98782c388f894f'
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
-          grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' _site/products/nutraxin/index.html
+          grep -Fq 'Nutraxin Vitamins &amp; Supplements UK | NovaPharm' _site/products/nutraxin/index.html
           grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' _site/products/nutraxin/index.html
           grep -Fq '/assets/js/consent-analytics.js' _site/products/nutraxin/index.html
           ! grep -Fq 'www.googletagmanager.com' _site/products/nutraxin/index.html
@@ -484,6 +534,16 @@ jobs:
           NOVAPHARM_CONTACT_API_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           node scripts/activate-contact-intake.mjs
+          # Validate the actual composed artifact before upload, not only fixtures or source metadata.
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import { readFileSync } from "node:fs";
+            import { execFileSync } from "node:child_process";
+            import { verifyPublishedHtml } from "./scripts/verify-public-brand-source-live.mjs";
+            const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+            const html = readFileSync("_site/contact/index.html", "utf8");
+            assert.deepEqual(verifyPublishedHtml(html, "/contact/", sha), [], "Staged managed Contact colour, shared chrome or safety verification failed");
+          '
           grep -Fq 'data-live-b2b-enquiry-form' _site/contact/index.html
           grep -Fq 'data-live-contact-status' _site/contact/index.html
           grep -Fq 'name="privacyAcknowledgement"' _site/contact/index.html
@@ -505,6 +565,9 @@ jobs:
           ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
           ! grep -Fq 'type="password"' _site/portal/index.html
+      - name: Require complete sitewide design before any public artifact is uploaded
+        run: |
+          node scripts/verify-sitewide-published-design.mjs --artifact _site "$(git rev-parse HEAD)"
       - name: Bind staged shared stylesheet to deployment receipt
         id: public_css
         run: |
@@ -549,10 +612,34 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
+          RELEASE_EVENT: ${{ github.event_name }}
+          BRANDING_ONLY: ${{ inputs.branding_only }}
+          CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           node scripts/check-pages-monotonic-release.mjs
+      - name: Require Actions-only Pages source before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mode=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')
+          if [ "$mode" != workflow ]; then
+            echo "::error::Unsafe branch-based Pages publication. In Settings > Pages choose GitHub Actions as Source before releasing."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.cname' | grep -Fxq novapharmhealthcare.com
+          gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.https_enforced' | grep -Fxq true
+      - name: Recheck exact current main immediately before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          [[ "$current_main" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          test "$current_main" = "$EXPECTED_SHA" || { echo '::error::Main advanced after verification; discard stale artifact and rebuild latest main.'; exit 1; }
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
@@ -561,6 +648,10 @@ jobs:
         with:
           ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           persist-credentials: false
+      - name: Verify all public design routes at exact deployed SHA
+        env:
+          EXPECTED_SITEWIDE_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-sitewide-published-design.mjs
       - name: Verify 19 live Product Offers and Google Shopping TSV
         env:
           GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
@@ -740,7 +831,7 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" \
               "https://novapharmhealthcare.com/products/nutraxin/?marketing-$GITHUB_SHA-$attempt-$(date +%s)" \
               -o /tmp/novapharm-live-organic.html; then
-              if grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' /tmp/novapharm-live-organic.html \
+              if grep -Fq 'Nutraxin Vitamins &amp; Supplements UK | NovaPharm' /tmp/novapharm-live-organic.html \
                  && grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' /tmp/novapharm-live-organic.html \
                  && grep -Fq '/assets/js/consent-analytics.js' /tmp/novapharm-live-organic.html \
                  && ! grep -Fq 'www.googletagmanager.com' /tmp/novapharm-live-organic.html; then
@@ -882,7 +973,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
-          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/"; do
+          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/" "legal/accessibility/"; do
             verified=false
             for attempt in $(seq 1 10); do
               curl --fail --silent --show-error --location --max-time 15 \
@@ -897,7 +988,15 @@ jobs:
             done
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
-          echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
+          echo 'The public origin serves the exact reviewed Git commit on all seven critical routes, including Markets and Accessibility.'
+
+      - name: Verify exact official brand vectors, raster checksums, manifest and CSS on public origin
+        run: node scripts/verify-live-official-brand.mjs
+
+      - name: Independently verify six live source SHAs, approved browser colours and AWS Contact
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
@@ -1141,6 +1240,10 @@ jobs:
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' /tmp/npi-live-intelligence.js
           grep -Fq 'data-live-b2b-enquiry-form' /tmp/npi-live-contact.html
           echo 'Live Intelligence official research and existing AWS-backed contact verified.'
+      - name: Verify exact published brand/source receipts and retained managed Contact
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-public-brand-source-live.mjs
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

@@ -66,6 +66,7 @@ let portalOutput = "";
 let screenshots = 0;
 let axeRuns = 0;
 const findings: Finding[] = [];
+const visualEvidence: Array<{ label: string; fontFamily: string; canvas: string; ink: string; reducedMotion: boolean; images: number; missingAlt: number }> = [];
 
 async function waitForResponse(url: string, expectedStatus = 200): Promise<void> {
   const deadline = Date.now() + 30_000;
@@ -230,7 +231,21 @@ function axeDetail(violation: Readonly<{ help: string; nodes: readonly Readonly<
 }
 
 async function inspectLayout(page: Page, label: string): Promise<void> {
-  const layout = await page.evaluate(() => ({
+  const layout = await page.evaluate(() => {
+    const probe = document.createElement("span");
+    probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none";
+    probe.style.backgroundColor = "var(--np-color-canvas, rgb(1, 2, 3))";
+    probe.style.color = "var(--np-color-label, rgb(1, 2, 3))";
+    document.body.append(probe);
+    const canvas = getComputedStyle(probe).backgroundColor;
+    const ink = getComputedStyle(probe).color;
+    probe.remove();
+    return ({
+    canvas, ink,
+    fontFamily: getComputedStyle(document.body).fontFamily,
+    reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+    images: document.images.length,
+    missingAlt: [...document.images].filter(image => !image.hasAttribute("alt")).length,
     viewportWidth: document.documentElement.clientWidth,
     documentWidth: document.documentElement.scrollWidth,
     layoutVersion: getComputedStyle(document.documentElement).getPropertyValue("--np-layout-contract").trim(),
@@ -251,7 +266,14 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
       document.body.innerText.includes("The string did not match the expected pattern") ||
       document.body.innerText.includes("Secure portal backend is not active on this static host yet") ||
       document.body.innerText.includes("Internal Server Error"),
-  }));
+    });
+  });
+  visualEvidence.push({label, fontFamily:layout.fontFamily, canvas:layout.canvas, ink:layout.ink, reducedMotion:layout.reducedMotion, images:layout.images, missingAlt:layout.missingAlt});
+  assert.equal(layout.canvas, "rgb(255, 255, 255)", `${label}: approved canvas colour`);
+  assert.equal(layout.ink, "rgb(11, 11, 14)", `${label}: approved ink colour`);
+  assert.match(layout.fontFamily, /apple-system|system-ui/i, `${label}: platform typography`);
+  assert.equal(layout.reducedMotion, true, `${label}: reduced-motion preference`);
+  assert.equal(layout.missingAlt, 0, `${label}: images without alt attributes`);
   assert.equal(layout.layoutVersion, "1", `${label}: shared Apple HIG layout CSS was not loaded`);
   assert.equal(layout.unboundedGrids, 0, `${label}: metrics grid extends outside the viewport`);
   assert.equal(layout.unboundedTables, 0, `${label}: data table is not bounded to its own scrolling region`);
@@ -325,8 +347,26 @@ async function inspectModule(
       }
       if (module.code === "customer.dashboard") {
         assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
-        assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
+        assert.equal(await page.locator(".customer-primary-nav a").count(), 6);
+        assert.equal(await page.getByRole("navigation", { name: "Common customer tasks" }).count(), 1);
         await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
+      }
+    }
+    if (module.area === "customer") {
+      const primary = page.getByRole("navigation", { name: "Customer workspace primary navigation" });
+      assert.equal(await primary.count(), 1, `${module.code}: primary navigation missing`);
+      assert.equal(await primary.locator("a").count(), 6, `${module.code}: primary destinations missing`);
+      if (module.code !== "customer.dashboard") {
+        const related = page.getByRole("navigation", { name: "Related customer tasks" });
+        assert.equal(await related.count(), 1, `${module.code}: related tasks missing`);
+        assert.ok(await related.locator("a").count() >= 2, `${module.code}: missing related destinations`);
+      }
+      for (const code of ["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.account", "customer.support"]) {
+        const entry = visiblePortalModules.find((candidate) => candidate.code === code);
+        assert.ok(entry, `Missing canonical destination ${code}`);
+        const link = primary.locator(`a[href="${entry.route}"]`);
+        assert.equal(await link.count(), 1, `${module.code}: missing ${code}`);
+        assert.equal(await link.getAttribute("aria-current"), module.code === code ? "page" : null);
       }
     }
     // Authenticated account/help routes must allow the optional first-run
@@ -352,6 +392,27 @@ async function inspectModule(
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
     await inspectLayout(page, `${engine} ${viewport.name} ${module.route}`);
+    if (viewport.name === "desktop-1440") {
+      // Inspect only CSS values, never account data, DOM contents or credentials.
+      // This catches stylesheet extraction/cascade regressions before Axe's
+      // final all-routes report, without weakening accessibility acceptance.
+      const selected = page.locator(".workspace-sidebar nav a[aria-current='page']");
+      if (await selected.count()) {
+        const inkAndSurface = await selected.evaluate((link) => {
+          const status = link.querySelector("small");
+          return {
+            background: getComputedStyle(link).backgroundColor,
+            title: getComputedStyle(link).color,
+            status: status ? getComputedStyle(status).color : null,
+          };
+        });
+        assert.deepEqual(inkAndSurface, {
+          background: "rgb(248, 247, 243)",
+          title: "rgb(11, 11, 14)",
+          status: "rgb(11, 11, 14)",
+        }, `${module.route}: accessible active sidebar palette changed`);
+      }
+    }
     assert.deepEqual(failedResources, [], `${engine} ${module.route}: failed subresources`);
     assert.deepEqual(consoleErrors, [], `${engine} ${module.route}: console errors`);
 
@@ -855,7 +916,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
 
     for (const viewport of interactionOnly ? [] : viewports) {
       const anonymous = await browser.newContext(contextOptions(viewport));
-      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Sign in to the right workspace", "login");
+      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Welcome to NovaPharm.", "login");
       await anonymous.close();
 
       for (const area of areas) {
@@ -911,6 +972,8 @@ try {
     visibleInformationalModuleCount: visiblePortalModules.length,
     screenshots,
     axeRuns,
+    visualEvidence,
+    visualEvidenceScope: "Rendered synthetic module checks; not independent live deployment or human image approval",
     seriousOrCriticalAccessibilityFindings: findings,
     data: "synthetic and non-confidential only",
     indexing: "disabled",

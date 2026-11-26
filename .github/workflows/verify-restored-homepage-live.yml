@@ -26,8 +26,26 @@ permissions:
   contents: read
 
 jobs:
+  pr-pure-white-source-acceptance:
+    # A PR cannot satisfy post-deployment custom-domain evidence. Validate
+    # the proposed source without mistaking today's live site for this PR.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Confirm proposed Pure White source and current Medicine hero
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '<meta name="theme-color" content="#FFFFFF">' index.html
+          grep -Fq 'Medicine. Where it needs to be' apps/corporate/components/concise-home.tsx
+          grep -Fq 'className="npd-apple-hero nph-earth-hero"' apps/corporate/components/concise-home.tsx
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' apps/corporate/components/concise-home.tsx
+          grep -Fq -- '--np-color-canvas: #FFFFFF' assets/css/novapharm.bundle.css
+
   live-origin-acceptance:
-    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 9
     steps:
@@ -44,18 +62,15 @@ jobs:
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               -H 'Pragma: no-cache' \
               "$LIVE_ORIGIN/?${cache}-${attempt}" -o /tmp/novapharm-restored-home.html; then
-              if grep -Fq 'class="nph-editorial-home npd-apple-home"' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Better access begins with better decisions.' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Specialist medicines.' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Thoughtfully selected.' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Understand the medicine.' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Built for trust.' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'Let&#x27;s build something meaningful.' /tmp/novapharm-restored-home.html \
+              # The source-approved 2026-11-23 release replaced the retired
+              # editorial-home copy. Verify its new headline, actual Earth
+              # artwork, source receipt and exact browser theme instead.
+              if grep -Fq 'Medicine. Where it needs to be' /tmp/novapharm-restored-home.html \
                 && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/novapharm-restored-home.html \
-                && grep -Fq '/assets/media/home/earth-reference-1400.jpg' /tmp/novapharm-restored-home.html \
-                && grep -Fq 'A better way to understand, access and move medicine.' /tmp/novapharm-restored-home.html \
-                && ! grep -Fq 'class="npd-hero npd-hero-media"' /tmp/novapharm-restored-home.html \
-                && ! grep -Fq 'Pharmaceutical opportunity should move no faster than the evidence behind it.' /tmp/novapharm-restored-home.html; then
+                && grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' /tmp/novapharm-restored-home.html \
+                && grep -Fq '<meta name="theme-color" content="#FFFFFF">' /tmp/novapharm-restored-home.html \
+                && grep -Fq 'name="novapharm-source-sha" content="' /tmp/novapharm-restored-home.html \
+                && ! grep -Fq 'class="npd-hero npd-hero-media"' /tmp/novapharm-restored-home.html; then
                 successful=true
                 break
               fi
@@ -63,12 +78,13 @@ jobs:
             sleep 8
           done
           if [ "$successful" != true ]; then
-            echo "::error::Custom domain has reverted to a partial/old homepage or the approved editorial design is missing."
+            echo "::error::Live homepage is missing the verified source receipt, Pure White browser metadata, approved Medicine headline or Earth hero."
             exit 1
           fi
           curl --fail --silent --show-error --location --max-time 20 \
             "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache}" -o /tmp/novapharm-restored-style.css
           grep -Fq 'nph-earth-hero-landscape' /tmp/novapharm-restored-style.css
+          grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/novapharm-restored-style.css
           curl --fail --silent --show-error --location --max-time 20 \
             "$LIVE_ORIGIN/assets/media/home/earth-reference-1400.jpg?${cache}" -o /tmp/novapharm-restored-earth.jpg
           test "$(wc -c < /tmp/novapharm-restored-earth.jpg)" -ge 60000
@@ -78,4 +94,4 @@ jobs:
           done
           grep -Fq 'Contact NovaPharm' /tmp/novapharm-preserved-contact.html
           grep -Fq 'Nutraxin' /tmp/novapharm-preserved-products-nutraxin.html
-          echo "PASSED: full owner-approved Next editorial body, Earth sunrise, CSS, image, contact and Nutraxin routes verified live."
+          echo "PASSED: released Medicine homepage, Pure White, source receipt, Earth media, CSS, Contact and Nutraxin routes verified live."

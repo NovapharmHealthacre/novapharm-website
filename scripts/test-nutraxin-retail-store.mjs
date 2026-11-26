@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { bagDiscoveryProducts, comparisonProducts, safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, mergeRetailOffers, merchantSaleReady, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -98,7 +98,13 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
- assert.match(html,/href="\/legal\/terms\/#nutraxin-consumer-sales"/);
+ assert.match(html,/data-nx-consumer-terms[^>]*><span>I accept the <a href="\/legal\/returns\/">Nutraxin delivery, returns and refunds policy<\/a>/);
+ const returns=readFileSync("legal/returns/index.html","utf8");
+ assert.match(returns,/14 days after receiving your goods/);
+ assert.match(returns,/a further 14 days after informing us/);
+ assert.match(returns,/refund within 14 days/);
+ assert.match(returns,/Nothing here excludes or reduces mandatory consumer rights/);
+ assert.match(returns,/href="\/legal\/terms\/"/);
  const legal=readFileSync("legal/terms/index.html","utf8");
  assert.match(legal,/id="nutraxin-consumer-sales"/);
  assert.match(legal,/14 days of receiving goods/);
@@ -178,7 +184,7 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.equal(checkoutReturnOutcome(null),"pending");
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  const returned=js.split('const returnedOrder = query.get("order_id");')[1]?.split("// Products-site readiness")[0];
- assert.match(returned,/checkoutReturnOutcome\(result\)/);
+ assert.match(returned,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
  assert.match(returned,/outcome === "expired" \|\| outcome === "failed"/);
  assert.match(returned,/closedOrder = returnedOrder/);
  assert.match(returned,/if \(outcome === "paid"\)/);
@@ -186,4 +192,211 @@ test("Stripe return does not confuse expiry with payment failure or erase Bag",(
  assert.equal(returned.split("bag=[];saveBag(bag)").length-1,1,"Only verified paid status may empty the bag");
  assert.match(js,/Your Bag is saved and you may start a new checkout/);
  assert.match(js,/No successful payment has been recorded/);
+});
+
+test("checkout uncertainty is explicit and return verification blocks another payment",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.doesNotMatch(js,/No payment was taken\./);
+ assert.match(js,/We could not confirm the checkout response/);
+ assert.match(js,/const locked = checkoutInFlight \|\| checkoutUncertain \|\| !!awaitingOrder/);
+ assert.match(js,/quantityInput\.disabled = locked/);
+ assert.match(js,/remove\.disabled = locked/);
+ assert.match(js,/awaitingOrder = returnedOrder;\s*render\(\);\s*const status = async/);
+ assert.match(js,/checkoutReturnOutcome\(result\?\.orderId === returnedOrder \? result : null\)/);
+});
+
+
+test("an uncertain retry retains the in-memory idempotency key and reconciles already-paid attempts",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/checkoutUncertain && \(!lastAttempt \|\| lastAttempt\.basket !== basketId \|\| lastAttempt\.mode !== mode\)/);
+ assert.match(js,/lastAttempt\?\.basket === basketId && lastAttempt\.mode === mode \? lastAttempt\.id/);
+ assert.match(js,/result\?\.already_paid === true && result\?\.status === "PAID"/);
+ assert.match(js,/BAG_URL \+ "\?checkout=return&order_id=" \+ encodeURIComponent\(result\.orderId\)/);
+});
+
+
+test("comparison limits selections to three unique canonical references",()=>{
+ const skus=catalogue.products.map(p=>p.sku);
+ assert.deepEqual(comparisonProducts([skus[0],skus[0],"UNKNOWN",skus[1],skus[2],skus[3]],catalogue).map(p=>p.sku),skus.slice(0,3));
+ assert.deepEqual(comparisonProducts(null,catalogue),[]);
+ assert.deepEqual(comparisonProducts(skus,{...catalogue,currency:"USD"}),[]);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/compare\.setAttribute\("aria-pressed", "false"\)/);
+ assert.match(js,/selected\.clear\(\)/);
+ assert.match(js,/This is not advice on suitability or treatment/);
+});
+
+
+test("basket recovery offers direct shopping and human support without claiming a payment result",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/!bag.length && !confirmedOrder && !awaitingOrder/);
+ assert.match(js,/anchor\("Continue shopping", SHOP_URL/);
+ assert.match(js,/anchor\("Check an order status", "\/products\/track\//);
+ assert.match(js,/anchor\("Contact customer support", "mailto:support@novapharmhealthcare.com"/);
+});
+test("all 19 Nutraxin details share the responsive typography, image, purchase and print layout contract",()=>{
+ const css=readFileSync("assets/css/nutraxin-merchant.css","utf8");
+ const checks=[
+   /Shared Nutraxin product-detail layout contract/,
+   /grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, 1fr\)/,
+   /grid-template-columns:\s*minmax\(0, 1\.3fr\) minmax\(270px, \.75fr\)/,
+   /\.npd-product-picture img\s*\{[^}]*object-fit:\s*contain/s,
+   /\.npd-composition dd\s*\{[^}]*white-space:\s*nowrap/s,
+   /@media\s*\(max-width:\s*1050px\)/,
+   /@media\s*\(max-width:\s*600px\)/,
+   /@media print\s*\{[\s\S]*?\.npd-product-hero-grid\s*\{[^}]*54mm minmax\(0, 1fr\)/,
+   /@media print\s*\{[\s\S]*?\.npd-composition > div\s*\{[^}]*42mm\s*!important/
+ ];
+ for(const rule of checks)assert.match(css,rule,"Nutraxin CSS lost a required layout contract");
+
+ assert.match(css,/NovaPharm Nutraxin Apple-inspired showcase v2/);
+ assert.match(css,/--nx-showcase-canvas:#FFFFFF/);
+ assert.match(css,/--nx-showcase-ink:#0B0B0E/);
+ assert.match(css,/--nx-showcase-accent:#9D1B32/);
+ assert.match(css,/@media print\s*\{[\s\S]*?white-space:normal !important;/);
+ assert.match(css,/@media screen and \(min-width:1121px\) \{[\s\S]*?NUT-UK-B12-SL60/,
+   "Long B12 title sizing must apply only to screen, never A4 print");
+ assert.equal(catalogue.products.length,19);
+ for(const product of catalogue.products){
+   const html=readFileSync("products/nutraxin/"+product.slug+"/index.html","utf8");
+   const classes=new Set([...html.matchAll(/class="([^"]+)"/g)]
+     .flatMap(match=>match[1].split(/\s+/)));
+   for(const requiredClass of [
+     "npd-product-hero-grid",
+     "npd-product-visual",
+     "npd-product-picture",
+     "npd-product-copy",
+     "npd-product-evidence",
+     "npd-composition"
+   ])assert.ok(classes.has(requiredClass),
+     product.slug+" missing CSS class "+requiredClass);
+   assert.ok(html.includes('data-page="product-portfolio/nutraxin"'),
+     product.slug+" missing governed product scope");
+   assert.match(html,/href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"/,
+     product.slug+" missing shared merchant stylesheet");
+   assert.match(html,/src="\/assets\/js\/nutraxin-retail-store\.js(?:\?[^"]*)?"/,
+     product.slug+" missing public retail module");
+   assert.equal((html.match(/<h1\b/g)||[]).length,1,product.slug+" title hierarchy");
+   assert.ok(html.includes('data-merchant-sku="'+product.sku+'"'),product.sku+" source price");
+   assert.match(html,new RegExp('src="/assets/media/products/nutraxin/'+product.slug+'\\.png(?:\\?[^"]*)?"'),
+     product.slug+" pack photograph");
+ }
+});
+
+test("Bag discovery excludes existing selections and unavailable products, without tracking",()=>{
+ const first=catalogue.products[0];
+ const bag=[{sku:first.sku,quantity:2}];
+ const suggestions=bagDiscoveryProducts(bag,catalogue);
+ assert.equal(suggestions.length,3);
+ assert.ok(suggestions.every(p=>p.sku!==first.sku && p.available_to_sell && p.ordering_enabled));
+ const disabled={...catalogue,products:catalogue.products.map(p=>({...p,available_to_sell:false}))};
+ assert.deepEqual(bagDiscoveryProducts(bag,disabled),[]);
+ assert.deepEqual(bagDiscoveryProducts(bag,{...catalogue,checkout_enabled:false}),[]);
+ assert.deepEqual(bagDiscoveryProducts(catalogue.products.map(p=>({sku:p.sku,quantity:1})),catalogue),[]);
+ assert.deepEqual(bagDiscoveryProducts(bag,null),[]);
+});
+test("retail navigation shares a single aligned accessible target contract",()=>{
+ const css=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(css,/\.nx-retail-store \.nx-store-topbar\{[^}]*align-items:center/);
+ assert.match(css,/\.nx-retail-store \.nx-store-topbar>a\{[^}]*align-items:center[^}]*min-height:44px/);
+ assert.match(css,/body\.nx-retail-store\{background:#FFFFFF\}/);
+ assert.ok(js.includes('nav.setAttribute("aria-label", "Nutraxin shopping navigation")'));
+ assert.ok(js.includes('link.setAttribute("aria-current", "page")'));
+ assert.ok(js.includes('button.disabled = locked ||'));
+ assert.ok(js.includes('const suggestions = locked || confirmedOrder ? [] : bagDiscoveryProducts(bag, data)'));
+ assert.ok(js.includes('if (locked) return;'));
+});
+
+test("gift card preview matches approved denomination list and cannot collect payment", async()=>{
+ const {giftPreviewAmount,GIFT_DENOMINATIONS}=await import("../assets/js/nutraxin-retail-store.js");
+ assert.deepEqual(GIFT_DENOMINATIONS,[1000,2500,5000,10000,25000]);
+ for(const v of GIFT_DENOMINATIONS) assert.equal(giftPreviewAmount(String(v)),v);
+ for(const v of [0,100,5001,-1000,"5e3",null,{},true]) assert.equal(giftPreviewAmount(v),null);
+ const html=readFileSync("products/nutraxin/gift-cards/index.html","utf8");
+ const main=html.match(/<main id="main"[^>]*>[\s\S]*?<\/main>/)?.[0];
+ assert.ok(main);
+ assert.match(html,/name="robots" content="noindex, nofollow"/);
+ assert.match(main,/data-nx-gift-preview/);
+ assert.match(main,/<button type="button" class="nx-store-bag-button" disabled>Purchasing unavailable<\/button>/);
+ assert.doesNotMatch(main,/<form\b|type="email"|data-nx-checkout/);
+ const inputs=[...main.matchAll(/name="nx-gift-amount" value="(\d+)"/g)].map(m=>Number(m[1]));
+ assert.deepEqual(inputs,GIFT_DENOMINATIONS);
+ const generator=readFileSync("scripts/apply-corporate-product-discipline.mjs","utf8");
+ assert.ok(generator.includes('materialize("products/nutraxin/gift-cards/index.html"'));
+ const preview=readFileSync("assets/js/nutraxin-retail-store.js","utf8").split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
+ assert.doesNotMatch(preview,/fetch\(|location\.assign|sessionStorage|localStorage/);
+});
+
+test("refresh restores original promo quote, or blocks a changed bag and identity mode",async()=>{
+ const {basketAttemptId,restoreCheckoutAttempt}=await import("../assets/js/nutraxin-retail-store.js");
+ const lines=[{sku:catalogue.products[0].sku,quantity:1}];
+ const quote={currency:"GBP",promotionCode:"SYNTHETIC10",basketVersion:"a".repeat(64),
+   originalGrossMinor:1000,discountGrossMinor:100,totalGrossMinor:900};
+ const record={id:"12345678-1234-4234-8234-123456789012",mode:"guest",quote,basket:basketAttemptId(lines,quote)};
+ const restored=restoreCheckoutAttempt(JSON.parse(JSON.stringify(record)),lines,"guest");
+ assert.equal(restored.resumable,true);
+ assert.deepEqual(restored.quote,quote);
+ assert.equal(restored.id,record.id);
+ for(const [r,b,m] of [
+   [record,[{...lines[0],quantity:2}],"guest"],
+   [record,lines,"account"],
+   [{...record,quote:{...quote,totalGrossMinor:1}},lines,"guest"],
+   [{id:record.id,basket:record.basket},lines,"guest"],
+   [{...record,quote:null},lines,"guest"]
+ ]) assert.equal(restoreCheckoutAttempt(r,b,m).resumable,false);
+ assert.equal(restoreCheckoutAttempt({...record,id:"bad"},lines,"guest"),null);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/sessionStorage\.setItem\(ATTEMPT_KEY,JSON\.stringify\(lastAttempt\)\)/);
+ assert.match(js,/!restoredAttemptBlocked/);
+ assert.match(js,/returnedOrder === "NUT-"\+lastAttempt\.id/);
+});
+
+
+test("personal privileges follow manual promo and require account-specific server approval",()=>{
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ const css=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ assert.ok(js.includes("promoSection.after(privileges)"));
+ assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/account/privileges"'));
+ assert.ok(js.includes('v?.account_privileges_supported === true'));
+ assert.ok(js.includes('token !== consumerAccess()'));
+ assert.ok(js.includes('privilegeList.replaceChildren()'));
+ assert.ok(js.includes('promoInput.value = offer.code'));
+ assert.ok(js.includes('void requestPromotion()'));
+ assert.ok(js.includes('No approved offers are available for this account right now.'));
+ assert.ok(css.includes(".nx-bag-privileges[hidden]"));
+});
+
+test("Klarna retail identification is readiness-gated and contains no credit claims",async()=>{
+ const {klarnaCheckoutNotice}=await import("../assets/js/nutraxin-retail-store.js");
+ assert.equal(klarnaCheckoutNotice(true),"Choose Klarna at checkout. Availability depends on eligibility.");
+ for(const value of [false,undefined,null,1,"true",{}])assert.equal(klarnaCheckoutNotice(value),"");
+ assert.doesNotMatch(klarnaCheckoutNotice(true),/interest|instalment|repayment|APR|pay in 3/i);
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.ok(js.includes("klarnaCheckoutNotice(ready && !checkoutUncertain)"));
+ assert.ok(js.includes("status?.payment_collection_active === true"));
+ assert.ok(js.includes("klarnaNotice.hidden = !message"));
+ // Inspect domain-like source tokens, not URL substrings or a runtime URL allowlist.
+ const forbiddenProviderToken = (token) => {
+  const labels = token.toLowerCase().split(".").filter(Boolean);
+  const [tld, domain, subdomain] = labels.reverse();
+  return tld === "com" && (domain === "klarna" || (domain === "stripe" && subdomain === "js"));
+ };
+ assert.equal(forbiddenProviderToken("js.stripe.com"),true);
+ assert.equal(forbiddenProviderToken("www.klarna.com"),true);
+ assert.equal(forbiddenProviderToken("klarna.com.example.org"),false);
+ assert.equal(forbiddenProviderToken("notklarna.com"),false);
+ const domainTokens = js.match(/[a-z0-9.-]+/gi) || [];
+ assert.equal(domainTokens.some(forbiddenProviderToken),false,"No Stripe.js or direct Klarna domain is embedded in this retail module");
+ const gift=js.split("function mountGiftPreview(main) {")[1].split("async function init()")[0];
+ assert.doesNotMatch(gift,/klarnaCheckoutNotice|Klarna/);
+});
+
+test("verified multi-brand offers share the bag and stale offers remain removable",()=>{
+ const sku="NP-CP-4006381333931";const p={sku,gtin:"4006381333931",name:"Fixture",pack:"30 tablets",brand:"Fixture",category:"Supplements",image:"/assets/media/products/fixture.webp",vatBasisPoints:2000,netMinor:1000,grossMinor:1200,availableQuantity:3};
+ const mixed=mergeRetailOffers(catalogue,{schema:"novapharm-retail-offers-v1",currency:"GBP",products:[p]});
+ assert.ok(catalogueIsSafe(mixed));assert.ok(merchantSaleReady(mixed.products.at(-1),mixed));
+ const lines=[{sku:catalogue.products[0].sku,quantity:1},{sku,quantity:2}];
+ assert.deepEqual(safeBasket(lines,mixed.products),lines);assert.equal(basketSubtotal(lines,mixed),3947);
+ const unavailable=mergeRetailOffers(catalogue,null,lines);assert.deepEqual(safeBasket(lines,unavailable.products),lines);assert.equal(basketSubtotal(lines,unavailable),null);assert.equal(merchantSaleReady(unavailable.products.at(-1),unavailable),false);
 });

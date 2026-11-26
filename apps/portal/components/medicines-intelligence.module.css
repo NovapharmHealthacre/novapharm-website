@@ -8,7 +8,7 @@
   --mi-navy-raised: #20252d;
   --mi-blue: #0066cc;
   --mi-blue-dark: #0057b7;
-  --mi-red: #e3120b;
+  --mi-red: #9E1B47;
   min-height: 100vh;
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);

@@ -49,7 +49,9 @@ export function validateOwnerProductionConstraints(policy) {
     "contract", "decisionDate", "vendorStrategy",
     "enterpriseVendorAccounts", "initialInfrastructureBudget",
     "engineeringTarget", "productionPermissions",
-    "acceptedEngineeringScope", "productionSignoff"
+    "acceptedEngineeringScope", "productionSignoff",
+    ...(policy && typeof policy === "object" && !Array.isArray(policy) &&
+      Object.hasOwn(policy, "publicBrandingRelease") ? ["publicBrandingRelease"] : [])
   ])) throw fail();
 
   if (
@@ -60,6 +62,20 @@ export function validateOwnerProductionConstraints(policy) {
     policy.engineeringTarget !== "private_read_only_pilot" ||
     policy.productionSignoff !== "not_granted"
   ) throw fail();
+
+  // This is a narrowly-scoped *public website branding* permission, not an
+  // Intelligence / Portal / customer production signoff. Require an exact
+  // three-field contract; all other production controls are independently
+  // validated below and must remain denied.
+  if (Object.hasOwn(policy, "publicBrandingRelease")) {
+    const branding = policy.publicBrandingRelease;
+    if (!exactly(branding, ["enabled", "signoff", "scope"]) ||
+        branding.scope !== "public-static-with-preserved-contact" ||
+        !((branding.enabled === true && branding.signoff === "granted") ||
+          (branding.enabled === false && branding.signoff === "not_granted"))) {
+      throw fail();
+    }
+  }
 
   // The owner permits existing subscriptions only, capped at GBP 0
   // additional monthly spend. This authorises no new metered usage or

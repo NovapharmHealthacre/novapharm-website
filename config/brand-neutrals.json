@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "palette": "NovaPharm Royal Neutral Identity",
+  "primary": "#FFFFFF",
+  "secondary": "#F8F7F3",
+  "black": "#0B0B0E",
+  "divider": "#DEDCD5",
+  "names": {
+    "primary": "Pure White",
+    "secondary": "Royal Porcelain White",
+    "black": "Sovereign Black",
+    "divider": "Porcelain Stone"
+  },
+  "usage": {
+    "primary": "Main light backgrounds and brand canvas",
+    "secondary": "Secondary light backgrounds, cards and grouped panels",
+    "black": "Default text and light-appearance neutral actions",
+    "divider": "Decorative hairline only; use stronger borders for essential controls"
+  },
+  "reviewedAgainst": [
+    "Apple Human Interface Guidelines: Color",
+    "Apple Human Interface Guidelines: Typography",
+    "WCAG 2.2 1.4.3 and 1.4.11"
+  ],
+  "scope": "Corporate web, static public pages, Portal, Technology, Status; dark semantics and distinct brand accents remain separate"
+}

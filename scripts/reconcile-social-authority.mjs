@@ -119,6 +119,9 @@ const files = [
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   "account-application/index.html"
 ];
+const categoryConfig = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-category-intents.json"), "utf8"));
+const nutraxinProducts = JSON.parse(readFileSync(join(root, "docs/nutraxin-product-register.json"), "utf8")).products;
+const categoryImages = new Map(categoryConfig.categories.map(category => [category.slug, nutraxinProducts.find(p => p.slug === category.products[0])]));
 const nutraxinProductDirectory = join(root, "products", "nutraxin");
 if (existsSync(nutraxinProductDirectory)) {
   for (const entry of readdirSync(nutraxinProductDirectory, { withFileTypes: true })) {
@@ -127,13 +130,15 @@ if (existsSync(nutraxinProductDirectory)) {
       files.push(file);
       // This is a quotation-request interface, not a catalogue product pack.
       // It uses the corporate social image rather than an invented SKU image.
-      if (entry.name === "order-request" || entry.name === "bag" || entry.name === "account") continue;
+      if (entry.name === "order-request" || entry.name === "bag" || entry.name === "account" || entry.name === "gift-cards") continue;
+      const representative = categoryImages.get(entry.name);
+      const imageSlug = representative?.imageBase ?? entry.name;
       routeImages.set(`/products/nutraxin/${entry.name}/`, {
-        url: `/assets/media/products/nutraxin/${entry.name}.png`,
+        url: `/assets/media/products/nutraxin/${imageSlug}.png`,
         type: "image/png",
-        width: 700,
-        height: 700,
-        alt: `Nutraxin ${entry.name.replaceAll("-", " ")} catalogue pack reference`
+        width: representative && imageSlug === "collagen-gold-30-tablets" ? 980 : 700,
+        height: representative && imageSlug === "collagen-gold-30-tablets" ? 654 : 700,
+        alt: representative?.altText ?? `Nutraxin ${entry.name.replaceAll("-", " ")} catalogue pack reference`
       });
     }
   }
