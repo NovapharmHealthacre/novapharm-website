@@ -38,7 +38,7 @@
     "design:audits:generate": "node scripts/programme/generate-apple-grade-audits.mjs",
     "design:audits:validate": "node scripts/programme/validate-apple-grade-audits.mjs",
     "design:typography:validate": "node scripts/test-official-typography-contract.mjs",
-    "design:colours:validate": "node scripts/test-apple-hig-colours.mjs",
+    "design:colours:validate": "node scripts/test-apple-hig-colours.mjs && node --test scripts/test-official-public-brand-metadata.mjs",
     "design:accessibility:validate": "node scripts/test-apple-hig-accessibility.mjs",
     "design:writing:validate": "node scripts/test-apple-hig-writing.mjs",
     "design:branding:validate": "node --test scripts/test-apple-preview-media-integrity.mjs && node scripts/test-apple-branding-previews.mjs",
@@ -55,7 +55,7 @@
     "test:public-copy": "node scripts/test-public-copy-quality.mjs",
     "docs:enterprise": "node scripts/generate-enterprise-portal-docs.mjs",
     "prepare:release": "npm run build",
-    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs && npm run test:technology-page && npm run test:nutraxin-showcase && npm run test:nutraxin-account-enquiry && npm run test:nutraxin-order-request && npm run test:nutraxin-retail-store && npm run test:nutraxin-consumer-account && npm run test:public-copy && npm run test:esco-catalogue && npm run test:global-distribution-foundation && npm run test:commerce-marketplace && npm run test:commerce-stock-live",
+    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs && npm run test:technology-page && npm run test:nutraxin-showcase && npm run test:nutraxin-account-enquiry && npm run test:nutraxin-order-request && npm run test:nutraxin-retail-store && npm run test:nutraxin-consumer-account && npm run test:public-copy && npm run test:esco-catalogue && npm run test:global-distribution-foundation && npm run test:commerce-marketplace && npm run test:commerce-stock-live && npm run test:multibrand-retail",
     "validate:site": "node scripts/validate-owner-site.mjs",
     "validate:app": "node scripts/validate-app.mjs",
     "validate:domain": "node scripts/validate-domain.mjs",
@@ -76,7 +76,7 @@
     "test:integration": "node scripts/test-server.mjs",
     "test:backend-activation": "node scripts/test-backend-activation.mjs",
     "test:production-security": "node scripts/test-production-security.mjs",
-    "test:cookies": "node scripts/test-cookie-consent.mjs && node scripts/test-consent-analytics.mjs",
+    "test:cookies": "node scripts/test-cookie-consent.mjs && node scripts/test-consent-analytics.mjs && node --test scripts/test-pharmacy-partners.mjs",
     "test:backup-restore": "node scripts/test-backup-restore.mjs",
     "test:preview-security": "node scripts/test-preview-security.mjs",
     "test:session-restart": "node scripts/test-session-restart.mjs",
@@ -114,7 +114,7 @@
     "browser:validation:test": "node scripts/run-browser-validation-tests.mjs",
     "browser:validation:stop": "node scripts/stop-browser-validation.mjs",
     "test": "npm run test:uk-vat && npm run test:integration && npm run test:backend-activation && npm run test:production-security && npm run test:preview-security && npm run test:session-restart && npm run test:database-migration && npm run test:azure-sql-migrations && npm run test:enterprise-migrations && npm run test:enterprise-portal && npm run test:unified-commerce && npm run test:medicines-intelligence && npm run intelligence:backfill:typecheck && npm run test:medicines-bulk-ingestion && npm run test:browser-validation-preparation && npm run test:entra-identity && npm run test:portal-gateway-identity && npm run test:secret-resolution && npm run test:keyed-digest && npm run test:safe-json && npm run test:html-text && npm run test:internal-ai && npm run test:document-scans && npm run test:cookies && npm run test:backup-restore",
-    "check": "npm run requirements:validate && npm run owner:reconcile && npm run owner:validate && npm run design:audits:generate && npm run design:audits:validate && npm run design:typography:validate && npm run design:colours:validate && npm run design:accessibility:validate && npm run design:writing:validate && npm run brand:validate && npm run design:branding:validate && npm run design:app-icons:validate && npm run images:inventory:validate && npm run post-pr53:validate && npm run supply-chain:validate && npm run workspace:check && npm run apps:check && npm run docs:enterprise && npm run build && npm run leadership:validate && npm run products:validate && npm run test:pages-artifact && npm run build:public-only && npm run visual:validate && npm run visual:modules && npm run validate && npm run syntax && npm run security:scan && npm run test:visual-contracts && npm run test:cro && npm run test:oncology-release && npm run seo:indexnow:dry-run && npm run build && npm test && npm run build:public-only && node scripts/test-static-public-source-safety.mjs",
+    "check": "npm run requirements:validate && npm run owner:reconcile && npm run owner:validate && npm run design:audits:generate && npm run design:audits:validate && npm run design:typography:validate && npm run design:colours:validate && npm run design:accessibility:validate && npm run design:writing:validate && npm run brand:validate && npm run design:branding:validate && npm run design:app-icons:validate && npm run native:branding:validate && npm run images:inventory:validate && npm run post-pr53:validate && npm run supply-chain:validate && npm run workspace:check && npm run apps:check && npm run docs:enterprise && npm run build && npm run leadership:validate && npm run products:validate && npm run test:pages-artifact && npm run build:public-only && npm run visual:validate && npm run visual:modules && npm run validate && npm run syntax && npm run security:scan && npm run test:visual-contracts && npm run test:cro && npm run test:oncology-release && npm run seo:indexnow:dry-run && npm run build && npm test && npm run build:public-only && node scripts/test-static-public-source-safety.mjs",
     "backup:database": "node scripts/backup-database.mjs",
     "verify:backup": "node scripts/verify-database-backup.mjs",
     "restore:database": "node scripts/restore-database.mjs",
@@ -122,7 +122,8 @@
     "migrate:azure-sql:schema": "node scripts/migrate-azure-sql-schema.mjs",
     "optimise:images": "node scripts/optimise-images.mjs",
     "optimise:leadership": "node scripts/materialize-leadership-media.mjs",
-    "brand:validate": "node scripts/programme/validate-brand-assets.mjs",
+    "brand:validate": "node scripts/programme/validate-brand-assets.mjs && node --test scripts/test-official-brand-triad.mjs",
+    "brand:triad:validate": "node --test scripts/test-official-brand-triad.mjs",
     "images:inventory": "node scripts/programme/generate-image-inventory.mjs",
     "images:inventory:validate": "node scripts/programme/generate-image-inventory.mjs --check",
     "post-pr53:validate": "node scripts/programme/validate-post-pr53-candidate.mjs",
@@ -165,7 +166,9 @@
     "test:unified-commerce": "node --test scripts/test-unified-customer-commerce.mjs",
     "test:commerce-marketplace": "node --test scripts/test-commerce-inventory-availability.mjs scripts/test-commerce-marketplace-core.mjs scripts/test-commerce-marketplace.mjs scripts/test-commerce-order-lifecycle.mjs scripts/test-commerce-atlas-reservations.mjs scripts/test-commerce-order-lookup.mjs",
     "test:commerce-stock-live": "node --test scripts/test-commerce-stock-live.mjs",
-    "test:visual-search": "node --test scripts/test-intelligence-visual-search.mjs"
+    "test:visual-search": "node --test scripts/test-intelligence-visual-search.mjs",
+    "native:branding:validate": "node --test scripts/test-native-intelligence-brand-icons.mjs",
+    "test:multibrand-retail": "node --test scripts/test-multibrand-retail.mjs scripts/test-connective-consumer-research.mjs scripts/test-connective-source-directory.mjs scripts/test-connective-photo-assets.mjs"
   },
   "engines": {
     "node": "24.x",
@@ -176,7 +179,7 @@
     "@azure/monitor-opentelemetry": "1.21.0",
     "@azure/storage-blob": "12.33.0",
     "dotenv": "^17.4.2",
-    "mssql": "12.7.0"
+    "mssql": "12.7.14"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

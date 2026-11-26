@@ -21,6 +21,7 @@ import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
 import "../../../assets/css/novapharm-hig-motion.css";
 import "../../../assets/css/rtl-localization.css";
 import "../../../assets/css/apple-web-navigation.css";
+import "./corporate-mega-menu.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
@@ -60,7 +61,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#ffffff",
+  themeColor: "#FFFFFF",
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -71,7 +72,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader locale={locale} />
         <CookieControls />
-        <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
+        <main id="main-content" lang="en-GB" data-np-untranslated tabIndex={-1}>{children}</main>
         <SiteFooter locale={locale} />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />

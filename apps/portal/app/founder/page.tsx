@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { FounderLogoutButton } from "../../components/founder-logout-button";
 import { founderWorkspaceCategories, founderWorkspaceCoverageValid } from "../../data/founder-workspace-categories";
 import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
+import { FounderCustomerDirectory } from "./founder-customer-directory";
 import styles from "./founder-experience.module.css";
 
 export const dynamic = "force-dynamic";
@@ -136,6 +137,8 @@ export default async function FounderShell() {
           <span>{intelligenceWorkspaceCatalogue.length - ready} awaiting acceptance</span>
         </div>
       </section>
+
+      <FounderCustomerDirectory />
 
       <footer className={styles.footer}>
         <p>Models forecast. AI explains. Humans decide.</p>

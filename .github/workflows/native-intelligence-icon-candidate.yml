@@ -1,0 +1,94 @@
+name: NovaPharm native icon source release candidate (no signed distribution)
+
+on:
+  push:
+    branches:
+      - brand/apple-hig-native-and-acceptance-20261122
+    paths:
+      - '.github/workflows/native-intelligence-icon-candidate.yml'
+      - 'scripts/programme/rebuild-native-intelligence-app-icons.mjs'
+      - 'scripts/test-native-intelligence-brand-icons.mjs'
+      - 'scripts/programme/generate-image-inventory.mjs'
+      - 'apps/founder/scripts/validate-content.ts'
+      - 'apps/portal/app/apple-pharma-portal.css'
+      - 'config/brand-identities.json'
+      - 'assets/css/novapharm-hig-colours.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-official-brand-triad.mjs'
+      # Source-level visual acceptance can introduce image reference counts.
+      - 'scripts/test-visual-contracts.mjs'
+      - 'assets/css/tokens.css'
+      # Re-run source-linked icon inventory after inherited parent token refinement.
+      - 'apps/founder/app/base.css'
+      - 'native/novapharm-intelligence-ios/App/NovaTheme.swift'
+      - 'native/novapharm-intelligence-ios/App/NovaRootView.swift'
+      - 'native/novapharm-intelligence-android/app/src/main/res/values/colors.xml'
+      - 'assets/brand/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-native-identity-candidate-20261122
+  cancel-in-progress: false
+
+jobs:
+  render-and-verify:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: brand/apple-hig-native-and-acceptance-20261122
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Require exact isolated branch HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/brand/apple-hig-native-and-acceptance-20261122"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/apple-hig-native-and-acceptance-20261122 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Parse icon generator and source tests before expensive dependency installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/programme/rebuild-native-intelligence-app-icons.mjs
+          node --check scripts/test-native-intelligence-brand-icons.mjs
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Generate native icon candidates from owner-approved SVG only
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/programme/rebuild-native-intelligence-app-icons.mjs
+          node scripts/programme/rebuild-native-intelligence-app-icons.mjs --apply
+          node --test scripts/test-native-intelligence-brand-icons.mjs
+          npm run design:colours:validate
+          npm run design:typography:validate
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+      - name: Commit source-linked native artwork to review branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/brand/apple-hig-native-and-acceptance-20261122 | cut -f1)" = "$GITHUB_SHA"
+          git add -A -- native/novapharm-intelligence-ios/App/Assets.xcassets native/novapharm-intelligence-android/app/src/main/res audit/generated/native-intelligence-icon-provenance.json audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Native candidate already current, no commit."
+            exit 0
+          fi
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "native(assets): install reviewed Intelligence iOS Android launch icons"
+          git push origin HEAD:refs/heads/brand/apple-hig-native-and-acceptance-20261122

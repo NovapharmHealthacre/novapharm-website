@@ -1,72 +1,40 @@
-# ESCO Anand — 10,000-unit owner inventory declaration and 25% margin model
+# ESCO Anand — public catalogue and commercial release boundaries
 
-**Date:** 9 November 2026  
-**Scope:** 373 catalogue *references* across 12 categories; 73 have supplier model codes.  
+**Date:** 20 November 2026  
+**Scope:** 373 catalogue references across 12 categories; supplier models and saleable variants require individual confirmation.  
 **Status:** Quote-first; **not authorised for automatic card charging**.
 
 ## Inventory statement
 
-The owner reports **10,000 units for each catalogue reference**. This yields **3,730,000 units of declared planning inventory** if and only if each reference maps to exactly one saleable variant. These units have **not** been reconciled against physical warehouse bins, serials/batches, allocatable variants, purchase orders or release/expiry/lead-time records. Do not transform `ownerDeclaredStockUnits` into `availableToPromise`, public "in stock" labels, automatic dispatch claims or backend checkout eligibility.
+The catalogue includes an owner-declared planning quantity, not independently verified warehouse inventory. It must not be used as available-to-promise, evidence of UK stock, a product-level “in stock” label, or shipment authority. Product variants, allocated stock, warehousing location and dispatch arrangements require confirmation.
 
-There are 373 catalogue references, some representing configurable variants. Physical stock per variant, UK stock location and shipment eligibility remain unverified.
+## Pricing source and confidential commercial assessment
 
-## Pricing source and assumptions
+Customer-facing website prices are category-level GBP estimates, displayed excluding VAT and delivery. They are not supplier quotations, guaranteed gross profit, approved landed costs, or payment authority.
 
-Existing prices in `scripts/esco-merchandising.mjs` are **non-binding UK category benchmark guides**. Not all 373 catalogue families have an exact publicly comparable model; these estimates are **not** supplier purchase cost data and do **not** prove a margin.
+Supplier purchase prices, freight, storage, payment processing, margin targets and cost sensitivity models **must be evaluated and retained only in access-controlled commercial systems**. Do not place those calculations or supplier terms in this public repository, its GitHub Actions artifacts or the public website. The ESCO merchant-review matrix may retain blank costing columns until individually verified private financial inputs are available. An empty cost field must never be interpreted as zero cost or confirmed margin.
 
-**Target margin**: 25% gross margin on price excluding VAT, **not** 25% markup on purchase cost.
-
-For each guide price `P` (GBP ex VAT):
-
-- Maximum *total* variable cost to retain 25% gross margin = `0.75 × P`.
-- Illustrative card-fee allocation = `2.5% × P + £0.20`. This is a scenario assumption, **not** a verified Stripe tariff.
-- Illustrative 3-month stockholding reserve = `1% × P`. **Not** actual rent/storage.
-- Illustrative outbound delivery allocation is category dependent (below). **Not** a Polar Speed or courier quotation.
-- Maximum supplier purchase + inbound freight/import allowance = `max(0, 0.75P - card-fee allocation - storage reserve - delivery allocation)`.
-- If the uncapped supplier/inbound allowance is negative, the planning assumptions are inconsistent with the 25% target at that guide price. Flag the item, do not claim it earns that margin.
-- Prices must additionally be checked against invoice costs, import duties, FX risk, handling, customs, returns, settlement costs, and any other real variable expenses before acceptance.
-- The VAT amount and legal tax rate are **not inferred** from the product family. UK VAT and buyer exemptions must be established for the actual product and sale. VAT is excluded from the headline guide and from gross margin numerator/denominator.
-
-| Catalogue category | Illustrative outbound delivery allocation |
-|---|---:|
-| Hospital Furniture | £55 |
-| Ward Equipment | £8 |
-| Hospital Trolleys | £28 |
-| SS Hollowware | £5 |
-| Hospital Sundries | £3 |
-| Hospital Linen & OT Textiles | £5 |
-| Sterilization & Refrigeration Equipment | £160 |
-| Laboratory Equipment | £25 |
-| Laboratory Glassware & Consumables | £4 |
-| Laboratory Plasticware | £4 |
-| Surgical Instruments | £7 |
-| OT & Surgical Lights | £140 |
-
-These coarse reserves are scenario inputs only. Real product mass, volume, insurance, location, service level and number of shipments could materially change the delivered cost. They must not be silently used as checkout shipping costs.
-
-**Illustrative £100 guide:** variable-cost ceiling £75; assumed card allocation £2.70 and three-month holding reserve £1.00; if category delivery reserve £8, maximum purchase + inbound budget is **£63.30**. This is **not** evidence the item can be bought from ESCO for that amount.
-
-**Pricing sensitivity:** If verified all-in variable cost exceeds the ceiling, increase the sale price or decline the sale; if the buyer has a competitive UK price cap, quote only where the economics pass.
+The correct UK VAT treatment, buyer eligibility, insurance, import duties, exchange-rate risk and service/returns obligations must be established before commercial acceptance.
 
 ## UK legal and image gating
 
-Supplier ISO 13485/CE paperwork is not blanket UK clearance for 373 references. Before charging, establish the *specific* product's intended medical use, classification, CE/UKCA conformity requirements, MHRA registration (where the product is a medical device), GB importer/UK Responsible Person information as appropriate, labelling, supply permission and imagery rights. Some non-medical laboratory goods may follow other UK product laws. The manufacturer photo map has 61 model-matched photographs with exact variant/right-to-use flags **not yet confirmed**; 312 other cards use original labelled concept graphics.
+Supplier conformity paperwork is not blanket UK clearance for all catalogue references. Before charging, establish the **specific** product's intended use, medical-device classification where applicable, conformity requirements, MHRA registration as required, GB importer/UK Responsible Person information where appropriate, labelling, supply permission and imagery rights. Model-associated supplier photographs still require rights and exact-variant verification; clearly labelled original concept previews are distinct from exact supplier photos.
 
 - [MHRA: Register medical devices to place on the market](https://www.gov.uk/guidance/register-medical-devices-to-place-on-the-market)
 - [MHRA: Regulating medical devices in the UK](https://www.gov.uk/guidance/regulating-medical-devices-in-the-uk)
 
-## Payment release contract (must be enforced by server)
+## Payment release contract — server enforced
 
-For **each** line selected, use a verified, unique saleable SKU, approved GB regulatory classification, signed commercial cost, authorised exact selling price and tax treatment, current **allocatable** warehouse stock and shipment method. The server must ignore public estimated prices and owner declarations in creating Stripe Checkout Sessions. Checkout must fail closed for unknown or unapproved references, capped quantities, unsupported delivery region, unverified tax and insufficient allocatable stock.
+For every order line, require an identified saleable SKU, approved UK regulatory classification, verified private commercial costs, approved exact selling price and tax treatment, current allocatable warehouse stock and shipment method. The server must ignore browser guide prices and owner-declared planning quantities when creating Stripe Checkout Sessions. Unknown or unapproved references, unsupported delivery destinations, missing tax determination and insufficient verified stock must fail closed.
 
-Use the existing Nutraxin production Stripe architecture only after a separate ESCO server-side allowlist and isolated order ledger/reconciliation are implemented. Preserve existing Nutraxin checkout. Signed webhooks (including async paid/failure), idempotency, payment-status-driven fulfilment, paid-order confirmation, refunds and fraud/exception handling must pass controlled acceptance tests before public payment buttons are activated.
+The Nutraxin checkout is independent. ESCO requires its own server-side eligibility allowlist, order ledger and reconciliation. Signed payment webhooks, idempotency, paid-order confirmation, payment-status-driven fulfilment, refunds and fraud/exception handling require controlled acceptance before ESCO card payment activation.
 
 ## Release implementation
 
-- Source generator: `scripts/esco-merchandising.mjs`.
-- Public-facing disclosure: `scripts/apply-esco-catalogue.mjs`; products and Bag pages built from source.
-- Tests: `scripts/test-esco-catalogue.mjs`.
-- Generated planning data: `assets/data/esco-uk-guide-prices.json`.
-- Existing checkout gates remain `checkoutEnabled:false`, `paymentCollectionEnabled:false`, `requestQuoteOnly:true` and per-reference `checkoutEligible:false`.
+- Public catalogue generator: `scripts/esco-merchandising.mjs`.
+- Public catalogue presentation: `scripts/apply-esco-catalogue.mjs`.
+- Regression tests: `scripts/test-esco-catalogue.mjs` and `scripts/test-esco-merchant-release-matrix.mjs`.
+- Public guide: `assets/data/esco-uk-guide-prices.json`, containing only approved display fields.
+- Payment remains quotation-first with checkout authorization established **only by protected backend policy**.
 
-The owner-authorised stock declaration is recorded, but none of the 373 items has been independently qualified by this change for immediate payment or shipment.
+**Confidentiality note:** This replaces sensitive assumptions in the current documentation but does not remove their historical Git commit copies. Any decision to rewrite public Git history or migrate retained business records to a private repository or approved document store requires a separate owner-reviewed procedure.

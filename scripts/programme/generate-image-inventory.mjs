@@ -333,6 +333,159 @@ for (const file of mediaFiles.filter((value) => value.startsWith("creative-asset
   });
 }
 
+// Canonical three-brand source rights and SHA evidence: never infer provenance
+// from a filename, colour, matching perceptual image, or a declared renderer.
+// The canonical current web canvas is Pure White #FFFFFF, while previously
+// generated raster evidence remains historical (mineral-white #FBFAEF).
+// Do not relabel historical bytes or waive per-asset SHA checks.
+// The parent source registry records exact owner-supplied vector bytes; raster
+// candidates are admitted only when their current physical SHA matches the
+// signed-off generated-derivative register. No public release is implied.
+const officialBrand = await json("config/brand-identities.json");
+const brandRasterEvidence = await json("audit/generated/three-brand-raster-provenance.json");
+if (officialBrand.approvedOn !== "2026-11-22" ||
+    officialBrand.neutralPalette?.primaryWhite?.hex !== "#FFFFFF" ||
+    brandRasterEvidence.sourceDate !== "2026-11-22" ||
+    brandRasterEvidence.method !== "SVG source master rasterized by sharp" ||
+    brandRasterEvidence.lightSocialBackground !== "#FBFAEF" ||
+    !Array.isArray(brandRasterEvidence.files) ||
+    brandRasterEvidence.files.length !== 31 ||
+    brandRasterEvidence.count !== 44) {
+  throw new Error("Official three-brand provenance contract changed without review");
+}
+const officialBrandVariants = {
+  "assets/brand/novapharm-healthcare-logo-reverse.svg": "2aa3e14774fed64bd9454ed52ec3ca24a5dfa3b7477689093284c71eeebdf6f2",
+  "assets/brand/novapharm-healthcare-logo-monochrome.svg": "598b755d89d0db65ed9929a260d829aebaa68c476cd4e51a33f0b3a8b8d68d0f",
+  "assets/brand/novapharm-distribution-logo-reverse.svg": "ad4836f70ff23b66d5f213ed5188862628c41c918c451d7f709ab1baa1c2c036",
+  "assets/brand/novapharm-distribution-logo-monochrome.svg": "85e296f76cb1534112c34ad04ee97f4a93c5a034f40239ea57499795dd66f2e1",
+  "assets/brand/novapharm-intelligence-logo-reverse.svg": "0fc0272d8ab5c441193959f4afa3bac7939a5ca02ab706d5fb67c78cd6c62e1f",
+  "assets/brand/novapharm-intelligence-logo-monochrome.svg": "9a408c1b98e91035b01fb6ef4e01a893047e26252443c946ba7d22538eaa805e"
+};
+const vectorEvidence = new Map(Object.entries(officialBrandVariants));
+for (const brand of Object.values(officialBrand.brands)) {
+  vectorEvidence.set(normaliseAssetPath(brand.primaryVector), brand.primaryVectorZipSha256);
+  vectorEvidence.set(normaliseAssetPath(brand.favicon), brand.browserIconZipSha256);
+}
+const officialMedia = new Set(mediaFiles);
+for (const [assetPath, expectedSha] of vectorEvidence) {
+  if (!officialMedia.has(assetPath)) throw new Error("Approved official brand vector missing: " + assetPath);
+  const actualSha = createHash("sha256").update(await readFile(path.join(root, assetPath))).digest("hex");
+  if (actualSha !== expectedSha) throw new Error("Official brand vector provenance digest mismatch: " + assetPath);
+  if (registry.get(assetPath)?.source) continue; // Preserve existing owner provenance.
+  const estate = assetPath.includes("distribution") ? "distribution"
+    : assetPath.includes("intelligence") ? "intelligence" : "healthcare";
+  const brand = officialBrand.brands[estate];
+  addRegistryRecord(registry, assetPath, {
+    id: "three-brand-owner-vector:" + assetPath,
+    source: "Owner-supplied " + brand.officialName + " approved SVG master/variant, exact SHA-256 " + expectedSha,
+    licence: "Owner-authorised NovaPharm identity use; owner archive and source rights remain governed",
+    semanticPurpose: "Official " + brand.officialName + " vector identity; not a third-party or clinical asset",
+    pageUsage: [],
+    reviewStatus: "owner-approved-byte-exact-vector-source",
+    technicalStatus: "verified-svg-source-digest",
+    provenanceRecord: "config/brand-identities.json; scripts/test-official-brand-triad.mjs"
+  });
+}
+const rasterPaths = new Set();
+for (const item of brandRasterEvidence.files) {
+  const assetPath = item.path;
+  const approvedRasterPath = typeof assetPath === "string" &&
+    assetPath.startsWith("assets/brand/") &&
+    !assetPath.slice("assets/brand/".length).includes("/") &&
+    [".png", ".jpg", ".jpeg", ".ico"].some((extension) => assetPath.endsWith(extension));
+  // Browser ICO files are SHA-verified against this owner-approved manifest,
+  // but the current physical image inventory deliberately covers SVG, PNG,
+  // JPEG, WebP, AVIF, EPS and PDF rather than ICO.
+  const inventoriedRaster = !assetPath.endsWith(".ico");
+  if (rasterPaths.has(assetPath) || !approvedRasterPath ||
+      (inventoriedRaster && !officialMedia.has(assetPath)) ||
+      !/^[a-f0-9]{64}$/u.test(item.sha256) ||
+      !Number.isInteger(item.bytes) || item.bytes <= 0) {
+    throw new Error("Invalid or missing three-brand physical derivative: " + String(assetPath));
+  }
+  rasterPaths.add(assetPath);
+  const bytes = await readFile(path.join(root, assetPath));
+  if (bytes.length !== item.bytes ||
+      createHash("sha256").update(bytes).digest("hex") !== item.sha256) {
+    throw new Error("Three-brand derivative does not match registered bytes: " + assetPath);
+  }
+  if (!inventoriedRaster) continue; // Validate ICO bytes, but do not invent an inventory record.
+  if (registry.get(assetPath)?.source) continue; // Preserve established source record.
+  const estate = assetPath.includes("distribution") ? "distribution"
+    : assetPath.includes("intelligence") ? "intelligence" : "healthcare";
+  const brand = officialBrand.brands[estate];
+  addRegistryRecord(registry, assetPath, {
+    id: "three-brand-derived:" + assetPath,
+    source: "SHA-verified SVG-derived asset generated by scripts/programme/rebuild-three-brand-derivatives.mjs from owner-approved " + brand.officialName + " source",
+    licence: "Owner-authorised NovaPharm identity use; generated derivative, NOT identical to original ZIP raster",
+    semanticPurpose: "Source-derived " + brand.officialName + " browser, PWA, favicon or social artwork",
+    pageUsage: [],
+    reviewStatus: "registered-generated-asset-awaiting-rendered-release-acceptance",
+    technicalStatus: "source-linked-derived-raster-with-verified-sha256",
+    provenanceRecord: "audit/generated/three-brand-raster-provenance.json#" + assetPath
+  });
+}
+
+// Native release candidates are not public or signed binaries. Register each
+// iOS/Android icon as a governed physical asset only after checking the exact
+// owner-approved Intelligence SVG and its SHA-256 generated-output manifest.
+// No filename-only, similarity-only, or inferred source-rights admissions.
+// Native raster assets were approved under the older mineral-white canvas.
+// Preserve their byte-verified provenance until an independent regeneration.
+const nativeIconEvidence = await json("audit/generated/native-intelligence-icon-provenance.json");
+const nativeIconPaths = new Set([
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-1024x1024.png",
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-dark-1024x1024.png",
+  "native/novapharm-intelligence-ios/App/Assets.xcassets/AppIcon.appiconset/AppIcon-tinted-1024x1024.png",
+  ...["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"].flatMap((density) => [
+    `native/novapharm-intelligence-android/app/src/main/res/mipmap-${density}/ic_launcher.png`,
+    `native/novapharm-intelligence-android/app/src/main/res/mipmap-${density}/ic_launcher_round.png`
+  ]),
+  "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png",
+  "native/novapharm-intelligence-android/app/src/main/res/drawable-nodpi/ic_launcher_monochrome.png"
+]);
+if (nativeIconEvidence.schemaVersion !== 1 ||
+    nativeIconEvidence.brand !== officialBrand.brands.intelligence.officialName ||
+    nativeIconEvidence.source !== normaliseAssetPath(officialBrand.brands.intelligence.favicon) ||
+    nativeIconEvidence.sourceSha256 !== officialBrand.brands.intelligence.browserIconZipSha256 ||
+    nativeIconEvidence.color !== officialBrand.brands.intelligence.hex ||
+    nativeIconEvidence.lightInk !== officialBrand.neutralPalette.defaultInk.hex ||
+    nativeIconEvidence.lightBackground !== "#FBFAEF" ||
+    nativeIconEvidence.status !== "unsigned-source-assets-only" ||
+    !Array.isArray(nativeIconEvidence.outputs) ||
+    nativeIconEvidence.outputs.length !== nativeIconPaths.size ||
+    nativeIconPaths.size !== 15) {
+  throw new Error("Native Intelligence source/provenance contract changed without review");
+}
+const seenNativeIcons = new Set();
+for (const asset of nativeIconEvidence.outputs) {
+  const assetPath = asset.filename;
+  if (!nativeIconPaths.has(assetPath) || seenNativeIcons.has(assetPath) ||
+      !officialMedia.has(assetPath) || !/^[a-f0-9]{64}$/u.test(asset.sha256) ||
+      !Number.isInteger(asset.bytes) || asset.bytes <= 0) {
+    throw new Error("Unapproved or missing Intelligence native icon: " + String(assetPath));
+  }
+  seenNativeIcons.add(assetPath);
+  const bytes = await readFile(path.join(root, assetPath));
+  if (bytes.length !== asset.bytes ||
+      createHash("sha256").update(bytes).digest("hex") !== asset.sha256) {
+    throw new Error("Native icon bytes do not match source-derived manifest: " + assetPath);
+  }
+  addRegistryRecord(registry, assetPath, {
+    id: "intelligence-native-source-derived:" + assetPath,
+    source: "SHA-256 verified derivative of owner-approved NovaPharm Intelligence SVG (not an app-store receipt)",
+    licence: "Owner-authorised NovaPharm Intelligence identity artwork; unsigned prototype only",
+    semanticPurpose: "Governed native launch icon candidate for iOS/Android",
+    pageUsage: [],
+    reviewStatus: "source-verified-unsigned-native-candidate-awaiting-device-and-release-acceptance",
+    technicalStatus: "byte-exact-native-icon-manifest-validation",
+    provenanceRecord: "audit/generated/native-intelligence-icon-provenance.json#" + assetPath
+  });
+}
+if (seenNativeIcons.size !== nativeIconPaths.size) {
+  throw new Error("Native Intelligence icon provenance set is incomplete");
+}
+
 for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/oncology/") && value.endsWith(".svg"))) {
   const canonical = canonicalDeliveryPath(file);
   addRegistryRecord(registry, canonical, {
@@ -345,6 +498,42 @@ for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/o
     technicalStatus: "script-free-vector-delivery",
     provenanceRecord: "docs/oncology-corrective-media-register.md"
   });
+}
+
+// Each Connective owner-authorised pack photograph has exact source SHA256
+// provenance. This is photo ownership and identity evidence, not a label or
+// regulated-product retail approval.
+if (existsSync(path.join(root, "docs/retail/connective-395-owner-photo-candidates.json"))) {
+  const photos = await json("docs/retail/connective-395-owner-photo-candidates.json");
+  if (photos.schema !== "novapharm-connective-owner-photos-v1" ||
+      photos.originalImagesVerified !== 802 || photos.localImagesPrepared !== 395 ||
+      !Array.isArray(photos.products) || photos.products.length !== 395 ||
+      photos.paymentOffersAdmitted !== 0) {
+    throw new Error("Unexpected Connective photograph provenance contract");
+  }
+  const seen = new Set();
+  for (const record of photos.products) {
+    if (!/^\d{13}$/.test(record.gtin) || seen.has(record.gtin) ||
+        record.localImage !== "/assets/media/products/connective/"+record.gtin+"/front-800.webp" ||
+        !/^[a-f0-9]{64}$/.test(record.sha256) ||
+        record.ownerPhotoUsageAuthorised !== true || record.visuallyCurrentPackVerified !== false ||
+        record.mandatoryLabelConfirmed !== false || record.paidCheckoutApproved !== false) {
+      throw new Error("Unverified or malformed Connective image source");
+    }
+    seen.add(record.gtin);
+    addRegistryRecord(registry, record.localImage, {
+      id: "connective-owner-photo:"+record.gtin,
+      source: "Checksum-verified archived supplier/manufacturer candidate image: "+record.originalSource+
+        " (original SHA256 "+record.originalSha256+")",
+      licence: "NovaPharm owner-authorised use of product photograph; third-party rights not independently validated",
+      altText: "Supplier original photograph of "+record.gtin+" candidate pack",
+      semanticPurpose: "Authentic manufacturer/supplier product-photo candidate for matching GTIN",
+      pageUsage: [],
+      reviewStatus: "owner-authorised-image; exact current UK packaging and full label pending",
+      technicalStatus: "sha256-verified-original-derived-webp",
+      provenanceRecord: "docs/retail/connective-395-owner-photo-candidates.json#"+record.gtin
+    });
+  }
 }
 
 const routeByAssetId = new Map();
@@ -556,6 +745,9 @@ if (process.argv.includes("--check")) {
         if (diagnostics >= 24) break;
       }
       if (!diagnostics) {
+        console.error("Media inventory diagnostic: stored summary=", JSON.stringify(currentReport.summary), "generated summary=", JSON.stringify(report.summary));
+        console.error("Media inventory diagnostic: stored assets=", currentReport.assets?.length, "generated assets=", report.assets.length);
+        console.error("Media inventory diagnostic: first divergent ordering index=", report.assets.findIndex((asset, index) => asset.path !== currentReport.assets?.[index]?.path));
         console.error("Media inventory report summary, structure, or asset ordering differs from regenerated source");
       }
       console.error("Image inventory authoritative fields are stale. Run npm run images:inventory and review the resulting provenance gaps.");

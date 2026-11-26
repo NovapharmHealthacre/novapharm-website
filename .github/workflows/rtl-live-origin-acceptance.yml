@@ -1,12 +1,6 @@
 name: RTL live public layout-preview proof
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - scripts/verify-live-rtl-origin.mjs
-      - scripts/test-live-rtl-origin.mjs
-      - .github/workflows/rtl-live-origin-acceptance.yml
   pull_request:
     paths:
       - scripts/verify-live-rtl-origin.mjs
@@ -21,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: novapharm-rtl-public-live-proof
@@ -40,8 +35,35 @@ jobs:
           node-version: 24
       - name: Require isolated fail-closed public acceptance fixtures
         run: node --test scripts/test-live-rtl-origin.mjs
+  confirm-contact-deployment:
+    # A successful workflow_run can be a scope-only no-op; inspect actual release jobs.
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      published: ${{ steps.receipt.outputs.published }}
+    steps:
+      - name: Require both AWS Contact build and production deploy receipts
+        id: receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipts="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN/jobs?per_page=100")"
+          if printf '%s' "$receipts" | jq -e '([.jobs[] | select(.name == "build-and-verify" and .conclusion == "success")] | length) == 1 and ([.jobs[] | select(.name == "deploy" and .conclusion == "success")] | length) == 1' > /dev/null; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "Actual Contact publication completed. Independent RTL proof is required."
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "No successful Contact build+deploy receipt; RTL production proof is not triggered."
+          fi
+
   verify-public:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    needs: confirm-contact-deployment
+    # Manual proof is intentional; only a real Contact deploy triggers automatic proof.
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || needs.confirm-contact-deployment.outputs.published == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

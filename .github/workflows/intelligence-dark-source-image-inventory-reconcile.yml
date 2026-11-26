@@ -1,0 +1,68 @@
+name: Reconcile approved Intelligence dark WebP source inventory (isolated draft)
+on:
+  push:
+    branches:
+      - fix/intelligence-dark-4096w-approved-source-20261123
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: intelligence-dark-source-inventory-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  reconcile-source:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/fix/intelligence-dark-4096w-approved-source-20261123' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact source-only PR branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: fix/intelligence-dark-4096w-approved-source-20261123
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Reject stale runs and unapproved branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/fix/intelligence-dark-4096w-approved-source-20261123'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/fix/intelligence-dark-4096w-approved-source-20261123 | cut -f1)" = "$GITHUB_SHA"
+      - name: Set up pinned Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Validate approved source and regenerate canonical media evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test scripts/test-intelligence-dark-source-repair.mjs
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          changed="$(git diff --name-only)"
+          if [ -n "$changed" ]; then
+            test "$changed" = 'audit/generated/image-inventory.json'
+          fi
+      - name: Commit only generated image inventory to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/fix/intelligence-dark-4096w-approved-source-20261123'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/fix/intelligence-dark-4096w-approved-source-20261123 | cut -f1)" = "$GITHUB_SHA"
+          git add -- audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo 'Already reconciled; no generated evidence change.'
+            exit 0
+          fi
+          test "$(git diff --cached --name-only)" = 'audit/generated/image-inventory.json'
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(evidence): reconcile Intelligence approved dark source inventory'
+          git push origin HEAD:refs/heads/fix/intelligence-dark-4096w-approved-source-20261123

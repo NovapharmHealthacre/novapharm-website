@@ -14,6 +14,8 @@ on:
       - 'assets/js/**'
       - 'packages/design-system/**'
       - 'docs/design/apple-hig-172-topic-acceptance-register.json'
+      - 'docs/design/apple-hig-na-disposition-review-packet-20261120.md'
+      - 'scripts/test-hig-na-disposition-review-packet.mjs'
       - 'docs/design/apple-hig-attachment-evidence-20261118.json'
       - 'docs/design/apple-hig-source-and-attachment-audit-20261118.md'
       - 'scripts/test-apple-hig-attachment-audit.mjs'
@@ -22,6 +24,7 @@ on:
       - 'native/novapharm-intelligence-mobile/MultimodalReviewScreen.tsx'
       - 'scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs'
       - 'scripts/test-hig-independent-review-authenticity.mjs'
+      - 'scripts/test-portal-keyboard-bypass.mjs'
       - '.github/workflows/apple-hig-cross-platform-detail.yml'
   workflow_dispatch:
     inputs:
@@ -50,10 +53,14 @@ jobs:
           node-version: 24
       - run: node --check scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
       - run: node --test scripts/test-apple-hig-full-catalogue-and-cross-platform.mjs
+      - name: Verify Portal keyboard bypass source and browser regression contracts
+        run: node --test scripts/test-portal-keyboard-bypass.mjs
       - name: Independently verify any claimed GitHub HIG approvals
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node --test scripts/test-hig-independent-review-authenticity.mjs
+      - name: Check all 28 proposed N/A rationales and pending dispositions
+        run: node --test scripts/test-hig-na-disposition-review-packet.mjs
       - name: Check native iOS/Android readable controls and consent state
         run: node --test native/novapharm-intelligence-mobile/tests/hig-native-readable-controls.test.mjs
       - run: node --check scripts/test-apple-hig-attachment-audit.mjs

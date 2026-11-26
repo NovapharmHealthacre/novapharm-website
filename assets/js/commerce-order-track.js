@@ -18,12 +18,30 @@
     CHECKOUT_OPEN:"Awaiting payment confirmation",
     PAID:"Payment confirmed",
     PAYMENT_FAILED:"Payment not completed",
+    CHECKOUT_EXPIRED:"Checkout expired — payment not confirmed",
     RECEIVED_AWAITING_CONFIRMATION:"Order request received, awaiting confirmation",
     AWAITING_CUSTOMER_ACCEPTANCE:"Awaiting your acceptance",
     ACCEPTED_AWAITING_PAYMENT:"Order accepted, awaiting payment",
     CANCELLED:"Order request cancelled"
   };
+  // Explain the next safe action using only the returned state. Do not infer dispatch or initiate payment.
+  const nextSteps=Object.freeze({
+    AWAITING_STRIPE:"Wait for payment confirmation before attempting another payment.",
+    PROCESSING:"Check again later. If you need assistance, contact customer support.",
+    OPENING_CHECKOUT:"Wait for the original checkout to open. Contact support if it does not.",
+    APPROVED_FOR_PAYMENT:"Use the original approved payment instructions. Contact support if you cannot find them.",
+    CHECKOUT_OPEN:"Check your original checkout or confirmation before paying again.",
+    PAID:"Payment is confirmed, not dispatch. Check any shipping confirmation you receive for delivery information.",
+    PAYMENT_FAILED:"Check whether your bank has charged you before retrying. Contact support if you are unsure.",
+    CHECKOUT_EXPIRED:"Contact support if you need a new payment link. Do not assume an order was accepted.",
+    RECEIVED_AWAITING_CONFIRMATION:"Keep your reference. NovaPharm must confirm the request before it becomes an accepted order.",
+    AWAITING_CUSTOMER_ACCEPTANCE:"Review the offer provided by NovaPharm. Contact support if you need help locating it.",
+    ACCEPTED_AWAITING_PAYMENT:"Follow the verified payment instructions supplied with your accepted order.",
+    CANCELLED:"Contact support if you believe this cancellation was unexpected."
+  });
+  const next=root.querySelector("[data-np-order-next]");
   function show(message,kind){
+    if(next){next.hidden=true;next.textContent="";}
     status.hidden=false;status.textContent=message;
     status.dataset.state=kind||"info";
   }
@@ -47,9 +65,10 @@
       if(!data||data.orderId!==ref||typeof data.status!=="string"||!Object.hasOwn(labels,data.status))
         throw new Error("unrecognized_response");
       const result=labels[data.status];
-      show(result+(data.status==="PAID"?". Shipment and delivery tracking are separate from payment confirmation.":"."),"success");
+      show(result+".","success");
+      if(next && Object.hasOwn(nextSteps,data.status)){next.textContent=nextSteps[data.status];next.hidden=false;}
     } catch(e) {
-      show("The order-status service is unavailable. Your order has not been changed; please try the existing Nutraxin or ESCO order page.","error");
+      show("We could not check your order right now. Your order has not been changed. Try again or contact customer support using the link below.","error");
     } finally{button.disabled=false;}
   });
 })();

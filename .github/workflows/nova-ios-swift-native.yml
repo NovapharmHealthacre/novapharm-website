@@ -24,6 +24,36 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2 # include PR merge parents for exact PR-head ancestry verification
+      - name: Record tested commit and pull-request-head provenance
+        env:
+          NOVAPHARM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          checkout_sha="$(git rev-parse HEAD)"
+          test "$checkout_sha" = "$GITHUB_SHA"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            # PR Actions check out an auto-merge commit. Its second parent SHA
+            # identifies the exact tested PR head even in a shallow clone.
+            parent_shas="$(git show -s --format=%P HEAD)"
+            set -- $parent_shas
+            if [ "$#" -ne 2 ] || [ "$2" != "$NOVAPHARM_PR_HEAD_SHA" ]; then
+              echo "::error::Tested PR merge head differs from the event head"
+              exit 1
+            fi
+          else
+            test "$checkout_sha" = "$NOVAPHARM_PR_HEAD_SHA"
+          fi
+          {
+            printf 'repository=%s\n' "$GITHUB_REPOSITORY"
+            printf 'event=%s\n' "$GITHUB_EVENT_NAME"
+            printf 'pr_head_sha=%s\n' "$NOVAPHARM_PR_HEAD_SHA"
+            printf 'tested_checkout_sha=%s\n' "$checkout_sha"
+            printf 'tested_tree_sha=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'release_signoff=not_granted\n'
+            printf 'artifact_class=unsigned-ios-simulator-only\n'
+          } > "$RUNNER_TEMP/novapharm-ios-test-provenance.txt"
       - name: Verify catalogue parity and fail-closed production controls
         run: node --test scripts/test-novapharm-native-ios-source-parity.mjs
       - name: Record toolchain
@@ -79,21 +109,52 @@ jobs:
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-light.png"
           test -s "$RUNNER_TEMP/novapharm-ios-simulator-dark.png"
           xcrun simctl terminate "$device" com.example.NovaPharmNativePreview || true
+      - name: Run native UI navigation, country and SwiftData persistence tests on iPhone Simulator
+        run: |
+          set -euo pipefail
+          device="$(sed -n 's/^Simulator UDID: //p' "$RUNNER_TEMP/novapharm-ios-simulator-device.txt")"
+          test -n "$device"
+          cd native/novapharm-intelligence-ios
+          xcodebuild test \
+            -project NovaPharmNative.xcodeproj \
+            -scheme NovaPharmNative \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$device" \
+            -derivedDataPath "$RUNNER_TEMP/novapharm-swift-derived" \
+            -resultBundlePath "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
+            -parallel-testing-enabled NO \
+            -only-testing:NovaPharmNativeUITests \
+            CODE_SIGNING_ALLOWED=NO
+          xcrun xcresulttool get test-results summary \
+            --path "$RUNNER_TEMP/NovaPharmNative-UITests.xcresult" \
+            --format json > "$RUNNER_TEMP/novapharm-native-uitest-summary.json"
+      - name: Upload native UI test evidence if repository is private
+        if: ${{ always() && github.event.repository.private }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-swift-native-uitest-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/NovaPharmNative-UITests.xcresult
+            ${{ runner.temp }}/novapharm-native-uitest-summary.json
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload non-distributable iOS Simulator artifact in private repositories only
         if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: novapharm-swift-ios-simulator-${{ github.sha }}
+          name: novapharm-swift-ios-simulator-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.zip
             ${{ runner.temp }}/NovaPharmNative-iOS-Simulator.sha256
+            ${{ runner.temp }}/novapharm-ios-test-provenance.txt
             ${{ runner.temp }}/novapharm-ios-simulator-device.txt
             ${{ runner.temp }}/novapharm-ios-launch-receipt.txt
             ${{ runner.temp }}/novapharm-ios-simulator-light.png
             ${{ runner.temp }}/novapharm-ios-simulator-dark.png
           if-no-files-found: error
           retention-days: 7
-      - name: Explain private-artifact suppression in public repositories
+      - name: Protect private app previews in a public repository
         if: ${{ !github.event.repository.private }}
         run: |
-          echo "::notice::Public repository: non-distributable iOS Simulator binary, screenshots and launch receipts were not uploaded. CI build/launch results remain recorded in logs."
+          echo "::notice::Public repository: Simulator app, UI screenshots and xcresult artifact uploads suppressed. Use approved private QA storage."

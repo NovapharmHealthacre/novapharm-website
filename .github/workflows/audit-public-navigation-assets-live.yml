@@ -1,0 +1,45 @@
+name: Audit live NovaPharm navigation and referenced assets
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit-public-navigation-assets-live.mjs
+      - .github/workflows/audit-public-navigation-assets-live.yml
+  workflow_dispatch:
+  # Read-only rollback checks after successful GitHub Pages publications.
+  deployment_status:
+  # Fallback for GitHub's branch-published Pages workflow, which may not emit
+  # a deployment_status event to this repository's Actions workflows.
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  check-live-links-assets:
+    if: ${{ (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check public navigation, image, CSS and JS targets without user transactions
+        run: node scripts/audit-public-navigation-assets-live.mjs
+      - name: Preserve sanitized link and asset audit
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-live-navigation-assets
+          path: artifacts/site-restoration/live-navigation-assets.json
+          retention-days: 14
+          if-no-files-found: warn

@@ -10,7 +10,7 @@
 | [SwiftUI](https://developer.apple.com/documentation/swiftui) | `App/NovaRootView.swift`: native `TabView`, `NavigationStack`, search, grouped lists, detail navigation, adaptive system typography/colors, native buttons |
 | [SwiftData](https://developer.apple.com/documentation/SwiftData) | `@Model OfflineBookmark` stores only non-sensitive module identifiers as local navigation preferences; `@Query` reads bookmarks; **no patient, medicine, invoice, order, employee, secret, token or tenant data caching; no CloudKit entitlement** |
 | [Swift Testing](https://developer.apple.com/documentation/Testing) | `CoreTests/NovaNativeCatalogTests.swift` checks counts, identities, source-only status and fail-closed per-module release policy; `swift test` for core |
-| [Swift Charts](https://developer.apple.com/documentation/Charts) | Native `Chart` shows **documented module counts** (22 / 10 / 9) only, explicitly not operational KPIs, with `LabeledContent` text alternatives |
+| [Swift Charts](https://developer.apple.com/documentation/Charts) | Native `Chart` shows **documented module counts** (currently 22 / 10 / 9), not operational KPIs. Its VoiceOver summary derives from the same `NovaCatalog` values as the bars and `LabeledContent` alternatives, and its height scales with Dynamic Type. An XCTest UI journey verifies the chart is discoverable and its spoken values match the offline source. These are Simulator checks, not physical-device VoiceOver certification. |
 | [Swift Resources](https://developer.apple.com/swift/resources/) | Xcode / iOS Simulator are the build and verification tools; Swift documentation, Swift open source, debugging and device testing |
 | [Swift Playgrounds](https://developer.apple.com/documentation/swift-playgrounds) | Valid prototyping/learning environment but **not** an app store distribution receipt or proof of iOS signing |
 
@@ -48,7 +48,7 @@ The 22 Intelligence slugs and titles match `apps/portal/data/intelligence-worksp
 
 The existing native Swift package `native/novapharm-intelligence-apple` is preserved separately. It contains early **Core ML, Create ML, Foundation Models, Vision, Natural Language, Speech, App Intents, MapKit, sparse-circuit, alignment, CLIP and compute admission** candidates; the distinct `native/novapharm-intelligence-storekit` includes a **read-only StoreKit** research component. **None is linked into this new iOS host**, and their source tests do not authorize model execution, camera/microphone use, source licensing, subscriptions or deployment. Integrate only after approved native app identity, purpose, input/data rights, suitable device verification and independently signed-off behavior.
 
-The previous Apple HIG programme is tracked in `docs/design/apple-hig-172-topic-acceptance-register.json`. Prior supplied Apple design DNA requires NovaPharm identity, white/graphite-first semantic interface, restrained red `#E3120B`, legally permitted system typography, readable controls, safe-area/adaptive layouts, Dynamic Type, accessibility, RTL, motion/transparency fallback and real implementation evidence. This prototype uses native controls and no copied Apple artwork or font binaries. **VoiceOver, keyboard, high contrast, 200% Dynamic Type, dark mode, RTL, device orientation, physical iPhone and independent tests are still pending.** No claim of 172 HIG topic production acceptance is implied.
+The previous Apple HIG programme is tracked in `docs/design/apple-hig-172-topic-acceptance-register.json`. Prior supplied Apple design DNA requires NovaPharm identity, white/graphite-first semantic interface, Regal Ultramarine `#2546D8`, legally permitted system typography, readable controls, safe-area/adaptive layouts, Dynamic Type, accessibility, RTL, motion/transparency fallback and real implementation evidence. This prototype uses native controls and no copied Apple artwork or font binaries. **VoiceOver, keyboard, high contrast, 200% Dynamic Type, dark mode, RTL, device orientation, physical iPhone and independent tests are still pending.** No claim of 172 HIG topic production acceptance is implied.
 
 ## Deliberate operational denial
 
@@ -56,6 +56,20 @@ The previous Apple HIG programme is tracked in `docs/design/apple-hig-172-topic-
 - No payments, App Store products, notifications, background processing, camera, microphone, location or external service integrations.
 - Owner production constraints remain `productionSignoff: not_granted` and incremental infrastructure budget **£0**.
 - Before live functionality: design and implement a dedicated Cognito public mobile client with system-browser Authorization Code + PKCE, MFA, session revocation, Keychain for permitted tokens, authenticated API Gateway, server-enforced tenant/data rights and independent privacy/security/device tests.
+
+## Native XCUITest interaction validation
+
+The Swift iOS app now defines a native `NovaPharmNativeUITests` XCTest UI-testing bundle alongside the existing Swift Testing unit suite. It is configured in `project.yml`, generated by XcodeGen and invoked on an iPhone Simulator by `.github/workflows/nova-ios-swift-native.yml`. The test evidence is uploaded as a separate Xcode `.xcresult` artifact.
+
+Four interaction journeys are specified and must pass in the exact-head Simulator workflow:
+1. **Native navigation and protected-workspace denial:** all four tabs exist; Portal Dashboard and Distribution Inventory screens can be opened; protected actions remain unavailable.
+2. **Offline country directory:** reach the native directory and an individual country; verify explicit research-only/source-rights disclosures.
+3. **Country research/source separation:** switch the native segmented filter between geography-only research (Botswana) and publisher-reference candidates (Algeria), ensure excluded countries do not appear, and confirm source licences are still unreviewed and customer publication disabled.
+4. **SwiftData lifecycle:** save a non-sensitive module shortcut, restart the application process, confirm the shortcut persists locally, then remove it.
+
+The tests use stable `accessibilityIdentifier` values and system accessibility elements. SwiftData shortcuts call `modelContext.save()` explicitly; a failed local save gives a non-sensitive user-facing error rather than a false success. This check neither stores customer content nor activates any protected API. It is **not a replacement** for independent VoiceOver, text-scaling, RTL, orientation, device-loss and real-iPhone review.
+
+**Acceptance discipline:** successful source checks, installation and screenshots are not enough to mark interaction journeys passed. Only count them if the corresponding `xcodebuild test` stage completes successfully and its `.xcresult` confirms the tests. A blocked macOS runner or failing UI selector is an actionable failure, not a production-verification receipt.
 
 ## Next engineering gates
 

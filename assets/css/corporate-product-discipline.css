@@ -1,14 +1,14 @@
 :root {
   --corporate-product-discipline-contract: 1;
-  --npd-red: #e3120b;
-  --npd-red-dark: #b30e09;
-  --npd-ink: #111111;
-  --npd-text: #3f454b;
+  --npd-red: #9D1B32;
+  --npd-red-dark: #68101F;
+  --npd-ink: #0B0B0E;
+  --npd-text: #0B0B0E;
   --npd-muted: #626970;
-  --npd-line: #d7dadd;
-  --npd-line-strong: #aeb3b8;
-  --npd-soft: #f5f6f7;
-  --npd-white: #ffffff;
+  --npd-line: #DEDCD5;
+  --npd-line-strong: #86868B;
+  --npd-soft: #F8F7F3;
+  --npd-white: #FFFFFF;
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --npd-compact: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Arial Narrow", Arial, sans-serif);
   --npd-mono: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
@@ -2285,7 +2285,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 540;
   }
   .npd-global-nav.site-nav > a:hover,
-  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #b30e09; }
+  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #68101F; }
   .npd-global-nav.site-nav > a[aria-current="page"]::after { height: 0; }
   .npd-mega {
     position: absolute;
@@ -2321,7 +2321,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column a {
     display: block;
     width: fit-content;
-    color: #1d1d1f;
+    color: #0B0B0E;
     font-size: 14px;
     line-height: 1.4;
     font-weight: 540;
@@ -2333,7 +2333,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-weight: 620;
   }
   .npd-mega-column a:hover,
-  .npd-mega-column a:focus-visible { color: #bd100b; }
+  .npd-mega-column a:focus-visible { color: #68101F; }
 }
 @media (max-width: 1180px) {
   .npd-header .npd-mega { display: none !important; }
@@ -2342,7 +2342,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-global-nav.site-nav > a { transition: none; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .npd-header .npd-mega { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .npd-header .npd-mega { background: var(--npd-soft); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media print { .npd-mega { display: none !important; } }
 
@@ -2371,15 +2371,15 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding:0 15px;
   border:1px solid #d6d6db;
   border-radius:999px;
-  background:#fff;
-  color:#1d1d1f;
+  background:var(--npd-soft);
+  color:#0B0B0E;
   font-weight:610;
 }
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
 .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:focus-visible {
-  background:#f5f5f7;
+  background:#F8F7F3;
   border-color:#99999f;
-  color:#111113;
+  color:#0B0B0E;
 }
 @media (max-width:1050px) {
   .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
@@ -2405,7 +2405,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   border: 0;
   border-bottom: 1px solid #dfe1e5;
   border-radius: 0;
-  background: #f5f5f7;
+  background: #F8F7F3;
   box-shadow: none;
 }
 .cookie-banner-inner {
@@ -2499,7 +2499,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 
 /* Public account pathway — optional HIG-aligned explanation, never a login gate. */
-.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:var(--npd-soft);color:#0B0B0E}
 .npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
 .npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
 .npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
@@ -2525,7 +2525,7 @@ body[data-page="legal/privacy"] .page-hero h1 {
   max-width: 900px;
 }
 body[data-page="legal/privacy"] .page-hero p { max-width: 64ch; line-height: 1.6; }
-body[data-page="legal/privacy"] .legal-section { background: #ffffff; }
+body[data-page="legal/privacy"] .legal-section { background: #FFFFFF; }
 body[data-page="legal/privacy"] .legal-layout {
   gap: clamp(26px, 5vw, 74px);
   grid-template-columns: minmax(210px, 0.32fr) minmax(0, 1fr);
@@ -2683,4 +2683,36 @@ body[data-page="legal/privacy"] .legal-content > section:not(.np-privacy-overvie
   body[data-page="legal/privacy"] .np-privacy-overview,
   body[data-page="legal/privacy"] .np-privacy-primary-action { border: 1px solid CanvasText; }
   body[data-page="legal/privacy"] .np-privacy-primary-action { background: ButtonFace; color: ButtonText; }
+}
+
+
+/* Supplement comparison collections use product media, not numbered ledger rows. */
+.npd-portfolio-list.npd-nutraxin-category-list article {
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  align-items: center;
+}
+.npd-nutraxin-category-list article > div {
+  min-width: 0;
+}
+.npd-nutraxin-category-list .npd-product-picture {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+}
+.npd-nutraxin-category-list .npd-product-picture img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 720px) {
+  .npd-portfolio-list.npd-nutraxin-category-list article {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .npd-nutraxin-category-list .npd-product-picture {
+    margin-inline: auto;
+  }
 }

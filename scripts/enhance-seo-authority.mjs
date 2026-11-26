@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { personIdForSlug, personUrlForSlug, VISHAL_PROFILE_ID } from "../src/seo/person-identity.mjs";
 import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
@@ -16,11 +17,32 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const officialNeutrals = JSON.parse(readFileSync(join(root, "config/brand-neutrals.json"), "utf8"));
+if (officialNeutrals.primary !== "#FFFFFF") {
+  throw new Error("Canonical public HTML generator requires approved Pure White");
+}
+
+// Canonical pages are sourced from both fresh templates and older product HTML.
+// Normalise only the browser theme tag; never rewrite inverse text, dark visuals,
+// a product's source data, or protected-route metadata.
+function normalizePublicTheme(html, file) {
+  const headEnd = html.search(/<\/head\s*>/i);
+  if (headEnd < 0) throw new Error("Canonical HTML has no closing head: " + file);
+  const head = html.slice(0, headEnd);
+  const themeTags = [...head.matchAll(/<meta\b[^>]*\bname\s*=\s*["']theme-color["'][^>]*>/gi)];
+  if (themeTags.length > 1) throw new Error("Duplicate canonical browser theme tags: " + file);
+  const replacement = '<meta name="theme-color" content="' + officialNeutrals.primary + '">';
+  if (themeTags.length === 0) {
+    return html.slice(0, headEnd) + replacement + "\n" + html.slice(headEnd);
+  }
+  return html.replace(themeTags[0][0], replacement);
+}
+
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const materialPageReleaseDate = (route) => {
-  if (route === "/about/company/") return "2026-11-20";
-  if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") return "2026-11-20";
-  return ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
+  if (route === "/" || route === "/about/company/") return "2026-11-22";
+  if (route === "/products/nutraxin/" || route.startsWith("/products/nutraxin/")) return "2026-11-25";
+  return ["/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
     ? "2026-11-10" : releaseDate;
 };
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
@@ -97,16 +119,23 @@ function canonicalOrganization() {
       url: company.companiesHouseUrl
     },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
     sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
-    founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
     ],
     knowsAbout: [
+      company.industry,
       "UK pharmaceutical market entry",
       "pharmaceutical sourcing resilience",
       "PLPI strategy",
@@ -138,12 +167,12 @@ function normalizePerson(schema, person) {
   return {
     ...schema,
     "@context": "https://schema.org",
-    "@id": `${canonicalUrl}#person`,
+    "@id": personIdForSlug(person.slug),
     "@type": "Person",
     name: person.displayName,
     alternateName: person.name !== person.displayName ? person.name : undefined,
     jobTitle: person.schemaTitle,
-    url: canonicalUrl,
+    url: personUrlForSlug(person.slug),
     image: person.image ? {
       "@type": "ImageObject",
       url: `${SITE_URL}${person.image}`,
@@ -155,7 +184,7 @@ function normalizePerson(schema, person) {
     affiliation: { "@id": ORGANIZATION_ID },
     sameAs: person.sameAs,
     knowsAbout: person.expertise,
-    mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` }
+    mainEntityOfPage: { "@id": person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_ID : `${canonicalUrl}#webpage` }
   };
 }
 
@@ -176,7 +205,7 @@ function normalizeArticle(schema, article, canonical, html) {
     description: article.summary,
     url: canonical,
     mainEntityOfPage: { "@id": `${canonical}#webpage` },
-    author: { "@id": `${SITE_URL}/leadership/${author.slug}/#person` },
+    author: { "@id": personIdForSlug(author.slug) },
     publisher: { "@id": ORGANIZATION_ID },
     image: {
       "@type": "ImageObject",
@@ -238,8 +267,8 @@ function enhanceJsonLd(html, route, article, leader) {
           "@type": "ProfilePage",
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
-          about: { "@id": `${canonical}#person` },
-          mainEntity: { "@id": `${canonical}#person` },
+          about: { "@id": personIdForSlug(leader.slug) },
+          mainEntity: { "@id": personIdForSlug(leader.slug) },
           primaryImageOfPage: leader.image ? { "@type": "ImageObject", url: `${SITE_URL}${leader.image}` } : undefined,
           dateModified: releaseDate
         };
@@ -370,6 +399,7 @@ if (existsSync(nutraxinProductDirectory)) {
 // ESCO is generated before SEO enhancement, not stored as a checked-in HTML directory.
 // Its public collection page needs a canonical sitemap URL and consistent metadata.
 publicFiles.push("products/esco/index.html");
+publicFiles.push("our-story/index.html");
 publicFiles.push("account-application/index.html");
 
 const pageRecords = [];
@@ -381,6 +411,7 @@ for (const file of [...new Set(publicFiles)]) {
   const article = route.startsWith("/news-insights/") ? articleBySlug.get(route.split("/")[2]) : null;
   const leader = route.startsWith("/leadership/") ? leaderBySlug.get(route.split("/")[2]) : null;
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
+  html = normalizePublicTheme(html, file);
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
   html = addCompanyIdentityLinks(html, route);

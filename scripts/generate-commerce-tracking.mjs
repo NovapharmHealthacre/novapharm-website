@@ -18,9 +18,11 @@ const content=`<main id="main" class="np-order-track" data-np-order-lookup>
 <form class="np-order-track-form"><label for="np-order-reference">Order reference</label>
 <div class="np-order-track-controls"><input id="np-order-reference" name="order_ref" placeholder="NUT-… or ESCO-…" type="text" autocomplete="off" spellcheck="false" maxlength="52" required>
 <button type="submit">Check status</button></div></form>
-<p class="np-order-track-result" data-np-order-status role="status" aria-live="polite" hidden></p></section>
+<p class="np-order-track-result" data-np-order-status role="status" aria-live="polite" hidden></p>
+<p class="np-order-track-next" data-np-order-next role="status" aria-live="polite" hidden></p>
+<p class="np-order-track-help"><a href="mailto:support@novapharmhealthcare.com">Need help? Contact customer support</a>. Keep your reference private; never send card details or passwords.</p></section>
 <section class="np-order-track-wrap np-order-track-note"><h2>Payment is not delivery.</h2><p>A paid order means payment has been confirmed by the checkout service. Picking, dispatch, carrier tracking and delivery require separate verified events. An ESCO order request does not mean payment has been taken.</p>
-<a href="/products/nutraxin/">Nutraxin collection</a><a href="/products/esco/">ESCO collection</a></section></main>`;
+<a href="/products/nutraxin/account/">Personal Nutraxin account</a><a href="mailto:support@novapharmhealthcare.com">Need help with your order?</a><a href="/products/nutraxin/">Nutraxin collection</a><a href="/products/esco/">ESCO collection</a></section></main>`;
 
 // A derived route must not inherit product-portfolio photography or Products-only
 // JSON-LD/social identity. The Products artwork is approved for that route alone.
@@ -38,6 +40,16 @@ function removeInheritedProductMedia(html) {
 
 let html=template.replace(main[0],content).replace(/<title>[\s\S]*?<\/title>/,'<title>Order Status | Nutraxin &amp; ESCO | NovaPharm</title>');
 html=html.replace(/<link rel="canonical" href="[^"]*"/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/track/"');
+
+// Status lookup is useful only to someone holding an opaque order reference.
+// Prevent indexing, and never inherit the Products overview's social identity.
+html=html.replace(/<meta name="robots" content="[^"]*">/,'<meta name="robots" content="noindex, follow">');
+html=html.replace(/<meta property="og:url" content="[^"]*">/,'<meta property="og:url" content="https://novapharmhealthcare.com/products/track/">');
+html=html.replace(/<meta property="og:title" content="[^"]*">/,'<meta property="og:title" content="Order Status | NovaPharm">');
+html=html.replace(/<meta property="og:description" content="[^"]*">/,'<meta property="og:description" content="Check a private order reference with NovaPharm. No customer details are shown.">');
+html=html.replace(/<meta name="twitter:title" content="[^"]*">/,'<meta name="twitter:title" content="Order Status | NovaPharm">');
+html=html.replace(/<meta name="twitter:description" content="[^"]*">/,'<meta name="twitter:description" content="Private reference-only order status. No personal details are displayed.">');
+
 html=html.replace(/<meta name="description" content="[^"]*">/,'<meta name="description" content="Check the latest order or order request status for NovaPharm Nutraxin and ESCO.">');
 html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-order-track.css"><script src="/assets/js/commerce-order-track.js" defer></script></head>');
 html=removeInheritedProductMedia(html);

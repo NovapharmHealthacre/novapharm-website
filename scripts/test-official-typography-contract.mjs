@@ -33,6 +33,10 @@ for (const path of [
   }
 }
 assert.match(read("apps/technology/styles/base-1.css"), /--sans:\s*-apple-system/);
+assert.match(read("apps/corporate/app/globals.css"), /body, button, input, select, textarea\s*\{\s*font-family:\s*var\(--np-type-ui/);
+assert.match(read("apps/corporate/app/globals.css"), /h1, h2, h3\s*\{[^}]*font-family:\s*var\(--np-type-ui/);
+assert.match(read("apps/portal/app/globals.css"), /font-family:\s*var\(--np-type-ui/);
+assert.match(read("packages/design-system/src/index.ts"), /editorialFamily:\s*"\x27New York\x27/);
 assert.match(read("apps/technology/styles/base-1.css"), /--serif:\s*"New York"/);
 assert.match(read("apps/portal/app/employee-distribution.css"), /font-variant-numeric:\s*tabular-nums/);
 assert.match(read("assets/css/corporate-product-discipline.css"), /font-variant-numeric:\s*tabular-nums/);
@@ -105,5 +109,16 @@ for (const selector of [
   assert.match(declarations(employeeCss, selector), /min-height:\s*44px/, selector + " requires 44px touch height");
 }
 assert.match(employeeCss, /@media\(max-width:570px\)[\s\S]*?\.employee-distribution-shell \.user-summary button\{[^}]*min-height:44px/, "Mobile employee controls must retain 44px touch height");
+
+// Customer workspace hub must use approved semantic tokens instead of the
+// former grey/red palette, with readable labels and touch-friendly links.
+const portalHubCss=read("apps/portal/app/globals.css");
+for (const selector of [".unified-customer-eyebrow",".unified-customer-group a small",".unified-collection-card span",".unified-customer-hub .unified-customer-release-note"]) {
+  assert.match(declarations(portalHubCss,selector), /font-size:\s*\.875rem/, selector+" must use the caption role");
+}
+assert.match(declarations(portalHubCss,".unified-customer-group a"), /min-height:\s*44px/);
+assert.match(declarations(portalHubCss,".unified-customer-hub"), /var\(--np-color-canvas, #FFFFFF\)/);
+assert.match(declarations(portalHubCss,".unified-collection-card"), /var\(--np-color-surface, #F8F7F3\)/);
+assert.match(portalHubCss, /@media \(hover:hover\) and \(pointer:fine\)\{\.unified-customer-group a:hover/);
 
 console.log("NovaPharm Apple HIG typography contract passed across public, corporate, portal, WMS, technology, status, founder and shared React styles.");

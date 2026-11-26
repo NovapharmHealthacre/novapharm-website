@@ -29,7 +29,8 @@ export function absoluteUrl(pathname = "/"): string {
 }
 
 export function organisationSchema() {
-  const vishal = personBySlug("vishal-chakravarty");
+  const founders = ["vishal-chakravarty", "prabhakar-lahare"].map(slug => personBySlug(slug));
+  const directors = ["vishal-chakravarty", "prabhakar-lahare", "girish-achliya", "helly-panchal"].map(slug => personBySlug(slug));
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -38,16 +39,38 @@ export function organisationSchema() {
     legalName: company.legalName,
     alternateName: "NovaPharm",
     url: siteUrl,
-    logo: { "@type": "ImageObject", url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`, width: 2048, height: 258 },
-    image: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${siteUrl}/#logo`,
+      url: `${siteUrl}/assets/brand/pwa-icon-512.png`,
+      contentUrl: `${siteUrl}/assets/brand/pwa-icon-512.png`,
+      width: 512,
+      height: 512,
+      caption: "NovaPharm Healthcare brand mark",
+    },
+    image: {
+      "@type": "ImageObject",
+      "@id": `${siteUrl}/#wordmark`,
+      url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.svg`,
+      contentUrl: `${siteUrl}/assets/brand/novapharm-healthcare-logo.svg`,
+      width: 2048,
+      height: 258,
+      caption: company.name,
+    },
     description: company.summary,
     foundingDate: company.incorporated,
-    identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber },
-    founder: { "@id": vishal.id },
-    sameAs: [company.companiesHouseUrl],
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
+    identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber, url: company.companiesHouseUrl },
+    mainEntityOfPage: { "@id": `${siteUrl}/#webpage` },
+    founder: founders.map(person => ({ "@type": "Person", "@id": person.id, name: person.displayName, jobTitle: person.publicTitle, url: person.canonicalUrl })),
+    member: directors.map(person => ({ "@type": "Person", "@id": person.id, name: person.displayName, jobTitle: person.publicTitle, url: person.canonicalUrl, ...(person.imagePath ? { image: `${siteUrl}${person.imagePath}` } : {}) })),
+    sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
     areaServed: ["United Kingdom"],
-    knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
-    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries", url: `${siteUrl}/contact/`, availableLanguage: "English" },
+    knowsAbout: [company.industry, "Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${siteUrl}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
   };
 }
 
@@ -72,7 +95,7 @@ export function pageSchema(page: CorporatePage) {
   const url = absoluteUrl(page.slug ? `/${page.slug}/` : "/");
   const pageType = page.kind === "contact" ? "ContactPage" : page.slug === "about" ? "AboutPage" : "WebPage";
   const graph: unknown[] = [
-    { "@type": pageType, "@id": `${url}#webpage`, url, name: meta.title, description: meta.description, isPartOf: { "@id": websiteId }, about: { "@id": organisationId }, breadcrumb: { "@id": `${url}#breadcrumb` }, inLanguage: "en-GB" },
+    { "@type": pageType, "@id": `${url}#webpage`, url, name: meta.title, description: meta.description, isPartOf: { "@id": websiteId }, about: { "@id": organisationId }, ...(page.slug === "about/company" ? { mainEntity: { "@id": organisationId } } : {}), breadcrumb: { "@id": `${url}#breadcrumb` }, inLanguage: "en-GB" },
     breadcrumbs(page.slug, page.heroTitle),
   ];
   if (page.kind === "services") {

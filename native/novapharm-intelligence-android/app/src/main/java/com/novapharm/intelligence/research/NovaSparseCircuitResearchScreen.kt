@@ -23,6 +23,11 @@ object NovaSparseCircuitResearchScreen {
             setBackgroundColor(canvas)
             isFillViewport = true
             clipToPadding = false
+            // A single named TalkBack pane gives this offline research view
+            // explicit context without hiding its individual text descendants.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                accessibilityPaneTitle = "NovaPharm Intelligence research — read only"
+            }
             // Android 15 edge-to-edge: respect status bars and gesture navigation.
             // Older supported APIs retain their legacy system window insets.
             setOnApplyWindowInsetsListener { view, insets ->

@@ -37,6 +37,10 @@ on:
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
       - scripts/stamp-public-release-provenance.mjs
+      - scripts/normalise-official-public-brand-metadata.mjs
+      - scripts/test-official-public-brand-metadata.mjs
+      - scripts/verify-public-brand-source-live.mjs
+      - scripts/test-public-brand-source-live.mjs
       - scripts/test-quantum-static-public-candidate.mjs
       - quantum-research/index.html
       - assets/css/quantum-research.css
@@ -83,6 +87,8 @@ jobs:
 
       - name: Build and validate the public artifact
         run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
           npm run build:public-only
           npm run test:technology-page
           npm run test:owner-corrections:public-only
@@ -111,7 +117,9 @@ jobs:
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
   build:
-    if: github.event_name != 'pull_request'
+    # The verified AWS-backed publisher is the only production entry point.
+    # Public-only builds must not publish or reconfigure the production site.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -161,7 +169,10 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build corrected public output
-        run: npm run build:public-only
+        run: |
+          node --test scripts/test-official-public-brand-metadata.mjs
+          node --test scripts/test-public-brand-source-live.mjs
+          npm run build:public-only
 
       - name: Validate owner corrections and public release artifact
         run: |
@@ -243,7 +254,7 @@ jobs:
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: ${{ false }}
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -355,6 +366,9 @@ jobs:
           done
           echo "::error::Quantum research route missing, stale, indexable, or unsafe on the custom domain." >&2
           exit 1
+
+      - name: Verify exact SHA, official browser colours and retained Contact B2B form on six live routes
+        run: node scripts/verify-public-brand-source-live.mjs
 
       - name: Mark publication successful
         if: success()

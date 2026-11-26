@@ -189,8 +189,21 @@ test("interface localization does not claim that clinical, legal, or regulated e
   assert.match(source, /return labels\[locale\]\[english\] \?\? english/);
   assert.match(source, /new Intl\.NumberFormat\(locale\)/);
   assert.match(source, /new Intl\.DateTimeFormat\(locale,/);
-  assert.equal((read("apps/corporate/components/site-header.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate desktop link branches must translate");
-  assert.equal((read("apps/corporate/components/mobile-navigation.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate mobile link branches must translate");
+  const corporateHeader = read("apps/corporate/components/site-header.tsx");
+  const corporateDesktopNav = read("apps/corporate/components/desktop-navigation.tsx");
+  const corporateMobileNav = read("apps/corporate/components/mobile-navigation.tsx");
+  assert.match(corporateHeader, /<DesktopNavigation items=\{publicNavigation\}/);
+  assert.match(corporateHeader, /<MobileNavigation items=\{publicNavigation\}/);
+  // The extraction replaced two conditional link branches with one semantic
+  // branch per variant. Each accessible nav link is still locally labelled.
+  for (const [name, component] of [["desktop", corporateDesktopNav], ["mobile", corporateMobileNav]]) {
+    assert.equal((component.match(/interfaceLabel\(locale, label\)/g) ?? []).length, 1,
+      "Corporate " + name + " navigation must translate every displayed label");
+    assert.match(component, /items\.map\(\(\[label, href\]\) =>/);
+    assert.match(component, /const isPortal = href === "\/portal\/";/);
+    assert.match(component, /href=\{isPortal \? portalOrigin : href\}/);
+    assert.match(component, /aria-current=\{!isPortal \? currentCorporateNavigationAriaValue\(pathname, href\) : undefined\}/);
+  }
   assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale, "Company links"\)/);
@@ -230,7 +243,7 @@ test("Apple-like footer language selector stays unboxed, accessible and honest a
     assert.ok(block.includes(rule), "Missing unboxed Apple-like footer contract: " + rule);
   }
   assert.doesNotMatch(block, /position: fixed/);
-  assert.match(staticJs, /footerSelectors = \["\.np-contact-reference-footer-inner", "\.npd-footer-bottom",/);
+  assert.match(staticJs, /footerSelectors = \["\.npd-footer-bottom", "\.footer-secondary",/);
   assert.match(staticJs, /node\.getClientRects\(\)\.length > 0/);
   assert.match(staticJs, /\(footer \|\| document\.body\)\.appendChild\(control\)/);
   assert.match(staticJs, /label\.textContent = locale === "ar" \? "اللغة"/);
