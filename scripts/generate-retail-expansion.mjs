@@ -75,9 +75,12 @@ function collectionCard(p,route){
  return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><div class="npr-card-purchase" data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></div></article>';
 }
 const input='src/content/approved-consumer-catalogue.json';
-if(existsSync(file(input))){
- const items=JSON.parse(read(input));
- assert(Array.isArray(items)&&items.length>0);
+const approvedCatalogue=existsSync(file(input))?JSON.parse(read(input)):[];
+assert(Array.isArray(approvedCatalogue),'Approved consumer catalogue must be an array');
+// Zero approved products is a valid fail-closed state; preserve the existing
+// browse-only Connective pages and never emit static prices or Offer schema.
+if(approvedCatalogue.length>0){
+ const items=approvedCatalogue;
  const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved','pack','gallery','productClass','description','ingredients','directions','warnings']);
  const ids=new Set();
  for(const p of items){
