@@ -78,7 +78,6 @@ const allowedRootFiles = new Set([
   "web-app-manifest-512x512.png"
 ]);
 
-const allowedPublicPharmacyFiles = new Set(["pharmacy-partners/index.html"]);
 const allowedPublicGiftFiles = new Set(["corporate-gifts/index.html"]);
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
 const allowedPublicPortalFiles = new Set(["portal/index.html"]);
@@ -106,9 +105,6 @@ const requiredPublicPaths = [
   "products/marketplace/index.html",
   "products/track/index.html",
   "corporate-gifts/index.html",
-  "pharmacy-partners/index.html",
-  "assets/css/pharmacy-partners.css",
-  "assets/js/pharmacy-partners.js",
   "assets/data/commerce-marketplace.json",
   "assets/js/commerce-marketplace.js",
   "assets/css/commerce-marketplace.css",
@@ -201,16 +197,6 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
       const reviewedDestination = join(output, reviewedPath);
       mkdirSync(dirname(reviewedDestination), { recursive: true });
       cpSync(reviewedSource, reviewedDestination, { force: true });
-    }
-    continue;
-  }
-  if (entry.isDirectory() && entry.name === "pharmacy-partners") {
-    const contents = readdirSync(source, { withFileTypes: true });
-    if (contents.length !== 1 || contents[0].name !== "index.html" || !contents[0].isFile()) throw new Error("Unreviewed pharmacy campaign file");
-    for (const publicPath of allowedPublicPharmacyFiles) {
-      const target = join(output, publicPath);
-      mkdirSync(dirname(target), { recursive: true });
-      cpSync(join(root, publicPath), target, { force: true });
     }
     continue;
   }
@@ -517,7 +503,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && !allowedPublicGiftFiles.has(stagedPath) && !allowedPublicPharmacyFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && !allowedPublicGiftFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {

@@ -45,6 +45,7 @@ function page(route,title,description,main,seo=null){
   catalogueSeo.push({route,canonical:base+route,file:route.slice(1)+'index.html',title,description,h1:seo.h1,indexable:true,schemaTypes:[seo.schema['@type']],intendedCta:[]});
  }
  if(route.startsWith('/products/health-and-wellbeing/')) head+='<script type="module" src="/assets/js/nutraxin-retail-store.js"></script>';
+ if(route==='/products/health-and-wellbeing/') head+='<script type="module" src="/assets/js/connective-collection-search.js"></script>';
  html=head+html.slice(headEnd);
  assert.equal((html.match(/<h1\b/g)||[]).length,1);
  assert.equal((html.match(/<main\b/g)||[]).length,1);
@@ -71,7 +72,7 @@ function mediaGallery(p){
  '</div>';
 }
 function collectionCard(p,route){
- return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></article>';
+ return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><div class="npr-card-purchase" data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></div></article>';
 }
 const input='src/content/approved-consumer-catalogue.json';
 if(existsSync(file(input))){
@@ -113,8 +114,8 @@ if(existsSync(file(input))){
   // No static Offer, price or availability: the authoritative checkout controls sales.
  }
  const groups=[...new Set(items.map(p=>p.category))].sort();
- const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
- page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Discover our collection by category. Explore '+items.length+' approved product references. Prices, stock and ordering eligibility are confirmed separately.</p><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'</main>',{h1:'Health and wellbeing.',schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
+ const groupCards=groups.map((g,i)=>'<section class="npr-wrap npr-section" data-npr-collection-section id="category-'+i+'"><header class="npr-collection-heading"><h2>'+escape(g)+'</h2><span>'+items.filter(p=>p.category===g).length+' products</span></header><div class="npr-grid">'+items.filter(p=>p.category===g).map(p=>collectionCard(p,routeFor(p))).join('')+'</div></section>').join('');
+ page('/products/health-and-wellbeing/','Health and wellbeing catalogue | NovaPharm','Explore approved health and wellbeing product references by category.', '<main id="main" class="npr-main"><section class="npr-wrap npr-section"><p class="npr-kicker">NOVAPHARM / PRODUCTS</p><h1>Health and wellbeing.</h1><p>Explore '+items.length+' approved products. Add to Bag and Buy Now appear with the current verified retail offer; all payments use NovaPharm secure Stripe checkout.</p><div class="npr-collection-search"><label for="npr-collection-search">Search products</label><input id="npr-collection-search" type="search" autocomplete="off" placeholder="Search product, brand or range" data-npr-collection-query><p data-npr-collection-status role="status" aria-live="polite">Showing '+items.length+' products</p></div><nav class="npr-categories" aria-label="Product categories">'+groups.map((g,i)=>'<a href="#category-'+i+'">'+escape(g)+'</a>').join('')+'</nav></section>'+groupCards+'<p class="npr-wrap npr-no-results" data-npr-collection-empty hidden>No products match your search. Try a different name or category.</p></main>',{h1:'Health and wellbeing.',schema:{'@context':'https://schema.org','@type':'CollectionPage','@id':base+'/products/health-and-wellbeing/#webpage',url:base+'/products/health-and-wellbeing/',name:'Health and wellbeing',mainEntity:{'@type':'ItemList',itemListElement:items.map((p,i)=>({'@type':'ListItem',position:i+1,url:base+routeFor(p)}))}}});
 }
 
  // Pharmacy acquisition offer: public illustrative quotes only, no supplier costs,
@@ -167,6 +168,7 @@ if(catalogueSeo.length){
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
 const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
+const connectiveLanding=existsSync(file(input))?(()=>{const approved=JSON.parse(read(input));const hero=approved[0];return '<section class="np-products-panel np-products-panel-nutraxin" aria-labelledby="np-products-connective-title"><div class="np-products-wrap np-products-panel-inner"><div class="np-products-panel-copy"><p class="np-products-kicker">Health and wellbeing</p><h2 id="np-products-connective-title">Find what works for you.</h2><p class="np-products-panel-lead">Explore '+approved.length+' UK product references across trusted wellbeing brands.</p><a class="np-products-link" href="/products/health-and-wellbeing/">Explore products <span aria-hidden="true">›</span></a></div><div class="np-products-panel-art np-products-panel-art-nutraxin"><img src="'+escape(hero.image)+'" alt="'+escape(hero.name)+' original product pack" width="700" height="700" loading="lazy" decoding="async"></div></div></section>';})():'';
 const landing='<section class="npr-wrap npr-section" aria-label="More from NovaPharm"><h2>Explore more.</h2><div class="npr-categories">'+giftLink+catalogueLink+'<a href="/pharmacy-partners/">Pharmacy partners</a></div></section>';
-write('products/index.html',template.replace(originalMain[0],()=>originalMain[0].replace('</main>',landing+'</main>')).replace('</head>','<link rel="stylesheet" href="/assets/css/retail-expansion.css"></head>'));
+write('products/index.html',template.replace(originalMain[0],()=>originalMain[0].replace('</main>',connectiveLanding+landing+'</main>')).replace('</head>','<link rel="stylesheet" href="/assets/css/retail-expansion.css"></head>'));
 console.log('Retail expansion generated; new consumer catalogue requires separately approved identity and licensed imagery.');
