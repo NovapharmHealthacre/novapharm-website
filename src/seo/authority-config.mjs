@@ -1,4 +1,5 @@
 import { company, leadership, pageMeta } from "../content/site-content.mjs";
+import { personIdForSlug, personUrlForSlug } from "./person-identity.mjs";
 
 export const SITE_URL = company.siteUrl;
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
@@ -117,7 +118,10 @@ export const canonicalEntities = Object.freeze([
     description: company.summary,
     image: `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`,
     role: "UK corporate entity preparing regulated B2B pharmaceutical market-entry, sourcing and distribution capabilities",
-    verifiedSources: [company.companiesHouseUrl, SITE_URL],
+    headquarters: company.headquarters,
+    industry: company.industry,
+    divisions: company.divisions.map(division => ({ name: division.name, url: `${SITE_URL}${division.path}`, id: `${SITE_URL}/#${division.id}` })),
+    verifiedSources: [company.companiesHouseUrl, SITE_URL, company.linkedinUrl],
     lastVerified: "2026-07-14"
   },
   ...leadership.map((person) => ({
@@ -125,8 +129,8 @@ export const canonicalEntities = Object.freeze([
     canonicalName: person.displayName,
     legalName: person.name,
     alternateNames: person.name === person.displayName ? [] : [person.name],
-    canonicalUrl: `${SITE_URL}/leadership/${person.slug}/`,
-    id: `${SITE_URL}/leadership/${person.slug}/#person`,
+    canonicalUrl: personUrlForSlug(person.slug),
+    id: personIdForSlug(person.slug),
     description: person.summary,
     image: person.image ? `${SITE_URL}${person.image}` : null,
     role: person.schemaTitle,

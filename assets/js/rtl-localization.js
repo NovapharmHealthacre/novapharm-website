@@ -11,8 +11,8 @@
   html.dataset.npLocaleStatus = locale === "en-GB" ? "en" : "layout-preview";
 
   var names = {
-    ar: {"Company":"الشركة","Capabilities":"القدرات","Distribution":"التوزيع","Oncology":"الأورام","Products":"المنتجات","NovaPharm Intelligence":"نوفافارم إنتليجنس","Insights":"الرؤى","Contact":"اتصل بنا","Secure portal":"البوابة الآمنة","Secure Portal":"البوابة الآمنة","Services":"الخدمات","Technology":"التكنولوجيا","Leadership":"القيادة","Governance":"الحوكمة","Careers":"الوظائف","Privacy":"الخصوصية","Cookies":"ملفات تعريف الارتباط","Terms":"الشروط","Accessibility":"إمكانية الوصول","Trust centre":"مركز الثقة","Open an account":"فتح حساب","Search":"بحث","Cookie settings":"إعدادات ملفات تعريف الارتباط","Menu":"القائمة"},
-    he: {"Company":"החברה","Capabilities":"יכולות","Distribution":"הפצה","Oncology":"אונקולוגיה","Products":"מוצרים","NovaPharm Intelligence":"נובאפארם אינטליג'נס","Insights":"תובנות","Contact":"יצירת קשר","Secure portal":"פורטל מאובטח","Secure Portal":"פורטל מאובטח","Services":"שירותים","Technology":"טכנולוגיה","Leadership":"הנהלה","Governance":"ממשל תאגידי","Careers":"קריירה","Privacy":"פרטיות","Cookies":"קובצי Cookie","Terms":"תנאים","Accessibility":"נגישות","Trust centre":"מרכז אמון","Open an account":"פתיחת חשבון","Search":"חיפוש","Cookie settings":"הגדרות קובצי Cookie","Menu":"תפריט"}
+    ar: {"Company":"الشركة","Capabilities":"القدرات","Distribution":"التوزيع","Oncology":"الأورام","Products":"المنتجات","Intelligence":"نوفافارم إنتليجنس","NovaPharm Intelligence":"نوفافارم إنتليجنس","Insights":"الرؤى","Contact":"اتصل بنا","Secure portal":"البوابة الآمنة","Secure Portal":"البوابة الآمنة","Services":"الخدمات","Technology":"التكنولوجيا","Leadership":"القيادة","Governance":"الحوكمة","Careers":"الوظائف","Privacy":"الخصوصية","Cookies":"ملفات تعريف الارتباط","Terms":"الشروط","Accessibility":"إمكانية الوصول","Trust centre":"مركز الثقة","Open an account":"فتح حساب","Search":"بحث","Cookie settings":"إعدادات ملفات تعريف الارتباط","Menu":"القائمة"},
+    he: {"Company":"החברה","Capabilities":"יכולות","Distribution":"הפצה","Oncology":"אונקולוגיה","Products":"מוצרים","Intelligence":"נובאפארם אינטליג'נס","NovaPharm Intelligence":"נובאפארם אינטליג'נס","Insights":"תובנות","Contact":"יצירת קשר","Secure portal":"פורטל מאובטח","Secure Portal":"פורטל מאובטח","Services":"שירותים","Technology":"טכנולוגיה","Leadership":"הנהלה","Governance":"ממשל תאגידי","Careers":"קריירה","Privacy":"פרטיות","Cookies":"קובצי Cookie","Terms":"תנאים","Accessibility":"נגישות","Trust centre":"מרכז אמון","Open an account":"פתיחת חשבון","Search":"חיפוש","Cookie settings":"הגדרות קובצי Cookie","Menu":"תפריט"}
   };
 
   function init() {
@@ -56,7 +56,7 @@
     selectWrap.className = "np-locale-select-wrap";
     selectWrap.appendChild(select);
     control.append(label, selectWrap, note);
-    var footerSelectors = [".np-contact-reference-footer-inner", ".npd-footer-bottom", ".footer-secondary", ".site-footer__bottom", ".footer-base", ".status-footer", ".site-footer", "footer"];
+    var footerSelectors = [".npd-footer-bottom", ".footer-secondary", ".site-footer__bottom", ".footer-base", ".status-footer", ".site-footer", "footer"];
     var footer = footerSelectors.map(function (selector) { return document.querySelector(selector); })
       .find(function (node) { return node && node.getClientRects().length > 0; });
     (footer || document.body).appendChild(control);

@@ -32,21 +32,6 @@ export function ContactExperience({ managedEnabled }: { readonly managedEnabled:
         </div>
       </aside>
 
-      <footer className="np-contact-reference-footer">
-        <div className="np-contact-reference-shell np-contact-reference-footer-inner">
-          <div>
-            <strong>Medicine. Where it needs to be.</strong>
-            <p>NovaPharm Healthcare Ltd · United Kingdom</p>
-            <small>Regulated wholesale supply has not commenced.</small>
-          </div>
-          <nav aria-label="Contact footer">
-            <a href="/about/">Company</a>
-            <a href="/legal/privacy/">Privacy</a>
-            <a href="/legal/terms/">Terms</a>
-            <a href="/legal/accessibility/">Accessibility</a>
-          </nav>
-        </div>
-      </footer>
     </div>
   );
 }

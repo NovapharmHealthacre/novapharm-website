@@ -55,7 +55,7 @@ const required = [
   'publicTitle: "Chief Executive Officer"',
   'publicTitle: "Chief Operating Officer"',
   'publicTitle: "Chief Scientific Officer"',
-  'publicTitle: "Chief Medical Director"',
+  'publicTitle: "Chief Financial Officer"',
   'publicTitle: "Chief Technology Officer and Responsible Person"',
   'executiveRole: "Chief Technology Officer"',
   'title: "Responsible Person"',

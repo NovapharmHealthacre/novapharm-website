@@ -9,7 +9,7 @@ const source = (name: string) => readFileSync(path.join(process.cwd(), name), "u
 test("approved human secure entry uses the exact Intelligence brand and owner copy", () => {
   const view = source("components/intelligence-sign-in.tsx");
   const styles = source("components/intelligence-sign-in.module.css");
-  assert.match(view, /novapharm-intelligence-approved\.svg/);
+  assert.match(view, /novapharm-intelligence-logo\.svg/);
   assert.match(view, /A more human/);
   assert.match(view, /intelligence for/);
   assert.match(view, /medicine\./);

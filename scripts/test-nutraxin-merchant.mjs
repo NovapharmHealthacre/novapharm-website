@@ -200,3 +200,79 @@ test("Collection has crawlable direct links to every exact product landing page"
       "Collection missing a direct product link: " + product.sku);
   }
 });
+
+const keywordMap = JSON.parse(read("assets/data/nutraxin-uk-search-intents.json"));
+test("19 product search descriptions and support links are source-aligned", () => {
+  assert.equal(keywordMap.market, "GB");
+  assert.equal(keywordMap.products.length, 19);
+  const bySku = new Map(keywordMap.products.map(x => [x.sku, x]));
+  assert.equal(bySku.size, 19);
+  for (const product of catalogue.products) {
+    const intent = bySku.get(product.sku);
+    assert(intent && intent.slug === product.slug && intent.primaryQuery.endsWith(" UK"));
+    const html = read("products/nutraxin/" + product.slug + "/index.html");
+    assert(html.includes('meta name="description" content="' + intent.metaDescription.replaceAll("&","&amp;") + '"'));
+    assert(html.includes('href="/contact/?enquiry=Nutraxin%20order%20support"'));
+    const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)].map(m => JSON.parse(m[1]));
+    assert.equal(nodes.find(n => n["@type"] === "WebPage")?.description, intent.metaDescription);
+  }
+});
+
+test("Nutraxin support email and delivery-returns policy are linked from each offer", () => {
+  for (const product of catalogue.products) {
+    const html = read("products/nutraxin/" + product.slug + "/index.html");
+    assert(html.includes('mailto:support@novapharmhealthcare.com'));
+    assert(html.includes('href="/legal/returns/"'));
+  }
+  const policy = read("legal/returns/index.html");
+  assert(policy.includes("support@novapharmhealthcare.com"));
+  assert(policy.includes("14 days"));
+  assert(policy.includes("NovaPharm Healthcare Ltd"));
+  assert(!/return(s)? (directly |to )?Polar Speed/i.test(policy),
+    "Do not publish an unconfirmed warehouse consumer-return destination");
+});
+
+test("Nutraxin Bag exposes return rights and support before payment", () => {
+  for (const path of ["products/nutraxin/bag/index.html", "scripts/apply-corporate-product-discipline.mjs"]) {
+    const content = read(path);
+    assert(content.includes('<span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand'), "Preserve the reviewed direct checkout policy link (#1172) in " + path);
+    assert(content.includes("support@novapharmhealthcare.com"), "Support contact missing in " + path);
+    assert(content.includes('data-nx-consumer-terms'), "Bag terms checkbox missing in " + path);
+  }
+});
+
+
+test("UK generic discovery is visible and aligned with all 19 Shopping offers", () => {
+  for (const item of keywordMap.products) {
+    assert(item.secondaryQueries.length >= 8, item.sku);
+    assert(item.secondaryQueries.some(query => !query.toLowerCase().includes("nutraxin")), item.sku);
+    const html = read("products/nutraxin/" + item.slug + "/index.html");
+    assert.equal((html.match(/data-nutraxin-discovery="true"/g) || []).length, 1);
+    assert(parsed.find(p => p.id === item.sku).description.startsWith(item.discoveryCopy + " "));
+  }
+  assert(read("products/nutraxin/index.html").includes("Nutraxin Vitamins &amp; Supplements UK | NovaPharm"));
+});
+
+
+test("Merchant unit prices use actual pack count or volume; unresolved pack is withheld", () => {
+  assert(heads.includes("unit_pricing_measure"));
+  assert(heads.includes("unit_pricing_base_measure"));
+  assert(lines.slice(1).every(line => line.split("\t").length === heads.length));
+  let published = 0;
+  for (const row of parsed) {
+    const ref = registered.products.find(p => p.sku === row.id);
+    assert(ref);
+    if (row.id === "NUT-UK-VMAX-E15") {
+      assert.equal(row.unit_pricing_measure, "");
+      assert.equal(row.unit_pricing_base_measure, "");
+      assert(ref.notes.some(note => note.includes("Pack mismatch")));
+      continue;
+    }
+    const number = Number(ref.packSize.split(" ")[0]);
+    const ml = ref.packSize.endsWith(" ml");
+    assert.equal(row.unit_pricing_measure, number + (ml ? "ml" : "ct"));
+    assert.equal(row.unit_pricing_base_measure, ml ? "100ml" : "1ct");
+    published++;
+  }
+  assert.equal(published, 18);
+});

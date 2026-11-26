@@ -13,6 +13,10 @@ const register = validateNutraxinRegister({ repositoryRoot: root }).register;
 const products = [...register.products].sort((a, b) => a.catalogueOrder - b.catalogueOrder);
 const officialNutraxinReferences = JSON.parse(readFileSync(join(root, "apps/corporate/data/nutraxin-uk-links.json"), "utf8")).products;
 const expectedNutraxinSlugs = new Set(products.map((product) => product.slug));
+const categoryIntents = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-category-intents.json"), "utf8"));
+const productSearchIntents = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-search-intents.json"), "utf8"));
+const searchBySku = new Map(productSearchIntents.products.map(item => [item.sku, item]));
+const categoryForSlug = new Map(categoryIntents.categories.flatMap(category => category.products.map(slug => [slug, category])));
 if (Object.keys(officialNutraxinReferences).length !== expectedNutraxinSlugs.size ||
     Object.keys(officialNutraxinReferences).some((slug) => !expectedNutraxinSlugs.has(slug))) {
   throw new Error("Nutraxin external publisher references must map exactly to the 19 catalogue slugs.");
@@ -46,7 +50,7 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 
 function globalSection(route) {
   if (route === "/") return "";
-  if (route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
+  if (route === "/our-story/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
   if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
@@ -64,7 +68,7 @@ const globalNavigation = [
   ["Distribution", "/distribution/", "distribution"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
-  ["NovaPharm Intelligence", "/technology/", "intelligence"],
+  ["Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
   ["Secure Portal", "https://portal.novapharmhealthcare.com/", "portal"]
@@ -74,7 +78,7 @@ const globalNavigation = [
 // remains usable as ordinary links without JavaScript.
 const megaNavigation = {
   company: [
-    ["Explore", [["Company overview", "/about/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Explore", [["Company overview", "/about/"], ["Our story", "/our-story/"], ["Company profile", "/about/company/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
     ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
     ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
   ],
@@ -111,12 +115,9 @@ const megaNavigation = {
 };
 
 function header(route) {
-  const current = globalSection(route);
-  // The public homepage retains concise navigation but must never hide the
-  // explicit secure portal entry. Insights remains available through site links.
-  const headerLinks = route === "/"
-    ? globalNavigation.filter(([, href]) => href !== "/news-insights/")
-    : globalNavigation;
+  // Keep the approved homepage ordering and labels on every public route.
+  // Insights is still discoverable from the shared footer.
+  const headerLinks = globalNavigation.filter(([, href]) => href !== "/news-insights/");
   return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
@@ -124,7 +125,7 @@ function header(route) {
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${route === "/" && href === "/technology/" ? "Intelligence" : label}</a>`).join("")}
+        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${route === href ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
       </nav>
     </div>
     ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
@@ -139,10 +140,10 @@ function footer() {
           <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
-        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
+        <div><h2>Company</h2><a href="/about/">Overview</a><a href="/our-story/">Our story</a><a href="/about/company/">Company profile</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
-        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
+        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">${esc(accountCtaLabel)}</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/products/track/">Check order status</a><a href="/products/nutraxin/account/">Personal orders &amp; account</a><a href="mailto:support@novapharmhealthcare.com">Customer support</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       <div class="npd-footer-notices">
@@ -445,7 +446,7 @@ function nutraxinMain() {
   if (seen.size !== products.length || [...seen].some((slug) => !expectedNutraxinSlugs.has(slug))) {
     throw new Error(`Expected all ${products.length} Nutraxin catalogue cards; found ${seen.size}`);
   }
-  return rendered;
+  return rendered.replace("</main>", "<section class=\"npd-section\" data-nutraxin-category-navigation=\"true\"><div class=\"container\"><h2>Shop by supplement type</h2><ul><li><a href=\"/products/nutraxin/magnesium/\">Magnesium supplements</a></li><li><a href=\"/products/nutraxin/vitamin-c/\">Vitamin C tablets and supplements</a></li><li><a href=\"/products/nutraxin/vitamin-d/\">Vitamin D and D3 + K2 supplements</a></li><li><a href=\"/products/nutraxin/multivitamins/\">Multivitamins and minerals</a></li><li><a href=\"/products/nutraxin/collagen/\">Collagen supplements</a></li><li><a href=\"/products/nutraxin/artoflex-90-tablets/\">Glucosamine, chondroitin and MSM</a></li><li><a href=\"/products/nutraxin/l-carnitine-60-tablets/\">L-carnitine</a></li><li><a href=\"/products/nutraxin/vitamin-b12-60-sublingual-tablets/\">Vitamin B12</a></li></ul></div></section>" + "</main>");
 }
 
 function nutraxinBagMain() {
@@ -473,9 +474,37 @@ function nutraxinBagMain() {
         <div><dt>Delivery</dt><dd data-nx-bag-delivery>Included · UK</dd></div>
         <div><dt>Taxes</dt><dd data-nx-bag-tax>20% VAT included</dd></div>
         <div class="nx-bag-total"><dt>Estimated total</dt><dd data-nx-bag-total>Calculating…</dd></div>
-      </dl><label class="nx-store-consumer-terms"><input type="checkbox" data-nx-consumer-terms><span>I accept the <a href="/legal/terms/#nutraxin-consumer-sales">Nutraxin consumer shopping terms and rights</a> and understand these supplements are fulfilled by the manufacturer, not reserved as warehouse stock. I acknowledge the stated delivery expectation may be up to 30 days.</span></label><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Continue to secure checkout</button>
+      </dl><label class="nx-store-consumer-terms"><input type="checkbox" data-nx-consumer-terms><span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand these supplements are fulfilled by the manufacturer, not reserved as warehouse stock. I acknowledge the stated delivery expectation may be up to 30 days.</span></label><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Continue to secure checkout</button>
       <p class="nx-store-note" role="status" data-nx-checkout-note>Your final amount is recalculated by NovaPharm’s server. Stripe securely handles your payment details.</p>
-      <a class="nx-shop-link" href="/products/nutraxin/">Back to products</a></aside>
+      <p class="nx-store-note">Questions before checkout? <a href="mailto:support@novapharmhealthcare.com">Email Nutraxin support</a>.</p><a class="nx-shop-link" href="/products/nutraxin/">Back to products</a></aside>
+    </div>
+  </main>`;
+}
+
+function nutraxinGiftCardMain() {
+  return `<main id="main" class="npd-main nx-shop-bag nx-gift-page" data-nx-gift-preview>
+    <p class="nx-shop-eyebrow">NUTRAXIN / GIFT CARDS</p>
+    <h1>Give the gift of choice.</h1>
+    <p class="nx-shop-intro">Explore the planned NovaPharm digital gift card. Online purchasing is not available yet.</p>
+    <div class="nx-bag-grid nx-gift-grid">
+      <section class="nx-gift-visual" aria-label="Digital gift card preview">
+        <div class="nx-gift-card-art"><picture><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258"></picture><span>Digital gift card</span><strong data-nx-gift-value>£50</strong></div>
+        <p>Design preview. No redeemable code or balance has been issued.</p>
+      </section>
+      <section class="nx-bag-summary nx-gift-summary" aria-labelledby="nx-gift-title">
+        <h2 id="nx-gift-title">Choose an amount.</h2>
+        <fieldset class="nx-gift-options"><legend>Gift card value</legend>
+          <label><input type="radio" name="nx-gift-amount" value="1000">£10</label>
+          <label><input type="radio" name="nx-gift-amount" value="2500">£25</label>
+          <label><input type="radio" name="nx-gift-amount" value="5000" checked>£50</label>
+          <label><input type="radio" name="nx-gift-amount" value="10000">£100</label>
+          <label><input type="radio" name="nx-gift-amount" value="25000">£250</label>
+        </fieldset>
+        <dl><div class="nx-bag-total"><dt>Gift card value</dt><dd data-nx-gift-total>£50.00</dd></div></dl>
+        <p class="nx-store-note" role="status">Gift card purchases and redemption are not available at this time. No payment or personal details are collected on this page.</p>
+        <button type="button" class="nx-store-bag-button" disabled>Purchasing unavailable</button>
+        <p class="nx-store-note"><a href="/products/nutraxin/">Explore Nutraxin products</a> or <a href="mailto:support@novapharmhealthcare.com">contact our team</a>.</p>
+      </section>
     </div>
   </main>`;
 }
@@ -491,6 +520,15 @@ function nutraxinProductMain(product) {
     ? "The values below use current Nutraxin UK publisher corrections where expressly noted. The exact approved physical-pack label remains unverified."
     : "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.";
   return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Request business ordering access", `/contact/?enquiry=Pharmacy%20or%20wholesaler%20account&product=${encodeURIComponent(product.name)}&sku=${encodeURIComponent(product.sku)}`, "Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}<p class="npd-product-order-request"><a href="/products/nutraxin/order-request/?sku=${encodeURIComponent(product.sku)}">Select quantity for a business order request</a></p><div class="npd-publisher-action">${nutraxinOfficialReference(product.slug)}<p>External publisher information. Pack details, claims and availability require separate verification.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", compositionNote)}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
+}
+
+
+// Broad search intents belong on useful comparison pages, not duplicate product offers.
+function nutraxinCategoryMain(category) {
+  const items = category.products.map(slug => products.find(product => product.slug === slug));
+  if (items.some(item => !item) || items.length < 2) throw new Error("Invalid category " + category.slug);
+  const cards = items.map(item => '<article class="nx-category-card"><div class="nx-category-visual">' + productPicture(item, false, "(max-width: 640px) 84vw, 340px") + '</div><div class="nx-category-copy"><h2><a href="/products/nutraxin/' + esc(item.slug) + '/">' + esc(item.name) + '</a></h2><p class="nx-category-pack">' + esc(item.packSize) + '</p><p>' + esc(searchBySku.get(item.sku).discoveryCopy) + '</p><a class="nx-category-link" href="/products/nutraxin/' + esc(item.slug) + '/">View product, price and availability</a></div></article>').join("");
+  return '<main id="main" class="npd-main nx-category-page"><nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">' + esc(category.heading) + '</span></div></nav><section class="npd-section nx-category-collection"><div class="container"><p class="npd-eyebrow">NUTRAXIN / SUPPLEMENT COLLECTION</p><h1>' + esc(category.heading) + '</h1><p>' + esc(category.intro) + '</p><div class="nx-category-grid">' + cards + '</div></div></section><section class="npd-section npd-section-soft nx-category-guide"><div class="container"><h2>Comparing the products</h2><p>' + esc(category.guide) + '</p><p>Food supplements are not substitutes for a varied, balanced diet and healthy lifestyle. Follow the final UK pack label. Product pages show current retail price and ordering status.</p><a href="/products/nutraxin/">Explore all Nutraxin supplements</a></div></section></main>';
 }
 
 function strategicPortfolioMain() {
@@ -563,10 +601,6 @@ function contactMain(existingHtml) {
     '<aside class="np-contact-reference-safety" aria-label="Important communication boundaries"><div class="np-contact-reference-shell">',
     '<p>Business enquiries only. This is not a medical or patient-ordering channel. Do not send patient-identifiable information, adverse-event reports or urgent medical details. Report suspected side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For UK emergencies call 999 or seek NHS 111 advice.</p>',
     '</div></aside>',
-    '<footer class="np-contact-reference-footer"><div class="np-contact-reference-shell np-contact-reference-footer-inner"><div>',
-    '<strong>Medicine. Where it needs to be.</strong>',
-    '<p>NovaPharm Healthcare Ltd · United Kingdom</p><small>Regulated wholesale supply has not commenced.</small>',
-    '</div><nav aria-label="Contact footer"><a href="/about/">Company</a><a href="/legal/privacy/">Privacy</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a></nav></div></footer>',
     '</main>'
   ].join("");
 }
@@ -668,12 +702,21 @@ function materialize(relative, route, main, metadata = null, template = null) {
     html = html.replace("</body>",
       '  <script type="module" src="/assets/js/nutraxin-retail-store.js"></script>\n</body>');
   }
+  if (route === "/products/nutraxin/gift-cards/" && !html.includes('href="/assets/css/nutraxin-retail-store.css"')) {
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-retail-store.css">\n</head>');
+  }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
     html = html.replace("</body>", '  <script type="module" src="/assets/js/nutraxin-order-request.js"></script></body>');
   }
   if (route === "/products/nutraxin/" && !html.includes('href="/assets/css/nutraxin-lineup.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-lineup.css">\n</head>');
+  }
+  // A clean build starts from the legacy collection template, not from the
+  // checked-in category snapshot. Attach category styles explicitly.
+  if (categoryIntents.categories.some(category => route === "/products/nutraxin/" + category.slug + "/")) {
+    html = html.replace(/\s*<link\b[^>]*href="\/assets\/css\/nutraxin-merchant\.css(?:\?[^"]*)?"[^>]*>/g, "");
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-merchant.css">\n</head>');
   }
   if (route === "/technology/" && !html.includes('href="/assets/css/technology-intelligence.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/technology-intelligence.css">\n</head>');
@@ -720,13 +763,18 @@ materialize("products/index.html", "/products/", productsMain(), {
   description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
-  title: "Nutraxin UK Supplements | Explore 19 Products | NovaPharm",
-  description: "Discover 19 Nutraxin food supplements across six ranges. Explore original pack images, clear product details and build your Bag on the NovaPharm website."
+  title: "Nutraxin Vitamins & Supplements UK | NovaPharm",
+  description: "Shop Nutraxin vitamins and supplements in the UK. Explore magnesium, vitamin C, vitamin D3, multivitamins, collagen and more at NovaPharm."
 }, nutraxinTemplate);
 materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutraxinBagMain(), {
   title: "Your Bag | Nutraxin | NovaPharm Healthcare",
   description: "Review your Nutraxin Bag, quantities, VAT and delivery information before choosing the next checkout step.",
   robots: "noindex, follow"
+}, nutraxinTemplate);
+materialize("products/nutraxin/gift-cards/index.html", "/products/nutraxin/gift-cards/", nutraxinGiftCardMain(), {
+  title: "Digital Gift Cards | NovaPharm Healthcare",
+  description: "Preview the planned NovaPharm digital gift card. Purchasing and redemption are not available yet.",
+  robots: "noindex, nofollow"
 }, nutraxinTemplate);
 materialize("products/nutraxin/order-request/index.html", "/products/nutraxin/order-request/", nutraxinOrderRequestMain(), {
   title: "Nutraxin Business Order Request | NovaPharm Healthcare",
@@ -775,7 +823,7 @@ function nutraxinSearchTitle(product) {
 for (const product of products) {
   const route = `/products/nutraxin/${product.slug}/`;
   const title = nutraxinSearchTitle(product);
-  const description = `${product.name}, ${product.packSize}, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.`;
+  const description = searchBySku.get(product.sku).metaDescription;
   const productSchema = {
     "@context": "https://schema.org", "@id": `${siteUrl}${route}#product`, "@type": "Product",
     name: product.name, sku: product.sku, category: "Food supplement catalogue reference",
@@ -787,10 +835,26 @@ for (const product of products) {
       { "@type": "PropertyValue", name: "Public status", value: "Catalogue reference; availability not asserted" }
     ]
   };
-  materialize(`products/nutraxin/${product.slug}/index.html`, route, nutraxinProductMain(product), { title, description, schemas: [productSchema] }, nutraxinTemplate);
+  const category = categoryForSlug.get(product.slug);
+  const content = nutraxinProductMain(product).replace("</main>", category ? `<section class="npd-section"><div class="container"><h2>Explore the range</h2><a href="/products/nutraxin/${category.slug}/">${esc(category.heading)}</a></div></section></main>` : "</main>");
+  materialize(`products/nutraxin/${product.slug}/index.html`, route, content, { title, description, schemas: [productSchema] }, nutraxinTemplate);
+}
+
+
+for (const category of categoryIntents.categories) {
+  const route = "/products/nutraxin/" + category.slug + "/";
+  const canonical = siteUrl + route;
+  const title = category.heading + " UK | NovaPharm";
+  const schema = {
+    "@context": "https://schema.org", "@type": "ItemList", "@id": canonical + "#items",
+    name: category.heading, numberOfItems: category.products.length,
+    itemListElement: category.products.map((slug, index) => ({ "@type": "ListItem", position: index + 1, url: siteUrl + "/products/nutraxin/" + slug + "/" }))
+  };
+  materialize("products/nutraxin/" + category.slug + "/index.html", route, nutraxinCategoryMain(category), { title, description: category.description, schemas: [schema] }, nutraxinTemplate);
 }
 
 const familyRoutes = [
+  ["our-story/index.html", "/our-story/", "company"],
   ["about/company/index.html", "/about/company/", "company"],
   ["about/governance/index.html", "/about/governance/", "company"],
   ["leadership/index.html", "/leadership/", "company"],

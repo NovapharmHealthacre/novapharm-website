@@ -12,14 +12,54 @@ on:
       - .github/workflows/stage-safe-esco-restoration.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: novapharm-scoped-esco-staging
   cancel-in-progress: false
 
 jobs:
+  validate-pr:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Generate reviewed public-only website and ESCO catalogue
+        run: |
+          npm ci --ignore-scripts
+          npm run build:public-only
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+      - name: Checkout current live Pages separately
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: gh-pages
+          path: published
+          persist-credentials: false
+      - name: Stage ESCO namespace and preserve protected site byte hashes
+        run: python3 scripts/stage-safe-esco-restoration.py
+      - name: Preserve sanitized candidate manifest
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: esco-scoped-restoration-${{ github.sha }}
+          path: artifacts/esco-restoration/manifest.json
+          retention-days: 14
+          if-no-files-found: warn
   stage-esco:
+    if: github.event_name == 'push'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

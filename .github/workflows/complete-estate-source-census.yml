@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/audit-entire-novapharm-application-estate.mjs
       - scripts/test-audit-entire-novapharm-application-estate.mjs
+      - src/content/our-story.mjs
+      - assets/data/nutraxin-uk-category-intents.json
       - apps/corporate/data/pages.ts
       - apps/corporate/data/articles.ts
       - apps/corporate/data/insights/**

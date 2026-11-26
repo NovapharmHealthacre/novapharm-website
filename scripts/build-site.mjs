@@ -69,10 +69,17 @@ await import("./apply-products-editorial.mjs");
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
 
+// Keep Our Story discoverable in late-generated public footers before versioning.
+await import("./apply-our-story-footer.mjs");
+
 // Finalized static pages must all load the RTL layout bootstrap,
 // including late-generated commerce, Marketplace and regulated legal pages.
 // This MUST precede CSS URL versioning so both first and repeat builds hash
 // the same complete stylesheet set, including standalone RTL assets.
+// Generate the retail expansion before finalizing public HTML artifacts.
+await import("./generate-retail-expansion.mjs");
+// Browse-only source references; approved, purchasable product pages always win.
+await import("./generate-connective-source-directory.mjs");
 const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 finalizePublicRtlArtifacts();
 
@@ -80,5 +87,12 @@ finalizePublicRtlArtifacts();
 // Run after every HTML/style entrypoint exists, before source-SHA stamping.
 await import("./version-public-visual-assets.mjs");
 
+// Normalize the browser theme, Safari mask tint and signed Next.js hydration
+// metadata before the authentic source SHA is stamped onto reviewed pages.
+const { normaliseCanonicalPublicBrandMetadata } = await import("./normalise-official-public-brand-metadata.mjs");
+normaliseCanonicalPublicBrandMetadata();
+
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
+// Fail the public build if any late route override restores old browser chrome.
+await import("./validate-royal-public-theme.mjs");

@@ -15,7 +15,7 @@ const catalogue = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-retai
 const header = expectedFeed.split("\n")[0].split("\t");
 const expectedHeader = ["id", "title", "description", "link", "image_link",
   "availability", "price", "condition", "brand", "gtin", "product_type",
-  "google_product_category", "shipping(country:price)"];
+  "google_product_category", "shipping(country:price)", "unit_pricing_measure", "unit_pricing_base_measure"];
 assert.deepEqual(header, expectedHeader);
 const rows = expectedFeed.replace(/\n$/, "").split("\n").slice(1).map((line) => {
   const cells = line.split("\t");
@@ -40,12 +40,42 @@ for (const row of rows) {
   assert.equal(row.gtin, gtinMap.get(row.id)?.gtin13, "Exact UK GTIN mismatch");
   assert.equal(row.google_product_category, "525", "Category must represent vitamins and supplements");
   assert.equal(row.availability, ready ? "in_stock" : "out_of_stock");
+  if (p.sku === "NUT-UK-VMAX-E15") {
+    assert.equal(row.unit_pricing_measure, "", "Unverified effervescent pack count must be withheld");
+    assert.equal(row.unit_pricing_base_measure, "");
+  } else {
+    const pack = p.pack.match(/^(\d+)\s+(ml|(?:chewable |sublingual )?tablets|sachets)$/i);
+    assert(pack, "Unrecognised pack for unit pricing: " + p.sku);
+    const volume = pack[2].toLowerCase() === "ml";
+    assert.equal(row.unit_pricing_measure, Number(pack[1]) + (volume ? "ml" : "ct"));
+    assert.equal(row.unit_pricing_base_measure, volume ? "100ml" : "1ct");
+  }
   assert.equal(row["shipping(country:price)"], "GB:" +
     (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
 }
 
+const categories = JSON.parse(readFileSync(join(root, "assets/data/nutraxin-uk-category-intents.json"), "utf8")).categories;
+assert.equal(categories.length, 5);
+function verifyCategory(category, html, sitemap) {
+  const path = "/products/nutraxin/" + category.slug + "/";
+  const url = origin + path;
+  assert(html.includes('<link rel="canonical" href="' + url + '">'), "Category canonical missing: " + path);
+  assert(!/<meta\b[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(html), "Category is noindex: " + path);
+  assert(html.includes('"@type":"ItemList"'), "Category ItemList missing: " + path);
+  assert(sitemap.includes("<loc>" + url + "</loc>"), "Category sitemap entry missing: " + path);
+  for (const slug of category.products) {
+    assert(html.includes('href="/products/nutraxin/' + slug + '/"'), "Missing category product link: " + slug);
+  }
+}
 if (process.argv.includes("--local")) {
-  console.log("Local Merchant vetting passed: 19 unique SKUs with matching prices and availability.");
+  const artifactArg = process.argv.find(arg => arg.startsWith("--artifact="));
+  const artifact = artifactArg ? resolve(root, artifactArg.slice("--artifact=".length)) : root;
+  const sitemap = readFileSync(join(artifact, "sitemap.xml"), "utf8");
+  for (const category of categories) {
+    const html = readFileSync(join(artifact, "products/nutraxin", category.slug, "index.html"), "utf8");
+    verifyCategory(category, html, sitemap);
+  }
+  console.log("Local Merchant vetting passed: 19 unique SKUs with matching prices and availability; five category routes verified.");
 } else {
   const suffix = process.env.GITHUB_SHA || "manual";
   async function get(path) {
@@ -74,6 +104,14 @@ if (process.argv.includes("--local")) {
     const body = await get("/shopping/nutraxin-uk.tsv");
     assert(!/^\s*<!doctype html/i.test(body), "Google was served HTML instead of TSV");
     assert.equal(body, expectedFeed, "Live TSV differs from committed source");
+  });
+
+  await verifyEventually("Five live supplement category routes and sitemap", async () => {
+    const sitemap = await get("/sitemap.xml");
+    for (const category of categories) {
+      const html = await get("/products/nutraxin/" + category.slug + "/");
+      verifyCategory(category, html, sitemap);
+    }
   });
 
   await verifyEventually("Sale availability frontend", async () => {

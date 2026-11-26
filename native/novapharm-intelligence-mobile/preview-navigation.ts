@@ -1,6 +1,6 @@
 /** Private Expo navigation policy. No network, session, or release activation. */
 export const moreDetailScreens: ReadonlySet<string> = new Set([
-  "countries", "review", "research", "inspect", "maps", "visual",
+  "countries", "fda", "review", "research", "inspect", "maps", "visual",
   "science", "account", "customer-portal-preview", "distribution-preview"
 ]);
 

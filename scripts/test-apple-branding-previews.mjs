@@ -74,14 +74,14 @@ for (const walkthrough of manifest.webProductWalkthroughs) {
 }
 
 const colors = text("assets/css/novapharm-hig-colours.css");
-assert(colors.includes("--np-color-accent: #e3120b"), "Preserve the approved NovaPharm identity accent");
+assert(colors.includes("--np-color-accent: #9D1B32"), "Preserve the approved NovaPharm identity accent");
 assert(colors.includes("NOVAPHARM / BRAND PRESENTATION"), "Shared logo presentation styles have not been installed");
 const componentsCss = text("packages/design-system/src/styles.ts");
-assert(!componentsCss.includes(".np-state--error{border-color:#E3120B}") && !componentsCss.includes(".np-status--critical{border-color:#E3120B}"), "The shared status design system must not reuse identity red for failure");
+assert(!componentsCss.includes(".np-state--error{border-color:#9D1B32}") && !componentsCss.includes(".np-status--critical{border-color:#9D1B32}"), "The shared status design system must not reuse identity red for failure");
 assert(colors.includes(":focus-visible"), "Brand navigation needs an accessible keyboard focus state");
 assert(colors.includes("forced-colors: active"), "Brand navigation must respect forced colours");
 const controlledBrandComponents = [
-  ["apps/corporate/components/brand.tsx", "novapharm-healthcare-logo.png"],
+  ["apps/corporate/components/brand.tsx", "novapharm-healthcare-logo.svg"],
   ["apps/portal/components/portal-brand.tsx", "novapharm-healthcare-logo"],
   ["apps/portal/components/distribution-brand.tsx", "novapharm-distribution-logo.svg"],
   ["apps/portal/components/pharmascope-brand.tsx", "pharmascope-logo"],
@@ -90,5 +90,5 @@ for (const [file, canonicalArtwork] of controlledBrandComponents) {
   assert(text(file).includes(canonicalArtwork), file + " must retain owner-approved NovaPharm identity");
   assert(text(file).includes("aria-label"), file + " must provide a named home destination");
 }
-assert(text("docs/programme/brand-governance.md").includes("#E3120B"), "Approved owner brand documentation must remain intact");
+assert(text("docs/programme/brand-governance.md").includes("#9D1B32"), "Approved owner brand documentation must remain intact");
 console.log("Apple HIG brand principles / NovaPharm logos / honest App Store and preview release gates: PASS");

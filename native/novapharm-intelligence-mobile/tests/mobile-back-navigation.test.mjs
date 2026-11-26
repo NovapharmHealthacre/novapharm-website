@@ -9,8 +9,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const app = readFileSync(path.join(root, "native/novapharm-intelligence-mobile/App.tsx"), "utf8");
 const operations = readFileSync(path.join(root, "native/novapharm-intelligence-mobile/PrivateOperationsPreviewScreen.tsx"), "utf8");
 
-test("all ten More research previews return to More, not an accidental app exit", () => {
-  assert.equal(moreDetailScreens.size, 10);
+test("all eleven More research previews return to More, not an accidental app exit", () => {
+  assert.equal(moreDetailScreens.size, 11);
   for (const screen of moreDetailScreens) {
     assert.equal(mobileBackDestination(screen, false), "more", screen);
   }

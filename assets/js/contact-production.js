@@ -118,6 +118,7 @@ if (form instanceof HTMLFormElement) {
       const controller = new AbortController();
       const deadline = setTimeout(() => controller.abort(), 15000);
       if (submit) submit.disabled = true;
+      form.setAttribute("aria-busy", "true");
       if (status) status.textContent = "Submitting your business enquiry securely…";
       try {
         const response = await fetch(origin + "/contact", {
@@ -126,6 +127,20 @@ if (form instanceof HTMLFormElement) {
           body: JSON.stringify(body),
           signal: controller.signal
         });
+        // Known pre-storage rejections are actionable; network/5xx/ambiguous
+        // receipts must not encourage a duplicate submission.
+        if (response.status === 422 || response.status === 400) {
+          if (status) status.textContent = "We couldn't accept those details. Check the required fields and both confirmations, or use the business email address above.";
+          return;
+        }
+        if (response.status === 403 || response.status === 415) {
+          if (status) status.textContent = "Secure online submission is unavailable for this request. Please contact us using the published business email address above.";
+          return;
+        }
+        if (response.status === 429) {
+          if (status) status.textContent = "Too many requests were received. Please allow some time before trying again, or contact us using the business email address above.";
+          return;
+        }
         const result = await response.json().catch(() => null);
         if (response.status !== 201 || result?.persisted !== true ||
             !/^[0-9a-f-]{36}$/i.test(result.receiptId || "")) {
@@ -136,16 +151,21 @@ if (form instanceof HTMLFormElement) {
       } catch {
         if (status) {
           status.replaceChildren();
-          status.append(document.createTextNode("We could not confirm that your enquiry was received. Please try again or email "));
+          status.append(document.createTextNode("We could not confirm whether your enquiry was recorded. To avoid a duplicate, please do not resubmit immediately. To check its status, email "));
           const link = document.createElement("a");
-          link.href = "mailto:vishal@novapharmhealthcare.com";
-          link.textContent = "vishal@novapharmhealthcare.com";
+          link.href = "mailto:bd@novapharmhealthcare.com";
+          link.textContent = "bd@novapharmhealthcare.com";
           status.append(link, document.createTextNode("."));
         }
       } finally {
         clearTimeout(deadline);
+        form.removeAttribute("aria-busy");
         if (submit) submit.disabled = false;
+        if (status instanceof HTMLElement) status.focus({ preventScroll: true });
       }
     });
+    // Fail closed until every setup step and the submit handler are installed.
+    if (submit) submit.disabled = false;
+    if (status) status.textContent = "";
   }
 }

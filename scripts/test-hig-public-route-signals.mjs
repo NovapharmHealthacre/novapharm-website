@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inspectPublicHigSignals } from "./hig-public-route-signals.mjs";
+import { inspectManagedContactMarkup, inspectPublicHigSignals, MANAGED_CONTACT_ORIGIN } from "./hig-public-route-signals.mjs";
 
 const sha = "a".repeat(40);
 
@@ -52,4 +52,40 @@ test("a data-id attribute cannot impersonate a real skip-navigation target", () 
     '<a class="skip-link" href="#main-content">Skip</a>' +
     '<main data-id="main-content"><h1>NovaPharm</h1></main></html>';
   assert.equal(inspectPublicHigSignals(html).skipLinkWithTarget, false);
+});
+
+test("inert content does not count as a server heading or a keyboard destination", () => {
+  const html = '<html lang=en><body><a class=skip-link href="#main">Skip</a>' +
+    '<template><main id="main"><h1>Template content</h1></main></template>' +
+    '<!-- <h1>Comment</h1> --><main><h1>Visible heading</h1></main></body></html>';
+  const result = inspectPublicHigSignals(html);
+  assert.equal(result.language, "en");
+  assert.equal(result.h1Elements, 1);
+  assert.equal(result.skipLinkWithTarget, false);
+});
+
+const contact = '<form data-live-b2b-enquiry-form data-api-origin="' + MANAGED_CONTACT_ORIGIN + '">' +
+  '<input name="privacyAcknowledgement" type="checkbox" required>' +
+  '<input type="checkbox" required name="safetyConfirmation"></form>' +
+  '<script defer src="/assets/js/contact-production.js"></script>';
+
+test("managed Contact accepts the scoped form, receiver, confirmations and client", () => {
+  assert.deepEqual(inspectManagedContactMarkup(contact), { emailDraftOnly: false, issues: [] });
+});
+
+test("reachable email-only Contact is a regression, not a passing page with a warning", () => {
+  const report = inspectManagedContactMarkup('<h1>Contact</h1><form method="post" action="mailto:team@example.test"></form>');
+  assert.equal(report.emailDraftOnly, true);
+  assert.ok(report.issues.includes("Expected exactly one managed business enquiry form"));
+  assert.ok(report.issues.includes("Email-draft form present on managed Contact"));
+});
+
+test("stale, changed or duplicate Contact markers do not pass", () => {
+  for (const html of [
+    contact + contact, contact.replace(MANAGED_CONTACT_ORIGIN, "https://other.example"),
+    contact.replace('required name="safetyConfirmation"', 'name="safetyConfirmation"'),
+    contact.replace("contact-production.js", "contact-email-draft.js"),
+    "<!--" + contact + "-->", "<template>" + contact + "</template>",
+    "<script type=\"application/json\">" + JSON.stringify(contact) + "</script>"
+  ]) assert.ok(inspectManagedContactMarkup(html).issues.length > 0);
 });

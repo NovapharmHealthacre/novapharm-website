@@ -416,15 +416,48 @@ for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service
   if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
 }
 
+// The August logo-pack bytes are preserved as historical source evidence.
+// Current public Healthcare identity is the November owner-approved SVG plus
+// SHA-verified raster derivatives. Fail closed against both governing manifests.
+const ownerBrand = JSON.parse(source("config/brand-identities.json"));
+const derivativeRegister = JSON.parse(source("audit/generated/three-brand-raster-provenance.json"));
+const healthcare = ownerBrand.brands?.healthcare;
+const logoVector = "assets/brand/novapharm-healthcare-logo.svg";
+const faviconVector = "assets/brand/favicon.svg";
+const rasterPaths = [
+  "assets/brand/novapharm-healthcare-logo.png",
+  "assets/brand/novapharm-open-graph-1200x630-white.jpg"
+];
+if (ownerBrand.approvedOn !== "2026-11-22" ||
+    healthcare?.hex !== "#9D1B32" ||
+    healthcare?.primaryVector !== "/" + logoVector ||
+    healthcare?.favicon !== "/" + faviconVector ||
+    derivativeRegister.sourceDate !== ownerBrand.approvedOn ||
+    derivativeRegister.method !== "SVG source master rasterized by sharp" ||
+    // The pre-existing, SHA-pinned social JPEGs still use the former Mineral White.
+    // The website canvas is Pure White; do not rewrite historical raster provenance
+    // or claim artwork regeneration until those image bytes are independently reviewed.
+    ![ownerBrand.neutralPalette?.primaryWhite?.hex, "#FBFAEF"].includes(derivativeRegister.lightSocialBackground) ||
+    !Array.isArray(derivativeRegister.files)) {
+  fail("current owner-approved brand or generated derivative provenance is invalid");
+}
+const generatedEntries = derivativeRegister.files ?? [];
+const generatedHashes = new Map(generatedEntries.map((item) => [item.path, item.sha256]));
+if (generatedHashes.size !== generatedEntries.length) {
+  fail("duplicate entries in generated brand asset provenance");
+}
 const logoHashes = new Map([
-  ["assets/brand/novapharm-healthcare-logo.svg", "9199250e117b5c7d2b39d4d08d33522928f668d36316863b4e60f5eb7ca2a729"],
-  ["assets/brand/novapharm-healthcare-logo.png", "f1f5a0e0aa68ebf0f6f0370b45c2810d41b9420c2c930d4649cf199efeb96fdf"],
-  ["assets/brand/favicon.svg", "f8abf32bef19098701e2e66097358d6f4fd517307dce19efb56b18b7cac43fcc"],
-  ["assets/brand/novapharm-open-graph-1200x630-white.jpg", "1239b1c71f95a3d0c34d02e068c2f86c85196aab617551be18e9783e7a18be8f"]
+  [logoVector, healthcare?.primaryVectorZipSha256],
+  [faviconVector, healthcare?.browserIconZipSha256],
+  ...rasterPaths.map((file) => [file, generatedHashes.get(file)])
 ]);
 for (const [file, expectedHash] of logoHashes) {
+  if (typeof expectedHash !== "string" || !/^[a-f0-9]{64}$/u.test(expectedHash)) {
+    fail(`${file} lacks owner-approved SHA-256 provenance`);
+    continue;
+  }
   const hash = createHash("sha256").update(readFileSync(join(root, file))).digest("hex");
-  if (hash !== expectedHash) fail(`${file} no longer matches the supplied official master`);
+  if (hash !== expectedHash) fail(`${file} differs from the approved owner source or registered generated derivative`);
 }
 const manifest = JSON.parse(source("manifest.webmanifest"));
 const expectedManifestIcons = [
@@ -437,7 +470,7 @@ for (const [src, sizes, purpose] of expectedManifestIcons) {
     fail(`web manifest is missing approved icon ${src}`);
   }
 }
-if (manifest.theme_color !== "#E3120B" || manifest.background_color !== "#ffffff") fail("web manifest must use approved NovaPharm brand colours");
+if (manifest.theme_color !== healthcare?.hex || manifest.background_color !== ownerBrand.neutralPalette?.primaryWhite?.hex) fail("web manifest must use owner-approved Healthcare crimson and Pure White");
 
 for (const file of redirectPages) {
   const html = source(file);
