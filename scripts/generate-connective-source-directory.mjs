@@ -6,6 +6,7 @@
  * generated until the authoritative catalogue/checkout has approved an offer.
  */
 import assert from 'node:assert/strict';
+import { parse } from 'parse5';
 import { existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
@@ -45,9 +46,33 @@ function metadataPage(shell, route, title, description, main, {indexable=false, 
   let html = shell.replace(oldMain[0], () => main);
   // The shell supplies the authentic global header/footer, accessibility and
   // navigation. Prevent inherited Products social and structured data claims.
-  html = html.replace(/<meta\s+(?:property|name)="(?:og:|twitter:)[^>]*>/gi, '');
-  html = html.replace(/<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/gi, '');
-  html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+  // Remove inherited social metadata and schema via parsed HTML source
+  // boundaries. Never use a regex to remove a script element: incomplete
+  // multi-character sanitisation can leave executable HTML behind.
+  const document = parse(html, {sourceCodeLocationInfo:true});
+  const ranges = [];
+  function visit(node) {
+    const attrs=Object.fromEntries((node.attrs||[]).map(a=>[a.name,a.value]));
+    const social=node.nodeName==='meta' &&
+      [attrs.name,attrs.property].some(v=>typeof v==='string' && /^(?:og:|twitter:)/i.test(v));
+    const structured=node.nodeName==='script' &&
+      attrs.type?.toLowerCase()==='application/ld+json';
+    const marker=node.nodeName==='#comment' &&
+      /^\\s*page-specific-social-(?:start|end)\\s*$/.test(node.data||'');
+    if(social||structured||marker) {
+      const loc=node.sourceCodeLocation;
+      assert(loc&&Number.isSafeInteger(loc.startOffset)&&Number.isSafeInteger(loc.endOffset)&&
+        loc.startOffset>=0&&loc.endOffset<=html.length&&loc.startOffset<loc.endOffset,
+        'Unlocatable inherited metadata');
+      ranges.push([loc.startOffset,loc.endOffset]);
+    }
+    for(const child of node.childNodes||[])visit(child);
+    if(node.content)visit(node.content);
+  }
+  visit(document);
+  for(const [start,end] of ranges.sort((x,y)=>y[0]-x[0])){
+    html=html.slice(0,start)+html.slice(end);
+  }
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
   html = html.replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${baseUrl+route}">`);
   html = html.replace(/<meta name="description" content="[^"]*">/i, `<meta name="description" content="${escapeHtml(description)}">`);
