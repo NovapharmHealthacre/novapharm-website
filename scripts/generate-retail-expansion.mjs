@@ -75,9 +75,12 @@ function collectionCard(p,route){
  return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><div class="npr-card-purchase" data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></div></article>';
 }
 const input='src/content/approved-consumer-catalogue.json';
-if(existsSync(file(input))){
- const items=JSON.parse(read(input));
- assert(Array.isArray(items)&&items.length>0);
+const approvedCatalogue=existsSync(file(input))?JSON.parse(read(input)):[];
+assert(Array.isArray(approvedCatalogue),'Approved consumer catalogue must be an array');
+// Zero approved products is a valid fail-closed state; preserve the existing
+// browse-only Connective pages and never emit static prices or Offer schema.
+if(approvedCatalogue.length>0){
+ const items=approvedCatalogue;
  const permitted=new Set(['ean','brand','name','category','image','imageRightsConfirmed','identityConfirmed','publicListingApproved','pack','gallery','productClass','description','ingredients','directions','warnings']);
  const ids=new Set();
  for(const p of items){
@@ -178,8 +181,8 @@ if(catalogueSeo.length){
  write('sitemap.xml',sitemap);
 }
 const giftLink='<a href="/corporate-gifts/">Corporate gifts</a>';
-const catalogueLink=existsSync(file(input))?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
-const connectiveLanding=existsSync(file(input))?(()=>{const approved=JSON.parse(read(input));const hero=approved[0];return '<section class="np-products-panel np-products-panel-nutraxin" aria-labelledby="np-products-connective-title"><div class="np-products-wrap np-products-panel-inner"><div class="np-products-panel-copy"><p class="np-products-kicker">Health and wellbeing</p><h2 id="np-products-connective-title">Find what works for you.</h2><p class="np-products-panel-lead">Explore '+approved.length+' UK product references across trusted wellbeing brands.</p><a class="np-products-link" href="/products/health-and-wellbeing/">Explore products <span aria-hidden="true">›</span></a></div><div class="np-products-panel-art np-products-panel-art-nutraxin"><img src="'+escape(hero.image)+'" alt="'+escape(hero.name)+' original product pack" width="700" height="700" loading="lazy" decoding="async"></div></div></section>';})():'';
+const catalogueLink=approvedCatalogue.length>0?'<a href="/products/health-and-wellbeing/">Health and wellbeing</a>':'';
+const connectiveLanding=approvedCatalogue.length>0?(()=>{const approved=approvedCatalogue;const hero=approved[0];return '<section class="np-products-panel np-products-panel-nutraxin" aria-labelledby="np-products-connective-title"><div class="np-products-wrap np-products-panel-inner"><div class="np-products-panel-copy"><p class="np-products-kicker">Health and wellbeing</p><h2 id="np-products-connective-title">Find what works for you.</h2><p class="np-products-panel-lead">Explore '+approved.length+' UK product references across trusted wellbeing brands.</p><a class="np-products-link" href="/products/health-and-wellbeing/">Explore products <span aria-hidden="true">›</span></a></div><div class="np-products-panel-art np-products-panel-art-nutraxin"><img src="'+escape(hero.image)+'" alt="'+escape(hero.name)+' original product pack" width="700" height="700" loading="lazy" decoding="async"></div></div></section>';})():'';
 const landing='<section class="npr-wrap npr-section" aria-label="More from NovaPharm"><h2>Explore more.</h2><div class="npr-categories">'+giftLink+catalogueLink+'<a href="/pharmacy-partners/">Pharmacy partners</a></div></section>';
 write('products/index.html',template.replace(originalMain[0],()=>originalMain[0].replace('</main>',connectiveLanding+landing+'</main>')).replace('</head>','<link rel="stylesheet" href="/assets/css/retail-expansion.css"></head>'));
 console.log('Retail expansion generated; new consumer catalogue requires separately approved identity and licensed imagery.');

@@ -168,7 +168,7 @@
     "test:commerce-stock-live": "node --test scripts/test-commerce-stock-live.mjs",
     "test:visual-search": "node --test scripts/test-intelligence-visual-search.mjs",
     "native:branding:validate": "node --test scripts/test-native-intelligence-brand-icons.mjs",
-    "test:multibrand-retail": "node --test scripts/test-multibrand-retail.mjs"
+    "test:multibrand-retail": "node --test scripts/test-multibrand-retail.mjs scripts/test-connective-consumer-research.mjs scripts/test-connective-source-directory.mjs"
   },
   "engines": {
     "node": "24.x",
