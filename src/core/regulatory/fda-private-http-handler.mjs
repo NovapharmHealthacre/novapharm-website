@@ -49,6 +49,86 @@ function groupsFromTrustedClaims(value) {
     return Array.isArray(parsed) ? new Set(parsed.filter(x=>typeof x === "string")) : new Set();
   } catch { return new Set(); }
 }
+// A new adapter field must be reviewed rather than automatically emitted to
+// board clients. This also prevents a future parser regression from forwarding
+// raw safety, contact, token, or patient payloads through a permitted source.
+const allowedResultKeys=new Set([
+  "sourceId","jurisdiction","publisher","kind","query","retrievedAt",
+  "sourceDocumentation","sourceEndpoint","recordType","dataState",
+  "matchedCountReported","records","limitations","truncated"
+]);
+const recordFields=Object.freeze({
+  labels:new Set(["recordId","setId","effectiveDate","genericNames",
+    "brandNames","applicationNumbers","productTypes"]),
+  approvals:new Set(["applicationNumber","sponsorName","products","submissions"]),
+  ndc:new Set(["productNdc","genericName","brandName","labelerName",
+    "marketingCategory","marketingStartDate","packageNdcs"]),
+  recalls:new Set(["recallNumber","classification","status","reportDate",
+    "productDescription","reasonForRecall","recallingFirm"]),
+  "adverse-events":new Set()
+});
+const approvalProductFields=new Set(["brandName","dosageForm","marketingStatus","productNumber"]);
+const approvalSubmissionFields=new Set(["status","statusDate","type"]);
+function safeText(value,max=512){
+  return value===null || (typeof value==="string" && value.length<=max &&
+    !/[\p{Cc}\p{Cf}\p{Cs}]/u.test(value));
+}
+function safeTextArray(value,maxCount){
+  return Array.isArray(value) && value.length<=maxCount &&
+    value.every(v=>safeText(v,160));
+}
+function safeObject(value,keys){
+  return value && typeof value==="object" && !Array.isArray(value) &&
+    Object.keys(value).every(k=>keys.has(k)) &&
+    Object.values(value).every(v=>safeText(v,160));
+}
+function safeRecord(kind,record){
+  if(!record || typeof record!=="object" || Array.isArray(record) ||
+     !Object.keys(record).every(k=>recordFields[kind]?.has(k)))return false;
+  for(const [key,value] of Object.entries(record)){
+    if(kind==="approvals" && (key==="products" || key==="submissions")){
+      const fields=key==="products"?approvalProductFields:approvalSubmissionFields;
+      if(!Array.isArray(value) || value.length>2 ||
+         !value.every(v=>safeObject(v,fields)))return false;
+    }else if((kind==="labels" && ["genericNames","brandNames",
+      "applicationNumbers","productTypes"].includes(key)) ||
+      (kind==="ndc" && key==="packageNdcs")){
+      if(!safeTextArray(value,4))return false;
+    }else if(!safeText(value,256))return false;
+  }
+  return true;
+}
+function safeSourceResult(kind,result){
+  if(!result || typeof result!=="object" || Array.isArray(result) ||
+     !Object.keys(result).every(k=>allowedResultKeys.has(k)) ||
+     !Array.isArray(result.records) || result.records.length>5 ||
+     result.sourceId!==(kind==="labels"?"us.fda.openfda-labels":"us.fda.openfda."+kind) ||
+     (result.kind!==undefined && result.kind!==kind) ||
+     !["no_source_matches","public_source_observations"].includes(result.dataState) ||
+     (result.dataState==="no_source_matches" && result.records.length!==0) ||
+     (kind==="adverse-events" && result.records.length!==0) ||
+     !result.records.every(row=>safeRecord(kind,row)))return false;
+  for(const [key,value] of Object.entries(result)){
+    if(key==="records" || key==="sourceId" || key==="dataState")continue;
+    if(key==="limitations"){
+      if(!safeTextArray(value,8))return false;
+    }else if(key==="matchedCountReported"){
+      if(value!==null && (!Number.isSafeInteger(value) || value<0))return false;
+    }else if(key==="truncated"){
+      if(typeof value!=="boolean")return false;
+    }else if(!safeText(value,512))return false;
+  }
+  return true;
+}
+function numericDateClaim(value) {
+  // API Gateway-supplied Cognito access-token NumericDate claims are integers
+  // (or decimal integer strings). Never coerce null, booleans, whitespace,
+  // non-finite, fractional or malformed dates into valid authorization times.
+  if (typeof value !== "number" &&
+      !(typeof value === "string" && /^[0-9]{1,16}$/u.test(value))) return null;
+  const numeric = Number(value);
+  return Number.isSafeInteger(numeric) && numeric > 0 ? numeric : null;
+}
 function authorized(event, env, nowSeconds) {
   const jwt = event?.requestContext?.authorizer?.jwt;
   const claims = jwt?.claims;
@@ -57,9 +137,16 @@ function authorized(event, env, nowSeconds) {
   if (!claims.sub || typeof claims.sub !== "string") return false;
   if (claims.iss !== env.NPI_FDA_EXPECTED_ISSUER) return false;
   if (!audienceSet(env.NPI_FDA_APPROVED_CLIENT_IDS).has(claims.client_id)) return false;
-  if (!Number.isSafeInteger(Number(claims.exp)) || Number(claims.exp) <= nowSeconds) return false;
-  if (claims.nbf && Number(claims.nbf) > nowSeconds) return false;
-  if (claims.iat && Number(claims.iat) > nowSeconds + 30) return false;
+  const exp = numericDateClaim(claims.exp);
+  if (exp === null || exp <= nowSeconds) return false;
+  if (claims.nbf !== undefined) {
+    const nbf = numericDateClaim(claims.nbf);
+    if (nbf === null || nbf > nowSeconds) return false;
+  }
+  if (claims.iat !== undefined) {
+    const iat = numericDateClaim(claims.iat);
+    if (iat === null || iat > nowSeconds + 30) return false;
+  }
   if (!validScope(claims, jwt, env.NPI_FDA_REQUIRED_SCOPE)) return false;
   const permitted = audienceSet(env.NPI_FDA_APPROVED_BOARD_GROUPS);
   if (!permitted.size) return false;
@@ -77,13 +164,23 @@ function configured(env) {
     /^novapharm\/[A-Za-z0-9._-]+$/u.test(env.NPI_FDA_REQUIRED_SCOPE || "");
 }
 function queryParams(event) {
-  if (typeof event?.rawQueryString === "string" && event.rawQueryString.length > 500) return null;
+  // HTTP API payload v2 collapses repeated raw query parameters into the
+  // queryStringParameters object. Compare both representations and reject
+  // parameter pollution before calling the FDA or charging a board quota.
+  const raw = event?.rawQueryString;
+  if (typeof raw !== "string" || !raw || raw.length > 500 || raw.split("&").length !== 2) return null;
+  const parsed = new URLSearchParams(raw);
+  const keys = [...parsed.keys()];
+  if (keys.length !== 2 || keys.filter(k=>k==="kind").length !== 1 ||
+      keys.filter(k=>k==="drug").length !== 1) return null;
   const values = event?.queryStringParameters;
-  if (!values || typeof values !== "object" || Array.isArray(values)) return null;
+  if (!values || typeof values !== "object" || Array.isArray(values) ||
+      Object.keys(values).length !== 2) return null;
   const kind = values.kind;
   const drug = values.drug;
-  if (typeof kind !== "string" || !kindSet.has(kind)) return null;
-  if (typeof drug !== "string" || drug.length > 80 || !/^[A-Za-z][A-Za-z0-9 -]{1,63}$/u.test(drug)) return null;
+  if (typeof kind !== "string" || !kindSet.has(kind) || parsed.get("kind") !== kind) return null;
+  if (typeof drug !== "string" || drug.length > 80 ||
+      parsed.get("drug") !== drug || !/^[A-Za-z][A-Za-z0-9 -]{1,63}$/u.test(drug)) return null;
   return { kind, drug };
 }
 /**
@@ -116,8 +213,10 @@ export function createPrivateFdaHandler({ limit, searchLabels=searchOpenFdaLabel
         : await searchEvidence(q.kind,q.drug,context);
       // Never forward error objects, patient-level events, cookies, or source
       // transport headers from an upstream API.
-      if (!result || typeof result !== "object" || !Array.isArray(result.records)) throw Error("Invalid source");
-      if (q.kind==="adverse-events" && result.records.length!==0) throw Error("FAERS must be count-only");
+      if (!safeSourceResult(q.kind,result)) throw Error("Invalid source");
+      // Response payloads remain bounded even if an upstream adapter regresses.
+      const serialized=JSON.stringify(result);
+      if (Buffer.byteLength(serialized,"utf8")>256*1024) throw Error("Oversized FDA response");
       return respond(200,result);
     } catch(error) {
       const status = error?.statusCode===400 ? 400 : 503;
