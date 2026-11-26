@@ -1,0 +1,98 @@
+{
+  "schema": "novapharm-connective-manufacturer-online-reference-v1",
+  "notLicenceEvidence": true,
+  "requiresPackReview": true,
+  "products": [
+    {
+      "ean": "5010058089785",
+      "name": "Pregnacare Original",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/pregnacare-original-tablets",
+      "ingredients": "Maltodextrin, magnesium oxide, microcrystalline cellulose, vitamin C, ferrous fumarate, zinc sulphate, tablet coating, silicon dioxide, stearic acid, magnesium stearate, niacin, vitamin B6, beta-carotene, calcium pantothenate, vitamin B12, vitamin E from soya, vitamin D3, thiamin, riboflavin, copper sulphate, vitamin K1, folic acid, potassium iodide, biotin and sodium selenate.",
+      "allergens": "Manufacturer identifies vitamin E derived from soya. Refer to the actual pack for the complete legally emphasised allergen declaration.",
+      "directions": "One tablet daily with the main meal, swallowed whole with water or a cold drink.",
+      "precautions": "Food supplement. Do not exceed the suggested intake; not a substitute for a varied diet. Contains iron and vitamin K. Seek medical advice before use with anticoagulants. Keep away from children and store dry below 25°C.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5010058089792",
+      "name": "Feroglobin Liquid",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/feroglobin-liquid",
+      "ingredients": "Purified water, cane sugar, barley malt extract, glucose liquid containing sulphites, honey, lysine hydrochloride, ferric ammonium citrate, zinc sulphate, vitamin C, xanthan gum, niacin, calcium glycerophosphate, mixed carotenes, thiamin, orange flavouring, beetroot-derived colour, citric acid, vitamin B6, potassium sorbate, pantothenic acid, vitamin B2, copper sulphate, manganese sulphate, folic acid, potassium iodide and vitamin B12.",
+      "allergens": "Contains barley (gluten) and sulphites. Contains honey. Verify the complete allergen emphasis against the supplied UK pack.",
+      "directions": "Adults: 5 ml twice daily. Children aged 3–6: 2.5 ml twice daily. Children aged 7–12: 5 ml once or twice daily.",
+      "precautions": "Food supplement containing iron; keep away from young children. Do not exceed the recommended intake. Manufacturer advises refrigeration after opening and consumption within eight weeks. Check the bottle label before use.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265243372",
+      "name": "Ultra Vitamin D 1000IU",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets",
+      "ingredients": "Maltodextrin, microcrystalline cellulose, vitamin D3 (cholecalciferol), antioxidant DL-alpha-tocopherol, tablet coating containing hydroxypropylmethylcellulose, isomalt, medium-chain triglycerides and calcium carbonate, plus silicon dioxide, stearic acid and magnesium stearate.",
+      "allergens": "Manufacturer states the production site may handle nuts. Check the actual pack for allergen declarations.",
+      "directions": "One tablet daily with a main meal and water or a cold drink; swallow without chewing.",
+      "precautions": "Food supplement; not suitable for children. Do not exceed the recommended intake. Seek professional advice if pregnant, breastfeeding or medically supervised. Store dry below 25°C, away from children.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265221301",
+      "name": "Wellman Original",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/wellman-original-tablets",
+      "ingredients": "Calcium carbonate, microcrystalline cellulose, magnesium oxide, vitamin C, L-carnitine tartrate, zinc sulphate, vitamin E from soya, tablet coating, niacin, L-arginine, thiamin, para-aminobenzoic acid, silicon dioxide, L-methionine, ferrous fumarate, citrus bioflavonoids, pantothenic acid, vitamin B6, beta-carotene, vitamin A, manganese sulphate, magnesium stearate, riboflavin, vitamin D3, Siberian ginseng extract, copper sulphate, coenzyme Q10, folic acid, sodium selenate, chromium trichloride, potassium iodide, biotin and vitamin B12.",
+      "allergens": "Manufacturer lists vitamin E sourced from soya. Consult the physical pack for full allergen emphasis.",
+      "directions": "One tablet a day with the main meal, on a full stomach, swallowed with water.",
+      "precautions": "Food supplement; do not exceed the recommended intake. Contains iron. Seek advice if under medical supervision or taking treatments that may interact. Store out of children’s reach.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265249282",
+      "name": "Osteocare Original",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/osteocare-original-tablets",
+      "ingredients": "Calcium carbonate, magnesium hydroxide, potato starch, zinc sulphate, tablet coating containing hydroxypropylmethylcellulose, isomalt, medium-chain triglycerides and calcium carbonate, vitamin D3, purified talc, sodium borate, crosslinked cellulose gum, manganese sulphate, copper sulphate and sodium selenite.",
+      "allergens": "Manufacturer states that the production facility may handle nuts. Verify the actual UK pack.",
+      "directions": "Two tablets a day with the main meal, swallowed with water or a cold drink.",
+      "precautions": "Food supplement, not for children. Do not exceed the advised daily dose; consult a professional if medically supervised or allergic to an ingredient. Keep dry below 25°C and away from children.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265249305",
+      "name": "Osteocare Original",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/osteocare-original-tablets",
+      "ingredients": "Calcium carbonate, magnesium hydroxide, potato starch, zinc sulphate, tablet coating containing hydroxypropylmethylcellulose, isomalt, medium-chain triglycerides and calcium carbonate, vitamin D3, purified talc, sodium borate, crosslinked cellulose gum, manganese sulphate, copper sulphate and sodium selenite.",
+      "allergens": "Manufacturer states that the production facility may handle nuts. Verify the actual UK pack.",
+      "directions": "Two tablets a day with the main meal, swallowed with water or a cold drink.",
+      "precautions": "Food supplement, not for children. Do not exceed the advised daily dose; consult a professional if medically supervised or allergic to an ingredient. Keep dry below 25°C and away from children.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265223305",
+      "name": "Perfectil Original",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/perfectil-original-tablets",
+      "ingredients": "Maltodextrin, microcrystalline cellulose, dibasic calcium phosphate, magnesium oxide, vitamin C, pantothenic acid, vitamin E sourced from soya, tablet coating, zinc sulphate, ferrous fumarate, stearic acid, silicon dioxide, magnesium stearate, niacin, L-cysteine, grape-seed extract, thiamin, vitamin B6, vitamin B12, beta-carotene, crosslinked cellulose gum, riboflavin, vitamin D3, chromium chloride, copper sulphate, manganese sulphate, folic acid, potassium iodide, sodium selenate and biotin.",
+      "allergens": "Vitamin E from soya; manufacturer reports a facility that may handle nuts and peanuts. The pack-specific allergen statement must be checked.",
+      "directions": "One tablet a day with the main meal, swallowed whole with water and taken on a full stomach.",
+      "precautions": "Food supplement; contains iron and must be kept away from young children. Not suitable for children. Seek medical advice if pregnant, breastfeeding or medically supervised. Keep dry below 25°C.",
+      "sourceCheckedOn": "2026-11-26",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    }
+  ]
+}
