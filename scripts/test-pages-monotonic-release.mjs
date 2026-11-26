@@ -4,20 +4,21 @@ import assert from "node:assert/strict";
 import { canShip, compareStatus, REVIEWED_LEGACY_PAGES_SHA } from "./check-pages-monotonic-release.mjs";
 
 const a="a".repeat(40), b="b".repeat(40), c="c".repeat(40);
-test("approved newer build may publish despite unrelated newer main commits", () => {
-  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"ahead"}),true);
+test("stale queued build cannot publish after main advances, even if it is newer than live", () => {
+  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"ahead"}),false);
 });
 test("current main and candidate exactly match", () => {
   assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:b,publishedToCandidate:"ahead",candidateToMain:"identical"}),true);
 });
 test("publishing the already live build is safe but a rollback is not", () => {
-  assert.equal(canShip({publishedSha:b,candidateSha:b,mainSha:c,publishedToCandidate:"identical",candidateToMain:"ahead"}),true);
-  assert.equal(canShip({publishedSha:c,candidateSha:b,mainSha:c,publishedToCandidate:"behind",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:b,candidateSha:b,mainSha:b,publishedToCandidate:"identical",candidateToMain:"identical"}),true);
+  assert.equal(canShip({publishedSha:b,candidateSha:b,mainSha:c,publishedToCandidate:"identical",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:c,candidateSha:b,mainSha:b,publishedToCandidate:"behind",candidateToMain:"identical"}),false);
 });
 test("diverged history, missing deployment and unknown comparisons fail closed", () => {
-  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"diverged",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:b,publishedToCandidate:"diverged",candidateToMain:"identical"}),false);
   assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"behind"}),false);
-  assert.equal(canShip({publishedSha:"",candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:"ahead"}),false);
+  assert.equal(canShip({publishedSha:"",candidateSha:b,mainSha:b,publishedToCandidate:"ahead",candidateToMain:"identical"}),false);
   assert.equal(canShip({publishedSha:a,candidateSha:b,mainSha:c,publishedToCandidate:"ahead",candidateToMain:undefined}),false);
 });
 
@@ -25,8 +26,8 @@ test("diverged history, missing deployment and unknown comparisons fail closed",
 test("unrelated legacy branch is accepted only with exact independent migration proof", () => {
   const legacy = "4c641e6c4277224014626e25bbf0bef060ba9706";
   assert.equal(REVIEWED_LEGACY_PAGES_SHA, legacy);
-  const proposal = { publishedSha: legacy, candidateSha: b, mainSha: c,
-    publishedToCandidate: "unrelated", candidateToMain: "ahead" };
+  const proposal = { publishedSha: legacy, candidateSha: b, mainSha: b,
+    publishedToCandidate: "unrelated", candidateToMain: "identical" };
   assert.equal(canShip({ ...proposal, legacyBridgeVerified: true }), true);
   for (const change of [
     { legacyBridgeVerified: false },
@@ -36,6 +37,8 @@ test("unrelated legacy branch is accepted only with exact independent migration 
     { publishedSha: "827fdf67341fe2f289e6d1a7810f847521b05dac", legacyBridgeVerified: true },
     { publishedSha: "f82e3ab9391ec7d9185c254a7cc5877b5885a62b", legacyBridgeVerified: true },
     { publishedSha: "f942eafabfd18161da10835c49a1b1cf93e9b72f", legacyBridgeVerified: true },
+    { mainSha: c, candidateToMain: "ahead", legacyBridgeVerified: true },
+    { mainSha: c, candidateToMain: "identical", legacyBridgeVerified: true },
     { candidateToMain: "behind", legacyBridgeVerified: true },
     { candidateToMain: "diverged", legacyBridgeVerified: true },
     { candidateToMain: undefined, legacyBridgeVerified: true },
@@ -51,6 +54,7 @@ test("deployment passes owner-scoped manual release inputs to the independent gu
   assert.match(workflow, /RELEASE_EVENT: \$\{\{ github\.event_name \}\}/);
   assert.match(workflow, /BRANDING_ONLY: \$\{\{ inputs\.branding_only \}\}/);
   assert.match(workflow, /CONTACT_API_ORIGIN: \$\{\{ inputs\.contact_api_origin \}\}/);
+  assert.match(workflow, /name: Recheck exact current main immediately before publication[\s\S]*?test "\$current_main" = "\$EXPECTED_SHA"[\s\S]*?name: Publish verified Pages artifact/);
 });
 
 
