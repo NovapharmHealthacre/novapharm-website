@@ -46,7 +46,7 @@ This change does **not** waive accurate retail pricing and VAT, complete mandato
 
 ## Exact-GTIN private Trade price import
 
-The original supplier workbooks and derived price schedule remain outside the repository. The private price draft has schema `novapharm-private-connective-price-draft-v1`, currency `GBP`, and records keyed by GTIN/SKU, with `pricingStatus` and `proposedNetMinor` (integer pence or null). The draft is not a public offer. For Trade-column matches the selected net selling price is copied exactly; for unit-price-only and missing-quote rows an independently reviewed selling price is required, never a guessed markup or silent use of acquisition cost.
+The original supplier workbooks and derived price schedule remain outside the repository. The private price draft has schema `novapharm-private-connective-price-draft-v1`, currency `GBP`, and records keyed by GTIN/SKU, with `pricingStatus` and `proposedNetMinor` (integer pence or null). The draft is not a public offer. For Trade-column matches the selected net selling price is copied exactly. On 26 November 2026 the owner expressly selected a 15% markup for unit-price-only quotes: `UNIT_PRICE_MARKUP_APPROVED` records include the original `quotedUnitMinor`, `markupBasisPoints:1500`, and `proposedNetMinor = floor((quotedUnitMinor * 11500 + 5000) / 10000)`. This rounds half-up to a penny before applying verified VAT. The importer independently recomputes the markup. Missing-quote rows remain unpriced until a genuine price is provided. The private quote and markup basis never enter the public offer.
 
 The same authoritative offer admission command accepts an optional private draft:
 
