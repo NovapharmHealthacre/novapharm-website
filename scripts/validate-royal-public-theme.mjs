@@ -47,6 +47,25 @@ if (existsSync(nutraxinDirectory)) {
     }
   }
 }
+// Retail routes are generated from the explicit approved consumer catalogue.
+ // Source-only supplier references remain noindex and MUST NOT be added to the
+ // governed canonical registry. Validate every admitted GTIN before accepting
+ // its dynamically created product and collection pages.
+const approvedRetail = JSON.parse(read("src/content/approved-consumer-catalogue.json"));
+assert.ok(Array.isArray(approvedRetail), "Approved retail catalogue must be an array");
+if (approvedRetail.length) {
+  const seenGtin = new Set();
+  for (const product of approvedRetail) {
+    assert.match(product?.ean ?? "", /^\\d{13}$/, "Invalid approved retail GTIN");
+    assert.ok(!seenGtin.has(product.ean) && product.identityConfirmed === true &&
+      product.imageRightsConfirmed === true && product.publicListingApproved === true,
+      "Duplicate or unapproved retail identity");
+    seenGtin.add(product.ean);
+    expectedCanonicalFiles.add("products/health-and-wellbeing/" + product.ean + "/index.html");
+  }
+  expectedCanonicalFiles.add("products/health-and-wellbeing/index.html");
+}
+
 const registeredFiles = register.map((page) => page.file);
 assert.equal(new Set(registeredFiles).size, registeredFiles.length,
   "Duplicate canonical public-page records");
