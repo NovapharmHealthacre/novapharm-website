@@ -16,26 +16,26 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ${{ github.event.pull_request.head.sha }
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: true
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: connective-packshot-review
           path: review/batch01
           run-id: 45533367019
-          github-token: ${{ github.token }
+          github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: connective-batch02-part-*
           path: review/batch02
           run-id: 45537009006
-          github-token: ${{ github.token }
+          github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: vitabiotics-packshot-review
           path: review/vitabiotics
           run-id: 45545185102
-          github-token: ${{ github.token }
+          github-token: ${{ github.token }}
       - name: Install pinned media decoder in isolated environment
         run: |
           python3 -m venv /tmp/npr-image-env
@@ -44,7 +44,7 @@ jobs:
         run: /tmp/npr-image-env/bin/python scripts/materialize-connective-owner-photos.py
       - name: Commit candidates only on this working PR branch
         env:
-          TARGET_BRANCH: ${{ github.head_ref }
+          TARGET_BRANCH: ${{ github.head_ref }}
         run: |
           git config user.name "novapharm-release-bot"
           git config user.email "release-bot@users.noreply.github.com"
