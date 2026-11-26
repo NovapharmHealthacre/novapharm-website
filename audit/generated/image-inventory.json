@@ -2019,8 +2019,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 112,
-      "referenceCount": 232,
+      "usageCount": 113,
+      "referenceCount": 233,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         "404.html",
@@ -2087,6 +2087,7 @@
         "partner-with-us/index.html",
         "portal/index.html",
         "products/index.html",
+        "products/nutraxin/account/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
         "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
