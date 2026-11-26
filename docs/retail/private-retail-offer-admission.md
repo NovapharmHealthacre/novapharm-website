@@ -8,7 +8,7 @@ This importer is the **payment-offer** release gate, not permission to publish a
 2. In a private directory **outside** the repository, create an input JSON with \`{"records":[...]}\`. Each item must have:
    - \`gtin\`, \`sku\` (\`NP-CP-<GTIN>\`), \`name\`, \`brand\`, \`pack\`, \`category\`, \`productClass\`, \`image\`, \`imageSha256\` matching the approved public catalogue and local image.
    - \`netMinor\`, \`vatBasisPoints\` (0/500/2000), \`grossMinor\` calculated using per-unit VAT rounding, \`availableQuantity\` (1–10,000), and \`expiresAt\` (future Unix seconds, no more than 31 days ahead).
-   - \`evidence\` with keys \`retailAuthority\`, \`retailPrice\`, \`vat\`, \`stock\`, \`fulfilment\`, \`sellerDelivery\`, \`ordering\`. Every key contains \`confirmed:true\`, a real \`reference\`, \`reviewedBy\` and \`observedAt\` UTC timestamp of the format \`YYYY-MM-DDTHH:MM:SSZ\`. Stock must have been checked within 48 hours; other evidence within 30 days. A quote is not a live availability report.
+   - \`evidence\` with keys \`retailAuthority\`, \`retailPrice\`, \`vat\`, \`stock\`, \`fulfilment\`, \`sellerDelivery\`, \`ordering\`. Every key contains \`confirmed:true\`, a real \`reference\`, \`reviewedBy\` and \`observedAt\` UTC timestamp of the format \`YYYY-MM-DDTHH:MM:SSZ\`. Stock must have been checked within 48 hours, and the offer must expire no later than 48 hours after that stock observation; other evidence must be within 30 days. Refresh or remove expired offers before accepting orders. A quote is not a live availability report.
 3. Run dry-run:
    \`\`\`
    node scripts/prepare-connective-retail-offers.mjs --root . \
