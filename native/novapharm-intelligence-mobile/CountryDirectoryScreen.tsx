@@ -7,6 +7,7 @@ import React, { useMemo, useState } from "react";
 import { FlatList, Linking, Pressable, StyleSheet, Text, TextInput, useColorScheme, useWindowDimensions, View } from "react-native";
 import catalogue from "../../docs/intelligence/country-101-client-catalog-20261118.json";
 import ownerNationalBrief from "../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
+import integrationPlan from "../../docs/intelligence/global-integration-execution-20261126.json";
 import { mobileDarkPalette, mobileLightPalette } from "./appearance";
 
 type Country = (typeof catalogue.countries)[number];
@@ -77,6 +78,7 @@ function CountryCard({ country, wide, styles }: { country: Country; wide: boolea
             <View key={source.candidateKey} style={styles.source}>
               <Text style={styles.publisher}>{source.provider}</Text>
               <Text style={styles.sourceText}>{source.mode} · Rights not reviewed · Not connected</Text>
+              <Text style={styles.sourceText}>{integrationPlan.sources.find((entry) => entry.candidateKey === source.candidateKey)?.verifiedSourceCodeIds.length ? "Backend adapter source candidate exists; not a live feed" : "Adapter implementation or verification outstanding"}</Text>
               <Text style={styles.sourceText}>{source.domains}</Text>
             </View>
           ))}

@@ -113,6 +113,10 @@ private struct NovaCountryDetailView: View {
                     : "This scope has no admitted national medicine-level dataset. Publisher research and independent evidence are required.")
                     .foregroundStyle(.secondary)
             }
+            Section("Backend integration planning") {
+                Text(["CA", "PL", "SG", "ES", "GB", "US"].contains(country.iso2) ? "Backend adapter source candidate exists; not a live feed" : "Adapter implementation or verification outstanding")
+                    .font(.subheadline)
+            }
             Section("Safety and release requirements") {
                 Text("Source links, national medicine data, commercial and AI reuse, clinical decisions and customer availability are not enabled in this offline iOS app.")
                     .font(.subheadline)

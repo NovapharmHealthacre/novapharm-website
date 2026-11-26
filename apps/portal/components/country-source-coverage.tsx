@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import directory from "../../../docs/intelligence/country-101-client-catalog-20261118.json";
 import ownerNationalBrief from "../../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
+import integrationPlan from "../../../docs/intelligence/global-integration-execution-20261126.json";
 import styles from "./country-source-coverage.module.css";
 
 type Filter = "all" | "candidate" | "research";
@@ -98,6 +99,7 @@ export function CountrySourceCoverage() {
                   <li key={source.candidateKey}>
                     <a href={source.referenceUrl} target="_blank" rel="noopener noreferrer">{source.provider}</a>
                     <span>{source.mode} · Rights not reviewed · Not connected</span>
+                    <small>{integrationPlan.sources.find((entry) => entry.candidateKey === source.candidateKey)?.verifiedSourceCodeIds.length ? "Backend adapter source candidate exists; not a live feed" : "Adapter implementation or verification outstanding"}</small>
                     <small>{source.domains}</small>
                   </li>
                 ))}</ul>

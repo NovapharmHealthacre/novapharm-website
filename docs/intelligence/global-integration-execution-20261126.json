@@ -1,0 +1,2533 @@
+{
+  "contract": "novapharm.intelligence.global-integration-execution.v1",
+  "asOf": "2026-11-26",
+  "note": "Source code existence is not live connectivity. Coverage counts only explicitly reviewed gateway candidates; other code may exist. No production or rights activation.",
+  "summary": {
+    "nationalScopes": 101,
+    "originalNationalList": 77,
+    "originalEuropeanExtension": 5,
+    "additionalResearch": 19,
+    "nationalSourceCandidates": 89,
+    "regionalGlobalSourceCandidates": 12,
+    "reviewedAdapterSources": 11,
+    "reviewedNationalAdapterCountries": 6,
+    "customerLiveCountries": 0
+  },
+  "countries": [
+    {
+      "iso2": "DZ",
+      "country": "Algeria",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-algeria-ministry-of-pharmaceutical-industry"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "AR",
+      "country": "Argentina",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-argentina-anmat"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "AM",
+      "country": "Armenia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "AU",
+      "country": "Australia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "oceania-australia-tga-artg",
+        "oceania-australia-pbs"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "AT",
+      "country": "Austria",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-austria-basg"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "BH",
+      "country": "Bahrain",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-bahrain-nhra"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "BD",
+      "country": "Bangladesh",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-bangladesh-dgda-dghs-fhir"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "BE",
+      "country": "Belgium",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-belgium-famhp-sam"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "BO",
+      "country": "Bolivia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "BW",
+      "country": "Botswana",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "BR",
+      "country": "Brazil",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-brazil-anvisa-and-cmed"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "BG",
+      "country": "Bulgaria",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-bulgaria-bda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "KH",
+      "country": "Cambodia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "CM",
+      "country": "Cameroon",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "CA",
+      "country": "Canada",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "north-america-canada-health-canada-drug-product-database",
+        "north-america-canada-canada-vigilance"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CL",
+      "country": "Chile",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-chile-isp-and-chilecompra"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CN",
+      "country": "China",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-china-nmpa"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CO",
+      "country": "Colombia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-colombia-invima-and-sismed"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CR",
+      "country": "Costa Rica",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "CI",
+      "country": "Côte d’Ivoire",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "HR",
+      "country": "Croatia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-croatia-halmed"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CY",
+      "country": "Cyprus",
+      "scope": "original-european-extension",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "CZ",
+      "country": "Czechia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-czechia-sukl"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "DK",
+      "country": "Denmark",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-denmark-medicinpriser-api"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "DO",
+      "country": "Dominican Republic",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "EC",
+      "country": "Ecuador",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-ecuador-arcsa"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "EG",
+      "country": "Egypt",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-egypt-egyptian-drug-authority"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "EE",
+      "country": "Estonia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-estonia-state-agency-of-medicines"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "ET",
+      "country": "Ethiopia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-ethiopia-efda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "FI",
+      "country": "Finland",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-finland-fimea"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "FR",
+      "country": "France",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-france-ansm-bdpm",
+        "europe-france-open-medic"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "GE",
+      "country": "Georgia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "DE",
+      "country": "Germany",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-germany-bfarm-amice-pharmnet-bund"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "GH",
+      "country": "Ghana",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-ghana-fda-ghana"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "GR",
+      "country": "Greece",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-greece-eof"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "GT",
+      "country": "Guatemala",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "HU",
+      "country": "Hungary",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-hungary-nngyk-ogyei"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "IS",
+      "country": "Iceland",
+      "scope": "original-european-extension",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "IN",
+      "country": "India",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-india-cdsco-sugam",
+        "asia-pacific-india-nppa-pharma-sahi-daam",
+        "asia-pacific-india-abdm-drug-registry",
+        "asia-pacific-india-ctri"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "ID",
+      "country": "Indonesia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-indonesia-bpom-satu-data"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "IE",
+      "country": "Ireland",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-ireland-hpra-authorised-medicines"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "IL",
+      "country": "Israel",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-israel-ministry-of-health-medicines-register"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "IT",
+      "country": "Italy",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-italy-aifa-osmed-and-authorised-lists"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "JP",
+      "country": "Japan",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-japan-pmda-mhlw"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "JO",
+      "country": "Jordan",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-jordan-jfda-open-data"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "KE",
+      "country": "Kenya",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-kenya-ppb"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "KW",
+      "country": "Kuwait",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-kuwait-ministry-of-health"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "LV",
+      "country": "Latvia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-latvia-state-agency-of-medicines"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "LI",
+      "country": "Liechtenstein",
+      "scope": "original-european-extension",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "LT",
+      "country": "Lithuania",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-lithuania-state-medicines-control-agency"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "LU",
+      "country": "Luxembourg",
+      "scope": "original-european-extension",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "MY",
+      "country": "Malaysia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-malaysia-npra-kkmnow"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "MT",
+      "country": "Malta",
+      "scope": "original-european-extension",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "MX",
+      "country": "Mexico",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "north-america-mexico-cofepris"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "MN",
+      "country": "Mongolia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "MA",
+      "country": "Morocco",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-morocco-open-data-ammps"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "MM",
+      "country": "Myanmar",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "NA",
+      "country": "Namibia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "NP",
+      "country": "Nepal",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-nepal-dda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "NL",
+      "country": "Netherlands",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-netherlands-meb-medicines-evaluation-board",
+        "europe-netherlands-gip-databank"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "NZ",
+      "country": "New Zealand",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "oceania-new-zealand-medsafe-nzulm"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "NG",
+      "country": "Nigeria",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-nigeria-nafdac-greenbook"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "NO",
+      "country": "Norway",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-norway-dmp-medicine-fhir-service"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "OM",
+      "country": "Oman",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-oman-ministry-of-health"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "PK",
+      "country": "Pakistan",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-pakistan-drap"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "PA",
+      "country": "Panama",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "PY",
+      "country": "Paraguay",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "PE",
+      "country": "Peru",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-peru-digemid"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "PH",
+      "country": "Philippines",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-philippines-fda-philippines"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "PL",
+      "country": "Poland",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-poland-nfz-drug-program-statistics",
+        "europe-poland-urpl"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "PT",
+      "country": "Portugal",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-portugal-infarmed-sns-transparencia"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "QA",
+      "country": "Qatar",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-qatar-ministry-of-public-health"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "RO",
+      "country": "Romania",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-romania-anmdmr"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "RU",
+      "country": "Russia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-russia-ministry-of-health-grls"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "RW",
+      "country": "Rwanda",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-rwanda-rwanda-fda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SA",
+      "country": "Saudi Arabia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-saudi-arabia-sfda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SN",
+      "country": "Senegal",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "RS",
+      "country": "Serbia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-serbia-alims"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SG",
+      "country": "Singapore",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-singapore-hsa-data-gov-sg"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SK",
+      "country": "Slovakia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-slovakia-sukl"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SI",
+      "country": "Slovenia",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-slovenia-jazmp"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "ZA",
+      "country": "South Africa",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-south-africa-sahpra",
+        "africa-south-africa-department-of-health-sep"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "KR",
+      "country": "South Korea",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-south-korea-mfds-openapi",
+        "asia-pacific-south-korea-hira"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "ES",
+      "country": "Spain",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-spain-aemps-cima"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "LK",
+      "country": "Sri Lanka",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-sri-lanka-nmra"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "SE",
+      "country": "Sweden",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-sweden-fass-and-tlv"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "CH",
+      "country": "Switzerland",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-switzerland-swissmedic"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "TW",
+      "country": "Taiwan",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-taiwan-tfda-and-nhi"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "TZ",
+      "country": "Tanzania",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-tanzania-tmda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "TH",
+      "country": "Thailand",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-thailand-thai-fda-data-go-th"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "TN",
+      "country": "Tunisia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "TR",
+      "country": "Türkiye",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-turkiye-titck"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "UG",
+      "country": "Uganda",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "africa-uganda-nda"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "UA",
+      "country": "Ukraine",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-ukraine-state-expert-center-register"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "AE",
+      "country": "United Arab Emirates",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "middle-east-united-arab-emirates-mohap-ede"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "GB",
+      "country": "United Kingdom",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "europe-united-kingdom-nhsbsa-english-prescribing-dataset",
+        "europe-united-kingdom-mhra-products"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "US",
+      "country": "United States",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "north-america-united-states-fda-openfda",
+        "north-america-united-states-cms-data"
+      ],
+      "adapterSourceCandidateCount": 1,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "UY",
+      "country": "Uruguay",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "latin-america-uruguay-ministry-of-public-health"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "VN",
+      "country": "Vietnam",
+      "scope": "original-national-list",
+      "sourceKeys": [
+        "asia-pacific-vietnam-drug-administration-of-vietnam"
+      ],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify each national dataset and implement missing access",
+      "customerLive": false
+    },
+    {
+      "iso2": "ZM",
+      "country": "Zambia",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    },
+    {
+      "iso2": "ZW",
+      "country": "Zimbabwe",
+      "scope": "additional-research",
+      "sourceKeys": [],
+      "adapterSourceCandidateCount": 0,
+      "next": "Verify national publisher research lead and register distinct dataset",
+      "customerLive": false
+    }
+  ],
+  "sources": [
+    {
+      "candidateKey": "global-global-us-clinicaltrials-gov",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "US ClinicalTrials.gov",
+      "mode": "API",
+      "domains": "Trial registrations, sites, sponsors, status, results",
+      "referenceUrl": "https://clinicaltrials.gov/data-api/api",
+      "verifiedSourceCodeIds": [
+        "global-clinicaltrials"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-europe-pmc",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "Europe PMC",
+      "mode": "API",
+      "domains": "Scientific articles, references, citations",
+      "referenceUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/",
+      "verifiedSourceCodeIds": [
+        "global-europepmc"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-ncbi-pubmed",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "NCBI PubMed",
+      "mode": "API",
+      "domains": "Biomedicine literature and metadata",
+      "referenceUrl": "https://www.ncbi.nlm.nih.gov/books/NBK25501/",
+      "verifiedSourceCodeIds": [
+        "global-pubmed"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-chembl",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "ChEMBL",
+      "mode": "API",
+      "domains": "Compounds, targets, bioactivity",
+      "referenceUrl": "https://www.ebi.ac.uk/chembl/api/data/",
+      "verifiedSourceCodeIds": [
+        "global-chembl"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-pubchem",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "PubChem",
+      "mode": "API",
+      "domains": "Chemical identities and substance properties",
+      "referenceUrl": "https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest",
+      "verifiedSourceCodeIds": [
+        "global-pubchem"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-un-comtrade",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "UN Comtrade",
+      "mode": "API",
+      "domains": "Pharmaceutical commodity cross-border trade",
+      "referenceUrl": "https://comtradeapi.un.org/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-epo-ops",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "EPO OPS",
+      "mode": "API",
+      "domains": "Patent filings and families",
+      "referenceUrl": "https://www.epo.org/en/searching-for-patents/data/web-services/ops",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-who-global-health-observatory",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "WHO Global Health Observatory",
+      "mode": "API-review",
+      "domains": "Demography, health indicators, contextual demand",
+      "referenceUrl": "https://www.who.int/data/gho/info/gho-odata-api",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "global-global-who-umc-vigiaccess",
+      "jurisdiction": "Global",
+      "iso2": null,
+      "provider": "WHO-UMC VigiAccess",
+      "mode": "Restricted/API",
+      "domains": "Aggregated global adverse-event summaries",
+      "referenceUrl": "https://who-umc.org/vigibase-data-access/vigiaccess-api/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-european-union-eea-ema-pms-public-api",
+      "jurisdiction": "European Union / EEA",
+      "iso2": null,
+      "provider": "EMA PMS Public API",
+      "mode": "Beta API",
+      "domains": "Public human medicine regulatory product master data",
+      "referenceUrl": "https://api.pms.ema.europa.eu/public/v1/swagger",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-european-union-eea-ema-esmp",
+      "jurisdiction": "European Union / EEA",
+      "iso2": null,
+      "provider": "EMA ESMP",
+      "mode": "Restricted/API",
+      "domains": "Medicine shortage reporting",
+      "referenceUrl": "https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/medicine-shortages-availability-issues/european-shortages-monitoring-platform",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-european-union-eea-ted",
+      "jurisdiction": "European Union / EEA",
+      "iso2": null,
+      "provider": "TED",
+      "mode": "API",
+      "domains": "EU procurement notices and awards",
+      "referenceUrl": "https://docs.ted.europa.eu/api/latest/search.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-united-kingdom-nhsbsa-english-prescribing-dataset",
+      "jurisdiction": "United Kingdom",
+      "iso2": "GB",
+      "provider": "NHSBSA English Prescribing Dataset",
+      "mode": "API/Download",
+      "domains": "England community dispensing, SNOMED/BNF, period, geography",
+      "referenceUrl": "https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code",
+      "verifiedSourceCodeIds": [
+        "gb-nhsbsa-dataset-catalogue"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-united-kingdom-mhra-products",
+      "jurisdiction": "United Kingdom",
+      "iso2": "GB",
+      "provider": "MHRA Products",
+      "mode": "Portal",
+      "domains": "Medicine approvals, SmPC and patient leaflets",
+      "referenceUrl": "https://products.mhra.gov.uk/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-ireland-hpra-authorised-medicines",
+      "jurisdiction": "Ireland",
+      "iso2": "IE",
+      "provider": "HPRA authorised medicines",
+      "mode": "Download",
+      "domains": "Authorised medicines and transfer-pending products",
+      "referenceUrl": "https://data.gov.ie/en_GB/dataset/medicines-authorised-or-transfer-pending-products",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-france-ansm-bdpm",
+      "jurisdiction": "France",
+      "iso2": "FR",
+      "provider": "ANSM BDPM",
+      "mode": "Download",
+      "domains": "Marketed medicine records, product characteristics",
+      "referenceUrl": "https://www.data.gouv.fr/datasets/base-de-donnees-publique-des-medicaments-base-officielle",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-france-open-medic",
+      "jurisdiction": "France",
+      "iso2": "FR",
+      "provider": "Open Medic",
+      "mode": "Download-review",
+      "domains": "Reimbursement and medicine spend",
+      "referenceUrl": "https://www.assurance-maladie.ameli.fr/etudes-et-donnees/open-medic-base-complete-depenses-medicaments",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-spain-aemps-cima",
+      "jurisdiction": "Spain",
+      "iso2": "ES",
+      "provider": "AEMPS CIMA",
+      "mode": "API",
+      "domains": "Medicines, authorisations, SmPC, packs",
+      "referenceUrl": "https://cima.aemps.es/cima/rest/medicamentos",
+      "verifiedSourceCodeIds": [
+        "es-aemps-cima"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-italy-aifa-osmed-and-authorised-lists",
+      "jurisdiction": "Italy",
+      "iso2": "IT",
+      "provider": "AIFA OsMed and authorised lists",
+      "mode": "Download",
+      "domains": "Consumption, expenditure, medicines lists",
+      "referenceUrl": "https://www.aifa.gov.it/dati-e-analisi",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-germany-bfarm-amice-pharmnet-bund",
+      "jurisdiction": "Germany",
+      "iso2": "DE",
+      "provider": "BfArM AMIce / PharmNet.Bund",
+      "mode": "Portal/Restricted",
+      "domains": "Registered medicinal products and authorisation details",
+      "referenceUrl": "https://www.pharmnet-bund.de/dynamic/de/arzneimittel-informationssystem/index.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-netherlands-meb-medicines-evaluation-board",
+      "jurisdiction": "Netherlands",
+      "iso2": "NL",
+      "provider": "MEB Medicines Evaluation Board",
+      "mode": "Download",
+      "domains": "Medicines, package leaflets, authorisations",
+      "referenceUrl": "https://www.geneesmiddeleninformatiebank.nl/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-netherlands-gip-databank",
+      "jurisdiction": "Netherlands",
+      "iso2": "NL",
+      "provider": "GIP Databank",
+      "mode": "Portal/Download",
+      "domains": "Outpatient drug utilization and expenditure",
+      "referenceUrl": "https://www.gipdatabank.nl/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-belgium-famhp-sam",
+      "jurisdiction": "Belgium",
+      "iso2": "BE",
+      "provider": "FAMHP / SAM",
+      "mode": "API-review",
+      "domains": "Authorisations, medicine references and prices",
+      "referenceUrl": "https://www.famhp.be/en/human_use/medicines",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-denmark-medicinpriser-api",
+      "jurisdiction": "Denmark",
+      "iso2": "DK",
+      "provider": "Medicinpriser API",
+      "mode": "API",
+      "domains": "Active medicine packs and official prices",
+      "referenceUrl": "https://api.medicinpriser.dk/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-sweden-fass-and-tlv",
+      "jurisdiction": "Sweden",
+      "iso2": "SE",
+      "provider": "Fass and TLV",
+      "mode": "Restricted/API",
+      "domains": "Medicine information plus separate reimbursement/price authority",
+      "referenceUrl": "https://api.fass.se/documentation/index.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-norway-dmp-medicine-fhir-service",
+      "jurisdiction": "Norway",
+      "iso2": "NO",
+      "provider": "DMP medicine FHIR service",
+      "mode": "API",
+      "domains": "Medicinal products and regulatory data",
+      "referenceUrl": "https://www.dmp.no/en/about-us/distribution-of-data-on-medicinal-products/FHIR-service/content-of-the-fhir-service",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-finland-fimea",
+      "jurisdiction": "Finland",
+      "iso2": "FI",
+      "provider": "Fimea",
+      "mode": "Portal/Download",
+      "domains": "Medicines register and consumption statistics",
+      "referenceUrl": "https://fimea.fi/en/databases_and_registers",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-poland-nfz-drug-program-statistics",
+      "jurisdiction": "Poland",
+      "iso2": "PL",
+      "provider": "NFZ drug-program statistics",
+      "mode": "API",
+      "domains": "Drug-program reimbursement spend by substance and programme",
+      "referenceUrl": "https://api.nfz.gov.pl/app-stat-api-pl/swagger-docs",
+      "verifiedSourceCodeIds": [
+        "pl-nfz-drug-program",
+        "pl-nfz-active-substances",
+        "pl-nfz-programs"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-poland-urpl",
+      "jurisdiction": "Poland",
+      "iso2": "PL",
+      "provider": "URPL",
+      "mode": "Portal",
+      "domains": "Registered medicinal products",
+      "referenceUrl": "https://rejestry.ezdrowie.gov.pl/rpl/search/public",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-czechia-sukl",
+      "jurisdiction": "Czechia",
+      "iso2": "CZ",
+      "provider": "SÚKL",
+      "mode": "Download",
+      "domains": "Medicine registrations, distributions and shortages",
+      "referenceUrl": "https://sukl.gov.cz/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-austria-basg",
+      "jurisdiction": "Austria",
+      "iso2": "AT",
+      "provider": "BASG",
+      "mode": "Portal/Download",
+      "domains": "Medicine register and supply disruptions",
+      "referenceUrl": "https://www.basg.gv.at/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-switzerland-swissmedic",
+      "jurisdiction": "Switzerland",
+      "iso2": "CH",
+      "provider": "Swissmedic",
+      "mode": "Download",
+      "domains": "Authorised medicinal product lists",
+      "referenceUrl": "https://www.swissmedic.ch/swissmedic/en/home/services/listen_neu.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-portugal-infarmed-sns-transparencia",
+      "jurisdiction": "Portugal",
+      "iso2": "PT",
+      "provider": "INFARMED / SNS Transparência",
+      "mode": "API/Download",
+      "domains": "Medicine expenditure and dispensing data",
+      "referenceUrl": "https://transparencia.sns.gov.pt/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-hungary-nngyk-ogyei",
+      "jurisdiction": "Hungary",
+      "iso2": "HU",
+      "provider": "NNGYK / OGYEI",
+      "mode": "Portal",
+      "domains": "Authorised medicines and SPCs",
+      "referenceUrl": "https://ogyei.gov.hu/drug_database/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-ukraine-state-expert-center-register",
+      "jurisdiction": "Ukraine",
+      "iso2": "UA",
+      "provider": "State Expert Center register",
+      "mode": "Portal/Download",
+      "domains": "Medicines registrations and official registry links",
+      "referenceUrl": "https://www.dec.gov.ua/en/announcement/informaczijne-povidomlennya-pro-oficzijni-dzherela-danyh-derzhavnogo-reyestru-likarskyh-zasobiv/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-russia-ministry-of-health-grls",
+      "jurisdiction": "Russia",
+      "iso2": "RU",
+      "provider": "Ministry of Health GRLS",
+      "mode": "Download/Portal",
+      "domains": "Registered medicinal products",
+      "referenceUrl": "https://minzdrav.gov.ru/opendata/7707778246-grls",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-greece-eof",
+      "jurisdiction": "Greece",
+      "iso2": "GR",
+      "provider": "EOF",
+      "mode": "Discovery",
+      "domains": "National medicine licensing and safety",
+      "referenceUrl": "https://www.eof.gr/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-romania-anmdmr",
+      "jurisdiction": "Romania",
+      "iso2": "RO",
+      "provider": "ANMDMR",
+      "mode": "Discovery",
+      "domains": "National approvals and medicines information",
+      "referenceUrl": "https://www.anm.ro/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-bulgaria-bda",
+      "jurisdiction": "Bulgaria",
+      "iso2": "BG",
+      "provider": "BDA",
+      "mode": "Discovery",
+      "domains": "National authorisations and safety",
+      "referenceUrl": "https://www.bda.bg/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-croatia-halmed",
+      "jurisdiction": "Croatia",
+      "iso2": "HR",
+      "provider": "HALMED",
+      "mode": "Discovery",
+      "domains": "Approved medicines and shortages",
+      "referenceUrl": "https://www.halmed.hr/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-slovenia-jazmp",
+      "jurisdiction": "Slovenia",
+      "iso2": "SI",
+      "provider": "JAZMP",
+      "mode": "Discovery",
+      "domains": "Medicine authorisations and regulatory decisions",
+      "referenceUrl": "https://www.jazmp.si/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-slovakia-sukl",
+      "jurisdiction": "Slovakia",
+      "iso2": "SK",
+      "provider": "SÚKL",
+      "mode": "Discovery",
+      "domains": "Registered medicines and safety notices",
+      "referenceUrl": "https://www.sukl.sk/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-estonia-state-agency-of-medicines",
+      "jurisdiction": "Estonia",
+      "iso2": "EE",
+      "provider": "State Agency of Medicines",
+      "mode": "Discovery",
+      "domains": "Medicines register and statistics",
+      "referenceUrl": "https://www.ravimiamet.ee/en",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-latvia-state-agency-of-medicines",
+      "jurisdiction": "Latvia",
+      "iso2": "LV",
+      "provider": "State Agency of Medicines",
+      "mode": "Discovery",
+      "domains": "Medicines register and prices",
+      "referenceUrl": "https://www.zva.gov.lv/en",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-lithuania-state-medicines-control-agency",
+      "jurisdiction": "Lithuania",
+      "iso2": "LT",
+      "provider": "State Medicines Control Agency",
+      "mode": "Discovery",
+      "domains": "Medicines register, regulation",
+      "referenceUrl": "https://vvkt.lrv.lt/en/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-serbia-alims",
+      "jurisdiction": "Serbia",
+      "iso2": "RS",
+      "provider": "ALIMS",
+      "mode": "Discovery",
+      "domains": "National medicine licences and safety",
+      "referenceUrl": "https://www.alims.gov.rs/english/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "europe-turkiye-titck",
+      "jurisdiction": "Türkiye",
+      "iso2": "TR",
+      "provider": "TİTCK",
+      "mode": "Portal",
+      "domains": "Registered drugs, reference prices, regulatory notices",
+      "referenceUrl": "https://www.titck.gov.tr/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "north-america-united-states-fda-openfda",
+      "jurisdiction": "United States",
+      "iso2": "US",
+      "provider": "FDA openFDA",
+      "mode": "API",
+      "domains": "Authorised products, drug labels, NDCs, adverse events, recalls",
+      "referenceUrl": "https://open.fda.gov/apis/drug/",
+      "verifiedSourceCodeIds": [
+        "us-fda-drugsfda"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "north-america-united-states-cms-data",
+      "jurisdiction": "United States",
+      "iso2": "US",
+      "provider": "CMS data",
+      "mode": "API",
+      "domains": "Medicare drug spending and prescriber activity",
+      "referenceUrl": "https://data.cms.gov/api-docs",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "north-america-canada-health-canada-drug-product-database",
+      "jurisdiction": "Canada",
+      "iso2": "CA",
+      "provider": "Health Canada Drug Product Database",
+      "mode": "API",
+      "domains": "DINs, approved drug products, status, ingredients",
+      "referenceUrl": "https://health-products.canada.ca/api/drug/",
+      "verifiedSourceCodeIds": [
+        "ca-health-canada-dpd"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "north-america-canada-canada-vigilance",
+      "jurisdiction": "Canada",
+      "iso2": "CA",
+      "provider": "Canada Vigilance",
+      "mode": "API",
+      "domains": "Spontaneous adverse reaction reports",
+      "referenceUrl": "https://health-products.canada.ca/api/canada-vigilance/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "north-america-mexico-cofepris",
+      "jurisdiction": "Mexico",
+      "iso2": "MX",
+      "provider": "COFEPRIS",
+      "mode": "Portal/Download",
+      "domains": "National medicine registration records",
+      "referenceUrl": "https://registros.cofepris.gob.mx/BRSDM/default.aspx",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-brazil-anvisa-and-cmed",
+      "jurisdiction": "Brazil",
+      "iso2": "BR",
+      "provider": "ANVISA and CMED",
+      "mode": "Download",
+      "domains": "Marketing authorisations and regulated medicine prices",
+      "referenceUrl": "https://dados.anvisa.gov.br/dados/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-argentina-anmat",
+      "jurisdiction": "Argentina",
+      "iso2": "AR",
+      "provider": "ANMAT",
+      "mode": "Portal/Download",
+      "domains": "Medicines register and status",
+      "referenceUrl": "https://www.argentina.gob.ar/anmat/regulados/medicamentos/registro-y-autorizacion-de-comercializacion",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-chile-isp-and-chilecompra",
+      "jurisdiction": "Chile",
+      "iso2": "CL",
+      "provider": "ISP and ChileCompra",
+      "mode": "API/Portal",
+      "domains": "Tender notices, purchase orders and awards; separate medicine register",
+      "referenceUrl": "https://www.chilecompra.cl/api/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-colombia-invima-and-sismed",
+      "jurisdiction": "Colombia",
+      "iso2": "CO",
+      "provider": "INVIMA and SISMED",
+      "mode": "API/Portal",
+      "domains": "CUM medicine records, reported medicine prices",
+      "referenceUrl": "https://www.datos.gov.co/Salud-y-Protecci-n-Social/Consulta-p-blica-de-Precios-de-Medicamentos/3he6-m866",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-peru-digemid",
+      "jurisdiction": "Peru",
+      "iso2": "PE",
+      "provider": "DIGEMID",
+      "mode": "Portal/Download",
+      "domains": "Registered medicines, price observatory, regulatory alerts",
+      "referenceUrl": "https://www.digemid.minsa.gob.pe/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-ecuador-arcsa",
+      "jurisdiction": "Ecuador",
+      "iso2": "EC",
+      "provider": "ARCSA",
+      "mode": "Portal",
+      "domains": "Registered health products and permits",
+      "referenceUrl": "https://www.controlsanitario.gob.ec/base-de-datos/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "latin-america-uruguay-ministry-of-public-health",
+      "jurisdiction": "Uruguay",
+      "iso2": "UY",
+      "provider": "Ministry of Public Health",
+      "mode": "Discovery",
+      "domains": "Registered medicines and supply notices",
+      "referenceUrl": "https://www.gub.uy/ministerio-salud-publica/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-india-cdsco-sugam",
+      "jurisdiction": "India",
+      "iso2": "IN",
+      "provider": "CDSCO / SUGAM",
+      "mode": "Portal",
+      "domains": "Approved medicines, licences, approval pathways",
+      "referenceUrl": "https://cdscoonline.gov.in/CDSCO/cdscoDrugs",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-india-nppa-pharma-sahi-daam",
+      "jurisdiction": "India",
+      "iso2": "IN",
+      "provider": "NPPA Pharma Sahi Daam",
+      "mode": "Portal",
+      "domains": "Ceiling and retail price references",
+      "referenceUrl": "https://nppaipdms.gov.in/NPPA/PharmaSahiDaam/searchMedicine",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-india-abdm-drug-registry",
+      "jurisdiction": "India",
+      "iso2": "IN",
+      "provider": "ABDM Drug Registry",
+      "mode": "Access-review",
+      "domains": "National standardized drug registry initiative",
+      "referenceUrl": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2278991",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-india-ctri",
+      "jurisdiction": "India",
+      "iso2": "IN",
+      "provider": "CTRI",
+      "mode": "Portal",
+      "domains": "Indian clinical trial registrations",
+      "referenceUrl": "https://www.ctri.nic.in/Clinicaltrials/pubview.php",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-china-nmpa",
+      "jurisdiction": "China",
+      "iso2": "CN",
+      "provider": "NMPA",
+      "mode": "Portal",
+      "domains": "National drug licences and regulatory records",
+      "referenceUrl": "https://english.nmpa.gov.cn/database.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-japan-pmda-mhlw",
+      "jurisdiction": "Japan",
+      "iso2": "JP",
+      "provider": "PMDA / MHLW",
+      "mode": "Portal/Download",
+      "domains": "Medicine approvals, labels, safety; NDB aggregate utilization",
+      "referenceUrl": "https://www.pmda.go.jp/english/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-south-korea-mfds-openapi",
+      "jurisdiction": "South Korea",
+      "iso2": "KR",
+      "provider": "MFDS OpenAPI",
+      "mode": "API",
+      "domains": "Drug permits, product registrations",
+      "referenceUrl": "https://www.data.go.kr/data/15095677/openapi.do",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-south-korea-hira",
+      "jurisdiction": "South Korea",
+      "iso2": "KR",
+      "provider": "HIRA",
+      "mode": "API",
+      "domains": "Reimbursement and prescribing utilization",
+      "referenceUrl": "https://www.data.go.kr/data/15047819/openapi.do",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-taiwan-tfda-and-nhi",
+      "jurisdiction": "Taiwan",
+      "iso2": "TW",
+      "provider": "TFDA and NHI",
+      "mode": "API/Download",
+      "domains": "Drug licences, reimbursed medicines and price schedules",
+      "referenceUrl": "https://data.nhi.gov.tw/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-singapore-hsa-data-gov-sg",
+      "jurisdiction": "Singapore",
+      "iso2": "SG",
+      "provider": "HSA / data.gov.sg",
+      "mode": "API/Download",
+      "domains": "Registered therapeutic products, suppliers and licensed pharmacies",
+      "referenceUrl": "https://developers.data.gov.sg/datasets?agencies=Health+Sciences+Authority+%28HSA%29&resultId=d_767279312753558cbf19d48344577084",
+      "verifiedSourceCodeIds": [
+        "sg-hsa-products"
+      ],
+      "engineeringState": "adapter-source-candidate",
+      "next": "Verify exact dataset contract, rights, staging and authenticated API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-malaysia-npra-kkmnow",
+      "jurisdiction": "Malaysia",
+      "iso2": "MY",
+      "provider": "NPRA / KKMNOW",
+      "mode": "Download",
+      "domains": "Approved medicines and manufacturers, importers, wholesalers",
+      "referenceUrl": "https://data.moh.gov.my/data-catalogue/pharmaceutical_products",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-indonesia-bpom-satu-data",
+      "jurisdiction": "Indonesia",
+      "iso2": "ID",
+      "provider": "BPOM Satu Data",
+      "mode": "API-review",
+      "domains": "Registered products, drug commodity data",
+      "referenceUrl": "https://satudata.pom.go.id/datasets/364-app---product-master-drug-commodity",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-thailand-thai-fda-data-go-th",
+      "jurisdiction": "Thailand",
+      "iso2": "TH",
+      "provider": "Thai FDA / data.go.th",
+      "mode": "API-review",
+      "domains": "Registered drugs and medicine reference data",
+      "referenceUrl": "https://data.go.th/th/dataset/web-service-drug-reg",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-vietnam-drug-administration-of-vietnam",
+      "jurisdiction": "Vietnam",
+      "iso2": "VN",
+      "provider": "Drug Administration of Vietnam",
+      "mode": "Portal",
+      "domains": "Medicine registrations, prices and GxP details",
+      "referenceUrl": "https://dichvucong.dav.gov.vn/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-philippines-fda-philippines",
+      "jurisdiction": "Philippines",
+      "iso2": "PH",
+      "provider": "FDA Philippines",
+      "mode": "Portal",
+      "domains": "Registered health products and licences",
+      "referenceUrl": "https://verification.fda.gov.ph/Home.php",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-pakistan-drap",
+      "jurisdiction": "Pakistan",
+      "iso2": "PK",
+      "provider": "DRAP",
+      "mode": "Portal",
+      "domains": "Registered medicines, manufacturers and price notices",
+      "referenceUrl": "https://e.dra.gov.pk/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-bangladesh-dgda-dghs-fhir",
+      "jurisdiction": "Bangladesh",
+      "iso2": "BD",
+      "provider": "DGDA / DGHS FHIR",
+      "mode": "FHIR-review",
+      "domains": "Registered drug terminology and medicine entries",
+      "referenceUrl": "https://fhir.dghs.gov.bd/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-nepal-dda",
+      "jurisdiction": "Nepal",
+      "iso2": "NP",
+      "provider": "DDA",
+      "mode": "Portal",
+      "domains": "Registered medicines",
+      "referenceUrl": "https://dams.dda.gov.np/manLogin/publicInfo1",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "asia-pacific-sri-lanka-nmra",
+      "jurisdiction": "Sri Lanka",
+      "iso2": "LK",
+      "provider": "NMRA",
+      "mode": "Portal",
+      "domains": "Medicine registrations and recalls",
+      "referenceUrl": "https://nmra.gov.lk/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "oceania-australia-tga-artg",
+      "jurisdiction": "Australia",
+      "iso2": "AU",
+      "provider": "TGA ARTG",
+      "mode": "Download",
+      "domains": "Authorised medicines, safety, shortages, recalls",
+      "referenceUrl": "https://www.tga.gov.au/resources/datasets",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "oceania-australia-pbs",
+      "jurisdiction": "Australia",
+      "iso2": "AU",
+      "provider": "PBS",
+      "mode": "API",
+      "domains": "Subsidy items, dispensing statistics, reimbursement",
+      "referenceUrl": "https://data.pbs.gov.au/document/91327.html",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement and test documented API contract",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "oceania-new-zealand-medsafe-nzulm",
+      "jurisdiction": "New Zealand",
+      "iso2": "NZ",
+      "provider": "Medsafe / NZULM",
+      "mode": "Download/Restricted",
+      "domains": "Medicine approvals, terminology and subsidy data",
+      "referenceUrl": "https://info.nzulm.org.nz/data-access",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-saudi-arabia-sfda",
+      "jurisdiction": "Saudi Arabia",
+      "iso2": "SA",
+      "provider": "SFDA",
+      "mode": "Download/Portal",
+      "domains": "Medicines register, recalls, open data and pricing",
+      "referenceUrl": "https://www.sfda.gov.sa/en/open-data",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-united-arab-emirates-mohap-ede",
+      "jurisdiction": "United Arab Emirates",
+      "iso2": "AE",
+      "provider": "MOHAP / EDE",
+      "mode": "API/Access-review",
+      "domains": "Registered medicinal products and licences",
+      "referenceUrl": "https://mohap.gov.ae/en/open-data/open-data-api",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-israel-ministry-of-health-medicines-register",
+      "jurisdiction": "Israel",
+      "iso2": "IL",
+      "provider": "Ministry of Health medicines register",
+      "mode": "Portal/Download",
+      "domains": "Registered medicines, product information, prices",
+      "referenceUrl": "https://israeldrugs.health.gov.il/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-jordan-jfda-open-data",
+      "jurisdiction": "Jordan",
+      "iso2": "JO",
+      "provider": "JFDA open data",
+      "mode": "Download/API-review",
+      "domains": "Published drug price lists",
+      "referenceUrl": "https://opendata.gov.jo/en/dataset/api_guide/drug-prices-838-2021",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Confirm access, terms and documented interface",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-oman-ministry-of-health",
+      "jurisdiction": "Oman",
+      "iso2": "OM",
+      "provider": "Ministry of Health",
+      "mode": "Portal/Download",
+      "domains": "Medicine prices, registration and safety",
+      "referenceUrl": "https://www.moh.gov.om/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-qatar-ministry-of-public-health",
+      "jurisdiction": "Qatar",
+      "iso2": "QA",
+      "provider": "Ministry of Public Health",
+      "mode": "Portal",
+      "domains": "Medicine registrations, pharmacies and price services",
+      "referenceUrl": "https://www.moph.gov.qa/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-bahrain-nhra",
+      "jurisdiction": "Bahrain",
+      "iso2": "BH",
+      "provider": "NHRA",
+      "mode": "Discovery",
+      "domains": "Medicine registrations, licensed institutions",
+      "referenceUrl": "https://www.nhra.bh/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "middle-east-kuwait-ministry-of-health",
+      "jurisdiction": "Kuwait",
+      "iso2": "KW",
+      "provider": "Ministry of Health",
+      "mode": "Discovery",
+      "domains": "Medicines approvals and procurement",
+      "referenceUrl": "https://www.moh.gov.kw/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-south-africa-sahpra",
+      "jurisdiction": "South Africa",
+      "iso2": "ZA",
+      "provider": "SAHPRA",
+      "mode": "Portal/Download",
+      "domains": "Registered medicines and product licences",
+      "referenceUrl": "https://www.sahpra.org.za/databases-registers/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-south-africa-department-of-health-sep",
+      "jurisdiction": "South Africa",
+      "iso2": "ZA",
+      "provider": "Department of Health SEP",
+      "mode": "Download",
+      "domains": "Single Exit Price medicine database",
+      "referenceUrl": "https://www.health.gov.za/nhi-pee/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-nigeria-nafdac-greenbook",
+      "jurisdiction": "Nigeria",
+      "iso2": "NG",
+      "provider": "NAFDAC Greenbook",
+      "mode": "Portal",
+      "domains": "Registered medicines and product licence details",
+      "referenceUrl": "https://greenbook.nafdac.gov.ng/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-kenya-ppb",
+      "jurisdiction": "Kenya",
+      "iso2": "KE",
+      "provider": "PPB",
+      "mode": "Portal",
+      "domains": "Registered medicines and licences",
+      "referenceUrl": "https://ppb.go.ke/products",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-ghana-fda-ghana",
+      "jurisdiction": "Ghana",
+      "iso2": "GH",
+      "provider": "FDA Ghana",
+      "mode": "Discovery",
+      "domains": "Registered products and authorization",
+      "referenceUrl": "https://fdaghana.gov.gh/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-tanzania-tmda",
+      "jurisdiction": "Tanzania",
+      "iso2": "TZ",
+      "provider": "TMDA",
+      "mode": "Portal",
+      "domains": "Registered medicines and licensing notices",
+      "referenceUrl": "https://www.tmda.go.tz/pages/registered-medicinal-products",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-rwanda-rwanda-fda",
+      "jurisdiction": "Rwanda",
+      "iso2": "RW",
+      "provider": "Rwanda FDA",
+      "mode": "Portal",
+      "domains": "Medicines product register",
+      "referenceUrl": "https://monitoring.rwandafda.gov.rw/register/hmdr/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-morocco-open-data-ammps",
+      "jurisdiction": "Morocco",
+      "iso2": "MA",
+      "provider": "Open Data / AMMPS",
+      "mode": "Download",
+      "domains": "Medicine reference list, retail and hospital prices",
+      "referenceUrl": "https://www.data.gov.ma/data/fr/dataset/referentiel-des-medicaments",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Implement bounded versioned snapshot intake",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-egypt-egyptian-drug-authority",
+      "jurisdiction": "Egypt",
+      "iso2": "EG",
+      "provider": "Egyptian Drug Authority",
+      "mode": "Portal",
+      "domains": "Registered drugs, pricing and safety reference data",
+      "referenceUrl": "https://edaegypt.gov.eg/en/services/databases/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-algeria-ministry-of-pharmaceutical-industry",
+      "jurisdiction": "Algeria",
+      "iso2": "DZ",
+      "provider": "Ministry of Pharmaceutical Industry",
+      "mode": "Discovery",
+      "domains": "Medicine registrations and manufacture",
+      "referenceUrl": "https://www.miph.gov.dz/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-ethiopia-efda",
+      "jurisdiction": "Ethiopia",
+      "iso2": "ET",
+      "provider": "EFDA",
+      "mode": "Discovery",
+      "domains": "Medicines registry, safety and licence notices",
+      "referenceUrl": "https://www.efda.gov.et/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    },
+    {
+      "candidateKey": "africa-uganda-nda",
+      "jurisdiction": "Uganda",
+      "iso2": "UG",
+      "provider": "NDA",
+      "mode": "Discovery",
+      "domains": "Registered medicines and pharmacovigilance",
+      "referenceUrl": "https://www.nda.or.ug/",
+      "verifiedSourceCodeIds": [],
+      "engineeringState": "adapter-not-assessed",
+      "next": "Discover authorised machine-readable feed; do not invent API",
+      "productionAccepted": false,
+      "customerLive": false
+    }
+  ]
+}
