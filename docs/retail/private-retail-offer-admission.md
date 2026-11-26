@@ -34,3 +34,11 @@ This importer is the **payment-offer** release gate, not permission to publish a
 - For the initial seven Vitabiotics records, proposed prices exist privately; no SKU has documented full evidence. The \`src/content/approved-consumer-catalogue.json\` file is not yet present on main. Dry-run fails closed until the public catalogue and evidence exist.
 - The importer writes only \`RETAIL#APPROVED\` items; it neither opens Stripe sessions nor changes Lambda flags.
 - Immediate feature rollback: restore \`MULTIBRAND_ENABLED=false\` while keeping original order and payment records intact.
+
+## Supplier-backed ordering without a dated stock snapshot
+
+The owner has selected supplier-assisted fulfilment. Set `supplyModel: "supplier_backed"` on a private offer only where the owner has expressly attested the supplier-backed arrangement and a maximum order-acceptance capacity. `availableQuantity` is an order-cap ceiling, **not** a claim of physically held or reserved stock. `evidence.stock` still requires `confirmed: true`, a named reviewer and a real reference, but no warehouse stock observation timestamp. The normal 48-hour rule remains mandatory for `stock_verified` offers.
+
+The supplier-backed model projects `stockVerified:false`, `orderingCapacityOnly:true`, `supplierBackedOrdering:true`, and `supplyModel:"supplier_backed"`. The AWS offer verifier accepts this distinct model only when the remaining requirements are met. Public product controls disclose that availability is confirmed after purchase and refunds are issued if the seller cannot fulfil.
+
+This change does **not** waive accurate retail pricing and VAT, complete mandatory online product information, product eligibility, permission to use manufacturer images, documented seller delivery support or the expiry of a consumer offer. It does not activate `MULTIBRAND_ENABLED`, insert a ledger record, enable medicine sales or change the existing Nutraxin checkout.

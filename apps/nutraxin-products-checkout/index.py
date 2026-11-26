@@ -90,7 +90,18 @@ def verified_retail_offer(row, instant):
             return None
         if sku!="NP-CP-"+gtin or p.get("sku")!=sku:
             return None
-        if any(p.get(k) is not True for k in ("identityConfirmed","imageRightsConfirmed","ukRetailApproved","priceApproved","vatTreatmentVerified","stockVerified","fulfilmentVerified","orderingEnabled","sellerDeliveryCommitment","labelInformationVerified")):
+        if any(p.get(k) is not True for k in ("identityConfirmed","imageRightsConfirmed","ukRetailApproved","priceApproved","vatTreatmentVerified","fulfilmentVerified","orderingEnabled","sellerDeliveryCommitment","labelInformationVerified")):
+            return None
+        supply_model=p.get("supplyModel","stock_verified")
+        if supply_model=="supplier_backed":
+            if (p.get("stockVerified") is not False or
+                p.get("supplierBackedOrdering") is not True or
+                p.get("orderingCapacityOnly") is not True):
+                return None
+        elif supply_model=="stock_verified":
+            if p.get("stockVerified") is not True:
+                return None
+        else:
             return None
         if p.get("productClass") not in ("food_supplement","cosmetic","consumer_non_medicinal"):
             return None
@@ -107,7 +118,9 @@ def verified_retail_offer(row, instant):
         gross=net+(net*vat+5000)//10000
         if gross>99999999 or p.get("grossMinor")!=gross:
             return None
-        return {k:p[k] for k in ("sku","gtin","name","pack","brand","category","image","netMinor","vatBasisPoints","grossMinor","availableQuantity","productClass")}
+        public={k:p[k] for k in ("sku","gtin","name","pack","brand","category","image","netMinor","vatBasisPoints","grossMinor","availableQuantity","productClass")}
+        public["supplyModel"]=supply_model
+        return public
     except (KeyError,ValueError,TypeError,AttributeError):
         return None
 

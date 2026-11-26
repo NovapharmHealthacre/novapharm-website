@@ -57,9 +57,11 @@ export function mergeRetailOffers(base, response, saved = []) {
          ![0,500,2000].includes(p.vatBasisPoints) || !Number.isSafeInteger(p.netMinor) || p.netMinor<1 ||
          !Number.isSafeInteger(p.grossMinor) || p.grossMinor!==p.netMinor+Math.round(p.netMinor*p.vatBasisPoints/10000) ||
          !Number.isSafeInteger(p.availableQuantity)||p.availableQuantity<1||p.availableQuantity>MAX_PER_SKU) continue;
+      if(p.supplyModel!==undefined && !["supplier_backed","stock_verified"].includes(p.supplyModel)) continue;
       extra.set(p.sku,{sku:p.sku,slug:p.gtin,name:p.name,pack:p.pack,range:p.category,brand:p.brand,image:p.image,
         retail_net_pence:p.netMinor,retail_price_pence:p.grossMinor,vatBasisPoints:p.vatBasisPoints,
-        availableQuantity:p.availableQuantity,available_to_sell:true,ordering_enabled:true,retailOfferVerified:true});
+        availableQuantity:p.availableQuantity,supplyModel:p.supplyModel||"stock_verified",
+        available_to_sell:true,ordering_enabled:true,retailOfferVerified:true});
     }
   }
   // An unavailable or withdrawn item must never silently disappear from a saved mixed bag.
@@ -809,6 +811,7 @@ function runStore(data) {
       const panel=make("section","nx-store-panel");
       panel.setAttribute("aria-label","Online ordering");
       panel.append(make("p","nx-store-price",formatGBP(publicPrice(p,data))),make("p","nx-store-note",p.vatBasisPoints/100+"% UK VAT · UK delivery included"));
+      if(p.supplyModel==="supplier_backed")panel.append(make("p","nx-store-note","Supplier-backed order. Availability is confirmed after purchase. If the supplier cannot fulfil, NovaPharm will refund promptly."));
       const options=make("div","nx-store-options");
       const label=make("label","nx-store-qty-label","Quantity");
       const qty=make("select","nx-store-qty");
