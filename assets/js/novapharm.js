@@ -441,6 +441,11 @@ for (const directory of document.querySelectorAll(
   if (document.querySelector('link[rel="canonical"]')?.getAttribute("href") !== canonical) return;
   const main = document.querySelector("main.npr-main");
   if (!main || !main.textContent.includes("GTIN " + gtin)) return;
+  // Buyers stay on NovaPharm for ordering; source pages may retain
+  // internal provenance in source control without outbound retail links.
+  main.querySelector(".npr-source-links")?.remove();
+  const manufacturerNote = main.querySelector(".npr-source-manufacturer-details p.npr-reference");
+  if (manufacturerNote) manufacturerNote.textContent = "Check the actual packaging before use.";
   // Future generated source pages include the mount and module themselves.
   if (main.querySelector("[data-npr-retail-sku]") ||
       document.querySelector('script[src="/assets/js/nutraxin-retail-store.js"]')) return;
