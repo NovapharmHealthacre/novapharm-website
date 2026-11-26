@@ -1,0 +1,45 @@
+{
+  "schema": "novapharm-connective-official-online-publication-evidence-v1",
+  "reviewedOn": "2026-11-26",
+  "gtin": "5021265243372",
+  "sku": "NP-CP-5021265243372",
+  "identity": {
+    "supplierGtin": "5021265243372",
+    "supplierProductPage": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets",
+    "manufacturerProductPage": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets",
+    "manufacturerCurrentUKProductPack": "96 Tablets"
+  },
+  "photograph": {
+    "officialManufacturerOriginal": "https://cdn.shopify.com/s/files/1/0027/7263/1621/files/ultra_vitamin_d_1000_front_CTUTD096T1UK2E_resized.png?v=1755180889",
+    "localImageSha256": "755650492209c6c6e3bd29da6efac115b789a02ee27c45cc91c16ce752e68520",
+    "ownerUseAuthorised": true,
+    "manufacturerPackshotSourceVerified": true,
+    "physicalPackPhotographIndividuallyInspected": false
+  },
+  "consumerInformation": {
+    "source": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets",
+    "sourceRecheckedOn": "2026-11-26",
+    "completeIngredientsCrossCheckedWithOfficialSite": true,
+    "directionsCrossCheckedWithOfficialSite": true,
+    "warningsCrossCheckedWithOfficialSite": true,
+    "nutrientDeclaration": "Vitamin D 25 micrograms (1000 IU), 500% NRV per tablet",
+    "currentPhysicalUKPackLabelIndividuallyInspected": false
+  },
+  "commercial": {
+    "ownerApprovedRetailListing": true,
+    "ownerApprovedConsumerPrice": true,
+    "ownerApprovedPhotoUse": true,
+    "supplierBackedOrderingNotPhysicalWarehouseStock": true,
+    "ukVatClassification": "20% standard-rated UK food supplement",
+    "customerPaymentOfferAdmitted": false
+  },
+  "evidenceReferences": {
+    "supplierProduct": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets",
+    "manufacturerProduct": "https://www.vitabiotics.com/products/ultra-vitamin-d-1000iu-96-tablets"
+  },
+  "review": {
+    "reviewedBy": "NovaPharm owner-authorised official-source research",
+    "reviewedOn": "2026-11-26",
+    "basis": "Supplier exact GTIN and pack combined with current manufacturer UK product page and first-party manufacturer front photograph; actual delivered pack must match advertised information."
+  }
+}

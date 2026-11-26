@@ -34,12 +34,42 @@ test("395 source-linked researched products and seven manufacturer descriptions"
   assert.equal(research.supplierOnlyReferences,269);
   assert.equal(research.products.filter(p=>p.manufacturerResearchUrl?.startsWith("https://")).length,126);
 });
-test("the approved list starts empty and cannot acquire falsely verified products",()=>{
+test("the first manufacturer-backed consumer listing carries exact source, image and approval evidence",()=>{
   const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
-  assert.deepEqual(approved,[]);
-  const p=research.products.find(x=>x.manufacturerOnlineInformation);
-  const candidate={...p,sku:p.sku,productClass:"food_supplement",category:"Vitamins",description:p.name,ingredients:p.manufacturerOnlineInformation.ingredients,directions:p.manufacturerOnlineInformation.directions,warnings:p.manufacturerOnlineInformation.warnings,image:"/assets/media/products/connective/"+p.ean+"/front-800.webp"};
-  const check=compileCatalogue([candidate],".",()=>false);
-  assert.equal(check.approved.length,0);
-  assert(check.blocked[0].reasons.includes("imageRightsConfirmed"));
+  const proof=JSON.parse(readFileSync("docs/retail/connective-first-live-consumer-source-evidence.json","utf8"));
+  const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
+  assert.equal(approved.length,1);
+  assert.equal(proof.gtin,"5021265243372");
+  const p=approved[0],photo=photos.products.find(x=>x.gtin===p.ean);
+  const ref=src.products.find(x=>x.ean===p.ean);
+  const manufacturer=online.products.find(x=>x.ean===p.ean);
+  assert(p.ean===proof.gtin && validGtin(p.ean));
+  assert(ref && manufacturer && photo);
+  assert.equal(ref.manufacturerProductUrl,proof.evidenceReferences.manufacturerProduct);
+  assert.equal(manufacturer.manufacturerUrl,proof.consumerInformation.source);
+  assert.equal(photo.sha256,proof.photograph.localImageSha256);
+  assert.equal(p.image,photo.localImage);
+  assert.equal(proof.photograph.ownerUseAuthorised,true);
+  assert.equal(proof.consumerInformation.currentPhysicalUKPackLabelIndividuallyInspected,false);
+  assert.equal(proof.commercial.customerPaymentOfferAdmitted,false);
+  const required=["ukPack","imageRights","label","publication"];
+  const evidence=Object.fromEntries(required.map(key=>[key,{
+    reference:key==="imageRights"?"NovaPharm owner photographic-use authorisation":proof.evidenceReferences.manufacturerProduct,
+    reviewedBy:proof.review.reviewedBy,reviewedOn:proof.review.reviewedOn,confirmed:true
+  }]));
+  const intake={...p,sku:"NP-CP-"+p.ean,imageSha256:photo.sha256,evidence};
+  const checked=compileCatalogue([intake],".");
+  assert.equal(checked.approved.length,1);
+  assert.equal(checked.blocked.length,0);
+  assert.deepEqual(checked.approved[0],p);
+  assert.equal(compileCatalogue([{...intake,imageRightsConfirmed:false}],".").approved.length,0);
+  assert.equal(compileCatalogue([{...intake,imageSha256:"bad"}],".").approved.length,0);
+  for(const key of ["netMinor","grossMinor","supplierCost","retailPrice","vatBasisPoints"])
+    assert(!Object.hasOwn(p,key));
+  const notReady=research.products.find(x=>x.ean!==p.ean && x.manufacturerOnlineInformation);
+  const candidate={...notReady,sku:notReady.sku,productClass:"food_supplement",category:"Vitamins",
+    description:notReady.name,ingredients:notReady.manufacturerOnlineInformation.ingredients,
+    directions:notReady.manufacturerOnlineInformation.directions,warnings:notReady.manufacturerOnlineInformation.warnings,
+    image:"/assets/media/products/connective/"+notReady.ean+"/front-800.webp"};
+  assert.equal(compileCatalogue([candidate],".",()=>false).approved.length,0);
 });
