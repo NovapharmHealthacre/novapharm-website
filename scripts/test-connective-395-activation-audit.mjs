@@ -15,7 +15,8 @@ test('unadmitted products remain on hold, including regulated products',()=>{
  assert.equal(count('APPROVED_LEDGER_OFFER'),7);
  assert.equal(count('STAGED_NOT_CHARGEABLE'),9);
  assert.equal(count('REGULATED_MEDICINE_OR_DEVICE_REVIEW'),10);
- assert.equal(count('VAT_OR_PRICE_REVIEW'),1);\n assert.equal(count('HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE'),11);
+ assert.equal(count('VAT_OR_PRICE_REVIEW'),1);
+ assert.equal(count('HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE'),11);
  assert.equal(count('RESEARCH_PENDING_NO_PAYMENT'),357);
  assert.equal(m.products.filter(x=>x.priceCandidateGrossPence>0).length,384);
  assert.equal(m.products.filter(x=>x.priceCandidateGrossPence===null).length,11);
