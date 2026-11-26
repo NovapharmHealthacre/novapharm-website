@@ -28,6 +28,11 @@ test("395 source-linked researched products and seven manufacturer descriptions"
     } else assert.equal(p.manufacturerOnlineInformation,null);
   }
   assert.equal(research.products.filter(p=>p.productClassReview==="medicine_review").length,10);
+  assert.equal(research.officialManufacturerProductPageCandidates,106);
+  assert.equal(research.manufacturerFamilyPackUnresolved,18);
+  assert.equal(research.relatedProductsNotSkuMatch,2);
+  assert.equal(research.supplierOnlyReferences,269);
+  assert.equal(research.products.filter(p=>p.manufacturerResearchUrl?.startsWith("https://")).length,126);
 });
 test("the approved list starts empty and cannot acquire falsely verified products",()=>{
   const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
