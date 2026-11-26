@@ -142,3 +142,31 @@ test("two source-verified Lansinoh feeding-bottle listings retain exact image an
    for(const key of ["netMinor","grossMinor","retailPrice","vatBasisPoints","privateSupplierCost"])assert(!Object.hasOwn(p,key));
  }
 });
+
+test("next seven Salus herbal teas and Vitabiotics food supplements have source-verified information and original approved photography",()=>{
+ const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
+ const batch=JSON.parse(readFileSync("docs/retail/connective-next-seven-consumer-source-evidence-20261126.json","utf8"));
+ const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
+ assert.equal(batch.schema,"novapharm-connective-source-reviewed-batch-v1");
+ assert.equal(batch.products.length,7);
+ const expected=new Set(["5021265220076","5021265221004","5021265221509","4004148013010","4004148013041","4004148013072","4004148013119"]);
+ for(const e of batch.products){
+  assert(expected.delete(e.gtin));
+  const p=approved.find(x=>x.ean===e.gtin),ref=src.products.find(x=>x.ean===e.gtin),photo=photos.products.find(x=>x.gtin===e.gtin);
+  assert(p&&ref&&photo);
+  assert.equal(p.name,ref.name);
+  assert.equal(p.pack,ref.pack);
+  assert.equal(p.image,photo.localImage);
+  assert.equal(e.imageSha256,photo.sha256);
+  assert.equal(e.image,p.image);
+  assert.equal(e.photoUseAuthorised,true);
+  assert.equal(e.physicalPackInspected,false);
+  assert.equal(p.identityConfirmed,true);
+  assert.equal(p.imageRightsConfirmed,true);
+  assert.equal(p.publicListingApproved,true);
+  assert(["food_supplement","consumer_non_medicinal"].includes(p.productClass));
+  for(const key of ["description","ingredients","directions","warnings"])assert(p[key].length>15);
+  for(const key of ["netMinor","grossMinor","retailPrice","vatBasisPoints","privateSupplierCost"])assert(!Object.hasOwn(p,key));
+ }
+ assert.equal(expected.size,0);
+});
