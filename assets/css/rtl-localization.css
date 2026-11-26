@@ -162,7 +162,7 @@ html[dir="rtl"] .metric { border-right: 0; border-left: 1px solid var(--line); }
 html[dir="rtl"] :is(.module-notice, .action-warning, .intelligence-advisory,
  .article-aside, .article-disclaimer, .footer-status) {
   border-left: 0;
-  border-right: 3px solid var(--red, #E3120B);
+  border-right: 3px solid var(--red, #9D1B32);
   padding-left: 0;
   padding-right: 16px;
 }

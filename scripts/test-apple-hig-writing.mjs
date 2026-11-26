@@ -10,6 +10,7 @@ const source = {
   interest: read("apps/corporate/components/account-interest-workflow.tsx"),
   help: read("apps/portal/components/account-access-help.tsx"),
   signIn: read("apps/portal/components/login-panel.tsx"),
+  managedFooter: read("apps/corporate/components/site-footer.tsx"),
   browserAcceptance: read("apps/portal/test/browser-acceptance.ts"),
   lighthouseLogin: read("scripts/run-portal-lighthouse.mjs"),
   corporateError: read("apps/corporate/app/error.tsx"),
@@ -45,6 +46,8 @@ function avoids(key, text) {
 
 // Public interest is not the same state as an approved account or application.
 needs("account", 'title="Register interest in a business account."');
+needs("managedFooter", 'href="/account-application/" lang="en-GB">Discuss account eligibility</Link>');
+avoids("managedFooter", "Open a business account");
 needs("account", 'Registering interest does not create an account or grant portal access.');
 needs("account", "Eligible businesses may receive a private application invitation");
 needs("interest", "Register business interest");
@@ -90,7 +93,8 @@ needs("signIn", 'aria-busy={busy}');
 needs("signIn", 'role="status" aria-live="polite"');
 needs("signIn", '{busy ? "Signing in…" : "Sign in"}');
 needs("browserAcceptance", 'getByRole("button", { name: "Sign in", exact: true })');
-needs("browserAcceptance", '"Sign in to the right workspace", "login"');
+needs("signIn", 'accessType === "customer" ? "Welcome to NovaPharm." : "Sign in to the right workspace"');
+needs("browserAcceptance", '"Welcome to NovaPharm.", "login"');
 avoids("browserAcceptance", 'One governed entry point. Four precise access boundaries.');
 needs("lighthouseLogin", 'page.getByRole("button", { name: "Sign in", exact: true }).click()');
 avoids("lighthouseLogin", '"Sign in securely"');

@@ -14,9 +14,9 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 export const publicRtlDirectories = Object.freeze([
-  "about", "account-application", "capabilities", "careers", "contact",
+  "about", "our-story", "account-application", "capabilities", "careers", "contact",
   "cro", "distribution", "investor-information", "leadership", "legal",
-  "market-access", "markets", "news-insights", "oncology", "partner-with-us",
+  "market-access", "markets", "news-insights", "oncology", "partner-with-us", "pharmacy-partners",
   "products", "product-portfolio", "regulatory-services",
   "service-unavailable", "services", "technology", "quantum-research", "trust-centre",
 ]);

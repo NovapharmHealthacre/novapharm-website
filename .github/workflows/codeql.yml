@@ -39,7 +39,7 @@ jobs:
           cache: npm
 
       - name: Install exact dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci --ignore-scripts --prefer-offline
 
       - name: Build generated application sources
         run: npm run build

@@ -9,6 +9,7 @@ import {
   extractCkanSchemaColumns,
   schemaContracts,
   sourceRegistry,
+  shouldProbeCkanDatastore,
   validateSchema,
   type CkanResource,
   type SchemaContractResult,
@@ -25,7 +26,7 @@ interface DiscoveryResult {
   readonly registry: SourceRegistryEntry;
   readonly resources: readonly CkanResource[];
   readonly schema: SchemaContractResult | null;
-  readonly datastoreState: "not_advertised" | "available" | "advertised_unavailable";
+  readonly datastoreState: "not_advertised" | "available" | "advertised_unavailable" | "not_probed_rights_pending";
   readonly datastoreMessage: string | null;
   readonly error: string | null;
 }
@@ -84,9 +85,12 @@ async function discover(entry: SourceRegistryEntry, checkedAt: string): Promise<
     const observedColumns = extractCkanSchemaColumns(latest?.schema);
     const schema = contract && observedColumns.length ? validateSchema(contract, observedColumns) : null;
     const advertised = latest?.datastore_active === true || String(latest?.datastore_active).toLowerCase() === "true";
-    let datastoreState: DiscoveryResult["datastoreState"] = advertised ? "available" : "not_advertised";
+    const mayProbeRows = shouldProbeCkanDatastore(entry);
+    let datastoreState: DiscoveryResult["datastoreState"] = mayProbeRows
+      ? (advertised ? "available" : "not_advertised")
+      : "not_probed_rights_pending";
     let datastoreMessage: string | null = null;
-    if (advertised && latest) {
+    if (advertised && latest && mayProbeRows) {
       try {
         await client.datastoreSearch(latest.id, { limit: 1 });
       } catch (error) {

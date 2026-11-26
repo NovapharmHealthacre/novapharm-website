@@ -1,0 +1,86 @@
+{
+  "market": "GB",
+  "version": "2026-11-25",
+  "categories": [
+    {
+      "slug": "magnesium",
+      "range": "Magnesium",
+      "heading": "Magnesium supplements",
+      "description": "Explore Nutraxin magnesium supplements in the UK, including a four-form magnesium complex with vitamin B6 and Magnesium Daily with vitamins D3, K2 and B6.",
+      "intro": "Compare our two magnesium tablet formats by their listed ingredients and pack size. Magnesium Complex lists citrate, bisglycinate, malate and taurate with vitamin B6. Magnesium Daily combines magnesium with vitamins D3, K2 and B6.",
+      "guide": "Compare the amount of elemental magnesium on the approved label, rather than the weight of individual magnesium compounds. Check serving size, other added nutrients and suitability before choosing a product.",
+      "products": [
+        "magnesium-complex-60-tablets",
+        "magnesium-daily-60-tablets"
+      ]
+    },
+    {
+      "slug": "vitamin-c",
+      "range": "Vitamin C",
+      "heading": "Vitamin C tablets and supplements",
+      "description": "Explore vitamin C tablets, chewables and effervescent supplements from Nutraxin in the UK. Compare pack formats and vitamin C, D and zinc combinations.",
+      "intro": "Our vitamin C range includes a 1000 mg tablet, a 500 mg chewable and Vitamin MAX formulations containing vitamin C, D and zinc. Choose between tablet, chewable and effervescent formats.",
+      "guide": "Compare the vitamin C amount on the final label, the number of tablets and whether other nutrients are included. Effervescent products should be prepared according to their pack instructions; the 15-tablet Vitamin MAX pack requires final label confirmation.",
+      "products": [
+        "vitamin-c-1000mg-30-tablets",
+        "vitamin-c-500mg-chewable-30-tablets",
+        "vitamin-max-60-tablets",
+        "vitamin-max-15-effervescent-tablets"
+      ]
+    },
+    {
+      "slug": "vitamin-d",
+      "range": "Vitamin D",
+      "heading": "Vitamin D and D3 + K2 supplements",
+      "description": "Browse Nutraxin vitamin D3 and D3 plus K2 supplements in the UK. Compare 120-tablet packs and 30 ml oral spray formats, ingredients and pack details.",
+      "intro": "Compare vitamin D3-only products with vitamin D3 and K2 combinations. The range includes 120-tablet packs and 30 ml oral sprays. The supplier catalogue identifies cholecalciferol and, in the combination products, menaquinone-7.",
+      "guide": "Check the UK label for the amount per serving and the instructions for sprays or tablets. Vitamin K-containing supplements may be unsuitable with certain medicines; consult a healthcare professional if you are unsure.",
+      "products": [
+        "vitamin-d3-120-tablets",
+        "vitamin-d3-spray-30ml",
+        "vitamin-d3-k2-120-tablets",
+        "vitamin-d3-k2-spray-30ml"
+      ]
+    },
+    {
+      "slug": "multivitamins",
+      "range": "Multivitamin and mineral",
+      "heading": "Multivitamins and minerals",
+      "description": "Explore Nutraxin adult multivitamin and mineral tablets, including women's, men's and Multivitamin Mineral Energy formats. Compare the 60-tablet packs.",
+      "intro": "Compare the Nutraxin Multivitamin Mineral Energy, Women's Multivitamin Complex and Men's Multivitamin Complex. Each is listed as a 60-tablet pack with a different catalogue formulation.",
+      "guide": "Compare the full ingredient list, amounts, allergens and directions on the approved pack. Avoid assuming that different multivitamins are interchangeable or that combining several products is appropriate.",
+      "products": [
+        "multivitamin-mineral-energy-60-tablets",
+        "womens-multivitamin-complex-60-tablets",
+        "mens-multivitamin-complex-60-tablets"
+      ]
+    },
+    {
+      "slug": "collagen",
+      "range": "Collagen",
+      "heading": "Collagen supplements",
+      "description": "Compare Nutraxin collagen tablets, collagen sachets and multi-type Collagen Complex in the UK. Explore pack sizes, catalogue ingredients and product information.",
+      "intro": "Explore Gold Quality Collagen in tablet and sachet formats and the 90-tablet Collagen Complex. The supplier catalogue lists hydrolysed collagen in the Gold Quality range and multiple collagen types in Collagen Complex.",
+      "guide": "Check collagen source, allergens, amount per serving and added ingredients against the final UK label. Tablet and sachet packs have different formulations and serving instructions; do not compare them solely by pack count.",
+      "products": [
+        "collagen-gold-30-tablets",
+        "collagen-gold-30-sachets",
+        "collagen-complex-90-tablets"
+      ]
+    }
+  ],
+  "singleProductTargets": [
+    {
+      "title": "Glucosamine, chondroitin and MSM",
+      "slug": "artoflex-90-tablets"
+    },
+    {
+      "title": "L-carnitine",
+      "slug": "l-carnitine-60-tablets"
+    },
+    {
+      "title": "Vitamin B12",
+      "slug": "vitamin-b12-60-sublingual-tablets"
+    }
+  ]
+}

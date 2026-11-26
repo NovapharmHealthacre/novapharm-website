@@ -110,8 +110,8 @@ const mapScript=read("assets/js/medicines-terminal-preview.js");
 assert.ok(mapScript.includes("Integrated_Care_Boards_April_2026_Boundaries_EN_BSC"), "Map must source official ONS geographic boundaries");
 assert.ok(!mapScript.match(/XMLHttpRequest|sendBeacon|localStorage|sessionStorage/), "Product preview must never transmit or persist customer records");
 assert.ok(source.includes("data-npi-real-map") && published.includes("data-npi-real-map"), "Official geometry mount must be present in source and published HTML");
-assert.ok(source.includes("novapharm-intelligence-approved.svg") && published.includes("novapharm-intelligence-approved.svg"), "Approved brand wordmark must appear in both pages");
-assert.ok(read("assets/brand/novapharm-intelligence-approved.svg").includes("viewBox=\"0 0 1950 337\""), "Uploaded brand kit aspect ratio must be retained");
+assert.ok(source.includes("novapharm-intelligence-logo.svg") && published.includes("novapharm-intelligence-logo.svg"), "Approved brand wordmark must appear in both pages");
+assert.ok(read("assets/brand/novapharm-intelligence-logo.svg").includes("viewBox=\"0 0 1950 337\""), "Uploaded brand kit aspect ratio must be retained");
 assert.ok(read("assets/css/novapharm.bundle.css").includes(".npd-mega.is-open"), "Global nav styling was not bundled");
 assert.ok(materialiser.includes('data-mega-trigger'), "Generated chrome must retain category triggers");
 

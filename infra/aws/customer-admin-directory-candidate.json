@@ -1,0 +1,278 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Private customer-directory candidate. Default is disabled and no API route. Reuses existing API, pools and session table; separate least-privilege role.",
+  "Parameters": {
+    "ArtifactBucket": {
+      "Type": "String",
+      "MinLength": 3
+    },
+    "ArtifactKey": {
+      "Type": "String",
+      "MinLength": 1
+    },
+    "ArtifactVersion": {
+      "Type": "String",
+      "MinLength": 1
+    },
+    "OwnerSubject": {
+      "Type": "String",
+      "NoEcho": true,
+      "AllowedPattern": "[A-Za-z0-9-]{8,128}"
+    },
+    "ReleaseEnabled": {
+      "Type": "String",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Default": "false"
+    },
+    "RouteEnabled": {
+      "Type": "String",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Default": "false"
+    }
+  },
+  "Conditions": {
+    "Publish": {
+      "Fn::Equals": [
+        {
+          "Ref": "RouteEnabled"
+        },
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "DirectoryLogs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-private-customer-directory",
+        "RetentionInDays": 14
+      }
+    },
+    "DirectoryRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "DirectoryReadAndAuditOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-private-customer-directory:*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:ListUsers"
+                  ],
+                  "Resource": [
+                    "arn:aws:cognito-idp:eu-north-1:250675045172:userpool/eu-north-1_SLNUKZypt",
+                    "arn:aws:cognito-idp:eu-north-1:250675045172:userpool/eu-north-1_jBL6hCUE2"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cognito-idp:DescribeUserPool",
+                    "cognito-idp:DescribeUserPoolClient",
+                    "cognito-idp:GetUserPoolMfaConfig",
+                    "cognito-idp:AdminGetUser",
+                    "cognito-idp:AdminListGroupsForUser"
+                  ],
+                  "Resource": "arn:aws:cognito-idp:eu-north-1:250675045172:userpool/eu-north-1_jBL6hCUE2"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:GetItem",
+                  "Resource": "arn:aws:dynamodb:eu-north-1:250675045172:table/novapharm-intelligence-customer-access",
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "FOUNDER_SESSION#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:ConditionCheckItem",
+                  "Resource": "arn:aws:dynamodb:eu-north-1:250675045172:table/novapharm-intelligence-customer-access",
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "FOUNDER_SESSION#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:PutItem",
+                  "Resource": "arn:aws:dynamodb:eu-north-1:250675045172:table/novapharm-intelligence-customer-access",
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "CUSTOMER_DIRECTORY_AUDIT#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    },
+                    "ForAnyValue:StringEquals": {
+                      "dynamodb:EnclosingOperation": [
+                        "TransactWriteItems"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DirectoryFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": "DirectoryLogs",
+      "Properties": {
+        "FunctionName": "novapharm-private-customer-directory",
+        "Runtime": "python3.13",
+        "Handler": "customer-admin-directory-api.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DirectoryRole",
+            "Arn"
+          ]
+        },
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ArtifactBucket"
+          },
+          "S3Key": {
+            "Ref": "ArtifactKey"
+          },
+          "S3ObjectVersion": {
+            "Ref": "ArtifactVersion"
+          }
+        },
+        "MemorySize": 256,
+        "Timeout": 20,
+        "Environment": {
+          "Variables": {
+            "CUSTOMER_DIRECTORY_RELEASE_ENABLED": {
+              "Ref": "ReleaseEnabled"
+            },
+            "CUSTOMER_DIRECTORY_OWNER_SUBJECT": {
+              "Ref": "OwnerSubject"
+            }
+          }
+        }
+      }
+    },
+    "DirectoryIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Condition": "Publish",
+      "Properties": {
+        "ApiId": "q2e6ztf8ic",
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "DirectoryFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 23000
+      }
+    },
+    "DirectoryInvoke": {
+      "Type": "AWS::Lambda::Permission",
+      "Condition": "Publish",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "DirectoryFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": "arn:aws:execute-api:eu-north-1:250675045172:q2e6ztf8ic/$default/GET/founder/customer-directory"
+      }
+    },
+    "DirectoryRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Condition": "Publish",
+      "DependsOn": "DirectoryInvoke",
+      "Properties": {
+        "ApiId": "q2e6ztf8ic",
+        "RouteKey": "GET /founder/customer-directory",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "DirectoryIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Rules": {
+    "ReleaseRequiresRoute": {
+      "RuleCondition": {
+        "Fn::Equals": [
+          {
+            "Ref": "ReleaseEnabled"
+          },
+          "true"
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "RouteEnabled"
+              },
+              "true"
+            ]
+          },
+          "AssertDescription": "Data release requires the separately installed private route."
+        }
+      ]
+    }
+  }
+}
