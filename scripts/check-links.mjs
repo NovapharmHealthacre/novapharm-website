@@ -48,6 +48,15 @@ for (const file of walk()) {
   const html = readFileSync(file, "utf8");
   const references = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const reference of references) {
+    // SES email templates have two substitution URL tokens. They are valid
+    // only inside docs/campaigns/*.html, never on live public pages.
+    // Unknown or misspelled placeholders still fail the normal link check.
+    const relative = file.slice(root.length + 1).replaceAll("\\", "/");
+    if (/^docs\/campaigns\/[^/]+\.html$/.test(relative) &&
+        /^(?:\{\{brand_logo_url\}\}|\{\{unsubscribe_url\}\})$/.test(reference)) {
+      checked += 1;
+      continue;
+    }
     if (/^(?:https?:|mailto:|tel:|data:|javascript:)/i.test(reference)) continue;
     if (reference.startsWith("/api/") || reference.startsWith("/.auth/")) continue;
     const [pathPart, fragment = ""] = reference.split("#");
