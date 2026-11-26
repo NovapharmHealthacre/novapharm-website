@@ -46,8 +46,12 @@ test("Expo SDK 58 enables Android and iOS automatic system appearance with suppo
 test("both original NovaPharm palettes preserve text and control contrast", () => {
   const light = paletteOf("mobileLightPalette");
   const dark = paletteOf("mobileDarkPalette");
-  assert.equal(light.accent, "#E3120B", "Keep canonical corporate red in light appearance");
-  assert.notEqual(light.accent, dark.accent, "Use a high-contrast red adaptation in dark mode");
+  assert.equal(light.accent, "#2546D8", "Keep canonical Intelligence Ultramarine in light appearance");
+  assert.equal(light.canvas, "#FFFFFF");
+  assert.equal(light.grouped, "#F8F7F3");
+  assert.equal(light.primary, "#0B0B0E");
+  assert.equal(dark.accent, "#A8B8FF");
+  assert.notEqual(light.accent, dark.accent, "Use a high-contrast blue adaptation in dark mode");
   for (const [name, palette] of [["light", light], ["dark", dark]]) {
     for (const foreground of ["primary", "secondary", "tertiary", "accent"]) {
       assert.ok(contrast(palette[foreground], palette.canvas) >= 4.5,

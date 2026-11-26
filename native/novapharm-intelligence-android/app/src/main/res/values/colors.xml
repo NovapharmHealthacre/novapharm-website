@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="nova_research_canvas">#FBFAEF</color>
+    <color name="nova_research_canvas">#FFFFFF</color>
     <color name="nova_research_primary">#0B0B0E</color>
     <color name="nova_research_secondary">#424245</color>
     <color name="nova_research_accent">#2546D8</color>
