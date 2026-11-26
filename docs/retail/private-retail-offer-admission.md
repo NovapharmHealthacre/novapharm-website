@@ -42,3 +42,19 @@ The owner has selected supplier-assisted fulfilment. Set `supplyModel: "supplier
 The supplier-backed model projects `stockVerified:false`, `orderingCapacityOnly:true`, `supplierBackedOrdering:true`, and `supplyModel:"supplier_backed"`. The AWS offer verifier accepts this distinct model only when the remaining requirements are met. Public product controls disclose that availability is confirmed after purchase and refunds are issued if the seller cannot fulfil.
 
 This change does **not** waive accurate retail pricing and VAT, complete mandatory online product information, product eligibility, permission to use manufacturer images, documented seller delivery support or the expiry of a consumer offer. It does not activate `MULTIBRAND_ENABLED`, insert a ledger record, enable medicine sales or change the existing Nutraxin checkout.
+
+
+## Exact-GTIN private Trade price import
+
+The original supplier workbooks and derived price schedule remain outside the repository. The private price draft has schema `novapharm-private-connective-price-draft-v1`, currency `GBP`, and records keyed by GTIN/SKU, with `pricingStatus` and `proposedNetMinor` (integer pence or null). The draft is not a public offer. For Trade-column matches the selected net selling price is copied exactly; for unit-price-only and missing-quote rows an independently reviewed selling price is required, never a guessed markup or silent use of acquisition cost.
+
+The same authoritative offer admission command accepts an optional private draft:
+
+```bash
+node scripts/prepare-connective-retail-offers.mjs --root . \
+  --catalogue src/content/approved-consumer-catalogue.json \
+  --input /private/novapharm/offers.json \
+  --price-draft /private/novapharm/checkout-price-draft.json
+```
+
+The join rejects duplicates, unmatched identities, conflicting reviewed prices and invalid VAT arithmetic. Gross pence is calculated only from the record's confirmed VAT evidence, including valid zero-rated exceptions. Price evidence, approved listing/label and image, delivery, eligibility and supply commitment still must pass the existing admission checks. No private workbook prices, source paths, or supplier costs are inserted into public HTML or static offer schema. The existing live retail offer endpoint remains the single authority for customer price and purchasing controls. No separate shopping bag is created.
