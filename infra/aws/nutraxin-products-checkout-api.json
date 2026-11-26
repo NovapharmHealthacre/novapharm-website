@@ -105,7 +105,7 @@
             "CONSUMER_CLIENT_ID": {
               "Fn::ImportValue": "novapharm-nutraxin-consumer-client-id"
             },
-            "MULTIBRAND_ENABLED": "false"
+            "MULTIBRAND_ENABLED": "true"
           }
         },
         "Code": {
