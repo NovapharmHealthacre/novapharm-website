@@ -10,6 +10,7 @@ import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import { CountrySourceCoverage } from "./country-source-coverage";
 import { GovernedHealthcareMap } from "./governed-healthcare-map";
 import styles from "./medicines-intelligence.module.css";
+import { formatIntelligenceOverviewMetric } from "../lib/intelligence-overview-metric.mjs";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
@@ -681,7 +682,7 @@ function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNul
 function PlatformOverview({ analytics, detail, headingLevel = 1, snapshot }: Readonly<{ analytics: AnalyticsResponse | null; detail: MedicineDetail | null; headingLevel?: 1 | 2; snapshot: IntelligenceSnapshot }>) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return <>
-    {detail ? <MedicineIdentity detail={detail} headingLevel={headingLevel} /> : <header className={styles.emptySubject}><p className={styles.breadcrumb}>Medicines Intelligence / Governed workspace</p><Heading>Search a medicine</Heading><p>The industry doesn't lack data. It lacks connection. One medicine search connects identity, observed market evidence and the next decisions to investigate. Every claim must remain attributable, and every missing fact stays visible.</p><dl><div><dt>Medicine identities</dt><dd>{metricValue(snapshot, "medicines").toLocaleString("en-GB")}</dd></div><div><dt>Pharmacy records</dt><dd>{metricValue(snapshot, "pharmacies").toLocaleString("en-GB")}</dd></div><div><dt>Population-linked practices</dt><dd>{metricValue(snapshot, "population-linked-practices").toLocaleString("en-GB")}</dd></div></dl></header>}
+    {detail ? <MedicineIdentity detail={detail} headingLevel={headingLevel} /> : <header className={styles.emptySubject}><p className={styles.breadcrumb}>Medicines Intelligence / Governed workspace</p><Heading>Search a medicine</Heading><p>Explore medicine identity, observed markets and source-backed evidence in one governed workspace. Every claim remains attributable; unreported metrics are marked unavailable, not zero.</p><dl><div><dt>Medicine identities</dt><dd>{formatIntelligenceOverviewMetric(snapshot, "medicines")}</dd></div><div><dt>Pharmacy records</dt><dd>{formatIntelligenceOverviewMetric(snapshot, "pharmacies")}</dd></div><div><dt>Population-linked practices</dt><dd>{formatIntelligenceOverviewMetric(snapshot, "population-linked-practices")}</dd></div></dl></header>}
     {detail?.investigationPassport ? <MedicineInvestigationPassport passport={detail.investigationPassport} /> : null}
     <AnalyticsDashboard analytics={analytics} detail={detail} />
   </>;
