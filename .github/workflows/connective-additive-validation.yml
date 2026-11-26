@@ -2,6 +2,11 @@ name: Validate Connective add-only Pages publication
 on:
   pull_request:
     paths:
+      - 'scripts/generate-connective-source-directory.mjs'
+      - 'scripts/test-connective-source-directory.mjs'
+      - 'scripts/test-connective-first-seven-manufacturer-info.mjs'
+      - 'src/content/connective-source-references.json'
+      - 'src/content/connective-first-seven-manufacturer-info.json'
       - 'scripts/stage-connective-source-only-release.py'
       - 'scripts/test-stage-connective-source-only-release.py'
       - '.github/workflows/connective-source-only-live-candidate.yml'
@@ -20,3 +25,7 @@ jobs:
           persist-credentials: false
       - name: Test additive-only staging against a preserved live-site fixture
         run: python3 scripts/test-stage-connective-source-only-release.py -v
+      - name: Install locked generator dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify customer-owned navigation and partial retail activation
+        run: node --test scripts/test-connective-source-directory.mjs scripts/test-connective-first-seven-manufacturer-info.mjs
