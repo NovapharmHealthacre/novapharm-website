@@ -26,3 +26,18 @@ test('unadmitted products remain on hold, including regulated products',()=>{
  for(const p of m.products)
    assert(!Object.hasOwn(p,'privateSupplierCost')&&!Object.hasOwn(p,'supplierCost'));
 });
+
+test('every regulated Vicks SKU has an independent non-payment review',()=>{
+ const review=JSON.parse(readFileSync('docs/retail/connective-vicks-ten-regulatory-review-20261126.json','utf8'));
+ assert.equal(review.products.length,10);
+ const ids=new Set(review.products.map(x=>x.gtin));
+ assert.equal(ids.size,10);
+ const medicines=new Set(m.products.filter(x=>x.readiness==='REGULATED_MEDICINE_OR_DEVICE_REVIEW').map(x=>x.gtin));
+ assert.deepEqual(ids,medicines);
+ for(const item of review.products){
+  assert.equal(item.saleAuthorised,false);
+  assert.equal(item.checkoutAdmitted,false);
+  assert.equal(item.exactCurrentPackVerified,false);
+  assert(item.evidence.startsWith('https://www.vicks.co.uk/'));
+ }
+});
