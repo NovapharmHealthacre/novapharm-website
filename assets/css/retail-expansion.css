@@ -49,3 +49,17 @@
 .npr-card[hidden],.npr-section[data-npr-collection-section][hidden],.npr-no-results[hidden]{display:none!important}
 .npr-no-results{padding-block:32px}
 @media(max-width:600px){.npr-collection-search{align-items:stretch;flex-direction:column}.npr-collection-search input{flex-basis:auto;width:100%}}
+
+/* Source-backed Connective catalogue: authentic supplier packaging, with
+   original presentation and no invented commerce statuses. */
+.npr-source-breadcrumb{padding-block:24px;align-items:center}
+.npr-source-breadcrumb span[aria-current]{color:#53535a}
+.npr-source-detail .npr-hero-media{width:100%;background:#f8f7f3;min-height:420px}
+.npr-source-detail .npr-pack-frame{width:100%;max-width:620px;aspect-ratio:1;display:grid;place-items:center;padding:clamp(24px,5vw,64px)}
+.npr-source-detail .npr-pack-frame img{width:100%;height:100%;object-fit:contain;object-position:center}
+.npr-source-links{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:24px}
+.npr-source-links a{color:#0b0b0e;text-decoration:underline;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center}
+.npr-source-image-fallback{border:1px solid #dedcd5;color:#0b0b0e;text-align:center;padding:24px}
+.npr-source-image-fallback span{font-size:clamp(20px,3vw,32px);font-weight:600}
+.npr-source-breadcrumb a{text-underline-offset:4px}
+@media(max-width:600px){.npr-source-detail .npr-hero-media{min-height:260px}.npr-source-breadcrumb{gap:10px}}
