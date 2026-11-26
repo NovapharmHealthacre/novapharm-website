@@ -116,6 +116,29 @@ if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
     if (!brands.has(normalizedBrand)) brands.set(normalizedBrand, {name:p.brand, items:[]});
     brands.get(normalizedBrand).items.push(p);
   }
+  // Only source-linked, manufacturer-online information is shown here.
+  // It is not evidence of checked physical pack labels, image rights, prices or stock.
+  const manufacturerInfo = new Map();
+  const labelFile = 'src/content/connective-first-seven-manufacturer-info.json';
+  if (existsSync(path(labelFile))) {
+    const labels = JSON.parse(read(labelFile));
+    assert(labels.schema === 'novapharm-connective-manufacturer-online-reference-v1' &&
+      labels.notLicenceEvidence === true && labels.requiresPackReview === true &&
+      Array.isArray(labels.products), 'Invalid manufacturer information status');
+    for (const entry of labels.products) {
+      const parent=products.find(p=>p.ean===entry.ean);
+      assert(parent && !manufacturerInfo.has(entry.ean) && entry.name === parent.name,
+        'Unmatched or duplicated manufacturer product reference');
+      assert(safeUrl(entry.manufacturerUrl, 'manufacturer') === parent.manufacturerProductUrl &&
+        new URL(entry.manufacturerUrl).hostname === 'www.vitabiotics.com', 'Manufacturer source mismatch');
+      assert(entry.verifiedCurrentPackLabel === false && entry.retailOfferApproved === false &&
+        entry.status === 'manufacturer_online_reference_pack_label_match_pending', 'Unverified release assertion');
+      for(const key of ['ingredients','allergens','directions','precautions'])
+        assert(typeof entry[key] === 'string' && entry[key].length > 15 && entry[key].length < 2000,
+          'Incomplete manufacturer field: '+key);
+      manufacturerInfo.set(entry.ean,entry);
+    }
+  }
   const groups = [...brands.values()].sort((a,b)=>a.name.localeCompare(b.name,'en-GB'));
   const shell = read('products/index.html');
   const card = p => {
@@ -142,6 +165,19 @@ if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
       script:'/assets/js/connective-collection-search.js',schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Health and wellbeing',url:baseUrl+collectionRoute}});
   for (const p of products) {
     const route=collectionRoute+p.ean+'/';
+    const label=manufacturerInfo.get(p.ean);
+    const labelNotice=label
+      ? `<p class="npr-reference">Manufacturer's online product information, reviewed 26 November 2026. The exact current UK pack label and allergen emphasis are not yet certified. Ordering remains unavailable until final verification.</p>`
+      : `<p class="npr-reference">Full ingredients, directions, warnings and final ordering terms must be confirmed on this page before checkout is available.</p>`;
+    const labelDetails=label
+      ? `<section class="npr-wrap npr-section npr-source-manufacturer-details" aria-labelledby="manufacturer-info-heading"><h2 id="manufacturer-info-heading">Manufacturer information</h2>`+
+        `<h3>Ingredient reference</h3><p>${escapeHtml(label.ingredients)}</p>`+
+        `<h3>Allergens</h3><p>${escapeHtml(label.allergens)}</p>`+
+        `<h3>Directions</h3><p>${escapeHtml(label.directions)}</p>`+
+        `<h3>Precautions</h3><p>${escapeHtml(label.precautions)}</p>`+
+        `<p class="npr-reference">Check the actual packaging before use. `+
+        `<a href="${escapeHtml(label.manufacturerUrl)}" rel="noopener noreferrer" target="_blank">See manufacturer source</a>.</p></section>`
+      : '';
     const sourceLinks = `<a href="${escapeHtml(p.supplierProductUrl)}" rel="noopener noreferrer" target="_blank">Supplier product information</a>`+
       (p.manufacturerProductUrl ? ` <a href="${escapeHtml(p.manufacturerProductUrl)}" rel="noopener noreferrer" target="_blank">Manufacturer information</a>` : '');
     const main = `<main id="main" class="npr-main"><nav class="npr-wrap npr-categories npr-source-breadcrumb" aria-label="Breadcrumb">`+
@@ -150,12 +186,13 @@ if (!existsSync(path(sourceFile)) || existsSync(path(approvedFile))) {
       `<div class="npr-detail-copy"><p class="npr-kicker">${escapeHtml(p.brand)}</p><h1>${escapeHtml(p.name)}</h1>`+
       `<p class="npr-detail-pack">${escapeHtml(p.pack)}</p><p class="npr-reference">GTIN ${escapeHtml(p.ean)}</p>`+
       `<p>Explore this product reference within NovaPharm's health and wellbeing collection.</p>`+
-      `<p class="npr-reference">Full ingredients, directions, warnings and final ordering terms must be confirmed on this page before checkout is available.</p>`+
+      labelNotice+
       `<div class="npr-source-links">${sourceLinks}</div></div></section>`+
       `<section class="npr-wrap npr-section"><h2>Product information</h2>`+
       `<p>Pack: ${escapeHtml(p.pack)} · Brand: ${escapeHtml(p.brand)} · GTIN: ${escapeHtml(p.ean)}</p>`+
-      `<p>Product-specific information is being prepared from official source material. No unverified stock or price is displayed.</p>`+
-      `<a href="${collectionRoute}" class="npr-card-action">Explore more products <span aria-hidden="true">→</span></a></section></main>`;
+      `<p>Source information is provided for product identification; no unverified price or stock is displayed.</p>`+
+      `<a href="${collectionRoute}" class="npr-card-action">Explore more products <span aria-hidden="true">→</span></a></section>`+
+      labelDetails+`</main>`;
     const schema={'@context':'https://schema.org','@type':'Product','@id':baseUrl+route+'#product',name:p.name,gtin13:p.ean,brand:{'@type':'Brand',name:p.brand},url:baseUrl+route};
     metadataPage(shell, route, `${p.name} | NovaPharm Healthcare`, `${p.brand} ${p.name}. ${p.pack}. Source-backed UK product reference.`,main,{schema});
   }
