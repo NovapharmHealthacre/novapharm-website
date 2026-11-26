@@ -69,3 +69,11 @@ test("Connective private intake projection self-test", async()=>{
  const result=spawn(process.execPath,[fileURLToPath(new URL("./compile-connective-approved-catalogue.mjs",import.meta.url)),"--self-test"],{encoding:"utf8"});
  assert.equal(result.status,0,result.stdout+result.stderr);
 });
+
+test("Private Connective offer import rejects unverified commercial and stock evidence", async()=>{
+ const {spawnSync:spawn}=await import("node:child_process");
+ const {fileURLToPath}=await import("node:url");
+ const script=fileURLToPath(new URL("./prepare-connective-retail-offers.mjs",import.meta.url));
+ const result=spawn(process.execPath,[script,"--self-test"],{encoding:"utf8"});
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
