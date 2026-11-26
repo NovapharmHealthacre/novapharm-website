@@ -125,7 +125,10 @@ def details(order, order_id, subject):
             if has_delivery or qty != 1 or shipping <= 0 or name != "Approved delivery and handling":
                 raise NotReady("Delivery line not approved")
             has_delivery = True
-        elif not isinstance(sku, str) or not SKU.fullmatch(sku) or sku in seen or type(qty) is not int or not 1 <= qty <= 10000:
+        elif not isinstance(sku, str) or not (SKU.fullmatch(sku) or (
+            order.get("ownerCommercialPolicy")==s("multibrand_uk_direct_v1") and
+            re.fullmatch(r"NP-CP-(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})",sku)
+        )) or sku in seen or type(qty) is not int or not 1 <= qty <= 10000:
             raise NotReady("Invalid or repeated SKU/quantity")
         if (not isinstance(name, str) or len(name) < 3 or len(name) > 120 or
             any(ord(c) < 32 for c in name) or type(amount) is not int or amount <= 0 or amount > MAX_PENCE):

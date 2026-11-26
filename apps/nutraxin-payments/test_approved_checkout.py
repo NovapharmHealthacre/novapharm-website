@@ -181,6 +181,18 @@ class PaymentContracts(unittest.TestCase):
         with self.assertRaises(CHECKOUT.NotReady):
             CHECKOUT.details(invalid,r["orderId"]["S"],"customer_123456")
 
+    def test_new_retail_namespace_requires_multibrand_approval(self):
+        r=approved_record()
+        lines=json.loads(r["approvedLinesJson"]["S"])
+        lines[0]["sku"]="NP-CP-4006381333931"
+        r["approvedLinesJson"]=CHECKOUT.s(json.dumps(lines))
+        with self.assertRaises(CHECKOUT.NotReady):
+            CHECKOUT.details(r,r["orderId"]["S"],"customer_123456")
+        r["ownerCommercialPolicy"]=CHECKOUT.s("multibrand_uk_direct_v1")
+        result=CHECKOUT.details(r,r["orderId"]["S"],"customer_123456")
+        self.assertEqual(result["lines"][0]["sku"],"NP-CP-4006381333931")
+        self.assertEqual(result["totalGrossMinor"],12600)
+
     def test_approved_totals_and_one_unit_are_allowed(self):
         r=approved_record()
         v=CHECKOUT.details(r,r["orderId"]["S"],"customer_123456")

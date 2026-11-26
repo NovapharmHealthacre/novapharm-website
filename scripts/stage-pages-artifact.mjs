@@ -24,6 +24,7 @@ const output = resolve(process.argv[2] || "_site");
 const allowedTopLevelDirectories = new Set([
   ".well-known",
   "about",
+  "our-story",
   "account-application",
   "assets",
   "capabilities",
@@ -77,6 +78,8 @@ const allowedRootFiles = new Set([
   "web-app-manifest-512x512.png"
 ]);
 
+const allowedPublicPharmacyFiles = new Set(["pharmacy-partners/index.html"]);
+const allowedPublicGiftFiles = new Set(["corporate-gifts/index.html"]);
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
 const allowedPublicPortalFiles = new Set(["portal/index.html"]);
 // Public research content is exactly one reviewed HTML file, never an entire directory.
@@ -91,6 +94,7 @@ const requiredPublicPaths = [
   "llms.txt",
   "assets",
   "capabilities/index.html",
+  "our-story/index.html",
   "cro/index.html",
   "distribution/index.html",
   "market-access/index.html",
@@ -101,6 +105,10 @@ const requiredPublicPaths = [
   "products/index.html",
   "products/marketplace/index.html",
   "products/track/index.html",
+  "corporate-gifts/index.html",
+  "pharmacy-partners/index.html",
+  "assets/css/pharmacy-partners.css",
+  "assets/js/pharmacy-partners.js",
   "assets/data/commerce-marketplace.json",
   "assets/js/commerce-marketplace.js",
   "assets/css/commerce-marketplace.css",
@@ -115,6 +123,11 @@ const requiredPublicPaths = [
   "assets/css/esco-catalogue.css",
   "assets/js/esco-catalogue.js",
   "products/nutraxin/index.html",
+  "products/nutraxin/magnesium/index.html",
+  "products/nutraxin/vitamin-c/index.html",
+  "products/nutraxin/vitamin-d/index.html",
+  "products/nutraxin/multivitamins/index.html",
+  "products/nutraxin/collagen/index.html",
   "shopping/nutraxin-uk.tsv",
   "products/strategic-portfolio/index.html",
   "quantum-research/index.html",
@@ -188,6 +201,26 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
       const reviewedDestination = join(output, reviewedPath);
       mkdirSync(dirname(reviewedDestination), { recursive: true });
       cpSync(reviewedSource, reviewedDestination, { force: true });
+    }
+    continue;
+  }
+  if (entry.isDirectory() && entry.name === "pharmacy-partners") {
+    const contents = readdirSync(source, { withFileTypes: true });
+    if (contents.length !== 1 || contents[0].name !== "index.html" || !contents[0].isFile()) throw new Error("Unreviewed pharmacy campaign file");
+    for (const publicPath of allowedPublicPharmacyFiles) {
+      const target = join(output, publicPath);
+      mkdirSync(dirname(target), { recursive: true });
+      cpSync(join(root, publicPath), target, { force: true });
+    }
+    continue;
+  }
+  if (entry.isDirectory() && entry.name === "corporate-gifts") {
+    const contents = readdirSync(source, { withFileTypes: true });
+    if (contents.length !== 1 || contents[0].name !== "index.html" || !contents[0].isFile()) throw new Error("Unreviewed corporate gifting file");
+    for (const publicPath of allowedPublicGiftFiles) {
+      const target = join(output, publicPath);
+      mkdirSync(dirname(target), { recursive: true });
+      cpSync(join(root, publicPath), target, { force: true });
     }
     continue;
   }
@@ -390,6 +423,50 @@ for (const path of [
   }
 }
 
+// Prevent a future "successful" Pages rebuild from silently losing the
+// previously restored 392-product Marketplace or the noindex status-only page.
+// This validates source-derived content, not the ability to take payments.
+const marketplaceHtml = readFileSync(join(output, "products/marketplace/index.html"), "utf8");
+if (!marketplaceHtml.includes('data-commerce-marketplace') ||
+    (marketplaceHtml.match(/class="mp-source-index-link"/g) ?? []).length !== 392 ||
+    !marketplaceHtml.includes('https://novapharmhealthcare.com/products/marketplace/') ||
+    !marketplaceHtml.includes('/assets/js/commerce-marketplace.js')) {
+  throw new Error("Missing owner-reviewed 392-product Commerce Marketplace");
+}
+const marketplaceData = JSON.parse(readFileSync(join(output, "assets/data/commerce-marketplace.json"), "utf8"));
+if (marketplaceData.schema !== "novapharm-public-merchant-discovery-v1" ||
+    marketplaceData.sourceProductCount !== 392 ||
+    marketplaceData.notPaymentAuthority !== true ||
+    !Array.isArray(marketplaceData.products) ||
+    marketplaceData.products.length !== 392 ||
+    marketplaceData.products.filter(p => p.brand === "Nutraxin").length !== 19 ||
+    marketplaceData.products.filter(p => p.brand === "ESCO").length !== 373 ||
+    new Set(marketplaceData.products.map(p => p.sku)).size !== 392 ||
+    marketplaceData.products.some(p => p.cardCheckoutAuthority !== false || p.availabilityQuantity !== null)) {
+  throw new Error("Commerce catalog source, inventory, or payment authority contract changed");
+}
+const trackingHtml = readFileSync(join(output, "products/track/index.html"), "utf8");
+if (!trackingHtml.includes("data-np-order-lookup") ||
+    !trackingHtml.includes('name="order_ref"') ||
+    !trackingHtml.includes('/assets/js/commerce-order-track.js') ||
+    !trackingHtml.includes('https://novapharmhealthcare.com/products/track/') ||
+    !/<meta\s+name="robots"\s+content="noindex,\s*follow"/i.test(trackingHtml)) {
+  throw new Error("Customer order tracking privacy or source contract changed");
+}
+const productsOverviewHtml = readFileSync(join(output, "products/index.html"), "utf8");
+if (!productsOverviewHtml.includes('data-products-editorial="approved-2026-11"') ||
+    !productsOverviewHtml.includes('/products/marketplace/') ||
+    !productsOverviewHtml.includes('/products/track/')) {
+  throw new Error("Approved November Products overview or its Commerce navigation was lost");
+}
+const stagedSitemap = readFileSync(join(output, "sitemap.xml"), "utf8");
+if (!stagedSitemap.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>') ||
+    !stagedSitemap.includes('<loc>https://novapharmhealthcare.com/products/esco/</loc>') ||
+    stagedSitemap.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>') ||
+    stagedSitemap.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>')) {
+  throw new Error("Commerce sitemap cannot index private order tracking or omit restored catalogues");
+}
+
 for (const forbiddenPath of ["admin", "employee", "entra-complete", "_secure", "portal/change-password", "portal/dashboard", "portal/executive-platform"]) {
   if (existsSync(join(output, forbiddenPath))) {
     throw new Error(`Secure or server-dependent path entered the Pages artifact: ${forbiddenPath}`);
@@ -440,7 +517,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && !allowedPublicGiftFiles.has(stagedPath) && !allowedPublicPharmacyFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
@@ -468,6 +545,15 @@ for (const page of canonicalPages) {
   if (markers.length !== 1 || markers[0][1] !== releaseSha) {
     throw new Error(`Canonical release provenance mismatch: ${page.file}`);
   }
+}
+
+// Check the actual staged canonical HTML, not just source templates or screenshots.
+// This is still source-only: it never asserts that live customer pages were deployed.
+const { officialPublicBrandPalette, assertOfficialPublicBrandMetadata } =
+  await import("./normalise-official-public-brand-metadata.mjs");
+const officialPalette = officialPublicBrandPalette(root);
+for (const page of canonicalPages) {
+  assertOfficialPublicBrandMetadata(readFileSync(join(output, page.file), "utf8"), officialPalette);
 }
 
 // Keep non-indexable quantum reference traceable to the exact released source.

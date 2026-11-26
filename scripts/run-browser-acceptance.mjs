@@ -433,6 +433,36 @@ for (const [engineName, engine] of engines) {
         addIssue({ engine: engineName, viewport: viewportName, route: "home", area: "interaction", type: "cookie-controls-missing" });
       }
 
+      // Run the actual overview journey once per browser, not per viewport.
+      if (viewport.width === 1440) {
+        for (const [section, destination] of [
+          ["company", "/about/"], ["capabilities", "/capabilities/"],
+          ["distribution", "/distribution/"], ["oncology", "/oncology/"],
+          ["products", "/products/"], ["intelligence", "/technology/"]
+        ]) {
+          await publicPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+          const trigger = publicPage.locator(`header [data-mega-trigger="${section}"]`);
+          const panel = publicPage.locator(`header [data-mega-panel="${section}"]`);
+          await trigger.hover();
+          await panel.waitFor({ state: "visible" });
+          await trigger.click();
+          await publicPage.waitForURL(`${baseUrl}${destination}`);
+          await publicPage.locator("header.site-header.npd-header").waitFor({ state: "visible" });
+          await publicPage.locator("footer.site-footer.npd-footer").waitFor({ state: "attached" });
+        }
+        await publicPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+        const company = publicPage.locator('header [data-mega-trigger="company"]');
+        const panel = publicPage.locator('header [data-mega-panel="company"]');
+        await company.focus();
+        await company.press("ArrowDown");
+        await panel.locator("a:focus").waitFor({ state: "attached" });
+        await publicPage.keyboard.press("Escape");
+        await panel.waitFor({ state: "hidden" });
+        await company.press("Enter");
+        await publicPage.waitForURL(`${baseUrl}/about/`);
+        await publicPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+      }
+
       if (viewport.width <= 768) {
         await publicPage.locator("[data-nav-toggle]").click();
         const mobileMenuPath = resolve(screenshotRoot, engineName, viewportName, "interactions", "mobile-navigation.jpg");

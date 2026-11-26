@@ -220,7 +220,7 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
-  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.png$/, `${engine} ${route}: header must retain the approved original NovaPharm logo`);
+  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg$/, `${engine} ${route}: header must render the approved Healthcare SVG logo`);
 
   const navigationPresentation = await page.evaluate(() => {
     const header = document.querySelector("header.site-header");
@@ -329,8 +329,13 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
       });
       screenshotCaptured = true;
     } catch (error) {
-      if (attempt === 3 || !/captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
-      console.warn(`${engine} ${viewport.name} ${route}: transient screenshot failure on attempt ${attempt}; retrying the same capture`);
+      // Screenshot timeouts are also transient on overloaded CI renderers.
+      // Retry only the capture, never an accessibility/layout/security assertion.
+      // Exhausting the three bounded attempts still fails the entire job.
+      const reason = error instanceof Error ? error.message : String(error);
+      const retriableCaptureFailure = /captureScreenshot|Unable to capture screenshot|page\.screenshot:\s*Timeout \d+ms exceeded/i.test(reason);
+      if (attempt === 3 || !retriableCaptureFailure) throw error;
+      console.warn(`${engine} ${viewport.name} ${route}: screenshot capture attempt ${attempt} failed (${reason.split("\n")[0]}); retrying the same capture`);
       await page.waitForTimeout(500 * attempt);
     }
   }
@@ -380,10 +385,43 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
+  // Desktop links must keep their ordinary browser destinations even when
+  // pointer or keyboard focus has opened a preview directory.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [section, destination] of [
+    ["company", "/about/"], ["capabilities", "/capabilities/"],
+    ["distribution", "/distribution/"], ["oncology", "/oncology/"],
+    ["products", "/products/"], ["intelligence", "/technology/"],
+  ]) {
+    await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+    const trigger = page.locator(`header .desktop-nav > a[data-mega-trigger="${section}"]`);
+    const panel = page.locator(`header [data-mega-panel="${section}"]`);
+    await trigger.hover();
+    await panel.waitFor({ state: "visible" });
+    await trigger.click();
+    await page.waitForURL(`${baseUrl}${destination}`);
+    assert.equal(await page.locator("header.site-header.npd-header").count(), 1);
+    assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1);
+  }
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+  const companyTrigger = page.locator('header .desktop-nav > a[data-mega-trigger="company"]');
+  const companyPanel = page.locator('header [data-mega-panel="company"]');
+  await companyTrigger.focus();
+  await companyTrigger.press("ArrowDown");
+  await companyPanel.locator("a").first().waitFor({ state: "visible" });
+  await companyPanel.locator("a:focus").waitFor({ state: "attached" });
+  await page.keyboard.press("Escape");
+  await companyPanel.waitFor({ state: "hidden" });
+  assert.equal(await companyTrigger.evaluate((element) => document.activeElement === element), true);
+  await companyTrigger.press("Enter");
+  await page.waitForURL(`${baseUrl}/about/`);
+  await page.setViewportSize({ width: 390, height: 844 });
+
   await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
-  assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");
+  assert.equal(await page.locator("footer.site-footer.npd-footer").count(), 1, "shared Contact footer missing");
+  assert.equal(await page.locator("main footer").count(), 0, "Contact must not have a second footer");
   if (process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true") {
     assert.equal(await page.locator("form.contact-form").count(), 1, "verified managed contact form required");
     await page.getByLabel("Full name").fill("Validation User");
@@ -526,8 +564,8 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
       const visibleNavigationLinks = page.locator('header nav a:visible');
       assert.deepEqual(
         await visibleNavigationLinks.allTextContents(),
-        navigation.map(([label]) => label),
-        `${name}: scriptless primary navigation does not match the governed seven-destination architecture`,
+        navigation.filter(([, href]) => href !== "/news-insights/").map(([label]) => label === "NovaPharm Intelligence" ? "Intelligence" : label),
+        `${name}: scriptless primary navigation does not match the uniform eight-destination architecture`,
       );
       const layout = await page.evaluate(() => ({
         viewportWidth: document.documentElement.clientWidth,

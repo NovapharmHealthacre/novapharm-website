@@ -68,3 +68,124 @@
 /* Checkout progress and legal terms: readable at normal and compact text sizes. */
 .nx-store-consumer-terms a{ text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; }
 .nx-store-consumer-terms a:hover{ text-decoration-thickness:2px; }
+
+/* Explicit, in-memory catalogue comparison; no tracking or medical inference. */
+.nx-compare{max-width:1120px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(18px,4vw,40px);color:#0B0B0E;background:#FFFFFF;scroll-margin-top:110px}
+.nx-compare h2{font-size:clamp(1.65rem,3.2vw,2.6rem);letter-spacing:normal;line-height:1.12;margin:0 0 12px}
+.nx-compare>p{max-width:68ch;line-height:1.6;color:#54545A;margin:0 0 14px}
+.nx-compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;margin-top:20px}
+.nx-compare-card{background:#F8F7F3;border:1px solid #DEDCD5;border-radius:16px;padding:20px;min-width:0}
+.nx-compare-card h3{font-size:1.05rem;margin:0 0 18px;overflow-wrap:anywhere}
+.nx-compare-card dl{margin:0 0 12px}.nx-compare-card dt{font-size:.8rem;color:#54545A;margin-top:12px}.nx-compare-card dd{margin:3px 0 0;font-weight:600;overflow-wrap:anywhere}
+.nx-compare-control,.nx-compare-link{font:inherit;font-size:.875rem;min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;padding:8px 12px;color:#9D1B32}
+.nx-compare-control{background:#FFFFFF;border:1px solid #DEDCD5;border-radius:8px;cursor:pointer}
+.nx-compare-control[aria-pressed="true"]{background:#9D1B32;border-color:#9D1B32;color:#FFFFFF}
+.nx-compare-control:disabled{opacity:.55;cursor:not-allowed}
+.nx-compare-link{text-decoration:underline;text-underline-offset:3px}
+.nx-compare-control:focus-visible,.nx-compare-link:focus-visible,#nx-compare-title:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.nx-product-card-shell>.nx-compare-control,.nx-product-card-shell>.nx-compare-link{margin:4px 12px 8px}
+
+/* Retail navigation and bag: consistent 44px controls, Pure White canvas,
+   editorial product rows and a compact order summary. Scoped to retail. */
+body.nx-retail-store{background:#FFFFFF}
+.nx-retail-store .nx-store-topbar{box-sizing:border-box;width:100%;max-width:1120px;display:flex;align-items:center;justify-content:flex-end;gap:clamp(8px,2vw,26px);padding:4px 24px;border-bottom:1px solid #DEDCD5;background:#FFFFFF}
+.nx-retail-store .nx-store-topbar>a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:0;min-height:44px;padding:0 4px;margin:0;font-size:14px;font-weight:550;line-height:1.25;white-space:nowrap;color:#0B0B0E}
+.nx-retail-store .nx-store-topbar>a[aria-current="page"]{font-weight:700;text-decoration:underline;text-underline-offset:5px}
+.nx-retail-store .nx-store-topbar>a:focus-visible,.nx-shop-bag button:focus-visible,.nx-shop-bag input:focus-visible{outline:2px solid #0066cc;outline-offset:3px}
+.nx-retail-store .nx-shop-bag{box-sizing:border-box;width:100%;max-width:1120px;padding:clamp(26px,4vw,52px) 24px 80px;background:#FFFFFF;color:#0B0B0E;--nx-ink:#0B0B0E;--nx-muted:#54545A}
+.nx-shop-bag h1{font-size:clamp(34px,4.5vw,52px);margin:4px 0 12px}
+.nx-shop-bag .nx-shop-intro{font-size:16px;margin-bottom:24px;color:#54545A}
+.nx-shop-bag .nx-purchase-progress{margin-bottom:20px;padding-bottom:16px}
+.nx-shop-bag .nx-checkout-identity{background:#F8F7F3;border-radius:12px;padding:16px 20px;margin-bottom:24px;gap:18px}
+.nx-shop-bag .nx-checkout-identity h2{font-size:20px;margin:4px 0 6px}
+.nx-shop-bag .nx-checkout-identity p:not(.nx-shop-eyebrow),.nx-shop-bag .nx-checkout-identity-meta span{color:#54545A}
+.nx-bag-grid{grid-template-columns:minmax(0,1fr) minmax(300px, .53fr);gap:28px;align-items:start}
+.nx-bag-grid>section,.nx-bag-summary{min-width:0}
+.nx-bag-item{grid-template-columns:112px minmax(0,1fr);gap:20px;padding:20px;margin-bottom:10px;border:0;border-radius:12px;background:#F8F7F3;align-items:center}
+.nx-bag-item img{width:112px;height:112px;max-width:100%;object-fit:contain}
+.nx-bag-item h2{font-size:17px;line-height:1.35;margin:0 0 4px;overflow-wrap:anywhere}
+.nx-bag-item .nx-bag-pack,.nx-bag-item .nx-bag-price{color:#54545A;margin:4px 0}
+.nx-bag-item .nx-bag-line-total{font-weight:650;color:#0B0B0E;font-variant-numeric:tabular-nums;white-space:nowrap;margin:0}
+.nx-bag-item .nx-bag-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.nx-bag-item .nx-bag-quantity{display:inline-flex;align-items:center;gap:0;border:1px solid #86868B;border-radius:8px;background:#FFFFFF}
+.nx-bag-item .nx-bag-quantity button{appearance:none;background:transparent;border:0;color:#0B0B0E;font:inherit;min-width:44px;min-height:44px;cursor:pointer}
+.nx-bag-item .nx-bag-quantity button:disabled{opacity:.45;cursor:not-allowed}
+.nx-bag-item .nx-bag-quantity input[type=number]{box-sizing:border-box;appearance:textfield;-moz-appearance:textfield;width:62px;min-height:44px;padding:0 2px;border:0;border-radius:0;text-align:center;font-size:16px;color:#0B0B0E}
+.nx-bag-item .nx-bag-quantity input::-webkit-inner-spin-button,.nx-bag-item .nx-bag-quantity input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.nx-bag-item .nx-bag-remove{min-height:44px;padding:8px 0;text-decoration:underline;text-underline-offset:3px}
+.nx-shop-bag .nx-bag-summary{background:#F8F7F3;border-radius:12px;padding:22px}
+.nx-bag-summary h2{font-size:22px;margin:0 0 14px}
+.nx-bag-summary dl div{border-color:#DEDCD5;padding:10px 0}
+.nx-bag-summary dt{color:#54545A}
+.nx-bag-summary .nx-bag-total{border-color:#DEDCD5;margin-top:8px;padding-top:16px}
+.nx-bag-summary .nx-store-bag-button{border-radius:8px;background:#0B0B0E}
+.nx-bag-summary .nx-store-bag-button:not(:disabled):hover{background:#333338}
+.nx-bag-summary .nx-store-bag-button:disabled{background:#d2d2d7;color:#555}
+.nx-shop-bag .nx-store-consumer-terms{font-size:14px;line-height:1.5}
+.nx-bag-secure{border-top:1px solid #DEDCD5;margin-top:18px;padding-top:16px;font-size:14px;color:#54545A;line-height:1.5}
+.nx-bag-secure strong{display:block;color:#0B0B0E;margin-bottom:4px}
+.nx-bag-discover{margin-top:28px}
+.nx-bag-discover h2{font-size:23px;margin:0 0 14px}
+.nx-bag-discover-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.nx-bag-discover-card{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:14px;background:#F8F7F3;border-radius:12px;min-width:0}
+.nx-bag-discover-card img{width:100%;height:120px;object-fit:contain}
+.nx-bag-discover-card h3{font-size:15px;line-height:1.35;margin:0;overflow-wrap:anywhere}
+.nx-bag-discover-card p{font-size:14px;margin:0;color:#54545A}
+.nx-bag-discover-card button{width:100%;margin-top:auto;padding:10px 8px;border-radius:8px;background:#0B0B0E}
+@media(max-width:760px){
+ .nx-retail-store .nx-store-topbar{justify-content:center;padding:4px 12px;gap:clamp(5px,2vw,16px)}
+ .nx-retail-store .nx-store-topbar>a{font-size:13px}
+ .nx-retail-store .nx-shop-bag{padding:24px 16px 56px}
+ .nx-bag-grid{grid-template-columns:minmax(0,1fr);gap:18px}
+ .nx-bag-item{grid-template-columns:76px minmax(0,1fr);padding:14px;gap:12px}
+ .nx-bag-item img{width:76px;height:76px}
+ .nx-bag-discover-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){.nx-bag-item{grid-template-columns:56px minmax(0,1fr)}.nx-bag-item img{width:56px;height:56px}.nx-bag-item .nx-bag-quantity input[type=number]{width:48px}.nx-bag-discover-grid{grid-template-columns:minmax(0,1fr)}}
+
+.nx-bag-count{font-size:15px;color:#54545A;margin:0 0 8px}
+.nx-bag-summary-jump{display:inline-flex;align-items:center;min-height:44px;margin-bottom:4px;text-decoration:underline!important;text-underline-offset:3px}
+#nx-bag-summary{scroll-margin-top:120px}
+.nx-bag-secure p{margin:0 0 8px}
+.nx-bag-discover[hidden]{display:none}
+
+/* Retail promotion disclosure follows the approved neutral palette. */
+.nx-bag-promotion{border-block-end:1px solid #DEDCD5;margin-block:16px;padding-block:12px;color:#0B0B0E}
+.nx-bag-promotion summary{cursor:pointer;font-weight:600;min-height:44px;display:list-item;padding-block:8px;box-sizing:border-box}
+.nx-bag-promotion[hidden],.nx-bag-summary dl div[hidden]{display:none!important}
+.nx-bag-promotion>div{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.nx-bag-promotion label{display:grid;gap:6px;flex:1 1 160px;font-size:14px;min-width:0}
+.nx-bag-promotion input{box-sizing:border-box;min-width:0;width:100%;min-height:44px;border:1px solid #DEDCD5;border-radius:8px;background:#FFFFFF;color:#0B0B0E;padding:10px 12px;font:inherit}
+.nx-bag-promotion input:focus-visible,.nx-bag-promotion summary:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
+.nx-bag-promotion .nx-store-note{margin:8px 0 0;overflow-wrap:anywhere}
+.nx-bag-promotion .nx-store-note:empty{display:none}
+
+/* Digital gift-card preview: no live tender controls or simulated purchase. */
+.nx-gift-page{background:#FFFFFF;color:#0B0B0E}
+.nx-gift-grid{align-items:start}
+.nx-gift-visual{min-width:0;padding:clamp(18px,4vw,48px);background:#F8F7F3;border-radius:24px}
+.nx-gift-card-art{aspect-ratio:1.586;box-sizing:border-box;border:1px solid #DEDCD5;border-radius:18px;padding:clamp(20px,4vw,40px);background:#FFFFFF;display:flex;flex-direction:column;justify-content:space-between;gap:12px;color:#0B0B0E;box-shadow:0 12px 32px rgba(11,11,14,.07)}
+.nx-gift-card-art img{display:block;width:min(80%,280px);height:auto}
+.nx-gift-card-art span{font-size:clamp(.85rem,2vw,1.1rem);margin-top:auto}
+.nx-gift-card-art strong{font-size:clamp(2rem,5vw,4rem);font-weight:500;letter-spacing:normal}
+.nx-gift-visual>p{font-size:14px;margin:16px 0 0;color:#55555A}
+.nx-gift-page .nx-gift-summary{background:#FFFFFF;border:1px solid #DEDCD5}
+.nx-gift-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:10px;border:0;padding:0;margin:0;min-width:0}
+.nx-gift-options legend{font-size:14px;margin-bottom:12px;color:#0B0B0E}
+.nx-gift-options label{display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border:1px solid #DEDCD5;border-radius:10px;background:#FFFFFF;color:#0B0B0E;cursor:pointer;padding:6px;font-size:14px}
+.nx-gift-options label:has(input:checked){border-color:#9D1B32;box-shadow:inset 0 0 0 1px #9D1B32}
+.nx-gift-options input{accent-color:#9D1B32}
+.nx-gift-options label:focus-within{outline:2px solid #9D1B32;outline-offset:3px}
+@media(max-width:480px){.nx-gift-visual{padding:16px}.nx-gift-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Account privileges: secondary to manual promotional code, never advertise unapproved offers. */
+.nx-bag-privileges{margin:16px 0;padding:16px 0;border-bottom:1px solid #DEDCD5}
+.nx-bag-privileges[hidden],.nx-bag-privileges [hidden]{display:none}
+.nx-bag-privileges h3{font-size:16px;font-weight:600;margin:0 0 8px;color:#0B0B0E}
+.nx-bag-privilege-list{display:grid;gap:8px}
+.nx-bag-privilege{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#FFFFFF;border:1px solid #DEDCD5;border-radius:8px}
+.nx-bag-privilege p{font-size:13px;line-height:1.5;margin:4px 0;color:#54545A}
+.nx-bag-privilege button{flex:none;min-height:44px}
+.nx-bag-privileges>a,.nx-bag-privileges>button{margin-top:8px}
+@media(max-width:420px){.nx-bag-privilege{align-items:stretch;flex-direction:column}}

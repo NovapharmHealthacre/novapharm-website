@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect, useRef } from "react";
+import { currentCorporateNavigationAriaValue } from "../lib/navigation-current";
 
 /** Responsive web navigation: desktop directory, native mobile disclosure. */
 export function AppleFooterNavigation({
@@ -29,4 +32,10 @@ export function AppleFooterNavigation({
       <div className="footer-link-list">{children}</div>
     </details>
   );
+}
+
+/** Footer-only sections retain their current page/location semantics. */
+export function CurrentFooterLink({ href, children }: Readonly<{ href: string; children: ReactNode }>) {
+  const pathname = usePathname();
+  return <Link href={href} aria-current={currentCorporateNavigationAriaValue(pathname, href)}>{children}</Link>;
 }

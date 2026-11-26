@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { leadership } from "../src/content/site-content.mjs";
+import { personIdForSlug } from "../src/seo/person-identity.mjs";
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
@@ -25,7 +26,7 @@ function editorialAuthor(article) {
   const leader = leadership.find((person) => person.displayName === article.author || person.name === article.author);
   if (leader) {
     return {
-      schema: { "@id": `${SITE_URL}/leadership/${leader.slug}/#person` },
+      schema: { "@id": personIdForSlug(leader.slug) },
       visibleName: leader.displayName,
       visibleUrl: `/leadership/${leader.slug}/`,
       canonicalUrl: `${SITE_URL}/leadership/${leader.slug}/`

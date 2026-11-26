@@ -6,7 +6,7 @@ import { leadership } from "@/data/site";
 import { absoluteUrl } from "@/lib/seo";
 
 const contentDate = new Date("2026-07-30T00:00:00Z");
-const corporateIdentityDate = new Date("2026-11-20T00:00:00Z");
+const corporateIdentityDate = new Date("2026-11-22T00:00:00Z");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

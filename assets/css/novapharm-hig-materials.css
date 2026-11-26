@@ -6,26 +6,26 @@
  * No pseudo-refraction, decorative glass cards, text translucency or animated blur.
  */
 :root {
-  --np-material-navigation-solid: #ffffff;
-  --np-material-navigation-tint: rgba(255, 255, 255, 0.94);
-  --np-material-navigation-border: rgba(17, 24, 32, 0.12);
-  --np-material-menu-solid: #ffffff;
-  --np-material-menu-tint: rgba(255, 255, 255, 0.97);
-  --np-material-content-solid: var(--np-color-canvas, #ffffff);
-  --np-material-content-muted: var(--np-color-surface, #f5f5f7);
-  --np-material-label: var(--np-color-label, #1d1d1f);
+  --np-material-navigation-solid: #FFFFFF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.94);
+  --np-material-navigation-border: rgba(11, 11, 14, 0.12);
+  --np-material-menu-solid: #F8F7F3;
+  --np-material-menu-tint: rgba(248, 247, 243, 0.97);
+  --np-material-content-solid: var(--np-color-canvas, #FFFFFF);
+  --np-material-content-muted: var(--np-color-surface, #F8F7F3);
+  --np-material-label: var(--np-color-label, #0B0B0E);
   --np-material-filter: saturate(125%) blur(14px);
   --np-material-filter-menu: saturate(115%) blur(18px);
 }
 html[data-np-estate="technology"] {
-  --np-material-navigation-solid: #f4f1ea;
-  --np-material-navigation-tint: rgba(244, 241, 234, 0.95);
-  --np-material-navigation-border: rgba(11, 13, 16, 0.16);
+  --np-material-navigation-solid: #FFFFFF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.95);
+  --np-material-navigation-border: rgba(11, 11, 14, 0.16);
 }
 html[data-np-estate="portal"] {
-  --np-material-navigation-solid: #ffffff;
-  --np-material-navigation-tint: rgba(255, 255, 255, 0.97);
-  --np-material-menu-tint: rgba(255, 255, 255, 0.98);
+  --np-material-navigation-solid: #FFFFFF;
+  --np-material-navigation-tint: rgba(251, 250, 239, 0.97);
+  --np-material-menu-tint: rgba(248, 247, 243, 0.98);
 }
 :root[data-np-color-scheme="dark"] {
   --np-material-navigation-solid: #1c1c1e;
