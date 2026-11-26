@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'src/data/atlas-first-country-four-index-orchestration.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
       - 'docs/intelligence/NHSBSA_EPD_FIRST_RELEASE_RIGHTS_20261126.json'
       - 'docs/intelligence/NHSBSA_EPD_S3_AUG_2026_ARCHIVE_EVIDENCE.json'
       - 'docs/intelligence/NHSBSA_EPD_FIRST_RELEASE_RIGHTS_20261126.md'

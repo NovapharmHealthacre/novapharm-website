@@ -92,12 +92,15 @@ export async function inspectAtlasG2UniqueIndexes({ database } = {}) {
  * subsequent approved invocation can resume after independent preflight.
  */
 export async function applyAtlasG2UniqueIndexes({
-  database, verifyMigrationAuthority, afterVerifiedIndex,
+  database, verifyMigrationAuthority, afterVerifiedIndex, beforeIndexCreate,
 } = {}) {
   validateDatabase(database);
   if (typeof verifyMigrationAuthority !== "function") throw deny("approval_callback_missing");
   if (afterVerifiedIndex !== undefined && typeof afterVerifiedIndex !== "function") {
     throw deny("invalid_audit_callback");
+  }
+  if (beforeIndexCreate !== undefined && typeof beforeIndexCreate !== "function") {
+    throw deny("invalid_precreate_authority_callback");
   }
   const preflight = await inspectAtlasG2UniqueIndexes({ database });
   if (preflight.ready) return Object.freeze({
@@ -124,6 +127,23 @@ export async function applyAtlasG2UniqueIndexes({
     if (current.compliant) continue;
     const collection = database.collection(spec.collection);
     if (typeof collection.createIndex !== "function") throw deny("unique_index_driver_unavailable");
+    // Optional hardened maintenance flow: independently re-verify authority and
+    // quiesced writes for EACH mutation, not just once before the batch.
+    if (beforeIndexCreate) {
+      let renewal;
+      try {
+        renewal = await beforeIndexCreate(Object.freeze({
+          operation: "create_g2_unique_index", database: DB,
+          collection: spec.collection, indexName: INDEX,
+          operatorId: auth.operatorId, changeTicket: auth.changeTicket,
+        }));
+      } catch { throw deny("precreate_authority_revoked"); }
+      if (renewal?.authorized !== true || renewal.productionWritesQuiesced !== true ||
+          renewal.operatorId !== auth.operatorId ||
+          renewal.changeTicket !== auth.changeTicket) {
+        throw deny("precreate_authority_revoked");
+      }
+    }
     // `unique: true` is mandatory; no non-unique fallback.
     const created = await collection.createIndex(current.required, {
       name: INDEX, unique: true, sparse: false,

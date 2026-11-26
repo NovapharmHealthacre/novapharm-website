@@ -93,3 +93,16 @@ test("changed or revoked authority on a second verification blocks first index",
  }),/denied/);
  assert.deepEqual(f.changes,[]);
 });
+
+test("independent approval revocation between G2 index writes stops partial migration safely",async()=>{
+ const f=fixture(),events=[];let checks=0;
+ await assert.rejects(runFirstCountryFourIndexMigration({
+  database:f.database,apply:true,
+  verifyChange:async()=>++checks>=5?{...proof,approved:false}:proof,
+  writeDurableAudit:audit(events)
+ }),/denied|revoked/);
+ assert.deepEqual(f.changes,required.slice(0,2).map(x=>x.collection));
+ assert.equal(events.filter(e=>e.event==="unique_index_verified").length,2);
+ assert.ok(!events.some(e=>e.event==="four_index_schema_ready"));
+ assert.equal((await inspectFirstCountryIndexReadiness({database:f.database})).schemaReady,false);
+});

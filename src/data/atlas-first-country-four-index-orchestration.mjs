@@ -118,6 +118,20 @@ export async function runFirstCountryFourIndexMigration({
         changeTicket:current.changeTicket
       };
     },
+    beforeIndexCreate: async ({collection}) => {
+      if (!REQUIRED.includes(collection) || collection === "npi_source_rights") {
+        throw deny("unexpected_index_target");
+      }
+      const current = await verify();
+      return {
+        authorized: current.changeTicket === operator.changeTicket &&
+          current.operatorId === operator.operatorId &&
+          current.backupEvidenceId === operator.backupEvidenceId,
+        productionWritesQuiesced: true,
+        operatorId: current.operatorId,
+        changeTicket: current.changeTicket
+      };
+    },
     afterVerifiedIndex: async ({collection,indexName}) => {
       await persist(writeDurableAudit,{
         event:"unique_index_verified",collection,indexName,
