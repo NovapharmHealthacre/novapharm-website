@@ -15,10 +15,10 @@ test('unadmitted products remain on hold, including regulated products',()=>{
  assert.equal(count('APPROVED_LEDGER_OFFER'),7);
  assert.equal(count('STAGED_NOT_CHARGEABLE'),9);
  assert.equal(count('REGULATED_MEDICINE_OR_DEVICE_REVIEW'),10);
- assert.equal(count('VAT_OR_PRICE_REVIEW'),12);
+ assert.equal(count('VAT_OR_PRICE_REVIEW'),1);\n assert.equal(count('HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE'),11);
  assert.equal(count('RESEARCH_PENDING_NO_PAYMENT'),357);
- assert.equal(m.products.filter(x=>x.priceCandidateGrossPence>0).length,373);
- assert.equal(m.products.filter(x=>x.priceCandidateGrossPence===null).length,22);
+ assert.equal(m.products.filter(x=>x.priceCandidateGrossPence>0).length,384);
+ assert.equal(m.products.filter(x=>x.priceCandidateGrossPence===null).length,11);
  for(const p of m.products.filter(x=>x.productClassReview==='medicine_review'))
    assert.equal(p.readiness,'REGULATED_MEDICINE_OR_DEVICE_REVIEW');
  for(const p of m.products.filter(x=>x.readiness==='STAGED_NOT_CHARGEABLE'))
@@ -39,5 +39,19 @@ test('every regulated Vicks SKU has an independent non-payment review',()=>{
   assert.equal(item.checkoutAdmitted,false);
   assert.equal(item.exactCurrentPackVerified,false);
   assert(item.evidence.startsWith('https://www.vicks.co.uk/'));
+ }
+});
+
+test('eleven Salus tea candidates have matching official manufacturer research but no payment approval',()=>{
+ const e=JSON.parse(readFileSync('docs/retail/connective-eleven-salus-manufacturer-evidence-20261126.json','utf8'));
+ assert.equal(e.products.length,11);
+ for(const p of e.products){
+   const r=m.products.find(x=>x.gtin===p.gtin);
+   assert(r&&r.readiness==='HERBAL_MANUFACTURER_RESEARCHED_NOT_ACTIVE');
+   assert.equal(p.provisionalPricePence,165);
+   assert.equal(p.paymentEnabled,false);
+   assert.equal(p.currentPackInspected,false);
+   assert.equal(p.manufacturerGTINIndependentlyVerified,false);
+   assert(p.manufacturerPage.startsWith('https://floradix.co.uk/product/'));
  }
 });
