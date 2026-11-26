@@ -62,3 +62,10 @@ test("approved catalogue emits crawlable product content and never fabricates an
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test("Connective private intake projection self-test", async()=>{
+ const {spawnSync:spawn}=await import("node:child_process");
+ const {fileURLToPath}=await import("node:url");
+ const result=spawn(process.execPath,[fileURLToPath(new URL("./compile-connective-approved-catalogue.mjs",import.meta.url)),"--self-test"],{encoding:"utf8"});
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
