@@ -293,6 +293,77 @@ function runStore(data) {
   };
   const top = document.querySelector("main");
   if (!top) return;
+  if (pathIsProducts(window.location.pathname) && top.querySelector("[data-nps-slug]")) {
+    const quick = top.querySelector("[data-nps-quick]");
+    const drawer = top.querySelector("[data-nps-bag]");
+    const bagLink = top.querySelector("[data-nps-bag-link]");
+    const bagCount = top.querySelector("[data-nps-bag-count]");
+    const bagItems = top.querySelector("[data-nps-bag-items]");
+    const content = top.querySelector("[data-nps-quick-content]");
+    const refresh = () => {
+      bag = loadBag(data);
+      bagCount.textContent = "(" + count(bag) + ")";
+      bagItems.replaceChildren();
+      if (!bag.length) bagItems.append(make("p", null, "Your Bag is currently empty."));
+      for (const line of bag) {
+        const p = productMap.get(line.sku);
+        if (!p) continue;
+        const row = make("article", "nps-bag-row");
+        const visual = make("div");
+        if (p.image) {const img = make("img"); img.src=p.image;img.alt=p.name;visual.append(img);}
+        const copy = make("div");
+        copy.append(make("h3",null,p.name),make("p",null,p.pack+" · "+productPriceLabel(p,data)));
+        const quantity = make("p",null,"Quantity: "+line.quantity);
+        const less=make("button",null,"−"),more=make("button",null,"+"),remove=make("button",null,"Remove");
+        for(const btn of [less,more,remove])btn.type="button";
+        less.setAttribute("aria-label","Decrease "+p.name);
+        more.setAttribute("aria-label","Increase "+p.name);
+        remove.setAttribute("aria-label","Remove "+p.name);
+        const setQty = qty => {
+          bag = loadBag(data);
+          bag = safeBasket(bag.filter(x=>x.sku!==p.sku).concat(qty>0?[{sku:p.sku,quantity:qty}]:[]),data.products);
+          saveBag(bag);refresh();
+        };
+        less.onclick=()=>setQty(Math.max(0,(loadBag(data).find(x=>x.sku===p.sku)?.quantity||0)-1));
+        more.disabled=!merchantSaleReady(p,data);
+        more.onclick=()=>{bag=loadBag(data);if(put(p.sku,1))refresh();};
+        remove.onclick=()=>setQty(0);
+        copy.append(quantity,less,more,remove);row.append(visual,copy);bagItems.append(row);
+      }
+      const subtotal=basketSubtotal(bag,data);
+      if(subtotal!==null)bagItems.append(make("p","nps-price","Subtotal · "+formatGBP(subtotal)));
+    };
+    const showBag=()=>{refresh();if(typeof drawer.showModal==="function"){if(!drawer.open)drawer.showModal();}else window.location.assign(BAG_URL);};
+    const addItem=p=>{bag=loadBag(data);if(put(p.sku,1)){if(quick.open)quick.close();showBag();}};
+    if(typeof drawer.showModal==="function")bagLink.addEventListener("click",e=>{e.preventDefault();showBag();});
+    for(const dialog of [drawer,quick])for(const btn of dialog.querySelectorAll("[data-nps-close]"))btn.onclick=()=>dialog.close();
+    for(const img of top.querySelectorAll(".nps-shelf img,.nps-packshot img"))alignCataloguePack(img);
+    const cards=[...top.querySelectorAll("[data-nps-slug]")];
+    for(const card of cards){
+      const p=slugMap.get(card.dataset.npsSlug);if(!p)continue;
+      const price=card.querySelector("[data-nps-price]"),add=card.querySelector("[data-nps-add]"),view=card.querySelector("[data-nps-view]");
+      const amount=publicPrice(p,data);
+      if(amount!==null){price.textContent=formatGBP(amount);price.hidden=false;}
+      if(merchantSaleReady(p,data)){add.hidden=false;add.disabled=false;add.onclick=()=>addItem(p);card.querySelector("[data-nps-fallback]").hidden=true;}
+      if(typeof quick.showModal==="function"){
+        view.hidden=false;view.onclick=()=>{
+          const grid=make("div","nps-quick-grid"),img=make("img"),copy=make("div");
+          img.src=p.image;img.alt=p.name;
+          copy.append(make("p","nps-kicker","Nutraxin"),make("h2",null,p.name),make("p",null,p.pack));
+          if(amount!==null)copy.append(make("p","nps-price",formatGBP(amount)));
+          if(merchantSaleReady(p,data)){const btn=make("button","nps-button","Add to Bag");btn.type="button";btn.onclick=()=>addItem(p);copy.append(btn);}
+          copy.append(anchor("Full product information",productUrl(p),"nps-link"));
+          grid.append(img,copy);content.replaceChildren(grid);quick.showModal();
+        };
+      }
+    }
+    const search=top.querySelector("[data-nps-search]"),query=search.querySelector("input"),status=top.querySelector("[data-nps-search-status]");
+    search.hidden=false;
+    const filter=()=>{const words=query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);let matches=0;for(const card of cards){const p=slugMap.get(card.dataset.npsSlug);const hay=[p?.name,p?.range,p?.pack].join(" ").toLowerCase();card.hidden=!words.every(w=>hay.includes(w));if(!card.hidden)matches++;}status.textContent=words.length?matches+" featured products found. Search the extended collection for more results.":"";};
+    query.addEventListener("input",filter);search.querySelector("[data-nps-clear]").onclick=()=>{query.value="";filter();query.focus();};
+    window.addEventListener("storage",e=>{if(e.key===BAG_KEY)refresh();});refresh();
+    return;
+  }
   document.body.classList.add("nx-retail-store");
   const nav = make("nav", "nx-store-topbar");
   nav.setAttribute("aria-label", "Nutraxin shopping navigation");
@@ -978,10 +1049,12 @@ function mountGiftPreview(main) {
   // Preview intentionally has no purchase request, personal data or redirect.
 }
 
+function pathIsProducts(path) { return path === "/products/" || path === "/products"; }
+
 async function init() {
   if (typeof document === "undefined") return;
   const path = window.location.pathname;
-  if ((!path.startsWith(SHOP_URL) && !path.startsWith(MULTIBRAND_URL)) || path.startsWith(SHOP_URL + "order-request/")) return;
+  if ((!pathIsProducts(path) && !path.startsWith(SHOP_URL) && !path.startsWith(MULTIBRAND_URL)) || path.startsWith(SHOP_URL + "order-request/")) return;
   if (path === SHOP_URL + "gift-cards/" || path === SHOP_URL + "gift-cards") {
     const preview = document.querySelector("[data-nx-gift-preview]");
     if (preview) mountGiftPreview(preview);
