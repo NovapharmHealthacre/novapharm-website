@@ -5,12 +5,12 @@ import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligen
 import { isNovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
+import { formatIntelligenceOverviewMetric } from "../lib/intelligence-overview-metric.mjs";
 import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import { CountrySourceCoverage } from "./country-source-coverage";
 import { GovernedHealthcareMap } from "./governed-healthcare-map";
 import styles from "./medicines-intelligence.module.css";
-import { formatIntelligenceOverviewMetric } from "../lib/intelligence-overview-metric.mjs";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
