@@ -78,14 +78,22 @@ async function localReviewView(snapshot) {
 }
 
 async function usersView(snapshot) {
-  const [users, scopes, sessions, security, activeSessions] = await Promise.all([
+  const [users, scopes, sessions, security, activeSessions, customerDirectory] = await Promise.all([
     all("SELECT username, display_name, role, customer_id, status, identity_provider, created_at, updated_at FROM users ORDER BY role, username"),
     all("SELECT username, scope, created_at FROM auth_user_scopes ORDER BY username, scope"),
     all("SELECT username, access_type, created_at, expires_at, last_seen_at, revoked_at FROM auth_sessions ORDER BY created_at DESC LIMIT 40"),
     all(`SELECT event_type, username, outcome, occurred_at FROM security_events
       WHERE event_type LIKE 'authentication.%' OR event_type LIKE 'password.%' OR event_type LIKE 'administrator.%'
       ORDER BY occurred_at DESC LIMIT 40`),
-    one("SELECT COUNT(*) AS value FROM auth_sessions WHERE revoked_at IS NULL AND expires_at > ?", new Date().toISOString())
+    one("SELECT COUNT(*) AS value FROM auth_sessions WHERE revoked_at IS NULL AND expires_at > ?", new Date().toISOString()),
+    all(`SELECT u.username, u.display_name, u.email, u.status, u.created_at, u.identity_provider,
+      c.customer_number, c.customer_type, org.legal_name AS company,
+      (SELECT MAX(s.last_seen_at) FROM auth_sessions s WHERE s.username = u.username AND s.access_type = 'customer') AS last_seen_at,
+      (SELECT COUNT(*) FROM orders ord WHERE ord.customer_id = c.id) AS recorded_orders
+      FROM users u LEFT JOIN customers c ON c.id = u.customer_id
+      LEFT JOIN organizations org ON org.id = c.organization_id
+      WHERE u.role IN ('client', 'customer')
+      ORDER BY u.created_at DESC, u.username`)
   ]);
   const scopesByUser = new Map();
   for (const row of scopes) {
@@ -94,22 +102,31 @@ async function usersView(snapshot) {
     scopesByUser.set(row.username, list);
   }
   const governedUsers = users.map((row) => ({ ...row, scopes: (scopesByUser.get(row.username) || []).join(", ") || "none" }));
+  const today = new Date().toISOString().slice(0, 10);
+  const directory = section("Customer directory", [["display_name", "Name"], ["email", "Email"], ["username", "Username"], ["company", "Company"], ["customer_number", "Customer number"], ["customer_type", "Customer type"], ["created_at", "Account recorded"], ["last_seen_at", "Last customer session"], ["recorded_orders", "Linked account orders", "number"], ["status", "Account status", "status"], ["identity_provider", "Identity provider"]], customerDirectory, "No customer-role identities are recorded in this application database.", { description: "Application-recorded customer identities only. Order counts belong to the linked customer account, not necessarily the individual. External Cognito-only registrations and guest purchases are not included." });
+  directory.searchable = true;
   return {
     ...snapshot,
     readOnly: true,
     actions: [],
     metrics: [
+      metric("customer-accounts", "Recorded customer identities", customerDirectory.length),
+      metric("new-customer-accounts", "New customer identities today (UTC)", customerDirectory.filter(row => String(row.created_at).startsWith(today)).length),
+      metric("active-customer-accounts", "Active recorded customer identities", customerDirectory.filter(row => row.status === "active").length),
+      metric("customer-accounts-with-orders", "Customer identities linked to orders", customerDirectory.filter(row => Number(row.recorded_orders) > 0).length),
       metric("users", "Governed identities", governedUsers.length),
       metric("active-sessions", "Active sessions", activeSessions?.value),
       metric("revoked-sessions", "Revoked sessions in view", sessions.filter((row) => row.revoked_at).length)
     ],
     sections: [
+      directory,
       section("Governed identities", [["username", "Username"], ["display_name", "Display name"], ["role", "Role", "status"], ["scopes", "Scopes"], ["customer_id", "Customer context"], ["identity_provider", "Identity provider", "status"], ["status", "Account status", "status"], ["updated_at", "Updated"]], governedUsers, "No governed identities are recorded."),
       section("Session posture", [["username", "Username"], ["access_type", "Workspace", "status"], ["created_at", "Created"], ["expires_at", "Expires"], ["last_seen_at", "Last seen"], ["revoked_at", "Revoked"]], sessions, "No session records are present."),
       section("Identity security events", [["event_type", "Event"], ["username", "Username"], ["outcome", "Outcome", "status"], ["occurred_at", "Time"]], security, "No identity security event is recorded.")
     ],
     notices: [
       ...snapshot.notices,
+      "Customer directory counts cover only canonical customer-role records, not all external registrations. Account creation is the local record date, not necessarily original sign-up.",
       "Credential hashes, salts, session identifiers, network fingerprints and security-event detail payloads are deliberately excluded.",
       "The server exposes controlled admin session revocation, but R1 keeps this module read-only until production identity authority is accepted."
     ]

@@ -29,6 +29,16 @@ assert.match(preserved, /async function employeeSnapshot/u);
 assert.match(preserved, /async function executiveSnapshot/u);
 assert.match(preserved, /async function adminSnapshot/u);
 
+assert.match(overlays, /WHERE u\.role IN \('client', 'customer'\)/u);
+assert.ok(overlays.includes("Customer directory"));
+assert.ok(overlays.includes("External Cognito-only registrations and guest purchases are not included"));
+assert.ok(overlays.includes("New customer identities today (UTC)"));
+assert.match(overlays, /directory\.searchable = true/u);
+const clientUi = await readFile(resolve("assets/js/enterprise-app.js"), "utf8");
+assert.ok(clientUi.includes("section.searchable === true"));
+assert.ok(clientUi.includes("Search customer directory"));
+assert.ok(clientUi.includes("record.hidden = !record.textContent"));
+
 console.log(JSON.stringify({
   authoredAdminModules: 5,
   directNonAdminOverlays: 2,

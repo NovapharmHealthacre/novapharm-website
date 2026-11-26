@@ -284,6 +284,21 @@ try {
   assert.equal(portalModules.length, 54);
   const adminValidationLogin = await login("vishal@novapharmhealthcare.com", replacementPassword, "admin", "127.20.0.19");
   assert.equal(adminValidationLogin.statusCode, 200);
+  const customerDirectory = await request({ url: "/api/enterprise/modules/admin.users", headers: jsonHeaders(adminValidationLogin.session) });
+  assert.equal(customerDirectory.statusCode, 200);
+  const directory = customerDirectory.payload.sections.find(section => section.title === "Customer directory");
+  assert.ok(directory?.searchable);
+  assert.ok(directory.rows.some(row => row.username === "customer-one@example.invalid"));
+  assert.ok(directory.rows.some(row => row.username === "customer-two@example.invalid" && Number(row.recorded_orders) >= 1));
+  assert.ok(!directory.rows.some(row => ["employee@example.invalid", "board@example.invalid", "vishal@novapharmhealthcare.com"].includes(row.username)));
+  assert.equal(customerDirectory.payload.metrics.find(metric => metric.key === "customer-accounts").value, directory.rows.length);
+  for (const deniedSession of [customerLogin.session, employeeLogin.session, boardLogin.session]) {
+    const denied = await request({ url: "/api/enterprise/modules/admin.users", headers: jsonHeaders(deniedSession) });
+    assert.equal(denied.statusCode, 403);
+    assert.ok(!JSON.stringify(denied.payload).includes("customer-one@example.invalid"));
+  }
+  const unauthenticatedDirectory = await request({ url: "/api/enterprise/modules/admin.users" });
+  assert.equal(unauthenticatedDirectory.statusCode, 401);
   const authorisedModuleSessions = {
     customer: customerLogin.session,
     employee: employeeLogin.session,
