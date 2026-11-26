@@ -61,7 +61,11 @@ async function beginLogin(config,mode){
  url.searchParams.set("code_challenge",await sha256(verifier));
  url.searchParams.set("code_challenge_method","S256");
  if(mode==="google")url.searchParams.set("identity_provider","Google");
- if(mode==="passkey")url.searchParams.set("identity_provider","COGNITO");
+ if(mode==="passkey"){
+  // Managed Login offers eligible factors after identification; never claim to force WebAuthn.
+  url.searchParams.set("identity_provider","COGNITO");
+  url.searchParams.set("prompt","login");
+ }
  window.location.assign(url.href);
 }
 async function completeCallback(config,query){

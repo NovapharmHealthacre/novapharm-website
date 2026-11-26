@@ -1,0 +1,130 @@
+name: Stage Connective 395 source pages as additive live candidate
+
+on:
+  workflow_run:
+    workflows: ["Production readiness"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-connective-additive-source-pages
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    permissions:
+      contents: write
+      pull-requests: write
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      contains(github.event.workflow_run.head_commit.message, '[connective-source-additive]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact green main commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require forward-only latest main and 395 explicit source GTINs
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          current_main="$(git ls-remote origin refs/heads/main | cut -f1)"
+          test "$current_main" = "$EXPECTED_SHA" || { echo 'Stale main; no publication candidate'; exit 1; }
+          python3 - <<'PY'
+          import json, pathlib
+          data=json.loads(pathlib.Path('src/content/connective-source-references.json').read_text())
+          assert data['schema']=='novapharm-connective-source-references-v1'
+          assert len(data['products'])==len({r['ean'] for r in data['products']})==395
+          assert not pathlib.Path('src/content/approved-consumer-catalogue.json').exists(), 'Approved catalogue requires separate retail release'
+          print('Current-green main contains all 395 public-safe source references')
+          PY
+
+      - name: Checkout current live Pages branch without resetting it
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: gh-pages
+          path: published
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup reproducible Node build
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Build and stage reviewed source under the current site rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run build:public-only
+          node scripts/stage-pages-artifact.mjs _site
+          python3 scripts/stage-connective-source-only-release.py --site _site --published published | tee connective-source-release-evidence.json
+
+      - name: Enforce additive-only production diff and prepare isolated candidate branch
+        id: changes
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          git -C published add --all
+          git -C published diff --cached --name-only > /tmp/connective-diff-paths
+          if ! test -s /tmp/connective-diff-paths; then
+            echo 'changes=false' >> "$GITHUB_OUTPUT"
+            echo 'Exact Connective source pages already staged in the current live tree; no new candidate'
+            exit 0
+          fi
+          test -z "$(git -C published diff --cached --diff-filter=D --name-only)" || { echo 'Deletion blocked'; exit 1; }
+          while IFS= read -r item; do
+            case "$item" in
+              products/index.html|assets/css/retail-expansion.css|assets/js/connective-collection-search.js|products/health-and-wellbeing/index.html)
+                ;;
+              products/health-and-wellbeing/*/index.html)
+                [[ "$item" =~ ^products/health-and-wellbeing/[0-9]{13}/index.html$ ]] || { echo "Forbidden path $item"; exit 1; }
+                ;;
+              *) echo "Forbidden public path $item"; exit 1;;
+            esac
+          done < /tmp/connective-diff-paths
+          name="release/connective-395-${SOURCE_SHA:0:12}-${RUN_ID}"
+          git -C published switch -c "$name"
+          git -C published config user.name 'NovaPharm additive commerce publishing'
+          git -C published config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C published commit -m "Stage 395 source-only Connective pages from current green $SOURCE_SHA"
+          git -C published push origin "HEAD:refs/heads/$name"
+          echo "changes=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$name" >> "$GITHUB_OUTPUT"
+
+      - name: Open reviewed Pages-only PR without deploying unrelated site files
+        if: steps.changes.outputs.changes == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_BRANCH: ${{ steps.changes.outputs.branch }}
+        run: |
+          set -euo pipefail
+          gh pr create --repo "$GITHUB_REPOSITORY" --head "$CANDIDATE_BRANCH" --base gh-pages \
+            --title "Publish 395 Connective browse-only product pages (additive-only)" \
+            --body "Add-only release: 395 source-backed product pages, searchable brand collection, two scoped assets, and one link on the live Products page. The existing gh-pages homepage, header, footer, customer account, Nutraxin checkout, AK Online Service, prices and all other live paths are unchanged. No payment offers or unverified availability are published. This branch is based on the current gh-pages commit, not a stale main snapshot. Review and merge only after public site checks pass."
+
+      - name: Keep public release evidence available for audit
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: connective-source-pages-additive-candidate
+          path: connective-source-release-evidence.json
+          if-no-files-found: ignore
+          retention-days: 14
