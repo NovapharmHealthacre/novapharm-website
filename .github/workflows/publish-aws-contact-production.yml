@@ -179,9 +179,29 @@ jobs:
           elif jq -e '.productionSignoff == "granted" and .productionPermissions.activatePublicCustomerAccess == true' config/intelligence/owner-production-constraints.json >/dev/null 2>&1; then
             # Preserve the existing ordinary customer-production gate verbatim.
             echo "hold=false" >> "$GITHUB_OUTPUT"
+          elif [ "$RELEASE_EVENT" = "push" ] && \
+               jq -e --slurpfile catalogue src/content/approved-consumer-catalogue.json \
+                 '.schema == "novapharm.retail-owner-release.v1" and .approval == "granted" and \
+                  .scope == "seven-existing-supplier-backed-food-supplement-offers-only" and \
+                  .checkoutApiOrigin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com" and \
+                  .allowExistingRetailPaymentCollection == true and \
+                  .allowPortalCustomerAccess == false and .allowMedicinesCheckout == false and \
+                  .allowExternalEmail == false and .allowNewInfrastructure == false and \
+                  ((.approvedGtins | sort) == ($catalogue[0] | map(select(.productClass == "food_supplement" and .publicListingApproved == true and .imageRightsConfirmed == true) | .ean) | sort)) and \
+                  (.approvedGtins | length) == 7' config/retail/approved-connective-checkout-release-20261126.json >/dev/null 2>&1 && \
+               jq -e '.productionSignoff == "not_granted" and \
+                 (.productionPermissions | to_entries | all(.value == false))' \
+                  config/intelligence/owner-production-constraints.json >/dev/null 2>&1 && \
+               git diff --name-only HEAD^ HEAD | grep -Fxq 'config/retail/approved-connective-checkout-release-20261126.json' && \
+               ! git diff --name-only HEAD^ HEAD | grep -Ev \
+                 '^(config/retail/approved-connective-checkout-release-20261126\.json|\.github/workflows/publish-aws-contact-production\.yml)$'; then
+            # Single approved retail site release; all unrelated customer, email,
+            # portal, medicine and new-infrastructure permissions remain denied.
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+            echo "Exact seven-product retail storefront release approved independently of private Intelligence and portal production."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
-            echo "Production on hold: neither customer release nor separate branding-only authorization is present."
+            echo "Production on hold: no scoped storefront, branding-only or general customer release authorization is present."
           fi
       - name: Exclude Nova ML-only changes from unrelated public AWS contact publication
         id: classify
