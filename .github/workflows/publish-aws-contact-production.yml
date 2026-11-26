@@ -131,8 +131,8 @@ permissions:
   id-token: write
   deployments: read
 
-# Exact-main verification precedes build; a verified artifact may publish later
-# only when last successful Pages deployment and current main prove forward ancestry.
+# Builds may be queued from a reviewed ancestor, but production publication
+# requires exact current main and forward ancestry from the last live release.
 concurrency:
   # v3 isolates the guarded AWS-backed publisher from stale v2 Pages recovery locks.
   # Preserve one active/one pending publisher, independent forward-only ancestry
@@ -611,6 +611,15 @@ jobs:
           fi
           gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.cname' | grep -Fxq novapharmhealthcare.com
           gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.https_enforced' | grep -Fxq true
+      - name: Recheck exact current main immediately before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          [[ "$current_main" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          test "$current_main" = "$EXPECTED_SHA" || { echo '::error::Main advanced after verification; discard stale artifact and rebuild latest main.'; exit 1; }
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
