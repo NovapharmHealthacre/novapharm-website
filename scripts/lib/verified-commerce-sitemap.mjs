@@ -14,6 +14,8 @@ const BASE="https://novapharmhealthcare.com";
 export const GENERATED_INDEXABLE_ROUTES=Object.freeze([
   "/distribution/","/market-access/","/markets/",
   "/products/esco/","/products/marketplace/",
+  // Only the Connective collection is indexable; 395 reference detail pages remain noindex.
+  "/products/health-and-wellbeing/",
   // Editorial route generated from src/content/our-story.mjs (PR #1200).
   "/our-story/",
   ...NUTRAXIN_CATEGORY_ROUTES
