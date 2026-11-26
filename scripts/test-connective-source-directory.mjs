@@ -50,6 +50,11 @@ test('approved catalogue is authoritative: reference generator never overwrites 
   const result=f.run();assert.equal(result.status,0,result.stderr);
   const before=f.read(`products/health-and-wellbeing/${p1.ean}/index.html`);
   f.put('src/content/approved-consumer-catalogue.json','[]');
+  const stillSource=f.run();assert.equal(stillSource.status,0,stillSource.stderr);
+  assert(f.exists('products/health-and-wellbeing/index.html'));
+  assert.equal(f.read(`products/health-and-wellbeing/${p1.ean}/index.html`),before);
+  // Only a populated approved catalogue may suppress source fallbacks.
+  f.put('src/content/approved-consumer-catalogue.json',JSON.stringify([{ean:p1.ean}]));
   const skipped=f.run();assert.equal(skipped.status,0,skipped.stderr);
   assert.equal(f.read(`products/health-and-wellbeing/${p1.ean}/index.html`),before);
  }finally{f.dispose();}
