@@ -38,7 +38,7 @@ test("the first manufacturer-backed consumer listing carries exact source, image
   const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
   const proof=JSON.parse(readFileSync("docs/retail/connective-first-live-consumer-source-evidence.json","utf8"));
   const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
-  assert.equal(approved.length,1);
+  assert.equal(approved.length,7);
   assert.equal(proof.gtin,"5021265243372");
   const p=approved[0],photo=photos.products.find(x=>x.gtin===p.ean);
   const ref=src.products.find(x=>x.ean===p.ean);
@@ -72,4 +72,45 @@ test("the first manufacturer-backed consumer listing carries exact source, image
     directions:notReady.manufacturerOnlineInformation.directions,warnings:notReady.manufacturerOnlineInformation.warnings,
     image:"/assets/media/products/connective/"+notReady.ean+"/front-800.webp"};
   assert.equal(compileCatalogue([candidate],".",()=>false).approved.length,0);
+});
+
+test("next six official Vitabiotics listings have exact manufacturer source, owner-approved local photos and safety information",()=>{
+ const approved=JSON.parse(readFileSync("src/content/approved-consumer-catalogue.json","utf8"));
+ const evidence=JSON.parse(readFileSync("docs/retail/connective-next-six-consumer-source-evidence.json","utf8"));
+ const photos=JSON.parse(readFileSync("docs/retail/connective-395-owner-photo-candidates.json","utf8"));
+ assert.equal(evidence.products.length,6);
+ assert.equal(approved.length,7);
+ const photoBy=new Map(photos.products.map(p=>[p.gtin,p]));
+ const sourceBy=new Map(src.products.map(p=>[p.ean,p]));
+ const manufacturerBy=new Map(online.products.map(p=>[p.ean,p]));
+ const admitted=new Set(approved.map(p=>p.ean));
+ assert.equal(admitted.size,7);
+ for(const proof of evidence.products){
+  const p=approved.find(item=>item.ean===proof.gtin);
+  const photo=photoBy.get(proof.gtin),ref=sourceBy.get(proof.gtin),label=manufacturerBy.get(proof.gtin);
+  assert(p&&photo&&ref&&label&&validGtin(proof.gtin));
+  assert.equal(ref.manufacturerProductUrl,proof.manufacturer);
+  assert.equal(proof.manufacturer,label.manufacturerUrl);
+  assert.equal(proof.originalPhoto,photo.originalSource);
+  assert.equal(proof.photoSha256,photo.sha256);
+  assert.equal(proof.photoLocalPath,photo.localImage);
+  assert.equal(p.image,photo.localImage);
+  assert.equal(p.ingredients,label.ingredients);
+  assert.equal(p.directions,label.directions);
+  assert(p.warnings.includes(label.precautions));
+  assert(p.warnings.includes(label.allergens));
+  assert.equal(proof.currentPhysicalPackInspected,false);
+  assert.equal(proof.checkoutReleaseSeparate,true);
+  assert.equal(p.publicListingApproved,true);
+  assert.equal(p.imageRightsConfirmed,true);
+  assert.equal(p.identityConfirmed,true);
+  for(const key of ["netMinor","grossMinor","retailPrice","vatBasisPoints","privateSupplierCost"])assert(!Object.hasOwn(p,key));
+  const required=["ukPack","imageRights","label","publication"];
+  const reviewed=Object.fromEntries(required.map(key=>[key,{reference:key==="imageRights"?"NovaPharm owner photographic-use authorisation":proof.manufacturer,reviewedBy:"Owner-authorised manufacturer-source review",reviewedOn:"2026-11-26",confirmed:true}]));
+  const entry={...p,sku:"NP-CP-"+p.ean,imageSha256:photo.sha256,evidence:reviewed};
+  const validated=compileCatalogue([entry],".");
+  assert.equal(validated.approved.length,1);
+  assert.equal(validated.blocked.length,0);
+  assert.deepEqual(validated.approved[0],p);
+ }
 });
