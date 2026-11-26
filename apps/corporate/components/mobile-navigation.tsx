@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
+import { currentCorporateNavigationAriaValue } from "../lib/navigation-current";
 
 interface MobileNavigationProps {
   readonly items: readonly (readonly [string, string])[];
@@ -59,7 +60,16 @@ export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigati
         {interfaceLabel(locale, open ? "Close" : "Menu")}
       </summary>
       <nav aria-label={interfaceLabel(locale, "Mobile navigation")}>
-        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{interfaceLabel(locale, label)}</a> : <a key={href} href={href} onClick={close}>{interfaceLabel(locale, label)}</a>)}
+        {items.map(([label, href]) => {
+          const isPortal = href === "/portal/";
+          return <a
+            key={href}
+            href={isPortal ? portalOrigin : href}
+            rel={isPortal ? "nofollow" : undefined}
+            aria-current={!isPortal ? currentCorporateNavigationAriaValue(pathname, href) : undefined}
+            onClick={close}
+          >{label === "NovaPharm Intelligence" && locale === "en-GB" ? "Intelligence" : interfaceLabel(locale, label)}</a>;
+        })}
       </nav>
     </details>
   );

@@ -1,0 +1,54 @@
+name: Complete NovaPharm application and module source census
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit-entire-novapharm-application-estate.mjs
+      - scripts/test-audit-entire-novapharm-application-estate.mjs
+      - src/content/our-story.mjs
+      - assets/data/nutraxin-uk-category-intents.json
+      - apps/corporate/data/pages.ts
+      - apps/corporate/data/articles.ts
+      - apps/corporate/data/insights/**
+      - apps/corporate/data/nutraxin-product-register.json
+      - assets/data/nutraxin-retail-catalogue.json
+      - assets/data/esco-catalogue.json
+      - apps/portal/data/intelligence-workspaces.ts
+      - apps/portal/components/wms-prototype-workspace-map.tsx
+      - packages/portal-contracts/src/module-catalog.json
+      - native/novapharm-intelligence-ios/project.yml
+      - native/novapharm-intelligence-android/app/build.gradle.kts
+      - config/intelligence/owner-production-constraints.json
+      - .github/workflows/complete-estate-source-census.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-census:
+    name: Enumerate app, page, product, Portal, Intelligence and native sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Test all registered source entries and permissions
+        run: node --test scripts/test-audit-entire-novapharm-application-estate.mjs
+      - name: Generate inspectable source census
+        run: node scripts/audit-entire-novapharm-application-estate.mjs
+      - name: Preserve audit artefact for human reviewer
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-entire-estate-source-census-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/estate-audit/novapharm-full-source-census.json
+          if-no-files-found: error
+          retention-days: 30

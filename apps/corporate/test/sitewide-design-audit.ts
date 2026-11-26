@@ -4,7 +4,8 @@ import { chromium } from "playwright";
 import { articles } from "../data/articles";
 import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { corporatePages } from "../data/pages";
-import { leadership } from "../data/site";
+import { leadership, navigation } from "../data/site";
+import { currentCorporateNavigationAriaValue, isCurrentCorporateNavigation } from "../lib/navigation-current";
 
 const origin = process.env.SITEWIDE_BASE_URL ?? "http://127.0.0.1:3178";
 const artifactDir = "../../artifacts/corporate-design-system";
@@ -53,6 +54,10 @@ async function audit() {
             if(status!==200){findings.push({route,viewport:vp.name,detail:`HTTP ${status}`});continue;}
             await page.locator("main").waitFor({state:"visible",timeout:10000});
             await page.evaluate(()=>document.fonts.ready);
+            // Force native lazy images to load before inspection, including below-fold packs.
+            // Do not alter src/srcset, crop, markup or production loading behaviour.
+            await page.evaluate(()=>{for(const img of document.images)img.loading="eager";});
+            await page.waitForFunction(()=>[...document.images].every(img=>img.complete),{},{timeout:15000});
             if(showcase.has(route) && (vp.name==="desktop-1440" || ["/","/contact/","/oncology/"].includes(route))) {
               // A transient Chromium capture-protocol failure is not a design finding.
               // Keep the exact same full-page evidence requirement and fail after 3 attempts.
@@ -66,16 +71,55 @@ async function audit() {
                 }
               }
             }
+            const insightsCurrent = currentCorporateNavigationAriaValue(route, "/news-insights/");
+            const expectedActiveNavigation = navigation.find(([, href]) =>
+              href !== "/news-insights/" && isCurrentCorporateNavigation(route, href))?.[1] ?? null;
+            if (insightsCurrent) {
+              await page.locator(`.site-footer a[href="/news-insights/"][aria-current="${insightsCurrent}"]`).waitFor({state:"attached",timeout:10000});
+            }
+            // Wait for hydrated Next.js navigation semantics before reading the
+            // rendered client components; never infer state from source alone.
+            const expectedAriaState = expectedActiveNavigation
+              ? currentCorporateNavigationAriaValue(route, expectedActiveNavigation)
+              : undefined;
+            if (expectedActiveNavigation && expectedAriaState) {
+              // Locator polling runs in Playwright, not in an esbuild-transformed
+              // nested browser callback (which can reference an absent __name helper).
+              // Both navigation variants must actually expose the hydrated state.
+              for (const selector of [".desktop-nav", ".mobile-menu nav"]) {
+                await page.locator(selector + ' a[href="' + expectedActiveNavigation +
+                  '"][aria-current="' + expectedAriaState + '"]').waitFor({
+                  state: "attached", timeout: 10000
+                });
+              }
+            }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);
               const body=getComputedStyle(document.body);
               const header=document.querySelector(".site-header");
               const footer=document.querySelector(".site-footer");
               const h1s=[...document.querySelectorAll("h1")];
+              // CSS optimizers may shorten hex colours or serialize them as rgb().
+              // Resolve tokens as actual computed colours, not literal source strings.
+              const colourProbe=document.createElement("span");
+              colourProbe.style.cssText="position:absolute;visibility:hidden;pointer-events:none;";
+              colourProbe.style.backgroundColor="var(--np-color-canvas, rgb(1, 2, 3))";
+              colourProbe.style.color="var(--np-color-label, rgb(1, 2, 3))";
+              document.body.append(colourProbe);
+              const canvasColour=getComputedStyle(colourProbe).backgroundColor;
+              const labelColour=getComputedStyle(colourProbe).color;
+              colourProbe.remove();
               return {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
+                currentNavigation: {
+                  insightsFooter: [...document.querySelectorAll('.site-footer a[href="/news-insights/"][aria-current]')].map(link => link.getAttribute("aria-current")),
+                  desktop: [...document.querySelectorAll('.desktop-nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") })),
+                  mobile: [...document.querySelectorAll('.mobile-menu nav a[aria-current]')]
+                    .map(link => ({ href: link.getAttribute("href"), state: link.getAttribute("aria-current") }))
+                },
                 homeNavLabel:(()=>{
                   const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
                   if(!link||!link.getClientRects().length)return null;
@@ -103,7 +147,15 @@ async function audit() {
                 width:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
-                brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
+                canvasColour,labelColour,
+                canvasToken:root.getPropertyValue("--np-color-canvas").trim(),
+                labelToken:root.getPropertyValue("--np-color-label").trim(),
+                reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+                brokenImages:[...document.images].filter(x=>x.naturalWidth===0).map(x=>x.currentSrc||x.getAttribute("src")||"(no source)"),
+                missingImageAlt:[...document.images].filter(x=>!x.hasAttribute("alt")).map(x=>x.currentSrc||x.getAttribute("src")||"(no source)"),
+                // Record actual image presentation for human crop/identity review; an
+                // automated test cannot decide whether a photograph is authentic.
+                imageEvidence:[...document.images].map(img=>{const css=getComputedStyle(img),box=img.getBoundingClientRect();return {src:img.currentSrc,alt:img.getAttribute("alt"),naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,renderedWidth:Math.round(box.width),renderedHeight:Math.round(box.height),objectFit:css.objectFit,objectPosition:css.objectPosition};}),
                 clippedControls:[...document.querySelectorAll("main form input:not([type=hidden]), main form select, main form textarea, main form button")]
                   .filter(el=>{if(el.closest('[aria-hidden="true"], .honeypot'))return false;const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
                     const b=el.getBoundingClientRect();return b.width>0&&b.height>0&&(b.left< -2||b.right>document.documentElement.clientWidth+2);})
@@ -128,6 +180,16 @@ async function audit() {
             if(data.h1s!==1)faults.push(`H1 count: ${data.h1s}`);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
+            const expectedCurrent = expectedActiveNavigation && expectedAriaState
+              ? [{ href: expectedActiveNavigation, state: expectedAriaState }]
+              : [];
+            if (JSON.stringify(data.currentNavigation.insightsFooter) !== JSON.stringify(insightsCurrent ? [insightsCurrent] : [])) {
+              faults.push("Insights footer current-location state is incorrect");
+            }
+            if (JSON.stringify(data.currentNavigation.desktop) !== JSON.stringify(expectedCurrent) ||
+                JSON.stringify(data.currentNavigation.mobile) !== JSON.stringify(expectedCurrent)) {
+              faults.push(`Current navigation accessibility state does not match ${expectedActiveNavigation ?? "no active section"}: ${JSON.stringify(data.currentNavigation)}`);
+            }
             if(data.scrollWidth>data.width+1)faults.push(`Horizontal overflow: ${data.scrollWidth}px`);
             if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
               faults.push(`Primary heading extends outside viewport: ${JSON.stringify(data.headlineBounds)}`);
@@ -140,6 +202,9 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
+            if(data.canvasColour!=="rgb(255, 255, 255)"||data.labelColour!=="rgb(11, 11, 14)")faults.push(`Approved Pure White / Sovereign Black computed colours differ: ${data.canvasColour} / ${data.labelColour}`);
+            if(!data.reducedMotion)faults.push("Reduced-motion browser preference was not applied");
+            if(data.missingImageAlt.length)faults.push(`Missing image alt attributes: ${data.missingImageAlt.slice(0,5).join(" / ")}`);
             if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
@@ -150,7 +215,7 @@ async function audit() {
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
             if(route==="/"&&vp.width>=1440){
               const nav=data.homeNavLabel;
-              if(!nav||nav.text!=="NovaPharm Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
+              if(!nav||nav.text!=="Intelligence"||nav.before==='"Intelligence"'||nav.color!=="rgb(214, 214, 218)")
                 faults.push(`Homepage Intelligence must use real, contrasting link text: ${JSON.stringify(nav)}`);
               if(nav&&!nav.portalVisible)
                 faults.push(`Homepage Secure Portal link must remain visible: ${JSON.stringify(nav)}`);

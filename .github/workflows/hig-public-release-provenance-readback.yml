@@ -1,0 +1,88 @@
+name: HIG public publisher provenance readback (no deployment)
+
+on:
+  pull_request:
+    paths:
+      - scripts/verify-hig-public-release-provenance.mjs
+      - scripts/test-hig-public-release-provenance.mjs
+      - .github/workflows/hig-public-release-provenance-readback.yml
+  workflow_dispatch:
+    inputs:
+      corporate_sha:
+        description: 'Reviewed deployed Corporate editorial source commit SHA (40 hex)'
+        required: true
+        type: string
+      static_sha:
+        description: 'Reviewed deployed static public source commit SHA (40 hex)'
+        required: true
+        type: string
+      nutraxin_sha:
+        description: 'Reviewed deployed Nutraxin publisher source commit SHA (40 hex)'
+        required: true
+        type: string
+      esco_sha:
+        description: 'Reviewed deployed ESCO publisher source commit SHA (40 hex)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  source-regressions:
+    name: Verify readback contract without any live mutation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact proposed revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Reject invented public release proof in synthetic tests
+        run: node --test scripts/test-hig-public-release-provenance.mjs
+
+  public-readback:
+    if: github.event_name == 'workflow_dispatch'
+    needs: source-regressions
+    name: Compare fresh public HTML and four reviewed publisher SHAs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact selected source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use pinned Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Read-only live sitemap, public pages and source evidence
+        id: public_audit
+        continue-on-error: true
+        run: node scripts/audit-restored-public-routes.mjs
+      - name: Refuse missing or mismatched publisher source SHA
+        env:
+          NOVA_EXPECTED_CORPORATE_SHA: ${{ inputs.corporate_sha }}
+          NOVA_EXPECTED_STATIC_SHA: ${{ inputs.static_sha }}
+          NOVA_EXPECTED_NUTRAXIN_SHA: ${{ inputs.nutraxin_sha }}
+          NOVA_EXPECTED_ESCO_SHA: ${{ inputs.esco_sha }}
+        run: node scripts/verify-hig-public-release-provenance.mjs artifacts/site-restoration/live-route-audit.json
+      - name: Preserve read-only evidence (including failures)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: hig-public-publisher-readback-${{ github.sha }}
+          path: |
+            artifacts/site-restoration/live-route-audit.json
+            artifacts/hig-public-provenance-readback/report.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Enforce independent read-only route audit outcome
+        if: always()
+        run: test '${{ steps.public_audit.outcome }}' = 'success'

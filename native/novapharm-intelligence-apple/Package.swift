@@ -31,7 +31,9 @@ let package = Package(
                 "NovaSparseCircuitReader.swift",
                 "NovaSparseCircuitResearchView.swift",
                 "NovaMapKitView.swift",
-                "NovaClipVisualSearch.swift"
+                "NovaClipVisualSearch.swift",
+                "NovaQuantumResearchReceipt.swift",
+                "NovaQuantumResearchView.swift"
             ]
         ),
         .testTarget(

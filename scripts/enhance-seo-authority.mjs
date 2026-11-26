@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
 import { textContentFromFragment } from "./lib/html-text.mjs";
+import { personIdForSlug, personUrlForSlug, VISHAL_PROFILE_ID } from "../src/seo/person-identity.mjs";
 import { publicAnalyticsRoute, validGa4Id } from "../assets/js/consent-analytics.js";
 import {
   INDEXNOW_KEY,
@@ -16,9 +17,38 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const officialNeutrals = JSON.parse(readFileSync(join(root, "config/brand-neutrals.json"), "utf8"));
+if (officialNeutrals.primary !== "#FFFFFF") {
+  throw new Error("Canonical public HTML generator requires approved Pure White");
+}
+
+// Canonical pages are sourced from both fresh templates and older product HTML.
+// Normalise only the browser theme tag; never rewrite inverse text, dark visuals,
+// a product's source data, or protected-route metadata.
+function normalizePublicTheme(html, file) {
+  const headEnd = html.search(/<\/head\s*>/i);
+  if (headEnd < 0) throw new Error("Canonical HTML has no closing head: " + file);
+  const head = html.slice(0, headEnd);
+  const themeTags = [...head.matchAll(/<meta\b[^>]*\bname\s*=\s*["']theme-color["'][^>]*>/gi)];
+  if (themeTags.length > 1) throw new Error("Duplicate canonical browser theme tags: " + file);
+  const replacement = '<meta name="theme-color" content="' + officialNeutrals.primary + '">';
+  if (themeTags.length === 0) {
+    return html.slice(0, headEnd) + replacement + "\n" + html.slice(headEnd);
+  }
+  return html.replace(themeTags[0][0], replacement);
+}
+
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
-const materialPageReleaseDate = (route) => ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
+const materialPageReleaseDate = (route) => {
+  if (route === "/" || route === "/about/company/") return "2026-11-22";
+  if (route === "/products/nutraxin/" || route.startsWith("/products/nutraxin/")) return "2026-11-25";
+  return ["/services/", "/distribution/", "/market-access/", "/markets/"].includes(route)
+    ? "2026-11-10" : releaseDate;
+};
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
+// The approved 512px square NovaPharm mark is the preferred Google Organization logo.
+// Keep the wide wordmark as a separate image for on-site corporate branding.
+const squareLogoUrl = `${SITE_URL}/assets/brand/pwa-icon-512.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articleDirectory)
@@ -67,13 +97,21 @@ function canonicalOrganization() {
     logo: {
       "@type": "ImageObject",
       "@id": `${SITE_URL}/#logo`,
+      url: squareLogoUrl,
+      contentUrl: squareLogoUrl,
+      width: 512,
+      height: 512,
+      caption: `${company.name} brand mark`
+    },
+    image: {
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/#wordmark`,
       url: logoUrl,
       contentUrl: logoUrl,
       width: 2048,
       height: 258,
       caption: company.name
     },
-    image: { "@id": `${SITE_URL}/#logo` },
     identifier: {
       "@type": "PropertyValue",
       propertyID: "Companies House company number",
@@ -81,15 +119,23 @@ function canonicalOrganization() {
       url: company.companiesHouseUrl
     },
     foundingDate: company.incorporated,
+    location: { "@type": "Country", name: company.headquarters },
+    department: company.divisions.map(division => ({ "@type": "Organization", "@id": `${company.siteUrl}/#${division.id}`, name: division.name, url: `${company.siteUrl}${division.path}`, parentOrganization: { "@id": `${company.siteUrl}/#organization` } })),
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
+    mainEntityOfPage: { "@id": `${SITE_URL}/#webpage` },
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
-    founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
+    telephone: company.publicTelephone,
+    email: company.publicEnquiriesEmail,
+    contactPoint: { "@type": "ContactPoint", contactType: "business enquiries and customer service", telephone: company.publicTelephone, email: company.publicEnquiriesEmail, url: `${SITE_URL}/contact/`, availableLanguage: "en-GB", areaServed: "GB" },
+    sameAs: [company.companiesHouseUrl, "https://www.linkedin.com/company/novapharm-healthcare/", "https://www.wikidata.org/wiki/Q137660644"],
+    founder: leadership.filter(person => person.governance.startsWith("Founder")).map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug) })),
+    member: leadership.filter(person => person.governance === "Founder and statutory director" || person.governance === "Statutory director").map(person => ({ "@type": "Person", "@id": personIdForSlug(person.slug), name: person.displayName, jobTitle: person.schemaTitle, url: personUrlForSlug(person.slug), ...(person.image ? { image: `${SITE_URL}${person.image}` } : {}) })),
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
     ],
     knowsAbout: [
+      company.industry,
       "UK pharmaceutical market entry",
       "pharmaceutical sourcing resilience",
       "PLPI strategy",
@@ -121,12 +167,12 @@ function normalizePerson(schema, person) {
   return {
     ...schema,
     "@context": "https://schema.org",
-    "@id": `${canonicalUrl}#person`,
+    "@id": personIdForSlug(person.slug),
     "@type": "Person",
     name: person.displayName,
     alternateName: person.name !== person.displayName ? person.name : undefined,
     jobTitle: person.schemaTitle,
-    url: canonicalUrl,
+    url: personUrlForSlug(person.slug),
     image: person.image ? {
       "@type": "ImageObject",
       url: `${SITE_URL}${person.image}`,
@@ -138,7 +184,7 @@ function normalizePerson(schema, person) {
     affiliation: { "@id": ORGANIZATION_ID },
     sameAs: person.sameAs,
     knowsAbout: person.expertise,
-    mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` }
+    mainEntityOfPage: { "@id": person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_ID : `${canonicalUrl}#webpage` }
   };
 }
 
@@ -159,7 +205,7 @@ function normalizeArticle(schema, article, canonical, html) {
     description: article.summary,
     url: canonical,
     mainEntityOfPage: { "@id": `${canonical}#webpage` },
-    author: { "@id": `${SITE_URL}/leadership/${author.slug}/#person` },
+    author: { "@id": personIdForSlug(author.slug) },
     publisher: { "@id": ORGANIZATION_ID },
     image: {
       "@type": "ImageObject",
@@ -221,8 +267,8 @@ function enhanceJsonLd(html, route, article, leader) {
           "@type": "ProfilePage",
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
-          about: { "@id": `${canonical}#person` },
-          mainEntity: { "@id": `${canonical}#person` },
+          about: { "@id": personIdForSlug(leader.slug) },
+          mainEntity: { "@id": personIdForSlug(leader.slug) },
           primaryImageOfPage: leader.image ? { "@type": "ImageObject", url: `${SITE_URL}${leader.image}` } : undefined,
           dateModified: releaseDate
         };
@@ -234,6 +280,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
+          ...(route === "/about/company/" ? { mainEntity: { "@id": ORGANIZATION_ID } } : {}),
           dateModified: materialPageReleaseDate(route)
         };
       }
@@ -251,6 +298,16 @@ function enhanceJsonLd(html, route, article, leader) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
   const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   return html.replace("</head>", `${serialized}\n</head>`);
+}
+
+function addCompanyIdentityLinks(html, route) {
+  if (route !== "/about/company/" || html.includes("data-company-identity-links")) return html;
+  const anchor = `<a class="text-link" href="${company.companiesHouseUrl}">View the official company record</a>`;
+  if (!html.includes(anchor)) throw new Error("Company identity references need the visible Companies House record link.");
+  const links = '<p data-company-identity-links>Public company identity cross-references: ' +
+    '<a href="https://www.linkedin.com/company/novapharm-healthcare/">NovaPharm on LinkedIn</a> and ' +
+    '<a href="https://www.wikidata.org/wiki/Q137660644">Wikidata (community-maintained)</a>.</p>';
+  return html.replace(anchor, anchor + links);
 }
 
 function insertHeadSignals(html, canonical, article, leader) {
@@ -342,6 +399,7 @@ if (existsSync(nutraxinProductDirectory)) {
 // ESCO is generated before SEO enhancement, not stored as a checked-in HTML directory.
 // Its public collection page needs a canonical sitemap URL and consistent metadata.
 publicFiles.push("products/esco/index.html");
+publicFiles.push("our-story/index.html");
 publicFiles.push("account-application/index.html");
 
 const pageRecords = [];
@@ -353,8 +411,10 @@ for (const file of [...new Set(publicFiles)]) {
   const article = route.startsWith("/news-insights/") ? articleBySlug.get(route.split("/")[2]) : null;
   const leader = route.startsWith("/leadership/") ? leaderBySlug.get(route.split("/")[2]) : null;
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
+  html = normalizePublicTheme(html, file);
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
+  html = addCompanyIdentityLinks(html, route);
   // Keep the editorial trust notice last: the downstream authorship reconciler
   // replaces its terminal section, so the native share link must precede it.
   html = addNativeArticleShare(html, article, canonical);
@@ -424,8 +484,10 @@ const imageEntries = [...imagesByPage.entries()].map(([page, images]) => `<url><
 write("sitemap-images.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${imageEntries.join("")}</urlset>\n`);
 
 const privateRules = protectedPaths.map((path) => `Disallow: ${path}`).join("\n");
-write("robots.txt", `User-agent: *\nAllow: /\n${privateRules}\n\nUser-agent: Googlebot\nAllow: /\n${privateRules}\n\nUser-agent: Bingbot\nAllow: /\n${privateRules}\n\nUser-agent: OAI-SearchBot\nAllow: /\n${privateRules}\n\n# Search discovery and model-training access are separate decisions.\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/sitemap-insights.xml\nSitemap: ${SITE_URL}/sitemap-images.xml\n`);
+write("robots.txt", `User-agent: *\nAllow: /\n${privateRules}\n\nUser-agent: Googlebot\nAllow: /\n${privateRules}\n\nUser-agent: Bingbot\nAllow: /\n${privateRules}\n\nUser-agent: OAI-SearchBot\nAllow: /\n${privateRules}\n\nUser-agent: Claude-SearchBot\nAllow: /\n${privateRules}\n\nUser-agent: PerplexityBot\nAllow: /\n${privateRules}\n\nUser-agent: Applebot\nAllow: /\n${privateRules}\n\n# Public search access is independent of model-training permission.\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\nSitemap: ${SITE_URL}/sitemap-insights.xml\nSitemap: ${SITE_URL}/sitemap-images.xml\n`);
 write(`${INDEXNOW_KEY}.txt`, `${INDEXNOW_KEY}\n`);
+write("llms.txt", "# NovaPharm Healthcare\n> Official public pages for NovaPharm Healthcare Ltd, a UK healthcare and pharmaceutical business. This is a navigational guide for readers and AI-assisted search tools, not an independent source of regulatory approval or commercial authorisation.\n\n## Official company and identity\n- [Official website](https://novapharmhealthcare.com/): Corporate overview and published capabilities\n- [Company](https://novapharmhealthcare.com/about/): Corporate background and operating context\n- [Leadership](https://novapharmhealthcare.com/leadership/): Named leadership biographies\n- [Governance](https://novapharmhealthcare.com/about/governance/): Public governance information\n- [Capabilities](https://novapharmhealthcare.com/capabilities/): Services and operating scope\n- [Contact](https://novapharmhealthcare.com/contact/): Official business contact route\n\n## Nutraxin UK food supplements\n- [Nutraxin product collection](https://novapharmhealthcare.com/products/nutraxin/): Browse the 19 listed food supplement products and product detail pages\n- [Products overview](https://novapharmhealthcare.com/products/): Consumer supplement and separate pharmaceutical portfolio navigation\n- [Vitamin D3 + K2, 120 tablets](https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/): Example individual product with pack details and current published UK price\n- [Magnesium Complex + Vitamin B6, 60 tablets](https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/): Example individual product with supplier-transcribed composition\n\n## Pharmaceutical and technology work\n- [Regulatory services](https://novapharmhealthcare.com/regulatory-services/): UK and international regulatory services\n- [Oncology](https://novapharmhealthcare.com/oncology/): Oncology strategy and planned capabilities\n- [Technology](https://novapharmhealthcare.com/technology/): NovaPharm Intelligence and published technology status\n- [Insights](https://novapharmhealthcare.com/news-insights/): Editorial articles with published attribution\n\n## Index and boundaries\n- [Canonical XML sitemap](https://novapharmhealthcare.com/sitemap.xml): Public indexable URL inventory\n- [Editorial and legal standards](https://novapharmhealthcare.com/legal/): Source and content governance\n- Product availability, medicines authorisations, regulatory status and health claims should be assessed from the current official product pages and competent authorities, not assumed from this guide.\n- Private account, portal, internal documentation and customer records are not public reference sources.\n- Discovery and citation by any third-party search engine or AI assistant is controlled by that service; publication of this guide does not guarantee indexing, inclusion, ranking or endorsement.\n");
+
 
 write("seo/generated/entity-register.json", `${JSON.stringify(canonicalEntities, null, 2)}\n`);
 write("seo/generated/page-metadata-register.json", `${JSON.stringify(pageRecords, null, 2)}\n`);

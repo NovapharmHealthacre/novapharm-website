@@ -1,0 +1,71 @@
+name: Intelligence Spain CIMA official pharmaceutical live probe
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-es-cima-public-live-probe.mjs'
+      - 'scripts/test-intelligence-es-cima-public-live-probe.mjs'
+      - 'scripts/test-intelligence-es-cima-live-quarantine.mjs'
+      - 'src/core/intelligence-source-snapshot-quarantine.mjs'
+      - 'src/core/intelligence-global-evidence-contract.mjs'
+      - 'scripts/run-intelligence-es-cima-public-live-probe.mjs'
+      - 'docs/intelligence/spain-cima-official-live-probe-20261118.md'
+      - '.github/workflows/intelligence-es-cima-public-live-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publisher-live:
+    name: Spain AEMPS CIMA live national registration and safety contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      # Node 24 uses existing trusted HTTP(S)_PROXY/NO_PROXY only if present.
+      # No proxy URL, credential, or new network service is introduced here.
+      NODE_USE_ENV_PROXY: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Static and fail-closed source contract checks
+        run: |
+          node --check src/core/intelligence-es-cima-public-live-probe.mjs
+          node --check scripts/test-intelligence-es-cima-public-live-probe.mjs
+          node --check scripts/test-intelligence-es-cima-live-quarantine.mjs
+          node --check scripts/run-intelligence-es-cima-public-live-probe.mjs
+          node --test scripts/test-intelligence-es-cima-public-live-probe.mjs scripts/test-intelligence-es-cima-live-quarantine.mjs
+      - name: Actual one-record official publisher HTTP read
+        run: |
+          mkdir -p artifacts/spain-cima-live
+          node scripts/run-intelligence-es-cima-public-live-probe.mjs > artifacts/spain-cima-live/receipt.json
+          node --input-type=module <<'NODE'
+          import {readFileSync} from "node:fs";
+          const receipt=JSON.parse(readFileSync("artifacts/spain-cima-live/receipt.json","utf8"));
+          if(receipt.sourceId!=="es-aemps-cima" ||
+             receipt.country!=="ES" || !receipt.publicPublisherResponded ||
+             !receipt.registrationIdentifierValidated ||
+             receipt.schemaBoundRecords!==1 ||
+             !/^[a-f0-9]{64}$/.test(receipt.responseSha256) ||
+             receipt.sourceDatasetAdmitted!==false ||
+             receipt.countryCustomerLive!==false ||
+             receipt.canPublish!==false ||
+             receipt.rawMedicineRecordsRetained!==false){
+            throw new Error("Official CIMA source read not verified or customer safety contract broken");
+          }
+          console.log("Verified AEMPS public CIMA HTTP source; no production data admission");
+          NODE
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4.6.2
+        with:
+          name: intelligence-es-cima-public-live-receipt
+          path: artifacts/spain-cima-live/receipt.json
+          if-no-files-found: error
+          retention-days: 7

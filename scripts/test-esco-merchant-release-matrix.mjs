@@ -17,7 +17,8 @@ test("all 373 ESCO references have a merchant review record with no invented cle
   assert.ok(rows.every(x => x.owner_approved_catalogue_unit_price_ex_vat_gbp === x.uk_category_guide_ex_vat_gbp));
   assert.ok(rows.every(x => x.owner_price_approval_date === "2026-11-09"));
   assert.ok(rows.every(x => x.owner_price_approval_scope.includes("EXCLUDING_DELIVERY_VAT")));
-  assert.ok(rows.every(x => Number(x.maximum_supplier_and_inbound_cost_for_modelled_25pct_margin_gbp) >= 0));
+  assert.ok(rows.every(x => x.maximum_supplier_and_inbound_cost_for_modelled_25pct_margin_gbp === ""));
+  assert.ok(rows.every(x => x.illustrative_delivery_budget_gbp === "" && x.illustrative_card_fee_gbp === "" && x.illustrative_storage_reserve_gbp === ""));
   assert.ok(rows.every(x => x.owner_declared_planning_units === 10000));
 });
 

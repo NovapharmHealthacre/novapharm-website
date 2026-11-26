@@ -1,0 +1,89 @@
+name: Verify managed Contact form on actual public domain
+
+on:
+  pull_request:
+    paths:
+      - scripts/verify-restored-contact-live.mjs
+      - scripts/lib/reviewed-contact-provenance.mjs
+      - scripts/test-reviewed-contact-provenance.mjs
+      - .github/workflows/verify-restored-contact-live.yml
+  workflow_dispatch:
+    inputs:
+      require_reviewed_contact:
+        description: Require exact approved Contact design/JS/CSS release identities (strict cutover check)
+        required: false
+        type: boolean
+        default: false
+  # Deliberately no real contact POST; read-only production smoke check only.
+  schedule:
+    - cron: "43 4 * * *"
+  deployment_status:
+  workflow_run:
+    workflows:
+      - pages build and deployment
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-verifier-source:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Test provenance-only Contact HTML transformation
+        run: node --test scripts/test-reviewed-contact-provenance.mjs
+      - name: Check read-only live verifier syntax and Contact design contract
+        run: |
+          node --check scripts/verify-restored-contact-live.mjs
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          const source=readFileSync("scripts/verify-restored-contact-live.mjs","utf8");
+          for(const marker of [
+            'Approved Contact visual identity and fail-closed controls',
+            '--ink:#0B0B0E', '--ref-ink:#0B0B0E', '#9D1B32',
+            'type="submit" disabled aria-describedby="contact-submission-status"',
+            '/assets/css/novapharm-unified-20261107.css',
+            'if (submit) submit.disabled = false;',
+            'reviewedBlobs=Object.freeze({',
+            'Uint8Array.of(0)', 'NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN',
+            'existing-managed-contact', 'reviewed-exact-assets', 'Live Contact HTML differs from reviewed release',
+            'Live Contact CSS differs from reviewed release',
+            'Live Contact submission client differs from reviewed release',
+            'method:"OPTIONS"', 'method:"GET"'
+          ]) assert.ok(source.includes(marker), "Read-only verifier source contract missing: "+marker);
+          assert.ok(!/method\s*:\s*["']POST["']/.test(source), "Verifier may not perform a real POST");
+          console.log("Reviewed Contact live-verifier source and no-POST contract passed");
+          NODE
+  verify-live-contact:
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'github-pages')) && (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'gh-pages' && github.event.workflow_run.head_repository.full_name == github.repository)) }}
+    env:
+      NOVAPHARM_CONTACT_EXPECT_REVIEWED_DESIGN: ${{ github.event_name == 'workflow_dispatch' && inputs.require_reviewed_contact == true && 'yes' || 'no' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check live Contact, privacy notice, CSP, client and AWS health with no enquiry POST
+        run: node scripts/verify-restored-contact-live.mjs
+      - name: Retain redacted, read-only Contact acceptance receipts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: novapharm-managed-contact-live-read-only
+          path: artifacts/site-restoration/live-contact-acceptance.json
+          if-no-files-found: warn
+          retention-days: 14

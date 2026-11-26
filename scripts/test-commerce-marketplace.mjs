@@ -103,6 +103,11 @@ test('search engines can discover every product reference without executing Java
  assert(!collection.mainEntity.itemListElement.some(x=>x.offers||x.availability),'Collection must not claim sales approval');
  const sitemap=read('sitemap.xml');
  assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'));
+ assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/esco/</loc>'));
+ assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/</loc>'));
+ assert(!sitemap.includes('<loc>https://novapharmhealthcare.com/products/track/</loc>'));
+ assert(!sitemap.includes('<loc>https://novapharmhealthcare.com/products/esco/bag/</loc>'));
+
  assert(!sitemap.includes('products/esco/?product='),'Per-record ESCO query links are not sitemap canonicals');
 });
 

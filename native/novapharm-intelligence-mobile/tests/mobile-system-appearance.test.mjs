@@ -169,3 +169,16 @@ test("large accessibility text reflows the 101-country list into one column with
   assert.match(countryScreen, /accessibilityLiveRegion="polite"/);
   assert.doesNotMatch(countryScreen, /\bfetch\s*\(|XMLHttpRequest|access_token|client_secret/i);
 });
+
+
+test("iOS and Android maps hand-off transmits coordinates, never an optional local reference label", () => {
+  assert.match(maps, /Platform\.OS === "android"/);
+  assert.match(maps, /buildAndroidMapUrl\(lat, lon\)/);
+  assert.match(maps, /https:\/\/maps\.apple\.com\/\?ll=/);
+  assert.doesNotMatch(maps, /&q=\$\{encodeURIComponent\(safeLabel\)\}/);
+  assert.doesNotMatch(maps, /[&?]q=\$\{encodeURIComponent\(safeLabel\)\}/);
+  assert.match(maps, /optional reference label stays local and is not included in the link/);
+  assert.match(maps, /const safeLabel = label\.trim\(\)\.slice\(0, 80\) \|\| "Reference location"/);
+  assert.match(maps, /setStatus\("Opened " \+ safeLabel \+/);
+  assert.doesNotMatch(maps, /fetch\(|navigator\.geolocation|expo-location|AsyncStorage|SecureStore|client_secret/);
+});

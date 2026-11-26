@@ -10,6 +10,7 @@ const publicEntry = read("assets/css/novapharm.css");
 const corporateLayout = read("apps/corporate/app/layout.tsx");
 const corporateBrand = read("apps/corporate/components/brand.tsx");
 const corporateHeader = read("apps/corporate/components/site-header.tsx");
+const corporateDesktopNav = read("apps/corporate/components/desktop-navigation.tsx");
 const publicHome = read("index.html");
 const publicMenuScript = read("assets/js/novapharm.js");
 const homepageLegacyNavigation = read("apps/corporate/app/homepage-editorial.css");
@@ -51,11 +52,14 @@ test("the published bundle is exactly the design source tail", () => {
   assert.ok(bundle.endsWith(`/* Source: apple-web-navigation.css */\n${design.trim()}\n`));
 });
 
-test("Next.js corporate imports the same stylesheet and preserves the original approved brand asset", () => {
+test("Next.js corporate imports the same stylesheet and preserves the owner-approved Sovereign Crimson brand asset", () => {
   assert.match(corporateLayout, /assets\/css\/apple-web-navigation\.css/);
-  assert.match(corporateBrand, /novapharm-healthcare-logo\.png/);
+  assert.match(corporateBrand, /novapharm-healthcare-logo\.svg/);
   assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
-  assert.match(corporateHeader, /<nav className="desktop-nav"/);
+  assert.match(corporateHeader, /<DesktopNavigation items=\{publicNavigation\} portalOrigin=\{portalOrigin\} locale=\{locale\}/);
+  assert.match(corporateDesktopNav, /<nav className="desktop-nav"/);
+  assert.match(corporateDesktopNav, /aria-current=\{!isPortal \? currentCorporateNavigationAriaValue\(pathname, href\) : undefined\}/);
+  assert.match(corporateDesktopNav, /const isPortal = href === "\/portal\/";/);
   assert.match(corporateHeader, /<MobileNavigation/);
 });
 
@@ -65,9 +69,11 @@ test("site destinations and native keyboard/browser commands remain intact", () 
   }
   assert.match(publicHome, /data-nav-toggle/);
   assert.match(publicHome, /data-mega-trigger/);
-  assert.match(publicMenuScript, /trigger\.addEventListener\("click", \(event\) =>/);
-  assert.match(publicMenuScript, /event\.metaKey \|\| event\.ctrlKey \|\| event\.altKey/);
+  assert.doesNotMatch(publicMenuScript, /trigger\.addEventListener\("click"/, "Native click and Enter must navigate");
+  assert.match(publicMenuScript, /trigger\.addEventListener\("pointerenter"/);
+  assert.match(publicMenuScript, /event\.key !== "ArrowDown"/);
+  assert.doesNotMatch(corporateDesktopNav, /onClick=\{\(event\)/, "Managed category links must not cancel navigation");
   assert.match(publicMenuScript, /event\.preventDefault\(\)/);
-  assert.match(publicMenuScript, /panel\.querySelector\("a"\)\?\.focus/);
+  assert.match(publicMenuScript, /panel\?\.querySelector\("a"\)\?\.focus/);
   assert.doesNotMatch(design, /Apple logo|apple\.com\/assets/);
 });

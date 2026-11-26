@@ -54,3 +54,7 @@
 .lifecycleSteps strong { text-transform: capitalize; font-size: 13px; line-height: 1.5; }
 .lifecycleSteps span { color: #595961; font-size: 12px; line-height: 1.5; }
 @media (max-width: 740px) { .lifecycle { padding: 18px; } .lifecycleSteps { grid-template-columns: minmax(0, 1fr); } }
+
+.capacityGroup { border: 0; padding: 0; margin: 16px 0; min-width: 0; }
+.capacityGroup legend { color: #48484b; font-size: 13px; font-weight: 650; padding: 0; }
+.capacityGroup .relatedLinks { margin-top: 8px; }

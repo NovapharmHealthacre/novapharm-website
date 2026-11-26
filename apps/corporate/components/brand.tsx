@@ -5,7 +5,7 @@ export function Brand({ footer = false }: { readonly footer?: boolean }) {
   return (
     <Link className={footer ? "brand brand-footer" : "brand"} href="/" lang="en-GB" aria-label="NovaPharm Healthcare home">
       <Image
-        src="/assets/brand/novapharm-healthcare-logo.png"
+        src="/assets/brand/novapharm-healthcare-logo.svg"
         alt="NovaPharm Healthcare"
         width={2048}
         height={258}

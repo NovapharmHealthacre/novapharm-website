@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import directory from "../../../docs/intelligence/country-101-client-catalog-20261118.json";
+import ownerNationalBrief from "../../../docs/intelligence/owner-national-pharma-source-brief-20261120.json";
 import styles from "./country-source-coverage.module.css";
 
 type Filter = "all" | "candidate" | "research";
 const nationalRows = directory.countries;
 const summary = directory.summary;
+const ownerBriefByCountry = new Map(ownerNationalBrief.countries.map((brief) => [brief.country, brief] as const));
 
 export function CountrySourceCoverage() {
   const [query, setQuery] = useState("");
@@ -22,6 +24,8 @@ export function CountrySourceCoverage() {
         country.country, country.iso2, country.region,
         country.publisherResearchLead?.publisherName ?? "",
         country.publisherResearchLead?.leadType ?? "",
+        ownerBriefByCountry.get(country.country)?.pharmaceuticalDataRequired ?? "",
+        ownerBriefByCountry.get(country.country)?.sourceAccessAsSupplied ?? "",
         ...country.candidateSources.map((source) => [source.provider, source.domains, source.candidateKey].join(" "))
       ].join(" ").normalize("NFKC").toLocaleLowerCase().includes(term);
     });
@@ -74,6 +78,19 @@ export function CountrySourceCoverage() {
             <p>{country.candidateSourceCount
               ? `${country.candidateSourceCount} unlicensed source candidate${country.candidateSourceCount === 1 ? "" : "s"}; no validated production data.`
               : "No national pharmaceutical dataset registered. Source discovery is required."}</p>
+            {ownerBriefByCountry.has(country.country) && (
+              <details className={styles.details}>
+                <summary>Owner-supplied pharmaceutical research brief · not verified</summary>
+                <p>{ownerBriefByCountry.get(country.country)?.pharmaceuticalDataRequired}</p>
+                <p>{ownerBriefByCountry.get(country.country)?.sourceAccessAsSupplied}</p>
+                <ul>{ownerBriefByCountry.get(country.country)?.references.map((reference) => (
+                  <li key={reference.url}>
+                    <a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.label}</a>
+                    <span>Owner reference · access unverified · API not connected</span>
+                  </li>
+                ))}</ul>
+              </details>
+            )}
             {country.candidateSources.length ? (
               <details className={styles.details}>
                 <summary>Inspect candidate publishers</summary>
@@ -99,7 +116,7 @@ export function CountrySourceCoverage() {
       {!matches.length && <p className={styles.empty}>No countries match this search. No result is inferred or fabricated.</p>}
       {visible.length < matches.length &&
         <button className={styles.more} type="button" onClick={() => setVisibleLimit((n) => n + 32)}>Show more countries</button>}
-      <p className={styles.footer}>Registry dated {directory.asOf}. All values represent discovery metadata, never clinical advice, medicine supply, commercial market intelligence or an authorised API session.</p>
+      <p className={styles.footer}>Registry dated {directory.asOf}; owner-supplied national source brief dated {ownerNationalBrief.asOf}. References, source claims and API availability are unverified. No clinical, commercial or medicine-data rights have been granted.</p>
     </section>
   );
 }

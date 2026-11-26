@@ -1,0 +1,135 @@
+import { test } from "node:test";
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+import { auditSeoCandidate } from "./verify-seo-pages-release-preflight.mjs";
+
+const base = "https://novapharmhealthcare.com";
+function fixture({ ownerApproved = false, candidateActive = false, liveActive = true } = {}) {
+  const files = {}, lines = ["id\ttitle\tdescription\tlink\tprice\tavailability"];
+  files["sitemap.xml"] = "<urlset>";
+  for (let i=0;i<19;i++) {
+    const id = "NUT-UK-TEST-" + (i+1), slug="test-"+(i+1), url=base+"/products/nutraxin/"+slug+"/";
+    const description = "Validated supplier ingredient listing " + i;
+    lines.push([id,"Sample product",description,url,"15.00 GBP","in_stock"].join("\t"));
+    const j={"@type":"Product",sku:id,description,offers:{url,price:"15.00",priceCurrency:"GBP",
+      seller:{logo:base+"/assets/brand/novapharm-healthcare-logo.png"}}};
+    files["products/nutraxin/"+slug+"/index.html"] =
+      '<meta name="description" content="Food supplement with a verified ingredient and pack description.">' +
+      '<meta name="robots" content="index,follow"><link rel="canonical" href="'+url+'">' +
+      '<script type="application/ld+json">'+JSON.stringify(j)+"</script>";
+    files["sitemap.xml"] += "<url><loc>"+url+"</loc></url>";
+  }
+  files["sitemap.xml"] += "</urlset>";
+  files["shopping/nutraxin-uk.tsv"] = lines.join("\n");
+  const paths = "\nDisallow: /portal/\nDisallow: /admin/\nDisallow: /employee/\nDisallow: /api/\n";
+  files["robots.txt"] = ["Googlebot","Bingbot","OAI-SearchBot","Claude-SearchBot","PerplexityBot","Applebot"]
+    .map(x=>"User-agent: "+x+"\nAllow: /"+paths).join("\n") +
+    "\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n";
+  files["llms.txt"] = "# NovaPharm Healthcare\n"+base+"/products/nutraxin/\n"+base+"/sitemap.xml";
+  files["portal/index.html"] = "This public website never asks for a portal username, password or confidential company record";
+  const active = '<form data-live-b2b-enquiry-form data-api-origin="https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com"><input name="privacyAcknowledgement"><input name="safetyConfirmation"></form><script src="/assets/js/contact-production.js"></script>';
+  files["contact/index.html"] = candidateActive?active:"<form data-email-enquiry-form></form>";
+  return {files,owner:{productionSignoff:ownerApproved?"granted":"not_granted",
+    productionPermissions:{activatePublicCustomerAccess:ownerApproved}},
+    liveContactHttp:200,liveContactHtml:liveActive?active:""};
+}
+test("valid 19 offers but owner hold and active form downgrade make release unsafe",()=>{
+  const r=auditSeoCandidate(fixture());
+  assert.equal(r.sourceReady,true);assert.equal(r.releaseReady,false);
+  assert.deepEqual(r.holds,["WOULD_DOWNGRADE_LIVE_CONTACT","OWNER_APPROVAL_NOT_GRANTED"]);
+});
+test("even explicit owner approval cannot allow contact downgrade",()=>{
+  const r=auditSeoCandidate(fixture({ownerApproved:true}));
+  assert.equal(r.sourceReady,true);assert.equal(r.releaseReady,false);
+});
+test("owner-approved, contact-preserving mock candidate passes read-only checks",()=>{
+  const r=auditSeoCandidate(fixture({ownerApproved:true,candidateActive:true}));
+  assert.equal(r.releaseReady,true);assert.equal(r.products.length,19);
+});
+test("feed/offer discrepancy fails source verification",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["products/nutraxin/test-3/index.html"] =
+    x.files["products/nutraxin/test-3/index.html"].replace('"price":"15.00"','"price":"30.00"');
+  const r=auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);assert(r.issues.some(x=>x.includes("NUT-UK-TEST-3")));
+});
+test("crawler model-training rules cannot be relaxed by the preflight",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["robots.txt"]=x.files["robots.txt"].replace("User-agent: GPTBot\nDisallow: /","User-agent: GPTBot\nAllow: /");
+  const r=auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);assert(r.issues.some(x=>x.includes("GPTBot")));
+});
+test("unavailable live contact evidence blocks the release",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.liveContactHttp=0;x.liveContactHtml="";
+  const r=auditSeoCandidate(x);
+  assert.equal(r.sourceReady,true);assert.equal(r.releaseReady,false);
+  assert(r.holds.includes("LIVE_CONTACT_UNKNOWN"));
+});
+
+test("contact candidate cannot silently switch the verified AWS API origin",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["contact/index.html"]=x.files["contact/index.html"].replace("h4dc1e4u57","unverifiedapi");
+  const r=auditSeoCandidate(x);
+  assert.equal(r.releaseReady,false);
+  assert(r.holds.includes("CONTACT_API_ORIGIN_DRIFT"));
+});
+
+test("AI source guide rejects protected NovaPharm URLs",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["llms.txt"] += "\nhttps://novapharmhealthcare.com/portal/internal/";
+  const r=auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);
+  assert(r.issues.some(issue=>issue.includes("protected route")));
+});
+test("AI source guide rejects deceptive lookalike hosts instead of matching a hostname substring",()=>{
+  const x=fixture({ownerApproved:true,candidateActive:true});
+  x.files["llms.txt"] += "\nhttps://novapharmhealthcare.com.evil.example/products/nutraxin/";
+  const r=auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);
+  assert(r.issues.some(issue=>issue.includes("unverified external host")));
+});
+
+
+test("read-only preflight CI covers contact changes and owner approval controls", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/nutraxin-seo-pages-preflight.yml", import.meta.url), "utf8");
+  for (const path of [
+    "contact/**",
+    "assets/js/contact-production.js",
+    "scripts/activate-contact-intake.mjs",
+    "config/intelligence/owner-production-constraints.json",
+    "assets/data/nutraxin-retail-catalogue.json",
+    "docs/nutraxin-product-register.json",
+    "sitemap.xml",
+    "portal/index.html",
+    "scripts/apply-corporate-product-discipline.mjs",
+    "package.json",
+    "package-lock.json"
+  ]) {
+    assert(workflow.includes('      - "' + path + '"'), "Preflight must run on changes to " + path);
+  }
+  assert(workflow.includes("permissions:\n  contents: read"), "Preflight workflow must retain read-only token permissions");
+  for (const scope of ["pages", "deployments", "id-token"]) {
+    assert(!workflow.includes(scope + ": write"), "Preflight must never grant " + scope + " write permission");
+  }
+});
+
+
+test("AI source guide rejects encoded private paths and credentialed source URLs", () => {
+  for (const url of [
+    "https://novapharmhealthcare.com/%70ortal/internal/",
+    "https://novapharmhealthcare.com/%2570ortal/internal/",
+    "https://novapharmhealthcare.com/%61dmin/"
+  ]) {
+    const x = fixture({ownerApproved:true,candidateActive:true});
+    x.files["llms.txt"] += "\n" + url;
+    const r = auditSeoCandidate(x);
+    assert.equal(r.sourceReady, false, "Encoded protected route must be blocked: " + url);
+    assert(r.issues.some(issue => issue.includes("protected route")));
+  }
+  const x = fixture({ownerApproved:true,candidateActive:true});
+  x.files["llms.txt"] += "\nhttps://user:secret@novapharmhealthcare.com/products/nutraxin/";
+  const r = auditSeoCandidate(x);
+  assert.equal(r.sourceReady,false);
+  assert(r.issues.some(issue => issue.includes("URL credentials")));
+});

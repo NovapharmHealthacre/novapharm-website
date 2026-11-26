@@ -51,8 +51,13 @@ assert.ok(contrastOnWhite(focusColor) >= 3, "keyboard-focus outline must have at
 assert.ok(contrastOnWhite(highContrastDivider) >= 3, "high-contrast nontext divider must have at least 3:1 contrast on white");
 
 assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
-assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
-assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
+const identity = JSON.parse(text("config/brand-identities.json"));
+assert.equal(identity.approvedOn, "2026-11-22", "brand approval date must remain governed");
+assert.equal(identity.brands.healthcare.hex, "#9D1B32", "Healthcare uses owner-approved Royal Cochineal Crimson");
+assert.equal(identity.brands.healthcare.strongAccent, "#68101F", "small foregrounds use approved contrast-safe crimson");
+assert.ok(tokenCss.includes(`--brand: ${identity.brands.healthcare.hex};`), "corporate identity must match approved Healthcare crimson");
+assert.ok(tokenCss.includes(`--brand-text: ${identity.brands.healthcare.strongAccent};`), "small red foreground text must use the approved contrast-safe derivative");
+assert.doesNotMatch(tokenCss, /#E3120B|#B30E09/i, "retired Economist Red must not reappear in canonical tokens");
 
 const homepageCss = text("assets/css/homepage-editorial.css");
 assert.match(homepageCss, /\.npd-apple-hero/);
@@ -131,7 +136,8 @@ const contact = text("contact/index.html");
 assert.match(contact, /class="npd-main np-contact np-contact-reference"/, "Contact retains the approved standalone presentation");
 assert.match(contact, /Let&#39;s talk\./, "Contact has the reference's direct headline");
 assert.match(contact, /How can we help\?/, "Contact has the reference form heading");
-assert.match(contact, /class="np-contact-reference-footer"/, "Contact has a restrained legal footer");
+assert.equal((contact.match(/<footer class="site-footer npd-footer"/g) || []).length, 1, "Contact retains exactly one shared corporate footer");
+assert.doesNotMatch(contact, /class="np-contact-reference-footer"/, "Contact must not restore its independent footer");
 assert.match(contact, /Business enquiries only\./, "Contact retains regulated-business scope");
 assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact preserves MHRA safety routing");
 assert.match(contact, /legal\/privacy\//);

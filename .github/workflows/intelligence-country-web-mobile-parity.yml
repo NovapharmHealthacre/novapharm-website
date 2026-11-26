@@ -6,6 +6,7 @@ on:
       - 'docs/intelligence/global-pharma-sources-20261117.json'
       - 'docs/intelligence/country-101-scope-proposal-20261118.json'
       - 'docs/intelligence/country-101-client-catalog-20261118.json'
+      - 'docs/intelligence/owner-national-pharma-source-brief-20261120.json'
       - 'docs/intelligence/country-101-new-24-publisher-research-20261118.json'
       - 'scripts/test-intelligence-24-publisher-research.mjs'
       - 'src/core/intelligence-country-101-proposed-ledger.mjs'
