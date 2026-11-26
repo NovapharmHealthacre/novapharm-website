@@ -4,13 +4,13 @@
  */
 export const mobileLightPalette = Object.freeze({
   canvas: "#FFFFFF",
-  grouped: "#F5F5F7",
+  grouped: "#F8F7F3",
   raised: "#E8E8ED",
   border: "#6C6C70",
-  primary: "#1D1D1F",
+  primary: "#0B0B0E",
   secondary: "#424245",
   tertiary: "#595961",
-  accent: "#E3120B"
+  accent: "#2546D8"
 });
 
 export const mobileDarkPalette = Object.freeze({
@@ -21,6 +21,6 @@ export const mobileDarkPalette = Object.freeze({
   primary: "#F5F5F7",
   secondary: "#D1D1D6",
   tertiary: "#BDBDC2",
-  accent: "#FF6961"
+  accent: "#A8B8FF"
 });
 

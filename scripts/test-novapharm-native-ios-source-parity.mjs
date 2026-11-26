@@ -106,7 +106,7 @@ test("all 101 native Swift country references precisely match the canonical sour
   assert.equal(source.summary.customerLiveNationalCountries, 0);
   assert.equal(source.liveMedicineRowsIncluded, false);
   assert.deepEqual(swiftCountries, expected);
-  assert.match(view, /searchable\(text: \$searchText/);
+  assert.match(view, /modifier\(NovaAdaptiveSearchModifier\(searchText: \$searchText/);
   assert.match(view, /No medicine facts or private information are loaded/);
   assert.doesNotMatch(view, /\bURLSession\b|\bfetch\s*\(|\bWKWebView\b|\bASWebAuthenticationSession\b/);
 });
@@ -132,4 +132,68 @@ test("native UI acceptance uses an actual XCTest UI target and stable accessible
   assert.match(workflow, /-parallel-testing-enabled NO/);
   assert.match(workflow, /CODE_SIGNING_ALLOWED=NO/);
   assert.doesNotMatch(appTest, /URLSession|http[s]?:\/\/|WKWebView|Cognito|client_secret|access_token/);
+});
+
+test("iOS accessibility and iPad smoke tests have explicit, non-skippable evidence gates", () => {
+  const ui = read("native/novapharm-intelligence-ios/UITests/NovaPharmAccessibilityUITests.swift");
+  const countryView = read("native/novapharm-intelligence-ios/App/NovaCountryDirectoryView.swift");
+  const workflow = read(".github/workflows/nova-ios-swift-native.yml");
+  assert.match(view, /@ScaledMetric\(relativeTo: \.body\) private var moduleChartHeight: CGFloat = 180/);
+  assert.match(view, /\.frame\(height: moduleChartHeight\)/);
+  assert.match(view, /\.accessibilityLabel\(moduleChartAccessibilitySummary\)/);
+  assert.doesNotMatch(view, /\.accessibilityLabel\("Module catalogue sizes:/);
+  assert.match(countryView, /if dynamicTypeSize\.isAccessibilitySize/);
+  assert.match(countryView, /\.pickerStyle\(\.menu\)/);
+  assert.match(view, /struct NovaAdaptiveSearchModifier: ViewModifier/);
+  assert.match(view, /novapharm\.workspaces\.inline-search/);
+  assert.match(countryView, /novapharm\.countries\.inline-search/);
+  assert.match(view, /\.modifier\(NovaAdaptiveSearchModifier\(searchText:/);
+  assert.match(countryView, /\.modifier\(NovaAdaptiveSearchModifier\(searchText:/);
+  assert.match(ui, /inlineSearch\.isHittable/);
+  assert.match(ui, /coverageFilter\.isHittable/);
+  assert.match(ui, /performAccessibilityAudit\(for:/);
+  assert.match(ui, /\.contrast, \.textClipped, \.hitRegion, \.sufficientElementDescription/);
+  assert.match(ui, /testLargestDynamicTypeMaintainsResearchNavigation/);
+  assert.match(workflow, /content_size accessibility-extra-extra-extra-large/);
+  assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmNativeUITests/);
+  assert.match(workflow, /-only-testing:NovaPharmNativeUITests\/NovaPharmAccessibilityUITests/);
+  assert.match(read("native/novapharm-intelligence-ios/App/NovaTheme.swift"), /trait\.userInterfaceStyle == \.dark/);
+  assert.match(workflow, /if: \$\{\{ always\(\) && steps\.native_build\.outcome == 'success' \}\}/);
+  assert.match(workflow, /No iPad Simulator available; iPad acceptance remains blocked/);
+  assert.match(workflow, /novapharm-ipad-simulator\.png/);
+  assert.match(workflow, /NovaPharmNative-Accessibility\.xcresult/);
+  assert.doesNotMatch(ui, /URLSession|WKWebView|client_secret|access_token/);
+});
+
+
+test("Intelligence retains approved Ultramarine and Pure White with accessible adaptive tint", () => {
+  const theme = read("native/novapharm-intelligence-ios/App/NovaTheme.swift");
+  assert.match(theme, /red: 37\.0 \/ 255, green: 70\.0 \/ 255, blue: 216\.0 \/ 255/);
+  assert.match(theme, /red: 168\.0 \/ 255, green: 184\.0 \/ 255, blue: 255\.0 \/ 255/);
+  assert.match(theme, /UIColor\(red: 1, green: 1, blue: 1, alpha: 1\)/);
+  assert.match(theme, /red: 248\.0 \/ 255, green: 247\.0 \/ 255, blue: 243\.0 \/ 255/);
+  const linear = v => { const n=v/255; return n<=0.04045?n/12.92:((n+0.055)/1.055)**2.4; };
+  const luminance = rgb => rgb.map(linear).reduce((a,x,i)=>a+x*[0.2126,0.7152,0.0722][i],0);
+  const contrast = (a,b) => { const x=luminance(a),y=luminance(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); };
+  for (const surface of [[255,255,255],[248,247,243],[242,242,247]]) assert.ok(contrast([37,70,216],surface)>=4.5);
+  for (const surface of [[44,44,46],[64,64,65],[28,28,30]]) assert.ok(contrast([168,184,255],surface)>=4.5);
+});
+
+test("public GitHub must not publish private Swift Simulator or accessibility artifacts", () => {
+  const workflow = read(".github/workflows/nova-ios-swift-native.yml");
+  const protectedUploads = [
+    "Upload Apple accessibility and iPad evidence in private repositories only",
+    "Upload native UI test evidence in private repositories only",
+    "Upload non-distributable iOS Simulator artifact in private repositories only"
+  ];
+  for (const name of protectedUploads) {
+    const start = workflow.indexOf("      - name: " + name);
+    assert.ok(start >= 0, "Missing privacy guarded CI step: " + name);
+    const body = workflow.slice(start, workflow.indexOf("\n      - name:", start + 1) < 0
+      ? undefined : workflow.indexOf("\n      - name:", start + 1));
+    assert.match(body, /if: \$\{\{ (?:always\(\) && )?github\.event\.repository\.private \}\}/);
+    assert.match(body, /uses: actions\/upload-artifact@/);
+  }
+  assert.match(workflow, /if: \$\{\{ !github\.event\.repository\.private \}\}/);
+  assert.match(workflow, /private Simulator binaries, screenshots, and XCResult uploads are suppressed/);
 });
