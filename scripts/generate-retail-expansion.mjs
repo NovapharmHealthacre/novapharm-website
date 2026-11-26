@@ -195,9 +195,14 @@ if(catalogueSeo.length){
  write(structuredPath,JSON.stringify(structured,null,2)+'\n');
  const imagePath='seo/generated/social-image-register.json';
  const priorImages=JSON.parse(read(imagePath));
- assert(catalogueSocial.length===catalogueSeo.length,'Every approved retail route requires a first-party photograph');
- const retainedImages=priorImages.filter(p=>!p.route.startsWith(prefix)&&p.route!==pharmacyRoute);
- write(imagePath,JSON.stringify([...retainedImages,...catalogueSocial],null,2)+'\n');
+ // Pharmacy Partners has its own reviewed and exact registered Nutraxin pack
+ // image. Preserve it, rather than replacing its dimensions and source with a
+ // new generic retail image record.
+ const retailSocial=catalogueSocial.filter(p=>p.route.startsWith(prefix));
+ assert(retailSocial.length===catalogueSeo.filter(p=>p.route.startsWith(prefix)).length,
+  'Every approved retail route requires its own exact product social photograph');
+ const retainedImages=priorImages.filter(p=>!p.route.startsWith(prefix));
+ write(imagePath,JSON.stringify([...retainedImages,...retailSocial],null,2)+'\n');
  let sitemap=read('sitemap.xml');
  assert(sitemap.includes('</urlset>'),'Missing sitemap root');
  sitemap=sitemap.replace(/<url>\s*<loc>https:\/\/novapharmhealthcare\.com\/products\/health-and-wellbeing\/[^<]*<\/loc>[\s\S]*?<\/url>/g,'');
