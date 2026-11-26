@@ -31,7 +31,9 @@ test('395-source directory generator creates one searchable source page per GTIN
     const html=f.read(`products/health-and-wellbeing/${p.ean}/index.html`);
     assert(html.includes(p.ean));
     assert(html.includes('name="robots" content="noindex, follow"'));
-    assert(!html.includes('data-npr-retail-sku'));
+    assert(html.includes('data-npr-retail-sku="NP-CP-'+p.ean+'"'));
+    assert(html.includes('data-npr-order-notice'));
+    assert(html.includes('/assets/js/nutraxin-retail-store.js'));
     assert(!html.includes('"offers"'));
     assert(!html.includes('availableQuantity'));
     assert(!html.includes('netMinor'));

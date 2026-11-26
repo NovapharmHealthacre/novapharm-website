@@ -255,6 +255,12 @@ export function restoreCheckoutAttempt(record, bag, mode) {
 }
 
 function runStore(data) {
+  // Source-only pages remain visually unchanged until the private AWS ledger
+  // returns this exact SKU with a price/fulfilment-approved retail offer.
+  if (window.location.pathname.startsWith(MULTIBRAND_URL)) {
+    const sku = document.querySelector('[data-npr-retail-sku]')?.dataset.nprRetailSku;
+    if (!sku || !merchantSaleReady(data.products.find(p => p.sku === sku), data)) return;
+  }
   let bag = loadBag(data);
   let approvedRelease = false;
   let confirmedOrder = "";
@@ -821,6 +827,7 @@ function runStore(data) {
       const buy=make("button","nx-store-add nx-store-buy-now","Buy now");buy.type="button";buy.onclick=()=>{if(put(p.sku,Number(qty.value)))window.location.assign(BAG_URL);};
       options.append(label,add,buy);panel.append(options);
       host.replaceChildren(panel);
+      host.closest('main')?.querySelector('[data-npr-order-notice]')?.setAttribute('hidden', '');
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
     const selected = new Set();
