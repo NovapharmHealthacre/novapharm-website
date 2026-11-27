@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {canEditCommerceDraft} from './wms-commerce-draft-contract.mjs';
 const fail=(code,message)=>{throw Object.assign(new Error(message),{statusCode:code});};
 export function canPublishPrice(context,env=process.env){
- return canEditCommerceDraft(context,env)&&env.WMS_COMMERCE_PRICE_PUBLISH_ENABLED==='true'&&env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE==='aws-private';
+ return canEditCommerceDraft(context,env)&&env.WMS_COMMERCE_PRICE_PUBLISH_ENABLED==='true'&&((env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE==='aws-private'&&env.WMS_COMMERCE_DATA_MODE!=='synthetic')||(env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE==='aws-isolated-staging'&&env.WMS_COMMERCE_DATA_MODE==='synthetic'));
 }
 export function validatePriceRequest(input,confirmation=false){
  const fields=confirmation?['sku','revision','expectedHash']:['sku','revision'];
