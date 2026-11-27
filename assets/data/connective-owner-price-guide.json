@@ -1,0 +1,1320 @@
+{
+  "schema": "novapharm.connective.owner-price-guide.v1",
+  "currency": "GBP",
+  "status": "OWNER_AUTHORISED_GUIDE_NOT_LIVE_PAYMENT_OFFER",
+  "checkedOn": "2026-11-27",
+  "entries": [
+    {
+      "gtin": "4004148017018",
+      "guideGrossMinor": 1140
+    },
+    {
+      "gtin": "4004148017063",
+      "guideGrossMinor": 858
+    },
+    {
+      "gtin": "4004148017179",
+      "guideGrossMinor": 858
+    },
+    {
+      "gtin": "4004148017186",
+      "guideGrossMinor": 1411
+    },
+    {
+      "gtin": "4004148017704",
+      "guideGrossMinor": 710
+    },
+    {
+      "gtin": "4004148017711",
+      "guideGrossMinor": 714
+    },
+    {
+      "gtin": "4004148017766",
+      "guideGrossMinor": 896
+    },
+    {
+      "gtin": "4004148018121",
+      "guideGrossMinor": 151
+    },
+    {
+      "gtin": "4004148047039",
+      "guideGrossMinor": 620
+    },
+    {
+      "gtin": "4004148047268",
+      "guideGrossMinor": 896
+    },
+    {
+      "gtin": "4004148047503",
+      "guideGrossMinor": 1304
+    },
+    {
+      "gtin": "4004148047527",
+      "guideGrossMinor": 1248
+    },
+    {
+      "gtin": "4004148057069",
+      "guideGrossMinor": 769
+    },
+    {
+      "gtin": "4004148057076",
+      "guideGrossMinor": 858
+    },
+    {
+      "gtin": "4004148059018",
+      "guideGrossMinor": 872
+    },
+    {
+      "gtin": "4004148332401",
+      "guideGrossMinor": 977
+    },
+    {
+      "gtin": "4004148339745",
+      "guideGrossMinor": 973
+    },
+    {
+      "gtin": "4004148346286",
+      "guideGrossMinor": 926
+    },
+    {
+      "gtin": "4004148348693",
+      "guideGrossMinor": 893
+    },
+    {
+      "gtin": "4006309024187",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024231",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024279",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024330",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024347",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024361",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024378",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024408",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024439",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024453",
+      "guideGrossMinor": 516
+    },
+    {
+      "gtin": "4006309024576",
+      "guideGrossMinor": 563
+    },
+    {
+      "gtin": "4030300022736",
+      "guideGrossMinor": 137
+    },
+    {
+      "gtin": "4030300022743",
+      "guideGrossMinor": 137
+    },
+    {
+      "gtin": "4030300022750",
+      "guideGrossMinor": 137
+    },
+    {
+      "gtin": "4030300023108",
+      "guideGrossMinor": 91
+    },
+    {
+      "gtin": "4030300573016",
+      "guideGrossMinor": 91
+    },
+    {
+      "gtin": "4030300573313",
+      "guideGrossMinor": 91
+    },
+    {
+      "gtin": "4103040014351",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "4103040014375",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "4103040024749",
+      "guideGrossMinor": 1450
+    },
+    {
+      "gtin": "4103040025180",
+      "guideGrossMinor": 472
+    },
+    {
+      "gtin": "4103040027160",
+      "guideGrossMinor": 996
+    },
+    {
+      "gtin": "4103040038777",
+      "guideGrossMinor": 266
+    },
+    {
+      "gtin": "4103040043368",
+      "guideGrossMinor": 498
+    },
+    {
+      "gtin": "4103040043382",
+      "guideGrossMinor": 266
+    },
+    {
+      "gtin": "4103040043405",
+      "guideGrossMinor": 331
+    },
+    {
+      "gtin": "4103040043528",
+      "guideGrossMinor": 283
+    },
+    {
+      "gtin": "4103040043542",
+      "guideGrossMinor": 434
+    },
+    {
+      "gtin": "4103040043566",
+      "guideGrossMinor": 426
+    },
+    {
+      "gtin": "4103040043580",
+      "guideGrossMinor": 380
+    },
+    {
+      "gtin": "4103040043689",
+      "guideGrossMinor": 610
+    },
+    {
+      "gtin": "4103040043702",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "4103040043726",
+      "guideGrossMinor": 542
+    },
+    {
+      "gtin": "4103040043740",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "4103040043764",
+      "guideGrossMinor": 534
+    },
+    {
+      "gtin": "4103040043856",
+      "guideGrossMinor": 366
+    },
+    {
+      "gtin": "4103040043870",
+      "guideGrossMinor": 434
+    },
+    {
+      "gtin": "4103040043894",
+      "guideGrossMinor": 380
+    },
+    {
+      "gtin": "4103040043931",
+      "guideGrossMinor": 532
+    },
+    {
+      "gtin": "4103040111746",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "4103040113924",
+      "guideGrossMinor": 398
+    },
+    {
+      "gtin": "4103040114204",
+      "guideGrossMinor": 763
+    },
+    {
+      "gtin": "4103040114587",
+      "guideGrossMinor": 679
+    },
+    {
+      "gtin": "4103040120465",
+      "guideGrossMinor": 275
+    },
+    {
+      "gtin": "4103040126276",
+      "guideGrossMinor": 1602
+    },
+    {
+      "gtin": "4103040135049",
+      "guideGrossMinor": 596
+    },
+    {
+      "gtin": "4103040146168",
+      "guideGrossMinor": 610
+    },
+    {
+      "gtin": "4103040147677",
+      "guideGrossMinor": 930
+    },
+    {
+      "gtin": "4103040147738",
+      "guideGrossMinor": 625
+    },
+    {
+      "gtin": "4103040148711",
+      "guideGrossMinor": 725
+    },
+    {
+      "gtin": "4103040167347",
+      "guideGrossMinor": 472
+    },
+    {
+      "gtin": "4103040167910",
+      "guideGrossMinor": 610
+    },
+    {
+      "gtin": "4103040167934",
+      "guideGrossMinor": 839
+    },
+    {
+      "gtin": "4103040167958",
+      "guideGrossMinor": 839
+    },
+    {
+      "gtin": "4103040167972",
+      "guideGrossMinor": 631
+    },
+    {
+      "gtin": "4103040171290",
+      "guideGrossMinor": 664
+    },
+    {
+      "gtin": "4103040898104",
+      "guideGrossMinor": 532
+    },
+    {
+      "gtin": "4103040908339",
+      "guideGrossMinor": 504
+    },
+    {
+      "gtin": "4103040921598",
+      "guideGrossMinor": 1727
+    },
+    {
+      "gtin": "4103040923363",
+      "guideGrossMinor": 1680
+    },
+    {
+      "gtin": "5000309008108",
+      "guideGrossMinor": 1103
+    },
+    {
+      "gtin": "5000309008115",
+      "guideGrossMinor": 1241
+    },
+    {
+      "gtin": "5000309008146",
+      "guideGrossMinor": 433
+    },
+    {
+      "gtin": "5000309008153",
+      "guideGrossMinor": 518
+    },
+    {
+      "gtin": "5000309008160",
+      "guideGrossMinor": 782
+    },
+    {
+      "gtin": "5000309008177",
+      "guideGrossMinor": 954
+    },
+    {
+      "gtin": "5000309008184",
+      "guideGrossMinor": 725
+    },
+    {
+      "gtin": "5000309008191",
+      "guideGrossMinor": 868
+    },
+    {
+      "gtin": "5000309008214",
+      "guideGrossMinor": 725
+    },
+    {
+      "gtin": "5000309008221",
+      "guideGrossMinor": 868
+    },
+    {
+      "gtin": "5000309008245",
+      "guideGrossMinor": 782
+    },
+    {
+      "gtin": "5000309008252",
+      "guideGrossMinor": 1303
+    },
+    {
+      "gtin": "5000309008269",
+      "guideGrossMinor": 605
+    },
+    {
+      "gtin": "5000309008276",
+      "guideGrossMinor": 605
+    },
+    {
+      "gtin": "5012335003309",
+      "guideGrossMinor": 966
+    },
+    {
+      "gtin": "5012335294004",
+      "guideGrossMinor": 689
+    },
+    {
+      "gtin": "5012335792005",
+      "guideGrossMinor": 570
+    },
+    {
+      "gtin": "5012335792104",
+      "guideGrossMinor": 1055
+    },
+    {
+      "gtin": "5012335850606",
+      "guideGrossMinor": 1475
+    },
+    {
+      "gtin": "5012335851108",
+      "guideGrossMinor": 988
+    },
+    {
+      "gtin": "5012335872608",
+      "guideGrossMinor": 520
+    },
+    {
+      "gtin": "5012335873001",
+      "guideGrossMinor": 520
+    },
+    {
+      "gtin": "5012335873100",
+      "guideGrossMinor": 520
+    },
+    {
+      "gtin": "5012335880009",
+      "guideGrossMinor": 982
+    },
+    {
+      "gtin": "5012335880108",
+      "guideGrossMinor": 982
+    },
+    {
+      "gtin": "5013662180015",
+      "guideGrossMinor": 764
+    },
+    {
+      "gtin": "5013662280012",
+      "guideGrossMinor": 764
+    },
+    {
+      "gtin": "5013662600025",
+      "guideGrossMinor": 1123
+    },
+    {
+      "gtin": "5013662900163",
+      "guideGrossMinor": 1123
+    },
+    {
+      "gtin": "5014154000002",
+      "guideGrossMinor": 1304
+    },
+    {
+      "gtin": "5014154553904",
+      "guideGrossMinor": 944
+    },
+    {
+      "gtin": "5014154563439",
+      "guideGrossMinor": 1214
+    },
+    {
+      "gtin": "5015672004817",
+      "guideGrossMinor": 683
+    },
+    {
+      "gtin": "5015672004923",
+      "guideGrossMinor": 1044
+    },
+    {
+      "gtin": "5015672049405",
+      "guideGrossMinor": 3310
+    },
+    {
+      "gtin": "5015672484480",
+      "guideGrossMinor": 1951
+    },
+    {
+      "gtin": "5021265220250",
+      "guideGrossMinor": 371
+    },
+    {
+      "gtin": "5021265221707",
+      "guideGrossMinor": 673
+    },
+    {
+      "gtin": "5021265222391",
+      "guideGrossMinor": 745
+    },
+    {
+      "gtin": "5021265222407",
+      "guideGrossMinor": 896
+    },
+    {
+      "gtin": "5021265222476",
+      "guideGrossMinor": 1112
+    },
+    {
+      "gtin": "5021265222513",
+      "guideGrossMinor": 1112
+    },
+    {
+      "gtin": "5021265222544",
+      "guideGrossMinor": 1912
+    },
+    {
+      "gtin": "5021265223350",
+      "guideGrossMinor": 3020
+    },
+    {
+      "gtin": "5021265223398",
+      "guideGrossMinor": 1364
+    },
+    {
+      "gtin": "5021265223527",
+      "guideGrossMinor": 760
+    },
+    {
+      "gtin": "5021265223855",
+      "guideGrossMinor": 536
+    },
+    {
+      "gtin": "5021265227471",
+      "guideGrossMinor": 1019
+    },
+    {
+      "gtin": "5021265232062",
+      "guideGrossMinor": 1148
+    },
+    {
+      "gtin": "5021265242252",
+      "guideGrossMinor": 756
+    },
+    {
+      "gtin": "5021265242337",
+      "guideGrossMinor": 1249
+    },
+    {
+      "gtin": "5021265243396",
+      "guideGrossMinor": 990
+    },
+    {
+      "gtin": "5021265243518",
+      "guideGrossMinor": 1099
+    },
+    {
+      "gtin": "5021265243792",
+      "guideGrossMinor": 1069
+    },
+    {
+      "gtin": "5021265244164",
+      "guideGrossMinor": 1069
+    },
+    {
+      "gtin": "5021265244423",
+      "guideGrossMinor": 637
+    },
+    {
+      "gtin": "5021265244843",
+      "guideGrossMinor": 1458
+    },
+    {
+      "gtin": "5021265244850",
+      "guideGrossMinor": 1048
+    },
+    {
+      "gtin": "5021265245284",
+      "guideGrossMinor": 1724
+    },
+    {
+      "gtin": "5021265245949",
+      "guideGrossMinor": 1868
+    },
+    {
+      "gtin": "5021265246298",
+      "guideGrossMinor": 1487
+    },
+    {
+      "gtin": "5021265246342",
+      "guideGrossMinor": 486
+    },
+    {
+      "gtin": "5021265246359",
+      "guideGrossMinor": 2236
+    },
+    {
+      "gtin": "5021265246441",
+      "guideGrossMinor": 644
+    },
+    {
+      "gtin": "5021265246694",
+      "guideGrossMinor": 594
+    },
+    {
+      "gtin": "5021265247318",
+      "guideGrossMinor": 644
+    },
+    {
+      "gtin": "5021265247325",
+      "guideGrossMinor": 644
+    },
+    {
+      "gtin": "5021265247332",
+      "guideGrossMinor": 1040
+    },
+    {
+      "gtin": "5021265247349",
+      "guideGrossMinor": 1040
+    },
+    {
+      "gtin": "5021265247394",
+      "guideGrossMinor": 443
+    },
+    {
+      "gtin": "5021265250592",
+      "guideGrossMinor": 860
+    },
+    {
+      "gtin": "5021265251117",
+      "guideGrossMinor": 1364
+    },
+    {
+      "gtin": "5021265251292",
+      "guideGrossMinor": 1796
+    },
+    {
+      "gtin": "5021265251858",
+      "guideGrossMinor": 464
+    },
+    {
+      "gtin": "5021265252480",
+      "guideGrossMinor": 1364
+    },
+    {
+      "gtin": "5024874015019",
+      "guideGrossMinor": 163
+    },
+    {
+      "gtin": "5024874015040",
+      "guideGrossMinor": 127
+    },
+    {
+      "gtin": "5024874015057",
+      "guideGrossMinor": 127
+    },
+    {
+      "gtin": "5024874015064",
+      "guideGrossMinor": 127
+    },
+    {
+      "gtin": "5024874015071",
+      "guideGrossMinor": 136
+    },
+    {
+      "gtin": "5024874015088",
+      "guideGrossMinor": 173
+    },
+    {
+      "gtin": "5024874015095",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874015101",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874015187",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874015347",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874015354",
+      "guideGrossMinor": 127
+    },
+    {
+      "gtin": "5024874015361",
+      "guideGrossMinor": 127
+    },
+    {
+      "gtin": "5024874015422",
+      "guideGrossMinor": 191
+    },
+    {
+      "gtin": "5024874015439",
+      "guideGrossMinor": 319
+    },
+    {
+      "gtin": "5024874015507",
+      "guideGrossMinor": 270
+    },
+    {
+      "gtin": "5024874015514",
+      "guideGrossMinor": 215
+    },
+    {
+      "gtin": "5024874015583",
+      "guideGrossMinor": 164
+    },
+    {
+      "gtin": "5024874016122",
+      "guideGrossMinor": 337
+    },
+    {
+      "gtin": "5024874016177",
+      "guideGrossMinor": 337
+    },
+    {
+      "gtin": "5024874016207",
+      "guideGrossMinor": 337
+    },
+    {
+      "gtin": "5024874016351",
+      "guideGrossMinor": 192
+    },
+    {
+      "gtin": "5024874016535",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874016573",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874016658",
+      "guideGrossMinor": 163
+    },
+    {
+      "gtin": "5024874016733",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5024874016740",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5024874016771",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5024874016801",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5024874017020",
+      "guideGrossMinor": 496
+    },
+    {
+      "gtin": "5024874017037",
+      "guideGrossMinor": 496
+    },
+    {
+      "gtin": "5024874017051",
+      "guideGrossMinor": 480
+    },
+    {
+      "gtin": "5024874017150",
+      "guideGrossMinor": 196
+    },
+    {
+      "gtin": "5024874017167",
+      "guideGrossMinor": 274
+    },
+    {
+      "gtin": "5024874017242",
+      "guideGrossMinor": 486
+    },
+    {
+      "gtin": "5024874017259",
+      "guideGrossMinor": 384
+    },
+    {
+      "gtin": "5024874030555",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5024874030562",
+      "guideGrossMinor": 480
+    },
+    {
+      "gtin": "5024874030579",
+      "guideGrossMinor": 196
+    },
+    {
+      "gtin": "5024874030586",
+      "guideGrossMinor": 496
+    },
+    {
+      "gtin": "5024874030630",
+      "guideGrossMinor": 274
+    },
+    {
+      "gtin": "5024874032061",
+      "guideGrossMinor": 101
+    },
+    {
+      "gtin": "5024874032221",
+      "guideGrossMinor": 181
+    },
+    {
+      "gtin": "5060072600305",
+      "guideGrossMinor": 815
+    },
+    {
+      "gtin": "5060072600336",
+      "guideGrossMinor": 762
+    },
+    {
+      "gtin": "5060072602910",
+      "guideGrossMinor": 2228
+    },
+    {
+      "gtin": "5060072603054",
+      "guideGrossMinor": 814
+    },
+    {
+      "gtin": "5060072606437",
+      "guideGrossMinor": 1943
+    },
+    {
+      "gtin": "5060149820094",
+      "guideGrossMinor": 762
+    },
+    {
+      "gtin": "5060149820544",
+      "guideGrossMinor": 1224
+    },
+    {
+      "gtin": "5060216560151",
+      "guideGrossMinor": 685
+    },
+    {
+      "gtin": "5060216560168",
+      "guideGrossMinor": 710
+    },
+    {
+      "gtin": "5060216560458",
+      "guideGrossMinor": 685
+    },
+    {
+      "gtin": "5060216560489",
+      "guideGrossMinor": 1571
+    },
+    {
+      "gtin": "5060216560496",
+      "guideGrossMinor": 1571
+    },
+    {
+      "gtin": "5060216560502",
+      "guideGrossMinor": 1757
+    },
+    {
+      "gtin": "5060216560670",
+      "guideGrossMinor": 1414
+    },
+    {
+      "gtin": "5060216560724",
+      "guideGrossMinor": 910
+    },
+    {
+      "gtin": "5060216560748",
+      "guideGrossMinor": 762
+    },
+    {
+      "gtin": "5060216560779",
+      "guideGrossMinor": 1068
+    },
+    {
+      "gtin": "5060216560823",
+      "guideGrossMinor": 1729
+    },
+    {
+      "gtin": "5060216560984",
+      "guideGrossMinor": 1728
+    },
+    {
+      "gtin": "5060216561189",
+      "guideGrossMinor": 3144
+    },
+    {
+      "gtin": "5060216561295",
+      "guideGrossMinor": 536
+    },
+    {
+      "gtin": "5060216561318",
+      "guideGrossMinor": 990
+    },
+    {
+      "gtin": "5060216561660",
+      "guideGrossMinor": 1178
+    },
+    {
+      "gtin": "5060216561677",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216562452",
+      "guideGrossMinor": 2358
+    },
+    {
+      "gtin": "5060216562568",
+      "guideGrossMinor": 1571
+    },
+    {
+      "gtin": "5060216562582",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216562605",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216562629",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216562643",
+      "guideGrossMinor": 1145
+    },
+    {
+      "gtin": "5060216562742",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216562773",
+      "guideGrossMinor": 1014
+    },
+    {
+      "gtin": "5060216563374",
+      "guideGrossMinor": 2358
+    },
+    {
+      "gtin": "5060216563442",
+      "guideGrossMinor": 1014
+    },
+    {
+      "gtin": "5060216563886",
+      "guideGrossMinor": 1909
+    },
+    {
+      "gtin": "5060216563916",
+      "guideGrossMinor": 686
+    },
+    {
+      "gtin": "5060216563923",
+      "guideGrossMinor": 1757
+    },
+    {
+      "gtin": "5060216563930",
+      "guideGrossMinor": 1452
+    },
+    {
+      "gtin": "5060216563947",
+      "guideGrossMinor": 2292
+    },
+    {
+      "gtin": "5060216563985",
+      "guideGrossMinor": 785
+    },
+    {
+      "gtin": "5060216564005",
+      "guideGrossMinor": 1298
+    },
+    {
+      "gtin": "5060216564081",
+      "guideGrossMinor": 839
+    },
+    {
+      "gtin": "5060216564098",
+      "guideGrossMinor": 762
+    },
+    {
+      "gtin": "5060216564135",
+      "guideGrossMinor": 533
+    },
+    {
+      "gtin": "5060216564142",
+      "guideGrossMinor": 533
+    },
+    {
+      "gtin": "5060216564159",
+      "guideGrossMinor": 533
+    },
+    {
+      "gtin": "5060216564166",
+      "guideGrossMinor": 533
+    },
+    {
+      "gtin": "5060216564173",
+      "guideGrossMinor": 685
+    },
+    {
+      "gtin": "5060216564234",
+      "guideGrossMinor": 3592
+    },
+    {
+      "gtin": "5060216564241",
+      "guideGrossMinor": 2826
+    },
+    {
+      "gtin": "5060216564609",
+      "guideGrossMinor": 354
+    },
+    {
+      "gtin": "5060216564722",
+      "guideGrossMinor": 772
+    },
+    {
+      "gtin": "5060216564739",
+      "guideGrossMinor": 275
+    },
+    {
+      "gtin": "5060216564746",
+      "guideGrossMinor": 402
+    },
+    {
+      "gtin": "5060216564753",
+      "guideGrossMinor": 439
+    },
+    {
+      "gtin": "5060216564784",
+      "guideGrossMinor": 760
+    },
+    {
+      "gtin": "5060216564807",
+      "guideGrossMinor": 359
+    },
+    {
+      "gtin": "5060216564814",
+      "guideGrossMinor": 553
+    },
+    {
+      "gtin": "5060216564838",
+      "guideGrossMinor": 402
+    },
+    {
+      "gtin": "5060216564845",
+      "guideGrossMinor": 402
+    },
+    {
+      "gtin": "5060216564937",
+      "guideGrossMinor": 312
+    },
+    {
+      "gtin": "5060216564968",
+      "guideGrossMinor": 312
+    },
+    {
+      "gtin": "5060216564982",
+      "guideGrossMinor": 428
+    },
+    {
+      "gtin": "5060216565002",
+      "guideGrossMinor": 790
+    },
+    {
+      "gtin": "5060216565026",
+      "guideGrossMinor": 312
+    },
+    {
+      "gtin": "5060216565132",
+      "guideGrossMinor": 401
+    },
+    {
+      "gtin": "5060216565279",
+      "guideGrossMinor": 808
+    },
+    {
+      "gtin": "5060216565286",
+      "guideGrossMinor": 808
+    },
+    {
+      "gtin": "5060216565293",
+      "guideGrossMinor": 808
+    },
+    {
+      "gtin": "5060216565316",
+      "guideGrossMinor": 840
+    },
+    {
+      "gtin": "5060216565323",
+      "guideGrossMinor": 808
+    },
+    {
+      "gtin": "5060216565330",
+      "guideGrossMinor": 553
+    },
+    {
+      "gtin": "5060216565835",
+      "guideGrossMinor": 490
+    },
+    {
+      "gtin": "5060216565842",
+      "guideGrossMinor": 560
+    },
+    {
+      "gtin": "5060216565941",
+      "guideGrossMinor": 700
+    },
+    {
+      "gtin": "5060216565989",
+      "guideGrossMinor": 559
+    },
+    {
+      "gtin": "5065010569010",
+      "guideGrossMinor": 823
+    },
+    {
+      "gtin": "5065010569027",
+      "guideGrossMinor": 538
+    },
+    {
+      "gtin": "5065010569058",
+      "guideGrossMinor": 670
+    },
+    {
+      "gtin": "5065010569065",
+      "guideGrossMinor": 670
+    },
+    {
+      "gtin": "5065010569072",
+      "guideGrossMinor": 803
+    },
+    {
+      "gtin": "5065010569089",
+      "guideGrossMinor": 803
+    },
+    {
+      "gtin": "5065010569096",
+      "guideGrossMinor": 469
+    },
+    {
+      "gtin": "5065010569119",
+      "guideGrossMinor": 731
+    },
+    {
+      "gtin": "5065010569126",
+      "guideGrossMinor": 670
+    },
+    {
+      "gtin": "5065010569188",
+      "guideGrossMinor": 890
+    },
+    {
+      "gtin": "7350012553456",
+      "guideGrossMinor": 1750
+    },
+    {
+      "gtin": "7350012553463",
+      "guideGrossMinor": 1120
+    },
+    {
+      "gtin": "7350012553470",
+      "guideGrossMinor": 1819
+    },
+    {
+      "gtin": "7350012553487",
+      "guideGrossMinor": 2099
+    },
+    {
+      "gtin": "7350012555115",
+      "guideGrossMinor": 1049
+    },
+    {
+      "gtin": "8001090507747",
+      "guideGrossMinor": 319
+    },
+    {
+      "gtin": "8006540002247",
+      "guideGrossMinor": 1600
+    },
+    {
+      "gtin": "8006540157947",
+      "guideGrossMinor": 1722
+    },
+    {
+      "gtin": "8006540157978",
+      "guideGrossMinor": 1698
+    },
+    {
+      "gtin": "8006540158890",
+      "guideGrossMinor": 787
+    },
+    {
+      "gtin": "8006540158920",
+      "guideGrossMinor": 1294
+    },
+    {
+      "gtin": "8006540158951",
+      "guideGrossMinor": 1926
+    },
+    {
+      "gtin": "8006540687383",
+      "guideGrossMinor": 1458
+    },
+    {
+      "gtin": "8006540687413",
+      "guideGrossMinor": 1458
+    },
+    {
+      "gtin": "8006540687444",
+      "guideGrossMinor": 1458
+    },
+    {
+      "gtin": "8006540687475",
+      "guideGrossMinor": 1458
+    },
+    {
+      "gtin": "8700216181587",
+      "guideGrossMinor": 1320
+    },
+    {
+      "gtin": "8700216181655",
+      "guideGrossMinor": 995
+    },
+    {
+      "gtin": "8700216356619",
+      "guideGrossMinor": 1834
+    },
+    {
+      "gtin": "8700216356640",
+      "guideGrossMinor": 688
+    },
+    {
+      "gtin": "8700216433242",
+      "guideGrossMinor": 1502
+    },
+    {
+      "gtin": "8700216433280",
+      "guideGrossMinor": 749
+    },
+    {
+      "gtin": "8700216433297",
+      "guideGrossMinor": 1357
+    },
+    {
+      "gtin": "8700216433303",
+      "guideGrossMinor": 1502
+    },
+    {
+      "gtin": "8700216436311",
+      "guideGrossMinor": 1880
+    },
+    {
+      "gtin": "8700216436342",
+      "guideGrossMinor": 1860
+    },
+    {
+      "gtin": "8700216455107",
+      "guideGrossMinor": 554
+    },
+    {
+      "gtin": "8700216455152",
+      "guideGrossMinor": 497
+    },
+    {
+      "gtin": "8700216918664",
+      "guideGrossMinor": 1118
+    },
+    {
+      "gtin": "8700216918725",
+      "guideGrossMinor": 737
+    },
+    {
+      "gtin": "9323705001006",
+      "guideGrossMinor": 1986
+    },
+    {
+      "gtin": "9323705001037",
+      "guideGrossMinor": 1604
+    },
+    {
+      "gtin": "9325740000310",
+      "guideGrossMinor": 864
+    },
+    {
+      "gtin": "9325740000815",
+      "guideGrossMinor": 3301
+    },
+    {
+      "gtin": "9325740000846",
+      "guideGrossMinor": 3301
+    },
+    {
+      "gtin": "9325740001829",
+      "guideGrossMinor": 1021
+    },
+    {
+      "gtin": "9325740003205",
+      "guideGrossMinor": 2750
+    },
+    {
+      "gtin": "9325740003700",
+      "guideGrossMinor": 1021
+    },
+    {
+      "gtin": "9325740021322",
+      "guideGrossMinor": 2437
+    },
+    {
+      "gtin": "9325740021377",
+      "guideGrossMinor": 1729
+    },
+    {
+      "gtin": "9325740022626",
+      "guideGrossMinor": 4088
+    },
+    {
+      "gtin": "9325740023272",
+      "guideGrossMinor": 2357
+    },
+    {
+      "gtin": "9325740023289",
+      "guideGrossMinor": 2357
+    },
+    {
+      "gtin": "9325740024828",
+      "guideGrossMinor": 1729
+    },
+    {
+      "gtin": "9325740026273",
+      "guideGrossMinor": 1494
+    },
+    {
+      "gtin": "9325740027294",
+      "guideGrossMinor": 1021
+    }
+  ]
+}
