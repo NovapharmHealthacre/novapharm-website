@@ -6,13 +6,24 @@
       "outputs": []
     },
     "test": {
-      "dependsOn": ["typecheck"],
+      "dependsOn": [
+        "typecheck"
+      ],
       "cache": true,
       "outputs": []
     },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**", "!.next/cache/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "dist/**",
+        "!.next/cache/**"
+      ]
+    },
+    "check": {
+      "cache": false
     }
   }
 }

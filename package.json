@@ -153,7 +153,7 @@
     "status:test:browser": "npm run test:browser --workspace=@novapharm/status",
     "status:test:lighthouse": "node scripts/run-status-lighthouse.mjs",
     "public:test:lighthouse": "node scripts/run-public-lighthouse.mjs",
-    "apps:check": "npm run founder:check && npm run technology:check && npm run corporate:check && npm run api:check && npm run portal:check && npm run status:check",
+    "apps:check": "turbo run check --filter=@novapharm/founder --filter=@novapharm/technology --filter=@novapharm/corporate --filter=@novapharm/api --filter=@novapharm/portal --filter=@novapharm/status --concurrency=2",
     "azure:package": "node scripts/package-unified-estate.mjs",
     "azure:test-artifacts": "node scripts/test-unified-release-artifacts.mjs",
     "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs",
