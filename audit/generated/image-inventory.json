@@ -14233,8 +14233,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 13,
+      "usageCount": 8,
+      "referenceCount": 15,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
@@ -14242,7 +14242,8 @@
         "creative-assets/module-media-asset-register.json",
         "products/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -38271,12 +38272,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html",
-        "src/content/products-editorial.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-185",

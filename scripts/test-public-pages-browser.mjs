@@ -574,6 +574,10 @@ for (const [engineName, browserType] of engines) {
               if(viewport.name==="desktop-1440")assert.equal(await page.locator(".nps-services a").evaluateAll(els=>new Set(els.map(e=>Math.round(e.getBoundingClientRect().top))).size),1,label+": desktop utilities wrap");
               assert.equal(await page.locator("[data-nps-category=All]").count(),1,label+": Shop all tab missing");
               assert.equal(await page.locator("[data-nps-filter]").count(),6,label+": filter controls missing");
+              if (viewport.name === "mobile-390") {
+                const targets = await page.locator(".nps-category-tabs button").evaluateAll(buttons => buttons.map(button => { const rect = button.getBoundingClientRect(); return { width: rect.width, height: rect.height }; }));
+                assert.ok(targets.every(target => target.width >= 44 && target.height >= 48), label + ": mobile category touch targets too small");
+              }
               await page.locator("[data-nps-category=All]").click();
               await page.waitForFunction(()=>document.querySelector("[data-nps-all-status]")?.textContent.includes("787 products"),{},{timeout:20000});
               assert.ok(await page.locator("[data-nps-all-grid] .nps-catalogue-item").count()>0,label+": unified catalogue empty");
