@@ -1,0 +1,64 @@
+{
+  "schema": "novapharm.connective.product-label-evidence.v1",
+  "reviewedOn": "2026-11-27",
+  "physicalCurrentUKPackInspected": false,
+  "status": "MANUFACTURER_REVIEWED_WAITING_PUBLICATION_AND_PAYMENT_ADMISSION",
+  "products": [
+    {
+      "gtin": "5021265223534",
+      "name": "Wellman Conception",
+      "pack": "30 Tablets",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/wellman-conception-tablets",
+      "independentGtinPackSourceUrl": "https://www.superdrug.com/health/vitamins-supplements/vitamins-for-men/vitabiotics-wellman-conception-30-tablets/p/285377",
+      "image": "/assets/media/products/connective/5021265223534/front-800.webp",
+      "retailGrossMinorCandidate": 860,
+      "vatBasisPointsCandidate": 2000,
+      "ingredientsDirectionsWarningsReviewed": true,
+      "sourceImageOwnerAuthorized": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265221806",
+      "name": "Jointace Omega-3",
+      "pack": "30 Capsules",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/jointace-omega-3-capsules",
+      "independentGtinPackSourceUrl": "https://openprescribing.net/dmd/ampp/17078711000001105/",
+      "image": "/assets/media/products/connective/5021265221806/front-800.webp",
+      "retailGrossMinorCandidate": 824,
+      "vatBasisPointsCandidate": 2000,
+      "ingredientsDirectionsWarningsReviewed": true,
+      "sourceImageOwnerAuthorized": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265222506",
+      "name": "Jointace Fizz",
+      "pack": "20 Effervescent Tablets",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/jointace-fizz-effervescent-tablets",
+      "independentGtinPackSourceUrl": "https://openprescribing.net/dmd/ampp/17078511000001100/",
+      "image": "/assets/media/products/connective/5021265222506/front-800.webp",
+      "retailGrossMinorCandidate": 673,
+      "vatBasisPointsCandidate": 2000,
+      "ingredientsDirectionsWarningsReviewed": true,
+      "sourceImageOwnerAuthorized": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265243389",
+      "name": "Wellwoman Sport",
+      "pack": "30 Tablets",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/wellwoman-sport-tablets",
+      "independentGtinPackSourceUrl": "https://www.chemist.net/vitabiotics-wellwoman-sport-tablets-30s",
+      "image": "/assets/media/products/connective/5021265243389/front-800.webp",
+      "retailGrossMinorCandidate": 688,
+      "vatBasisPointsCandidate": 2000,
+      "ingredientsDirectionsWarningsReviewed": true,
+      "sourceImageOwnerAuthorized": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    }
+  ]
+}
