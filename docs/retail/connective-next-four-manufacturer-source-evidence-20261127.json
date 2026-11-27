@@ -1,0 +1,61 @@
+{
+  "schema": "novapharm-connective-four-uk-manufacturer-facts-v1",
+  "reviewedOn": "2026-11-27",
+  "sourceType": "official UK manufacturer product page",
+  "status": "STAGED_NOT_YET_PUBLIC_OR_CHARGEABLE",
+  "physicalPackInspected": false,
+  "products": [
+    {
+      "gtin": "5021265220403",
+      "name": "Osteocare Chewable",
+      "supplierProductUrl": "https://www.vitabiotics.com/products/osteocare-chewable-tablets",
+      "manufacturerSource": "https://www.vitabiotics.com/products/osteocare-chewable-tablets",
+      "originalImageSha256": "75ed77c4f29501088ef9be19fd657ca8c080dfc903536e416d78bd2e1cbb7d94",
+      "image": "/assets/media/products/connective/5021265220403/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalUKPackInspected": false,
+      "paymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27"
+    },
+    {
+      "gtin": "5021265221424",
+      "name": "Immunace Original",
+      "supplierProductUrl": "https://www.vitabiotics.com/products/immunace-original-tablets",
+      "manufacturerSource": "https://www.vitabiotics.com/products/immunace-original-tablets",
+      "originalImageSha256": "9d20deb8009c4e78d3c1583f1290e7aec2efc73beb9b62d4d82095751f0078a2",
+      "image": "/assets/media/products/connective/5021265221424/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalUKPackInspected": false,
+      "paymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27"
+    },
+    {
+      "gtin": "5021265223510",
+      "name": "Wellman 50+",
+      "supplierProductUrl": "https://www.vitabiotics.com/products/wellman-50-tablets",
+      "manufacturerSource": "https://www.vitabiotics.com/products/wellman-50-tablets",
+      "originalImageSha256": "0934bc96b3f4bdb87446e46cb53efee1999f74472ff5f1eaf5432aa7889ab643",
+      "image": "/assets/media/products/connective/5021265223510/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalUKPackInspected": false,
+      "paymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27"
+    },
+    {
+      "gtin": "4103040036308",
+      "name": "Sebamed Clear Face Foam 150ml",
+      "supplierProductUrl": "https://www.connectivepharma.com/en/product/7566/sebamed_clear_face_foam_150ml",
+      "manufacturerSource": "https://www.sebamed.co.uk/products/clear-face-antibacterial-cleansing-foam-150ml",
+      "originalImageSha256": "90066516a748a666732224f5a9eac0f769f53c523f7ab4ab34edcd403a683ea5",
+      "image": "/assets/media/products/connective/4103040036308/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalUKPackInspected": false,
+      "paymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27"
+    }
+  ]
+}
