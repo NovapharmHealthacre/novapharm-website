@@ -7,21 +7,21 @@
       "name": "Nutraxin",
       "id": "nutraxin",
       "displayUrl": "/assets/media/brands/nutraxin.png",
-      "sourcePage": "https://brandfetch.com/nutraxin.com.tr",
+      "sourcePage": "https://nutraxin.com.tr/",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://cdn.brandfetch.io/idrOhCxcUv/w/300/h/73/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781868009887"
+      "review": "Exact manufacturer header logo visually checked, original PNG.",
+      "remoteSourceUrl": "https://nutraxin.com.tr/nutraxin/images/logo.png"
     },
     {
       "name": "BioGaia",
       "id": "biogaia",
       "displayUrl": "/assets/media/brands/biogaia.png",
-      "sourcePage": "https://www.biogaiagroup.com/newsroom/image-bank",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:BioGaia%C2%AE_logo_PMS_296.png",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
-      "rights": "trademark of respective owner",
-      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://www.biogaiagroup.com/wp-content/uploads/2024/06/BioGaia%C2%AE-logo-black-new-1.png"
+      "rights": "Public-domain text-logo assessment on Commons; trademark rights remain; no endorsement implied.",
+      "review": "Original BioGaia navy wordmark visually checked; Commons marks it PD-textlogo. Not sourced from the noncommercial-only press image bank.",
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d0/BioGaia%C2%AE_logo_PMS_296.png"
     },
     {
       "name": "Bioglan",
@@ -30,7 +30,7 @@
       "sourcePage": "https://www.pharmacarenz.co.nz/our-brands/bioglan/",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "review": "Original manufacturer-parent PharmaCare logo visually checked on its site.",
       "remoteSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png"
     },
     {
@@ -49,19 +49,21 @@
       "displayUrl": "/assets/media/brands/salus.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Salus_Logo.svg",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
-      "rights": "trademark of respective owner",
+      "rights": "CC BY 4.0 as listed by Wikimedia Commons; SALUS Haus Dr. med. Otto Greither Nachf. GmbH & Co. KG; PNG thumbnail of SVG; no colour edits.",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png"
+      "remoteSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
     },
     {
       "name": "Seven Seas",
       "id": "seven-seas",
       "displayUrl": "/assets/media/brands/seven-seas.png",
-      "sourcePage": "https://seven-seas.co.uk/products",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:SevenSeas.png",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
-      "rights": "trademark of respective owner",
-      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://seven-seas.co.uk/static/images/logo_main.png"
+      "rights": "CC BY 4.0 as listed on Commons, attributed to Procter & Gamble; uploader licence authority not independently verified.",
+      "review": "Original coloured Seven Seas mark, visually checked from public logo archive. Not a current brand-owner media-kit certification.",
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c7/SevenSeas.png",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
     },
     {
       "name": "Vicks",
@@ -80,7 +82,7 @@
       "sourcePage": "https://brandfetch.com/vitabiotics.com",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "review": "Original omega symbol and wordmark visually checked on Brandfetch; aggregator source, not manufacturer authorization.",
       "remoteSourceUrl": "https://cdn.brandfetch.io/idYI6rEthj/w/318/h/116/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1789998943998"
     }
   ]

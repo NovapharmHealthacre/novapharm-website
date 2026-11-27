@@ -552,10 +552,12 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 .np-store .nps-brand-grid .nps-brand-mark>img{display:block;width:auto;max-width:min(100%,195px);max-height:52px;height:auto;object-fit:contain;object-position:center}
 .np-store .nps-brand-grid .nps-brand-mark--vicks>img{max-height:65px}
 .np-store .nps-brand-grid .nps-brand-mark--salus>img{max-height:54px}
-.np-store .nps-brand-grid .nps-brand-mark--seven-seas>img{max-height:61px;filter:brightness(0)}
+.np-store .nps-brand-grid .nps-brand-mark--seven-seas>img{max-height:61px}
 .np-store .nps-brand-grid .nps-brand-mark--bioglan>img{max-height:54px}
 .np-store .nps-brand-grid .nps-brand-name{display:block;color:#555459;font-size:12px;font-weight:450;line-height:1.4;letter-spacing:.015em;text-transform:none}
 .np-store .nps-brand-grid .nps-brand-mark:is(:hover,:focus-visible){opacity:.73;text-decoration:none}
 .np-store .nps-brand-grid .nps-brand-mark:focus-visible{outline:2px solid #9D1B32;outline-offset:4px;border-radius:3px}
 @media(max-width:640px){.np-store .nps-brand-grid[data-nps-brand-logo-directory]{gap:12px 14px;padding-block:12px}.np-store .nps-brand-grid .nps-brand-mark{min-height:102px;padding:10px 4px}.np-store .nps-brand-grid .nps-brand-mark>img{max-width:calc(100% - 8px);max-height:44px}.np-store .nps-brand-grid .nps-brand-mark--vicks>img{max-height:54px}}
 @media(prefers-reduced-motion:reduce){.np-store .nps-brand-grid .nps-brand-mark{transition:none}}
+
+.np-store .nps-logo-attribution{font-size:11px;line-height:1.5;color:#555459;margin:16px 0 0;text-align:center}.np-store .nps-logo-attribution a{color:inherit;text-decoration:underline;text-underline-offset:2px}

@@ -5,6 +5,7 @@ on:
     paths:
       - docs/retail/brand-logo-source-register-20261127.json
       - .github/workflows/vendor-retail-brand-logos.yml
+      - scripts/vendor-retail-brand-logos.py
   workflow_dispatch:
 
 permissions:
@@ -24,6 +25,16 @@ jobs:
           persist-credentials: true
       - name: Copy original sources only
         run: python3 scripts/vendor-retail-brand-logos.py
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Validate decoded originals and refresh image inventory
+        run: |
+          npm ci --ignore-scripts
+          node --input-type=module -e 'import sharp from "sharp";import fs from "node:fs";for(const file of fs.readdirSync("assets/media/brands").filter(x=>x.endsWith(".png"))){await sharp("assets/media/brands/"+file).raw().toBuffer()}'
+          npm run images:inventory
       - name: Commit eight locally hosted marks into this PR branch
         env:
           SOURCE_BRANCH: ${{ github.event.pull_request.head.ref }}
@@ -33,7 +44,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/media/brands/
+          git add assets/media/brands/ docs/retail/brand-logo-source-register-20261127.json audit/generated/image-inventory.json
           git diff --cached --quiet && exit 0
           git commit -m "Vendor verified eight original retail brand marks"
           git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
