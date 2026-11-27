@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'src/core/wms-commerce-product-master.mjs'
+      - 'src/core/wms-commerce-draft-contract.mjs'
+      - 'src/core/wms-commerce-editor.mjs'
+      - 'scripts/test-wms-commerce-drafts.mjs'
+      - 'apps/portal/components/wms-commerce-editor.tsx'
       - 'scripts/test-wms-commerce-product-master.mjs'
       - 'src/content/approved-consumer-catalogue.json'
       - 'src/content/connective-consumer-research.json'
@@ -20,3 +24,4 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/test-wms-commerce-product-master.mjs
+      - run: node scripts/test-wms-commerce-drafts.mjs

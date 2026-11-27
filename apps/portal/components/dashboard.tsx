@@ -15,6 +15,7 @@ import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
+import { WmsCommerceEditor } from "./wms-commerce-editor";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
@@ -362,6 +363,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
         {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {module.area === "customer" && !isEditorialCustomerDashboard ? <CustomerRelatedTasks moduleCode={module.code} /> : null}
+        {user && snapshot && module.code === "employee.products" ? <WmsCommerceEditor /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">

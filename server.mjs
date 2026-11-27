@@ -52,6 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { listCommerceProducts, saveCommerceDraft } from "./src/core/wms-commerce-editor.mjs";
 import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
 import { probeOfficialPublicPharmaSource, OFFICIAL_LIVE_PROBE_PLANS } from "./src/core/intelligence-official-live-pharma-probes.mjs";
@@ -1143,6 +1144,21 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/enterprise/wms/commerce-products" && request.method === "GET") {
+      if (!await rateLimit(request, "wms-commerce-products-read", 120, 60 * 1000)) return json(response, 429, { error: "Too many catalogue requests." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, await listCommerceProducts(enterpriseContext(session), url.searchParams));
+      return;
+    }
+    if (pathname === "/api/enterprise/wms/commerce-products" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "wms-commerce-products-write", 40, 60 * 1000)) return json(response, 429, { error: "Too many draft updates." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, await saveCommerceDraft(enterpriseContext(session), await readBody(request)));
+      return;
+    }
     if (pathname === "/api/enterprise/wms/pilot-feedback-summary" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["admin"]);
       if (!session) return;

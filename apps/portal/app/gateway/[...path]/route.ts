@@ -23,6 +23,7 @@ const permittedPaths = [
   /^v1\/intelligence\/sources\/official\/public-live-probe$/,
   /^enterprise\/search$/,
   /^enterprise\/customer\/(?:support|returns|quality-complaints)$/,
+  /^enterprise\/wms\/commerce-products$/,
   /^enterprise\/wms\/pilot-feedback$/,
   /^enterprise\/wms\/pilot-feedback-summary$/,
   /^enterprise\/workflows\/[a-z0-9._-]+\/advance$/,
