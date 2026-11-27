@@ -180,6 +180,11 @@ jobs:
             # Preserve the existing ordinary customer-production gate verbatim.
             echo "hold=false" >> "$GITHUB_OUTPUT"
           elif [ "$RELEASE_EVENT" = "push" ] && \
+               node scripts/verify-nutraxin-reprice-release.mjs; then
+            # Owner-approved existing retail price revision only; no wider customer access.
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+            echo "Exact nineteen-product Nutraxin pricing publication approved."
+          elif [ "$RELEASE_EVENT" = "push" ] && \
                jq -e --slurpfile catalogue src/content/approved-consumer-catalogue.json \
                  '.schema == "novapharm.retail-owner-release.v1" and .approval == "granted" and
                   .scope == "fifty-two-reviewed-supplier-backed-consumer-offers" and

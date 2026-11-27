@@ -42,3 +42,14 @@ test("both retired production jobs must remain disabled while PR validation rema
     assert.throws(() => assertLegacyPublisherDisabled(lines.join("\n")), /Legacy publishing job must be disabled/);
   }
 });
+
+test("exact Nutraxin repricing publication authorizes only the reviewed pricing-only scope", async () => {
+  const { verifyNutraxinReprice, APPROVAL, RELEASE_PARENT, APPROVED_PATHS } = await import("./verify-nutraxin-reprice-release.mjs");
+  const { gitBlobSha, REVIEWED_CONTACT_BLOBS } = await import("./verify-public-branding-only-release.mjs");
+  const approval = JSON.parse(readFileSync(join(REPO_ROOT, APPROVAL), "utf8"));
+  const facts = {approval, constraints: JSON.parse(readFileSync(join(REPO_ROOT,"config/intelligence/owner-production-constraints.json"),"utf8")), catalogue: JSON.parse(readFileSync(join(REPO_ROOT,"assets/data/nutraxin-retail-catalogue.json"),"utf8")), feed: readFileSync(join(REPO_ROOT,"shopping/nutraxin-uk.tsv"),"utf8"), sourceBlobs: Object.fromEntries(Object.keys(approval.sourceBlobs).map(path=>[path,gitBlobSha(readFileSync(join(REPO_ROOT,path)))])),contactBlobs:Object.fromEntries(Object.keys(REVIEWED_CONTACT_BLOBS).map(path=>[path,gitBlobSha(readFileSync(join(REPO_ROOT,path)))])), parent:RELEASE_PARENT, changedPaths:APPROVED_PATHS,eventName:"push"};
+  assert.equal(verifyNutraxinReprice(facts),true);
+  for (const changes of [{eventName:"workflow_dispatch"},{parent:"0".repeat(40)},{changedPaths:[...APPROVED_PATHS,"apps/portal/index.ts"]},{approval:{...approval,allowMedicinesCheckout:true}},{constraints:{...facts.constraints,productionPermissions:{...facts.constraints.productionPermissions,sendExternalEmail:true}}},{catalogue:{...facts.catalogue,provisional_uk_delivery_charge_pence:0}},{sourceBlobs:{...facts.sourceBlobs,"assets/js/nutraxin-retail-store.js":"0".repeat(40)}}]) {
+    assert.throws(()=>verifyNutraxinReprice({...facts,...changes}));
+  }
+});
