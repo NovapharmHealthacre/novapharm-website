@@ -1,9 +1,12 @@
 // Server-only IAM invocation. Fixed AWS service, region and function; no user-supplied URL.
 import {createHash,createHmac} from 'node:crypto';
-const region='eu-north-1',host='lambda.'+region+'.amazonaws.com',path='/2015-03-31/functions/novapharm-private-wms-price-publisher/invocations';
+const region='eu-north-1',host='lambda.'+region+'.amazonaws.com';
+const paths=Object.freeze({'aws-private':'/2015-03-31/functions/novapharm-private-wms-price-publisher/invocations','aws-isolated-staging':'/2015-03-31/functions/novapharm-staging-wms-price-publisher/invocations'});
+function publisherPath(scope){if(!Object.hasOwn(paths,scope))throw Error('Invalid private publisher scope');return paths[scope];}
 const hash=v=>createHash('sha256').update(v).digest('hex');
 const hmac=(key,v)=>createHmac('sha256',key).update(v).digest();
-export function signedPublisherRequest(payload,credentials,instant=new Date()){
+export function signedPublisherRequest(payload,credentials,instant=new Date(),scopeName='aws-private'){
+ const path=publisherPath(scopeName);
  const {AccessKeyId,SecretAccessKey,Token}=credentials;
  if(![AccessKeyId,SecretAccessKey,Token].every(v=>typeof v==='string'&&v.length>0&&!/[\r\n]/.test(v)))throw Error('Invalid workload credentials');
  const body=JSON.stringify(payload),stamp=instant.toISOString().replace(/[:-]|\.\d{3}/g,''),day=stamp.slice(0,8);
@@ -23,7 +26,9 @@ export async function invokePricePublisher(payload,{env=process.env,fetcher=fetc
  if(!response.ok)throw Error('Workload credentials unavailable');
  const credentials=await response.json();
  if(!Number.isFinite(Date.parse(credentials.Expiration))||Date.parse(credentials.Expiration)<=Date.now()+30000)throw Error('Workload credentials expired');
- const req=signedPublisherRequest(payload,credentials);
+ const scopeName=env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE;
+ if(scopeName==='aws-isolated-staging'&&env.WMS_COMMERCE_DATA_MODE!=='synthetic'||scopeName==='aws-private'&&env.WMS_COMMERCE_DATA_MODE==='synthetic')throw Error('Publisher scope and data mode do not match');
+ const req=signedPublisherRequest(payload,credentials,new Date(),scopeName??'disabled');
  const reply=await fetcher(req.url,req.init);
  if(!reply.ok||reply.headers.get('x-amz-function-error'))throw Error('Private price publisher unavailable');
  return reply.json();
