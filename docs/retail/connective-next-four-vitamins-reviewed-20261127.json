@@ -1,0 +1,68 @@
+{
+  "schema": "novapharm.connective.official-label-review.v1",
+  "reviewedAt": "2026-11-27",
+  "reviewStatus": "SOURCE_REVIEWED_AWAITING_PUBLICATION_AND_RETAIL_OFFER_ADMISSION",
+  "physicalCurrentUKPacksInspected": false,
+  "products": [
+    {
+      "gtin": "5021265221202",
+      "name": "Menopace Plus",
+      "pack": "56 Tablets",
+      "category": "Women's health supplements",
+      "manufacturerProductUrl": "https://www.vitabiotics.com/products/menopace-plus-tablets",
+      "independentGtinSourceUrl": "https://navera.co.uk/products/vitabiotics-menopace-plus-56-capsules",
+      "image": "/assets/media/products/connective/5021265221202/front-800.webp",
+      "vatBasisPointsCandidate": 2000,
+      "retailGrossMinorCandidate": 1206,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerPhotoUseAuthorised": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265221226",
+      "name": "Menopace Calcium",
+      "pack": "60 Tablets",
+      "category": "Women's health supplements",
+      "manufacturerProductUrl": "https://www.vitabiotics.com/products/menopace-calcium-tablets",
+      "independentGtinSourceUrl": "https://www.chemist.net/vitabiotics-menopace-calcium-60s-pd-12201",
+      "image": "/assets/media/products/connective/5021265221226/front-800.webp",
+      "vatBasisPointsCandidate": 2000,
+      "retailGrossMinorCandidate": 932,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerPhotoUseAuthorised": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265224081",
+      "name": "Visionace Plus",
+      "pack": "56 Tablets/Capsules",
+      "category": "Eye health supplements",
+      "manufacturerProductUrl": "https://www.vitabiotics.com/products/visionace-plus-tablets-and-capsules",
+      "independentGtinSourceUrl": "https://www.chemist.net/vitabiotics-visionace-plus-omega-3-56s-pd-12474",
+      "image": "/assets/media/products/connective/5021265224081/front-800.webp",
+      "vatBasisPointsCandidate": 2000,
+      "retailGrossMinorCandidate": 1141,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerPhotoUseAuthorised": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265227396",
+      "name": "Osteocare Plus",
+      "pack": "84 Tablets / Capsules",
+      "category": "Bone Health",
+      "manufacturerProductUrl": "https://www.vitabiotics.com/products/osteocare-plus-tablets-and-capsules",
+      "independentGtinSourceUrl": "https://sianwholesale.com/vitabiotics-osteocare-plus-84s.html",
+      "image": "/assets/media/products/connective/5021265227396/front-800.webp",
+      "vatBasisPointsCandidate": 2000,
+      "retailGrossMinorCandidate": 1084,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerPhotoUseAuthorised": true,
+      "physicalCurrentUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    }
+  ]
+}

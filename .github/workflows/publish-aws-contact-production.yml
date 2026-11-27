@@ -182,23 +182,23 @@ jobs:
           elif [ "$RELEASE_EVENT" = "push" ] && \
                jq -e --slurpfile catalogue src/content/approved-consumer-catalogue.json \
                  '.schema == "novapharm.retail-owner-release.v1" and .approval == "granted" and
-                  .scope == "forty-four-reviewed-supplier-backed-consumer-offers" and
+                  .scope == "forty-eight-reviewed-supplier-backed-consumer-offers" and
                   .checkoutApiOrigin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com" and
                   .allowExistingRetailPaymentCollection == true and
                   .allowPortalCustomerAccess == false and .allowMedicinesCheckout == false and
                   .allowExternalEmail == false and .allowNewInfrastructure == false and
                   ((.approvedGtins | sort) == ($catalogue[0] | map(select((.productClass == "food_supplement" or .productClass == "consumer_non_medicinal" or .productClass == "cosmetic") and .publicListingApproved == true and .imageRightsConfirmed == true and .identityConfirmed == true) | .ean) | sort)) and
-                  (.approvedGtins | length) == 44' config/retail/approved-connective-checkout-release-20261126.json >/dev/null 2>&1 && \
+                  (.approvedGtins | length) == 48' config/retail/approved-connective-checkout-release-20261126.json >/dev/null 2>&1 && \
                jq -e '.productionSignoff == "not_granted" and
                  (.productionPermissions | to_entries | all(.value == false))' \
                   config/intelligence/owner-production-constraints.json >/dev/null 2>&1 && \
                git diff --name-only HEAD^ HEAD | grep -Fxq 'config/retail/approved-connective-checkout-release-20261126.json' && \
                ! git diff --name-only HEAD^ HEAD | grep -Ev \
-                 '^(config/retail/approved-connective-checkout-release-20261126\.json|\.github/workflows/publish-aws-contact-production\.yml|src/content/approved-consumer-catalogue\.json|docs/retail/connective-next-three-consumer-source-evidence-20261127\.json|docs/retail/connective-next-eleven-salus-source-evidence-20261127\.json|docs/retail/connective-next-four-official-source-evidence-20261127\.json|docs/retail/connective-next-four-ultra-source-evidence-20261127\.json|docs/retail/connective-next-four-manufacturer-source-evidence-20261127\.json|docs/retail/connective-next-two-verified-source-evidence-20261127\.json|audit/generated/image-inventory\.json)$'; then
+                 '^(config/retail/approved-connective-checkout-release-20261126\.json|\.github/workflows/publish-aws-contact-production\.yml|src/content/approved-consumer-catalogue\.json|docs/retail/connective-next-three-consumer-source-evidence-20261127\.json|docs/retail/connective-next-eleven-salus-source-evidence-20261127\.json|docs/retail/connective-next-four-official-source-evidence-20261127\.json|docs/retail/connective-next-four-ultra-source-evidence-20261127\.json|docs/retail/connective-next-four-manufacturer-source-evidence-20261127\.json|docs/retail/connective-next-two-verified-source-evidence-20261127\.json|docs/retail/connective-next-four-vitamins-reviewed-20261127\.json|audit/generated/image-inventory\.json)$'; then
             # Single approved retail site release; all unrelated customer, email,
             # portal, medicine and new-infrastructure permissions remain denied.
             echo "hold=false" >> "$GITHUB_OUTPUT"
-            echo "Exact forty-four-product retail storefront release approved independently of private Intelligence and portal production."
+            echo "Exact forty-eight-product retail storefront release approved independently of private Intelligence and portal production."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
             echo "Production on hold: no scoped storefront, branding-only or general customer release authorization is present."
