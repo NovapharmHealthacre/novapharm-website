@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'src/core/wms-commerce-product-master.mjs'
+      - 'apps/wms-price-publisher/**'
+      - 'apps/nutraxin-products-checkout/index.py'
+      - 'infra/aws/wms-private-price-publisher.json'
+      - 'scripts/test-wms-price-publisher.py'
       - 'src/core/wms-commerce-draft-contract.mjs'
       - 'src/core/wms-commerce-editor.mjs'
       - 'scripts/test-wms-commerce-drafts.mjs'
@@ -25,3 +29,4 @@ jobs:
           node-version: '22'
       - run: node scripts/test-wms-commerce-product-master.mjs
       - run: node scripts/test-wms-commerce-drafts.mjs
+      - run: python3 -B scripts/test-wms-price-publisher.py
