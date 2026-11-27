@@ -12,10 +12,10 @@ import { gatewayJson, type PortalUser, professionalError, protectedMutation } fr
 import { AccountAccessHelp } from "./account-access-help";
 import { CustomerCommerceWorkspace, CustomerRelatedTasks } from "./customer-commerce-workspace";
 import { DistributionBrand } from "./distribution-brand";
-import { WmsCommerceEditor } from "./wms-commerce-editor";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
+import { WmsCommerceEditor } from "./wms-commerce-editor";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
