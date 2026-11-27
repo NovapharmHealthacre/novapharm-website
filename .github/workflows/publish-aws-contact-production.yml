@@ -469,10 +469,14 @@ jobs:
           test -s _site/assets/media/esco/previews/esco-cat-0373.svg
           node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('_site/assets/data/esco-uk-guide-prices.json','utf8'));if(x.entriesTotal!==373||x.checkoutEnabled||x.paymentCollectionEnabled||!x.requestQuoteOnly||Object.keys(x.guidePrices).length!==373||Object.keys(x.visualPreviews).length!==373)process.exit(1)"
 
-          # The Products hero is one uninterrupted, three-family photographic story.
-          grep -Fq 'Different products.' _site/products/index.html
-          grep -Fq 'np-products-stage-esco' _site/products/index.html
-          grep -Fq 'np-products-stage-pharma' _site/products/index.html
+          # Require the owner-approved luxury storefront and governed shopping journey.
+          grep -Fq 'Carefully selected.<br>For the everyday.' _site/products/index.html
+          grep -Fq 'nps-shelf-hero' _site/products/index.html
+          grep -Fq 'nps-packshot' _site/products/index.html
+          grep -Fq 'data-nps-quick' _site/products/index.html
+          grep -Fq 'data-nps-bag-items' _site/products/index.html
+          grep -Fq 'href="/products/health-and-wellbeing/"' _site/products/index.html
+          grep -Fq 'nutraxin-retail-store.js' _site/products/index.html
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
@@ -480,7 +484,8 @@ jobs:
           products_css_sha256="${products_css_sha256%% *}"
           grep -Fq "href=\"/assets/css/products-editorial.css?v=20261111-products-layout-v4&amp;sha256=${products_css_sha256}\"" _site/products/index.html
           test -s _site/assets/css/products-editorial.css
-          grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
+          grep -Fq '.np-store .nps-shelf img,.np-store .nps-packshot img' _site/assets/css/products-editorial.css
+          grep -Fq 'object-fit:contain' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
           test -s _site/assets/css/esco-catalogue.css
           test -s _site/assets/js/esco-catalogue.js
@@ -1106,7 +1111,7 @@ jobs:
             exit 1
           }
 
-      - name: Verify unified Products hero and source photography on live custom domain
+      - name: Verify approved luxury Products hero, shopping controls and exact stylesheet on live custom domain
         run: |
           set -euo pipefail
           for attempt in $(seq 1 18); do
@@ -1114,23 +1119,23 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 20 \
               -H 'Cache-Control: no-cache, no-store' "$url" \
               -o /tmp/novapharm-live-products.html \
-              && grep -Fq 'Different products.' /tmp/novapharm-live-products.html \
-              && grep -Fq 'np-products-stage-nutraxin' /tmp/novapharm-live-products.html \
-              && grep -Fq 'np-products-stage-esco' /tmp/novapharm-live-products.html \
-              && grep -Fq 'np-products-stage-pharma' /tmp/novapharm-live-products.html \
+              && grep -Fq 'Carefully selected.<br>For the everyday.' /tmp/novapharm-live-products.html \
+              && grep -Fq 'nps-shelf-hero' /tmp/novapharm-live-products.html \
+              && grep -Fq 'data-nps-quick' /tmp/novapharm-live-products.html \
+              && grep -Fq 'data-nps-bag-items' /tmp/novapharm-live-products.html \
               && grep -Fq 'href="/products/esco/"' /tmp/novapharm-live-products.html; then
               curl --fail --silent --show-error --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/products-editorial.css?products-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-products.css
-              if grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' /tmp/novapharm-live-products.css \
-                && grep -Fq 'mask-image:radial-gradient' /tmp/novapharm-live-products.css; then
-                echo 'Approved Nutraxin, ESCO and pharmaceutical hero design and edge blending verified on live custom domain.'
+              if grep -Fq '.np-store .nps-shelf img,.np-store .nps-packshot img' /tmp/novapharm-live-products.css \
+                && test "$(sha256sum /tmp/novapharm-live-products.css | cut -d' ' -f1)" = "$(sha256sum assets/css/products-editorial.css | cut -d' ' -f1)"; then
+                echo 'Approved luxury Products layout, shopping controls and exact stylesheet verified on live custom domain.'
                 exit 0
               fi
             fi
             sleep 5
           done
-          echo '::error::Unified Products hero or unframed supplier photography CSS is not live.'
+          echo '::error::Approved luxury Products layout or exact stylesheet is not live.'
           exit 1
 
       - name: Verify live Global Distribution, Market Access and Markets pages
