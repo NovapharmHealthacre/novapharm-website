@@ -69,6 +69,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 16,
-  "publicationFix": "Four official-source GTIN-corroborated food supplements; preserve conditional payment release"
+  "publicationAttempt": 17,
+  "publicationFix": "Rebuild exact 56-product public release from current main after monotonic ancestry check rejected stale 7c3d976 candidate; retain 56 GTINs and payment gate"
 }
