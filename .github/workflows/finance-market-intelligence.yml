@@ -1,0 +1,21 @@
+name: Finance market intelligence
+on:
+  pull_request:
+    paths:
+      - 'src/core/finance-market-intelligence.mjs'
+      - 'scripts/test-finance-market-intelligence.mjs'
+      - 'scripts/ingest-finance-treasury.mjs'
+      - '.github/workflows/finance-market-intelligence.yml'
+permissions:
+  contents: read
+jobs:
+  market-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-finance-market-intelligence.mjs
