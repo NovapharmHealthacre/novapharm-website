@@ -4,6 +4,7 @@ import { adminModules, customerModules, employeeModules, executiveModules, type 
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import type { InterfaceLocale } from "../../../src/core/interface-locale";
+import { canRenderFinanceWorkspace } from "../data/finance-workspaces";
 import { isNovaMlWorkspaceSlug } from "../data/nova-ml-modules";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
@@ -13,6 +14,7 @@ import { AccountAccessHelp } from "./account-access-help";
 import { CustomerCommerceWorkspace, CustomerRelatedTasks } from "./customer-commerce-workspace";
 import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
+import { FinanceWorkspaceDirectory } from "./finance-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
 
@@ -374,6 +376,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
             <a href="/portal/orders/">My Orders</a>
           </div>
         </section> : null}
+        {user && snapshot && !loading && canRenderFinanceWorkspace(module.code, user.accessScopes, snapshot.module.code === module.code) ? <FinanceWorkspaceDirectory /> : null}
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
         {loading ? <div className="loading-state"><Activity aria-hidden="true" className="np-symbol" /><span>Loading authorised records…</span></div> : null}
