@@ -49,6 +49,40 @@ test('395-source directory generator creates one searchable source page per GTIN
   }
  }finally{f.dispose();}
 });
+test('owner-authorised guide prices do not activate checkout or offer schema',()=>{
+ const f=fixture();
+ try{
+  f.put('assets/data/connective-owner-price-guide.json',JSON.stringify({
+   schema:'novapharm.connective.owner-price-guide.v1',currency:'GBP',
+   status:'OWNER_AUTHORISED_GUIDE_NOT_LIVE_PAYMENT_OFFER',
+   entries:[{gtin:p2.ean,guideGrossMinor:1199}]}));
+  const out=f.run();assert.equal(out.status,0,out.stderr);
+  const html=f.read('products/health-and-wellbeing/'+p2.ean+'/index.html');
+  const collection=f.read('products/health-and-wellbeing/index.html');
+  assert(html.includes('Guide price £11.99'));
+  assert(collection.includes('Guide price £11.99'));
+  assert(!f.read('products/health-and-wellbeing/'+p1.ean+'/index.html').includes('Guide price'));
+  assert(!html.includes('"offers"'));
+  assert(!html.includes('Add to Bag'));
+  assert(html.includes('data-npr-order-notice'));
+  assert(html.includes('data-npr-retail-sku="NP-CP-'+p2.ean+'"'));
+ }finally{f.dispose();}
+});
+test('guide register rejects unknown GTINs, duplicate entries and medicine offers',()=>{
+ for(const entries of [
+  [{gtin:'4004148013011',guideGrossMinor:100}],
+  [{gtin:p2.ean,guideGrossMinor:120},{gtin:p2.ean,guideGrossMinor:121}],
+  [{gtin:p1.ean,guideGrossMinor:-1}]
+ ]){
+  const f=fixture();
+  try{
+   f.put('assets/data/connective-owner-price-guide.json',JSON.stringify({
+    schema:'novapharm.connective.owner-price-guide.v1',currency:'GBP',
+    status:'OWNER_AUTHORISED_GUIDE_NOT_LIVE_PAYMENT_OFFER',entries}));
+   const out=f.run();assert.notEqual(out.status,0);
+  }finally{f.dispose();}
+ }
+});
 test('approved catalogue pages and checkout remain authoritative during partial activation',()=>{
  const f=fixture();
  try{
