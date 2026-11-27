@@ -1,0 +1,140 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "One-off synthetic WMS ECS signed invocation acceptance; no service or production permissions",
+  "Parameters": {
+    "Image": {
+      "Type": "String",
+      "AllowedPattern": "[0-9]{12}\\.dkr\\.ecr\\.eu-north-1\\.amazonaws\\.com/novapharm/staging/portal@sha256:[a-f0-9]{64}"
+    },
+    "ExecutionRoleArn": {
+      "Type": "String",
+      "AllowedPattern": "arn:aws:iam::[0-9]{12}:role/novapharm-staging-portal-privat-[A-Za-z0-9-]+"
+    }
+  },
+  "Resources": {
+    "AcceptanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                },
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:*"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "InvokeSyntheticPublisherOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "lambda:InvokeFunction",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:novapharm-staging-wms-price-publisher"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "AcceptanceTask": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Family": "novapharm-staging-wms-signed-acceptance",
+        "Cpu": "256",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "RuntimePlatform": {
+          "CpuArchitecture": "X86_64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "ExecutionRoleArn": {
+          "Ref": "ExecutionRoleArn"
+        },
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "AcceptanceRole",
+            "Arn"
+          ]
+        },
+        "ContainerDefinitions": [
+          {
+            "Name": "acceptance",
+            "Image": {
+              "Ref": "Image"
+            },
+            "Essential": true,
+            "EntryPoint": [
+              "node",
+              "--input-type=module",
+              "-e"
+            ],
+            "Command": [
+              "import assert from 'node:assert/strict';\nimport {randomUUID} from 'node:crypto';\n// Server-only IAM invocation. Fixed AWS service, region and function; no user-supplied URL.\nimport {createHash,createHmac} from 'node:crypto';\nconst region='eu-north-1',host='lambda.'+region+'.amazonaws.com';\nconst paths=Object.freeze({'aws-private':'/2015-03-31/functions/novapharm-private-wms-price-publisher/invocations','aws-isolated-staging':'/2015-03-31/functions/novapharm-staging-wms-price-publisher/invocations'});\nfunction publisherPath(scope){if(!Object.hasOwn(paths,scope))throw Error('Invalid private publisher scope');return paths[scope];}\nconst hash=v=>createHash('sha256').update(v).digest('hex');\nconst hmac=(key,v)=>createHmac('sha256',key).update(v).digest();\nexport function signedPublisherRequest(payload,credentials,instant=new Date(),scopeName='aws-private'){\n const path=publisherPath(scopeName);\n const {AccessKeyId,SecretAccessKey,Token}=credentials;\n if(![AccessKeyId,SecretAccessKey,Token].every(v=>typeof v==='string'&&v.length>0&&!/[\\r\\n]/.test(v)))throw Error('Invalid workload credentials');\n const body=JSON.stringify(payload),stamp=instant.toISOString().replace(/[:-]|\\.\\d{3}/g,''),day=stamp.slice(0,8);\n const headers={'content-type':'application/json','host':host,'x-amz-date':stamp,'x-amz-security-token':Token};\n const names=Object.keys(headers).sort();\n const canonical=['POST',path,'',names.map(k=>k+':'+headers[k].trim()+'\\n').join(''),names.join(';'),hash(body)].join('\\n');\n const scope=day+'/'+region+'/lambda/aws4_request';\n const key=hmac(hmac(hmac(hmac('AWS4'+SecretAccessKey,day),region),'lambda'),'aws4_request');\n const signature=hmac(key,['AWS4-HMAC-SHA256',stamp,scope,hash(canonical)].join('\\n')).toString('hex');\n return {url:'https://'+host+path,init:{method:'POST',headers:{...headers,authorization:'AWS4-HMAC-SHA256 Credential='+AccessKeyId+'/'+scope+', SignedHeaders='+names.join(';')+', Signature='+signature},body,redirect:'error',signal:AbortSignal.timeout(20000)}};\n}\nexport async function invokePricePublisher(payload,{env=process.env,fetcher=fetch}={}){\n // Only ECS task-role credentials. No access keys from the browser or env, no arbitrary metadata URI.\n const relative=env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI;\n if(typeof relative!=='string'||!/^\\/v2\\/credentials\\/[a-f0-9-]{36}$/i.test(relative))throw Error('Dedicated ECS workload credentials unavailable');\n const response=await fetcher('http://169.254.170.2'+relative,{redirect:'error',signal:AbortSignal.timeout(3000)});\n if(!response.ok)throw Error('Workload credentials unavailable');\n const credentials=await response.json();\n if(!Number.isFinite(Date.parse(credentials.Expiration))||Date.parse(credentials.Expiration)<=Date.now()+30000)throw Error('Workload credentials expired');\n const scopeName=env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE;\n if(scopeName==='aws-isolated-staging'&&env.WMS_COMMERCE_DATA_MODE!=='synthetic'||scopeName==='aws-private'&&env.WMS_COMMERCE_DATA_MODE==='synthetic')throw Error('Publisher scope and data mode do not match');\n const req=signedPublisherRequest(payload,credentials,new Date(),scopeName??'disabled');\n const reply=await fetcher(req.url,req.init);\n if(!reply.ok||reply.headers.get('x-amz-function-error'))throw Error('Private price publisher unavailable');\n return reply.json();\n}\n\nconst sku='NP-CP-0000009341531';\nassert.equal(process.env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE,'aws-isolated-staging');\nassert.equal(process.env.WMS_COMMERCE_DATA_MODE,'synthetic');\nconst offer=await invokePricePublisher({action:'inspect',sku});\nassert.equal(offer.status,'eligible_existing_offer');\nassert.equal(offer.grossMinor,1200);\nconst cmd={action:'publish_price',sku,grossMinor:1800,expectedHash:offer.expectedHash,requestId:randomUUID(),actor:'ecs.staging.acceptance',draftRevision:2};\nconst published=await invokePricePublisher(cmd);\nassert.equal(published.status,'ledger_revision_confirmed');\nassert.equal(published.currentGrossMinor,1800);\nassert.deepEqual(await invokePricePublisher(cmd),published);\nconst after=await invokePricePublisher({action:'inspect',sku});\nassert.equal(after.grossMinor,1800);\nassert.equal(after.availableQuantity,offer.availableQuantity);\nassert.equal(after.vatBasisPoints,offer.vatBasisPoints);\nconsole.log(JSON.stringify({status:'ecs_signed_invocation_passed',sku,before:offer.grossMinor,after:after.grossMinor,vat:after.vatBasisPoints,quantity:after.availableQuantity,requestId:cmd.requestId,websiteVerified:false,stripeVerified:false}));\n"
+            ],
+            "Environment": [
+              {
+                "Name": "WMS_COMMERCE_PRICE_PUBLISH_SCOPE",
+                "Value": "aws-isolated-staging"
+              },
+              {
+                "Name": "WMS_COMMERCE_DATA_MODE",
+                "Value": "synthetic"
+              }
+            ],
+            "ReadonlyRootFilesystem": true,
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": "/aws/ecs/novapharm-portal-bootstrap",
+                "awslogs-region": "eu-north-1",
+                "awslogs-stream-prefix": "wms-acceptance"
+              }
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "DataMode",
+            "Value": "synthetic-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "TaskDefinitionArn": {
+      "Value": {
+        "Ref": "AcceptanceTask"
+      }
+    }
+  }
+}
