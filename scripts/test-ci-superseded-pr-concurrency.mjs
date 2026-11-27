@@ -8,6 +8,13 @@ const paths = [
   ".github/workflows/supply-chain.yml",
   ".github/workflows/intelligence-nova-egress-contract.yml",
   ".github/workflows/intelligence-subscription-boundary.yml",
+  ".github/workflows/intelligence-clip-research-contract.yml",
+  ".github/workflows/nova-ml-infrastructure-contract.yml",
+  ".github/workflows/esco-checkout-contract.yml",
+  ".github/workflows/apple-privacy-contract.yml",
+  ".github/workflows/customer-account-request.yml",
+  ".github/workflows/nutraxin-google-merchant.yml",
+  ".github/workflows/nutraxin-seo-pages-preflight.yml",
 ];
 
 test("PR-only cancellation preserves distinct manual and protected-main runs", () => {
