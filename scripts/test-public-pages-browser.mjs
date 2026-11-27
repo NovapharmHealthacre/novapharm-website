@@ -90,6 +90,15 @@ async function mockLocalReadiness(page, pathname) {
       });
     });
   }
+  if (pathname === "/products/" || pathname.startsWith("/products/health-and-wellbeing/")) {
+    // Local acceptance must not depend on production CORS or live offers.
+    // Empty offer list grants no new purchase authority; catalogue discovery
+    // remains covered using the staged public references.
+    await page.route("https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/retail/offers", async request => {
+      await request.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({schema:"novapharm-retail-offers-v1",currency:"GBP",products:[]})});
+    });
+  }
   const checkoutApi = pathname.startsWith("/products/nutraxin/")
     ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
     : pathname.startsWith("/products/esco/")
@@ -547,11 +556,28 @@ for (const [engineName, browserType] of engines) {
               for(const img of await page.locator(".nps-shelf img, .nps-packshot img, .nps-white-gallery img").all()){
                 await img.scrollIntoViewIfNeeded();
                 await img.evaluate(async el=>{await el.decode();});
-                assert.ok(await img.evaluate(el=>el.complete&&el.naturalWidth>0),label+": image failed to load");
+                assert.ok(await img.evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return el.complete&&el.naturalWidth>0&&r.width>=35&&r.height>=35&&s.visibility!=="hidden"&&Number(s.opacity)>0}),label+": image failed to render with visible dimensions");
               }
               const geometry=await page.evaluate(()=>[...document.querySelectorAll(".nps-hero-art,.nps-packshot,.nps-art")].every(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.left>=-1&&r.right<=document.documentElement.clientWidth+1;}));
               assert.ok(geometry,label+": product media exceeds viewport");
               assert.equal(await page.locator("[data-nps-bag-link]").count(),1,label+": shared Bag link missing");
+              assert.equal(await page.locator(".nps-brand-grid a").count(),8,label+": brand directory incomplete");
+              // Check composition geometry, not merely decoded pixels. A
+              // previous half-width selector passed the original smoke test.
+              const editorial = await page.locator(".nps-shelf-nutraxin picture>img").evaluateAll(imgs=>imgs.map(img=>({image:img.getBoundingClientRect().width,cell:img.parentElement.getBoundingClientRect().width})));
+              assert.ok(editorial.length===2&&editorial.every(x=>x.image>=x.cell*.95),label+": Nutraxin editorial image shrunk by legacy selector");
+              const pharma = await page.locator(".nps-pharma-photo>img").evaluate(img=>({image:img.getBoundingClientRect().width,panel:img.parentElement.getBoundingClientRect().width,fit:getComputedStyle(img).objectFit}));
+              assert.ok(pharma.image>=pharma.panel*.99&&pharma.fit==="cover",label+": pharmaceutical image does not fill panel");
+              assert.ok(await page.locator(".nps-brand-grid").evaluate(el=>parseFloat(getComputedStyle(el).borderTopWidth)===0),label+": unwanted brand table border");
+
+              assert.equal(await page.locator(".nps-services a").count(),5,label+": utility links incomplete");
+              if(viewport.name==="desktop-1440")assert.equal(await page.locator(".nps-services a").evaluateAll(els=>new Set(els.map(e=>Math.round(e.getBoundingClientRect().top))).size),1,label+": desktop utilities wrap");
+              assert.equal(await page.locator("[data-nps-category=All]").count(),1,label+": Shop all tab missing");
+              assert.equal(await page.locator("[data-nps-filter]").count(),6,label+": filter controls missing");
+              await page.locator("[data-nps-category=All]").click();
+              await page.waitForFunction(()=>document.querySelector("[data-nps-all-status]")?.textContent.includes("787 products"),{},{timeout:20000});
+              assert.ok(await page.locator("[data-nps-all-grid] .nps-catalogue-item").count()>0,label+": unified catalogue empty");
+              await page.locator('a[href="#nps-essentials"]').first().click();
             }
 
             if (route.name === "our-story") {
