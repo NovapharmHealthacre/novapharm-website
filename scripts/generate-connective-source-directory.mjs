@@ -176,7 +176,18 @@ if (!existsSync(path(sourceFile))) {
       manufacturerInfo.set(entry.ean,entry);
     }
   }
-  const groups = [...brands.values()].sort((a,b)=>a.name.localeCompare(b.name,'en-GB'));
+  // Commercial editorial priority only: order the Vicks source collection first.
+  // This changes neither regulated product eligibility nor AWS payment admission.
+  const groups = [...brands.values()].sort((a,b)=>{
+    const aVicks=a.name.toUpperCase()==='VICKS',bVicks=b.name.toUpperCase()==='VICKS';
+    return aVicks===bVicks?a.name.localeCompare(b.name,'en-GB'):aVicks?-1:1;
+  });
+  const vicksGroupIndex=groups.findIndex(g=>g.name.toUpperCase()==='VICKS');
+  const vicksSpotlight=vicksGroupIndex<0?'':
+    '<section class="npr-wrap npr-section npr-vicks-spotlight" data-npr-vicks-spotlight>'+ 
+    '<p class="npr-kicker">FEATURED BRAND / VICKS</p><h2>Explore Vicks.</h2>'+ 
+    '<p>'+groups[vicksGroupIndex].items.length+' Vicks products. Product details and guide prices are displayed where available; checkout remains subject to each product’s approval.</p>'+ 
+    '<a class="npr-card-action" href="#brand-'+vicksGroupIndex+'">View Vicks products <span aria-hidden="true">→</span></a></section>';
   const shell = read('products/index.html');
   const card = p => {
     const route=collectionRoute+p.ean+'/';
@@ -196,7 +207,7 @@ if (!existsSync(path(sourceFile))) {
     `<input id="npr-collection-search" type="search" autocomplete="off" data-npr-collection-query placeholder="Search brand or product">`+
     `<p role="status" aria-live="polite" data-npr-collection-status>Showing ${products.length} products</p></div>`+
     `<nav class="npr-categories" aria-label="Product brands">${groups.map((g,i)=>`<a href="#brand-${i}">${escapeHtml(g.name)}</a>`).join('')}</nav>`+
-    `</section>${groupHtml}<p class="npr-wrap npr-no-results" data-npr-collection-empty hidden>No matching products found.</p></main>`;
+    `</section>${vicksSpotlight}${groupHtml}<p class="npr-wrap npr-no-results" data-npr-collection-empty hidden>No matching products found.</p></main>`;
   if (approvedIds.size) {
     // Retain the approved collection's purchasing widgets, scripts and metadata.
     // Replace only our own supplemental section on repeat generation.
@@ -204,7 +215,7 @@ if (!existsSync(path(sourceFile))) {
     let html=read(target).replace(/<!-- npr-additional-reference-start -->[\s\S]*?<!-- npr-additional-reference-end -->/g,'');
     if (remaining.length) {
       assert(html.includes('</main>'), 'Approved collection main missing');
-      html=html.replace('</main>', '<!-- npr-additional-reference-start --><div data-npr-additional-reference>'+groupHtml+'</div><!-- npr-additional-reference-end --></main>');
+      html=html.replace('</main>', '<!-- npr-additional-reference-start --><div data-npr-additional-reference>'+vicksSpotlight+groupHtml+'</div><!-- npr-additional-reference-end --></main>');
     }
     write(target,html);
   } else {
