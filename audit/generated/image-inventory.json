@@ -14233,8 +14233,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 13,
+      "usageCount": 8,
+      "referenceCount": 15,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
@@ -14242,7 +14242,8 @@
         "creative-assets/module-media-asset-register.json",
         "products/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -15862,10 +15863,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-069",
@@ -15938,10 +15941,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -16014,10 +16019,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-071",
@@ -16088,10 +16095,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-069",
@@ -16125,10 +16134,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-070",
@@ -16162,10 +16173,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-070",
@@ -16199,10 +16212,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-071",
@@ -16236,10 +16251,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-069",
@@ -16273,10 +16290,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-073",
@@ -16310,10 +16329,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -16645,10 +16666,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-eleven-salus-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-071",
@@ -21056,10 +21079,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-three-consumer-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-096",
@@ -21397,10 +21422,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-three-consumer-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -27883,10 +27910,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-three-consumer-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-126",

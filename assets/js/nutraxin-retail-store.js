@@ -343,7 +343,7 @@ function runStore(data) {
     const addItem=p=>{bag=loadBag(data);if(put(p.sku,1)){if(quick.open)quick.close();showBag();}};
     if(typeof drawer.showModal==="function")bagLink.addEventListener("click",e=>{e.preventDefault();showBag();});
     for(const dialog of [drawer,quick])for(const btn of dialog.querySelectorAll("[data-nps-close]"))btn.onclick=()=>dialog.close();
-    for(const img of top.querySelectorAll(".nps-shelf img,.nps-packshot img"))alignCataloguePack(img);
+    for(const img of top.querySelectorAll(".nps-packshot img"))alignCataloguePack(img);
     const cards=[...top.querySelectorAll("[data-nps-slug]")];
     for(const card of cards){
       const p=slugMap.get(card.dataset.npsSlug);if(!p)continue;
@@ -363,10 +363,59 @@ function runStore(data) {
         };
       }
     }
-    const search=top.querySelector("[data-nps-search]"),query=search.querySelector("input"),status=top.querySelector("[data-nps-search-status]");
+    const search=top.querySelector("[data-nps-search]"),query=search.querySelector("input");
+    const all=top.querySelector("#nps-all-products"),grid=all.querySelector("[data-nps-all-grid]"),status=all.querySelector("[data-nps-all-status]"),more=all.querySelector("[data-nps-more]");
+    const fields=Object.fromEntries([...all.querySelectorAll("[data-nps-filter]")].map(el=>[el.dataset.npsFilter,el]));
+    let category="All",limit=12,records=[],catalogueLoaded=false,catalogueLoading=null;
+    const textKey=v=>String(v||"").trim().toLowerCase();
+    const format=p=>/spray/i.test(p.pack+" "+p.name)?"Spray":/sachet/i.test(p.pack)?"Sachets":/capsule/i.test(p.pack)?"Capsules":/tablet/i.test(p.pack)?"Tablets":/liquid|ml/i.test(p.pack)?"Liquid":/tea|bags/i.test(p.pack)?"Tea":p.group==="Equipment"?"Equipment":"Other";
+    const retailRow=p=>({id:p.sku,name:p.name,brand:p.brand||"Nutraxin",pack:p.pack,category:p.range||"Other",group:p.sku.startsWith("NUT-UK-")?"Nutraxin":"Health & wellbeing",image:p.image,url:productUrl(p),price:publicPrice(p,data),buy:merchantSaleReady(p,data),offer:p});
+    const validPath=url=>typeof url==="string"&&url.startsWith("/products/")&&!url.startsWith("//");
+    const validImage=url=>typeof url==="string"&&(/^\/assets\/media\//.test(url)||/^https:\/\/www\.connectivepharma\.com\/userfiles\/images\//.test(url));
+    const populate=(key,values)=>{const field=fields[key],prior=field.value;field.replaceChildren(make("option",null,key==="brand"?"All brands":key==="category"?"All categories":"All formats"));field.firstChild.value="";for(const val of [...new Set(values)].filter(Boolean).sort((a,b)=>a.localeCompare(b))){const option=make("option",null,val);option.value=val;field.append(option)}field.value=[...field.options].some(o=>o.value===prior)?prior:"";};
+    function renderAll(){
+      if(!catalogueLoaded)return;
+      const words=query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const selected=records.filter(p=>(category==="All"||p.group===category||textKey(p.category)===textKey(category))&&(!fields.brand.value||p.brand===fields.brand.value)&&(!fields.category.value||p.category===fields.category.value)&&(!fields.format.value||format(p)===fields.format.value)&&(!fields.availability.value||(fields.availability.value==="buy"?p.buy:!p.buy))&&(!fields.price.value||(p.price!==null&&(fields.price.value==="under"?p.price<2000:fields.price.value==="mid"?p.price>=2000&&p.price<=3500:p.price>3500)))&&words.every(w=>[p.name,p.brand,p.pack,p.category,p.group].join(" ").toLowerCase().includes(w)));
+      if(fields.sort.value==="low")selected.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
+      if(fields.sort.value==="high")selected.sort((a,b)=>(b.price??-1)-(a.price??-1));
+      if(fields.sort.value==="name")selected.sort((a,b)=>a.name.localeCompare(b.name));
+      status.textContent=selected.length+" products · Showing "+Math.min(limit,selected.length);
+      grid.replaceChildren();
+      for(const p of selected.slice(0,limit)){
+        const card=make("article","nps-catalogue-item"),visual=make("div","nps-catalogue-photo");
+        if(validImage(p.image)){const img=make("img");img.src=p.image;img.alt=p.name;img.loading="lazy";img.decoding="async";img.referrerPolicy="no-referrer";img.onerror=()=>visual.replaceChildren(make("span",null,p.brand+" · Image unavailable"));visual.append(img)}else visual.append(make("span",null,p.brand+" · Product reference"));
+        const link=anchor("",p.url);link.append(visual);card.append(link,make("p","nps-kicker",p.brand),make("h3",null,p.name),make("p",null,p.pack||p.category),make("p","nps-price",p.price===null?(p.group==="Equipment"?"View guide price":"View product details"):formatGBP(p.price)));
+        if(p.buy&&p.offer){const add=make("button","nps-outline","Add to Bag");add.type="button";add.onclick=()=>addItem(p.offer);card.append(add)}else card.append(anchor(p.group==="Equipment"?"Explore equipment":"View product",""+p.url,"nps-outline"));
+        const view=make("button","nps-quiet","Quick view");view.type="button";view.onclick=()=>{if(typeof quick.showModal!=="function"){window.location.assign(p.url);return}const copy=make("div");copy.append(make("p","nps-kicker",p.brand),make("h2",null,p.name),make("p",null,p.pack||p.category));if(p.price!==null)copy.append(make("p","nps-price",formatGBP(p.price)));if(p.buy&&p.offer){const add=make("button","nps-button","Add to Bag");add.type="button";add.onclick=()=>addItem(p.offer);copy.append(add)}copy.append(anchor("Full product information",p.url,"nps-link"));const box=make("div","nps-quick-grid");if(validImage(p.image)){const img=make("img");img.src=p.image;img.alt=p.name;box.append(img)}box.append(copy);content.replaceChildren(box);quick.showModal()};card.append(view);grid.append(card);
+      }
+      more.hidden=selected.length<=limit;
+    }
+    async function loadAll(){
+      if(catalogueLoading)return catalogueLoading;
+      catalogueLoading=(async()=>{
+        const fetchJson=async url=>{const r=await fetch(url,{credentials:"omit",cache:"no-store"});if(!r.ok)throw Error("Catalogue unavailable");return r.json()};
+        const result=await Promise.allSettled([fetchJson("/assets/data/commerce-marketplace.json"),fetchJson("/assets/data/products-discovery-references.json")]);
+        const retail=data.products.filter(p=>p.sku.startsWith("NUT-UK-")||p.retailOfferVerified===true).map(retailRow);
+        const map=new Map(retail.map(p=>[p.id,p]));
+        for(const p of result[0].status==="fulfilled"?result[0].value.products||[]:[]){if(p.brand!=="ESCO"||!validPath(p.href))continue;map.set(p.id,{id:p.id,name:p.title,brand:"ESCO Anand",pack:p.model||p.subcategory||p.category,category:p.category,group:"Equipment",image:p.image,url:p.href,price:null,buy:false})}
+        for(const p of result[1].status==="fulfilled"?result[1].value.products||[]:[]){if(!validPath(p.url)||map.has(p.id))continue;map.set(p.id,{...p,price:null,buy:false})}
+        records=[...map.values()];const labels=new Map();for(const p of records){const k=textKey(p.brand);if(!labels.has(k))labels.set(k,p.brand);p.brand=labels.get(k)}
+        populate("brand",records.map(p=>p.brand));populate("category",records.map(p=>p.category));populate("format",records.map(format));catalogueLoaded=true;renderAll();
+        if(result.some(r=>r.status==="rejected"))status.textContent+=" · Some catalogue collections could not load. Use the collection links above.";
+      })();return catalogueLoading;
+    }
+    const openAll=()=>{all.hidden=false;top.querySelector("#nps-essentials").hidden=true;void loadAll();renderAll()};
+    for(const link of top.querySelectorAll('a[href="#nps-essentials"]'))link.addEventListener("click",()=>{all.hidden=true;top.querySelector("#nps-essentials").hidden=false});
     search.hidden=false;
-    const filter=()=>{const words=query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);let matches=0;for(const card of cards){const p=slugMap.get(card.dataset.npsSlug);const hay=[p?.name,p?.range,p?.pack].join(" ").toLowerCase();card.hidden=!words.every(w=>hay.includes(w));if(!card.hidden)matches++;}status.textContent=words.length?matches+" featured products found. Search the extended collection for more results.":"";};
-    query.addEventListener("input",filter);search.querySelector("[data-nps-clear]").onclick=()=>{query.value="";filter();query.focus();};
+    query.addEventListener("input",()=>{limit=12;openAll()});
+    search.querySelector("[data-nps-clear]").onclick=()=>{query.value="";limit=12;openAll();query.focus()};
+    for(const tab of top.querySelectorAll("[data-nps-category]"))tab.onclick=()=>{category=tab.dataset.npsCategory;fields.category.value="";limit=12;for(const b of top.querySelectorAll("[data-nps-category]"))b.setAttribute("aria-pressed",String(b===tab));openAll()};
+    for(const field of Object.values(fields))field.onchange=()=>{limit=12;renderAll()};
+    all.querySelector("[data-nps-reset]").onclick=()=>{category="All";query.value="";limit=12;for(const field of Object.values(fields))field.value="";for(const b of top.querySelectorAll("[data-nps-category]"))b.setAttribute("aria-pressed",String(b.dataset.npsCategory==="All"));renderAll()};
+    more.onclick=()=>{limit+=12;renderAll()};
+    for(const link of top.querySelectorAll("[data-nps-shop-all]"))link.addEventListener("click",()=>openAll());
+    if(location.hash==="#nps-all-products")openAll();
     window.addEventListener("storage",e=>{if(e.key===BAG_KEY)refresh();});refresh();
     return;
   }
@@ -1076,7 +1125,7 @@ async function init() {
     let offers=null,saved=[];
     try { saved=JSON.parse(localStorage.getItem(BAG_KEY)||"[]"); }catch{}
     // Preserve the original Nutraxin-only journey: no calls to an unreleased endpoint.
-    const needsExtra=path.startsWith(MULTIBRAND_URL)||(Array.isArray(saved)&&saved.some(line=>CP_SKU.test(line?.sku||"")));
+    const needsExtra=pathIsProducts(path)||path.startsWith(MULTIBRAND_URL)||(Array.isArray(saved)&&saved.some(line=>CP_SKU.test(line?.sku||"")));
     try {
       if(needsExtra){
       const extra=await fetch(CHECKOUT_API_ORIGIN+"/retail/offers",{cache:"no-store",credentials:"omit",mode:"cors",signal:AbortSignal.timeout(9000)});

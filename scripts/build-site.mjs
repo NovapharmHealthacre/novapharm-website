@@ -80,6 +80,7 @@ await import("./apply-our-story-footer.mjs");
 await import("./generate-retail-expansion.mjs");
 // Browse-only source references; approved, purchasable product pages always win.
 await import("./generate-connective-source-directory.mjs");
+await import("./generate-products-discovery-references.mjs");
 const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 finalizePublicRtlArtifacts();
 
