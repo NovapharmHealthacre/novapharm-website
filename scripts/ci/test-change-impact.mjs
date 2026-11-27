@@ -66,6 +66,9 @@ test("all renamed paths are included, and no mandatory checks are skipped", asyn
   assert.equal(result.decision, "direct-impact-candidate");
   assert.equal(result.testsSkipped, 0);
   assert.equal(result.actualRequiredDomains.length, Object.keys(policy.domains).length);
+  assert.ok(result.workspaceImpact.declaredImpact.includes("apps/portal"));
+  assert.equal(result.workspaceImpact.testsSkipped, 0);
+  assert.equal(result.workspaceImpact.graphComplete, false);
 });
 test("API errors, unstable heads, unavailable count, unknown paths fail closed", async () => {
   const entries = [

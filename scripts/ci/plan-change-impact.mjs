@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { REPO_ROOT, POLICY_FILE } from "./verify-unified-ci-contract.mjs";
+import { readWorkspaceGraph, affectedWorkspaces } from "./workspace-dependency-graph.mjs";
 
 const prefix = (file, scope) => file === scope || file.startsWith(scope + "/");
 const shared = [".github", "config", "packages", "infra", "scripts", "package.json", "package-lock.json", "pnpm-lock.yaml", "server.mjs", "tsconfig.base.json", "assets/css", "assets/js"];
@@ -124,6 +125,7 @@ export async function planGitHubEvent(event, request = fetch) {
   }
   const result = planImpact(paths, policy);
   return { ...result, source, changedPaths: paths.length,
+    workspaceImpact: affectedWorkspaces(paths, readWorkspaceGraph()),
     fallbackReasons: unavailable
       ? [...new Set([...result.fallbackReasons, "diff-unavailable-or-head-changed"])].sort()
       : result.fallbackReasons };
@@ -143,6 +145,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     let paths;
     try { paths = changedPaths(REPO_ROOT, base, head); }
     catch { paths = []; }
-    console.log(JSON.stringify(planImpact(paths, policy), null, 2));
+    console.log(JSON.stringify({ ...planImpact(paths, policy), workspaceImpact: affectedWorkspaces(paths, readWorkspaceGraph()) }, null, 2));
   }
 }
