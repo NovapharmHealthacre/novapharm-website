@@ -110,6 +110,7 @@ const requiredPublicPaths = [
   "assets/css/pharmacy-partners.css",
   "assets/js/pharmacy-partners.js",
   "assets/data/commerce-marketplace.json",
+  "assets/data/products-discovery-references.json",
   "assets/js/commerce-marketplace.js",
   "assets/css/commerce-marketplace.css",
   "assets/js/commerce-order-track.js",
