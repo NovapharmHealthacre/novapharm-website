@@ -133,7 +133,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (process.argv[2] === "--github-event") {
     // No token is supplied, persisted, or printed. If public API access fails,
     // this report explicitly selects all domains and has no effect on CI.
-    const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
+    let event = {};
+    try { event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")); }
+    catch { /* Missing or malformed event: full-estate shadow fallback. */ }
     console.log(JSON.stringify(await planGitHubEvent(event), null, 2));
   } else {
     const [base, head] = process.argv.slice(2);
