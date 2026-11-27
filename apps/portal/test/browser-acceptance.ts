@@ -6,6 +6,7 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { type PortalArea, type PortalModule, portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
 import { type Browser, type BrowserContext, type BrowserType, chromium, type Page, webkit } from "playwright";
+import { runViewportBatches, viewportConcurrency } from "./viewport-batches";
 
 type StoredBrowserState = Awaited<ReturnType<BrowserContext["storageState"]>>;
 type AcceptanceViewport = Readonly<{ name: string; width: number; height: number }>;
@@ -914,10 +915,20 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
     await verifyAuthenticationBoundaries(browser, engine);
     for (const area of areas) states.set(area, await login(browser, area));
 
-    for (const viewport of interactionOnly ? [] : viewports) {
+    // Ordinary viewports use isolated browser contexts with at most two in flight.
+    // Keep keyboard-focus and Axe evidence viewports serial, and interactions
+    // strictly after all matrix work. Local runs retain the serial default.
+    const concurrency = viewportConcurrency(process.env);
+    console.log(`${engine}: viewport matrix concurrency ${concurrency}`);
+    await runViewportBatches(interactionOnly ? [] : viewports, concurrency,
+      (viewport) => viewport.name === "desktop-1440" || viewport.name === "mobile-390",
+      async (viewport) => {
       const anonymous = await browser.newContext(contextOptions(viewport));
-      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Welcome to NovaPharm.", "login");
-      await anonymous.close();
+      try {
+        await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Welcome to NovaPharm.", "login");
+      } finally {
+        await anonymous.close();
+      }
 
       for (const area of areas) {
         const context = await browser.newContext(contextOptions(viewport, states.get(area)));
@@ -936,7 +947,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
         }
       }
       console.log(`${engine}: completed ${viewport.name}`);
-    }
+    });
   } finally {
     await browser.close();
   }
