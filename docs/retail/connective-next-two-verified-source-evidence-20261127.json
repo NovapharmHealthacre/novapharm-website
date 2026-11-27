@@ -1,0 +1,42 @@
+{
+  "schema": "novapharm-connective-source-review-v1",
+  "reviewedOn": "2026-11-27",
+  "status": "ONLINE_SOURCE_REVIEWED_PENDING_PUBLICATION_AND_PAYMENT_ADMISSION",
+  "physicalCurrentUKPackInspected": false,
+  "products": [
+    {
+      "gtin": "5021265222605",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/visionace-original-tablets",
+      "independentGtinUrl": "https://openprescribing.net/dmd/ampp/12579911000001104/",
+      "retailGrossMinorCandidate": 594,
+      "vatBasisPointsCandidate": 2000,
+      "image": "/assets/media/products/connective/5021265222605/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "currentPhysicalUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265222902",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/osteocare-fizz-effervescent-tablets",
+      "independentGtinUrl": "https://www.chemist.net/vitabiotics-osteocare-fizz-20s-pd-12197",
+      "retailGrossMinorCandidate": 371,
+      "vatBasisPointsCandidate": 2000,
+      "image": "/assets/media/products/connective/5021265222902/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "currentPhysicalUKPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    }
+  ],
+  "held": [
+    {
+      "gtin": "5021265222407",
+      "reason": "Manufacturer advertises updated turmeric-containing formula; archived candidate pack needs formulation match."
+    },
+    {
+      "gtin": "5021265223527",
+      "reason": "Manufacturer and UK retail ingredient data differ on alpha lipoic acid; resolve current pack formula."
+    }
+  ]
+}

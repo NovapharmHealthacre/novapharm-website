@@ -575,8 +575,23 @@ for (const [engineName, browserType] of engines) {
               assert.equal(await page.locator("[data-nps-category=All]").count(),1,label+": Shop all tab missing");
               assert.equal(await page.locator("[data-nps-filter]").count(),6,label+": filter controls missing");
               if (viewport.name === "mobile-390") {
-                const targets = await page.locator(".nps-category-tabs button").evaluateAll(buttons => buttons.map(button => { const rect = button.getBoundingClientRect(); return { width: rect.width, height: rect.height }; }));
+                // Verify the actual clickable hit areas with the category strip
+                // fully on screen. Scrolling later to Essentials can leave only
+                // a 20px sliver of this strip at the viewport edge, which axe
+                // correctly flags when audited mid-scroll.
+                await page.locator(".nps-category-tabs").scrollIntoViewIfNeeded();
+                const targets = await page.locator(".nps-category-tabs button").evaluateAll(buttons => buttons.map(button => {
+                  const rect = button.getBoundingClientRect();
+                  const x = rect.left + rect.width / 2;
+                  const y = rect.top + rect.height / 2;
+                  return {
+                    width: rect.width, height: rect.height,
+                    centerVisible: x >= 0 && x < innerWidth && y >= 0 && y < innerHeight,
+                    centerClickable: document.elementFromPoint(x, y) === button || button.contains(document.elementFromPoint(x, y))
+                  };
+                }));
                 assert.ok(targets.every(target => target.width >= 44 && target.height >= 48), label + ": mobile category touch targets too small");
+                assert.ok(targets.every(target => target.centerVisible && target.centerClickable), label + ": mobile category targets are covered or unreachable");
               }
               await page.locator("[data-nps-category=All]").click();
               await page.waitForFunction(()=>document.querySelector("[data-nps-all-status]")?.textContent.includes("787 products"),{},{timeout:20000});
@@ -851,6 +866,10 @@ for (const [engineName, browserType] of engines) {
               assert.equal(await page.locator(".npd-roadmap > li").count(), 7, `${engineName} ${viewport.name}: regulatory roadmap must contain seven governed gates`);
             }
 
+            // Audit from a deterministic viewport origin, not an intermediate
+            // anchor-scroll position left by the interaction checks above.
+            // Dedicated product target-size and hit-test assertions run above.
+            await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
             const axe = await new AxeBuilder({ page })
               .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
               .analyze();
