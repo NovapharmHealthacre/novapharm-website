@@ -103,7 +103,7 @@ const authoredModuleContracts = new Map([
   ["about", ["npd-main", "np-about-pillars", "np-about-purpose"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
-  ["products", ["npd-main np-products-page", "np-products-hero", "np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"]],
+  ["products", ["npd-main np-products-page np-store", "nps-hero", "nps-shelf-hero", "nps-packshot", "nps-white-gallery", "nps-professional-art"]],
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
   ["technology", ["npd-main", "npi-terminal", "npi-roadmap-grid", "npi-provenance-list"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
@@ -170,7 +170,16 @@ assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-la
 assert.match(read("technology/index.html"), /npi-roadmap-grid/, "Technology must explain development maturity");
 assert.match(read("technology/index.html"), /npi-terminal/, "Technology must provide an explicit illustrative Medicines Terminal");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
-assert.match(read("products/index.html"), /np-products-panel-nutraxin[\s\S]*np-products-panel-esco[\s\S]*np-products-panel-pharma/, "Products must retain three approved and differentiated portfolio collections");
+const productsMain = read("products/index.html").match(/<main\b[\s\S]*?<\/main>/)?.[0] ?? "";
+const collections = productsMain.slice(productsMain.indexOf('id="np-products-collections"'));
+const positions = ["/products/nutraxin/","/products/health-and-wellbeing/","/products/esco/","/products/strategic-portfolio/"].map(route=>collections.indexOf('href="'+route+'"'));
+assert.ok(positions.every((pos,i)=>pos>=0&&(i===0||pos>positions[i-1])), "Products must retain four differentiated collections in order");
+const packs = [...productsMain.matchAll(/<div class="nps-packshot"[^>]*>[\s\S]*?<\/picture><\/div>/g)];
+assert.equal(packs.length,4,"Four original featured product photographs required");
+for(const [pack] of packs) {
+  assert.match(pack, /data-photo-mode="original-packshot"/);
+  assert.match(pack, /<img[^>]+alt="[^"]+"/);
+}
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
 
 const generatedRegister = new Map(productionRegister.assets.map((asset) => [asset.id, asset]));
