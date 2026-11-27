@@ -2,7 +2,7 @@
 
 The static public website owns the basket. AWS independently calculates
 live-session totals from owner-approved server-only SSM unit prices, enforces
-a UK-only 20% VAT policy and £0 additional UK delivery, durably records a
+a UK-only 20% VAT policy and approved delivery charges, durably records a
 guest order, then invokes the IAM-only Stripe Checkout worker. A browser
 never supplies net prices, stock reservations, approval flags or Stripe keys.
 Stripe collects card details, customer email and UK delivery address.
@@ -24,6 +24,31 @@ PAYMENT_LEDGER_TABLE = os.environ["PAYMENT_LEDGER_TABLE"]
 PRODUCTION_CHECKOUT_FUNCTION = os.environ["PRODUCTION_CHECKOUT_FUNCTION"]
 SHOP_ENABLED = os.environ.get("SHOP_ENABLED", "false") == "true"
 MULTIBRAND_ENABLED = os.environ.get("MULTIBRAND_ENABLED", "false") == "true"
+# Explicit release switch; old price policy stays unchanged until coordinated deployment.
+REPRICE_ENABLED = os.environ.get("NUTRAXIN_REPRICE_ENABLED", "false") == "true"
+REPRICE_REVISION = "nutraxin-retail-2026-11-27"
+REPRICE_SHIPPING_GROSS = 449
+REPRICE_GROSS = {
+    "NUT-UK-VD3-T120": 949,
+    "NUT-UK-VD3-S30": 949,
+    "NUT-UK-VD3K2-T120": 1099,
+    "NUT-UK-VD3K2-S30": 1099,
+    "NUT-UK-VC1000-T30": 949,
+    "NUT-UK-VC500-C30": 1099,
+    "NUT-UK-VMAX-T60": 1099,
+    "NUT-UK-VMAX-E15": 1199,
+    "NUT-UK-MGCX-T60": 1099,
+    "NUT-UK-MGDL-T60": 1099,
+    "NUT-UK-MVE-T60": 1249,
+    "NUT-UK-MVW-T60": 1349,
+    "NUT-UK-MVM-T60": 1349,
+    "NUT-UK-CG-T30": 1199,
+    "NUT-UK-CG-S30": 2149,
+    "NUT-UK-CCX-T90": 1749,
+    "NUT-UK-ART-T90": 1399,
+    "NUT-UK-LCAR-T60": 999,
+    "NUT-UK-B12-SL60": 949
+}
 ALLOWED_ORIGINS = frozenset((
     "https://novapharmhealthcare.com",
     "https://www.novapharmhealthcare.com",
@@ -384,6 +409,14 @@ def direct_checkout(event, customer_subject=None, preview=False):
     # Only a mixed basket needs the extra ledger read. Existing Nutraxin orders
     # retain their original price policy and do not depend on new catalogue records.
     mixed=any(isinstance(line,dict) and isinstance(line.get("sku"),str) and line["sku"].startswith("NP-CP-") for line in lines)
+    revised = REPRICE_ENABLED and any(isinstance(line, dict) and line.get("sku") in PRODUCTS for line in lines if isinstance(line, dict) and isinstance(line.get("sku"), str))
+    if revised:
+        if set(REPRICE_GROSS) != set(PRODUCTS):
+            return error(503, "retail_catalogue_incomplete")
+        # Prevent cached legacy browsers from authorising a different payable amount.
+        if body.get("retail_price_revision") != REPRICE_REVISION:
+            return error(422, "retail_price_changed")
+        price_by_sku = {sku: (gross * 5 + 3) // 6 for sku, gross in REPRICE_GROSS.items()}
     extra={}
     if mixed:
         if not MULTIBRAND_ENABLED:
@@ -397,6 +430,9 @@ def direct_checkout(event, customer_subject=None, preview=False):
         promotion = retail_promotion(pricing, promo_code, now(), price_by_sku if mixed else None)
     except ValueError as exc:
         return error(422, str(exc))
+    if revised and promotion and any(sku in PRODUCTS for sku in promotion["floors"]):
+        # Existing campaigns need a new margin-safe revision before stacking.
+        return error(422, "promo_code_unavailable")
     seen = set()
     ordered = []
     net = 0
@@ -421,7 +457,8 @@ def direct_checkout(event, customer_subject=None, preview=False):
             return error(503, "invalid_seller_price")
         # Consumer catalogue, portal and Stripe all charge exactly the same
         # published unit price, including VAT rounded per unit.
-        line_original_gross = (unit + (unit * vat_bps + 5000) // 10000) * quantity
+        approved_unit_gross = REPRICE_GROSS[sku] if revised and sku in PRODUCTS else unit + (unit * vat_bps + 5000) // 10000
+        line_original_gross = approved_unit_gross * quantity
         original_gross += line_original_gross
         if promotion and sku in promotion["floors"]:
             eligible_original_gross += line_original_gross
@@ -430,7 +467,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
             if discounted < promotion["floors"][sku]:
                 return error(422, "promo_code_unavailable")
             unit = discounted
-        unit_gross = unit + (unit * vat_bps + 5000) // 10000
+        unit_gross = approved_unit_gross if revised and sku in PRODUCTS else unit + (unit * vat_bps + 5000) // 10000
         net += unit * quantity
         gross += unit_gross * quantity
         if gross > 99999999:
@@ -443,10 +480,15 @@ def direct_checkout(event, customer_subject=None, preview=False):
     tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
+    shipping_gross = REPRICE_SHIPPING_GROSS if revised else 0
+    if gross + shipping_gross > 99999999:
+        return error(422, "basket_exceeds_stripe_payment_limit")
+    if shipping_gross:
+        ordered.append({"sku":"DELIVERY-APPROVED","quantity":1,"name":"Approved delivery and handling","grossMinor":shipping_gross})
     basket_hash = hashlib.sha256(json.dumps(
         sorted((item["sku"], item["quantity"]) for item in ordered),
         separators=(",", ":")).encode()).hexdigest()
-    if mixed:
+    if mixed or revised:
         basket_hash=hashlib.sha256(json.dumps({"basket":basket_hash,"lines":ordered,"net":net,"tax":tax},sort_keys=True,separators=(",",":")).encode()).hexdigest()
     if promotion:
         basket_hash = hashlib.sha256(json.dumps({
@@ -464,15 +506,15 @@ def direct_checkout(event, customer_subject=None, preview=False):
         except ClientError:
             return error(503,"promotion_eligibility_unavailable")
     if preview:
-        return reply(200, {"currency":"GBP","originalGrossMinor":original_gross,
-                          "discountGrossMinor":original_gross-gross,"totalGrossMinor":gross,
-                          "taxMinor":tax,"basketVersion":basket_hash,
+        return reply(200, {"currency":"GBP","originalGrossMinor":original_gross + shipping_gross,
+                          "discountGrossMinor":original_gross-gross,"totalGrossMinor":gross + shipping_gross,
+                          "shippingGrossMinor":shipping_gross,"taxMinor":tax,"basketVersion":basket_hash,
                           "promotionCode":promotion["code"] if promotion else None})
     if promotion and (body.get("basket_version") != basket_hash):
         return error(422, "promo_quote_changed")
     receipt = "NUT-" + request_id
     subject = customer_subject or ("guest_" + request_id.replace("-", ""))
-    quote_version = "ownerprice_v7_unitvat_" + basket_hash[:20]
+    quote_version = ("ownerprice_v8_retail_" if revised else "ownerprice_v7_unitvat_") + basket_hash[:20]
     item = {
         "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
         "orderId": {"S": receipt}, "customerSub": {"S": subject},
@@ -482,7 +524,7 @@ def direct_checkout(event, customer_subject=None, preview=False):
         "quoteVersion": {"S": quote_version},
         "basketHash": {"S": basket_hash},
         "sellerApprovalReference": {"S": "owner_direct_sale_20261108"},
-        "deliveryQuoteReference": {"S": "owner_uk_delivery_included_20261108"},
+        "deliveryQuoteReference": {"S": "owner_uk_delivery_449_20261127" if revised else "owner_uk_delivery_included_20261108"},
         "taxAssessmentReference": {"S": "verified_retail_product_vat_v1" if mixed else "owner_uk_supplement_vat20_20261108"},
         "fulfilmentApprovalReference": {"S": "verified_retail_delivery_commitment_v1" if mixed else "owner_manufacturer_supply_20261108"},
         "approvedForPayment": {"BOOL": True},
@@ -495,15 +537,15 @@ def direct_checkout(event, customer_subject=None, preview=False):
         "expiresAtUnix": {"N": str(now() + 1800)},
         "productNetMinor": {"N": str(net)},
         "taxMinor": {"N": str(tax)},
-        "shippingGrossMinor": {"N": "0"},
-        "totalGrossMinor": {"N": str(gross)},
+        "shippingGrossMinor": {"N": str(shipping_gross)},
+        "totalGrossMinor": {"N": str(gross + shipping_gross)},
         "approvedLinesJson": {"S": json.dumps(ordered, separators=(",", ":"))},
         "ownerCommercialPolicy": {"S": "multibrand_uk_direct_v1" if mixed else "nutraxin_uk_direct_v1"}
     }
     if promotion:
         item.update({"promotionCode":{"S":promotion["code"]},
                      "promotionRevision":{"S":promotion["revision"]},
-                     "preDiscountGrossMinor":{"N":str(original_gross)},
+                     "preDiscountGrossMinor":{"N":str(original_gross + shipping_gross)},
                      "discountGrossMinor":{"N":str(original_gross-gross)}})
         if promotion["audience"]!="public_reusable":
             item["promotionCampaignId"]={"S":promotion["campaign_id"]}
@@ -703,6 +745,8 @@ def handler(event, context):
         return reply(200, {"checkout_ready":SHOP_ENABLED,
                            "payment_collection_active":SHOP_ENABLED,
                            "origin":"novapharmhealthcare.com",
+                           "retail_price_revision":REPRICE_REVISION if REPRICE_ENABLED else None,
+                           "nutraxin_shipping_gross_minor":REPRICE_SHIPPING_GROSS if REPRICE_ENABLED else 0,
                            "promotion_preview_supported":True,
                            "account_promotion_preview_supported":True,
                            "account_privileges_supported":True,
