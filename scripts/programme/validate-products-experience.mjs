@@ -8,24 +8,26 @@ if (!main) throw new Error("Products page has no main landmark.");
 
 const heading = "Food Supplement Portfolio Review";
 const reference = "Nutraxin UK catalogue reference";
-const occurrences = main.match(new RegExp(heading, "g"))?.length ?? 0;
-if (occurrences !== 1) throw new Error(`Expected one ${heading} heading; found ${occurrences}.`);
-if (!main.includes(reference)) throw new Error(`Products page is missing ${reference}.`);
-
-const heroEnd = main.indexOf("</section>");
-const firstSectionStart = main.indexOf("<section", heroEnd + 10);
-const firstSectionEnd = main.indexOf("</section>", firstSectionStart);
-const firstSubstantiveSection = main.slice(firstSectionStart, firstSectionEnd);
-if (!firstSubstantiveSection.includes(heading)) {
-  throw new Error("Food Supplement Portfolio Review is not the first substantive section after the Products introduction.");
+// The approved storefront supersedes the old portfolio-first static page.
+// Keep runtime commerce fail-closed: no hard-coded prices or enabled purchase
+// buttons in the landing HTML, and every featured identity must be governed.
+if (!main.includes('id="np-products-title">Carefully selected.<br>For the everyday.</h1>')) throw new Error("Approved luxury Products heading missing.");
+if (!main.includes('id="nps-essentials"') || main.indexOf('id="nps-essentials"') >= main.indexOf('id="np-products-collections"')) throw new Error("Featured products must precede collection discovery.");
+const featured = [...main.matchAll(/<article class="nps-product" data-nps-slug="([^"]+)">([\s\S]*?)<\/article>/g)];
+if (featured.length !== 4 || new Set(featured.map(m=>m[1])).size !== 4) throw new Error("Expected four distinct featured products.");
+for (const [_,slug,card] of featured) {
+  if (!card.includes('href="/products/nutraxin/'+slug+'/"') || !card.includes('data-nps-add hidden disabled') || !card.includes('data-nps-price hidden')) throw new Error("Featured product lacks canonical link or fail-closed controls: "+slug);
 }
-if (!/href="\/products\/nutraxin\/"/.test(firstSubstantiveSection)) throw new Error("Nutraxin catalogue action is missing or non-canonical.");
-if (!existsSync(path.join(root, "products/nutraxin/index.html"))) throw new Error("Nutraxin catalogue route does not resolve to a generated page.");
-if (/[£€$]\s*\d|add to cart|buy now|checkout/i.test(main)) throw new Error("Products page exposes ecommerce or price content.");
+for (const route of ["/products/nutraxin/","/products/health-and-wellbeing/","/products/esco/","/products/strategic-portfolio/","/products/marketplace/","/products/track/"]) {
+  if (!main.includes('href="'+route+'"') || !existsSync(path.join(root,route.slice(1),"index.html"))) throw new Error("Missing Products destination: "+route);
+}
+if (!main.includes("data-nps-quick") || !main.includes("data-nps-bag-items") || !main.includes('href="/products/nutraxin/bag/"') || !html.includes("nutraxin-retail-store.js")) throw new Error("Shared shopping journey missing.");
+if (/[£€$]\s*\d|add to cart|buy now/i.test(main)) throw new Error("Products page exposes ungoverned static ecommerce or price content.");
 
 const register = JSON.parse(readFileSync(path.join(root, "docs/nutraxin-product-register.json"), "utf8"));
 const retailCatalog = JSON.parse(readFileSync(path.join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
 const retailBySku = new Map(retailCatalog.products.map((item) => [item.sku, item]));
+for (const [,slug] of featured) if (!retailCatalog.products.some(item=>item.slug===slug)) throw new Error("Ungoverned featured product: "+slug);
 if (register.products.length !== 19) throw new Error(`Expected 19 governed Nutraxin products; found ${register.products.length}.`);
 for (const product of register.products) {
   const productPath = path.join(root, "products", "nutraxin", product.slug, "index.html");
@@ -80,4 +82,4 @@ if (priorityIndex < firstSectionIndex || priorityIndex > productsComponent.index
 }
 if (!productsComponent.includes('href="/products/nutraxin/"')) throw new Error("Corporate application uses a legacy Nutraxin route.");
 
-console.log("Products experience validation passed: one priority Food Supplement Portfolio Review, 19 canonical detail routes, compatibility redirects, and no unauthorised commerce.");
+console.log("Products experience validation passed: approved luxury storefront, four governed featured products, 19 canonical detail routes, compatibility redirects, and fail-closed commerce.");
