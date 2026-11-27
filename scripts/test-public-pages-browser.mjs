@@ -547,11 +547,16 @@ for (const [engineName, browserType] of engines) {
               for(const img of await page.locator(".nps-shelf img, .nps-packshot img, .nps-white-gallery img").all()){
                 await img.scrollIntoViewIfNeeded();
                 await img.evaluate(async el=>{await el.decode();});
-                assert.ok(await img.evaluate(el=>el.complete&&el.naturalWidth>0),label+": image failed to load");
+                assert.ok(await img.evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return el.complete&&el.naturalWidth>0&&r.width>=35&&r.height>=35&&s.visibility!=="hidden"&&Number(s.opacity)>0}),label+": image failed to render with visible dimensions");
               }
               const geometry=await page.evaluate(()=>[...document.querySelectorAll(".nps-hero-art,.nps-packshot,.nps-art")].every(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.left>=-1&&r.right<=document.documentElement.clientWidth+1;}));
               assert.ok(geometry,label+": product media exceeds viewport");
               assert.equal(await page.locator("[data-nps-bag-link]").count(),1,label+": shared Bag link missing");
+              assert.equal(await page.locator(".nps-brand-grid a").count(),8,label+": brand directory incomplete");
+              assert.equal(await page.locator(".nps-services a").count(),5,label+": utility links incomplete");
+              if(viewport.name==="desktop-1440")assert.equal(await page.locator(".nps-services a").evaluateAll(els=>new Set(els.map(e=>Math.round(e.getBoundingClientRect().top))).size),1,label+": desktop utilities wrap");
+              assert.equal(await page.locator("[data-nps-category=All]").count(),1,label+": Shop all tab missing");
+              assert.equal(await page.locator("[data-nps-filter]").count(),6,label+": filter controls missing");
             }
 
             if (route.name === "our-story") {
