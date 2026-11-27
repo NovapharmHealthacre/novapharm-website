@@ -254,5 +254,53 @@
     "identityConfirmed": true,
     "imageRightsConfirmed": true,
     "publicListingApproved": true
+  },
+  {
+    "ean": "5021265220175",
+    "brand": "VITABIOTICS",
+    "name": "Omega-H3 Original",
+    "category": "Multivitamins",
+    "pack": "30 Capsules",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5021265220175/front-800.webp",
+    "description": "Adult food supplement, 30 capsules. Daily capsule provides vitamin A 750 µg (94% NRV), vitamin D 5 µg (100%), vitamin E 20 mg (167%), vitamin C 60 mg (75%), B1 20 mg (1818%), B2 5 mg (357%), niacin 25 mg (156%), B6 10 mg (714%), folic acid 400 µg (200%), B12 9 µg (360%), biotin 30 µg (60%), pantothenic acid 10 mg (167%), iron 15 mg (107%), zinc 15 mg (150%), copper 2 mg (200%), manganese 2 mg (100%), selenium 100 µg (182%), chromium 50 µg (125%), molybdenum 50 µg (100%) and iodine 150 µg (100%). Other declared amounts: mixed carotenoids 5 mg, PABA 30 mg, pollen extract 2 mg, lecithin 40 mg, wheat-germ oil 100 mg, garlic concentrate 20 mg, rutin 10 mg, cod liver oil 50 mg, omega-3 fish oil 50 mg, ginseng extract 4 mg, lysine 40 mg, methionine 60 mg and inositol 30 mg.",
+    "ingredients": "Capsule shell (bovine halal gelatin, water, sorbitol, glycerin, iron oxides), WHEAT germ oil, SOYA bean oil, ascorbic acid, L-methionine, magnesium oxide, L-lysine hydrochloride, cod liver oil (FISH), omega-3 FISH oil, ferrous fumarate, zinc sulphate, SOYA lecithin, hard vegetable preparation, DL-alpha tocopheryl acetate, PABA, inositol, thiamin mononitrate, nicotinamide, garlic concentrate (rapeseed oil), beta-carotene (sunflower oil), calcium pantothenate, cyanocobalamin, pyridoxine hydrochloride, rutin, beeswax, copper sulphate, manganese sulphate, riboflavin, ginseng extract, vitamin A palmitate, pollen extract, folic acid, chromium trichloride, cholecalciferol, sodium selenite, potassium iodide, sodium molybdate, biotin.",
+    "directions": "Adults: swallow one capsule with the main meal and water or a cold drink, on a full stomach. Do not exceed the recommended intake or combine with another multivitamin.",
+    "warnings": "Contains WHEAT (gluten), SOYA and FISH; made at a site that may handle nuts. Not suitable for children. Contains iron, which can harm young children in excess. People taking anticoagulants should only use on a doctor's advice. Consult a doctor or pharmacist if pregnant, breastfeeding, under medical supervision, taking medication, have epilepsy, haemochromatosis, thyroid disease or food allergies. Food supplements do not replace a balanced varied diet and healthy lifestyle. Store dry below 25°C, away from children.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
+  },
+  {
+    "ean": "5021265221608",
+    "brand": "VITABIOTICS",
+    "name": "Cardioace Original",
+    "category": "Multivitamins",
+    "pack": "30 Tablets",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5021265221608/front-800.webp",
+    "description": "Adult food supplement, 30 tablets. Per daily tablet: L-carnitine 20 mg, coenzyme Q10 3 mg, beta-carotene 4 mg, flaxseed oil powder 100 mg, garlic extract equivalent to 200 mg; vitamin D3 20 µg (400% NRV), E 40 mg (333%), C 80 mg (100%), B1 10 mg (909%), B2 1.4 mg (100%), niacin 16 mg (100%), B6 8 mg (571%), folic acid 200 µg (100%), B12 20 µg (800%), magnesium 60 mg (16%), iron 5 mg (36%), zinc 10 mg (100%), copper 1 mg (100%), manganese 2 mg (100%), selenium 100 µg (182%), chromium 100 µg (250%), iodine 150 µg (100%).",
+    "ingredients": "Maltodextrin, microcrystalline cellulose, ascorbic acid, magnesium oxide, flaxseed oil powder, vitamin E (D-alpha tocopheryl acid succinate from SOYA), silicon dioxide, stearic acid, magnesium stearate, coating (hydroxypropylmethylcellulose, glycerin, polydextrose, talc, medium-chain triglycerides, calcium carbonate and iron oxides), cyanocobalamin, L-carnitine tartrate, zinc sulphate, beta-carotene (DL-alpha tocopherol), nicotinamide, thiamin mononitrate, ferrous fumarate, crosslinked cellulose gum, garlic powder, pyridoxine hydrochloride, cholecalciferol (DL-alpha tocopherol), manganese sulphate, chromium chloride, coenzyme Q10, copper sulphate, riboflavin, folic acid, sodium selenate, potassium iodide.",
+    "directions": "Adults: swallow one tablet with a main meal and water or a cold drink, on a full stomach. Do not chew, exceed the recommended dose or combine with another multivitamin.",
+    "warnings": "Contains SOYA; made at a site that may handle nuts. Not for children; excess iron may harm young children. Consult a doctor or pharmacist before use if pregnant, breastfeeding, under medical supervision, have epilepsy, thyroid disease, haemochromatosis or food allergies. Food supplements do not replace a varied balanced diet and healthy lifestyle. Store dry below 25°C, out of children's reach.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
+  },
+  {
+    "ean": "5060216565309",
+    "brand": "HALIBORANGE",
+    "name": "Haliborange Adult Gut Health 30s",
+    "category": "Digestive supplements",
+    "pack": "30 Gummies",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5060216565309/front-800.webp",
+    "description": "Adult strawberry-flavoured food supplement, 30 gummies. Per daily gummy: vitamin C 20 mg (25% NRV), calcium 120 mg (15% NRV), Bifidobacterium lactis 1 billion cells and Lactobacillus rhamnosus 1 billion cells.",
+    "ingredients": "Glucose syrup, sugar, water, calcium salts of orthophosphoric acid, inulin, ascorbic acid, Lactobacillus rhamnosus, Bifidobacterium lactis, coconut oil, natural flavouring, citric acid, pectin, trisodium citrate, anthocyanins, carnauba wax.",
+    "directions": "Adults aged 18 years and over: chew one gummy daily. Do not exceed the recommended daily intake.",
+    "warnings": "Keep away from young children. Check the seal before purchase; close lid securely after use and store in a dry, cool place below 25°C. Food supplements must not replace a varied diet and healthy lifestyle.",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
   }
 ]
