@@ -57,6 +57,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 11,
-  "publicationFix": "Repair scoped 44-product release shell terminator and reconcile six authoritative image reference counts from production readiness logs"
+  "publicationAttempt": 12,
+  "publicationFix": "Restore known-good publisher without duplicated workflow body; allow exact 44-GTIN scope and forward-only website deployment"
 }
