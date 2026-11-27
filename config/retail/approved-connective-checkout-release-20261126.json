@@ -57,6 +57,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 10,
-  "publicationFix": "44 source-reviewed consumer GTINs with existing retail payment infrastructure"
+  "publicationAttempt": 11,
+  "publicationFix": "Repair scoped 44-product release shell terminator and reconcile six authoritative image reference counts from production readiness logs"
 }
