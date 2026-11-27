@@ -100,6 +100,8 @@ on:
       - 'assets/js/marketing-attribution.js'
       - 'legal/cookies/index.html'
       - 'legal/privacy/index.html'
+      # Reissue exactly-approved consumer retail releases when their scope manifest changes.
+      - 'config/retail/approved-connective-checkout-release-20261126.json'
       - '.github/workflows/publish-aws-contact-production.yml'
       # Dispatch deduplication changes must trigger one independently verified publication.
       - '.github/workflows/dispatch-approved-aws-contact-release.yml'
