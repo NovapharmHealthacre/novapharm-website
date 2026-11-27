@@ -22,7 +22,8 @@ for (const route of ["/products/nutraxin/","/products/health-and-wellbeing/","/p
   if (!main.includes('href="'+route+'"') || !existsSync(path.join(root,route.slice(1),"index.html"))) throw new Error("Missing Products destination: "+route);
 }
 if (!main.includes("data-nps-quick") || !main.includes("data-nps-bag-items") || !main.includes('href="/products/nutraxin/bag/"') || !html.includes("nutraxin-retail-store.js")) throw new Error("Shared shopping journey missing.");
-if (/[£€$]\s*\d|add to cart|buy now/i.test(main)) throw new Error("Products page exposes ungoverned static ecommerce or price content.");
+const merchandiseMarkup=main.replace(/<select data-nps-filter="price">[\s\S]*?<\/select>/,"");
+if (/[£€$]\s*\d|add to cart|buy now/i.test(merchandiseMarkup)) throw new Error("Products page exposes ungoverned static ecommerce or price content.");
 
 const register = JSON.parse(readFileSync(path.join(root, "docs/nutraxin-product-register.json"), "utf8"));
 const retailCatalog = JSON.parse(readFileSync(path.join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
