@@ -1,0 +1,48 @@
+{
+  "schema": "novapharm-connective-source-reviewed-batch-v1",
+  "reviewedOn": "2026-11-27",
+  "status": "CATALOGUE_PREPARATION_NOT_ACTIVE",
+  "ownerCatalogueAndPhotoAuthorisation": true,
+  "physicalCurrentUKPackInspected": false,
+  "products": [
+    {
+      "gtin": "5021265220175",
+      "manufacturerInformationUrl": "https://www.vitabiotics.com/products/omega-h3-original",
+      "barcodeCorroborationUrl": "https://sianwholesale.com/vitabiotics-omega-h3-multivitamin-caps-30s.html",
+      "image": "/assets/media/products/connective/5021265220175/front-800.webp",
+      "imageSha256": "66516c63e16f9143dd7e9f1a56a8cec880d8f186eba0d99aabf53bab8cf7c417",
+      "photoUseAuthorised": true,
+      "physicalPackInspected": false,
+      "manufacturerProductInformationPresent": true,
+      "vatBasisPointsCandidate": 2000,
+      "supplierBackedOrderAttestation": true,
+      "checkoutAdmitted": false
+    },
+    {
+      "gtin": "5021265221608",
+      "manufacturerInformationUrl": "https://www.vitabiotics.com/products/cardioace-original-tablets",
+      "barcodeCorroborationUrl": "https://www.iwonderwhatsnext.co.uk/health-beauty/vitamins-supplements/vitabiotics-cardioace-original-heart-support-30-tablets/",
+      "image": "/assets/media/products/connective/5021265221608/front-800.webp",
+      "imageSha256": "5ecc0a66d92388a1d49fff1eb2fddf6c10c65ad92639ba7ea608d40fb2408723",
+      "photoUseAuthorised": true,
+      "physicalPackInspected": false,
+      "manufacturerProductInformationPresent": true,
+      "vatBasisPointsCandidate": 2000,
+      "supplierBackedOrderAttestation": true,
+      "checkoutAdmitted": false
+    },
+    {
+      "gtin": "5060216565309",
+      "manufacturerInformationUrl": "https://www.haliborange.com/product/gut-health-gummies-x30/",
+      "barcodeCorroborationUrl": "https://www.superdrug.com/health/vitamins-supplements/gut-health-digestive-support/haliborange-adult-gut-health-30s/p/809074",
+      "image": "/assets/media/products/connective/5060216565309/front-800.webp",
+      "imageSha256": "eabd1872a873608d098e0719d3a8dadac15c611a88fbb3fbd9c7976d1f0116ac",
+      "photoUseAuthorised": true,
+      "physicalPackInspected": false,
+      "manufacturerProductInformationPresent": true,
+      "vatBasisPointsCandidate": 2000,
+      "supplierBackedOrderAttestation": true,
+      "checkoutAdmitted": false
+    }
+  ]
+}

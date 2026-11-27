@@ -504,3 +504,43 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 .np-store .nps-filter-row select:focus-visible{outline:2px solid #9D1B32;outline-offset:3px}
 @media(max-width:1000px){.np-store .nps-filter-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:640px){.np-store .nps-filter-row,.np-store .nps-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.np-store .nps-services{grid-template-columns:repeat(2,minmax(0,1fr))}.np-store .nps-services a:last-child{grid-column:1/-1}.np-store .nps-shop-nav{gap:4px 14px}.np-store .nps-category-tabs{gap:4px}.np-store .nps-category-tabs button{font-size:13px;padding:8px}.np-store .nps-catalogue-item h3{font-size:15px}}
+
+/* Products editorial finishing pass — optically dominant, unframed photography.
+   Preserve the established product assets and all commerce controls. */
+.np-store .nps-hero-art.nps-editorial-stage{aspect-ratio:1.48;min-height:0;background:#F8F7F3}
+.np-store .nps-editorial-stage::after{height:19%}
+.np-store .nps-editorial-stage::before{bottom:19%}
+.np-store .nps-hero-art.nps-editorial-stage>.nps-shelf-hero{inset:4% 3% 10%;grid-template-columns:minmax(0,1.03fr) minmax(0,1.13fr) minmax(0,.94fr);gap:0;align-items:end}
+.np-store .nps-art.nps-editorial-stage>.nps-shelf-nutraxin{inset:2% 5% 10%;gap:1%;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+.np-store .nps-editorial-stage>.nps-shelf>picture{height:100%;width:100%;min-height:0;max-width:none;overflow:visible}
+.np-store .nps-editorial-stage>.nps-shelf>picture>img:not(:only-child){position:absolute;inset:auto 0 0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center bottom;transform:none;mix-blend-mode:multiply;filter:none}
+.np-store .nps-hero-art.nps-editorial-stage>.nps-shelf-hero>picture>img:not(:only-child){width:116%;left:-8%;height:100%;transform:translateY(0);transform-origin:center bottom}
+.np-store .nps-hero-art.nps-editorial-stage>.nps-shelf-hero>picture:nth-child(3)>img{width:112%;left:-6%}
+.np-store .nps-art.nps-editorial-stage>.nps-shelf-nutraxin>picture>img:not(:only-child){width:100%;left:0;height:100%}
+.np-store .nps-art.nps-white-gallery:not(.nps-equipment-gallery){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:minmax(0,1fr);padding:0 2% 4%;gap:0;background:#FFFFFF}
+.np-store .nps-art.nps-white-gallery:not(.nps-equipment-gallery)>img:not(:only-child){width:100%;height:100%;object-fit:contain;object-position:center;transform:scale(1.27);transform-origin:center;mix-blend-mode:multiply}
+.np-store .nps-art.nps-white-gallery:not(.nps-equipment-gallery)>img:first-child{transform:scale(1.42)}
+.np-store .nps-art.nps-equipment-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;justify-items:center;gap:3%;padding:3% 2%;background:#FFFFFF;border:0;box-shadow:none}
+.np-store .nps-art.nps-equipment-gallery>img:not(:only-child){width:100%;height:auto;aspect-ratio:1;max-height:none;object-fit:fill;transform:none;clip-path:none;border:0;outline:0;box-shadow:none;mix-blend-mode:multiply}
+.np-store .nps-art.nps-equipment-gallery>img:first-child:not(:only-child){clip-path:inset(3% .4% 3% .4%)}
+.np-store .nps-art.nps-professional-art.nps-pharma-photo{display:block;position:relative;isolation:isolate;padding:0;border:0;background:#F8F7F3}
+.np-store .nps-art.nps-professional-art.nps-pharma-photo>img:not(:only-child){position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:52% 50%;mix-blend-mode:normal}
+.np-store .nps-art.nps-pharma-photo>.nps-photo-caption{z-index:1;left:0;right:0;bottom:0;padding:14px 18px;background:#F8F7F3;font-size:clamp(14px,1.3vw,18px);font-weight:550;letter-spacing:0}
+.np-store .nps-brand-grid{border:0;background:transparent;gap:18px 24px;grid-template-columns:repeat(4,minmax(0,1fr));padding:14px 0}
+.np-store .nps-brand-grid>a{border:0;box-shadow:none;background:transparent;min-height:94px;font-size:clamp(17px,1.8vw,24px);padding:16px 8px}
+.np-store .nps-brand-grid>a:hover{background:transparent;text-decoration:underline;text-underline-offset:6px}
+.np-store .nps-brand-grid>a:focus-visible{outline:2px solid #9D1B32;outline-offset:4px}
+.np-store .nps-filter-row{gap:14px;margin-block:24px 18px}
+.np-store .nps-filter-row>label{font-size:15px;font-weight:500;gap:9px}
+.np-store .nps-filter-row>label>select{min-height:54px;font-size:16px;font-weight:400;padding:12px 14px;border-radius:8px}
+.np-store .nps-category-tabs>button{font-size:15px;min-height:48px;padding-inline:16px}
+@media(max-width:1000px){.np-store .nps-filter-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.np-store .nps-hero-art.nps-editorial-stage{aspect-ratio:1.4}.np-store .nps-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}.np-store .nps-brand-grid>a{min-height:76px}.np-store .nps-filter-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.np-store .nps-filter-row>label>select{padding-inline:9px}.np-store .nps-category-tabs>button{font-size:14px;padding-inline:12px}}
+
+/* Mobile discovery: stable rows, generous touch targets, and unobscured anchor destinations. */
+.np-store .nps-category-tabs>button{scroll-margin-block:112px 24px;min-width:0}
+@media(max-width:640px){
+ .np-store .nps-category-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin-block:24px 16px}
+ .np-store .nps-category-tabs>button{display:flex;align-items:center;justify-content:center;min-height:56px;padding:12px 8px;line-height:1.35;text-align:center;white-space:normal}
+ .np-store #nps-essentials,.np-store #nps-professional,.np-store #nps-all-products{scroll-margin-top:112px}
+}
