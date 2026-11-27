@@ -1,0 +1,79 @@
+{
+  "schema": "novapharm.retail-brand-logo-sources.v1",
+  "date": "2026-11-27",
+  "notes": "Source URLs identify original trademarks for catalogue navigation; remote URL availability and trademark usage are not manufacturer permissions. Do not imply brand endorsement.",
+  "brands": [
+    {
+      "name": "Nutraxin",
+      "id": "nutraxin",
+      "displayUrl": "https://cdn.brandfetch.io/idrOhCxcUv/w/300/h/73/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781868009887",
+      "sourcePage": "https://brandfetch.com/nutraxin.com.tr",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "BioGaia",
+      "id": "biogaia",
+      "displayUrl": "https://www.biogaiagroup.com/wp-content/uploads/2024/06/BioGaia%C2%AE-logo-black-new-1.png",
+      "sourcePage": "https://www.biogaiagroup.com/newsroom/image-bank",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Bioglan",
+      "id": "bioglan",
+      "displayUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png",
+      "sourcePage": "https://www.pharmacarenz.co.nz/our-brands/bioglan/",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Centrum",
+      "id": "centrum",
+      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Centrum_(multivitamin)_logo.png",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Salus",
+      "id": "salus",
+      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/Salus_Logo.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Salus_Logo.svg",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Seven Seas",
+      "id": "seven-seas",
+      "displayUrl": "https://seven-seas.co.uk/static/images/logo_main.png",
+      "sourcePage": "https://seven-seas.co.uk/products",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Vicks",
+      "id": "vicks",
+      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:VicksLogo.png",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    },
+    {
+      "name": "Vitabiotics",
+      "id": "vitabiotics",
+      "displayUrl": "https://cdn.brandfetch.io/idYI6rEthj/w/318/h/116/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1789998943998",
+      "sourcePage": "https://brandfetch.com/vitabiotics.com",
+      "assetHosting": "external",
+      "rights": "trademark of respective owner",
+      "review": "source-identified; local licensing and reliability not independently certified"
+    }
+  ]
+}
