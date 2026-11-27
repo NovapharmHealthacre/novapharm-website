@@ -1,0 +1,227 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Isolated synthetic-only WMS price publisher acceptance; no production resources or customer data",
+  "Parameters": {
+    "PublishEnabled": {
+      "Type": "String",
+      "Default": "false",
+      "AllowedValues": [
+        "false",
+        "true"
+      ],
+      "Description": "Enable only synthetic fixture price revision writes."
+    }
+  },
+  "Resources": {
+    "PublisherRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ExistingOffersAndRevisionAudit",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:GetItem",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "FixtureLedger",
+                      "Arn"
+                    ]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringEquals": {
+                      "dynamodb:LeadingKeys": [
+                        "RETAIL#APPROVED",
+                        "WMS#PRICE-AUDIT"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:UpdateItem",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "FixtureLedger",
+                      "Arn"
+                    ]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringEquals": {
+                      "dynamodb:LeadingKeys": [
+                        "RETAIL#APPROVED"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "dynamodb:PutItem",
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "FixtureLedger",
+                      "Arn"
+                    ]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringEquals": {
+                      "dynamodb:LeadingKeys": [
+                        "WMS#PRICE-AUDIT"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "FixturePublisherLogs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-staging-wms-price-publisher:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Publisher": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "novapharm-staging-wms-price-publisher",
+        "Runtime": "python3.13",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "PublisherRole",
+            "Arn"
+          ]
+        },
+        "Timeout": 15,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "PAYMENT_LEDGER_TABLE": {
+              "Ref": "FixtureLedger"
+            },
+            "WMS_PRICE_PUBLISH_ENABLED": {
+              "Ref": "PublishEnabled"
+            }
+          }
+        },
+        "Code": {
+          "ZipFile": "\"\"\"IAM-only WMS price revision worker. Existing approved Connective offers only.\"\"\"\nimport hashlib\nimport json\nimport os\nimport re\nimport time\n\ndef verified_retail_offer(row, instant):\n    \"\"\"Allowlisted customer-facing fields only; private ledger approval is authoritative.\"\"\"\n    try:\n        p=json.loads(row[\"offerJson\"][\"S\"])\n        sku=row[\"sk\"][\"S\"]\n        gtin=p[\"gtin\"]\n        if not isinstance(gtin,str) or not re.fullmatch(r\"(?:\\d{8}|\\d{12}|\\d{13}|\\d{14})\",gtin):\n            return None\n        if (10-sum(int(c)*(3 if i%2==0 else 1) for i,c in enumerate(reversed(gtin[:-1])))%10)%10!=int(gtin[-1]):\n            return None\n        if sku!=\"NP-CP-\"+gtin or p.get(\"sku\")!=sku:\n            return None\n        if any(p.get(k) is not True for k in (\"identityConfirmed\",\"imageRightsConfirmed\",\"ukRetailApproved\",\"priceApproved\",\"vatTreatmentVerified\",\"fulfilmentVerified\",\"orderingEnabled\",\"sellerDeliveryCommitment\",\"labelInformationVerified\")):\n            return None\n        supply_model=p.get(\"supplyModel\",\"stock_verified\")\n        if supply_model==\"supplier_backed\":\n            if (p.get(\"stockVerified\") is not False or\n                p.get(\"supplierBackedOrdering\") is not True or\n                p.get(\"orderingCapacityOnly\") is not True):\n                return None\n        elif supply_model==\"stock_verified\":\n            if p.get(\"stockVerified\") is not True:\n                return None\n        else:\n            return None\n        if p.get(\"productClass\") not in (\"food_supplement\",\"cosmetic\",\"consumer_non_medicinal\"):\n            return None\n        if type(p.get(\"expiresAt\")) is not int or not instant < p[\"expiresAt\"] <= instant+31*86400:\n            return None\n        for key in (\"name\",\"pack\",\"brand\",\"category\"):\n            if not isinstance(p.get(key),str) or not 1<=len(p[key])<=90 or any(ord(c)<32 for c in p[key]):\n                return None\n        if not isinstance(p.get(\"image\"),str) or not re.fullmatch(r\"/assets/media/products/[a-zA-Z0-9/_-]+\\.(?:avif|webp|png|jpg)\",p[\"image\"]):\n            return None\n        net,vat,qty=p.get(\"netMinor\"),p.get(\"vatBasisPoints\"),p.get(\"availableQuantity\")\n        if type(net) is not int or not 1<=net<=99999999 or type(vat) is not int or vat not in (0,500,2000) or type(qty) is not int or not 1<=qty<=10000:\n            return None\n        gross=net+(net*vat+5000)//10000\n        if gross>99999999 or p.get(\"grossMinor\")!=gross:\n            return None\n        public={k:p[k] for k in (\"sku\",\"gtin\",\"name\",\"pack\",\"brand\",\"category\",\"image\",\"netMinor\",\"vatBasisPoints\",\"grossMinor\",\"availableQuantity\",\"productClass\")}\n        public[\"supplyModel\"]=supply_model\n        return public\n    except (KeyError,ValueError,TypeError,AttributeError):\n        return None\n\nPARTITION = \"RETAIL#APPROVED\"\nAUDIT = \"WMS#PRICE-AUDIT\"\n\nclass Rejected(Exception):\n    pass\n\ndef digest(raw):\n    return hashlib.sha256(raw.encode(\"utf-8\")).hexdigest()\n\ndef key(pk, sk):\n    return {\"pk\":{\"S\":pk},\"sk\":{\"S\":sk}}\n\ndef gross_for(net, vat):\n    return net + (net * vat + 5000) // 10000\n\ndef net_for(gross, vat):\n    if type(gross) is not int or not 1 <= gross <= 99999999:\n        raise Rejected(\"invalid_gross\")\n    # Some gross-pence values cannot be represented at a fixed per-unit tax rate.\n    candidate = gross * 10000 // (10000 + vat)\n    for net in range(max(1, candidate - 1), candidate + 3):\n        if gross_for(net, vat) == gross:\n            return net\n    raise Rejected(\"gross_not_representable_at_verified_vat\")\n\ndef get(ddb, table, pk, sk):\n    return ddb.get_item(TableName=table, Key=key(pk,sk), ConsistentRead=True).get(\"Item\")\n\ndef current(ddb, table, sku, instant):\n    row = get(ddb, table, PARTITION, sku)\n    offer = verified_retail_offer(row,instant) if row else None\n    if not offer:\n        raise Rejected(\"existing_eligible_offer_required\")\n    raw = row[\"offerJson\"][\"S\"]\n    return row, offer, raw\n\ndef result_state(ddb, table, sku, instant, audit):\n    row = get(ddb, table, PARTITION, sku)\n    raw = row.get(\"offerJson\",{}).get(\"S\",\"\") if row else \"\"\n    visible = verified_retail_offer(row,instant) if row else None\n    return {\"status\":\"ledger_revision_confirmed\" if visible and digest(raw)==audit[\"afterHash\"] else \"recorded_revision_not_current\",\n            \"sku\":sku,\"requestId\":audit[\"requestId\"],\"grossMinor\":audit[\"grossMinor\"],\n            \"currentGrossMinor\":visible[\"grossMinor\"] if visible else None,\"websiteVerified\":False,\"stripeVerified\":False}\n\ndef execute(event, ddb, table, instant, enabled=False):\n    if not isinstance(event,dict):\n        raise Rejected(\"invalid_request\")\n    action=event.get(\"action\")\n    sku=event.get(\"sku\")\n    if not isinstance(sku,str) or not re.fullmatch(r\"NP-CP-[0-9]{8,14}\",sku):\n        raise Rejected(\"unsupported_sku\")\n    if action==\"inspect\":\n        if set(event)!={\"action\",\"sku\"}:\n            raise Rejected(\"unexpected_fields\")\n        _,offer,raw=current(ddb,table,sku,instant)\n        return {\"status\":\"eligible_existing_offer\",\"sku\":sku,\"grossMinor\":offer[\"grossMinor\"],\n                \"vatBasisPoints\":offer[\"vatBasisPoints\"],\"availableQuantity\":offer[\"availableQuantity\"],\n                \"supplyModel\":offer[\"supplyModel\"],\"expectedHash\":digest(raw)}\n    if action!=\"publish_price\" or set(event)!={\"action\",\"sku\",\"grossMinor\",\"expectedHash\",\"requestId\",\"actor\",\"draftRevision\"}:\n        raise Rejected(\"unexpected_fields\")\n    if not enabled:\n        raise Rejected(\"publisher_disabled\")\n    request_id,actor,expected,revision=event[\"requestId\"],event[\"actor\"],event[\"expectedHash\"],event[\"draftRevision\"]\n    gross=event[\"grossMinor\"]\n    if (not isinstance(request_id,str) or not re.fullmatch(r\"[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\",request_id)\n        or not isinstance(actor,str) or not re.fullmatch(r\"[a-zA-Z0-9][a-zA-Z0-9._@-]{2,159}\",actor)\n        or not isinstance(expected,str) or not re.fullmatch(r\"[a-f0-9]{64}\",expected)\n        or type(revision) is not int or not 1<=revision<=2147483647\n        or type(gross) is not int or not 1<=gross<=99999999):\n        raise Rejected(\"invalid_revision_request\")\n    fingerprint=digest(json.dumps(event,sort_keys=True,separators=(\",\",\":\")))\n    prior=get(ddb,table,AUDIT,request_id)\n    if prior:\n        record=json.loads(prior[\"revisionJson\"][\"S\"])\n        if record[\"fingerprint\"]!=fingerprint:\n            raise Rejected(\"idempotency_conflict\")\n        return result_state(ddb,table,sku,instant,record)\n    _,offer,raw=current(ddb,table,sku,instant)\n    if digest(raw)!=expected:\n        raise Rejected(\"stale_offer_reload\")\n    updated=json.loads(raw)\n    updated[\"netMinor\"]=net_for(gross,offer[\"vatBasisPoints\"])\n    updated[\"grossMinor\"]=gross\n    after=json.dumps(updated,separators=(\",\",\":\"),ensure_ascii=False)\n    if not verified_retail_offer({\"sk\":{\"S\":sku},\"offerJson\":{\"S\":after}},instant):\n        raise Rejected(\"updated_offer_invalid\")\n    record={\"requestId\":request_id,\"sku\":sku,\"actor\":actor,\"draftRevision\":revision,\n            \"fingerprint\":fingerprint,\"beforeHash\":expected,\"afterHash\":digest(after),\n            \"beforeGrossMinor\":offer[\"grossMinor\"],\"grossMinor\":gross,\"vatBasisPoints\":offer[\"vatBasisPoints\"],\"recordedAt\":instant}\n    # Conditional on exact prior bytes; preserve every other attribute and offer field.\n    # Audit and price change commit together or neither commits.\n    ddb.transact_write_items(TransactItems=[\n        {\"Update\":{\"TableName\":table,\"Key\":key(PARTITION,sku),\"UpdateExpression\":\"SET offerJson = :after\",\n                   \"ConditionExpression\":\"offerJson = :before\",\"ExpressionAttributeValues\":{\":before\":{\"S\":raw},\":after\":{\"S\":after}}}},\n        {\"Put\":{\"TableName\":table,\"Item\":{**key(AUDIT,request_id),\"revisionJson\":{\"S\":json.dumps(record,separators=(\",\",\":\"))}},\n                \"ConditionExpression\":\"attribute_not_exists(pk)\"}}\n    ])\n    return result_state(ddb,table,sku,instant,record)\n\ndef handler(event,context):\n    import boto3\n    from botocore.exceptions import ClientError\n    table=os.environ[\"PAYMENT_LEDGER_TABLE\"]\n    try:\n        return execute(event,boto3.client(\"dynamodb\"),table,int(time.time()),os.environ.get(\"WMS_PRICE_PUBLISH_ENABLED\")==\"true\")\n    except Rejected as e:\n        return {\"status\":\"rejected\",\"reason\":str(e)}\n    except ClientError as e:\n        code=e.response.get(\"Error\",{}).get(\"Code\")\n        return {\"status\":\"retry_or_reload\" if code in (\"TransactionCanceledException\",\"ConditionalCheckFailedException\") else \"unavailable\"}\n"
+        },
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "DataMode",
+            "Value": "synthetic-only"
+          }
+        ]
+      },
+      "DependsOn": [
+        "PublisherLogGroup"
+      ]
+    },
+    "FixtureLedger": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "novapharm-staging-wms-price-fixture-ledger",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "DataMode",
+            "Value": "synthetic-only"
+          }
+        ]
+      }
+    },
+    "PublisherLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-staging-wms-price-publisher",
+        "RetentionInDays": 7
+      }
+    }
+  },
+  "Outputs": {
+    "PublisherArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Publisher",
+          "Arn"
+        ]
+      }
+    },
+    "FixtureTableName": {
+      "Value": {
+        "Ref": "FixtureLedger"
+      }
+    }
+  }
+}
