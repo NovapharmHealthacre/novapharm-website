@@ -14,7 +14,8 @@
       "nutraxin-products-checkout",
       "portal",
       "status",
-      "technology"
+      "technology",
+      "wms-price-publisher"
     ],
     "packages": [
       "accessibility",
@@ -97,14 +98,27 @@
         "apps/portal/components/wms-prototype-workspace-map.tsx",
         "integrations/polar-speed",
         "src/core/wms-control-tower.mjs",
-        "src/core/wms-five-layer-readiness.mjs"
+        "src/core/wms-five-layer-readiness.mjs",
+        "apps/wms-price-publisher",
+        "infra/aws/wms-private-price-publisher.json",
+        "src/core/wms-commerce-product-master.mjs",
+        "src/core/wms-commerce-draft-contract.mjs",
+        "src/core/wms-commerce-editor.mjs",
+        "apps/portal/components/wms-commerce-editor.tsx",
+        "src/core/wms-price-bridge.mjs",
+        "src/core/wms-price-invoke.mjs",
+        "src/core/wms-price-bridge-contract.mjs"
       ],
       "tests": [
         "scripts/test-wms-execution-review.mjs",
         "scripts/test-wms-fefo-wave-review.mjs",
         "scripts/test-wms-five-layer-control-plane.mjs",
         "scripts/test-wms-quality-workflows.mjs",
-        "scripts/test-wms-signed-provider-feed.mjs"
+        "scripts/test-wms-signed-provider-feed.mjs",
+        "scripts/test-wms-commerce-product-master.mjs",
+        "scripts/test-wms-commerce-drafts.mjs",
+        "scripts/test-wms-price-publisher.mjs",
+        "scripts/test-wms-price-bridge.mjs"
       ]
     },
     "native-ios-swiftui": {
@@ -242,6 +256,7 @@
     "public-pages-browser-acceptance.yml",
     "publish-aws-contact-production.yml",
     "supply-chain.yml",
-    "verify-sitewide-published-design.yml"
+    "verify-sitewide-published-design.yml",
+    "wms-commerce-product-master.yml"
   ]
 }
