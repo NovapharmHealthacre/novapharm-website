@@ -86,3 +86,11 @@ test("commerce no-change acceptance is read-only PR-scoped, never a publishing b
   assert.match(source, /An existing public website file was overwritten/);
   assert.match(source, /No new commerce public files staged/);
 });
+
+test("production readiness preserves each main push and supersedes obsolete PR checks", () => {
+  const workflow = readFileSync(join(root, "ci.yml"), "utf8");
+  assert.match(workflow, /^  group: novapharm-ci-\$\{\{ github\.ref == 'refs\/heads\/main' && github\.run_id \|\| github\.ref \}\}$/m,
+    "Main production checks must have a distinct concurrency group per run");
+  assert.match(workflow, /^  cancel-in-progress: \$\{\{ github\.ref != 'refs\/heads\/main' \}\}$/m,
+    "Main validation must not be cancelled by a newer push; PRs may supersede old checks");
+});
