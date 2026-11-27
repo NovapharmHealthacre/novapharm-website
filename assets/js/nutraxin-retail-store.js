@@ -264,6 +264,12 @@ function runStore(data) {
   }
   let bag = loadBag(data);
   let approvedRelease = false;
+  let serverRetailRevision = null;
+  let serverShippingMinor = null;
+  const retailRevision = data.retail_price_revision || null;
+  const hasNutraxin = () => bag.some(line => !CP_SKU.test(line.sku));
+  const deliveryMinor = () => hasNutraxin() ? data.provisional_uk_delivery_charge_pence : 0;
+  const retailTermsMatch = () => !hasNutraxin() || (serverRetailRevision === retailRevision && serverShippingMinor === deliveryMinor());
   let confirmedOrder = "";
   let awaitingOrder = "";
   let closedOrder = "";
@@ -557,7 +563,7 @@ function runStore(data) {
           const response = await fetch(CHECKOUT_API_ORIGIN + quotePath, {
             method:"POST", mode:"cors", credentials:"omit",
             headers:quoteHeaders,
-            body:JSON.stringify({lines:bag,promo_code:code}), cache:"no-store"
+            body:JSON.stringify({lines:bag,promo_code:code,retail_price_revision:retailRevision}), cache:"no-store"
           });
           const quote = response.ok ? await response.json() : null;
           if (generation !== promoGeneration) return;
@@ -699,14 +705,15 @@ function runStore(data) {
           (exact || sameProduct || fallback || container.querySelector(".nx-shop-link"))?.focus();
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight && !promoPending && !restoredAttemptBlocked);
+        const ready = !!(approvedRelease && retailTermsMatch() && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder && !checkoutInFlight && !promoPending && !restoredAttemptBlocked);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
         subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
         const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
           data.provisional_uk_delivery_cost_seller_funded === true;
-        shipping.textContent = ready ? "Included · UK" : (ukDeliveryIncluded ? "£0.00 · UK only" : "Not confirmed");
+        const delivery = deliveryMinor();
+        shipping.textContent = Number.isSafeInteger(delivery) ? formatGBP(delivery) + " · UK" : "Not confirmed";
         tax.textContent = bag.some(line=>CP_SKU.test(line.sku))?"Applicable UK VAT included":"20% UK VAT included";
         promoSection.hidden = !promoSupported || !approvedRelease || !bag.length || !!confirmedOrder || !!awaitingOrder;
         privileges.hidden = promoSection.hidden || !privilegesSupported;
@@ -727,8 +734,8 @@ function runStore(data) {
         promoApply.textContent = promoPending ? "Checking…" : promoQuote ? "Remove" : "Apply";
         discountRow.hidden = !promoQuote;
         discountAmount.textContent = promoQuote ? "−" + formatGBP(promoQuote.discountGrossMinor) : "";
-        if (promoQuote) subtotal.textContent = formatGBP(promoQuote.originalGrossMinor);
-        grand.textContent = promoQuote ? formatGBP(promoQuote.totalGrossMinor) : subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
+        if (promoQuote) subtotal.textContent = formatGBP(promoQuote.originalGrossMinor - (promoQuote.shippingGrossMinor || 0));
+        grand.textContent = promoQuote ? formatGBP(promoQuote.totalGrossMinor) : subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor + delivery);
         const paymentNotice = klarnaCheckoutNotice(ready && !checkoutUncertain);
         klarnaNotice.textContent = paymentNotice;
         klarnaNotice.hidden = !paymentNotice;
@@ -781,7 +788,7 @@ function runStore(data) {
             const target=accountToken?"/account/checkout":"/checkout";
             const response = await fetch(CHECKOUT_API_ORIGIN + target, {
               method: "POST", mode: "cors", credentials: "omit", headers,
-              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true,
+              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true, retail_price_revision:retailRevision,
                 ...(promoQuote ? {promo_code:promoQuote.promotionCode,basket_version:promoQuote.basketVersion} : {}) }), cache: "no-store"
             });
             if (response.status === 401) {
@@ -874,6 +881,8 @@ function runStore(data) {
             {credentials:"omit",cache:"no-store",mode:"cors"});
           const v=r.ok?await r.json():null;
           approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true && v?.origin === "novapharmhealthcare.com";
+          serverRetailRevision = v?.retail_price_revision || null;
+          serverShippingMinor = v?.nutraxin_shipping_gross_minor ?? 0;
           promoSupported = v?.promotion_preview_supported === true;
           accountPromoSupported = v?.account_promotion_preview_supported === true;
           privilegesSupported = accountPromoSupported && v?.account_privileges_supported === true;
@@ -952,7 +961,7 @@ function runStore(data) {
       const footer = make("div", "nx-store-card-footer");
       const priceWrap = make("div");
       const price = make("span", "nx-store-price", productPriceLabel(p, data));
-      const tax = make("p", "nx-store-vat-note", "20% UK VAT included · UK delivery included");
+      const tax = make("p", "nx-store-vat-note", "20% UK VAT included · " + formatGBP(data.provisional_uk_delivery_charge_pence) + " standard UK delivery per order");
       priceWrap.append(price, tax);
       const add = make("button", "nx-store-add", "Add to Bag");
       add.type = "button";
@@ -983,7 +992,7 @@ function runStore(data) {
       panel.setAttribute("aria-label", "Nutraxin shopping options");
       panel.append(make("p", "nx-store-kicker", "Nutraxin / Retail"));
       panel.append(make("p", "nx-store-price", productPriceLabel(p, data)));
-      panel.append(make("p", "nx-store-note", "Includes 20% UK VAT. UK delivery is included. Buy securely with Stripe from your Bag."));
+      panel.append(make("p", "nx-store-note", "Includes 20% UK VAT. Standard UK delivery " + formatGBP(data.provisional_uk_delivery_charge_pence) + " per order. Buy securely with Stripe from your Bag."));
       const options = make("div", "nx-store-options");
       const label = make("label", "nx-store-qty-label", "Quantity");
       const quantity = make("select", "nx-store-qty");
