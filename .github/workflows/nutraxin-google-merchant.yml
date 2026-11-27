@@ -4,6 +4,8 @@ on:
     paths:
       - "shopping/nutraxin-uk.tsv"
       - "scripts/generate-nutraxin-shopping.mjs"
+      - "scripts/build-nutraxin-openai-feed.mjs"
+      - "scripts/test-nutraxin-openai-feed.mjs"
       - "scripts/test-nutraxin-merchant.mjs"
       - "scripts/verify-nutraxin-merchant-live.mjs"
       - "scripts/audit-nutraxin-21.mjs"
@@ -32,6 +34,10 @@ jobs:
           node scripts/generate-nutraxin-shopping.mjs --check
           node --test scripts/test-nutraxin-merchant.mjs
           node scripts/verify-nutraxin-merchant-live.mjs --local
+      - name: Validate UK ChatGPT merchant candidate without publishing or Ads
+        run: |
+          node --test scripts/test-nutraxin-openai-feed.mjs
+          node scripts/build-nutraxin-openai-feed.mjs --check
       - name: Independent 21-check Nutraxin source audit
         env:
           NUTRAXIN_AUDIT_REPORT: /tmp/nutraxin-source-21.json
