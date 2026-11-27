@@ -21,6 +21,8 @@ export async function publishWmsPrice(context,input){
  const {draft,request}=await resolveDraft(context,input,true);
  // Worker atomically verifies exact expected offer hash and writes revision audit.
  // Repeat the same command after an uncertain response; never invent success.
+ const offer=await invoke({action:'inspect',sku:draft.sku});
+ validateOfferPreview(offer,draft);
  const result=await invoke(priceCommand(context,draft,request));
  if(result?.status==='rejected'||result?.status==='retry_or_reload')fail(409,'AWS rejected the revision or it is no longer current. Review the offer before retrying.');
  if(!['ledger_revision_confirmed','recorded_revision_not_current'].includes(result?.status)||result.sku!==draft.sku||result.grossMinor!==draft.grossPriceMinor)fail(503,'AWS publication outcome is not confirmed. Retry the same revision.');
