@@ -90,6 +90,15 @@ async function mockLocalReadiness(page, pathname) {
       });
     });
   }
+  if (pathname === "/products/" || pathname.startsWith("/products/health-and-wellbeing/")) {
+    // Local acceptance must not depend on production CORS or live offers.
+    // Empty offer list grants no new purchase authority; catalogue discovery
+    // remains covered using the staged public references.
+    await page.route("https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/retail/offers", async request => {
+      await request.fulfill({status:200,contentType:"application/json",
+        body:JSON.stringify({schema:"novapharm-retail-offers-v1",currency:"GBP",products:[]})});
+    });
+  }
   const checkoutApi = pathname.startsWith("/products/nutraxin/")
     ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
     : pathname.startsWith("/products/esco/")
