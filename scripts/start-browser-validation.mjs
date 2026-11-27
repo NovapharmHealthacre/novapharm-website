@@ -103,7 +103,26 @@ if (!existingPid && existingRuntimeReady) {
 }
 rmSync(pidPath, { force: true });
 
-run("build-site.mjs", "Validation build", { PLATFORM_MODE: "FULL_PLATFORM", PUBLIC_API_ORIGIN: "" });
+// Only the isolated, one-shot WMS acceptance image may reuse prebuilt artifacts.
+// Its CodeBuild recipe verifies Git HEAD and stamps the generated pages before
+// packaging; the runtime deliberately does not include .git or its credentials.
+if (process.env.WMS_HTTP_AWS_ACCEPTANCE === "true" && process.env.WMS_HTTP_PREBUILT_SOURCE_SHA) {
+  const sha = process.env.WMS_HTTP_PREBUILT_SOURCE_SHA;
+  if (!/^[a-f0-9]{40}$/.test(sha) || validationEnvironment.NODE_ENV !== "test" ||
+      validationEnvironment.BROWSER_VALIDATION_MODE !== "true" ||
+      validationEnvironment.WMS_COMMERCE_DATA_MODE !== "synthetic" ||
+      validationEnvironment.WMS_COMMERCE_PRICE_PUBLISH_SCOPE !== "aws-isolated-staging" ||
+      validationEnvironment.HOST !== "127.0.0.1") {
+    throw new Error("Prebuilt WMS validation artifacts require an isolated synthetic runtime.");
+  }
+  const home = readFileSync(join(repositoryRoot, "index.html"), "utf8");
+  if (!home.includes('<meta name="novapharm-source-sha" content="' + sha + '">')) {
+    throw new Error("Prebuilt validation source provenance mismatch.");
+  }
+  console.log("Using verified prebuilt synthetic validation source " + sha);
+} else {
+  run("build-site.mjs", "Validation build", { PLATFORM_MODE: "FULL_PLATFORM", PUBLIC_API_ORIGIN: "" });
+}
 run("initialise-browser-validation.mjs", "Validation database initialisation");
 run(join("local-portal", "seed.mjs"), "Base synthetic scenario seed");
 run("import-nutraxin-catalogue.mjs", "Nutraxin validation import");
