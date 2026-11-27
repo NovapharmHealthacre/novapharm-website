@@ -119,6 +119,33 @@ if (!existsSync(path(sourceFile))) {
     for (const p of approved) assert(existsSync(path(collectionRoute.slice(1)+p.ean+'/index.html')), 'Approved product detail not generated');
     assert(existsSync(path(collectionRoute.slice(1)+'index.html')), 'Approved collection not generated');
   }
+  // Display owner-authorised guide prices on browse-only non-medicine references.
+  // The server-side retail offer ledger alone decides whether checkout is enabled.
+  const guidePrices = new Map();
+  const priceGuideFile = 'assets/data/connective-owner-price-guide.json';
+  if (existsSync(path(priceGuideFile))) {
+    const guide = JSON.parse(read(priceGuideFile));
+    assert(guide?.schema === 'novapharm.connective.owner-price-guide.v1' &&
+      guide.currency === 'GBP' && guide.status === 'OWNER_AUTHORISED_GUIDE_NOT_LIVE_PAYMENT_OFFER' &&
+      Array.isArray(guide.entries) && guide.entries.length <= 395, 'Invalid owner guide price register');
+    const byGtin = new Map(products.map(p=>[p.ean,p]));
+    for (const record of guide.entries) {
+      const product = byGtin.get(record?.gtin);
+      assert(product && !approvedIds.has(record.gtin) &&
+        product.classificationReview !== 'medicine_class_review' &&
+        !guidePrices.has(record.gtin) &&
+        Number.isSafeInteger(record.guideGrossMinor) &&
+        record.guideGrossMinor > 0 && record.guideGrossMinor <= 99999999 &&
+        Object.keys(record).every(k=>['gtin','guideGrossMinor'].includes(k)),
+        'Unsafe, duplicate or unsupported guide price identity');
+      guidePrices.set(record.gtin,record.guideGrossMinor);
+    }
+  }
+  const guidePrice = p => guidePrices.has(p.ean)
+    ? '<p class="npr-reference npr-guide-price" data-npr-price-guide="'+escapeHtml(p.ean)+'">' +
+      'Guide price £'+(guidePrices.get(p.ean)/100).toFixed(2)+
+      ' <span>· Final price and availability confirmed before payment</span></p>'
+    : '';
   const remaining = products.filter(p=>!approvedIds.has(p.ean));
   const brands = new Map();
   for (const p of remaining) {
@@ -155,7 +182,7 @@ if (!existsSync(path(sourceFile))) {
     const route=collectionRoute+p.ean+'/';
     return `<article class="npr-card"><a href="${route}" class="npr-card-link">${image(p)}`+
       `<div class="npr-card-copy"><p class="npr-kicker">${escapeHtml(p.brand)}</p><h3>${escapeHtml(p.name)}</h3>`+
-      `<p class="npr-pack-size">${escapeHtml(p.pack)}</p></div></a>`+
+      `<p class="npr-pack-size">${escapeHtml(p.pack)}</p>${guidePrice(p)}</div></a>`+
       `<a class="npr-card-action" href="${route}">View product <span aria-hidden="true">→</span></a></article>`;
   };
   const groupHtml = groups.map((group,i)=>`<section class="npr-wrap npr-section" id="brand-${i}" data-npr-collection-section>`+
@@ -209,7 +236,7 @@ if (!existsSync(path(sourceFile))) {
       `<div class="npr-detail-copy"><p class="npr-kicker">${escapeHtml(p.brand)}</p><h1>${escapeHtml(p.name)}</h1>`+
       `<p class="npr-detail-pack">${escapeHtml(p.pack)}</p><p class="npr-reference">GTIN ${escapeHtml(p.ean)}</p>`+
       `<p>Part of NovaPharm's health and wellbeing collection.</p>`+
-      labelNotice+`<div data-npr-retail-sku="NP-CP-${escapeHtml(p.ean)}"></div>`+
+      labelNotice+guidePrice(p)+`<div data-npr-retail-sku="NP-CP-${escapeHtml(p.ean)}"></div>`+
       `<div class="npr-source-links">${shoppingLinks}</div></div></section>`+
       `<section class="npr-wrap npr-section"><h2>Product information</h2>`+
       `<p>Pack: ${escapeHtml(p.pack)} · Brand: ${escapeHtml(p.brand)} · GTIN: ${escapeHtml(p.ean)}</p>`+
