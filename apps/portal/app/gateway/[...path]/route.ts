@@ -24,6 +24,7 @@ const permittedPaths = [
   /^enterprise\/search$/,
   /^enterprise\/customer\/(?:support|returns|quality-complaints)$/,
   /^enterprise\/wms\/commerce-products$/,
+  /^enterprise\/wms\/commerce-price-(?:preview|publish)$/,
   /^enterprise\/wms\/pilot-feedback$/,
   /^enterprise\/wms\/pilot-feedback-summary$/,
   /^enterprise\/workflows\/[a-z0-9._-]+\/advance$/,
