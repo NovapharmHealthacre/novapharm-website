@@ -11,7 +11,17 @@
       "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Exact manufacturer header logo visually checked, original PNG.",
-      "remoteSourceUrl": "https://nutraxin.com.tr/nutraxin/images/logo.png"
+      "remoteSourceUrl": "https://nutraxin.com.tr/nutraxin/images/logo.png",
+      "selectedSourceUrl": "https://nutraxin.com.tr/nutraxin/images/logo.png",
+      "selectedSourcePage": "https://nutraxin.com.tr/",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "2f5fa7015fd36665b910e28610df3336a2e64d3c4c92b5d02a79193a67e60b99",
+      "sha256": "2f5fa7015fd36665b910e28610df3336a2e64d3c4c92b5d02a79193a67e60b99",
+      "retrievedWidth": 300,
+      "retrievedHeight": 73,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "BioGaia",
@@ -21,7 +31,17 @@
       "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "Public-domain text-logo assessment on Commons; trademark rights remain; no endorsement implied.",
       "review": "Original BioGaia navy wordmark visually checked; Commons marks it PD-textlogo. Not sourced from the noncommercial-only press image bank.",
-      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d0/BioGaia%C2%AE_logo_PMS_296.png"
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d0/BioGaia%C2%AE_logo_PMS_296.png",
+      "selectedSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d0/BioGaia%C2%AE_logo_PMS_296.png",
+      "selectedSourcePage": "https://commons.wikimedia.org/wiki/File:BioGaia%C2%AE_logo_PMS_296.png",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "1367bd1f12a49b3498f43d6ca0e7d51f5dfeb42eb982f673b13be4acc0de8f63",
+      "sha256": "1367bd1f12a49b3498f43d6ca0e7d51f5dfeb42eb982f673b13be4acc0de8f63",
+      "retrievedWidth": 2175,
+      "retrievedHeight": 508,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Bioglan",
@@ -31,7 +51,17 @@
       "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Original manufacturer-parent PharmaCare logo visually checked on its site.",
-      "remoteSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png"
+      "remoteSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png",
+      "selectedSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png",
+      "selectedSourcePage": "https://www.pharmacarenz.co.nz/our-brands/bioglan/",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "4bdbfb5914ebfeb9b4168b5868427e34bb5e1ee437b916634d65707a67fa868a",
+      "sha256": "4bdbfb5914ebfeb9b4168b5868427e34bb5e1ee437b916634d65707a67fa868a",
+      "retrievedWidth": 2086,
+      "retrievedHeight": 987,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Centrum",
@@ -41,7 +71,17 @@
       "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png"
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png",
+      "selectedSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png",
+      "selectedSourcePage": "https://commons.wikimedia.org/wiki/File:Centrum_(multivitamin)_logo.png",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "feaa7360736599ebf5369ca09a6889550b7c97f1f7066ac740648558e88f1357",
+      "sha256": "feaa7360736599ebf5369ca09a6889550b7c97f1f7066ac740648558e88f1357",
+      "retrievedWidth": 898,
+      "retrievedHeight": 278,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Salus",
@@ -52,7 +92,17 @@
       "rights": "CC BY 4.0 as listed by Wikimedia Commons; SALUS Haus Dr. med. Otto Greither Nachf. GmbH & Co. KG; PNG thumbnail of SVG; no colour edits.",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
       "remoteSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "selectedSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png",
+      "selectedSourcePage": "https://commons.wikimedia.org/wiki/File:Salus_Logo.svg",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "a357a7a0a054571473f0f2caa2c338bf27c48ffb627bb9101006a66e662db0f0",
+      "sha256": "a357a7a0a054571473f0f2caa2c338bf27c48ffb627bb9101006a66e662db0f0",
+      "retrievedWidth": 330,
+      "retrievedHeight": 188,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Seven Seas",
@@ -63,7 +113,17 @@
       "rights": "CC BY 4.0 as listed on Commons, attributed to Procter & Gamble; uploader licence authority not independently verified.",
       "review": "Original coloured Seven Seas mark, visually checked from public logo archive. Not a current brand-owner media-kit certification.",
       "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c7/SevenSeas.png",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "selectedSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c7/SevenSeas.png",
+      "selectedSourcePage": "https://commons.wikimedia.org/wiki/File:SevenSeas.png",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "3bace39556f0716c65fe84ed7a8377c05c941aadef4e8ccbe0fdc9a46e6e6023",
+      "sha256": "3bace39556f0716c65fe84ed7a8377c05c941aadef4e8ccbe0fdc9a46e6e6023",
+      "retrievedWidth": 547,
+      "retrievedHeight": 512,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Vicks",
@@ -73,7 +133,17 @@
       "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
-      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png"
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png",
+      "selectedSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png",
+      "selectedSourcePage": "https://commons.wikimedia.org/wiki/File:VicksLogo.png",
+      "selectedSourceKind": "reviewed source",
+      "originalFormat": "png",
+      "originalSha256": "370f92f37ae2a0cd14e0aafe223f56a7d8db924ddaca575543bf31eb2a25f77b",
+      "sha256": "370f92f37ae2a0cd14e0aafe223f56a7d8db924ddaca575543bf31eb2a25f77b",
+      "retrievedWidth": 836,
+      "retrievedHeight": 825,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "byte-exact copy"
     },
     {
       "name": "Vitabiotics",
@@ -101,7 +171,17 @@
           "page": "https://www.nhathuocankhang.com/ban-tin-suc-khoe/thuong-hieu-vitabiotics-cua-nuoc-nao-co-tot-khong-1510776",
           "kind": "retailer-published original corporate logo; alternative requiring visual review"
         }
-      ]
+      ],
+      "selectedSourceUrl": "https://pbs.twimg.com/profile_images/772814198971719680/3kLr8qeK.jpg",
+      "selectedSourcePage": "https://x.com/vitabiotics",
+      "selectedSourceKind": "manufacturer public profile",
+      "originalFormat": "jpeg",
+      "originalSha256": "f5866dfcd916d471c88797b634a8bf72146424cbb562d3e849b6c695649655c2",
+      "sha256": "ea2a0803954b36219d0f3294817f47b220328f71392f440114a92426eefea63d",
+      "retrievedWidth": 512,
+      "retrievedHeight": 512,
+      "deliveryFormat": "png",
+      "deliveryTransformation": "PNG encoding of decoded pixels; no recolour or geometry change"
     }
   ]
 }
