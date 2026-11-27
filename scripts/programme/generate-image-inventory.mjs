@@ -536,6 +536,24 @@ if (existsSync(path.join(root, "docs/retail/connective-395-owner-photo-candidate
   }
 }
 
+// Catalogue brand logos: exact local bytes and source provenance; rights not inferred.
+if (existsSync(path.join(root,"docs/retail/brand-logo-source-register-20261127.json"))) {
+  const marks=await json("docs/retail/brand-logo-source-register-20261127.json");
+  if(marks.schema!=="novapharm.retail-brand-logo-sources.v1"||marks.brands.length!==8)throw Error("Invalid retail logo register");
+  for(const mark of marks.brands){
+    const local=mark.displayUrl.slice(1);
+    if(!/^assets\/media\/brands\/[a-z-]+\.png$/.test(local)||!existsSync(path.join(root,local)))continue;
+    const digest=createHash("sha256").update(await readFile(path.join(root,local))).digest("hex");
+    if(digest!==mark.sha256||!mark.selectedSourceUrl)throw Error("Logo provenance mismatch: "+local);
+    addRegistryRecord(registry,mark.displayUrl,{
+      id:"retail-brand-mark:"+mark.id,source:mark.selectedSourceUrl+" (original SHA256 "+mark.originalSha256+")",
+      licence:mark.rights,altText:mark.name+" logo",semanticPurpose:"Catalogue identification and collection navigation",
+      pageUsage:["/products/"],reviewStatus:"source identified; supplier trademark permission not independently confirmed",
+      technicalStatus:mark.deliveryTransformation,provenanceRecord:"docs/retail/brand-logo-source-register-20261127.json#"+mark.id
+    });
+  }
+}
+
 const routeByAssetId = new Map();
 for (const module of modulePageRegister.modules ?? []) {
   for (const assetId of [module.heroAsset, module.secondaryAsset].filter(Boolean)) {
