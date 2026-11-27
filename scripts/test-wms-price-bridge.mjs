@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {createWmsPriceBridge} from '../src/core/wms-price-bridge-service.mjs';
 import {canPublishPrice,validatePriceRequest,savedPrice,validateOfferPreview,priceCommand} from '../src/core/wms-price-bridge-contract.mjs';
 import {signedPublisherRequest,invokePricePublisher} from '../src/core/wms-price-invoke.mjs';
 const context={username:'owner@example.test',accessType:'employee',accessScopes:['employee']},env={WMS_COMMERCE_DRAFTS_ENABLED:'true',WMS_COMMERCE_EDITOR_ALLOWLIST:context.username,WMS_COMMERCE_PRICE_PUBLISH_ENABLED:'true',WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-private'};
@@ -47,4 +48,20 @@ assert.equal(stageRole[0].PolicyDocument.Statement[0].Resource['Fn::Sub'].split(
 const commandSource=task.ContainerDefinitions[0].Command[0];
 assert(commandSource.includes(readFileSync(new URL('../src/core/wms-price-invoke.mjs',import.meta.url),'utf8')));
 assert(task.ContainerDefinitions[0].Environment.some(e=>e.Name==='WMS_COMMERCE_DATA_MODE'&&e.Value==='synthetic'));
+const stageEnv={...env,WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-isolated-staging',WMS_COMMERCE_DATA_MODE:'synthetic'};
+assert(canPublishPrice(context,stageEnv));
+assert(!canPublishPrice(context,{...stageEnv,WMS_COMMERCE_DATA_MODE:'live'}));
+assert(!canPublishPrice(context,{...env,WMS_COMMERCE_DATA_MODE:'synthetic'}));
+const fixtureSku='NP-CP-0000009341531',fixture={...draft,sku:fixtureSku,gtin:fixtureSku.slice(6),grossPriceMinor:2400,revision:3};
+const fixtureOffer={...offer,sku:fixtureSku,grossMinor:1800};
+let calls=0;
+const bridge=createWmsPriceBridge({env:stageEnv,loadDraft:async sku=>sku===fixtureSku?{revision:3,draft_json:JSON.stringify(fixture)}:null,invokePublisher:async cmd=>{calls++;if(cmd.action==='inspect')return fixtureOffer;assert.equal(cmd.grossMinor,2400);assert.equal(cmd.actor,context.username);return {status:'ledger_revision_confirmed',sku:fixtureSku,grossMinor:2400,currentGrossMinor:2400};}});
+const preview=await bridge.inspectWmsPrice(context,{sku:fixtureSku,revision:3});
+assert.equal(preview.currentGrossMinor,1800);assert.equal(preview.proposedGrossMinor,2400);
+await assert.rejects(()=>bridge.publishWmsPrice({...context,username:'unauthorized'},{sku:fixtureSku,revision:3,expectedHash:preview.expectedHash}),e=>e.statusCode===403);
+await assert.rejects(()=>bridge.inspectWmsPrice(context,{sku:draft.sku,revision:3}),e=>e.statusCode===403);
+await assert.rejects(()=>bridge.inspectWmsPrice(context,{sku:fixtureSku,revision:2}),e=>e.statusCode===409);
+assert.equal(calls,1);
+const receipt=await bridge.publishWmsPrice(context,{sku:fixtureSku,revision:3,expectedHash:preview.expectedHash});
+assert.equal(receipt.grossMinor,2400);assert.equal(receipt.websiteVerified,false);assert.equal(receipt.stripeVerified,false);
 console.log('WMS bridge permissions, revision binding and signed request contract passed');
