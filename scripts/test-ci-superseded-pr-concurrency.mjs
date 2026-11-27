@@ -8,6 +8,17 @@ const paths = [
   ".github/workflows/supply-chain.yml",
   ".github/workflows/intelligence-nova-egress-contract.yml",
   ".github/workflows/intelligence-subscription-boundary.yml",
+  ".github/workflows/apple-hig-motion.yml",
+  ".github/workflows/apple-image-guidelines.yml",
+  ".github/workflows/complete-estate-source-census.yml",
+  ".github/workflows/nutraxin-google-merchant.yml",
+  ".github/workflows/nutraxin-products-checkout.yml",
+  ".github/workflows/nutraxin-approved-checkout.yml",
+  ".github/workflows/nutraxin-stripe-webhook.yml",
+  ".github/workflows/intelligence-three-plan-public-pricing.yml",
+  ".github/workflows/aws-live-hardening-contract.yml",
+  ".github/workflows/nutraxin-seo-pages-preflight.yml",
+  ".github/workflows/staging-preflight.yml",
 ];
 
 test("PR-only cancellation preserves distinct manual and protected-main runs", () => {
