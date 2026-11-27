@@ -18,6 +18,7 @@ assert.deepEqual(files, [
 	"009_authoritative_bulk_observations.sql",
 	"010_source_scoped_medicine_marts.sql",
 	"011_distribution_pilot_feedback.sql",
+	"012_wms_commerce_drafts.sql",
 ]);
 
 const sources = Object.fromEntries(
