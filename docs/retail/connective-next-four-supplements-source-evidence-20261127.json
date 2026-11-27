@@ -1,0 +1,64 @@
+{
+  "schema": "novapharm.connective.online-label-review.v1",
+  "reviewedOn": "2026-11-27",
+  "physicalCurrentUKPackInspected": false,
+  "status": "REVIEWED_PENDING_EXACT_PRODUCTION_PUBLICATION",
+  "products": [
+    {
+      "gtin": "5021265243341",
+      "name": "Immunace Extra Protection",
+      "pack": "30 Tablets",
+      "manufacturerSourceUrl": "https://www.vitabiotics.com/products/immunace-extra-protection-tablets",
+      "independentGtinPackSourceUrl": "https://navera.co.uk/products/vitabiotics-immunace-extra-protection-30-tablets",
+      "image": "/assets/media/products/connective/5021265243341/front-800.webp",
+      "retailGrossMinorCandidate": 810,
+      "vatBasisPointsCandidate": 2000,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerImageUseApproved": true,
+      "physicalCurrentPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265244157",
+      "name": "Perfectil Nails",
+      "pack": "60 Tablets",
+      "manufacturerSourceUrl": "https://www.vitabiotics.com/products/perfectil-nails-tablets",
+      "independentGtinPackSourceUrl": "https://www.chemist.net/vitabiotics-perfectil-plus-nails-60s-pd-17981",
+      "image": "/assets/media/products/connective/5021265244157/front-800.webp",
+      "retailGrossMinorCandidate": 1120,
+      "vatBasisPointsCandidate": 2000,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerImageUseApproved": true,
+      "physicalCurrentPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265244447",
+      "name": "Wellwoman 70+",
+      "pack": "30 Tablets",
+      "manufacturerSourceUrl": "https://www.vitabiotics.com/products/wellwoman-70-tablets",
+      "independentGtinPackSourceUrl": "https://www.superdrug.com/health/vitamins-supplements/womens-vitamins/vitabiotics-wellwoman-70-30-tablets/p/999086",
+      "image": "/assets/media/products/connective/5021265244447/front-800.webp",
+      "retailGrossMinorCandidate": 716,
+      "vatBasisPointsCandidate": 2000,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerImageUseApproved": true,
+      "physicalCurrentPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    },
+    {
+      "gtin": "5021265251124",
+      "name": "Neuromind Original",
+      "pack": "30 Tablets",
+      "manufacturerSourceUrl": "https://www.vitabiotics.com/products/neuromind-original",
+      "independentGtinPackSourceUrl": "https://www.ebay.co.uk/p/21044082674",
+      "image": "/assets/media/products/connective/5021265251124/front-800.webp",
+      "retailGrossMinorCandidate": 860,
+      "vatBasisPointsCandidate": 2000,
+      "manufacturerIngredientsDirectionsWarningsReviewed": true,
+      "ownerImageUseApproved": true,
+      "physicalCurrentPackInspected": false,
+      "customerPaymentOfferAdmitted": false
+    }
+  ]
+}
