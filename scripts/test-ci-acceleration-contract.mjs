@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import "./test-portal-ci-build-reuse.mjs";
-import "./test-turbo-app-checks.mjs";
+import "./test-parallel-app-checks.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const file = path => readFileSync(new URL(path, "file://" + root), "utf8");
