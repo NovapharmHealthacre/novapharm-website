@@ -40,11 +40,13 @@ test("only the secure Portal Actions job reuses its checked build; both complete
   const check = portal.indexOf("npm run api:check && npm run portal:check");
   const record = portal.indexOf("node scripts/portal-ci-build-reuse.mjs record");
   const browser = portal.indexOf("npm run portal:test:browser -- --reuse-checked-ci-build");
-  const lighthouse = portal.indexOf("npm run portal:test:lighthouse -- --reuse-checked-ci-build");
+  const lighthouse = portal.indexOf("run: npm run portal:test:lighthouse\n");
+  assert.doesNotMatch(portal, /portal:test:lighthouse -- --reuse-checked-ci-build/);
   assert.ok(check >= 0 && check < record && record < browser && browser < lighthouse);
-  for (const script of ["run-portal-browser-acceptance.mjs", "run-portal-lighthouse.mjs"]) {
-    const source = readFileSync(new URL("./" + script, import.meta.url), "utf8");
-    assert.match(source, /if \(process\.argv\.includes\(reuseFlag\)\) requireCheckedBuild\(repositoryRoot\);/);
-    assert.match(source, /else run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
-  }
+  const source = readFileSync(new URL("./run-portal-browser-acceptance.mjs", import.meta.url), "utf8");
+  assert.match(source, /if \(process\.argv\.includes\(reuseFlag\)\) requireCheckedBuild\(repositoryRoot\);/);
+  assert.match(source, /else run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
+  const benchmark = readFileSync(new URL("./run-portal-lighthouse.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(benchmark, /reuseFlag|requireCheckedBuild/);
+  assert.match(benchmark, /run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
 });

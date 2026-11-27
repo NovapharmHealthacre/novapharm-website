@@ -8,7 +8,6 @@ import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
 import { chromium } from "playwright";
 import { assertBrowserValidationRoot } from "./browser-validation-runtime.mjs";
-import { requireCheckedBuild, reuseFlag } from "./portal-ci-build-reuse.mjs";
 import { runLighthouseWithNavigationRetry } from "./lighthouse-transient-navigation.mjs";
 
 const repositoryRoot = resolve(process.cwd());
@@ -270,8 +269,7 @@ rmSync(artifactRoot, { recursive: true, force: true });
 mkdirSync(artifactRoot, { recursive: true });
 
 try {
-  if (process.argv.includes(reuseFlag)) requireCheckedBuild(repositoryRoot);
-  else run("npm", ["run", "build", "--workspace=@novapharm/portal"], "Portal production build");
+  run("npm", ["run", "build", "--workspace=@novapharm/portal"], "Portal production build");
   run(
     process.execPath,
     [join(repositoryRoot, "scripts", "start-browser-validation.mjs"), runtimeRoot],

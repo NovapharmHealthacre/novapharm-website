@@ -43,7 +43,7 @@ export function recordCheckedBuild(root = process.cwd(), env = process.env) {
   const { receipt, identity } = context(root, env);
   const current = captureBuildIdentity(root, identity);
   writeFileSync(receipt, JSON.stringify(current), { flag: "wx", mode: 0o600 });
-  console.log("Recorded checked Portal build for same-job browser and Lighthouse acceptance.");
+  console.log("Recorded checked Portal build for same-job browser acceptance.");
 }
 
 export function requireCheckedBuild(root = process.cwd(), env = process.env) {
