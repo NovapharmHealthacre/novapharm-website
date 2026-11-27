@@ -1,79 +1,87 @@
 {
   "schema": "novapharm.retail-brand-logo-sources.v1",
   "date": "2026-11-27",
-  "notes": "Source URLs identify original trademarks for catalogue navigation; remote URL availability and trademark usage are not manufacturer permissions. Do not imply brand endorsement.",
+  "notes": "Manufacturer/product-brand marks for catalogue identification. Trademark rights remain with owners. Local source copies must be exact and validate with image signature and dimensions; no external image fetch on the published page.",
   "brands": [
     {
       "name": "Nutraxin",
       "id": "nutraxin",
-      "displayUrl": "https://cdn.brandfetch.io/idrOhCxcUv/w/300/h/73/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781868009887",
+      "displayUrl": "/assets/media/brands/nutraxin.png",
       "sourcePage": "https://brandfetch.com/nutraxin.com.tr",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://cdn.brandfetch.io/idrOhCxcUv/w/300/h/73/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1781868009887"
     },
     {
       "name": "BioGaia",
       "id": "biogaia",
-      "displayUrl": "https://www.biogaiagroup.com/wp-content/uploads/2024/06/BioGaia%C2%AE-logo-black-new-1.png",
+      "displayUrl": "/assets/media/brands/biogaia.png",
       "sourcePage": "https://www.biogaiagroup.com/newsroom/image-bank",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://www.biogaiagroup.com/wp-content/uploads/2024/06/BioGaia%C2%AE-logo-black-new-1.png"
     },
     {
       "name": "Bioglan",
       "id": "bioglan",
-      "displayUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png",
+      "displayUrl": "/assets/media/brands/bioglan.png",
       "sourcePage": "https://www.pharmacarenz.co.nz/our-brands/bioglan/",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png"
     },
     {
       "name": "Centrum",
       "id": "centrum",
-      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png",
+      "displayUrl": "/assets/media/brands/centrum.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Centrum_(multivitamin)_logo.png",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png"
     },
     {
       "name": "Salus",
       "id": "salus",
-      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/Salus_Logo.svg",
+      "displayUrl": "/assets/media/brands/salus.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Salus_Logo.svg",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png"
     },
     {
       "name": "Seven Seas",
       "id": "seven-seas",
-      "displayUrl": "https://seven-seas.co.uk/static/images/logo_main.png",
+      "displayUrl": "/assets/media/brands/seven-seas.png",
       "sourcePage": "https://seven-seas.co.uk/products",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://seven-seas.co.uk/static/images/logo_main.png"
     },
     {
       "name": "Vicks",
       "id": "vicks",
-      "displayUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png",
+      "displayUrl": "/assets/media/brands/vicks.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:VicksLogo.png",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png"
     },
     {
       "name": "Vitabiotics",
       "id": "vitabiotics",
-      "displayUrl": "https://cdn.brandfetch.io/idYI6rEthj/w/318/h/116/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1789998943998",
+      "displayUrl": "/assets/media/brands/vitabiotics.png",
       "sourcePage": "https://brandfetch.com/vitabiotics.com",
-      "assetHosting": "external",
+      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
       "rights": "trademark of respective owner",
-      "review": "source-identified; local licensing and reliability not independently certified"
+      "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
+      "remoteSourceUrl": "https://cdn.brandfetch.io/idYI6rEthj/w/318/h/116/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1789998943998"
     }
   ]
 }

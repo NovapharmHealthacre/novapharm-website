@@ -564,7 +564,12 @@ for (const [engineName, browserType] of engines) {
               assert.equal(await page.locator(".nps-brand-grid a").count(),8,label+": brand directory incomplete");
               assert.equal(await page.locator("[data-nps-brand-logo-directory] img").count(),8,label+": original brand marks missing");
               assert.equal(await page.locator("[data-nps-brand-logo-directory] .nps-brand-name").count(),8,label+": readable brand names missing");
-              assert.ok(await page.locator("[data-nps-brand-logo-directory] img").evaluateAll(images=>images.every(image=>image.getAttribute("src")?.startsWith("https://")&&image.hasAttribute("alt"))),label+": brand marks must use sourced images and accessible labels");
+              for(const logo of await page.locator("[data-nps-brand-logo-directory] img").all()){
+                await logo.scrollIntoViewIfNeeded();
+                await logo.evaluate(async image=>{await image.decode();});
+                assert.ok(await logo.evaluate(image=>image.complete&&image.naturalWidth>20&&image.naturalHeight>20),label+": local brand logo missing or failed to decode");
+              }
+              assert.ok(await page.locator("[data-nps-brand-logo-directory] img").evaluateAll(images=>images.every(image=>image.getAttribute("src")?.startsWith("/assets/media/brands/")&&image.hasAttribute("alt"))),label+": brand marks must use sourced images and accessible labels");
               // Check composition geometry, not merely decoded pixels. A
               // previous half-width selector passed the original smoke test.
               const editorial = await page.locator(".nps-shelf-nutraxin picture>img").evaluateAll(imgs=>imgs.map(img=>({image:img.getBoundingClientRect().width,cell:img.parentElement.getBoundingClientRect().width})));
