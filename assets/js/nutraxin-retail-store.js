@@ -710,8 +710,6 @@ function runStore(data) {
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
         subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
-        const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
-          data.provisional_uk_delivery_cost_seller_funded === true;
         const delivery = deliveryMinor();
         shipping.textContent = Number.isSafeInteger(delivery) ? formatGBP(delivery) + " · UK" : "Not confirmed";
         tax.textContent = bag.some(line=>CP_SKU.test(line.sku))?"Applicable UK VAT included":"20% UK VAT included";
