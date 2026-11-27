@@ -34,16 +34,19 @@ export function createFinanceSnapshotService({provider, storage, verifyAccess, a
     throw new Error('Finance persistence requires approved server-side adapters');
   }
   async function authorize(actor, scope, action) {
-    if (await verifyAccess({actor, scope, action}) !== true) {
+    const decision = await verifyAccess({actor, scope, action});
+    if (decision?.allowed !== true) {
       await audit({scope, action, outcome:'denied'});
       throw new Error('Finance access denied');
     }
-    await audit({scope, action, outcome:'authorized'});
+    const subject = opaque(decision.subject);
+    await audit({scope, subject, action, outcome:'authorized'});
+    return subject;
   }
   return Object.freeze({
     async save({actor, ref, snapshot}) {
       const scope = reference(ref);
-      await authorize(actor, scope, 'create');
+      const subject = await authorize(actor, scope, 'create');
       let bytes;
       try {
         checkSnapshot(snapshot, ref.source);
@@ -52,17 +55,17 @@ export function createFinanceSnapshotService({provider, storage, verifyAccess, a
         const encrypted = await encryptFinanceRecord({plaintext:bytes,scope,provider});
         await storage.create({key:objectKey(scope),envelope:encrypted});
       } catch {
-        await audit({scope,action:'create',outcome:'failed_or_commit_uncertain'});
+        await audit({scope,subject,action:'create',outcome:'failed_or_commit_uncertain'});
         throw new Error('Finance snapshot could not be saved');
       } finally { bytes?.fill(0); }
       // If the completion audit fails, the caller receives an error and must reconcile
       // the immutable object; never retry with a different identifier blindly.
-      await audit({scope,action:'create',outcome:'stored'});
+      await audit({scope,subject,action:'create',outcome:'stored'});
       return {id:scope.recordId,state:'encrypted_snapshot_stored',publicationApproved:false};
     },
     async read({actor, ref}) {
       const scope = reference(ref);
-      await authorize(actor,scope,'read');
+      const subject = await authorize(actor,scope,'read');
       let bytes, snapshot;
       try {
         const envelope = await storage.read({key:objectKey(scope)});
@@ -70,10 +73,10 @@ export function createFinanceSnapshotService({provider, storage, verifyAccess, a
         snapshot = JSON.parse(bytes.toString('utf8'));
         checkSnapshot(snapshot,ref.source);
       } catch {
-        await audit({scope,action:'read',outcome:'failed'});
+        await audit({scope,subject,action:'read',outcome:'failed'});
         throw new Error('Finance snapshot unavailable');
       } finally { bytes?.fill(0); }
-      await audit({scope,action:'read',outcome:'read'});
+      await audit({scope,subject,action:'read',outcome:'read'});
       return snapshot;
     }
   });
