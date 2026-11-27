@@ -1,0 +1,31 @@
+name: Connective 395 GTIN bulk evidence review
+on:
+  pull_request:
+    paths:
+      - 'scripts/research-connective-bulk-evidence.mjs'
+      - 'scripts/research-connective-bulk-evidence.test.mjs'
+      - '.github/workflows/connective-bulk-evidence-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bulk-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node --test scripts/research-connective-bulk-evidence.test.mjs
+      - run: node scripts/research-connective-bulk-evidence.mjs research/connective-bulk-evidence-review.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: connective-bulk-evidence-review
+          path: research/connective-bulk-evidence-review.json
+          if-no-files-found: error
+          retention-days: 14
