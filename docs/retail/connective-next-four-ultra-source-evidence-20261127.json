@@ -1,0 +1,63 @@
+{
+  "schema": "novapharm-connective-four-ultra-official-source-evidence-v1",
+  "reviewedOn": "2026-11-27",
+  "status": "NOT_PUBLISHED_NOT_FOR_PAYMENT",
+  "products": [
+    {
+      "gtin": "5021265251025",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-3000iu-tablets",
+      "supplierUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-3000iu-tablets",
+      "image": "/assets/media/products/connective/5021265251025/front-800.webp",
+      "photoSha256": "f0a353374bc9c2c48b3d7a4ca4eed892eaef95c4c1d769d84efc750f87ce640c",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerOnlineIngredientsDosingWarningsReviewed": true,
+      "physicalPackInspected": false,
+      "publicationApproved": false,
+      "customerPaymentOfferAdmitted": false,
+      "reviewedOn": "2026-11-27",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "5021265222551",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-cod-liver-oil-plus-omega-3-capsules",
+      "supplierUrl": "https://www.vitabiotics.com/products/ultra-cod-liver-oil-plus-omega-3-capsules",
+      "image": "/assets/media/products/connective/5021265222551/front-800.webp",
+      "photoSha256": "234caaa5424341a33634386c26afc94954bbc54197d784d1f0d9de75ef0b97a2",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerOnlineIngredientsDosingWarningsReviewed": true,
+      "physicalPackInspected": false,
+      "publicationApproved": false,
+      "customerPaymentOfferAdmitted": false,
+      "reviewedOn": "2026-11-27",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "5021265245611",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-omega-3-6-9-capsules",
+      "supplierUrl": "https://www.vitabiotics.com/products/ultra-omega-3-6-9-capsules",
+      "image": "/assets/media/products/connective/5021265245611/front-800.webp",
+      "photoSha256": "3954072ac22424547a0239a27c483d0be48a82667d7b8e5a5ae79fa237f980d6",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerOnlineIngredientsDosingWarningsReviewed": true,
+      "physicalPackInspected": false,
+      "publicationApproved": false,
+      "customerPaymentOfferAdmitted": false,
+      "reviewedOn": "2026-11-27",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "5021265244072",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-vitamin-b-complex-tablets",
+      "supplierUrl": "https://www.vitabiotics.com/products/ultra-vitamin-b-complex-tablets",
+      "image": "/assets/media/products/connective/5021265244072/front-800.webp",
+      "photoSha256": "16efe245a307edd13078c3145c74ba576f42c84a34ae40614c41cd7cea1aa8a4",
+      "ownerPhotoUseAuthorised": true,
+      "manufacturerOnlineIngredientsDosingWarningsReviewed": true,
+      "physicalPackInspected": false,
+      "publicationApproved": false,
+      "customerPaymentOfferAdmitted": false,
+      "reviewedOn": "2026-11-27",
+      "vatBasisPointsCandidate": 2000
+    }
+  ]
+}
