@@ -409,13 +409,13 @@ def direct_checkout(event, customer_subject=None, preview=False):
     # Only a mixed basket needs the extra ledger read. Existing Nutraxin orders
     # retain their original price policy and do not depend on new catalogue records.
     mixed=any(isinstance(line,dict) and isinstance(line.get("sku"),str) and line["sku"].startswith("NP-CP-") for line in lines)
-    revised = REPRICE_ENABLED and any(isinstance(line, dict) and line.get("sku") in PRODUCTS for line in lines if isinstance(line, dict) and isinstance(line.get("sku"), str))
+    has_nutraxin = any(isinstance(line, dict) and isinstance(line.get("sku"), str) and line["sku"] in PRODUCTS for line in lines)
+    revised = REPRICE_ENABLED and has_nutraxin
+    if has_nutraxin and body.get("retail_price_revision") != (REPRICE_REVISION if revised else None):
+        return error(422, "retail_price_changed")
     if revised:
         if set(REPRICE_GROSS) != set(PRODUCTS):
             return error(503, "retail_catalogue_incomplete")
-        # Prevent cached legacy browsers from authorising a different payable amount.
-        if body.get("retail_price_revision") != REPRICE_REVISION:
-            return error(422, "retail_price_changed")
         price_by_sku = {sku: (gross * 5 + 3) // 6 for sku, gross in REPRICE_GROSS.items()}
     extra={}
     if mixed:
