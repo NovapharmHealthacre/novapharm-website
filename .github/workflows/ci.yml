@@ -9,8 +9,10 @@ permissions:
   contents: read
 
 concurrency:
-  group: novapharm-ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Preserve every main push's production validation; it must not be cancelled by a newer push.
+  # For pull requests and feature branches, only obsolete runs for that same ref are cancelled.
+  group: novapharm-ci-${{ github.ref == 'refs/heads/main' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   verify:
