@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useState,type FormEvent} from "react";
 import {gatewayJson,protectedMutation,professionalError} from "../lib/gateway";
-type Draft={sku:string;supplier:string;name:string;brand:string;pack:string;gtin:string|null;grossPriceMinor:number|null;vatBasisPoints:number|null;proposedQuantity:number|null;websiteVisible:boolean;revision:number};
+type Draft={sku:string;supplier:string;name:string;brand:string;pack:string;gtin:string|null;grossPriceMinor:number|null;vatBasisPoints:number|null;proposedQuantity:number|null;websiteVisible:boolean;revision:number;updatedAt?:string};
 type Product={sku:string;supplier:string;name:string;brand:string;pack:string|null;gtin:string|null;sourcePriceMinor:number|null;draft:Draft|null;catalogueAdmission:string};
 type Catalogue={total:number;matching:number;offset:number;limit:number;canEdit:boolean;publicationEnabled:false;records:Product[]};
 const path="enterprise/wms/commerce-products";
@@ -10,16 +10,16 @@ export function WmsCommerceEditor(){
  const [data,setData]=useState<Catalogue|null>(null),[search,setSearch]=useState(""),[supplier,setSupplier]=useState(""),[offset,setOffset]=useState(0),[refresh,setRefresh]=useState(0);
  const [draft,setDraft]=useState<Draft|null>(null),[message,setMessage]=useState(""),[loading,setLoading]=useState(false),[saving,setSaving]=useState(false);
  useEffect(()=>{let active=true;setLoading(true);setData(null);const params=new URLSearchParams({q:search,supplier,offset:String(offset)});gatewayJson<Catalogue>(path+"?"+params).then(r=>{if(active)setData(r);}).catch(e=>{if(active)setMessage(professionalError(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[search,supplier,offset,refresh]);
- function select(p:Product){setMessage("");setDraft(p.draft??{...blank,sku:p.sku,supplier:p.supplier,name:p.name,brand:p.brand,pack:p.pack??"",gtin:p.gtin,grossPriceMinor:null});}
- function change<K extends keyof Draft>(key:K,value:Draft[K]){setDraft(d=>d?{...d,[key]:value}:null);}
- async function save(e:FormEvent){e.preventDefault();if(!data?.canEdit||!draft||saving)return;setSaving(true);setMessage("");try{const {revision,...fields}=draft;const response=await protectedMutation<{draft:Draft;status:string;publicationEnabled:false}>(path,{...fields,expectedRevision:revision});if(response.status!=="draft_saved"||response.publicationEnabled!==false)throw new Error("Unexpected response");setDraft(response.draft);setMessage("Draft saved. Live website, stock and payments have not changed.");setRefresh(v=>v+1);}catch(error){setMessage(professionalError(error));}finally{setSaving(false);}}
+ function select(p:Product){if(saving)return;setMessage("");setDraft(p.draft??{...blank,sku:p.sku,supplier:p.supplier,name:p.name,brand:p.brand,pack:p.pack??"",gtin:p.gtin,grossPriceMinor:null});}
+ function change<K extends keyof Draft>(key:K,value:Draft[K]){if(saving)return;setDraft(d=>d?{...d,[key]:value}:null);}
+ async function save(e:FormEvent){e.preventDefault();if(!data?.canEdit||!draft||saving)return;setSaving(true);setMessage("");try{const {revision,updatedAt: _updatedAt,...fields}=draft;const response=await protectedMutation<{draft:Draft;status:string;publicationEnabled:false}>(path,{...fields,expectedRevision:revision});if(response.status!=="draft_saved"||response.publicationEnabled!==false)throw new Error("Unexpected response");setDraft(response.draft);setMessage("Draft saved. Live website, stock and payments have not changed.");setRefresh(v=>v+1);}catch(error){setMessage(professionalError(error));}finally{setSaving(false);}}
  return <section className="distribution-wms-pilot" aria-labelledby="wms-commerce-title">
  <p className="distribution-employee-overline">NOVAPHARM DISTRIBUTION / COMMERCE</p><h2 id="wms-commerce-title">Product master.</h2>
  <p>Search catalogue references and prepare commercial changes. Published prices and physical stock are not inferred from this register.</p>
  <div className="distribution-wms-pilot-form">
  <label htmlFor="wms-commerce-search">Search SKU, GTIN or product</label><input id="wms-commerce-search" value={search} onChange={e=>{setSearch(e.target.value);setOffset(0);}}/>
  <label htmlFor="wms-commerce-supplier">Supplier</label><select id="wms-commerce-supplier" value={supplier} onChange={e=>{setSupplier(e.target.value);setOffset(0);}}><option value="">All suppliers</option>{["nutraxin","connective","esco","s1","other"].map(s=><option key={s} value={s}>{s}</option>)}</select>
- {data?.canEdit?<button type="button" onClick={()=>{setDraft({...blank});setMessage("");}}>New product draft</button>:null}
+ {data?.canEdit?<button type="button" disabled={saving} onClick={()=>{setDraft({...blank});setMessage("");}}>New product draft</button>:null}
  </div>
  {loading?<p role="status">Loading catalogue…</p>:null}
  {data?<><p>{data.matching} matching of {data.total} records.</p><div className="distribution-wms-pilot-table"><table><caption>Product references</caption><thead><tr><th scope="col">SKU</th><th scope="col">Product</th><th scope="col">Source price</th><th scope="col">Draft</th></tr></thead><tbody>{data.records.map(p=><tr key={p.sku}><th scope="row">{p.sku}</th><td>{p.name}</td><td>{p.sourcePriceMinor===null?"Not recorded":new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(p.sourcePriceMinor/100)}</td><td>{data.canEdit?<button type="button" onClick={()=>select(p)}>{p.draft?"Edit draft":"Prepare draft"}</button>:"Read only"}</td></tr>)}</tbody></table></div><div className="distribution-employee-links"><button type="button" disabled={offset===0} onClick={()=>setOffset(v=>Math.max(0,v-40))}>Previous</button><button type="button" disabled={offset+40>=data.matching} onClick={()=>setOffset(v=>v+40)}>Next</button></div></>:null}
