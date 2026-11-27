@@ -39,6 +39,8 @@ jobs:
         run: node --test scripts/test-ci-acceleration-contract.mjs scripts/test-ci-latency-audit.mjs
       - name: Read-only change-impact shadow report (no test selection)
         run: node --test scripts/ci/test-change-impact.mjs && node scripts/ci/plan-change-impact.mjs --github-event
+      - name: Verify declared workspace graph (advisory only)
+        run: node --test scripts/ci/test-workspace-dependency-graph.mjs && node scripts/ci/workspace-dependency-graph.mjs
 
   # These TWO exact-head contexts are independently required by protected main.
   # Parallel execution only removes scheduling latency; either failed check blocks merge.
