@@ -103,12 +103,20 @@ jobs:
         run: node --test scripts/test-protected-portal-artifact-privacy.mjs
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
+      - name: Record same-job checked Portal build identity
+        env:
+          PORTAL_CI_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/portal-ci-build-reuse.mjs record
       - name: Run all portal roles, routes and responsive viewports
-        run: npm run portal:test:browser
+        env:
+          PORTAL_CI_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run portal:test:browser -- --reuse-checked-ci-build
       - name: Verify Lighthouse transient retry never hides real failures
         run: node --test scripts/test-lighthouse-transient-navigation.mjs
       - name: Run portal Lighthouse acceptance
-        run: npm run portal:test:lighthouse
+        env:
+          PORTAL_CI_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run portal:test:lighthouse -- --reuse-checked-ci-build
       - name: Upload protected-portal acceptance evidence (private repositories only)
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

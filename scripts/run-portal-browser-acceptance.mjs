@@ -3,6 +3,7 @@ import { existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { assertBrowserValidationRoot } from "./browser-validation-runtime.mjs";
+import { requireCheckedBuild, reuseFlag } from "./portal-ci-build-reuse.mjs";
 
 const repositoryRoot = resolve(process.cwd());
 const runtimeRoot = assertBrowserValidationRoot(join(tmpdir(), "novapharm-unified-portal-browser-runtime"));
@@ -39,7 +40,8 @@ stopValidationRuntime();
 if (existsSync(runtimeRoot)) rmSync(runtimeRoot, { recursive: true, force: true });
 
 try {
-  run("npm", ["run", "build", "--workspace=@novapharm/portal"], "Portal production build");
+  if (process.argv.includes(reuseFlag)) requireCheckedBuild(repositoryRoot);
+  else run("npm", ["run", "build", "--workspace=@novapharm/portal"], "Portal production build");
   run(
     process.execPath,
     [join(repositoryRoot, "scripts", "start-browser-validation.mjs"), runtimeRoot],
