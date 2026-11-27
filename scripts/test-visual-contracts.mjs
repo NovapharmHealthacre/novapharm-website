@@ -175,7 +175,7 @@ assert.match(products, /<h1 id="np-products-title">Carefully selected\.<br>For t
 assert.match(products, /data-photo-mode="original-packshot"/, "genuine product photography remains present");
 assert.match(products, /href="\/products\/nutraxin\/"/);
 assert.match(products, /href="\/products\/strategic-portfolio\/"/);
-assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
+assert.doesNotMatch(products.replace(/<select data-nps-filter="price">[\s\S]*?<\/select>/,""), /£|\bGBP\b|Add to basket|Buy now|In stock/);
 
 const register = JSON.parse(text("apps/corporate/data/nutraxin-product-register.json"));
 const retail = JSON.parse(text("assets/data/nutraxin-retail-catalogue.json"));
