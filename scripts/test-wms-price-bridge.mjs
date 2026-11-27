@@ -22,4 +22,17 @@ assert.equal(signed.init.redirect,'error');assert.equal(signed.init.headers['x-a
 assert.match(signed.init.headers.authorization,/Credential=ASIAEXAMPLE\/20261127\/eu-north-1\/lambda\/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-security-token, Signature=[a-f0-9]{64}$/);
 assert.throws(()=>signedPublisherRequest(command,{...creds,Token:'bad\nheader'}));
 await assert.rejects(()=>invokePricePublisher(command,{env:{AWS_CONTAINER_CREDENTIALS_RELATIVE_URI:'//example.com'},fetcher:()=>{throw Error('unexpected fetch')}}),/workload credentials unavailable/i);
+const stageSigned=signedPublisherRequest(command,creds,new Date('2026-11-27T05:00:00Z'),'aws-isolated-staging');
+assert.equal(stageSigned.url,'https://lambda.eu-north-1.amazonaws.com/2015-03-31/functions/novapharm-staging-wms-price-publisher/invocations');
+assert.throws(()=>signedPublisherRequest(command,creds,new Date(),'https://example.com'));
+const metadata={...creds,Expiration:new Date(Date.now()+3600000).toISOString()};
+const metaEnv={AWS_CONTAINER_CREDENTIALS_RELATIVE_URI:'/v2/credentials/00000000-0000-0000-0000-000000000000'};
+const called=[];
+const fakeFetch=async(url)=>{called.push(url);return {ok:true,headers:new Headers(),json:async()=>url.startsWith('http://169.254.170.2')?metadata:{status:'fixture'}}};
+await assert.rejects(()=>invokePricePublisher(command,{env:{...metaEnv,WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-isolated-staging'},fetcher:fakeFetch}),/scope and data mode/);
+await assert.rejects(()=>invokePricePublisher(command,{env:{...metaEnv,WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-private',WMS_COMMERCE_DATA_MODE:'synthetic'},fetcher:fakeFetch}),/scope and data mode/);
+await assert.rejects(()=>invokePricePublisher(command,{env:metaEnv,fetcher:fakeFetch}),/Invalid private publisher scope/);
+assert.equal(called.length,3);
+await invokePricePublisher(command,{env:{...metaEnv,WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-isolated-staging',WMS_COMMERCE_DATA_MODE:'synthetic'},fetcher:fakeFetch});
+assert.equal(called.at(-1),stageSigned.url);
 console.log('WMS bridge permissions, revision binding and signed request contract passed');
