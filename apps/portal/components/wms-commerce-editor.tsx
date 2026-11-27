@@ -1,6 +1,7 @@
 "use client";
-import {useEffect,useState,type FormEvent} from "react";
-import {gatewayJson,protectedMutation,professionalError} from "../lib/gateway";
+import { type FormEvent, useEffect, useState } from "react";
+import { gatewayJson, professionalError, protectedMutation } from "../lib/gateway";
+
 type Draft={sku:string;supplier:string;name:string;brand:string;pack:string;gtin:string|null;grossPriceMinor:number|null;vatBasisPoints:number|null;proposedQuantity:number|null;websiteVisible:boolean;revision:number;updatedAt?:string};
 type Product={sku:string;supplier:string;name:string;brand:string;pack:string|null;gtin:string|null;sourcePriceMinor:number|null;draft:Draft|null;catalogueAdmission:string};
 type PricePreview={sku:string;revision:number;currentGrossMinor:number;proposedGrossMinor:number;vatBasisPoints:number;expectedHash:string};
@@ -12,7 +13,7 @@ export function WmsCommerceEditor(){
  const [data,setData]=useState<Catalogue|null>(null),[search,setSearch]=useState(""),[supplier,setSupplier]=useState(""),[offset,setOffset]=useState(0),[refresh,setRefresh]=useState(0);
  const [preview,setPreview]=useState<PricePreview|null>(null),[priceBusy,setPriceBusy]=useState(false),[dirty,setDirty]=useState(false);
  const [draft,setDraft]=useState<Draft|null>(null),[message,setMessage]=useState(""),[loading,setLoading]=useState(false),[saving,setSaving]=useState(false);
- useEffect(()=>{let active=true;setLoading(true);setData(null);const params=new URLSearchParams({q:search,supplier,offset:String(offset)});gatewayJson<Catalogue>(path+"?"+params).then(r=>{if(active)setData(r);}).catch(e=>{if(active)setMessage(professionalError(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[search,supplier,offset,refresh]);
+ useEffect(()=>{let active=true;setLoading(true);setData(null);const params=new URLSearchParams({q:search,supplier,offset:String(offset),refresh:String(refresh)});gatewayJson<Catalogue>(`${path}?${params}`).then(r=>{if(active)setData(r);}).catch(e=>{if(active)setMessage(professionalError(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[search,supplier,offset,refresh]);
  function select(p:Product){if(saving||priceBusy)return;setPreview(null);setDirty(!p.draft);setMessage("");setDraft(p.draft??{...blank,sku:p.sku,supplier:p.supplier,name:p.name,brand:p.brand,pack:p.pack??"",gtin:p.gtin,grossPriceMinor:null});}
  function change<K extends keyof Draft>(key:K,value:Draft[K]){if(saving||priceBusy)return;setPreview(null);setDirty(true);setDraft(d=>d?{...d,[key]:value}:null);}
  async function save(e:FormEvent){e.preventDefault();if(!data?.canEdit||!draft||saving||priceBusy)return;setPreview(null);setSaving(true);setMessage("");try{const {revision,updatedAt: _updatedAt,...fields}=draft;const response=await protectedMutation<{draft:Draft;status:string;publicationEnabled:false}>(path,{...fields,expectedRevision:revision});if(response.status!=="draft_saved"||response.publicationEnabled!==false)throw new Error("Unexpected response");setDraft(response.draft);setDirty(false);setMessage("Draft saved. Live website, stock and payments have not changed.");setRefresh(v=>v+1);}catch(error){setMessage(professionalError(error));}finally{setSaving(false);}}
