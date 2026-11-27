@@ -1,0 +1,21 @@
+name: Finance AES-256 security
+on:
+  pull_request:
+    paths:
+      - 'src/core/finance-aes256.mjs'
+      - 'scripts/test-finance-aes256.mjs'
+      - '.github/workflows/finance-aes256.yml'
+      - 'docs/finance/aes256-security-standard.md'
+permissions:
+  contents: read
+jobs:
+  crypto-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-finance-aes256.mjs
