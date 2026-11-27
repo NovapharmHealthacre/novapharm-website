@@ -219,8 +219,8 @@ importers:
         specifier: 0.1.0
         version: link:../../packages/security
       lucide-react:
-        specifier: 1.72.0
-        version: 1.72.0(@types/react@19.2.14)(react@19.2.8)
+        specifier: 1.79.0
+        version: 1.79.0(@types/react@19.2.14)(react@19.2.8)
       next:
         specifier: 16.4.6
         version: 16.4.6(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -262,8 +262,8 @@ importers:
         specifier: 0.1.0
         version: link:../../packages/security
       lucide-react:
-        specifier: 1.72.0
-        version: 1.72.0(@types/react@19.2.14)(react@19.2.8)
+        specifier: 1.79.0
+        version: 1.79.0(@types/react@19.2.14)(react@19.2.8)
       next:
         specifier: 16.4.6
         version: 16.4.6(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -2102,8 +2102,8 @@ packages:
   lookup-closest-locale@6.2.0:
     resolution: {integrity: sha512-/c2kL+Vnp1jnV6K6RpDTHK3dgg0Tu2VVp+elEiJpjfS1UyY7AjOYHohRug6wT0OpoX2qFgNORndE9RqesfVxWQ==}
 
-  lucide-react@1.72.0:
-    resolution: {integrity: sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg==}
+  lucide-react@1.79.0:
+    resolution: {integrity: sha512-MDHKxzUobPRyQgt4hHO1z+pUQJKYMvenh8qw+ndWQE0Wg+Hbjli/ZrkZXBGmRBrMvvqDRjkmQj0Z5RbeL/ogNw==}
     peerDependencies:
       '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -4474,7 +4474,7 @@ snapshots:
 
   lookup-closest-locale@6.2.0: {}
 
-  lucide-react@1.72.0(@types/react@19.2.14)(react@19.2.8):
+  lucide-react@1.79.0(@types/react@19.2.14)(react@19.2.8):
     dependencies:
       react: 19.2.8
     optionalDependencies:
