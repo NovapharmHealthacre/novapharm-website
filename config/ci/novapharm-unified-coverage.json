@@ -118,7 +118,8 @@
         "scripts/test-wms-commerce-product-master.mjs",
         "scripts/test-wms-commerce-drafts.mjs",
         "scripts/test-wms-price-publisher.mjs",
-        "scripts/test-wms-price-bridge.mjs"
+        "scripts/test-wms-price-bridge.mjs",
+        "scripts/test-wms-commerce-persistence.mjs"
       ]
     },
     "native-ios-swiftui": {
