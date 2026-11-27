@@ -1,0 +1,72 @@
+{
+  "schema": "novapharm-four-official-manufacturer-source-records-v1",
+  "reviewedOn": "2026-11-27",
+  "status": "PREPARED_NOT_PUBLISHED_OR_CHARGEABLE",
+  "physicalCurrentUKPackInspected": false,
+  "products": [
+    {
+      "gtin": "4103040003188",
+      "brand": "SEBAMED",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/clear-face-mattifying-cream-50ml",
+      "supplierProductUrl": "https://www.connectivepharma.com/en/product/7570/sebamed_clear_face_mattifying_cream_50ml",
+      "photoSha256": "5788ccc3e7d9c713ef8c0c250ad6e1ec6ca1e9e99f8310bd73d6740757a1b192",
+      "image": "/assets/media/products/connective/4103040003188/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "officialManufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalCurrentUKPackInspected": false,
+      "manufacturerPageListsSupplierGTIN": false,
+      "customerPaymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27",
+      "productClass": "cosmetic",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "4103040004932",
+      "brand": "SEBAMED",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/clear-face-gentle-scrub-150ml",
+      "supplierProductUrl": "https://www.connectivepharma.com/en/product/7571/sebamed_clear_face_gentle_scrub_150ml",
+      "photoSha256": "ba6b19511bb151f8318c3668b6d5ce987c7aba3bac2cfa72f4465a4b79c00277",
+      "image": "/assets/media/products/connective/4103040004932/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "officialManufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalCurrentUKPackInspected": false,
+      "manufacturerPageListsSupplierGTIN": false,
+      "customerPaymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27",
+      "productClass": "cosmetic",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "5021265247400",
+      "brand": "VITABIOTICS",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-2000iu-extra-strength-96-tablets",
+      "supplierProductUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-2000iu-extra-strength-96-tablets",
+      "photoSha256": "7f4957797326041191c87b209d020f09209af8995b6ef65788a0c71b8a7df35b",
+      "image": "/assets/media/products/connective/5021265247400/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "officialManufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalCurrentUKPackInspected": false,
+      "manufacturerPageListsSupplierGTIN": false,
+      "customerPaymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27",
+      "productClass": "food_supplement",
+      "vatBasisPointsCandidate": 2000
+    },
+    {
+      "gtin": "5021265248223",
+      "brand": "VITABIOTICS",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-400iu-tablets",
+      "supplierProductUrl": "https://www.vitabiotics.com/products/ultra-vitamin-d-400iu-tablets",
+      "photoSha256": "48ca67da89e7a2cbc2c023530037ec73c008cfb2f1f0cbfeab3a5394d1662358",
+      "image": "/assets/media/products/connective/5021265248223/front-800.webp",
+      "ownerPhotoUseAuthorised": true,
+      "officialManufacturerIngredientsDirectionsWarningsReviewed": true,
+      "physicalCurrentUKPackInspected": false,
+      "manufacturerPageListsSupplierGTIN": false,
+      "customerPaymentOfferAdmitted": false,
+      "sourceReviewedOn": "2026-11-27",
+      "productClass": "food_supplement",
+      "vatBasisPointsCandidate": 2000
+    }
+  ]
+}
