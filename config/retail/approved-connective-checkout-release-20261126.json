@@ -2,7 +2,7 @@
   "schema": "novapharm.retail-owner-release.v1",
   "approvedOn": "2026-11-27",
   "approval": "granted",
-  "scope": "fifty-two-reviewed-supplier-backed-consumer-offers",
+  "scope": "fifty-six-reviewed-supplier-backed-consumer-offers",
   "checkoutApiOrigin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com",
   "checkoutCollection": "/products/health-and-wellbeing/",
   "sharedBag": "/products/nutraxin/bag/",
@@ -42,15 +42,19 @@
     "5021265221424",
     "5021265221509",
     "5021265221608",
+    "5021265221806",
+    "5021265222506",
     "5021265222551",
     "5021265222605",
     "5021265222902",
     "5021265223305",
     "5021265223510",
+    "5021265223534",
     "5021265224081",
     "5021265227396",
     "5021265243341",
     "5021265243372",
+    "5021265243389",
     "5021265244072",
     "5021265244157",
     "5021265244447",
@@ -65,6 +69,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 15,
-  "publicationFix": "Four exact GTIN/pack manufacturer reviewed supplement releases; payment admission after public deployment"
+  "publicationAttempt": 16,
+  "publicationFix": "Four official-source GTIN-corroborated food supplements; preserve conditional payment release"
 }
