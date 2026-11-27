@@ -17,6 +17,8 @@ test("both independently required protected-main contexts remain unconditional",
   assert.match(gate, /node scripts\/ci\/verify-unified-ci-contract\.mjs --run/);
   assert.match(gate, /npm run build && npm run build:public-only/);
   assert.doesNotMatch(gate, /^\s+(?:id-token|deployments|pages|actions): write\s*$/m);
+  assert.match(gate, /Read-only change-impact shadow report \(no test selection\)/);
+  assert.match(gate, /node --test scripts\/ci\/test-change-impact\.mjs && node scripts\/ci\/plan-change-impact\.mjs --github-event/);
 });
 
 test("locked installs continue using npm ci and pinned existing dependencies", () => {
