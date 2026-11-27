@@ -400,6 +400,7 @@ function runStore(data) {
       })();return catalogueLoading;
     }
     const openAll=()=>{all.hidden=false;top.querySelector("#nps-essentials").hidden=true;void loadAll();renderAll()};
+    for(const link of top.querySelectorAll('a[href="#nps-essentials"]'))link.addEventListener("click",()=>{all.hidden=true;top.querySelector("#nps-essentials").hidden=false});
     search.hidden=false;
     query.addEventListener("input",()=>{limit=12;openAll()});
     search.querySelector("[data-nps-clear]").onclick=()=>{query.value="";limit=12;openAll();query.focus()};
