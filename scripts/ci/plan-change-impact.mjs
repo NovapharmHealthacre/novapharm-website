@@ -112,7 +112,7 @@ export async function fetchExactPRPaths(event, request = fetch) {
 }
 
 export async function planGitHubEvent(event, request = fetch) {
-  const policy = JSON.parse(read(REPO_ROOT, POLICY_FILE));
+  const policy = JSON.parse(readFileSync(resolve(REPO_ROOT, POLICY_FILE), "utf8"));
   let paths = [];
   let source = "fallback-full-estate";
   let unavailable = false;
