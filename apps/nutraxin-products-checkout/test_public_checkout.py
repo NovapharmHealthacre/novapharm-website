@@ -477,6 +477,13 @@ class ProductsPaymentTests(unittest.TestCase):
         self.assertEqual(row["totalGrossMinor"]["N"],str(999*2+1749+449))
         self.assertEqual(row["shippingGrossMinor"]["N"],"449")
         self.assertEqual(sum(x["grossMinor"] for x in json.loads(row["approvedLinesJson"]["S"])),999*2+1749+449)
+    def test_reprice_rejects_revised_client_when_server_is_legacy(self):
+        payload=dict(self.basket(),retail_price_revision=API.REPRICE_REVISION)
+        result=API.handler(self.event("/checkout","POST",payload),None)
+        self.assertEqual(result["statusCode"],422)
+        self.assertFalse(DB.rows)
+        self.assertFalse(WORKER.calls)
+
     def test_reprice_rejects_cached_client_without_revision(self):
         API.REPRICE_ENABLED=True
         result=API.handler(self.event("/checkout","POST",self.basket()),None)
