@@ -16,6 +16,7 @@ const migrationFiles = [
   "009_authoritative_bulk_observations.sql",
   "010_source_scoped_medicine_marts.sql",
   "011_distribution_pilot_feedback.sql",
+  "012_wms_commerce_drafts.sql",
 ];
 const expectedMigrations = new Map(migrationFiles.map((file) => {
   const source = readFileSync(resolve("database", "sqlite", file), "utf8");
@@ -45,7 +46,7 @@ const requiredTables = [
   "population_age_sex_history", "practice_monthly_mapping", "medicine_mart_build_runs",
   "mart_medicine_source_month", "mart_medicine_source_geography_month", "mart_medicine_source_practice_month",
   "mart_medicine_source_presentation_month", "mart_medicine_source_supplier_month",
-  "wms_pilot_feedback",
+  "wms_pilot_feedback", "wms_commerce_drafts",
 ];
 
 async function validate(provider) {
