@@ -571,6 +571,20 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertNotIn("qty48_price_pence", response["body"])
         self.assertEqual(PORTAL.handler(self.event("/api/catalogue"), None)["statusCode"], 401)
 
+    def test_revised_retail_catalogue_is_separate_from_wholesale(self):
+        previous=PORTAL.REPRICE_ENABLED
+        PORTAL.REPRICE_ENABLED=True
+        try:
+            response=PORTAL.handler(self.event("/api/retail/catalogue"),None)
+            self.assertEqual(response["statusCode"],200)
+            payload=json.loads(response["body"])
+            self.assertEqual(payload["uk_delivery_charge_pence"],449)
+            self.assertEqual(payload["retail_price_revision"],PORTAL.REPRICE_REVISION)
+            self.assertEqual({p["sku"]:p["retail_price_pence"] for p in payload["products"]},PORTAL.REPRICE_GROSS)
+            self.assertNotIn("qty48_price_pence",response["body"])
+        finally:
+            PORTAL.REPRICE_ENABLED=previous
+
     def test_personal_account_does_not_require_trade_approval(self):
         self.assertIn("Your account is ready.", PORTAL.PAGE)
         self.assertIn("Business account approval is not required for personal shopping", PORTAL.PAGE)
