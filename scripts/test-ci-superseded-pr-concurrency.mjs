@@ -4,6 +4,9 @@ import { test } from "node:test";
 
 const root = new URL("../", import.meta.url);
 const paths = [
+  ".github/workflows/novapharm-unified-ci-gate.yml",
+  ".github/workflows/apple-debugging-dna.yml",
+  ".github/workflows/apple-hig-writing.yml",
   ".github/workflows/public-pages-browser-acceptance.yml",
   ".github/workflows/supply-chain.yml",
   ".github/workflows/intelligence-nova-egress-contract.yml",

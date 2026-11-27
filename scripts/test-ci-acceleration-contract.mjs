@@ -22,6 +22,23 @@ test("both independently required protected-main contexts remain unconditional",
   assert.match(gate, /node --test scripts\/ci\/test-change-impact\.mjs && node scripts\/ci\/plan-change-impact\.mjs --github-event/);
 });
 
+test("protected-main CI and read-only Apple suites only cancel superseded pull-request runs", () => {
+  const expected = [
+    ".github/workflows/novapharm-unified-ci-gate.yml",
+    ".github/workflows/apple-debugging-dna.yml",
+    ".github/workflows/apple-hig-writing.yml",
+  ];
+  for (const path of expected) {
+    const body = file(path);
+    assert.match(body, /^  pull_request:/m, path + " must continue validating PRs");
+    assert.match(body, /^  push:/m, path + " must continue validating main pushes");
+    assert.match(body, /^    branches: \[main\]/m, path + " must remain main scoped");
+    assert.match(body, /^concurrency:\s*\n  group: \$\{\{ github\.workflow \}\}-\$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.number \|\| github\.run_id \}\}\s*\n  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}\s*$/m,
+      path + " must never cancel a main-push or manual validation");
+    assert.match(body, /^permissions:\s*\n  contents: read/m, path + " must remain read-only");
+  }
+});
+
 test("locked installs continue using npm ci and pinned existing dependencies", () => {
   for (const path of [
     ".github/workflows/ci.yml",
