@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {canPublishPrice,validatePriceRequest,savedPrice,validateOfferPreview,priceCommand} from '../src/core/wms-price-bridge-contract.mjs';
 import {signedPublisherRequest,invokePricePublisher} from '../src/core/wms-price-invoke.mjs';
 const context={username:'owner@example.test',accessType:'employee',accessScopes:['employee']},env={WMS_COMMERCE_DRAFTS_ENABLED:'true',WMS_COMMERCE_EDITOR_ALLOWLIST:context.username,WMS_COMMERCE_PRICE_PUBLISH_ENABLED:'true',WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-private'};
@@ -35,4 +36,15 @@ await assert.rejects(()=>invokePricePublisher(command,{env:metaEnv,fetcher:fakeF
 assert.equal(called.length,3);
 await invokePricePublisher(command,{env:{...metaEnv,WMS_COMMERCE_PRICE_PUBLISH_SCOPE:'aws-isolated-staging',WMS_COMMERCE_DATA_MODE:'synthetic'},fetcher:fakeFetch});
 assert.equal(called.at(-1),stageSigned.url);
+const smoke=JSON.parse(readFileSync(new URL('../infra/aws/wms-staging-signed-acceptance.json',import.meta.url),'utf8'));
+const task=smoke.Resources.AcceptanceTask.Properties;
+assert.deepEqual(task.TaskRoleArn,{'Fn::GetAtt':['AcceptanceRole','Arn']});
+assert.equal(task.ContainerDefinitions[0].ReadonlyRootFilesystem,true);
+const stageRole=smoke.Resources.AcceptanceRole.Properties.Policies;
+assert.equal(stageRole.length,1);
+assert.equal(stageRole[0].PolicyDocument.Statement[0].Action,'lambda:InvokeFunction');
+assert.equal(stageRole[0].PolicyDocument.Statement[0].Resource['Fn::Sub'].split(':').at(-1),'novapharm-staging-wms-price-publisher');
+const commandSource=task.ContainerDefinitions[0].Command[0];
+assert(commandSource.includes(readFileSync(new URL('../src/core/wms-price-invoke.mjs',import.meta.url),'utf8')));
+assert(task.ContainerDefinitions[0].Environment.some(e=>e.Name==='WMS_COMMERCE_DATA_MODE'&&e.Value==='synthetic'));
 console.log('WMS bridge permissions, revision binding and signed request contract passed');
