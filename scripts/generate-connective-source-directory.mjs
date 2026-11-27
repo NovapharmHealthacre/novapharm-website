@@ -156,8 +156,14 @@ if (!existsSync(path(sourceFile))) {
   // Only source-linked, manufacturer-online information is shown here.
   // It is not evidence of checked physical pack labels, image rights, prices or stock.
   const manufacturerInfo = new Map();
-  const labelFile = 'src/content/connective-first-seven-manufacturer-info.json';
-  if (existsSync(path(labelFile))) {
+  // Extend source-only information by reviewed batch, never by unreviewed scrape.
+  // The existing first-seven record stays the authoritative historical source.
+  const labelFiles = [
+    'src/content/connective-first-seven-manufacturer-info.json',
+    'src/content/connective-two-manufacturer-online-details-20261127.json'
+  ];
+  for (const labelFile of labelFiles) {
+    if (!existsSync(path(labelFile))) continue;
     const labels = JSON.parse(read(labelFile));
     assert(labels.schema === 'novapharm-connective-manufacturer-online-reference-v1' &&
       labels.notLicenceEvidence === true && labels.requiresPackReview === true &&
