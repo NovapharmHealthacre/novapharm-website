@@ -1,0 +1,45 @@
+name: Regenerate reviewed logo inventory
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/refresh-retail-brand-inventory.yml
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    if: github.event.pull_request.number == 1303 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'design/official-brand-logo-grid-bdb3a07'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out exact reviewed branch head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Rebuild and independently verify the entire media inventory
+        run: |
+          npm ci --ignore-scripts --prefer-offline
+          npm run images:inventory
+          npm run images:inventory:validate
+      - name: Commit regenerated inventory only to the reviewed PR branch
+        env:
+          SOURCE_BRANCH: ${{ github.event.pull_request.head.ref }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audit/generated/image-inventory.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Regenerate verified media inventory from synchronized source"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"

@@ -2,7 +2,7 @@
   "schema": "novapharm.retail-owner-release.v1",
   "approvedOn": "2026-11-27",
   "approval": "granted",
-  "scope": "forty-four-reviewed-supplier-backed-consumer-offers",
+  "scope": "forty-eight-reviewed-supplier-backed-consumer-offers",
   "checkoutApiOrigin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com",
   "checkoutCollection": "/products/health-and-wellbeing/",
   "sharedBag": "/products/nutraxin/bag/",
@@ -36,6 +36,8 @@
     "5021265220175",
     "5021265220403",
     "5021265221004",
+    "5021265221202",
+    "5021265221226",
     "5021265221301",
     "5021265221424",
     "5021265221509",
@@ -45,6 +47,8 @@
     "5021265222902",
     "5021265223305",
     "5021265223510",
+    "5021265224081",
+    "5021265227396",
     "5021265243372",
     "5021265244072",
     "5021265245611",
@@ -57,6 +61,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 12,
-  "publicationFix": "Restore known-good publisher without duplicated workflow body; allow exact 44-GTIN scope and forward-only website deployment"
+  "publicationAttempt": 14,
+  "publicationFix": "Source-reviewed four exact barcode dual packs; existing payment gateway unaffected; publication before admission"
 }

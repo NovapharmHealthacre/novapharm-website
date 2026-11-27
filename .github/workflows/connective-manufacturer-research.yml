@@ -1,0 +1,37 @@
+name: Collect Connective manufacturer online label candidates
+on:
+  pull_request:
+    paths:
+      - 'scripts/research-connective-manufacturer-pages.mjs'
+      - 'scripts/research-connective-manufacturer-pages.test.mjs'
+      - '.github/workflows/connective-manufacturer-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manufacturer-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout read-only source catalogue
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked parser
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test fail-closed product research
+        run: node --test scripts/research-connective-manufacturer-pages.test.mjs
+      - name: Collect manufacturer product-page candidates
+        run: node scripts/research-connective-manufacturer-pages.mjs --output=research/connective-official-label-candidates.json
+      - name: Keep findings private to review workflow, never deploy or enable checkout
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: connective-official-label-review-candidates
+          path: research/connective-official-label-candidates.json
+          if-no-files-found: error
+          retention-days: 14
