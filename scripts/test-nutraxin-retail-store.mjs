@@ -19,7 +19,7 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
   assert.ok(Number.isSafeInteger(publicEntry.retail_price_pence) && publicEntry.retail_price_pence > 0);
   assert.equal(publicEntry.available_to_sell,true);
   assert.equal(publicEntry.ordering_enabled,true);
-  assert.equal(Math.round(publicEntry.retail_net_pence*1.2),publicEntry.retail_price_pence);
+  assert.equal(publicEntry.retail_net_pence,Math.round(publicEntry.retail_price_pence/1.2));
  }
  assert.equal(catalogue.checkout_enabled,true);
  assert.equal(catalogue.payment_collection_enabled,true);
@@ -27,31 +27,31 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
  assert.equal(catalogue.price_includes_estimated_uk_vat,true);
  assert.equal(catalogue.vat_estimate_rate_percent,20);
  assert.equal(catalogue.delivery_verified,true);
- assert.equal(catalogue.provisional_uk_delivery_charge_pence,0);
- assert.equal(catalogue.provisional_uk_delivery_cost_seller_funded,true);
+ assert.equal(catalogue.provisional_uk_delivery_charge_pence,449);
+ assert.equal(catalogue.provisional_uk_delivery_cost_seller_funded,false);
  assert.match(catalogue.source_record,/_v6$/);
 });
-test("public guide prices match all 19 owner-approved 48-tier references plus rounded 20% estimated UK VAT",()=>{
+test("public guide prices match all 19 approved revised VAT-inclusive retail prices",()=>{
  const expected={
- "NUT-UK-VD3-T120": 1547,
- "NUT-UK-VD3-S30": 1547,
- "NUT-UK-VD3K2-T120": 1838,
- "NUT-UK-VD3K2-S30": 1838,
- "NUT-UK-VC1000-T30": 1547,
- "NUT-UK-VC500-C30": 1838,
- "NUT-UK-VMAX-T60": 1838,
- "NUT-UK-VMAX-E15": 1936,
- "NUT-UK-MGCX-T60": 1838,
- "NUT-UK-MGDL-T60": 1838,
- "NUT-UK-MVE-T60": 2032,
- "NUT-UK-MVW-T60": 2226,
- "NUT-UK-MVM-T60": 2226,
- "NUT-UK-CG-T30": 1936,
- "NUT-UK-CG-S30": 3542,
- "NUT-UK-CCX-T90": 2808,
- "NUT-UK-ART-T90": 2323,
- "NUT-UK-LCAR-T60": 1644,
- "NUT-UK-B12-SL60": 1547
+ "NUT-UK-VD3-T120": 949,
+ "NUT-UK-VD3-S30": 949,
+ "NUT-UK-VD3K2-T120": 1099,
+ "NUT-UK-VD3K2-S30": 1099,
+ "NUT-UK-VC1000-T30": 949,
+ "NUT-UK-VC500-C30": 1099,
+ "NUT-UK-VMAX-T60": 1099,
+ "NUT-UK-VMAX-E15": 1199,
+ "NUT-UK-MGCX-T60": 1099,
+ "NUT-UK-MGDL-T60": 1099,
+ "NUT-UK-MVE-T60": 1249,
+ "NUT-UK-MVW-T60": 1349,
+ "NUT-UK-MVM-T60": 1349,
+ "NUT-UK-CG-T30": 1199,
+ "NUT-UK-CG-S30": 2149,
+ "NUT-UK-CCX-T90": 1749,
+ "NUT-UK-ART-T90": 1399,
+ "NUT-UK-LCAR-T60": 999,
+ "NUT-UK-B12-SL60": 949
 };
  assert.equal(Object.keys(expected).length,19);
  for(const item of catalogue.products){
@@ -72,7 +72,7 @@ test("tampered, repeated and out-of-range Bag entries are ignored",()=>{
 });
 test("owner-authorized chargeable price displays only under approved retail policy",()=>{
  const item=catalogue.products[0];
- assert.equal(publicPrice(item,catalogue),1547);
+ assert.equal(publicPrice(item,catalogue),949);
  assert.equal(publicPrice({...item,retail_price_pence:999},catalogue),999);
  assert.equal(publicPrice(item,{...catalogue,price_authority:"not_yet_verified_for_consumer_sale"}),null);
  assert.equal(publicPrice(item,{...catalogue,payment_collection_enabled:false}),null);
@@ -81,7 +81,7 @@ test("owner-authorized chargeable price displays only under approved retail poli
  assert.equal(publicPrice({...item,retail_price_pence:999},approved),999);
  assert.equal(publicPrice({...item,retail_price_pence:-2},approved),null);
  assert.equal(publicPrice({...item,retail_price_pence:2.5},approved),null);
- assert.equal(basketSubtotal([{sku:item.sku,quantity:1}],catalogue),1547);
+ assert.equal(basketSubtotal([{sku:item.sku,quantity:1}],catalogue),949);
  const storefront=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  assert.match(storefront,/data.price_authority === "approved_consumer_retail"/);
  assert.match(storefront,/data.payment_collection_enabled === true/);
@@ -397,6 +397,6 @@ test("verified multi-brand offers share the bag and stale offers remain removabl
  const mixed=mergeRetailOffers(catalogue,{schema:"novapharm-retail-offers-v1",currency:"GBP",products:[p]});
  assert.ok(catalogueIsSafe(mixed));assert.ok(merchantSaleReady(mixed.products.at(-1),mixed));
  const lines=[{sku:catalogue.products[0].sku,quantity:1},{sku,quantity:2}];
- assert.deepEqual(safeBasket(lines,mixed.products),lines);assert.equal(basketSubtotal(lines,mixed),3947);
+ assert.deepEqual(safeBasket(lines,mixed.products),lines);assert.equal(basketSubtotal(lines,mixed),3349);
  const unavailable=mergeRetailOffers(catalogue,null,lines);assert.deepEqual(safeBasket(lines,unavailable.products),lines);assert.equal(basketSubtotal(lines,unavailable),null);assert.equal(merchantSaleReady(unavailable.products.at(-1),unavailable),false);
 });
