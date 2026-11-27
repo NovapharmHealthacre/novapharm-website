@@ -57,6 +57,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 12,
-  "publicationFix": "Restore known-good publisher without duplicated workflow body; allow exact 44-GTIN scope and forward-only website deployment"
+  "publicationAttempt": 13,
+  "publicationFix": "Reconcile six image reference counts with verified CI generator at 44-product released source"
 }
