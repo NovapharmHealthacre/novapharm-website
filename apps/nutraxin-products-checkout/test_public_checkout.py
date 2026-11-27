@@ -102,6 +102,7 @@ class ProductsPaymentTests(unittest.TestCase):
     def setUp(self):
         DB.rows.clear();WORKER.calls.clear();COGNITO.tokens.clear()
         API.SHOP_ENABLED=True
+        API.REPRICE_ENABLED=False
         API.CONSUMER_POOL_ID="eu-north-1_synthetic"
         API.CONSUMER_CLIENT_ID="synthetic-products-pkce"
     def event(self,route,method="GET",payload=None,origin="https://novapharmhealthcare.com"):
@@ -461,6 +462,34 @@ class ProductsPaymentTests(unittest.TestCase):
         self.assertEqual(row["taxMinor"]["N"],"540")
         self.assertEqual(row["totalGrossMinor"]["N"],"3240")
         self.assertEqual(json.loads(row["approvedLinesJson"]["S"])[0]["grossMinor"],3240)
+
+    def test_reprice_all_19_gross_prices_and_one_delivery(self):
+        API.REPRICE_ENABLED=True
+        for sku, expected in API.REPRICE_GROSS.items():
+            payload=dict(self.basket(),lines=[{"sku":sku,"quantity":1}],retail_price_revision=API.REPRICE_REVISION)
+            q=json.loads(API.handler(self.event("/quote","POST",payload),None)["body"])
+            self.assertEqual(q["totalGrossMinor"],expected+449,sku)
+            self.assertEqual(q["shippingGrossMinor"],449,sku)
+        payload=dict(self.basket(),lines=[{"sku":"NUT-UK-LCAR-T60","quantity":2},{"sku":"NUT-UK-CCX-T90","quantity":1}],retail_price_revision=API.REPRICE_REVISION)
+        result=API.handler(self.event("/checkout","POST",payload),None)
+        self.assertEqual(result["statusCode"],200,result["body"])
+        row=DB.rows["ORDER#NUT-"+self.ID]
+        self.assertEqual(row["totalGrossMinor"]["N"],str(999*2+1749+449))
+        self.assertEqual(row["shippingGrossMinor"]["N"],"449")
+        self.assertEqual(sum(x["grossMinor"] for x in json.loads(row["approvedLinesJson"]["S"])),999*2+1749+449)
+    def test_reprice_rejects_revised_client_when_server_is_legacy(self):
+        payload=dict(self.basket(),retail_price_revision=API.REPRICE_REVISION)
+        result=API.handler(self.event("/checkout","POST",payload),None)
+        self.assertEqual(result["statusCode"],422)
+        self.assertFalse(DB.rows)
+        self.assertFalse(WORKER.calls)
+
+    def test_reprice_rejects_cached_client_without_revision(self):
+        API.REPRICE_ENABLED=True
+        result=API.handler(self.event("/checkout","POST",self.basket()),None)
+        self.assertEqual(result["statusCode"],422)
+        self.assertFalse(DB.rows)
+        self.assertFalse(WORKER.calls)
 
     def test_uk_owner_price_vat_delivery_and_guest_only_no_stock_claim(self):
         x=API.handler(self.event("/checkout","POST",self.basket()),None)

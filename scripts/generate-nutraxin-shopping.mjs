@@ -135,7 +135,7 @@ const answerSection = (p, ref, inStock) => {
       ". These values are catalogue references rather than dosing instructions.";
   const buy = inStock
     ? "NovaPharm currently displays a UK retail price of £" + money(p.retail_price_pence) +
-      " including VAT. UK delivery is included under the published offer. " +
+      " including VAT. Standard UK delivery is £" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " per order. " +
       "Confirm final availability and terms at checkout."
     : "Online ordering is currently unavailable for this item. Contact NovaPharm for availability.";
   const rows = [
@@ -264,7 +264,7 @@ for (const product of registered.products) {
     (_, before, after) => before + htmlAttribute(metaDescription) + after);
   const offer = '<div class="nx-merchant-offer" data-merchant-sku="' + p.sku + '">' +
     '<p class="nx-merchant-price">£' + money(p.retail_price_pence) +
-    ' <small>including UK VAT</small></p><p class="nx-merchant-availability">' +
+    ' <small>including UK VAT</small></p><p>Standard UK delivery £' + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + ' per order.</p><p class="nx-merchant-availability">' +
     (inStock ? "Available to order online in the UK." :
       "Currently unavailable to order online. Contact us for availability.") +
     '</p><p class="nx-merchant-regulatory-scope">Nutraxin food supplements have a separate UK consumer shopping journey. NovaPharm does not sell prescription medicines directly to patients. Regulated medicine supply is restricted to qualified businesses and remains subject to applicable authorisations.</p><a class="nx-merchant-shop-link" href="/products/nutraxin/">Shop Nutraxin online</a>' +
@@ -290,7 +290,9 @@ for (const product of registered.products) {
   } else {
     html = html.replace("</main>", discovery + "</main>");
   }
-  if (!html.includes('data-nutraxin-answers="true"')) {
+  if (html.includes('data-nutraxin-answers="true"')) {
+    html = html.replace(/<section[^>]*data-nutraxin-answers="true"[^>]*>[\s\S]*?<\/section>/, answerSection(p, product, inStock));
+  } else {
     assert(html.includes("</main>"), "Missing product main content: " + p.sku);
     html = html.replace("</main>", answerSection(p, product, inStock) + "</main>");
   }

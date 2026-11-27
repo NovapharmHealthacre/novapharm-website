@@ -99,6 +99,7 @@ class PaymentContracts(unittest.TestCase):
             x=calls[-1]
             self.assertEqual(x["success_url"][0],
                 "https://portal.novapharmhealthcare.com/portal/products/?checkout=return&order_id="+record["orderId"]["S"])
+            self.assertEqual(x["metadata[delivery_charge_minor]"], ["600"])
             self.assertEqual(x["cancel_url"][0],
                 "https://portal.novapharmhealthcare.com/portal/products/?checkout=cancelled&order_id="+record["orderId"]["S"])
             public=CHECKOUT.details(record,record["orderId"]["S"],"customer_123456")
@@ -180,6 +181,15 @@ class PaymentContracts(unittest.TestCase):
         ]))
         with self.assertRaises(CHECKOUT.NotReady):
             CHECKOUT.details(invalid,r["orderId"]["S"],"customer_123456")
+
+    def test_delivery_line_must_equal_approved_shipping(self):
+        r=approved_record()
+        lines=json.loads(r["approvedLinesJson"]["S"])
+        lines[0]["grossMinor"] += 1
+        lines[1]["grossMinor"] -= 1
+        r["approvedLinesJson"]=CHECKOUT.s(json.dumps(lines))
+        with self.assertRaises(CHECKOUT.NotReady):
+            CHECKOUT.details(r,r["orderId"]["S"],"customer_123456")
 
     def test_new_retail_namespace_requires_multibrand_approval(self):
         r=approved_record()

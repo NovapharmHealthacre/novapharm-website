@@ -540,8 +540,8 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 /* Mobile discovery: stable rows, generous touch targets, and unobscured anchor destinations. */
 .np-store .nps-category-tabs>button{scroll-margin-block:112px 24px;min-width:0}
 @media(max-width:640px){
- .np-store .nps-category-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin-block:24px 16px}
- .np-store .nps-category-tabs>button{display:flex;align-items:center;justify-content:center;min-height:56px;padding:12px 8px;line-height:1.35;text-align:center;white-space:normal}
+ .np-store .nps-category-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;align-items:stretch;margin-block:24px 24px;overflow:visible}
+ .np-store .nps-category-tabs>button{display:flex;align-items:center;justify-content:center;min-height:64px;padding:12px 8px;line-height:1.35;text-align:center;white-space:normal}
  .np-store #nps-essentials,.np-store #nps-professional,.np-store #nps-all-products{scroll-margin-top:112px}
 }
 

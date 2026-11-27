@@ -122,7 +122,7 @@ def details(order, order_id, subject):
         name = line.get("name")
         amount = line.get("grossMinor")
         if sku == "DELIVERY-APPROVED":
-            if has_delivery or qty != 1 or shipping <= 0 or name != "Approved delivery and handling":
+            if has_delivery or qty != 1 or shipping <= 0 or amount != shipping or name != "Approved delivery and handling":
                 raise NotReady("Delivery line not approved")
             has_delivery = True
         elif not isinstance(sku, str) or not (SKU.fullmatch(sku) or (
@@ -141,7 +141,7 @@ def details(order, order_id, subject):
     if channel is not None and channel != s("PORTAL_RETAIL"):
         raise NotReady("Unknown checkout return channel")
     return {"orderId": order_id, "customerSub": subject, "customerId": subject,
-            "quoteVersion": quote, "totalGrossMinor": total, "lines": lines,
+            "quoteVersion": quote, "totalGrossMinor": total, "shippingGrossMinor": shipping, "lines": lines,
             "checkoutChannel": "PORTAL_RETAIL" if channel else "PUBLIC_STORE"}
 
 
@@ -171,7 +171,7 @@ def stripe_session(order, attempt):
         "billing_address_collection": "required",
         "shipping_address_collection[allowed_countries][0]": "GB",
         "phone_number_collection[enabled]": "true",
-        "metadata[delivery_charge_minor]": "0",
+        "metadata[delivery_charge_minor]": str(order["shippingGrossMinor"]),
         "success_url": success_url,
         "cancel_url": cancel_url,
         "automatic_tax[enabled]": "false",
