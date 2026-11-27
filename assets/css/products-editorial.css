@@ -536,3 +536,11 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 .np-store .nps-category-tabs>button{font-size:15px;min-height:48px;padding-inline:16px}
 @media(max-width:1000px){.np-store .nps-filter-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:640px){.np-store .nps-hero-art.nps-editorial-stage{aspect-ratio:1.4}.np-store .nps-brand-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}.np-store .nps-brand-grid>a{min-height:76px}.np-store .nps-filter-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.np-store .nps-filter-row>label>select{padding-inline:9px}.np-store .nps-category-tabs>button{font-size:14px;padding-inline:12px}}
+
+/* Mobile discovery: stable rows, generous touch targets, and unobscured anchor destinations. */
+.np-store .nps-category-tabs>button{scroll-margin-block:112px 24px;min-width:0}
+@media(max-width:640px){
+ .np-store .nps-category-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin-block:24px 16px}
+ .np-store .nps-category-tabs>button{display:flex;align-items:center;justify-content:center;min-height:56px;padding:12px 8px;line-height:1.35;text-align:center;white-space:normal}
+ .np-store #nps-essentials,.np-store #nps-professional,.np-store #nps-all-products{scroll-margin-top:112px}
+}
