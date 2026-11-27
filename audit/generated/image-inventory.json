@@ -1492,7 +1492,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 11,
-      "referenceCount": 15,
+      "referenceCount": 17,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         ".github/workflows/publish-aws-contact-production.yml",
@@ -1862,7 +1862,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 101,
-      "referenceCount": 258,
+      "referenceCount": 261,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -3396,7 +3396,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 9,
-      "referenceCount": 24,
+      "referenceCount": 31,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -3452,7 +3452,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 5,
-      "referenceCount": 6,
+      "referenceCount": 7,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -6989,7 +6989,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 10,
-      "referenceCount": 24,
+      "referenceCount": 28,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -7640,7 +7640,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 5,
-      "referenceCount": 7,
+      "referenceCount": 10,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "creative-assets/module-media-asset-register.json",
@@ -21806,10 +21806,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-two-verified-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -21843,10 +21845,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
-        "docs/retail/connective-395-owner-photo-candidates.json"
+        "docs/retail/connective-395-owner-photo-candidates.json",
+        "docs/retail/connective-next-two-verified-source-evidence-20261127.json",
+        "src/content/approved-consumer-catalogue.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-100",

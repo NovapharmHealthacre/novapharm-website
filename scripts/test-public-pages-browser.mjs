@@ -563,7 +563,10 @@ for (const [engineName, browserType] of engines) {
               assert.equal(await page.locator("[data-nps-bag-link]").count(),1,label+": shared Bag link missing");
               assert.equal(await page.locator(".nps-brand-grid a").count(),8,label+": brand directory incomplete");
               assert.equal(await page.locator("[data-nps-brand-logo-directory] img").count(),8,label+": original brand marks missing");
-              assert.equal(await page.locator("[data-nps-brand-logo-directory] .nps-brand-name").count(),8,label+": readable brand names missing");
+              assert.equal(await page.locator("[data-nps-brand-logo-directory] .nps-brand-name").count(),0,label+": duplicate brand captions should not be shown");
+              assert.equal(await page.locator("[data-nps-brand-logo-directory] a[aria-label]").count(),8,label+": brand accessible names missing");
+              const brandColumns=await page.locator("[data-nps-brand-logo-directory]").evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(" ").length);
+              assert.equal(brandColumns,viewport.width<=640?2:4,label+": incorrect brand-grid columns");
               for(const logo of await page.locator("[data-nps-brand-logo-directory] img").all()){
                 await logo.scrollIntoViewIfNeeded();
                 await logo.evaluate(async image=>{await image.decode();});

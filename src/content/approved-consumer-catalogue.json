@@ -670,5 +670,37 @@
     "identityConfirmed": true,
     "imageRightsConfirmed": true,
     "publicListingApproved": true
+  },
+  {
+    "ean": "5021265222605",
+    "brand": "VITABIOTICS",
+    "name": "Visionace Original",
+    "category": "Eye health supplements",
+    "pack": "30 Tablets",
+    "description": "Food supplement. Per daily tablet: beta-carotene 3 mg; citrus bioflavonoids 15 mg; bilberry equivalent 60 mg; lutein esters 4 mg; vitamin A 300 µg RE (38% NRV), D 2.5 µg (50%), E 60 mg α-TE (500%), C 150 mg (188%), B1 12 mg (1091%), B2 4.8 mg (343%), niacin 18 mg NE (113%), B6 10 mg (714%), folic acid 400 µg (200%), B12 9 µg (360%), pantothenic acid 20 mg (333%), magnesium 60 mg (16%), iron 6 mg (43%), zinc 15 mg (150%), copper 1000 µg (100%), manganese 4 mg (200%), selenium 150 µg (273%), chromium 50 µg (125%), iodine 100 µg (67%). NRV = nutrient reference value.",
+    "ingredients": "Ascorbic acid; bulking agents (microcrystalline cellulose, dibasic calcium phosphate); magnesium oxide; vitamin E (D-alpha tocopheryl acid succinate, SOYA); lutein and zeaxanthin esters (antioxidants: vitamin E, ascorbyl palmitate); zinc sulphate; coating (hydroxypropylmethylcellulose, hydroxypropylcellulose, talc, calcium carbonate and iron oxide colours); calcium pantothenate; citrus bioflavonoids; anti-caking agents (stearic acid, magnesium stearate, silicon dioxide); thiamin mononitrate; nicotinamide; ferrous fumarate; beta-carotene (DL-alpha tocopherol antioxidant); pyridoxine hydrochloride; bilberry extract; manganese sulphate; cross-linked cellulose gum; riboflavin; hydroxypropylmethylcellulose; vitamin A acetate (DL-alpha tocopherol antioxidant); copper sulphate; cholecalciferol (DL-alpha tocopherol antioxidant); folic acid; sodium selenate; chromium trichloride; potassium iodide; cyanocobalamin.",
+    "directions": "Adults: take one tablet daily with the main meal, using water or a cold drink. Swallow whole on a full stomach. Do not exceed one tablet per day.",
+    "warnings": "Contains SOYA; do not take with soya allergy. Manufactured where nuts may be handled. Not for children; excess iron can harm young children. Ask a doctor or pharmacist before use if pregnant, breastfeeding, taking medication, under medical supervision, or affected by epilepsy, thyroid disease, haemochromatosis or food allergies. Do not combine with another Visionace or multivitamin supplement. Not a replacement for a balanced varied diet and healthy lifestyle. Keep dry below 25°C and away from children.",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5021265222605/front-800.webp",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
+  },
+  {
+    "ean": "5021265222902",
+    "brand": "VITABIOTICS",
+    "name": "Osteocare Fizz",
+    "category": "Bone Health",
+    "pack": "20 Effervescent tablets",
+    "description": "Orange-flavoured food supplement. Per tablet: vitamin D3 10 µg (200% NRV), vitamin C 60 mg (75%), calcium 400 mg (50%), magnesium 60 mg (16%), zinc 5 mg (50%), copper 500 µg (50%), manganese 0.75 mg (38%), selenium 25 µg (45%). Two tablets supply twice these amounts. NRV = nutrient reference value.",
+    "ingredients": "Citric acid (acidity regulator); calcium carbonate; sweeteners (sorbitol, sucralose); sodium bicarbonate (acidity regulator); flavourings (orange: maltodextrin, dextrin, natural flavour; lemon: maltodextrin, gum arabic, citric acid; apricot: maltodextrin, dextrin, glyceryl triacetate, acetic acid, natural flavour); magnesium oxide; starch; ascorbic acid; zinc sulphate; beetroot powder; vitamin D3 (cholecalciferol, acacia, sucrose, corn starch, medium-chain triglycerides, DL-alpha tocopherol antioxidant); sodium riboflavin-5-phosphate colour; manganese sulphate; copper sulphate; sodium selenite.",
+    "directions": "Dissolve one tablet in a glass of water; drink once or twice a day as required. Do not exceed two tablets daily.",
+    "warnings": "Contains polyols; excessive consumption may have a laxative effect. Not for children. Manufactured where nuts may be handled. Consult a doctor or pharmacist if under medical supervision, using medication, or affected by epilepsy, an underlying condition or food allergies. Supplements do not replace a varied balanced diet and healthy lifestyle. Store dry below 25°C, away from children.",
+    "productClass": "food_supplement",
+    "image": "/assets/media/products/connective/5021265222902/front-800.webp",
+    "identityConfirmed": true,
+    "imageRightsConfirmed": true,
+    "publicListingApproved": true
   }
 ]

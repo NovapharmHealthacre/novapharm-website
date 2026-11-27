@@ -8,7 +8,7 @@
       "id": "nutraxin",
       "displayUrl": "/assets/media/brands/nutraxin.png",
       "sourcePage": "https://nutraxin.com.tr/",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Exact manufacturer header logo visually checked, original PNG.",
       "remoteSourceUrl": "https://nutraxin.com.tr/nutraxin/images/logo.png"
@@ -18,7 +18,7 @@
       "id": "biogaia",
       "displayUrl": "/assets/media/brands/biogaia.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:BioGaia%C2%AE_logo_PMS_296.png",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "Public-domain text-logo assessment on Commons; trademark rights remain; no endorsement implied.",
       "review": "Original BioGaia navy wordmark visually checked; Commons marks it PD-textlogo. Not sourced from the noncommercial-only press image bank.",
       "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d0/BioGaia%C2%AE_logo_PMS_296.png"
@@ -28,7 +28,7 @@
       "id": "bioglan",
       "displayUrl": "/assets/media/brands/bioglan.png",
       "sourcePage": "https://www.pharmacarenz.co.nz/our-brands/bioglan/",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Original manufacturer-parent PharmaCare logo visually checked on its site.",
       "remoteSourceUrl": "https://www.pharmacarenz.co.nz/wp-content/uploads/2025/07/BIOGLAN-LOGO-1.png"
@@ -38,7 +38,7 @@
       "id": "centrum",
       "displayUrl": "/assets/media/brands/centrum.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Centrum_(multivitamin)_logo.png",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
       "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Centrum_%28multivitamin%29_logo.png"
@@ -48,7 +48,7 @@
       "id": "salus",
       "displayUrl": "/assets/media/brands/salus.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:Salus_Logo.svg",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "CC BY 4.0 as listed by Wikimedia Commons; SALUS Haus Dr. med. Otto Greither Nachf. GmbH & Co. KG; PNG thumbnail of SVG; no colour edits.",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
       "remoteSourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Salus_Logo.svg/330px-Salus_Logo.svg.png",
@@ -59,7 +59,7 @@
       "id": "seven-seas",
       "displayUrl": "/assets/media/brands/seven-seas.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:SevenSeas.png",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "CC BY 4.0 as listed on Commons, attributed to Procter & Gamble; uploader licence authority not independently verified.",
       "review": "Original coloured Seven Seas mark, visually checked from public logo archive. Not a current brand-owner media-kit certification.",
       "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c7/SevenSeas.png",
@@ -70,7 +70,7 @@
       "id": "vicks",
       "displayUrl": "/assets/media/brands/vicks.png",
       "sourcePage": "https://commons.wikimedia.org/wiki/File:VicksLogo.png",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "trademark of respective owner",
       "review": "Manufacturer mark visually reviewed; original asset will be copied unchanged from source and checked for valid PNG.",
       "remoteSourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/VicksLogo.png"
@@ -78,13 +78,30 @@
     {
       "name": "Vitabiotics",
       "id": "vitabiotics",
-      "displayUrl": "/assets/media/brands/vitabiotics.jpg",
+      "displayUrl": "/assets/media/brands/vitabiotics.png",
       "sourcePage": "https://x.com/vitabiotics",
-      "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
+      "assetHosting": "Local image with recorded original and delivered checksums",
       "rights": "Vitabiotics trademark; publication rights unverified. Manufacturer website terms require prior written consent for trademark use in connection with products or services; assess supplier approval before publication.",
-      "review": "Candidate original red omega and black wordmark from brand's public social profile, visually checked via indexed image. Download and full decode pending; no commercial logo permission inferred.",
+      "review": "Source retrieval and visual review pending; no commercial logo permission inferred.",
       "remoteSourceUrl": "https://pbs.twimg.com/profile_images/772814198971719680/3kLr8qeK.jpg",
-      "termsUrl": "https://www.vitabiotics.com/pages/terms"
+      "termsUrl": "https://www.vitabiotics.com/pages/terms",
+      "candidateSources": [
+        {
+          "url": "https://pbs.twimg.com/profile_images/772814198971719680/3kLr8qeK.jpg",
+          "page": "https://x.com/vitabiotics",
+          "kind": "manufacturer public profile"
+        },
+        {
+          "url": "https://pbs.twimg.com/profile_images/772814198971719680/3kLr8qeK.jpg?format=jpg&name=400x400",
+          "page": "https://x.com/vitabiotics",
+          "kind": "manufacturer profile image variant"
+        },
+        {
+          "url": "https://cdn.tgdd.vn/News/1510776/logo-cong-ty-845x660.jpg",
+          "page": "https://www.nhathuocankhang.com/ban-tin-suc-khoe/thuong-hieu-vitabiotics-cua-nuoc-nao-co-tot-khong-1510776",
+          "kind": "retailer-published original corporate logo; alternative requiring visual review"
+        }
+      ]
     }
   ]
 }

@@ -1,93 +1,83 @@
 #!/usr/bin/env python3
-"""Download the eight reviewed original image files; fail closed on unexpected hosts or bytes."""
+"""Retrieve only reviewed original brand image sources; fail closed."""
 from __future__ import annotations
 import hashlib
 import json
+import os
 from pathlib import Path
-import struct
 from urllib.parse import urlparse
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
-ROOT = Path(__file__).resolve().parents[1]
-REGISTER = ROOT / "docs/retail/brand-logo-source-register-20261127.json"
-TARGET = ROOT / "assets/media/brands"
-EXPECTED = {
-    "nutraxin": {"nutraxin.com.tr", "www.nutraxin.com.tr"},
-    "biogaia": {"upload.wikimedia.org"},
-    "bioglan": {"www.pharmacarenz.co.nz", "pharmacarenz.co.nz"},
-    "centrum": {"upload.wikimedia.org"},
-    "salus": {"thumb.wikimedia.org", "upload.wikimedia.org"},
-    "seven-seas": {"upload.wikimedia.org"},
-    "vicks": {"upload.wikimedia.org"},
-    "vitabiotics": {"pbs.twimg.com"},
+ROOT=Path(__file__).resolve().parents[1]
+REGISTER=ROOT/"docs/retail/brand-logo-source-register-20261127.json"
+EXPECTED={
+ "nutraxin":{"nutraxin.com.tr","www.nutraxin.com.tr"},
+ "biogaia":{"upload.wikimedia.org"},
+ "bioglan":{"www.pharmacarenz.co.nz","pharmacarenz.co.nz"},
+ "centrum":{"upload.wikimedia.org"},
+ "salus":{"thumb.wikimedia.org","upload.wikimedia.org"},
+ "seven-seas":{"upload.wikimedia.org"},
+ "vicks":{"upload.wikimedia.org"},
+ "vitabiotics":{"pbs.twimg.com","cdn.tgdd.vn"},
 }
-MAX_BYTES = 1_000_000
-PNG_MAGIC = bytes.fromhex("89504e470d0a1a0a")
-
-def check_url(url, hosts):
-    parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname not in hosts or parsed.username or parsed.password or parsed.port not in (None,443):
-        raise ValueError(f"Unreviewed HTTPS origin: {parsed.hostname}")
-
+MAX_BYTES=1_000_000
+def check_url(url,hosts):
+    p=urlparse(url)
+    if p.scheme!="https" or p.hostname not in hosts or p.username or p.password or p.port not in (None,443):
+        raise ValueError("Unreviewed HTTPS origin: "+str(p.hostname))
 class ReviewedRedirect(HTTPRedirectHandler):
-    max_redirections = 4
-    def __init__(self, hosts):
-        self.hosts = hosts
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        check_url(newurl, self.hosts)
-        print(f"  HTTP {code}: {urlparse(req.full_url).hostname} -> {urlparse(newurl).hostname}", flush=True)
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
-
-def validate_png(data, name):
-    if len(data) < 33 or not data.startswith(PNG_MAGIC) or data[12:16] != b"IHDR":
-        raise ValueError(f"{name} did not return PNG bytes")
-    w,h = struct.unpack(">II",data[16:24])
-    if not (20 <= w <= 4096 and 20 <= h <= 4096):
-        raise ValueError(f"{name} invalid dimensions {w}x{h}")
-    return w,h
-
+    max_redirections=4
+    def __init__(self,hosts):
+        self.hosts=hosts
+    def redirect_request(self,req,fp,code,msg,headers,newurl):
+        check_url(newurl,self.hosts)
+        return super().redirect_request(req,fp,code,msg,headers,newurl)
+def raster_format(data):
+    if len(data)>=33 and data.startswith(bytes.fromhex("89504e470d0a1a0a")) and data[12:16]==b"IHDR":
+        return "png"
+    if len(data)>20 and data.startswith(bytes.fromhex("ffd8ff")):
+        return "jpeg"
+    if len(data)>20 and data[:4]==b"RIFF" and data[8:12]==b"WEBP":
+        return "webp"
+    raise ValueError(f"Unsupported raster: length={len(data)}, signature={data[:12].hex()}")
 def main():
     register=json.loads(REGISTER.read_text())
     entries=register["brands"]
     if len(entries)!=8 or {e["id"] for e in entries}!=set(EXPECTED):
         raise ValueError("Eight exact brand identifiers required")
-    downloaded={}
+    stage=Path(os.environ["RUNNER_TEMP"])/"retail-logo-originals"
+    stage.mkdir(parents=True,exist_ok=True)
     failures=[]
     for entry in entries:
         name=entry["id"]
-        try:
-            url=entry["remoteSourceUrl"]
-            check_url(url,EXPECTED[name])
-            print(f"Checking {name}: {urlparse(url).hostname}",flush=True)
-            opener=build_opener(ReviewedRedirect(EXPECTED[name]))
-            request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.1 (https://novapharmhealthcare.com/contact/)","Accept":"image/png,image/jpeg"})
-            with opener.open(request,timeout=25) as response:
-                check_url(response.geturl(),EXPECTED[name])
-                data=response.read(MAX_BYTES+1)
-            if len(data)>MAX_BYTES:
-                raise ValueError("Image exceeds byte limit")
-            if name == "vitabiotics":
-                if not (data.startswith(bytes.fromhex("ffd8ff")) and data.endswith(bytes.fromhex("ffd9"))):
-                    raise ValueError("Vitabiotics did not return JPEG bytes")
-                # Full decoder validates dimensions and pixels in the next step.
-                w,h=None,None
-            else:
-                w,h=validate_png(data,name)
-            downloaded[name]=data
-            entry["retrievedWidth"]=w
-            entry["retrievedHeight"]=h
-            entry["sha256"]=hashlib.sha256(data).hexdigest()
-            print(f"PASS {name}: {w}x{h}, {len(data)} bytes",flush=True)
-        except Exception as error:
+        candidates=entry.get("candidateSources") if name=="vitabiotics" else [{"url":entry["remoteSourceUrl"],"page":entry["sourcePage"],"kind":"reviewed source"}]
+        passed=False
+        for candidate in candidates:
+            try:
+                url=candidate["url"]
+                check_url(url,EXPECTED[name])
+                print(f"Checking {name}: {url}",flush=True)
+                opener=build_opener(ReviewedRedirect(EXPECTED[name]))
+                request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.2 (https://novapharmhealthcare.com/contact/)","Accept":"image/png,image/jpeg,image/webp"})
+                with opener.open(request,timeout=25) as response:
+                    check_url(response.geturl(),EXPECTED[name])
+                    data=response.read(MAX_BYTES+1)
+                if len(data)>MAX_BYTES:
+                    raise ValueError("Asset exceeds limit")
+                kind=raster_format(data)
+                if name!="vitabiotics" and kind!="png":
+                    raise ValueError("Expected original PNG")
+                (stage/f"{name}.source").write_bytes(data)
+                entry.update(selectedSourceUrl=url,selectedSourcePage=candidate["page"],selectedSourceKind=candidate["kind"],originalFormat=kind,originalSha256=hashlib.sha256(data).hexdigest())
+                print(f"PASS {name}: {kind}, {len(data)} bytes",flush=True)
+                passed=True
+                break
+            except Exception as error:
+                print(f"FAIL {name}: {type(error).__name__}: {error}",flush=True)
+        if not passed:
             failures.append(name)
-            print(f"FAIL {name}: {type(error).__name__}: {error}",flush=True)
     if failures:
-        raise SystemExit(f"Not committing a partial logo grid; failed: {', '.join(failures)}")
-    TARGET.mkdir(parents=True,exist_ok=True)
-    for name,data in downloaded.items():
-        (TARGET / (f"{name}.jpg" if name == "vitabiotics" else f"{name}.png")).write_bytes(data)
+        raise SystemExit("No partial logo release; failed: "+", ".join(failures))
     REGISTER.write_text(json.dumps(register,indent=2,ensure_ascii=False)+"\n")
-    print("All eight original source images retrieved and hashed.")
-
 if __name__=="__main__":
     main()

@@ -564,3 +564,20 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 
 /* Vitabiotics original square profile asset includes white space around the mark. */
 .np-store .nps-brand-grid .nps-brand-mark--vitabiotics>img{max-height:88px;max-width:100%;object-fit:contain}
+
+/* Owner-approved compact original brand discovery. */
+.np-store .nps-brand-intro{font-size:16px;color:#555459;line-height:1.55;margin:10px 0 0;max-width:48ch}
+.np-store .nps-brand-grid[data-nps-brand-logo-directory]{gap:12px clamp(12px,2.2vw,30px);padding:18px 0 10px;background:#FFFFFF}
+.np-store .nps-brand-grid .nps-brand-mark{min-height:106px;gap:0;padding:12px 10px;background:#FFFFFF;opacity:1;transition:background-color .22s ease}
+.np-store .nps-brand-grid .nps-brand-mark>img{max-width:min(100%,190px);max-height:50px;transition:transform .22s ease}
+.np-store .nps-brand-grid .nps-brand-mark--salus>img,.np-store .nps-brand-grid .nps-brand-mark--seven-seas>img,.np-store .nps-brand-grid .nps-brand-mark--vicks>img{max-height:70px}
+.np-store .nps-brand-grid .nps-brand-mark--vitabiotics>img{max-height:88px}
+.np-store .nps-brand-grid .nps-brand-mark:hover{background:#F8F7F3;opacity:1}
+.np-store .nps-brand-grid .nps-brand-mark:hover>img{transform:scale(1.025)}
+.np-store .nps-brand-grid .nps-brand-mark:focus-visible{opacity:1}
+.np-store .nps-brand-collection{border-top:1px solid #DEDCD5;padding:14px 0 0}
+.np-store .nps-brand-collection a{display:inline-flex;align-items:center;gap:7px;min-height:44px;color:#9D1B32;font-size:15px;font-weight:500;text-decoration:none}
+.np-store .nps-brand-collection a:hover{text-decoration:underline;text-underline-offset:4px}
+.np-store .nps-logo-attribution{text-align:left;margin:4px 0 0;font-size:11px}
+@media(max-width:640px){.np-store .nps-brand-grid[data-nps-brand-logo-directory]{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;padding:12px 0}.np-store .nps-brand-grid .nps-brand-mark{min-height:94px;padding:8px}.np-store .nps-brand-grid .nps-brand-mark>img{max-width:100%;max-height:44px}.np-store .nps-brand-grid .nps-brand-mark--salus>img,.np-store .nps-brand-grid .nps-brand-mark--seven-seas>img,.np-store .nps-brand-grid .nps-brand-mark--vicks>img{max-height:60px}.np-store .nps-brand-grid .nps-brand-mark--vitabiotics>img{max-height:76px}}
+@media(prefers-reduced-motion:reduce){.np-store .nps-brand-grid .nps-brand-mark,.np-store .nps-brand-grid .nps-brand-mark>img{transition:none}.np-store .nps-brand-grid .nps-brand-mark:hover>img{transform:none}}

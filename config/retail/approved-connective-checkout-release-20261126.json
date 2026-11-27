@@ -2,7 +2,7 @@
   "schema": "novapharm.retail-owner-release.v1",
   "approvedOn": "2026-11-27",
   "approval": "granted",
-  "scope": "forty-two-reviewed-supplier-backed-consumer-offers",
+  "scope": "forty-four-reviewed-supplier-backed-consumer-offers",
   "checkoutApiOrigin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com",
   "checkoutCollection": "/products/health-and-wellbeing/",
   "sharedBag": "/products/nutraxin/bag/",
@@ -41,6 +41,8 @@
     "5021265221509",
     "5021265221608",
     "5021265222551",
+    "5021265222605",
+    "5021265222902",
     "5021265223305",
     "5021265223510",
     "5021265243372",
@@ -55,6 +57,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 9,
-  "publicationFix": "42 source-reviewed consumer products with existing checkout and exact publication gate"
+  "publicationAttempt": 11,
+  "publicationFix": "Repair scoped 44-product release shell terminator and reconcile six authoritative image reference counts from production readiness logs"
 }
