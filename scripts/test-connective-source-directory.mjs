@@ -83,6 +83,36 @@ test('guide register rejects unknown GTINs, duplicate entries and medicine offer
   }finally{f.dispose();}
  }
 });
+test('Vicks has first editorial priority without adding unapproved retail offers',()=>{
+ const vicks={ean:'4030300022736',brand:'VICKS',name:'Vicks V Throat Drops Menthol',pack:'72g',
+  supplierProductUrl:'https://www.connectivepharma.com/en/product/7726/vicks_v_throat_drops_sore_solid_drop_menthol_72g',
+  manufacturerProductUrl:null,supplierImageUrl:'https://www.connectivepharma.com/userfiles/images/example.jpeg',
+  classificationReview:'routine_class_review'};
+ for(const approved of [false,true]){
+  const f=fixture([p1,p2,vicks]);
+  try{
+   if(approved){
+    f.put('products/health-and-wellbeing/index.html','<main><h1>Approved collection</h1><article class="npr-card">Approved product</article></main>');
+    f.put('products/health-and-wellbeing/'+p1.ean+'/index.html','<main><h1>Approved detail</h1></main>');
+    f.put('src/content/approved-consumer-catalogue.json',JSON.stringify([{ean:p1.ean}]));
+   }
+   for(let i=0;i<2;i++){
+    const result=f.run();assert.equal(result.status,0,result.stderr);
+    const html=f.read('products/health-and-wellbeing/index.html');
+    assert.equal((html.match(/data-npr-vicks-spotlight/g)||[]).length,1);
+    assert(html.includes('19 Vicks products')===false);
+    assert(html.includes('1 Vicks products'));
+    assert(html.includes('href="#brand-0"'));
+    assert(html.indexOf('>VICKS</h2>')<html.indexOf('>Vitabiotics</h2>'));
+    assert(!html.includes('"offers"'));
+    const detail=f.read('products/health-and-wellbeing/'+vicks.ean+'/index.html');
+    assert(detail.includes('data-npr-retail-sku="NP-CP-'+vicks.ean+'"'));
+    assert(detail.includes('name="robots" content="noindex, follow"'));
+    assert(!detail.includes('Add to Bag'));
+   }
+  }finally{f.dispose();}
+ }
+});
 test('approved catalogue pages and checkout remain authoritative during partial activation',()=>{
  const f=fixture();
  try{
