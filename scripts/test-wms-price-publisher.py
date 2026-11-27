@@ -71,4 +71,25 @@ class Test(unittest.TestCase):
         self.assertEqual(t["Resources"]["Publisher"]["Properties"]["Code"]["ZipFile"],(ROOT/"apps/wms-price-publisher/index.py").read_text())
         self.assertEqual(t["Parameters"]["PublishEnabled"]["Default"],"false")
         self.assertFalse(any(x["Type"] in ("AWS::Lambda::Permission","AWS::Lambda::Url","AWS::ApiGatewayV2::Api") for x in t["Resources"].values()))
+    def test_staging_template_isolation(self):
+        raw=(ROOT/"infra/aws/wms-staging-price-publisher.json").read_text()
+        t=json.loads(raw)
+        resources=t["Resources"]
+        self.assertNotIn("novapharm-production-",raw)
+        self.assertEqual(t["Parameters"]["PublishEnabled"]["Default"],"false")
+        self.assertEqual(resources["FixtureLedger"]["Properties"]["TableName"],"novapharm-staging-wms-price-fixture-ledger")
+        self.assertEqual(resources["FixtureLedger"]["Properties"]["BillingMode"],"PAY_PER_REQUEST")
+        self.assertTrue(resources["FixtureLedger"]["Properties"]["SSESpecification"]["SSEEnabled"])
+        publisher=resources["Publisher"]["Properties"]
+        self.assertEqual(publisher["FunctionName"],"novapharm-staging-wms-price-publisher")
+        self.assertEqual(publisher["Environment"]["Variables"]["PAYMENT_LEDGER_TABLE"],{"Ref":"FixtureLedger"})
+        self.assertEqual(publisher["Code"]["ZipFile"],(ROOT/"apps/wms-price-publisher/index.py").read_text())
+        role=resources["PublisherRole"]["Properties"]
+        self.assertNotIn("ManagedPolicyArns",role)
+        for policy in role["Policies"]:
+            for statement in policy["PolicyDocument"]["Statement"]:
+                if any(action.startswith("dynamodb:") for action in ([statement["Action"]] if isinstance(statement["Action"],str) else statement["Action"])):
+                    self.assertEqual(statement["Resource"],{"Fn::GetAtt":["FixtureLedger","Arn"]})
+                    self.assertIn("dynamodb:LeadingKeys",statement["Condition"]["ForAllValues:StringEquals"])
+        self.assertFalse(any(x["Type"] in ("AWS::Lambda::Permission","AWS::Lambda::Url","AWS::ApiGatewayV2::Api") for x in resources.values()))
 if __name__=="__main__": unittest.main()
