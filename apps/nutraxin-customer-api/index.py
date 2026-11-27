@@ -37,6 +37,30 @@ SNS = boto3.client("sns", region_name=REGION) if ALERT_TOPIC else None
 PRODUCTION_CHECKOUT_FUNCTION = os.environ.get("PRODUCTION_CHECKOUT_FUNCTION", "")
 CHECKOUT_LAMBDA = boto3.client("lambda", region_name=REGION) if PRODUCTION_CHECKOUT_FUNCTION else None
 DIRECT_SHOP_PAYMENTS_ENABLED = os.environ.get("DIRECT_SHOP_PAYMENTS_ENABLED", "false") == "true"
+REPRICE_ENABLED = os.environ.get("NUTRAXIN_REPRICE_ENABLED", "false") == "true"
+REPRICE_REVISION = "nutraxin-retail-2026-11-27"
+REPRICE_SHIPPING_GROSS = 449
+REPRICE_GROSS = {
+    "NUT-UK-VD3-T120": 949,
+    "NUT-UK-VD3-S30": 949,
+    "NUT-UK-VD3K2-T120": 1099,
+    "NUT-UK-VD3K2-S30": 1099,
+    "NUT-UK-VC1000-T30": 949,
+    "NUT-UK-VC500-C30": 1099,
+    "NUT-UK-VMAX-T60": 1099,
+    "NUT-UK-VMAX-E15": 1199,
+    "NUT-UK-MGCX-T60": 1099,
+    "NUT-UK-MGDL-T60": 1099,
+    "NUT-UK-MVE-T60": 1249,
+    "NUT-UK-MVW-T60": 1349,
+    "NUT-UK-MVM-T60": 1349,
+    "NUT-UK-CG-T30": 1199,
+    "NUT-UK-CG-S30": 2149,
+    "NUT-UK-CCX-T90": 1749,
+    "NUT-UK-ART-T90": 1399,
+    "NUT-UK-LCAR-T60": 999,
+    "NUT-UK-B12-SL60": 949
+}
 PAYMENT_LEDGER_TABLE = os.environ.get("PAYMENT_LEDGER_TABLE", "")
 PAYMENT_DDB = boto3.client("dynamodb", region_name=REGION) if DIRECT_SHOP_PAYMENTS_ENABLED and PAYMENT_LEDGER_TABLE else None
 
@@ -195,7 +219,7 @@ async function init(){try{const session=await read("/api/session");retailAuthent
 $("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". Provisional products "+money(data.net_total_pence)+" + illustrative UK VAT at 20% "+money(data.indicative_vat_pence)+" = "+money(data.indicative_gross_total_pence)+". Indicative UK delivery charge £0 (included in the existing price model). No payment taken or VAT charged; NovaPharm will confirm availability and terms.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
 // A saved bag is a local selection, not a paid or accepted order.
 const retailStorageKey="novapharm.nutraxin.bag.v1";
-const retailBag=new Map();let retailProducts=[];let retailCheckoutEnabled=false;let retailAuthenticated=false;
+const retailBag=new Map();let retailProducts=[];let retailCheckoutEnabled=false;let retailAuthenticated=false;let retailShipping=0;let retailRevision=null;
 function retailLoad(){try{const data=JSON.parse(localStorage.getItem(retailStorageKey)||"[]");if(Array.isArray(data))for(const item of data){if(typeof item?.sku==="string"&&Number.isSafeInteger(item.quantity)&&item.quantity>=1&&item.quantity<=10000)retailBag.set(item.sku,item.quantity);}}catch{}}
 function retailPersist(){try{localStorage.setItem(retailStorageKey,JSON.stringify([...retailBag].map(([sku,quantity])=>({sku,quantity}))));}catch{}}
 function retailSummary(){
@@ -214,7 +238,7 @@ function retailSummary(){
   qty.addEventListener("change",()=>{const n=Number(qty.value);if(!Number.isSafeInteger(n)||n<0||n>10000){qty.value=String(count);return;}if(n===0)retailBag.delete(product.sku);else retailBag.set(product.sku,n);retailSummary();});
   li.append(qty);list.append(li);
  }
- $("retail-bag-status").textContent=total?total+" unit"+(total===1?"":"s")+" in your bag. Indicative total "+money(basketGross)+" including 20% UK VAT and £0 additional UK delivery.":"Your bag is empty.";
+ $("retail-bag-status").textContent=total?total+" unit"+(total===1?"":"s")+" in your bag. Indicative total "+money(basketGross+retailShipping)+" including 20% UK VAT and "+money(retailShipping)+" UK delivery.":"Your bag is empty.";
  $("retail-checkout").disabled=!retailCheckoutEnabled||!total;
  retailPersist();
 }
@@ -223,11 +247,11 @@ async function retailCollection(){
  try{
   const data=await read("/api/retail/catalogue");
   if(!Array.isArray(data.products)||data.products.length!==19||data.public_retail_prices_approved!==true)throw new Error("Retail catalogue not ready");retailCheckoutEnabled=data.checkout_enabled===true;
-  retailProducts=data.products;host.replaceChildren();
+  retailProducts=data.products;retailShipping=data.uk_delivery_charge_pence;retailRevision=data.retail_price_revision||null;host.replaceChildren();
   for(const product of retailProducts){
    if(typeof product.sku!=="string"||typeof product.name!=="string"||typeof product.slug!=="string"||!/^[a-z0-9-]+$/.test(product.slug))continue;
    const card=node("article","retail-card"),picture=node("img");picture.src="https://novapharmhealthcare.com/assets/media/products/nutraxin/"+product.slug+".png";picture.alt=product.name+" pack";picture.loading="lazy";picture.width=180;picture.height=180;
-   const name=node("h3",null,product.name),pack=node("p","retail-muted",product.pack),price=node("p","retail-muted",money(product.retail_price_pence)+" per unit incl. 20% UK VAT. UK delivery included.");
+   const name=node("h3",null,product.name),pack=node("p","retail-muted",product.pack),price=node("p","retail-muted",money(product.retail_price_pence)+" per unit incl. 20% UK VAT. UK delivery "+money(retailShipping)+" per order.");
    const detail=node("a",null,"Product details");detail.href="https://novapharmhealthcare.com/products/nutraxin/"+product.slug+"/";
    const add=node("button","button quiet","Add to bag");add.type="button";
    add.addEventListener("click",()=>{retailBag.set(product.sku,Math.min(10000,(retailBag.get(product.sku)||0)+1));retailSummary();});
@@ -250,7 +274,7 @@ $("retail-checkout").addEventListener("click",async()=>{
   const oldId=localStorage.getItem("novapharm.nutraxin.current.checkout.id")||"";
   const requestId=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(oldId)?oldId:crypto.randomUUID();
   localStorage.setItem("novapharm.nutraxin.current.checkout.id",requestId);
-  const r=await fetch("/api/retail/checkout",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({request_id:requestId,lines,accept_terms:true})});
+  const r=await fetch("/api/retail/checkout",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({request_id:requestId,lines,accept_terms:true,retail_price_revision:retailRevision})});
   const data=await r.json();
   if(!r.ok||typeof data.checkoutUrl!=="string"||!data.checkoutUrl.startsWith("https://checkout.stripe.com/"))throw new Error(data.error||"Payment is unavailable for this basket.");
   window.location.assign(data.checkoutUrl);
@@ -2218,6 +2242,12 @@ def retail_checkout(event, customer):
         return error(503, "owner_price_policy_unavailable")
     if set(price_by_sku) != set(PRODUCTS):
         return error(503, "incomplete_retail_catalogue")
+    if body.get("retail_price_revision") != (REPRICE_REVISION if REPRICE_ENABLED else None):
+        return error(422, "retail_price_changed")
+    if REPRICE_ENABLED:
+        if set(REPRICE_GROSS) != set(PRODUCTS):
+            return error(503, "retail_catalogue_incomplete")
+        price_by_sku = {sku: (gross * 5 + 3) // 6 for sku, gross in REPRICE_GROSS.items()}
     seen = set()
     ordered = []
     net = 0
@@ -2237,7 +2267,7 @@ def retail_checkout(event, customer):
         # The displayed public price is rounded per unit, VAT included.
         # Apply exactly that unit price to each quantity. Rounding only the
         # basket aggregate can disagree with the customer's Bag by pennies.
-        unit_gross = unit + illustrative_uk_vat_pence(unit)
+        unit_gross = REPRICE_GROSS[sku] if REPRICE_ENABLED else unit + illustrative_uk_vat_pence(unit)
         line_gross = unit_gross * quantity
         net += unit * quantity
         gross += line_gross
@@ -2249,11 +2279,18 @@ def retail_checkout(event, customer):
     tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
+    shipping_gross = REPRICE_SHIPPING_GROSS if REPRICE_ENABLED else 0
+    if gross + shipping_gross > 99999999:
+        return error(422, "basket_exceeds_stripe_payment_limit")
+    if shipping_gross:
+        ordered.append({"sku":"DELIVERY-APPROVED","quantity":1,"name":"Approved delivery and handling","grossMinor":shipping_gross})
     basket_hash = hashlib.sha256(json.dumps(
         sorted((item["sku"], item["quantity"]) for item in ordered),
         separators=(",", ":")).encode()).hexdigest()
+    if REPRICE_ENABLED:
+        basket_hash = hashlib.sha256(json.dumps({"basket":basket_hash,"lines":ordered,"net":net,"tax":tax},sort_keys=True,separators=(",",":")).encode()).hexdigest()
     receipt = "NUT-" + request_id
-    quote_version = "ownerprice_v5_" + basket_hash[:24]
+    quote_version = ("ownerprice_portal_v8_retail_" if REPRICE_ENABLED else "ownerprice_v5_") + basket_hash[:24]
     item = {
         "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
         "orderId": {"S": receipt}, "customerSub": {"S": customer["sub"]},
@@ -2264,7 +2301,7 @@ def retail_checkout(event, customer):
         "quoteVersion": {"S": quote_version},
         "basketHash": {"S": basket_hash},
         "sellerApprovalReference": {"S": "owner_direct_sale_20261108"},
-        "deliveryQuoteReference": {"S": "owner_uk_delivery_included_20261108"},
+        "deliveryQuoteReference": {"S": "owner_uk_delivery_449_20261127" if REPRICE_ENABLED else "owner_uk_delivery_included_20261108"},
         "taxAssessmentReference": {"S": "owner_uk_supplement_vat20_20261108"},
         "fulfilmentApprovalReference": {"S": "owner_manufacturer_supply_20261108"},
         "approvedForPayment": {"BOOL": True},
@@ -2277,8 +2314,8 @@ def retail_checkout(event, customer):
         "expiresAtUnix": {"N": str(now() + 1800)},
         "productNetMinor": {"N": str(net)},
         "taxMinor": {"N": str(tax)},
-        "shippingGrossMinor": {"N": "0"},
-        "totalGrossMinor": {"N": str(gross)},
+        "shippingGrossMinor": {"N": str(shipping_gross)},
+        "totalGrossMinor": {"N": str(gross + shipping_gross)},
         "approvedLinesJson": {"S": json.dumps(ordered, separators=(",", ":"))},
         "ownerCommercialPolicy": {"S": "nutraxin_uk_direct_v1"}
     }
@@ -2344,10 +2381,11 @@ def handler(event,context):
         return reply(200,{"currency":"GBP","public_retail_prices_approved":True,
             "checkout_enabled":ready,
             "payment_collection_enabled":ready,
-            "vat_rate_bps":2000,"uk_delivery_charge_pence":0,
+            "vat_rate_bps":2000,"uk_delivery_charge_pence":REPRICE_SHIPPING_GROSS if REPRICE_ENABLED else 0,
+            "retail_price_revision":REPRICE_REVISION if REPRICE_ENABLED else None,
             "products":[{"sku":sku,"name":item[0],"pack":item[1],"slug":PUBLIC_SLUGS[sku],
-                "retail_net_price_pence":int(prices[sku]["qty48_price_pence"]),
-                "retail_price_pence":int(prices[sku]["qty48_price_pence"]) + illustrative_uk_vat_pence(int(prices[sku]["qty48_price_pence"])),
+                "retail_net_price_pence":(REPRICE_GROSS[sku]*5+3)//6 if REPRICE_ENABLED else int(prices[sku]["qty48_price_pence"]),
+                "retail_price_pence":REPRICE_GROSS[sku] if REPRICE_ENABLED else int(prices[sku]["qty48_price_pence"]) + illustrative_uk_vat_pence(int(prices[sku]["qty48_price_pence"])),
                 "sale_status":"owner_approved_price"}
                 for sku,item in PRODUCTS.items()]})
     if method=="GET" and path=="/health":
