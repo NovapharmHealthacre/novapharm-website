@@ -37,6 +37,8 @@ jobs:
         run: node --test scripts/test-unified-ci-policy.mjs && node scripts/ci/verify-unified-ci-contract.mjs
       - name: Guard optimized CI against skipped or weakened required checks
         run: node --test scripts/test-ci-acceleration-contract.mjs scripts/test-ci-latency-audit.mjs
+      - name: Read-only change-impact shadow report (no test selection)
+        run: node --test scripts/ci/test-change-impact.mjs && node scripts/ci/plan-change-impact.mjs --github-event
 
   # These TWO exact-head contexts are independently required by protected main.
   # Parallel execution only removes scheduling latency; either failed check blocks merge.
