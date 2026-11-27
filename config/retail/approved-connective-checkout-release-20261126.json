@@ -2,7 +2,7 @@
   "schema": "novapharm.retail-owner-release.v1",
   "approvedOn": "2026-11-27",
   "approval": "granted",
-  "scope": "nineteen-reviewed-supplier-backed-consumer-offers",
+  "scope": "thirty-reviewed-supplier-backed-consumer-offers",
   "checkoutApiOrigin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com",
   "checkoutCollection": "/products/health-and-wellbeing/",
   "sharedBag": "/products/nutraxin/bag/",
@@ -14,8 +14,19 @@
   "approvedGtins": [
     "4004148013010",
     "4004148013041",
+    "4004148013058",
     "4004148013072",
+    "4004148013102",
     "4004148013119",
+    "4004148013140",
+    "4004148013164",
+    "4004148013171",
+    "4004148013188",
+    "4004148013195",
+    "4004148013201",
+    "4004148013270",
+    "4004148013294",
+    "4004148043116",
     "5010058089785",
     "5010058089792",
     "5021265220076",
@@ -32,6 +43,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 5,
-  "publicationFix": "Exact 19-SKU catalogue publication using existing Stripe gateway; preserve denied portal, medicine, external email and new-infrastructure permissions. No automatic payment-offer admission."
+  "publicationAttempt": 6,
+  "publicationFix": "30 reviewed source-backed consumer GTINs; independently checked payment admission with existing Stripe checkout"
 }
