@@ -1,0 +1,11 @@
+# Finance encrypted snapshot persistence
+
+Stacked on PR #1293 so it imports the actual encryption engine without duplication. Retarget after #1293 merges; review the diff and run exact-head CI against main. No live AWS resource or financial record modified.
+
+The service accepts an explicit source-scoped snapshot (worldBank, ecb, usTreasury, sec-edgar), tenant, entity and immutable record ID. A combined World Bank/ECB ingestion result must be split into separate snapshots, preserving source, retrieval timestamp and relevant status. Persist neither failed/empty data nor self-approved publication. Ingestion orchestration is not connected yet.
+
+A trusted server verifier must check current session/service identity, operation, and tenant/entity access; return {allowed:true,subject:opaqueId}. Only after access and metadata-only audit succeeds may data be encrypted/decrypted. The S3 boundary uses conditional create (IfNoneMatch *) and AES256 server-side encryption in addition to AES-256-GCM application ciphertext. No fallback to plaintext, no overwrite. A durable audit adapter must correlate events with actor and request IDs and handle failure/uncertain commit reconciliation; failed audit after a storage write does not undo the object.
+
+Before runtime deployment: approve a Finance-specific customer-managed symmetric KMS key and scoped storage prefix; verify actual KMS GenerateDataKey/Decrypt permissions, key policy, access denial and rotation/recovery. Bind SDK calls and bounded streaming reads to existing approved runtime; enforce storage bucket policy, versioning/recovery, private access, encryption and TLS. Do not reuse unrelated evidence buckets without approval. Encrypt log destinations and avoid logging payloads; do not use earlier CLI plaintext output redirection for persisted Finance snapshots. Sensitive record size capped at 8 MiB; larger source datasets require partitioning and manifest verification. Separate publication and rights approval remains required.
+
+Test: node --test scripts/test-finance-aes256.mjs scripts/test-finance-encrypted-snapshots.mjs. All fixtures are synthetic. No actual KMS, S3, identity, audit sink or publisher roundtrip has been verified. This is a backend service boundary, not a deployed HTTP endpoint. No paid resources provisioned.
