@@ -83,6 +83,56 @@ test('guide register rejects unknown GTINs, duplicate entries and medicine offer
   }finally{f.dispose();}
  }
 });
+test('new manufacturer-online references enrich only matching browse-only pages without enabling payment',()=>{
+ const f=fixture();
+ try{
+  f.put('src/content/connective-two-manufacturer-online-details-20261127.json',JSON.stringify({
+    schema:'novapharm-connective-manufacturer-online-reference-v1',
+    notLicenceEvidence:true,requiresPackReview:true,
+    products:[{ean:p2.ean,name:p2.name,manufacturerUrl:p2.manufacturerProductUrl,
+      ingredients:'Manufacturer listed ingredients, not certified pack label.',
+      allergens:'Manufacturer identifies a food allergen. Check product packaging.',
+      directions:'Take only the recommended intake with the main meal.',
+      precautions:'Food supplements are not a substitute for varied diets.',
+      sourceCheckedOn:'2026-11-27',
+      status:'manufacturer_online_reference_pack_label_match_pending',
+      verifiedCurrentPackLabel:false,retailOfferApproved:false}]
+  }));
+  const out=f.run();assert.equal(out.status,0,out.stderr);
+  const html=f.read('products/health-and-wellbeing/'+p2.ean+'/index.html');
+  assert(html.includes('Manufacturer information'));
+  assert(html.includes('Manufacturer identifies a food allergen'));
+  assert(html.includes('current UK pack label is not yet certified'));
+  assert(html.includes('name="robots" content="noindex, follow"'));
+  assert(!html.includes('"offers"'));assert(!html.includes('Add to Bag'));
+  assert(html.includes('data-npr-retail-sku="NP-CP-'+p2.ean+'"'));
+ }finally{f.dispose();}
+});
+test('unapproved manufacturer-online references are rejected if identity is wrong or payment-approval is falsely asserted',()=>{
+ const records=[
+  {ean:'4004148013011',name:p2.name,manufacturerUrl:p2.manufacturerProductUrl},
+  {ean:p2.ean,name:'Other product',manufacturerUrl:p2.manufacturerProductUrl},
+  {ean:p2.ean,name:p2.name,manufacturerUrl:'https://example.com/other-product'},
+  {ean:p2.ean,name:p2.name,manufacturerUrl:p2.manufacturerProductUrl,retailOfferApproved:true}
+ ];
+ for(const changed of records){
+  const f=fixture();
+  try{
+   f.put('src/content/connective-two-manufacturer-online-details-20261127.json',JSON.stringify({
+     schema:'novapharm-connective-manufacturer-online-reference-v1',
+     notLicenceEvidence:true,requiresPackReview:true,
+     products:[{ean:p2.ean,name:p2.name,manufacturerUrl:p2.manufacturerProductUrl,
+       ingredients:'Manufacturer listed ingredients, not certified pack label.',
+       allergens:'Manufacturer identifies a food allergen. Check product packaging.',
+       directions:'Take only the recommended intake with the main meal.',
+       precautions:'Food supplements are not a substitute for varied diets.',
+       status:'manufacturer_online_reference_pack_label_match_pending',
+       verifiedCurrentPackLabel:false,retailOfferApproved:false,...changed}]
+   }));
+   const out=f.run();assert.notEqual(out.status,0);
+  }finally{f.dispose();}
+ }
+});
 test('approved catalogue pages and checkout remain authoritative during partial activation',()=>{
  const f=fixture();
  try{

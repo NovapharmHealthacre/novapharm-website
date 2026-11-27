@@ -1,0 +1,33 @@
+{
+  "schema": "novapharm-connective-manufacturer-online-reference-v1",
+  "notLicenceEvidence": true,
+  "requiresPackReview": true,
+  "products": [
+    {
+      "ean": "5021265227471",
+      "name": "Osteocare Glucosamine and Chondroitin",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/osteocare-glucosamine-and-chondroitin-tablets",
+      "ingredients": "Manufacturer online ingredients include calcium carbonate, glucosamine sulphate from crustaceans, magnesium hydroxide, chondroitin sulphate from fish, vitamin C, zinc, vitamin D3, ginger root extract, copper, manganese and selenium. This is a selection, not the full ingredient declaration.",
+      "allergens": "Contains crustacean-derived glucosamine and fish-derived chondroitin. Do not use with fish or shellfish allergy. The manufacturer also notes possible nut handling at the manufacturing site.",
+      "directions": "For adults, two or three tablets daily with the main meal, swallowed whole with water or a cold drink. Do not exceed the recommended intake; this replaces other Osteocare and Jointace supplements.",
+      "precautions": "Food supplement, not a replacement for a balanced diet. Consult a doctor or pharmacist before use if diabetic, taking anticoagulants, under medical supervision, pregnant, breastfeeding or affected by food allergies. Not suitable for children. Store dry below 25°C away from children.",
+      "sourceCheckedOn": "2026-11-27",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    },
+    {
+      "ean": "5021265243518",
+      "name": "Wellman Prostace",
+      "manufacturerUrl": "https://www.vitabiotics.com/products/wellman-prostace-tablets",
+      "ingredients": "Manufacturer online ingredients include magnesium oxide, inositol, vitamin C, tomato extract, soya extract, L-carnitine, zinc, vitamin B12, saw palmetto, pumpkin seed extract, coenzyme Q10, iron, vitamins A, D3 and E, green tea extract, iodine and selenium. This is a selection, not the full ingredient declaration.",
+      "allergens": "Contains soya-derived ingredients. The manufacturer also notes that the manufacturing site may handle nuts; consult the full pack allergen declaration.",
+      "directions": "For adults, two tablets daily with the main meal, swallowed whole with water or a cold drink. Do not exceed the stated intake and do not take on an empty stomach.",
+      "precautions": "Food supplement, not a medicine or substitute for a varied diet. Not suitable for children or those under 18. Consult a doctor or pharmacist before use if under medical supervision, taking medicines or affected by thyroid disease, epilepsy, haemochromatosis or food allergies. Contains green tea extract and iron; avoid taking with other green tea extract products or when fasting. Seek medical advice for urinary symptoms. Store dry below 25°C away from children.",
+      "sourceCheckedOn": "2026-11-27",
+      "status": "manufacturer_online_reference_pack_label_match_pending",
+      "verifiedCurrentPackLabel": false,
+      "retailOfferApproved": false
+    }
+  ]
+}
