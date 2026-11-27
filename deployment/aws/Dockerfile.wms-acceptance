@@ -2,6 +2,7 @@
 FROM node:24-bookworm
 WORKDIR /workspace
 COPY --chown=node:node . .
+RUN chown node:node /workspace
 USER node
 RUN npm ci --ignore-scripts && npm run build --workspace=@novapharm/portal
 ENV NODE_ENV=test
