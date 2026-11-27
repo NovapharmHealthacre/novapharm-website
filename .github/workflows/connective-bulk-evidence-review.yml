@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/research-connective-bulk-evidence.mjs'
       - 'scripts/research-connective-bulk-evidence.test.mjs'
+      - 'scripts/reconcile-connective-payment-readiness.mjs'
+      - 'scripts/reconcile-connective-payment-readiness.test.mjs'
       - '.github/workflows/connective-bulk-evidence-review.yml'
   workflow_dispatch:
 permissions:
@@ -22,10 +24,14 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: node --test scripts/research-connective-bulk-evidence.test.mjs
+      - run: node --test scripts/reconcile-connective-payment-readiness.test.mjs
       - run: node scripts/research-connective-bulk-evidence.mjs research/connective-bulk-evidence-review.json
+      - run: node scripts/reconcile-connective-payment-readiness.mjs research/connective-bulk-evidence-review.json research/connective-payment-readiness-matrix.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: connective-bulk-evidence-review
-          path: research/connective-bulk-evidence-review.json
+          path: |
+            research/connective-bulk-evidence-review.json
+            research/connective-payment-readiness-matrix.json
           if-no-files-found: error
           retention-days: 14
