@@ -52,6 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { inspectWmsPrice, publishWmsPrice } from "./src/core/wms-price-bridge.mjs";
 import { listCommerceProducts, saveCommerceDraft } from "./src/core/wms-commerce-editor.mjs";
 import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
@@ -1144,6 +1145,15 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (["/api/enterprise/wms/commerce-price-preview", "/api/enterprise/wms/commerce-price-publish"].includes(pathname) && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "wms-commerce-price", 20, 60 * 1000)) return json(response, 429, { error: "Too many price requests." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      const handler = pathname.endsWith("-preview") ? inspectWmsPrice : publishWmsPrice;
+      json(response, 200, await handler(enterpriseContext(session), await readBody(request)));
+      return;
+    }
     if (pathname === "/api/enterprise/wms/commerce-products" && request.method === "GET") {
       if (!await rateLimit(request, "wms-commerce-products-read", 120, 60 * 1000)) return json(response, 429, { error: "Too many catalogue requests." });
       const session = await scopedAuthentication(request, response, ["employee"]);

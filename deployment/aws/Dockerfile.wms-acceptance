@@ -1,0 +1,11 @@
+# Synthetic staging-only acceptance image: no customer data, production secrets or listener.
+FROM node:24-bookworm
+WORKDIR /workspace
+COPY --chown=node:node . .
+RUN chown node:node /workspace
+USER node
+RUN npm ci --ignore-scripts && npm run build --workspace=@novapharm/portal
+ARG EXPECTED_SHA
+ENV NODE_ENV=test WMS_HTTP_PREBUILT_SOURCE_SHA=${EXPECTED_SHA}
+RUN node -e "const s=process.env.WMS_HTTP_PREBUILT_SOURCE_SHA;if(!/^[a-f0-9]{40}$/.test(s)||!require('node:fs').readFileSync('index.html','utf8').includes('novapharm-source-sha'))process.exit(1)"
+CMD ["node","scripts/test-wms-http-acceptance.mjs"]

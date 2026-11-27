@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 import {all,one,run,insertIgnore,transaction,audit,nowIso} from '../data/database.mjs';
 import {buildProductMaster} from './wms-commerce-product-master.mjs';
 import {assertCommerceReader,canEditCommerceDraft,validateCommerceDraft} from './wms-commerce-draft-contract.mjs';
+import {canPublishPrice} from './wms-price-bridge-contract.mjs';
 const read=p=>JSON.parse(readFileSync(new URL('../../'+p,import.meta.url),'utf8'));
 let cached;
 function catalogue(){return cached??=buildProductMaster({nutraxin:read('assets/data/nutraxin-retail-catalogue.json'),esco:read('assets/data/esco-catalogue.json'),connective:read('src/content/connective-consumer-research.json'),approvedConnective:read('src/content/approved-consumer-catalogue.json')});}
@@ -18,7 +19,7 @@ export async function listCommerceProducts(context,query){
  const offset=Number(query.get('offset')||0);
  if(!Number.isSafeInteger(offset)||offset<0||offset>1000000)fail(400,'Invalid offset.');
  const filtered=records.filter(r=>(!supplier||r.supplier===supplier)&&(!q||[r.sku,r.name,r.brand,r.gtin,r.draft?.name].some(v=>String(v??'').toLowerCase().includes(q))));
- return {total:records.length,matching:filtered.length,offset,limit:40,canEdit,publicationEnabled:false,records:filtered.slice(offset,offset+40)};
+ return {total:records.length,matching:filtered.length,offset,limit:40,canEdit,publicationEnabled:false,pricePublicationEnabled:canPublishPrice(context),records:filtered.slice(offset,offset+40)};
 }
 export async function saveCommerceDraft(context,input){
  assertCommerceReader(context);

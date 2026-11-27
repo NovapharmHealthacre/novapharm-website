@@ -4,6 +4,8 @@ on:
     paths:
       - 'src/core/wms-commerce-product-master.mjs'
       - 'apps/wms-price-publisher/**'
+      - 'src/core/wms-price-*.mjs'
+      - 'scripts/test-wms-price-bridge.mjs'
       - 'apps/nutraxin-products-checkout/index.py'
       - 'infra/aws/wms-private-price-publisher.json'
       - 'scripts/test-wms-price-publisher.py'
@@ -30,3 +32,4 @@ jobs:
       - run: node scripts/test-wms-commerce-product-master.mjs
       - run: node scripts/test-wms-commerce-drafts.mjs
       - run: python3 -B scripts/test-wms-price-publisher.py
+      - run: node scripts/test-wms-price-bridge.mjs

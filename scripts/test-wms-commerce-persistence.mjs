@@ -1,0 +1,56 @@
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import test, { after } from "node:test";
+
+const root = mkdtempSync(join(tmpdir(), "novapharm-wms-commerce-"));
+process.env.DATABASE_PROVIDER = "sqlite";
+process.env.DATABASE_PATH = join(root, "commerce.sqlite");
+process.env.WMS_COMMERCE_DRAFTS_ENABLED = "true";
+process.env.WMS_COMMERCE_EDITOR_ALLOWLIST = "wms.fixture";
+delete process.env.WMS_COMMERCE_PRICE_PUBLISH_ENABLED;
+delete process.env.WMS_COMMERCE_PRICE_PUBLISH_SCOPE;
+const { listCommerceProducts, saveCommerceDraft } = await import("../src/core/wms-commerce-editor.mjs");
+const { one, all, closeDatabase } = await import("../src/data/database.mjs");
+const { inspectWmsPrice, publishWmsPrice } = await import("../src/core/wms-price-bridge.mjs");
+after(async () => { await closeDatabase(); rmSync(root, { recursive: true, force: true }); });
+
+const owner = { username: "wms.fixture", accessType: "employee", accessScopes: ["employee"] };
+const reader = { ...owner, username: "other.fixture" };
+const customer = { ...owner, accessType: "customer", accessScopes: ["customer"] };
+const fixture = { sku: "NP-NEW-FIXTURE", supplier: "s1", name: "Synthetic product", brand: "Fixture", pack: "1 unit", gtin: null, grossPriceMinor: 1200, vatBasisPoints: 2000, proposedQuantity: 12, websiteVisible: true, expectedRevision: 0 };
+
+test("persistent product master: paginated references, guarded writes, revision conflicts and audit", async () => {
+  const initial = await listCommerceProducts(owner, new URLSearchParams());
+  assert.equal(initial.total, 787);
+  assert.equal(initial.records.length, 40);
+  assert.equal(initial.canEdit, true);
+  assert.equal(initial.pricePublicationEnabled, false);
+  const cp = await listCommerceProducts(owner, new URLSearchParams({ supplier: "connective" }));
+  assert.equal(cp.matching, 395);
+  assert.equal(cp.records.every(p => p.supplier === "connective"), true);
+  await assert.rejects(listCommerceProducts(customer, new URLSearchParams()), e => e.statusCode === 403);
+  await assert.rejects(saveCommerceDraft(reader, fixture), e => e.statusCode === 403);
+  const saved = await saveCommerceDraft(owner, fixture);
+  assert.equal(saved.status, "draft_saved");
+  assert.equal(saved.publicationEnabled, false);
+  assert.equal(saved.draft.revision, 1);
+  const listed = await listCommerceProducts(owner, new URLSearchParams({ q: fixture.sku }));
+  assert.equal(listed.matching, 1);
+  assert.equal(listed.records[0].draft.grossPriceMinor, 1200);
+  assert.equal(listed.records[0].stockQuantity, null);
+  assert.equal(listed.records[0].checkoutStatus, "unverified_runtime");
+  assert.equal((await listCommerceProducts(reader, new URLSearchParams({ q: fixture.sku }))).matching, 0);
+  const revised = await saveCommerceDraft(owner, { ...fixture, grossPriceMinor: 2400, expectedRevision: 1 });
+  assert.equal(revised.draft.revision, 2);
+  await assert.rejects(saveCommerceDraft(owner, { ...fixture, expectedRevision: 1 }), e => e.statusCode === 409);
+  await assert.rejects(saveCommerceDraft(owner, { ...fixture, supplier: "esco", expectedRevision: 2 }), e => e.statusCode === 400);
+  const row = await one("SELECT revision, draft_json FROM wms_commerce_drafts WHERE sku = ?", fixture.sku);
+  assert.equal(Number(row.revision), 2);
+  assert.equal(JSON.parse(row.draft_json).grossPriceMinor, 2400);
+  const audits = await all("SELECT action FROM audit_logs WHERE action = 'wms.commerce.draft.saved'");
+  assert.equal(audits.length, 2);
+  await assert.rejects(inspectWmsPrice(owner, { sku: "NP-CP-5010058089785", revision: 1 }), e => e.statusCode === 403);
+  await assert.rejects(publishWmsPrice(owner, { sku: "NP-CP-5010058089785", revision: 1, expectedHash: "a".repeat(64) }), e => e.statusCode === 403);
+});

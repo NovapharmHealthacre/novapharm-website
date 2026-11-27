@@ -104,7 +104,10 @@
         "src/core/wms-commerce-product-master.mjs",
         "src/core/wms-commerce-draft-contract.mjs",
         "src/core/wms-commerce-editor.mjs",
-        "apps/portal/components/wms-commerce-editor.tsx"
+        "apps/portal/components/wms-commerce-editor.tsx",
+        "src/core/wms-price-bridge.mjs",
+        "src/core/wms-price-invoke.mjs",
+        "src/core/wms-price-bridge-contract.mjs"
       ],
       "tests": [
         "scripts/test-wms-execution-review.mjs",
@@ -114,7 +117,9 @@
         "scripts/test-wms-signed-provider-feed.mjs",
         "scripts/test-wms-commerce-product-master.mjs",
         "scripts/test-wms-commerce-drafts.mjs",
-        "scripts/test-wms-price-publisher.mjs"
+        "scripts/test-wms-price-publisher.mjs",
+        "scripts/test-wms-price-bridge.mjs",
+        "scripts/test-wms-commerce-persistence.mjs"
       ]
     },
     "native-ios-swiftui": {
