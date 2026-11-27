@@ -562,6 +562,14 @@ for (const [engineName, browserType] of engines) {
               assert.ok(geometry,label+": product media exceeds viewport");
               assert.equal(await page.locator("[data-nps-bag-link]").count(),1,label+": shared Bag link missing");
               assert.equal(await page.locator(".nps-brand-grid a").count(),8,label+": brand directory incomplete");
+              // Check composition geometry, not merely decoded pixels. A
+              // previous half-width selector passed the original smoke test.
+              const editorial = await page.locator(".nps-shelf-nutraxin picture>img").evaluateAll(imgs=>imgs.map(img=>({image:img.getBoundingClientRect().width,cell:img.parentElement.getBoundingClientRect().width})));
+              assert.ok(editorial.length===2&&editorial.every(x=>x.image>=x.cell*.95),label+": Nutraxin editorial image shrunk by legacy selector");
+              const pharma = await page.locator(".nps-pharma-photo>img").evaluate(img=>({image:img.getBoundingClientRect().width,panel:img.parentElement.getBoundingClientRect().width,fit:getComputedStyle(img).objectFit}));
+              assert.ok(pharma.image>=pharma.panel*.99&&pharma.fit==="cover",label+": pharmaceutical image does not fill panel");
+              assert.ok(await page.locator(".nps-brand-grid").evaluate(el=>parseFloat(getComputedStyle(el).borderTopWidth)===0),label+": unwanted brand table border");
+
               assert.equal(await page.locator(".nps-services a").count(),5,label+": utility links incomplete");
               if(viewport.name==="desktop-1440")assert.equal(await page.locator(".nps-services a").evaluateAll(els=>new Set(els.map(e=>Math.round(e.getBoundingClientRect().top))).size),1,label+": desktop utilities wrap");
               assert.equal(await page.locator("[data-nps-category=All]").count(),1,label+": Shop all tab missing");
