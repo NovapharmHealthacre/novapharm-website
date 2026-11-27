@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {validateCommerceDraft,canEditCommerceDraft,assertCommerceReader} from '../src/core/wms-commerce-draft-contract.mjs';
+const draft={sku:'NP-NEW-TEST',supplier:'s1',name:'Test',brand:'Test',pack:'1 unit',gtin:null,grossPriceMinor:1995,vatBasisPoints:2000,proposedQuantity:0,websiteVisible:true,expectedRevision:0};
+assert.deepEqual(validateCommerceDraft(draft),draft);
+for(const bad of [{grossPriceMinor:12.3},{proposedQuantity:-1},{vatBasisPoints:700},{sku:'NUT-UK-NEW'},{gtin:'123'},{expectedRevision:-1},{published:true},{name:'<script>'}])assert.throws(()=>validateCommerceDraft({...draft,...bad}));
+assert.throws(()=>validateCommerceDraft(draft,{supplier:'esco',gtin:null}));
+const ctx={username:'employee@example.test',accessType:'employee',accessScopes:['employee']};
+const env={WMS_COMMERCE_DRAFTS_ENABLED:'true',WMS_COMMERCE_EDITOR_ALLOWLIST:ctx.username};
+assert.equal(canEditCommerceDraft(ctx,env),true);
+assert.equal(canEditCommerceDraft(ctx,{}),false);
+assert.equal(canEditCommerceDraft({...ctx,accessType:'customer'},env),false);
+assert.throws(()=>assertCommerceReader({...ctx,accessType:'customer'}));
+console.log('WMS commerce draft permission and validation passed');
