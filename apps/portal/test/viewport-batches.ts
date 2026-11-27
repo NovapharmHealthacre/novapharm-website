@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 
 // Keep the worker cap small: the Playwright container has bounded shared
 // memory, and the synthetic API is shared by the isolated browser contexts.
-export function viewportConcurrency(env: NodeJS.ProcessEnv): 1 | 2 {
+export function viewportConcurrency(env: Readonly<Record<string, string | undefined>>): 1 | 2 {
   const value = env["PORTAL_BROWSER_VIEWPORT_CONCURRENCY"] ?? (env["GITHUB_ACTIONS"] === "true" ? "2" : "1");
   assert.ok(value === "1" || value === "2", "Portal viewport concurrency must be 1 or 2");
   return value === "2" ? 2 : 1;
