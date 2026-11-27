@@ -58,14 +58,17 @@ def main():
                 check_url(url,EXPECTED[name])
                 print(f"Checking {name}: {url}",flush=True)
                 opener=build_opener(ReviewedRedirect(EXPECTED[name]))
-                request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.2 (https://novapharmhealthcare.com/contact/)","Accept":"image/png,image/jpeg,image/webp"})
+                # Prefer the original PNG for the seven previously verified sources.
+                # Wikimedia may negotiate WebP for the Salus SVG thumbnail.
+                accept="image/png,image/jpeg,image/webp" if name=="vitabiotics" else "image/png"
+                request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.2 (https://novapharmhealthcare.com/contact/)","Accept":accept})
                 with opener.open(request,timeout=25) as response:
                     check_url(response.geturl(),EXPECTED[name])
                     data=response.read(MAX_BYTES+1)
                 if len(data)>MAX_BYTES:
                     raise ValueError("Asset exceeds limit")
                 kind=raster_format(data)
-                if name!="vitabiotics" and kind!="png":
+                if name not in {"vitabiotics","salus"} and kind!="png":
                     raise ValueError("Expected original PNG")
                 (stage/f"{name}.source").write_bytes(data)
                 entry.update(selectedSourceUrl=url,selectedSourcePage=candidate["page"],selectedSourceKind=candidate["kind"],originalFormat=kind,originalSha256=hashlib.sha256(data).hexdigest())
