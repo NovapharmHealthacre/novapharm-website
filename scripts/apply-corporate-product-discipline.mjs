@@ -471,7 +471,7 @@ function nutraxinBagMain() {
       <section aria-label="Items in your bag"><div data-nx-bag-items><p class="nx-bag-empty">Loading your saved selections...</p></div><a href="/products/nutraxin/" class="nx-shop-link">Continue shopping</a></section>
       <aside class="nx-bag-summary" aria-label="Order summary"><h2>Bag summary</h2><dl>
         <div><dt>Products</dt><dd data-nx-bag-subtotal>Pending</dd></div>
-        <div><dt>Delivery</dt><dd data-nx-bag-delivery>Included · UK</dd></div>
+        <div><dt>Delivery</dt><dd data-nx-bag-delivery>Calculated in Bag</dd></div>
         <div><dt>Taxes</dt><dd data-nx-bag-tax>20% VAT included</dd></div>
         <div class="nx-bag-total"><dt>Estimated total</dt><dd data-nx-bag-total>Calculating…</dd></div>
       </dl><label class="nx-store-consumer-terms"><input type="checkbox" data-nx-consumer-terms><span>I accept the <a href="/legal/returns/">Nutraxin delivery, returns and refunds policy</a> and understand these supplements are fulfilled by the manufacturer, not reserved as warehouse stock. I acknowledge the stated delivery expectation may be up to 30 days.</span></label><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Continue to secure checkout</button>

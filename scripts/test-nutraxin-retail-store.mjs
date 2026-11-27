@@ -29,7 +29,8 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
  assert.equal(catalogue.delivery_verified,true);
  assert.equal(catalogue.provisional_uk_delivery_charge_pence,449);
  assert.equal(catalogue.provisional_uk_delivery_cost_seller_funded,false);
- assert.match(catalogue.source_record,/_v6$/);
+ assert.equal(catalogue.source_record,"owner_approved_nutraxin_19_sku_reprice_2026-11-27");
+ assert.equal(catalogue.retail_price_revision,"nutraxin-retail-2026-11-27");
 });
 test("public guide prices match all 19 approved revised VAT-inclusive retail prices",()=>{
  const expected={
