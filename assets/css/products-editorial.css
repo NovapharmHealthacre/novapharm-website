@@ -561,3 +561,6 @@ body[data-route="/products/"] .np-store{font-family:var(--np-type-ui,-apple-syst
 @media(prefers-reduced-motion:reduce){.np-store .nps-brand-grid .nps-brand-mark{transition:none}}
 
 .np-store .nps-logo-attribution{font-size:11px;line-height:1.5;color:#555459;margin:16px 0 0;text-align:center}.np-store .nps-logo-attribution a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* Vitabiotics original square profile asset includes white space around the mark. */
+.np-store .nps-brand-grid .nps-brand-mark--vitabiotics>img{max-height:88px;max-width:100%;object-fit:contain}

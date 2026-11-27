@@ -78,12 +78,13 @@
     {
       "name": "Vitabiotics",
       "id": "vitabiotics",
-      "displayUrl": "/assets/media/brands/vitabiotics.png",
-      "sourcePage": "https://brandfetch.com/vitabiotics.com",
+      "displayUrl": "/assets/media/brands/vitabiotics.jpg",
+      "sourcePage": "https://x.com/vitabiotics",
       "assetHosting": "local product-catalogue static asset (planned by controlled vendor workflow)",
-      "rights": "trademark of respective owner",
-      "review": "Original omega symbol and wordmark visually checked on Brandfetch; aggregator source, not manufacturer authorization.",
-      "remoteSourceUrl": "https://cdn.brandfetch.io/idYI6rEthj/w/318/h/116/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1789998943998"
+      "rights": "Vitabiotics trademark; publication rights unverified. Manufacturer website terms require prior written consent for trademark use in connection with products or services; assess supplier approval before publication.",
+      "review": "Candidate original red omega and black wordmark from brand's public social profile, visually checked via indexed image. Download and full decode pending; no commercial logo permission inferred.",
+      "remoteSourceUrl": "https://pbs.twimg.com/profile_images/772814198971719680/3kLr8qeK.jpg",
+      "termsUrl": "https://www.vitabiotics.com/pages/terms"
     }
   ]
 }

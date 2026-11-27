@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download the eight reviewed original PNGs; fail closed on unexpected hosts or bytes."""
+"""Download the eight reviewed original image files; fail closed on unexpected hosts or bytes."""
 from __future__ import annotations
 import hashlib
 import json
@@ -19,7 +19,7 @@ EXPECTED = {
     "salus": {"thumb.wikimedia.org", "upload.wikimedia.org"},
     "seven-seas": {"upload.wikimedia.org"},
     "vicks": {"upload.wikimedia.org"},
-    "vitabiotics": {"cdn.brandfetch.io"},
+    "vitabiotics": {"pbs.twimg.com"},
 }
 MAX_BYTES = 1_000_000
 PNG_MAGIC = bytes.fromhex("89504e470d0a1a0a")
@@ -60,13 +60,19 @@ def main():
             check_url(url,EXPECTED[name])
             print(f"Checking {name}: {urlparse(url).hostname}",flush=True)
             opener=build_opener(ReviewedRedirect(EXPECTED[name]))
-            request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.1 (https://novapharmhealthcare.com/contact/)","Accept":"image/png"})
+            request=Request(url,headers={"User-Agent":"NovaPharm-BrandAssetReview/1.1 (https://novapharmhealthcare.com/contact/)","Accept":"image/png,image/jpeg"})
             with opener.open(request,timeout=25) as response:
                 check_url(response.geturl(),EXPECTED[name])
                 data=response.read(MAX_BYTES+1)
             if len(data)>MAX_BYTES:
                 raise ValueError("Image exceeds byte limit")
-            w,h=validate_png(data,name)
+            if name == "vitabiotics":
+                if not (data.startswith(bytes.fromhex("ffd8ff")) and data.endswith(bytes.fromhex("ffd9"))):
+                    raise ValueError("Vitabiotics did not return JPEG bytes")
+                # Full decoder validates dimensions and pixels in the next step.
+                w,h=None,None
+            else:
+                w,h=validate_png(data,name)
             downloaded[name]=data
             entry["retrievedWidth"]=w
             entry["retrievedHeight"]=h
@@ -79,9 +85,9 @@ def main():
         raise SystemExit(f"Not committing a partial logo grid; failed: {', '.join(failures)}")
     TARGET.mkdir(parents=True,exist_ok=True)
     for name,data in downloaded.items():
-        (TARGET / f"{name}.png").write_bytes(data)
+        (TARGET / (f"{name}.jpg" if name == "vitabiotics" else f"{name}.png")).write_bytes(data)
     REGISTER.write_text(json.dumps(register,indent=2,ensure_ascii=False)+"\n")
-    print("All eight source PNGs retrieved and hashed.")
+    print("All eight original source images retrieved and hashed.")
 
 if __name__=="__main__":
     main()

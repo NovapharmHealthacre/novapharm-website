@@ -33,7 +33,7 @@ jobs:
       - name: Validate decoded originals and refresh image inventory
         run: |
           npm ci --ignore-scripts
-          node --input-type=module -e 'import sharp from "sharp";import fs from "node:fs";for(const file of fs.readdirSync("assets/media/brands").filter(x=>x.endsWith(".png"))){await sharp("assets/media/brands/"+file).raw().toBuffer()}'
+          node --input-type=module -e 'import sharp from "sharp";import fs from "node:fs";for(const file of fs.readdirSync("assets/media/brands").filter(x=>/\.(png|jpg)$/.test(x))){const img=sharp("assets/media/brands/"+file);const meta=await img.metadata();if(!meta.width||!meta.height||meta.width<20||meta.height<20||meta.width>4096||meta.height>4096)throw Error("Invalid dimensions: "+file);await img.raw().toBuffer()}'
           npm run images:inventory
       - name: Commit eight locally hosted marks into this PR branch
         env:
