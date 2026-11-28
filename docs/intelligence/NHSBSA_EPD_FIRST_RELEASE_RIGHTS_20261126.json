@@ -1,0 +1,61 @@
+{
+  "contract": "novapharm.intelligence.nhsbsa-first-country-source-terms-review.v1",
+  "reviewDate": "2026-11-26",
+  "publisher": "NHS Business Services Authority",
+  "scope": "England, retrospective community prescribing; not UK-wide, wholesale sales, stock or clinical guidance",
+  "dataset": {
+    "title": "English Prescribing Dataset (EPD) with SNOMED Code",
+    "datasetSlug": "english-prescribing-dataset-epd-with-snomed-code",
+    "publisherPage": "https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code",
+    "period": "2026-08",
+    "ckanResourceUuid": "30b74257-9912-4b54-8990-8eec2a4b7f14",
+    "datastoreResourceId": "EPD_SNOMED_202608",
+    "resourceSha256": "6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551",
+    "sourceReleaseManifestVerified": false,
+    "extractedCsvSha256": "1a3ee72477c8e999cabd3284544bf370f78eb3045529191c0062bf74c9a1017b",
+    "privateArchiveS3Verified": true,
+    "privateArchiveVerifiedAt": "2026-11-13T17:23:56.830183+00:00",
+    "independentPublisherCertifiedTotals": false,
+    "productionAccepted": false
+  },
+  "publishedTerms": {
+    "portalTerms": "https://opendata.nhsbsa.net/pages/terms-and-conditions",
+    "licenseIdentifier": "OGL-UK-3.0",
+    "licenseText": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "publisherAttributionCandidate": "NHSBSA Copyright 2021-2026",
+    "attributionRequirement": "Publisher datasets require attribution, and individual resource-version terms must be independently confirmed",
+    "publisherPageCurrentVersionVerified": false,
+    "cachedPublisherPageMayDiffer": true
+  },
+  "thirdPartyTerminology": {
+    "bnfCommercialAndAiReuseApproved": false,
+    "dmdCommercialAndAiReuseApproved": false,
+    "snomedCtCommercialAndAiReuseApproved": false,
+    "assessedFieldByField": false
+  },
+  "independentReview": {
+    "legalReviewerApproved": false,
+    "technicalApproverApproved": false,
+    "sourceRightsSignaturePresent": false,
+    "licenseEvidenceId": null,
+    "rightsRevision": null
+  },
+  "releaseGates": {
+    "snapshotAuthenticityVerified": false,
+    "fullResourceChecksumVerified": false,
+    "sourceRightsGranted": false,
+    "uniqueAtlasIndexesVerified": false,
+    "medicineIdentityAccepted": false,
+    "tenantIsolationVerified": false,
+    "productionIngestionApproved": false,
+    "customerCountryLive": false
+  },
+  "observations": [
+    "Historic QA evidence (17,754,211 rows and 50,593 Apixaban-labelled rows) is not itself the full authentic publisher snapshot acceptance",
+    "A publisher OGL claim does not automatically clear third-party BNF, dm+d or SNOMED CT rights",
+    "NHSBSA limits high-volume API querying under fair-use terms; prefer publisher-approved full-file capture",
+    "Previously cached dataset page displayed older attribution. Require current exact resource acknowledgement and date before publication",
+    "Verified 26 November against existing staging S3 HeadObject and read-only archive/full-row QA receipts: 644,232,845 ZIP bytes, 7,432,815,985 CSV bytes, matching SHA-256 and 17,754,211 QA rows. Neither source rights nor production admission follows from this private integrity evidence."
+  ],
+  "operatorNextAction": "Verify exact August publisher resource metadata, immutable object digest and rights for intended fields; obtain independently signed source-specific revision and perform controlled database migration before private admission"
+}

@@ -1,0 +1,29 @@
+name: Intelligence private first-country four-index migration orchestration
+on:
+  pull_request:
+    paths:
+      - 'src/data/atlas-first-country-four-index-orchestration.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
+      - 'docs/intelligence/NHSBSA_EPD_FIRST_RELEASE_RIGHTS_20261126.json'
+      - 'docs/intelligence/NHSBSA_EPD_S3_AUG_2026_ARCHIVE_EVIDENCE.json'
+      - 'docs/intelligence/NHSBSA_EPD_FIRST_RELEASE_RIGHTS_20261126.md'
+      - 'scripts/test-nhsbsa-first-country-rights-evidence.mjs'
+      - 'scripts/test-atlas-first-country-four-index-orchestration.mjs'
+      - '.github/workflows/intelligence-first-country-migration-orchestration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - run: node --check src/data/atlas-first-country-four-index-orchestration.mjs
+      - run: node --test scripts/test-atlas-first-country-four-index-orchestration.mjs scripts/test-atlas-four-index-preflight.mjs scripts/test-atlas-g2-unique-index-migration.mjs scripts/test-atlas-private-medicine-rights-index.mjs scripts/test-nhsbsa-first-country-rights-evidence.mjs

@@ -187,3 +187,41 @@ test("missing durable audit callback denies migration before the first write", a
   }), denied("durable_migration_audit_required"));
   assert.deepEqual(sys.writes, []);
 });
+
+test("per-index authority callback rejects revoked or changed approval before later writes", async () => {
+ const sys=fake(),calls=[];
+ await assert.rejects(applyAtlasG2UniqueIndexes({
+   database:sys.database,verifyMigrationAuthority:permitted,
+   beforeIndexCreate:async ({collection,operatorId,changeTicket}) => {
+     calls.push(collection);
+     if(calls.length===2)return {authorized:false,productionWritesQuiesced:false,operatorId,changeTicket};
+     return {authorized:true,productionWritesQuiesced:true,operatorId,changeTicket};
+   },
+   afterVerifiedIndex:async()=>({persisted:true})
+ }),denied("precreate_authority_revoked"));
+ assert.deepEqual(calls,names.slice(0,2));
+ assert.deepEqual(sys.writes.map(x=>x.collection),names.slice(0,1));
+ assert.equal((await inspectAtlasG2UniqueIndexes({database:sys.database})).ready,false);
+});
+test("per-index callback must preserve operator and signed change identity",async()=>{
+ for(const override of [
+  {authorized:true,productionWritesQuiesced:false,operatorId:"operator-001",changeTicket:"change-667"},
+  {authorized:true,productionWritesQuiesced:true,operatorId:"other-user",changeTicket:"change-667"},
+  {authorized:true,productionWritesQuiesced:true,operatorId:"operator-001",changeTicket:"changed"},
+  null
+ ]){
+   const sys=fake();
+   await assert.rejects(applyAtlasG2UniqueIndexes({
+    database:sys.database,verifyMigrationAuthority:permitted,
+    beforeIndexCreate:async()=>override,
+    afterVerifiedIndex:async()=>({persisted:true})
+   }),denied("precreate_authority_revoked"));
+   assert.deepEqual(sys.writes,[]);
+ }
+ const sys=fake();
+ await assert.rejects(applyAtlasG2UniqueIndexes({
+  database:sys.database,verifyMigrationAuthority:permitted,
+  beforeIndexCreate:true,afterVerifiedIndex:async()=>({persisted:true})
+ }),denied("invalid_precreate_authority_callback"));
+ assert.deepEqual(sys.writes,[]);
+});

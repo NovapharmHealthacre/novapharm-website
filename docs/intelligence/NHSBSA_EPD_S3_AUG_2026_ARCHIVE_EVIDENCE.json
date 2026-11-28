@@ -1,0 +1,70 @@
+{
+  "contract": "novapharm.intelligence.nhsbsa-august-private-archive-readback.v1",
+  "verifiedReadOnlyOn": "2026-11-26",
+  "environment": "private staging quarantine (not production data admission)",
+  "bucket": "novapharm-staging-foundation-quarantinebucket-knggqkn5aqoq",
+  "region": "eu-north-1",
+  "resource": "EPD_SNOMED_202608",
+  "reportingPeriod": "2026-08",
+  "archive": {
+    "key": "governed-intake/nhsbsa/EPD_SNOMED_202608/raw/EPD_SNOMED_202608-6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551.zip",
+    "versionId": "NvYYWOLeozSJLO72pYHk1Z5EVbHz6YTG",
+    "bytes": 644232845,
+    "sha256": "6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551",
+    "s3MetadataSha256": "6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551",
+    "serverSideEncryption": "AES256",
+    "s3FullByteHashVerifiedByPriorArchiveReceipt": true,
+    "sourceTransportInArchiveReceipt": "publisher_https_acquired_digest_equal_to_drive_private_archive",
+    "sourceReleaseManifestIndependentlyCertified": false
+  },
+  "csv": {
+    "bytes": 7432815985,
+    "sha256": "1a3ee72477c8e999cabd3284544bf370f78eb3045529191c0062bf74c9a1017b"
+  },
+  "receipts": {
+    "archive": {
+      "key": "governed-intake/nhsbsa/EPD_SNOMED_202608/receipts/private-archive-6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551.json",
+      "versionId": "a0SydhvR0d3vfShP3CTdmXjAQwGLysG9"
+    },
+    "fullRowQuality": {
+      "key": "governed-intake/nhsbsa/EPD_SNOMED_202608/receipts/private-full-row-qa-6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551-v1.json",
+      "versionId": "HWfJazjlpOkx80lxqqe_nPSavfzQvHzo"
+    },
+    "privateDriveManifest": {
+      "key": "governed-intake/nhsbsa/EPD_SNOMED_202608/receipts/drive-manifest-v1.json",
+      "versionId": "J06RI1TjAZFU77Aa81ITd5E5_65Rl4I4"
+    },
+    "privateDriveDigestMatched": true
+  },
+  "quality": {
+    "records": 17754211,
+    "columns": 27,
+    "apixabanRows": 50593,
+    "apixabanMissingSnomed": 0,
+    "missingSnomedTotal": 10972,
+    "invalidItems": 0,
+    "invalidQuantity": 0,
+    "invalidNic": 0,
+    "invalidActualCost": 0,
+    "rowLengthMismatches": 0,
+    "unexpectedReportingPeriods": 0,
+    "apixabanPresentationCounts": {
+      "0208020Z0AAAAAA": 25298,
+      "0208020Z0AAABAB": 24175,
+      "0208020Z0AAACAC": 71,
+      "0208020Z0BBAAAA": 394,
+      "0208020Z0BBABAB": 655
+    }
+  },
+  "authority": {
+    "rightsApproved": false,
+    "thirdPartyTerminologyRightsApproved": false,
+    "aiProcessingApproved": false,
+    "commercialRedistributionApproved": false,
+    "acceptedMedicineObservations": 0,
+    "productionPromoted": false,
+    "customerPublishApproved": false,
+    "independentPublisherCertifiedTotals": false
+  },
+  "review": "S3 metadata and existing private receipt records inspected live. No independent re-download or fresh recomputation of the 644MB archive hash in this session; prior archive receipt attests full-byte readback."
+}
