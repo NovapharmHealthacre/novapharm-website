@@ -16,6 +16,8 @@ function sha256(buffer) {
 const runnerTemp = process.env.RUNNER_TEMP;
 const useJobCache = process.env.GITHUB_ACTIONS === "true"
   && process.env.GITHUB_EVENT_NAME === "pull_request"
+  && process.env.GITHUB_WORKFLOW === "Production readiness"
+  && process.env.RUNNER_ENVIRONMENT === "github-hosted"
   && process.env.GITHUB_JOB === "verify"
   && Boolean(runnerTemp && process.env.GITHUB_RUN_ID && process.env.GITHUB_RUN_ATTEMPT);
 const cacheKey = useJobCache ? sha256(JSON.stringify({
