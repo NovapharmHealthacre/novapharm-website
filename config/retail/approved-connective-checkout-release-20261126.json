@@ -1,8 +1,8 @@
 {
   "schema": "novapharm.retail-owner-release.v1",
-  "approvedOn": "2026-11-27",
+  "approvedOn": "2026-11-28",
   "approval": "granted",
-  "scope": "fifty-six-reviewed-supplier-backed-consumer-offers",
+  "scope": "sixty-five-reviewed-supplier-backed-consumer-offers",
   "checkoutApiOrigin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com",
   "checkoutCollection": "/products/health-and-wellbeing/",
   "sharedBag": "/products/nutraxin/bag/",
@@ -27,6 +27,12 @@
     "4004148013270",
     "4004148013294",
     "4004148043116",
+    "4030300022736",
+    "4030300022743",
+    "4030300022750",
+    "4030300023108",
+    "4030300573016",
+    "4030300573313",
     "4103040003188",
     "4103040004932",
     "4103040036308",
@@ -67,8 +73,11 @@
     "5021265251124",
     "5060062999488",
     "5060062999518",
-    "5060216565309"
+    "5060216565309",
+    "8001090507747",
+    "8700216455107",
+    "8700216455152"
   ],
-  "publicationAttempt": 23,
-  "publicationFix": "Restore single valid protected publisher after duplicate job corruption; reissue exact same approved Vicks-first retail release"
+  "publicationAttempt": 25,
+  "publicationFix": "Owner-authorised nine Vicks consumer-unit additions at reviewed 20 percent VAT; preserve medicine, account and outbound email holds"
 }
