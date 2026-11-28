@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -53,7 +53,9 @@ async function writeDerivative(input, output, width, format) {
     pipeline = pipeline.jpeg({ quality: 91, mozjpeg: true, chromaSubsampling: "4:4:4" });
   }
 
-  await pipeline.toFile(output);
+  const bytes = await pipeline.toBuffer();
+  await writeFile(output, bytes);
+  return bytes;
 }
 
 for (const portrait of configuration.portraits) {
@@ -77,29 +79,32 @@ for (const portrait of configuration.portraits) {
       const extension = format === "jpg" ? "jpg" : format;
       const output = path.join(root, `${portrait.outputBase}-${width}.${extension}`);
       const relative = path.relative(root, output);
-      let matches = false;
+      // Validate one immutable byte buffer instead of a stat/metadata/read sequence.
+      // This prevents time-of-check/time-of-use races in the receipt creation.
+      let outputBytes;
       if (receiptPath && typeof previous[relative] === "string") {
         try {
-          matches = sha256(await readFile(output)) === previous[relative];
+          const candidate = await readFile(output);
+          if (sha256(candidate) === previous[relative]) outputBytes = candidate;
         } catch (error) {
           if (error.code !== "ENOENT") throw error;
         }
       }
-      if (matches) {
+      if (outputBytes) {
         reused++;
       } else {
-        await writeDerivative(input, output, width, format);
+        outputBytes = await writeDerivative(input, output, width, format);
         generated++;
       }
 
-      const [outputMetadata, outputStat] = await Promise.all([sharp(output).metadata(), stat(output)]);
+      const outputMetadata = await sharp(outputBytes).metadata();
       if (outputMetadata.width !== width || outputMetadata.height !== expectedHeight) {
-        throw new Error(`Leadership derivative has incorrect dimensions: ${path.relative(root, output)}`);
+        throw new Error(`Leadership derivative has incorrect dimensions: ${relative}`);
       }
-      if (outputStat.size > configuration.deliveryCeilingBytes) {
-        throw new Error(`Leadership derivative exceeds ${configuration.deliveryCeilingBytes} bytes: ${path.relative(root, output)}`);
+      if (outputBytes.length > configuration.deliveryCeilingBytes) {
+        throw new Error(`Leadership derivative exceeds ${configuration.deliveryCeilingBytes} bytes: ${relative}`);
       }
-      if (receiptPath) verified[relative] = sha256(await readFile(output));
+      if (receiptPath) verified[relative] = sha256(outputBytes);
     }
   }
 }
