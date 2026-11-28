@@ -34,23 +34,19 @@ test("same-job build receipt rejects changed server, lock, build ID, and run ide
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test("only the secure Portal Actions job reuses its checked build; both complete suites remain mandatory", () => {
+test("only the secure Portal browser matrix reuses its same-job checked build", () => {
   const workflow = readFileSync(new URL("../.github/workflows/browser-acceptance.yml", import.meta.url), "utf8");
-  const portal = workflow.split("\n  secure-portal:")[1].split("\n  backend-workflows:")[0];
+  const portal = workflow.split("\n  secure-portal:")[1].split("\n  portal-lighthouse:")[0];
+  const lighthouse = workflow.split("\n  portal-lighthouse:")[1].split("\n  backend-workflows:")[0];
   const check = portal.indexOf("npm run api:check && npm run portal:check");
   const record = portal.indexOf("node scripts/portal-ci-build-reuse.mjs record");
   const browser = portal.indexOf("npm run portal:test:browser -- --reuse-checked-ci-build");
-  const lighthouse = workflow.split("\\n  portal-lighthouse:")[1].split("\\n  backend-workflows:")[0];
   assert.ok(check >= 0 && check < record && record < browser);
-  assert.doesNotMatch(portal, /portal:test:lighthouse/);
-  assert.doesNotMatch(lighthouse, /--reuse-checked-ci-build|portal-ci-build-reuse\\.mjs record/);
-  assert.match(lighthouse, /run: npm run portal:test:lighthouse/);
-  assert.match(lighthouse, /run: npm ci --ignore-scripts --prefer-offline/);
-  assert.match(lighthouse, /run: node --test scripts\\/test-lighthouse-transient-navigation\\.mjs/);
-  assert.match(lighthouse, /if: \\$\\{\\{ always\\(\\) && github\\.event\\.repository\\.private \\}\\}/);
-  const gate = workflow.split("\\n  acceptance-gate:")[1];
-  assert.match(gate, /- portal-lighthouse/);
-  assert.match(gate, /needs\\.portal-lighthouse\\.result/);
+  assert.ok(!portal.includes("portal:test:lighthouse"), "Lighthouse must not serialize the browser matrix");
+  assert.ok(lighthouse.includes("run: npm run portal:test:lighthouse"));
+  assert.ok(lighthouse.includes("run: npm ci --ignore-scripts --prefer-offline"));
+  assert.ok(lighthouse.includes("run: node --test scripts/test-lighthouse-transient-navigation.mjs"));
+  assert.ok(!lighthouse.includes("--reuse-checked-ci-build") && !lighthouse.includes("portal-ci-build-reuse.mjs record"));
   const source = readFileSync(new URL("./run-portal-browser-acceptance.mjs", import.meta.url), "utf8");
   assert.match(source, /if \(process\.argv\.includes\(reuseFlag\)\) requireCheckedBuild\(repositoryRoot\);/);
   assert.match(source, /else run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
@@ -59,21 +55,22 @@ test("only the secure Portal Actions job reuses its checked build; both complete
   assert.match(benchmark, /run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
 });
 
-
-test("Lighthouse is independent, complete and blocks the unified acceptance gate on failure", () => {
+test("independent Lighthouse stays mandatory and protected artifacts stay private", () => {
   const workflow = readFileSync(new URL("../.github/workflows/browser-acceptance.yml", import.meta.url), "utf8");
-  const portal = workflow.split("\\n  secure-portal:")[1].split("\\n  portal-lighthouse:")[0];
-  const lighthouse = workflow.split("\\n  portal-lighthouse:")[1].split("\\n  backend-workflows:")[0];
-  const gate = workflow.split("\\n  acceptance-gate:")[1];
-  assert.match(portal, /run: npm run api:check && npm run portal:check/);
-  assert.match(portal, /run: npm run portal:test:browser -- --reuse-checked-ci-build/);
-  assert.match(portal, /if: \\$\\{\\{ always\\(\\) && github\\.event\\.repository\\.private \\}\\}/);
-  assert.match(lighthouse, /name: Independent Portal Lighthouse acceptance/);
-  assert.match(lighthouse, /Run portal Lighthouse acceptance/);
-  assert.match(lighthouse, /artifacts\\/portal-lighthouse/);
-  assert.match(lighthouse, /!github\\.event\\.repository\\.private/);
-  assert.match(gate, /- secure-portal/);
-  assert.match(gate, /- portal-lighthouse/);
-  assert.match(gate, /test "\\$\\{\\{ needs\\.secure-portal\\.result \\}\\}" = success/);
-  assert.match(gate, /test "\\$\\{\\{ needs\\.portal-lighthouse\\.result \\}\\}" = success/);
+  const portal = workflow.split("\n  secure-portal:")[1].split("\n  portal-lighthouse:")[0];
+  const lighthouse = workflow.split("\n  portal-lighthouse:")[1].split("\n  backend-workflows:")[0];
+  const gate = workflow.split("\n  acceptance-gate:")[1];
+  assert.ok(portal.includes("npm run api:check && npm run portal:check"));
+  assert.ok(portal.includes("npm run portal:test:browser -- --reuse-checked-ci-build"));
+  assert.ok(portal.includes("always() && github.event.repository.private"));
+  assert.ok(lighthouse.includes("name: Independent Portal Lighthouse acceptance"));
+  assert.ok(lighthouse.includes("name: Run portal Lighthouse acceptance"));
+  assert.ok(lighthouse.includes("artifacts/portal-lighthouse"));
+  assert.ok(lighthouse.includes("always() && github.event.repository.private"));
+  assert.ok(lighthouse.includes("always() && !github.event.repository.private"));
+  assert.ok(gate.includes("- secure-portal"));
+  assert.ok(gate.includes("- portal-lighthouse"));
+  assert.ok(gate.includes("needs.secure-portal.result"));
+  assert.ok(gate.includes("needs.portal-lighthouse.result"));
+  assert.ok(gate.includes("= success"));
 });
