@@ -596,10 +596,10 @@ test("AWS-backed public publisher has one authorisation gate, one build, and one
     assert.equal(occurrence.length, 1, "Publisher must declare exactly one " + name + " job");
   }
   const guard = workflowStepShell(publishWorkflow,
-    "Enforce separately approved customer-production or public-branding-only permissions").join("\\n");
+    "Enforce separately approved customer-production or public-branding-only permissions").join("\n");
   const parse = spawnSync("bash", ["-n"], { input: guard, encoding: "utf8", timeout: 5000 });
   assert.equal(parse.status, 0, "Owner release authorisation shell must be valid: " + parse.stderr);
-  assert.match(guard, /owner-production-constraints\\.json/, "Production permissions must remain checked");
+  assert.match(guard, /owner-production-constraints\.json/, "Production permissions must remain checked");
   assert.match(guard, /hold=true/, "Unapproved releases must remain blocked");
   assert.match(workflow, /cancel-in-progress: false/, "Do not cancel an approved in-progress publication");
 });
