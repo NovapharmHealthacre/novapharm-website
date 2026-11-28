@@ -8,6 +8,13 @@ export const BASE = "https://novapharmhealthcare.com";
 export const OUTPUT = "feeds/chatgpt-products.csv";
 const MAX_AGE_MS = 48 * 60 * 60 * 1000;
 const ALLOWED_CLASSES = new Set(["cosmetic", "consumer_non_medicinal"]);
+// Each initial SKU has been individually screened as a non-supplement,
+// non-medicine retail product; never wholesale-enable all nominal classes.
+const REVIEWED_GTINS = new Set([
+  "4103040003188", "4103040004932", "4103040036308",
+  "5060062999488", "5060062999518"
+]);
+export class StaleRetailFeedEvidence extends Error {}
 export const COLUMNS = Object.freeze([
   "item_id", "title", "description", "url", "brand", "seller_name",
   "image_url", "price", "availability", "gtin",
@@ -64,7 +71,7 @@ export function buildChatGptRows(catalogue, manifest, now = new Date()) {
     seen.add(id);
     const product = products.get(id);
     assert(product, "Offer is missing approved product identity: " + id);
-    assert(ALLOWED_CLASSES.has(product.productClass),
+    assert(ALLOWED_CLASSES.has(product.productClass) && REVIEWED_GTINS.has(id),
       "Product class prohibited or not reviewed for ChatGPT: " + id);
     assert(product.identityConfirmed === true && product.imageRightsConfirmed === true &&
       product.publicListingApproved === true, "Missing approved consumer listing: " + id);
@@ -75,10 +82,22 @@ export function buildChatGptRows(catalogue, manifest, now = new Date()) {
       "Not a verified live retail checkout offer: " + id);
     assert(Number.isSafeInteger(offer.pricePence) && offer.pricePence > 0,
       "Missing verified consumer price: " + id);
-    assert(["in_stock", "out_of_stock"].includes(offer.availability),
-      "Missing verified availability: " + id);
-    assert(recentUtc(offer.priceCheckedAt, now) && recentUtc(offer.stockCheckedAt, now),
-      "Price or stock evidence stale: " + id);
+    const unknownSupplierBacked = offer.availability === "unknown" &&
+      offer.stockVerified === false && offer.supplierBackedOrdering === true &&
+      offer.sellerDeliveryCommitment === true;
+    const inventoryVerified = ["in_stock", "out_of_stock"].includes(offer.availability) &&
+      offer.stockVerified === true && recentUtc(offer.stockCheckedAt, now);
+    assert(unknownSupplierBacked || inventoryVerified,
+      "Availability must disclose unverified supplier-backed stock: " + id);
+    assert(offer.priceEvidenceSource === "aws-retail-approved-ledger-eu-north-1",
+      "Unknown source of live retail price: " + id);
+    if (!Number.isSafeInteger(offer.priceEvidenceExpiresAt) ||
+        offer.priceEvidenceExpiresAt * 1000 <= now.getTime()) {
+      throw new StaleRetailFeedEvidence("Price authority expired: " + id);
+    }
+    if (!recentUtc(offer.priceCheckedAt, now)) {
+      throw new StaleRetailFeedEvidence("Authoritative price snapshot stale: " + id);
+    }
     assert(safeProductUrl(offer.productUrl, id), "Unexpected checkout landing page: " + id);
     assert(nonblank(product.name, 150) && nonblank(product.brand, 120) &&
       nonblank(product.description, 5000), "Missing factual product information: " + id);
@@ -105,7 +124,16 @@ export function serializeChatGptRows(rows) {
 export function stageChatGptFeed(root, publicDirectory, now = new Date()) {
   const catalogue = JSON.parse(readFileSync(join(root, "src/content/approved-consumer-catalogue.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(root, "src/content/chatgpt-uk-verified-offers.json"), "utf8"));
-  const rows = buildChatGptRows(catalogue, manifest, now);
+  let rows;
+  try {
+    rows = buildChatGptRows(catalogue, manifest, now);
+  } catch (error) {
+    if (error instanceof StaleRetailFeedEvidence) {
+      // No future static-site release should keep advertising stale prices.
+      return { rows: 0, published: false, reason: "stale-price-evidence" };
+    }
+    throw error;
+  }
   // A header-only feed is not a valid retail offer. Never publish a fake product.
   if (!rows.length) return { rows: 0, published: false };
   for (const row of rows) {
@@ -124,9 +152,15 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
   const catalogue = JSON.parse(readFileSync(join(root, "src/content/approved-consumer-catalogue.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(root, "src/content/chatgpt-uk-verified-offers.json"), "utf8"));
-  const rows = buildChatGptRows(catalogue, manifest);
-  console.log(JSON.stringify({
-    verifiedEligibleRows: rows.length, wouldPublish: rows.length > 0,
-    target: OUTPUT, productUploadPerformed: false, checkoutActivated: false
-  }));
+  try {
+    const rows = buildChatGptRows(catalogue, manifest);
+    console.log(JSON.stringify({
+      verifiedEligibleRows: rows.length, wouldPublish: rows.length > 0,
+      target: OUTPUT, productUploadPerformed: false, checkoutActivated: false
+    }));
+  } catch (error) {
+    if (!(error instanceof StaleRetailFeedEvidence)) throw error;
+    console.log(JSON.stringify({verifiedEligibleRows:0,wouldPublish:false,
+      reason:"stale-price-evidence",target:OUTPUT,productUploadPerformed:false}));
+  }
 }

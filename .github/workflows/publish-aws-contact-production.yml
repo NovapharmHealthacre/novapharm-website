@@ -96,6 +96,11 @@ on:
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
       - 'scripts/stage-pages-artifact.mjs'
+      # UK ChatGPT discovery-only feed publisher: no payments or user account changes.
+      - 'src/content/chatgpt-uk-verified-offers.json'
+      - 'scripts/build-chatgpt-uk-feed.mjs'
+      - 'scripts/test-chatgpt-uk-feed.mjs'
+      - 'config/retail/approved-chatgpt-uk-feed-release-20261128.json'
       - 'scripts/validate-public-sitemaps.py'
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
@@ -241,6 +246,41 @@ jobs:
             # Rebuild the same reviewed retail release; no new access or checkout admission.
             echo "hold=false" >> "$GITHUB_OUTPUT"
             echo "Dependency-only follow-on of approved Vicks 56-offer publication; full exact-main acceptance required."
+          elif [ "$RELEASE_EVENT" = "push" ] && \
+               jq -e '.schema == "novapharm-chatgpt-uk-discovery-release-v1" and
+                 .approval == "granted" and
+                 .scope == "five-reviewed-nonmedicinal-uk-product-discovery-only" and
+                 .market == "GB" and .currency == "GBP" and
+                 .allowNewCheckout == false and .allowNewPayments == false and
+                 .allowNewInfrastructure == false and .allowCustomerAccessChanges == false and
+                 .allowExternalEmail == false and .allowMedicineOrSupplementOffers == false and
+                 (.approvedOffers | length) == 5' \
+                 config/retail/approved-chatgpt-uk-feed-release-20261128.json >/dev/null 2>&1 && \
+               jq -e --slurpfile approved config/retail/approved-chatgpt-uk-feed-release-20261128.json \
+                 '.schema == "novapharm-chatgpt-gb-verified-offers-v1" and
+                  .market == "GB" and .currency == "GBP" and
+                  (.offers | length) == 5 and
+                  ((.offers | map({ean,pricePence}) | sort_by(.ean)) ==
+                    ($approved[0].approvedOffers | sort_by(.ean))) and
+                  all(.offers[]; .availability == "unknown" and
+                      .stockVerified == false and .supplierBackedOrdering == true and
+                      .sellerDeliveryCommitment == true and
+                      .policyApproved == true and .sellerApproved == true and
+                      .checkoutVerified == true and .priceIncludesVat == true and
+                      .source == "verified-live-retail" and
+                      .priceEvidenceSource == "aws-retail-approved-ledger-eu-north-1")' \
+                  src/content/chatgpt-uk-verified-offers.json >/dev/null 2>&1 && \
+               jq -e '.productionSignoff == "not_granted" and
+                 (.productionPermissions | to_entries | all(.value == false))' \
+                 config/intelligence/owner-production-constraints.json >/dev/null 2>&1 && \
+               git diff --name-only HEAD^1 HEAD | grep -Eq \
+                 '^(src/content/chatgpt-uk-verified-offers\.json|scripts/build-chatgpt-uk-feed\.mjs|config/retail/approved-chatgpt-uk-feed-release-20261128\.json)$' && \
+               ! git diff --name-only HEAD^1 HEAD | grep -Ev \
+                 '^(src/content/chatgpt-uk-verified-offers\.json|scripts/build-chatgpt-uk-feed\.mjs|scripts/test-chatgpt-uk-feed\.mjs|docs/chatgpt-uk-retail-feed\.md|config/retail/approved-chatgpt-uk-feed-release-20261128\.json|\.github/workflows/publish-aws-contact-production\.yml)$'; then
+            # Owner-authorised discovery feed only; no permission for customer
+            # access, medicine sales, payment changes, or infrastructure.
+            echo "hold=false" >> "$GITHUB_OUTPUT"
+            echo "Exact five-product UK ChatGPT discovery feed release approved."
           else
             echo "hold=true" >> "$GITHUB_OUTPUT"
             echo "Production on hold: no scoped storefront, branding-only or general customer release authorization is present."

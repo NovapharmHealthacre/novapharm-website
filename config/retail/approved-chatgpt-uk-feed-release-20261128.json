@@ -1,0 +1,35 @@
+{
+  "schema": "novapharm-chatgpt-uk-discovery-release-v1",
+  "approval": "granted",
+  "scope": "five-reviewed-nonmedicinal-uk-product-discovery-only",
+  "currency": "GBP",
+  "market": "GB",
+  "allowNewCheckout": false,
+  "allowNewPayments": false,
+  "allowNewInfrastructure": false,
+  "allowCustomerAccessChanges": false,
+  "allowExternalEmail": false,
+  "allowMedicineOrSupplementOffers": false,
+  "approvedOffers": [
+    {
+      "ean": "4103040003188",
+      "pricePence": 730
+    },
+    {
+      "ean": "4103040004932",
+      "pricePence": 686
+    },
+    {
+      "ean": "4103040036308",
+      "pricePence": 664
+    },
+    {
+      "ean": "5060062999488",
+      "pricePence": 487
+    },
+    {
+      "ean": "5060062999518",
+      "pricePence": 524
+    }
+  ]
+}

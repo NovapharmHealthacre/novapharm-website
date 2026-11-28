@@ -1,58 +1,66 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildChatGptRows, serializeChatGptRows } from "./build-chatgpt-uk-feed.mjs";
-const actualCatalogue = JSON.parse(readFileSync(new URL("../src/content/approved-consumer-catalogue.json", import.meta.url)));
-const actualManifest = JSON.parse(readFileSync(new URL("../src/content/chatgpt-uk-verified-offers.json", import.meta.url)));
+import {
+  buildChatGptRows, serializeChatGptRows, StaleRetailFeedEvidence
+} from "./build-chatgpt-uk-feed.mjs";
+const catalogue = JSON.parse(readFileSync(new URL("../src/content/approved-consumer-catalogue.json", import.meta.url)));
+const manifest = JSON.parse(readFileSync(new URL("../src/content/chatgpt-uk-verified-offers.json", import.meta.url)));
 const now = new Date();
 const fresh = () => now.toISOString().replace(/\.\d{3}Z$/, "Z");
-const item = actualCatalogue.find(product => product.productClass === "cosmetic");
-assert(item, "Expected existing approved cosmetic listing");
+const cosmetic = catalogue.find(x => x.productClass === "cosmetic");
+const supplement = catalogue.find(x => x.productClass === "food_supplement");
+assert(cosmetic && supplement);
+const feed = offers => ({ ...manifest, offers });
 const offer = () => ({
-  ean: item.ean,
-  productUrl: "https://novapharmhealthcare.com/products/health-and-wellbeing/" + item.ean + "/",
-  pricePence: 1299, availability: "in_stock",
-  priceCheckedAt: fresh(), stockCheckedAt: fresh(),
+  ean: cosmetic.ean,
+  productUrl: "https://novapharmhealthcare.com/products/health-and-wellbeing/" + cosmetic.ean + "/",
+  pricePence: 1299, availability: "unknown",
+  priceCheckedAt: fresh(),
+  priceEvidenceSource: "aws-retail-approved-ledger-eu-north-1",
+  priceEvidenceExpiresAt: Math.floor(now.getTime() / 1000) + 86400,
+  stockVerified: false, supplierBackedOrdering: true, sellerDeliveryCommitment: true,
   sellerApproved: true, checkoutVerified: true, priceIncludesVat: true,
-  source: "verified-live-retail", policyApproved: true,
-  policyReviewReference: "test-fixture-only"
+  source: "verified-live-retail", policyApproved: true, policyReviewReference: "verified-test-fixture"
 });
-const feed = offers => ({ ...actualManifest, offers });
-test("no approved live offers means no misleading public feed", () => {
-  assert.equal(buildChatGptRows(actualCatalogue, actualManifest, now).length, 0);
+test("empty manifest produces no misleading public products", () => {
+  assert.equal(buildChatGptRows(catalogue, feed([]), now).length, 0);
 });
-test("verified cosmetics use GBP, UK market, and website checkout only", () => {
-  const rows = buildChatGptRows(actualCatalogue, feed([offer()]), now);
-  assert.equal(rows.length, 1);
-  assert.equal(rows[0].price, "12.99 GBP");
-  assert.equal(rows[0].target_countries, '["GB"]');
-  assert.equal(rows[0].is_eligible_checkout, "false");
-  assert.equal(rows[0].is_ads_eligible, "false");
+test("five AWS-ledger approved prices are preserved with explicit unknown physical stock", () => {
+  const rows = buildChatGptRows(catalogue, manifest, new Date("2026-11-28T09:36:00Z"));
+  assert.equal(rows.length, 5);
+  assert.deepEqual(rows.map(x => x.price), ["7.30 GBP","6.86 GBP","6.64 GBP","4.87 GBP","5.24 GBP"]);
+  assert(rows.every(x => x.availability === "unknown" && x.target_countries === '["GB"]'));
+  assert(rows.every(x => x.is_eligible_checkout === "false" && x.is_ads_eligible === "false"));
   assert(serializeChatGptRows(rows).includes('"[""GB""]"'));
 });
-test("food supplements cannot be sent even when seller-approved", () => {
-  const supplement = actualCatalogue.find(p => p.productClass === "food_supplement");
-  assert(supplement);
-  assert.throws(() => buildChatGptRows(actualCatalogue, feed([{
+test("a fresh evidence-backed cosmetic can be listed without a fictional in-stock claim", () => {
+  assert.equal(buildChatGptRows(catalogue, feed([offer()]), now)[0].availability, "unknown");
+});
+test("supplements cannot be submitted even with other approval flags", () => {
+  assert.throws(() => buildChatGptRows(catalogue, feed([{
     ...offer(), ean: supplement.ean,
     productUrl: "https://novapharmhealthcare.com/products/health-and-wellbeing/" + supplement.ean + "/"
   }]), now), /prohibited or not reviewed/);
 });
-test("unverified stock, price, seller approval and policy fail closed", () => {
-  const invalids = [
-    { pricePence: null }, { pricePence: 0 }, { availability: "unknown" },
-    { stockCheckedAt: "2026-01-01T00:00:00Z" }, { priceCheckedAt: "2026-01-01T00:00:00Z" },
+test("unsupported class, missing SKU, bad price, policy or sourcing fail closed", () => {
+  for (const invalid of [
+    { pricePence: null }, { pricePence: 0 }, { availability: "in_stock" },
+    { stockVerified: true }, { supplierBackedOrdering: false },
+    { sellerDeliveryCommitment: false },
+    { priceCheckedAt: "2026-01-01T00:00:00Z" },
+    { priceEvidenceSource: "guide-price" },
+    { priceEvidenceExpiresAt: 0 },
     { sellerApproved: false }, { checkoutVerified: false },
-    { policyApproved: false }, { priceIncludesVat: false },
-    { source: "guide-price" }, { productUrl: "https://example.com/" },
-    { productUrl: "https://novapharmhealthcare.com/products/nutraxin/" }
-  ];
-  for (const bad of invalids) assert.throws(
-    () => buildChatGptRows(actualCatalogue, feed([{ ...offer(), ...bad }]), now),
-    "Fail-closed for " + JSON.stringify(bad)
-  );
+    { policyApproved: false }, { priceIncludesVat: false }, { source: "guide-price" },
+    { productUrl: "https://example.com/" }
+  ]) assert.throws(() => buildChatGptRows(catalogue, feed([{ ...offer(), ...invalid }]), now),
+    "must reject " + JSON.stringify(invalid));
+  assert.throws(() => buildChatGptRows(catalogue, feed([{ ...offer(), ean: "0000000000000" }]), now));
+  assert.throws(() => buildChatGptRows(catalogue, feed([offer(), offer()]), now));
 });
-test("duplicate items and unreviewed products cannot enter feed", () => {
-  assert.throws(() => buildChatGptRows(actualCatalogue, feed([offer(), offer()]), now));
-  assert.throws(() => buildChatGptRows(actualCatalogue, feed([{ ...offer(), ean: "0000000000000" }]), now));
+test("stale price data uses a typed error so public builds can withhold stale offers", () => {
+  assert.throws(() => buildChatGptRows(catalogue, feed([{
+    ...offer(), priceCheckedAt: "2026-11-01T00:00:00Z"
+  }]), now), StaleRetailFeedEvidence);
 });

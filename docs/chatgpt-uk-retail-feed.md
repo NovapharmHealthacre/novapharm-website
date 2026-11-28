@@ -1,5 +1,42 @@
 # ChatGPT UK retail feed — governed release
 
+## Verified production price snapshot — 28 November 2026
+
+A read-only DynamoDB Query against `eu-north-1`,
+`novapharm-production-nutraxin-payment-ledger`, partition
+`RETAIL#APPROVED` returned 52 approved retail offers.
+The first five manually commerce-policy-reviewed non-supplement
+records were joined to the publicly approved consumer catalogue:
+
+| GTIN | Product | Approved VAT-inclusive GBP |
+|---|---|---|
+| 4103040003188 | Sebamed Clear Face Mattifying Cream | £7.30 |
+| 4103040004932 | Sebamed Clear Face Gentle Scrub | £6.86 |
+| 4103040036308 | Sebamed Clear Face Foam | £6.64 |
+| 5060062999488 | Lansinoh Feeding Bottle 160ml | £4.87 |
+| 5060062999518 | Lansinoh Feeding Bottle 240ml | £5.24 |
+
+DynamoDB gives `orderingEnabled=true`, `priceApproved=true`,
+`ukRetailApproved=true`, `fulfilmentVerified=true` and
+`sellerDeliveryCommitment=true` for these five, but
+`stockVerified=false` and `supplierBackedOrdering=true`.
+**OpenAI availability must therefore be `unknown`, NOT `in_stock`.**
+Never convert owner-declared 1,000-unit supplier capacity into warehouse
+inventory. Product URLs and pack image paths are drawn from the approved
+public catalogue, never from supplier quotes or planning prices.
+
+The price snapshot has a maximum 48-hour freshness. A future Pages
+build with stale pricing withholds the entire feed rather than
+advertising stale prices or blocking the corporate website.
+**Production still needs an automatic authorised read-only AWS refresh**
+to make the feed reliably available beyond this snapshot.
+
+The standard OpenAI feed schema describes US market support by default;
+the UK/GBP Business Hub selection does not guarantee acceptance.
+Do not claim UK ingestion or sales until OpenAI accepts and reports
+the uploaded feed in Business Hub.
+
+
 The Business Hub hosted-URL field should eventually use:
 `https://novapharmhealthcare.com/feeds/chatgpt-products.csv`
 
