@@ -5,7 +5,7 @@ import { buildChatGptRows, serializeChatGptRows } from "./build-chatgpt-uk-feed.
 const actualCatalogue = JSON.parse(readFileSync(new URL("../src/content/approved-consumer-catalogue.json", import.meta.url)));
 const actualManifest = JSON.parse(readFileSync(new URL("../src/content/chatgpt-uk-verified-offers.json", import.meta.url)));
 const now = new Date();
-const fresh = () => now.toISOString().replace(/\\.\\d{3}Z$/, "Z");
+const fresh = () => now.toISOString().replace(/\.\d{3}Z$/, "Z");
 const item = actualCatalogue.find(product => product.productClass === "cosmetic");
 assert(item, "Expected existing approved cosmetic listing");
 const offer = () => ({
