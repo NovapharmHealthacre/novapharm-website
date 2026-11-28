@@ -34,19 +34,50 @@ test("same-job build receipt rejects changed server, lock, build ID, and run ide
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test("only the secure Portal Actions job reuses its checked build; both complete suites remain mandatory", () => {
+test("only the secure Portal browser matrix reuses its same-job checked build", () => {
   const workflow = readFileSync(new URL("../.github/workflows/browser-acceptance.yml", import.meta.url), "utf8");
-  const portal = workflow.split("\n  secure-portal:")[1].split("\n  backend-workflows:")[0];
+  const portal = workflow.split("\n  secure-portal:")[1].split("\n  portal-lighthouse:")[0];
+  const lighthouse = workflow.split("\n  portal-lighthouse:")[1].split("\n  backend-workflows:")[0];
   const check = portal.indexOf("npm run api:check && npm run portal:check");
   const record = portal.indexOf("node scripts/portal-ci-build-reuse.mjs record");
   const browser = portal.indexOf("npm run portal:test:browser -- --reuse-checked-ci-build");
-  const lighthouse = portal.indexOf("run: npm run portal:test:lighthouse\n");
-  assert.doesNotMatch(portal, /portal:test:lighthouse -- --reuse-checked-ci-build/);
-  assert.ok(check >= 0 && check < record && record < browser && browser < lighthouse);
+  assert.ok(check >= 0 && check < record && record < browser);
+  assert.ok(!portal.includes("portal:test:lighthouse"), "Lighthouse must not serialize the browser matrix");
+  assert.ok(lighthouse.includes("run: npm run portal:test:lighthouse"));
+  assert.ok(lighthouse.includes("run: npm ci --ignore-scripts --prefer-offline"));
+  assert.ok(lighthouse.includes("run: node --test scripts/test-lighthouse-transient-navigation.mjs"));
+  assert.ok(!lighthouse.includes("--reuse-checked-ci-build") && !lighthouse.includes("portal-ci-build-reuse.mjs record"));
   const source = readFileSync(new URL("./run-portal-browser-acceptance.mjs", import.meta.url), "utf8");
   assert.match(source, /if \(process\.argv\.includes\(reuseFlag\)\) requireCheckedBuild\(repositoryRoot\);/);
   assert.match(source, /else run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
   const benchmark = readFileSync(new URL("./run-portal-lighthouse.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(benchmark, /reuseFlag|requireCheckedBuild/);
   assert.match(benchmark, /run\("npm", \["run", "build", "--workspace=@novapharm\/portal"\]/);
+});
+
+test("independent Lighthouse stays mandatory and protected artifacts stay private", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/browser-acceptance.yml", import.meta.url), "utf8");
+  const portal = workflow.split("\n  secure-portal:")[1].split("\n  portal-lighthouse:")[0];
+  const lighthouse = workflow.split("\n  portal-lighthouse:")[1].split("\n  backend-workflows:")[0];
+  const gate = workflow.split("\n  acceptance-gate:")[1];
+  assert.ok(portal.includes("npm run api:check && npm run portal:check"));
+  assert.ok(portal.includes("npm run portal:test:browser -- --reuse-checked-ci-build"));
+  assert.ok(portal.includes("engine: [chromium, webkit]"), "Every supported browser engine must run");
+  assert.ok(portal.includes("fail-fast: false"), "One engine failing must not skip sibling checks");
+  assert.ok(portal.includes("PORTAL_BROWSER_ENGINES: ${{ matrix.engine }}"), "Each job must run only its assigned engine");
+  assert.ok(portal.includes("portal-browser-${{ matrix.engine }}-"), "Protected evidence must not collide across engines");
+  const suite = readFileSync(new URL("../apps/portal/test/browser-acceptance.ts", import.meta.url), "utf8");
+  assert.ok(suite.includes('process.env["PORTAL_BROWSER_ENGINES"] ?? "chromium,webkit"'));
+  assert.ok(suite.includes("for (const engine of selectedEngines) await runEngine"));
+  assert.ok(portal.includes("always() && github.event.repository.private"));
+  assert.ok(lighthouse.includes("name: Independent Portal Lighthouse acceptance"));
+  assert.ok(lighthouse.includes("name: Run portal Lighthouse acceptance"));
+  assert.ok(lighthouse.includes("artifacts/portal-lighthouse"));
+  assert.ok(lighthouse.includes("always() && github.event.repository.private"));
+  assert.ok(lighthouse.includes("always() && !github.event.repository.private"));
+  assert.ok(gate.includes("- secure-portal"));
+  assert.ok(gate.includes("- portal-lighthouse"));
+  assert.ok(gate.includes("needs.secure-portal.result"));
+  assert.ok(gate.includes("needs.portal-lighthouse.result"));
+  assert.ok(gate.includes("= success"));
 });
