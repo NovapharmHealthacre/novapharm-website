@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import "./test-portal-ci-build-reuse.mjs";
 import "./test-parallel-app-checks.mjs";
+import "./test-react-singleton-ci.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const file = path => readFileSync(new URL(path, "file://" + root), "utf8");
