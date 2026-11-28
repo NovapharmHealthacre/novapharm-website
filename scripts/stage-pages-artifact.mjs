@@ -81,6 +81,8 @@ const allowedRootFiles = new Set([
 const allowedPublicPharmacyFiles = new Set(["pharmacy-partners/index.html"]);
 const allowedPublicGiftFiles = new Set(["corporate-gifts/index.html"]);
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
+// Only this exact, policy-gated ChatGPT discovery feed may be staged.
+const allowedPublicChatGptFiles = new Set(["feeds/chatgpt-products.csv"]);
 const allowedPublicPortalFiles = new Set(["portal/index.html"]);
 // Public research content is exactly one reviewed HTML file, never an entire directory.
 const allowedPublicQuantumFiles = new Set(["quantum-research/index.html"]);
@@ -510,6 +512,13 @@ if (localeVersionedPages !== rtlValidation.valid) {
 }
 console.log("Pinned exact locale JavaScript fingerprint in " + localeVersionedPages + " staged Pages HTML files.");
 
+// Build only from live-verified, policy-approved consumer offers. When none
+// qualify, do not create a header-only or misleading public feed.
+const { stageChatGptFeed } = await import("./build-chatgpt-uk-feed.mjs");
+const chatGptStatus = stageChatGptFeed(root, output);
+console.log("ChatGPT UK discovery feed:", chatGptStatus.published
+  ? chatGptStatus.rows + " verified retail product(s)" : "withheld — no verified eligible offers");
+
 const stagedFiles = walk(output);
 if (!stagedFiles.length) throw new Error("Pages artifact contains no files.");
 
@@ -518,7 +527,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && !allowedPublicGiftFiles.has(stagedPath) && !allowedPublicPharmacyFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicChatGptFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && !allowedPublicQuantumFiles.has(stagedPath) && !allowedPublicGiftFiles.has(stagedPath) && !allowedPublicPharmacyFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
