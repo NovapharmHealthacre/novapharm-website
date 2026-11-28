@@ -91,9 +91,10 @@ export function buildChatGptRows(catalogue, manifest, now = new Date()) {
       "Availability must disclose unverified supplier-backed stock: " + id);
     assert(offer.priceEvidenceSource === "aws-retail-approved-ledger-eu-north-1",
       "Unknown source of live retail price: " + id);
-    assert(Number.isSafeInteger(offer.priceEvidenceExpiresAt) &&
-      offer.priceEvidenceExpiresAt * 1000 > now.getTime(),
-      "Price authority expired: " + id);
+    if (!Number.isSafeInteger(offer.priceEvidenceExpiresAt) ||
+        offer.priceEvidenceExpiresAt * 1000 <= now.getTime()) {
+      throw new StaleRetailFeedEvidence("Price authority expired: " + id);
+    }
     if (!recentUtc(offer.priceCheckedAt, now)) {
       throw new StaleRetailFeedEvidence("Authoritative price snapshot stale: " + id);
     }
