@@ -1492,7 +1492,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 11,
-      "referenceCount": 15,
+      "referenceCount": 19,
       "usageFiles": [
         ".github/workflows/brand-raster-candidate.yml",
         ".github/workflows/publish-aws-contact-production.yml",
@@ -1862,7 +1862,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 101,
-      "referenceCount": 258,
+      "referenceCount": 264,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -3396,7 +3396,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 9,
-      "referenceCount": 24,
+      "referenceCount": 38,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -3452,7 +3452,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 5,
-      "referenceCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -7317,7 +7317,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 10,
-      "referenceCount": 24,
+      "referenceCount": 32,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -7968,7 +7968,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 5,
-      "referenceCount": 7,
+      "referenceCount": 13,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "creative-assets/module-media-asset-register.json",
