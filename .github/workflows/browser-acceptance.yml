@@ -67,7 +67,7 @@ jobs:
           retention-days: 7
 
   secure-portal:
-    name: Secure portal and role-boundary acceptance
+    name: Secure Portal ${{ matrix.engine }} role and viewport acceptance
     runs-on: ubuntu-24.04
     # The official image matches the exact package-lock Playwright version.
     # It includes Chromium/WebKit and OS libraries, avoiding slow Ubuntu APT mirrors.
@@ -75,6 +75,10 @@ jobs:
       image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
       options: --shm-size=1gb
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -110,12 +114,13 @@ jobs:
       - name: Run all portal roles, routes and responsive viewports
         env:
           PORTAL_CI_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PORTAL_BROWSER_ENGINES: ${{ matrix.engine }}
         run: npm run portal:test:browser -- --reuse-checked-ci-build
       - name: Upload protected-portal acceptance evidence (private repositories only)
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: portal-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          name: portal-browser-${{ matrix.engine }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: artifacts/portal-browser
           if-no-files-found: error
           retention-days: 7

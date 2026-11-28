@@ -62,6 +62,13 @@ test("independent Lighthouse stays mandatory and protected artifacts stay privat
   const gate = workflow.split("\n  acceptance-gate:")[1];
   assert.ok(portal.includes("npm run api:check && npm run portal:check"));
   assert.ok(portal.includes("npm run portal:test:browser -- --reuse-checked-ci-build"));
+  assert.ok(portal.includes("engine: [chromium, webkit]"), "Every supported browser engine must run");
+  assert.ok(portal.includes("fail-fast: false"), "One engine failing must not skip sibling checks");
+  assert.ok(portal.includes("PORTAL_BROWSER_ENGINES: ${{ matrix.engine }}"), "Each job must run only its assigned engine");
+  assert.ok(portal.includes("portal-browser-${{ matrix.engine }}-"), "Protected evidence must not collide across engines");
+  const suite = readFileSync(new URL("../apps/portal/test/browser-acceptance.ts", import.meta.url), "utf8");
+  assert.ok(suite.includes('process.env["PORTAL_BROWSER_ENGINES"] ?? "chromium,webkit"'));
+  assert.ok(suite.includes("for (const engine of selectedEngines) await runEngine"));
   assert.ok(portal.includes("always() && github.event.repository.private"));
   assert.ok(lighthouse.includes("name: Independent Portal Lighthouse acceptance"));
   assert.ok(lighthouse.includes("name: Run portal Lighthouse acceptance"));
