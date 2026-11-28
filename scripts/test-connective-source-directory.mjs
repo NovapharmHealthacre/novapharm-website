@@ -96,9 +96,11 @@ test('Vicks has first editorial priority without adding unapproved retail offers
     f.put('products/health-and-wellbeing/'+p1.ean+'/index.html','<main><h1>Approved detail</h1></main>');
     f.put('src/content/approved-consumer-catalogue.json',JSON.stringify([{ean:p1.ean}]));
    }
+   f.put('assets/data/connective-owner-price-guide.json',JSON.stringify({schema:'novapharm.connective.owner-price-guide.v1',currency:'GBP',status:'OWNER_AUTHORISED_GUIDE_NOT_LIVE_PAYMENT_OFFER',entries:[{gtin:vicks.ean,guideGrossMinor:137}]}));
    for(let i=0;i<2;i++){
     const result=f.run();assert.equal(result.status,0,result.stderr);
     const html=f.read('products/health-and-wellbeing/index.html');
+    assert(html.includes('Guide price £1.37'));
     assert.equal((html.match(/data-npr-vicks-spotlight/g)||[]).length,1);
     assert(html.includes('19 Vicks products')===false);
     assert(html.includes('1 Vicks products'));
@@ -107,6 +109,8 @@ test('Vicks has first editorial priority without adding unapproved retail offers
     assert(!html.includes('"offers"'));
     const detail=f.read('products/health-and-wellbeing/'+vicks.ean+'/index.html');
     assert(detail.includes('data-npr-retail-sku="NP-CP-'+vicks.ean+'"'));
+    assert(detail.includes('Guide price £1.37'));
+    assert(detail.includes('Final price and availability confirmed before payment'));
     assert(detail.includes('name="robots" content="noindex, follow"'));
     assert(!detail.includes('Add to Bag'));
    }
