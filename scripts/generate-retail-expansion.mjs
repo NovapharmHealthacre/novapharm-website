@@ -97,7 +97,7 @@ if(ownerVicksReview){
  assert(ownerVicksReview.schema==='novapharm.vicks.owner-approved-uk-consumer-review.v1'&&
   Array.isArray(ownerVicksReview.records)&&ownerVicksReview.records.length===9,'Unrecognised Vicks owner guide review');
  for(const r of ownerVicksReview.records){
-  assert(/^\\d{13}$/.test(r.gtin)&&Number.isSafeInteger(r.grossMinor)&&r.grossMinor>0&&
+  assert(/^\d{13}$/.test(r.gtin)&&Number.isSafeInteger(r.grossMinor)&&r.grossMinor>0&&
    r.vatBasisPoints===2000&&r.grossMinor===r.netMinor+Math.floor((r.netMinor*2000+5000)/10000)&&
    r.paymentOfferAdmitted===false&&!ownerVicksGuide.has(r.gtin),'Unverified Vicks VAT-inclusive guide price');
   ownerVicksGuide.set(r.gtin,r.grossMinor);
