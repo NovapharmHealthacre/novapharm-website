@@ -111,25 +111,63 @@ jobs:
         env:
           PORTAL_CI_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run portal:test:browser -- --reuse-checked-ci-build
-      - name: Verify Lighthouse transient retry never hides real failures
-        run: node --test scripts/test-lighthouse-transient-navigation.mjs
-      # Keep the performance benchmark independent of the long browser matrix.
-      - name: Run portal Lighthouse acceptance
-        run: npm run portal:test:lighthouse
       - name: Upload protected-portal acceptance evidence (private repositories only)
         if: ${{ always() && github.event.repository.private }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: portal-browser-${{ github.event.pull_request.head.sha || github.sha }}
-          path: |
-            artifacts/portal-browser
-            artifacts/portal-lighthouse
+          path: artifacts/portal-browser
           if-no-files-found: error
           retention-days: 7
       - name: Protect role-boundary traces in public repositories
         if: ${{ always() && !github.event.repository.private }}
         run: |
           echo "::notice::Public repository: protected Portal screenshots, traces and Lighthouse evidence are not uploaded."
+
+  portal-lighthouse:
+    name: Independent Portal Lighthouse acceptance
+    runs-on: ubuntu-24.04
+    # Use the same immutable browser image and exact lockfile as the role matrix.
+    container:
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
+      options: --shm-size=1gb
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust checked-out workspace for Git provenance
+        run: |
+          test -n "$GITHUB_WORKSPACE"
+          test -d "$GITHUB_WORKSPACE/.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci --ignore-scripts --prefer-offline
+      - name: Verify pinned Playwright image and bundled browsers
+        run: |
+          node -e "const fs=require('node:fs'); const p=require('playwright/package.json'); const b=require('playwright'); if(p.version!=='1.61.1') process.exit(1); for(const engine of [b.chromium,b.webkit]) { const file=engine.executablePath(); if(!fs.existsSync(file)) {console.error('Missing browser '+file); process.exit(1);} }"
+      - name: Verify Lighthouse transient retry never hides real failures
+        run: node --test scripts/test-lighthouse-transient-navigation.mjs
+      # This script independently builds the Portal, starts its isolated API and
+      # authenticates synthetic users. No shared build or credentials are reused.
+      - name: Run portal Lighthouse acceptance
+        run: npm run portal:test:lighthouse
+      - name: Upload sanitized Lighthouse evidence (private repositories only)
+        if: ${{ always() && github.event.repository.private }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: portal-lighthouse-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/portal-lighthouse
+          if-no-files-found: error
+          retention-days: 7
+      - name: Prevent protected Lighthouse artifacts in public repositories
+        if: ${{ always() && !github.event.repository.private }}
+        run: echo "::notice::Public repository: protected Portal Lighthouse evidence is not uploaded."
 
   backend-workflows:
     name: Contact, account, upload and authentication workflows
@@ -186,6 +224,7 @@ jobs:
     needs:
       - public-applications
       - secure-portal
+      - portal-lighthouse
       - backend-workflows
     runs-on: ubuntu-24.04
     steps:
@@ -193,4 +232,5 @@ jobs:
         run: |
           test "${{ needs.public-applications.result }}" = success
           test "${{ needs.secure-portal.result }}" = success
+          test "${{ needs.portal-lighthouse.result }}" = success
           test "${{ needs.backend-workflows.result }}" = success
