@@ -16,7 +16,7 @@ export const COLUMNS = Object.freeze([
 ]);
 
 function validGtin(gtin) {
-  if (typeof gtin !== "string" || !/^\\d{13}$/.test(gtin)) return false;
+  if (typeof gtin !== "string" || !/^\d{13}$/.test(gtin)) return false;
   const digits = [...gtin].map(Number);
   const check = (10 - [...digits.slice(0, -1)].reverse().reduce(
     (sum, digit, index) => sum + digit * (index % 2 ? 1 : 3), 0
@@ -24,13 +24,13 @@ function validGtin(gtin) {
   return digits.at(-1) === check;
 }
 function recentUtc(value, now) {
-  if (typeof value !== "string" || !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/.test(value)) return false;
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)) return false;
   const timestamp = Date.parse(value), age = now.getTime() - timestamp;
   return Number.isFinite(timestamp) && age >= 0 && age <= MAX_AGE_MS;
 }
 function nonblank(value, max = 5000) {
   return typeof value === "string" && value.trim().length > 0 &&
-    value.length <= max && !/[\\u0000-\\u0008\\u000b\\u000e-\\u001f]/.test(value);
+    value.length <= max && !/[\u0000-\u0008\u000b\u000e-\u001f]/.test(value);
 }
 function safeProductUrl(url, ean) {
   if (typeof url !== "string") return false;
@@ -43,7 +43,7 @@ function safeProductUrl(url, ean) {
 }
 function csvCell(raw) {
   const value = String(raw);
-  return /[",\\r\\n]/.test(value) ? '"' + value.replaceAll('"', '""') + '"' : value;
+  return /[",\r\n]/.test(value) ? '"' + value.replaceAll('"', '""') + '"' : value;
 }
 
 export function buildChatGptRows(catalogue, manifest, now = new Date()) {
@@ -82,7 +82,7 @@ export function buildChatGptRows(catalogue, manifest, now = new Date()) {
     assert(safeProductUrl(offer.productUrl, id), "Unexpected checkout landing page: " + id);
     assert(nonblank(product.name, 150) && nonblank(product.brand, 120) &&
       nonblank(product.description, 5000), "Missing factual product information: " + id);
-    assert(/^\\/assets\\/media\\/products\\/connective\\/[A-Za-z0-9/_-]+\\.(?:webp|png|jpe?g|avif)$/.test(product.image),
+    assert(/^\/assets\/media\/products\/connective\/[A-Za-z0-9/_-]+\.(?:webp|png|jpe?g|avif)$/.test(product.image),
       "Missing owner-approved product photograph: " + id);
     return {
       item_id: id, title: product.name, description: product.description,
@@ -97,9 +97,9 @@ export function buildChatGptRows(catalogue, manifest, now = new Date()) {
 }
 
 export function serializeChatGptRows(rows) {
-  return COLUMNS.join(",") + "\\n" + rows.map(row =>
+  return COLUMNS.join(",") + "\n" + rows.map(row =>
     COLUMNS.map(key => csvCell(row[key])).join(",")
-  ).join("\\n") + (rows.length ? "\\n" : "");
+  ).join("\n") + (rows.length ? "\n" : "");
 }
 
 export function stageChatGptFeed(root, publicDirectory, now = new Date()) {
