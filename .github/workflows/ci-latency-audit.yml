@@ -3,6 +3,9 @@ name: CI latency telemetry (read-only)
 # Manual diagnostic only. Do not add a pull_request trigger: this is a
 # bottleneck-measurement tool, not another required merge gate.
 on:
+  # Weekly read-only audit; never triggered by pull requests or publishes.
+  schedule:
+    - cron: '17 6 * * 1'
   workflow_dispatch:
     inputs:
       sample_runs:

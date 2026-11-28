@@ -40,5 +40,8 @@ test("read-only report aggregates completed job observations and flags limitatio
   assert.equal(result.queueP95Minutes, 63);
   assert.equal(result.executionP95Minutes, 5);
   assert.equal(result.byWorkflow.length, 2);
+  assert.equal(result.byJob.length, 2);
+  assert.deepEqual(result.byJob.map(job => job.executionP95Minutes), [5, 5]);
+  assert.ok(result.byJob.some(job => job.job === "Unit checks" && job.samples === 1));
   assert.match(result.limitations.join(" "), /runner-capacity/);
 });

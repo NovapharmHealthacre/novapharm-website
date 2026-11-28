@@ -923,6 +923,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
     await runViewportBatches(interactionOnly ? [] : viewports, concurrency,
       (viewport) => viewport.name === "desktop-1440" || viewport.name === "mobile-390",
       async (viewport) => {
+      const viewportStartedAt = performance.now();
       const anonymous = await browser.newContext(contextOptions(viewport));
       try {
         await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Welcome to NovaPharm.", "login");
@@ -946,7 +947,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
           await context.close();
         }
       }
-      console.log(`${engine}: completed ${viewport.name}`);
+      console.log(`${engine}: completed ${viewport.name} in ${Math.round(performance.now() - viewportStartedAt)} ms`);
     });
   } finally {
     await browser.close();
@@ -955,9 +956,11 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
   // Start a fresh process for interaction acceptance without skipping any
   // viewport, role, route or interaction assertion. Reuse only the scoped
   // synthetic cookies captured by the login fixtures.
+  const interactionStartedAt = performance.now();
   const interactionBrowser = await browserType.launch({ headless: true });
   try {
     await verifyInteractions(interactionBrowser, engine, states);
+    console.log(`${engine}: completed all authenticated interaction assertions in ${Math.round(performance.now() - interactionStartedAt)} ms`);
   } finally {
     await interactionBrowser.close();
   }
