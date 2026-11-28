@@ -17,6 +17,8 @@ test("sitemap contract is the exact approved canonical set, including generated 
   for (const route of ["/distribution/","/market-access/","/markets/"]) assert.ok(canonicals.has("https://novapharmhealthcare.com"+route));
   assert.ok(canonicals.has("https://novapharmhealthcare.com/products/esco/"));
   assert.ok(canonicals.has("https://novapharmhealthcare.com/products/marketplace/"));
+  assert.ok(canonicals.has("https://novapharmhealthcare.com/products/health-and-wellbeing/"));
+  assert.ok([...canonicals].every(url => !/\/products\/health-and-wellbeing\/\d{13}\/$/.test(url)));
   assert.ok(canonicals.has("https://novapharmhealthcare.com/our-story/"));
 });
 test("reject omission, extra URLs, private trackers, duplicates and wrong host",()=>{

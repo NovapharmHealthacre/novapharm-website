@@ -14,6 +14,8 @@ const BASE="https://novapharmhealthcare.com";
 export const GENERATED_INDEXABLE_ROUTES=Object.freeze([
   "/distribution/","/market-access/","/markets/",
   "/products/esco/","/products/marketplace/",
+  // Only the Connective collection is indexable; 395 reference detail pages remain noindex.
+  "/products/health-and-wellbeing/",
   // Editorial route generated from src/content/our-story.mjs (PR #1200).
   "/our-story/",
   ...NUTRAXIN_CATEGORY_ROUTES
@@ -44,7 +46,7 @@ function locsFromSitemap(xml) {
     const canonical=body.slice(5,locEnd);
     const lastmod=body.slice(locEnd+6);
     if(!lastmod.startsWith("<lastmod>") || !lastmod.endsWith("</lastmod>"))
-      throw Error("Missing sitemap lastmod");
+      throw Error("Missing sitemap lastmod for "+canonical.slice(0,120)+"; observed="+lastmod.slice(0,150));
     const date=lastmod.slice(9,-10);
     if(!fullDate(date) || body!=="<loc>"+canonical+"</loc><lastmod>"+date+"</lastmod>")
       throw Error("Malformed sitemap canonical or modification date");
