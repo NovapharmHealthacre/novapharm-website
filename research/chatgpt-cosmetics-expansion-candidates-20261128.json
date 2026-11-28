@@ -1,0 +1,1670 @@
+{
+  "schema": "novapharm.chatgpt.cosmetics.expansion-candidate-register.v1",
+  "asOf": "2026-11-28",
+  "scope": "Sebamed and Skin Doctors source references not already in approved consumer catalogue",
+  "policy": "https://openai.com/policies/commerce-policies/",
+  "sourceFiles": [
+    "src/content/connective-source-references.json",
+    "src/content/approved-consumer-catalogue.json",
+    "assets/data/connective-owner-price-guide.json",
+    "src/content/connective-consumer-research.json"
+  ],
+  "counts": {
+    "total": 58,
+    "withGuidePrice": 58,
+    "manufacturerPackPageMatched": 8,
+    "firstBatch": 7,
+    "classificationReview": 17,
+    "readyToUpload": 0
+  },
+  "products": [
+    {
+      "gtin": "4103040014351",
+      "sku": "NP-CP-4103040014351",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Gentle Wash 1L",
+      "pack": "1L",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7592/sebamed_baby_gentle_wash_1l",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/2b/3e/9c/67/4d11ae21110f878ab15bdaf3.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/collections/cleansing/products/baby-gentle-wash-200ml",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "1 Litre",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040014375",
+      "sku": "NP-CP-4103040014375",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Lotion 750ml",
+      "pack": "750ml",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7595/sebamed_baby_lotion_750ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/b0/25/52/7b/24dd441573d33c7b9a482fd9.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040024749",
+      "sku": "NP-CP-4103040024749",
+      "brand": "SEBAMED",
+      "title": "Sebamed Liquid Face & Body Wash 1L Refill",
+      "pack": "1L",
+      "guideGrossMinor": 1450,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7556/sebamed_liquid_face_body_wash_1l_refill",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/15/28/6c/3f/e7397e385630cb82267c281f.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040025180",
+      "sku": "NP-CP-4103040025180",
+      "brand": "SEBAMED",
+      "title": "Sebamed Intensive Hand Cream 75ml",
+      "pack": "75ml",
+      "guideGrossMinor": 472,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7562/sebamed_intensive_hand_cream_75ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/83/74/3d/e1/8038b3c10e82787ca31025d9.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040027160",
+      "sku": "NP-CP-4103040027160",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Ageing Wrinkle Filler 50ml",
+      "pack": "50ml",
+      "guideGrossMinor": 996,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7608/sebamed_anti_ageing_wrinkle_filler_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/ee/57/67/e9/c92093a778e9ddb8a6aaae7e.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040038777",
+      "sku": "NP-CP-4103040038777",
+      "brand": "SEBAMED",
+      "title": "Sebamed Lip Defense Balm Spf 30",
+      "pack": "4G",
+      "guideGrossMinor": 266,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7561/sebamed_lip_defense_balm_spf_30",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/e9/6b/1c/6a/dc4742c397815da93ff151a4.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043368",
+      "sku": "NP-CP-4103040043368",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Hairloss Shampoo 200ml",
+      "pack": "200ML",
+      "guideGrossMinor": 498,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7574/sebamed_anti_hairloss_shampoo_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/b9/9e/34/03/c5a9457bb2059d79e3e874fa.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043382",
+      "sku": "NP-CP-4103040043382",
+      "brand": "SEBAMED",
+      "title": "Sebamed Cleansing Bar",
+      "pack": "100G",
+      "guideGrossMinor": 266,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6040/sebamed_cleansing_bar",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/54/d1/47/25/f169794be68b507a39e25bed.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/cleansing-bar-100g",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "100g",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043405",
+      "sku": "NP-CP-4103040043405",
+      "brand": "SEBAMED",
+      "title": "Sebamed Cleansing Bar",
+      "pack": "150G",
+      "guideGrossMinor": 331,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6041/sebamed_cleansing_bar",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/93/19/62/84/e00ab41cba75289a18bdfb99.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/cleansing-bar-100g",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "150g",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043528",
+      "sku": "NP-CP-4103040043528",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Cleansing Bar 100g",
+      "pack": "100G",
+      "guideGrossMinor": 283,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7588/sebamed_baby_cleansing_bar_100g",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/1a/32/3a/9c/ea22efdd4aeb59421402ec27.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/collections/newest-products/products/baby-cleansing-bar-100g",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "100g",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043542",
+      "sku": "NP-CP-4103040043542",
+      "brand": "SEBAMED",
+      "title": "Sebamed Shampoo Anti-Dandruff",
+      "pack": "200ml",
+      "guideGrossMinor": 434,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/5980/sebamed_shampoo_anti_dandruff",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/76/25/a0/1f/7f154664a8d10993837cb868.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043566",
+      "sku": "NP-CP-4103040043566",
+      "brand": "SEBAMED",
+      "title": "Sebamed Shampoo Every Day",
+      "pack": "200ml",
+      "guideGrossMinor": 426,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/5981/sebamed_shampoo_every_day",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/ea/13/04/11/fc96fee6a978813298e87036.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/everyday-shampoo-200ml",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "200ml",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043580",
+      "sku": "NP-CP-4103040043580",
+      "brand": "SEBAMED",
+      "title": "Sebamed Clear Face Cleansing Bar 100g",
+      "pack": "100G",
+      "guideGrossMinor": 380,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7565/sebamed_clear_face_cleansing_bar_100g",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/c7/91/64/b4/f96fb4d7ee3d7aa3d18612d4.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/clear-face-cleansing-bar-100g",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "100g",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043689",
+      "sku": "NP-CP-4103040043689",
+      "brand": "SEBAMED",
+      "title": "Sebamed Intimate Wash 3.8",
+      "pack": "200ml",
+      "guideGrossMinor": 610,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6162/sebamed_intimate_wash_3_8",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/b2/88/ba/c3/c003ee877dd22f716f00ed2f.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043702",
+      "sku": "NP-CP-4103040043702",
+      "brand": "SEBAMED",
+      "title": "Sebamed Olive Liquid Face & Body Wash 1L",
+      "pack": "1L",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7557/sebamed_olive_liquid_face_body_wash_1l",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/77/88/ec/20/a755b31490ce746fa2715378.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043726",
+      "sku": "NP-CP-4103040043726",
+      "brand": "SEBAMED",
+      "title": "Sebamed Moisturising Lotion 200ml",
+      "pack": "200ml",
+      "guideGrossMinor": 542,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7559/sebamed_moisturising_lotion_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/4e/3f/0d/0f/c716ea59a468abac7c8d678f.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043740",
+      "sku": "NP-CP-4103040043740",
+      "brand": "SEBAMED",
+      "title": "Sebamed Liquid Face & Body Wash",
+      "pack": "1000ml",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6042/sebamed_liquid_face_body_wash",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/41/f2/a2/62/0e030c5acba9f2cff20e2613.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043764",
+      "sku": "NP-CP-4103040043764",
+      "brand": "SEBAMED",
+      "title": "Sebamed Medicated Liquid Face & Body Wash",
+      "pack": "200ml",
+      "guideGrossMinor": 534,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6149/sebamed_medicated_liquid_face_body_wash",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/f2/e5/6f/5a/53f7a5b0308d71ad647b7fcd.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043856",
+      "sku": "NP-CP-4103040043856",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Lotion 100ml",
+      "pack": "100ML",
+      "guideGrossMinor": 366,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7594/sebamed_baby_lotion_100ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/a2/51/d3/1a/d26969444a417b551d4d283c.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043870",
+      "sku": "NP-CP-4103040043870",
+      "brand": "SEBAMED",
+      "title": "Baby gentle wash",
+      "pack": "200ML",
+      "guideGrossMinor": 434,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7591/sebamed_baby_gentle_wash_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/6c/17/4f/78/baf75a0893a7bf578419730a.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/collections/cleansing/products/baby-gentle-wash-200ml",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "200ml",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043894",
+      "sku": "NP-CP-4103040043894",
+      "brand": "SEBAMED",
+      "title": "Sebamed Clear Face Anti Pimple Gel 10ml",
+      "pack": "10ML",
+      "guideGrossMinor": 380,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7569/sebamed_clear_face_anti_pimple_gel_10ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/29/4b/60/94/d9415e00f3ecd327b85474f1.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040043931",
+      "sku": "NP-CP-4103040043931",
+      "brand": "SEBAMED",
+      "title": "Sebamed Medicated Clear Face Care Gel",
+      "pack": "50ml",
+      "guideGrossMinor": 532,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/6148/sebamed_medicated_clear_face_care_gel",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/62/9b/e1/d0/bab0c134410e733978e535d3.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040111746",
+      "sku": "NP-CP-4103040111746",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Dandruff Shampoo 1L",
+      "pack": "1L",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7572/sebamed_anti_dandruff_shampoo_1l",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/72/c9/f7/a4/fbe51f5888d6d2298a5f3ff4.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040113924",
+      "sku": "NP-CP-4103040113924",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Bubble Bath 200ml",
+      "pack": "200ML",
+      "guideGrossMinor": 398,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7589/sebamed_baby_bubble_bath_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/09/0c/15/8a/397886736b6438407dd31188.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040114204",
+      "sku": "NP-CP-4103040114204",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Shampoo 500ml",
+      "pack": "500ML",
+      "guideGrossMinor": 763,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7593/sebamed_baby_shampoo_500ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/f2/00/03/5b/2a5b3888b70f4cfd4f30fdd1.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040114587",
+      "sku": "NP-CP-4103040114587",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Skincare Oil 150ml",
+      "pack": "150ml",
+      "guideGrossMinor": 679,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7599/sebamed_baby_skincare_oil_150ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/20/fe/4a/fd/2232b52dd3c473c39097c0cf.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040120465",
+      "sku": "NP-CP-4103040120465",
+      "brand": "SEBAMED",
+      "title": "Baby cream extra soft",
+      "pack": "50ML",
+      "guideGrossMinor": 275,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7597/sebamed_baby_cream_extra_soft_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/4c/e0/1e/bf/823555ac46f2c988688f6846.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040126276",
+      "sku": "NP-CP-4103040126276",
+      "brand": "SEBAMED",
+      "title": "Everyday shampoo",
+      "pack": "1L",
+      "guideGrossMinor": 1602,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7573/sebamed_everyday_shampoo_1l",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/00/90/0a/96/b8cc8f7a1c4ffa7336dde60e.jpg",
+      "manufacturerUrl": "https://www.sebamed.co.uk/products/everyday-shampoo-200ml",
+      "manufacturerPageEvidence": {
+        "status": "manufacturer_page_and_pack_size_observed",
+        "size": "1000ml",
+        "checkedOn": "2026-11-28",
+        "gtinIndependentlyConfirmed": false
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "first_batch",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040135049",
+      "sku": "NP-CP-4103040135049",
+      "brand": "SEBAMED",
+      "title": "Sebamed Clear Face Deep Cleansing Toner 150ml",
+      "pack": "150ml",
+      "guideGrossMinor": 596,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7567/sebamed_clear_face_deep_cleansing_toner_150ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/ed/e2/0b/c0/6908e8d3a98503b8ddb0b23e.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040146168",
+      "sku": "NP-CP-4103040146168",
+      "brand": "SEBAMED",
+      "title": "Anti-ageing Q10 firming body lotion",
+      "pack": "200ML",
+      "guideGrossMinor": 610,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7607/sebamed_anti_ageing_q10_firming_body_lotion_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/9a/20/1b/19/921c4244055de35090dd08fc.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040147677",
+      "sku": "NP-CP-4103040147677",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Ageing Q10 Protection Cream 50ml",
+      "pack": "50ml",
+      "guideGrossMinor": 930,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7606/sebamed_anti_ageing_q10_protection_cream_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/9e/49/7f/6f/4fa17fb3602f985f7dc06d8d.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040147738",
+      "sku": "NP-CP-4103040147738",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Body Milk 200ml",
+      "pack": "200ml",
+      "guideGrossMinor": 625,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7598/sebamed_baby_body_milk_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/99/19/bc/4a/77878e2f32d70d8176a5f4f3.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040148711",
+      "sku": "NP-CP-4103040148711",
+      "brand": "SEBAMED",
+      "title": "Sebamed Baby Bubble Bath 500ml",
+      "pack": "500ML",
+      "guideGrossMinor": 725,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7590/sebamed_baby_bubble_bath_500ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/dd/79/35/4a/7ca174795cc80f17404399d8.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040167347",
+      "sku": "NP-CP-4103040167347",
+      "brand": "SEBAMED",
+      "title": "Baby diaper rash cream",
+      "pack": "100ml",
+      "guideGrossMinor": 472,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7596/sebamed_baby_diaper_rash_cream_100ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/24/2b/29/67/0094cc175b366ce285f8f959.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040167910",
+      "sku": "NP-CP-4103040167910",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Dry Derma Soft Wash Emulsion 200ml",
+      "pack": "200ml",
+      "guideGrossMinor": 610,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7600/sebamed_anti_dry_derma_soft_wash_emulsion_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/cf/d8/55/2d/10ab083e9181e6fce52fffac.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040167934",
+      "sku": "NP-CP-4103040167934",
+      "brand": "SEBAMED",
+      "title": "Anti-dry night intensive cream",
+      "pack": "50ml",
+      "guideGrossMinor": 839,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7603/sebamed_anti_dry_night_intensive_cream_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/45/29/0b/94/b828f43828cf3196216c45e7.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040167958",
+      "sku": "NP-CP-4103040167958",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Dry Day Defence Cream 50ml",
+      "pack": "50ml",
+      "guideGrossMinor": 839,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7602/sebamed_anti_dry_day_defence_cream_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/99/f7/b8/0d/a5d37bae128647c418be9cec.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040167972",
+      "sku": "NP-CP-4103040167972",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Dry Hydrating Body Lotion 200ml",
+      "pack": "200ml",
+      "guideGrossMinor": 631,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7604/sebamed_anti_dry_hydrating_body_lotion_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/bb/3c/ec/7e/7a08dbc4286fbbe7581f9111.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040171290",
+      "sku": "NP-CP-4103040171290",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Ageing Q10 Lifting Eye Cream 15ml",
+      "pack": "15ml",
+      "guideGrossMinor": 664,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7605/sebamed_anti_ageing_q10_lifting_eye_cream_15ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/e3/94/46/c6/744099ffc42ad180fb98ea03.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040898104",
+      "sku": "NP-CP-4103040898104",
+      "brand": "SEBAMED",
+      "title": "Anti-dry revitalizing shampoo",
+      "pack": "200ml",
+      "guideGrossMinor": 532,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7601/sebamed_anti_dry_revitalizing_shampoo_200ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/71/6c/f7/2c/8e22132781964762c619fa60.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040908339",
+      "sku": "NP-CP-4103040908339",
+      "brand": "SEBAMED",
+      "title": "Sebamed Cracked Heel Balm 75ml",
+      "pack": "75ml",
+      "guideGrossMinor": 504,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7563/sebamed_cracked_heel_balm_75ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/da/a0/eb/4b/28b52d03b903c0873cd4d29e.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040921598",
+      "sku": "NP-CP-4103040921598",
+      "brand": "SEBAMED",
+      "title": "Sebamed Anti-Hairloss Shampoo 1L",
+      "pack": "1L",
+      "guideGrossMinor": 1727,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7575/sebamed_anti_hairloss_shampoo_1l",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/ae/05/62/b9/47841a57140686fef001cba5.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "4103040923363",
+      "sku": "NP-CP-4103040923363",
+      "brand": "SEBAMED",
+      "title": "Sebamed Moisturising Lotion 750ml",
+      "pack": "750ml",
+      "guideGrossMinor": 1680,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7560/sebamed_moisturising_lotion_750ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/14/50/78/13/4b42ea7f9c5767de276de430.jpg",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "5060216560823",
+      "sku": "NP-CP-5060216560823",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Vein Away Plus 100ml",
+      "pack": "100ML",
+      "guideGrossMinor": 1729,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7417/skin_doctors_vein_away_plus_100ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/85/03/2c/dd/4abee007fd7d9027e595a345.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/product/vein-away/",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740000310",
+      "sku": "NP-CP-9325740000310",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Hair NO More Inhibitor Spray 120ml",
+      "pack": "120ML",
+      "guideGrossMinor": 864,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7408/skin_doctors_hair_no_more_inhibitor_spray_120ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/54/41/7d/68/62fcad0e2de39fd2cd064d0b.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740000815",
+      "sku": "NP-CP-9325740000815",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Antarctilyne Plump 3 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 3301,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7403/skin_doctors_antarctilyne_plump_3_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/68/1a/38/72/baab7f2094ad735b3de35d24.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740000846",
+      "sku": "NP-CP-9325740000846",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors (Radiance And Renew) Gamma Hydroxy 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 3301,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7402/skin_doctors_radiance_and_renew_gamma_hydroxy_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/df/f6/65/e8/56a84faf8032c585cf7efa6a.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740001829",
+      "sku": "NP-CP-9325740001829",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Zit Zapper 10ml",
+      "pack": "10ML",
+      "guideGrossMinor": 1021,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7418/skin_doctors_zit_zapper_10ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/b8/99/5f/b1/36cfbf328345c9bd269f50ba.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/product/t-zone-control-zit-zapper/",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740003205",
+      "sku": "NP-CP-9325740003205",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Eyetuck 15ml",
+      "pack": "15ML",
+      "guideGrossMinor": 2750,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7407/skin_doctors_eyetuck_15ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/f6/24/90/b8/bf05253124f00de6a346c659.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740003700",
+      "sku": "NP-CP-9325740003700",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Ingrow GO Lotion 120ml",
+      "pack": "120ML",
+      "guideGrossMinor": 1021,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7409/skin_doctors_ingrow_go_lotion_120ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/ec/12/0d/e3/5cae587a7629eb2241dcdd51.jpg",
+      "manufacturerUrl": "https://skindoctors.co.uk/products/skin-doctors-ingrow-go",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740021322",
+      "sku": "NP-CP-9325740021322",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Instant Facelift 30ml",
+      "pack": "30ML",
+      "guideGrossMinor": 2437,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7411/skin_doctors_instant_facelift_30ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/be/c3/a6/63/ec1a296fdd5cb583901b7092.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/products/skin-doctors-instant-facelift",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740021377",
+      "sku": "NP-CP-9325740021377",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Capillary Clear 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 1729,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7405/skin_doctors_capillary_clear_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/8b/3e/dc/f5/3fe6cbe8c89a546933740a13.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/products/capillary-clear",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740022626",
+      "sku": "NP-CP-9325740022626",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Relaxaderm Advance 30ml",
+      "pack": "30ML",
+      "guideGrossMinor": 4088,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7413/skin_doctors_relaxaderm_advance_30ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/91/9e/95/16/d6e77d4814a86ee5443f0ba3.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740023272",
+      "sku": "NP-CP-9325740023272",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Skinactive14 Day Cream 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 2357,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7415/skin_doctors_skinactive14_day_cream_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/4b/af/a3/b0/e0e575607a38991680103469.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/product/skin-doctors-skinactive14-intensive-day/",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740023289",
+      "sku": "NP-CP-9325740023289",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Skinactive14 Night Cream 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 2357,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7416/skin_doctors_skinactive14_night_cream_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/50/b0/c5/2e/b1112953e0196b4ac89255d6.png",
+      "manufacturerUrl": "https://skindoctors.co.uk/product/skin-doctors-skinactive14-regenerating-night/",
+      "manufacturerPageEvidence": {
+        "status": "Manufacturer product page checked"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740024828",
+      "sku": "NP-CP-9325740024828",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors SD White & Bright 50ml",
+      "pack": "50ML",
+      "guideGrossMinor": 1729,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7414/skin_doctors_sd_white_bright_50ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/3f/4f/74/af/a2a456a88657c6149c2b1b2f.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "classification_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740026273",
+      "sku": "NP-CP-9325740026273",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors Exfoliating Crystals 100ml",
+      "pack": "100ML",
+      "guideGrossMinor": 1494,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7406/skin_doctors_exfoliating_crystals_100ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/d4/e3/d7/e4/cb67e5cb3898fd8ae65b59d5.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    },
+    {
+      "gtin": "9325740027294",
+      "sku": "NP-CP-9325740027294",
+      "brand": "SKIN DOCTORS",
+      "title": "Skin Doctors PH Balancing Cleanser 100ml",
+      "pack": "100ML",
+      "guideGrossMinor": 1021,
+      "currency": "GBP",
+      "priceStatus": "owner_authorised_guide_not_live_offer",
+      "supplierUrl": "https://www.connectivepharma.com/en/product/7412/skin_doctors_ph_balancing_cleanser_100ml",
+      "supplierImageReference": "https://www.connectivepharma.com/userfiles/images/5a/3b/f2/01/f6413f526820fc1586640205.png",
+      "manufacturerUrl": null,
+      "manufacturerPageEvidence": {
+        "status": "Supplier catalogue source only (web not confirmed)"
+      },
+      "classCandidate": "cosmetic_or_personal_care_pending_review",
+      "priority": "routine_review",
+      "imageRightsConfirmed": false,
+      "liveOfferVerified": false,
+      "merchantUploadEligible": false,
+      "remaining": [
+        "confirm_exact_uk_pack_and_label",
+        "confirm_image_reuse_rights",
+        "approve_product_class_and_claims",
+        "admit_live_retail_offer",
+        "verify_public_product_page_and_checkout"
+      ]
+    }
+  ]
+}
