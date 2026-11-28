@@ -148,3 +148,54 @@ test('source catalogue rejects unsafe external links and invalid GTIN rather tha
   try{const result=f.run();assert.notEqual(result.status,0,result.stdout);assert(!f.exists('products/health-and-wellbeing/index.html'));}finally{f.dispose();}
  }
 });
+
+test('nine approved Vicks consumer units preserve exact 20 percent VAT and do not include regulated products',()=>{
+ const root=fileURLToPath(new URL('../',import.meta.url));
+ const load=(p)=>JSON.parse(readFileSync(join(root,p),'utf8'));
+ const approved=load('src/content/approved-consumer-catalogue.json');
+ const source=load('src/content/connective-source-references.json');
+ const owner=load('config/retail/approved-connective-checkout-release-20261126.json');
+ const guide=load('assets/data/connective-owner-price-guide.json');
+ const review=load('docs/retail/vicks-nine-owner-uk-retail-review-20261128.json');
+ assert.equal(source.products.length,395);
+ assert.equal(approved.length,65);
+ assert.equal(owner.approvedGtins.length,65);
+ assert.equal(review.records.length,9);
+ const byId=new Map(approved.map(p=>[p.ean,p]));
+ assert.equal(byId.size,65);
+ assert.deepEqual([...owner.approvedGtins].sort(),[...byId.keys()].sort());
+ const approvedVicks=approved.filter(p=>p.brand==='VICKS');
+ assert.equal(approvedVicks.length,9);
+ for(const entry of review.records){
+  const p=byId.get(entry.gtin),sourceP=source.products.find(x=>x.ean===entry.gtin);
+  assert(p && sourceP && sourceP.classificationReview==='routine_class_review');
+  assert.equal(entry.vatBasisPoints,2000);
+  assert.equal(entry.vatMinor,Math.floor((entry.netMinor*2000+5000)/10000));
+  assert.equal(entry.grossMinor,entry.netMinor+entry.vatMinor);
+  assert(!guide.entries.some(row=>row.gtin===entry.gtin));
+  assert.equal(p.publicListingApproved,true);
+  assert.equal(p.imageRightsConfirmed,true);
+  assert.equal(p.identityConfirmed,true);
+  assert(!p.pack.includes('24x42g'));
+  for(const k of ['description','ingredients','directions','warnings'])assert(p[k]?.length>15);
+  assert(existsSync(join(root,p.image.slice(1))));
+  assert.equal(entry.paymentOfferAdmitted,false);
+  assert.equal(entry.supplierBackedSupplyCapacityAttested,false);
+  assert.equal(entry.paymentOfferAdmitted,false);
+ }
+ for(const p of source.products.filter(p=>p.brand==='VICKS'&&p.classificationReview==='medicine_class_review')) {
+  assert(!byId.has(p.ean),'Medicine or device review item entered owner-approved consumer catalogue');
+ }
+ assert.equal(review.records.find(r=>r.gtin==='4030300023108').consumerPack.includes('42g'),true);
+ assert.equal(review.records.find(r=>r.gtin==='4030300573016').consumerPack.includes('42g'),true);
+});
+
+test('pending Vicks guide price remains visible until the live AWS offer replaces it',()=>{
+ const root=fileURLToPath(new URL('../',import.meta.url));
+ const generator=readFileSync(join(root,'scripts/generate-retail-expansion.mjs'),'utf8');
+ assert(generator.includes('const pendingVicksGuide='));
+ assert(generator.includes('r.vatBasisPoints===2000'));
+ assert(generator.includes('r.paymentOfferAdmitted===false'));
+ assert(generator.includes("'+pendingVicksGuide(p)+'<a class="));
+ assert(generator.includes("'+pendingVicksGuide(p)+'<p>Online ordering"));
+});

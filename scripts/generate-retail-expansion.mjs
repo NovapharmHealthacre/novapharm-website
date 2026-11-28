@@ -88,8 +88,26 @@ function mediaGallery(p){
  views.map((view,index)=>'<figure class="npr-gallery-view"><a class="npr-image-link" href="'+escape(view.image)+'" aria-label="View larger image: '+escape(view.alt)+'"><img src="'+escape(view.image)+'" alt="'+escape(view.alt)+'" width="800" height="800" '+(index===0?'fetchpriority="high"':'loading="lazy"')+' decoding="async"></a><figcaption>'+escape(index===0?'View original pack photograph':view.alt)+'</figcaption></figure>').join('')+
  '</div>';
 }
+// Owner-review display fallback only. The live AWS offer replaces this inside
+// data-npr-retail-sku when the product is admitted for checkout.
+const ownerVicksReviewFile='docs/retail/vicks-nine-owner-uk-retail-review-20261128.json';
+const ownerVicksReview=existsSync(file(ownerVicksReviewFile))?JSON.parse(read(ownerVicksReviewFile)):null;
+const ownerVicksGuide=new Map();
+if(ownerVicksReview){
+ assert(ownerVicksReview.schema==='novapharm.vicks.owner-approved-uk-consumer-review.v1'&&
+  Array.isArray(ownerVicksReview.records)&&ownerVicksReview.records.length===9,'Unrecognised Vicks owner guide review');
+ for(const r of ownerVicksReview.records){
+  assert(/^\d{13}$/.test(r.gtin)&&Number.isSafeInteger(r.grossMinor)&&r.grossMinor>0&&
+   r.vatBasisPoints===2000&&r.grossMinor===r.netMinor+Math.floor((r.netMinor*2000+5000)/10000)&&
+   r.paymentOfferAdmitted===false&&!ownerVicksGuide.has(r.gtin),'Unverified Vicks VAT-inclusive guide price');
+  ownerVicksGuide.set(r.gtin,r.grossMinor);
+ }
+}
+const pendingVicksGuide=p=>p.brand==='VICKS'&&ownerVicksGuide.has(p.ean)
+ ?'<p class="npr-guide-price">Guide price £'+(ownerVicksGuide.get(p.ean)/100).toFixed(2)+
+  '<span>20% UK VAT included · Indicative only until checkout is activated</span></p>':'';
 function collectionCard(p,route){
- return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><div class="npr-card-purchase" data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></div></article>';
+ return '<article class="npr-card"><a class="npr-card-link" href="'+route+'">'+packImage(p)+'<div class="npr-card-copy"><p class="npr-kicker">'+escape(p.brand)+'</p><h3>'+escape(p.name)+'</h3>'+(p.pack?'<p class="npr-pack-size">'+escape(p.pack)+'</p>':'')+'</div></a><div class="npr-card-purchase" data-npr-retail-sku="NP-CP-'+escape(p.ean)+'">'+pendingVicksGuide(p)+'<a class="npr-card-action" href="'+route+'">View product <span aria-hidden="true">→</span></a></div></article>';
 }
 const input='src/content/approved-consumer-catalogue.json';
 const approvedCatalogue=existsSync(file(input))?JSON.parse(read(input)):[];
@@ -128,7 +146,7 @@ if(approvedCatalogue.length>0){
   const route=routeFor(p);
   const related=items.filter(q=>q.ean!==p.ean&&q.category===p.category).slice(0,3);
   const enquiry='/contact/?enquiry='+encodeURIComponent('Product enquiry '+p.ean);
-  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap npr-detail-hero">'+mediaGallery(p)+'<div class="npr-detail-copy"><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1>'+(p.pack?'<p class="npr-detail-pack">'+escape(p.pack)+'</p>':'')+'<p class="npr-reference">Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>'+escape(p.description)+'</p><h3>Ingredients</h3><p>'+escape(p.ingredients)+'</p><h3>Directions</h3><p>'+escape(p.directions)+'</p><h3>Warnings</h3><p>'+escape(p.warnings)+'</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>collectionCard(q,routeFor(q))).join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
+  const detail='<main id="main" class="npr-main"><nav class="npr-wrap npr-categories" aria-label="Breadcrumb"><a href="/products/">Products</a><a href="/products/health-and-wellbeing/">Health and wellbeing</a><span aria-current="page">'+escape(p.name)+'</span></nav><section class="npr-hero npr-wrap npr-detail-hero">'+mediaGallery(p)+'<div class="npr-detail-copy"><p class="npr-kicker">'+escape(p.brand)+' / '+escape(p.category)+'</p><h1>'+escape(p.name)+'</h1>'+(p.pack?'<p class="npr-detail-pack">'+escape(p.pack)+'</p>':'')+'<p class="npr-reference">Product reference '+escape(p.ean)+'</p><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'">'+pendingVicksGuide(p)+'<p>Online ordering will be available when the price, stock and delivery arrangements have been verified.</p><a class="npr-action" href="'+enquiry+'">Enquire about this product</a></div><p><a href="/products/nutraxin/bag/">View your shopping bag</a></p></div></section><section class="npr-wrap npr-section"><h2>Product information</h2><p>'+escape(p.description)+'</p><h3>Ingredients</h3><p>'+escape(p.ingredients)+'</p><h3>Directions</h3><p>'+escape(p.directions)+'</p><h3>Warnings</h3><p>'+escape(p.warnings)+'</p></section>'+ (related.length?'<section class="npr-wrap npr-section"><h2>Explore the collection.</h2><div class="npr-grid">'+related.map(q=>collectionCard(q,routeFor(q))).join('')+'</div></section>':'')+'<aside class="npr-sticky"><div class="npr-wrap"><strong>'+escape(p.name)+'</strong><div data-npr-retail-sku="NP-CP-'+escape(p.ean)+'"><a class="npr-action" href="'+enquiry+'">Enquire</a></div></div></aside></main>';
   const description=p.description.replace(/\s+/g,' ').trim().slice(0,160);
   page(route,p.name+' | NovaPharm Healthcare',description,detail,{h1:p.name,image:p.image,schema:{'@context':'https://schema.org','@type':'Product','@id':base+route+'#product',url:base+route,name:p.name,description:p.description,brand:{'@type':'Brand',name:p.brand},['gtin'+p.ean.length]:p.ean,image:[base+p.image,...(p.gallery||[]).map(v=>base+v.image)],category:p.category,sku:'NP-CP-'+p.ean}});
   // No static Offer, price or availability: the authoritative checkout controls sales.
