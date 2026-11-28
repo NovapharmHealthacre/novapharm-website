@@ -167,7 +167,8 @@ jobs:
           retention-days: 7
       - name: Prevent protected Lighthouse artifacts in public repositories
         if: ${{ always() && !github.event.repository.private }}
-        run: echo "::notice::Public repository: protected Portal Lighthouse evidence is not uploaded."
+        run: |
+          echo "::notice::Public repository: protected Portal Lighthouse evidence is not uploaded."
 
   backend-workflows:
     name: Contact, account, upload and authentication workflows
