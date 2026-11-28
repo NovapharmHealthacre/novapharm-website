@@ -69,6 +69,6 @@
     "5060062999518",
     "5060216565309"
   ],
-  "publicationAttempt": 22,
-  "publicationFix": "Rebuild Vicks-first approved retail publication from exact main after dependency-only drift; future dependency-only merges trigger full guarded publication without expanding checkout"
+  "publicationAttempt": 23,
+  "publicationFix": "Restore single valid protected publisher after duplicate job corruption; reissue exact same approved Vicks-first retail release"
 }
