@@ -1,7 +1,15 @@
 name: Unified Chromium and WebKit acceptance
 
 on:
+  # Only documentation-only PRs omit the expensive rendered browser matrix.
+  # Any code, commerce, security, CSS, assets or mixed change still runs all engines.
+  # The two independently protected cross-estate checks remain unconditional.
   pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'docs/ci/**'
+      - '.github/ISSUE_TEMPLATE/**'
   workflow_dispatch:
 
 permissions:

@@ -40,10 +40,16 @@ export function summarizeRuns(samples) {
   const queue = observations.map(row => row.queueMinutes);
   const execution = observations.map(row => row.executionMinutes);
   const grouped = new Map();
+  const groupedJobs = new Map();
   for (const row of observations) {
     const arr = grouped.get(row.workflow) ?? [];
     arr.push(row);
     grouped.set(row.workflow, arr);
+    // A stable JSON tuple avoids collisions between workflow/job names.
+    const key = JSON.stringify([row.workflow, row.job]);
+    const jobArr = groupedJobs.get(key) ?? [];
+    jobArr.push(row);
+    groupedJobs.set(key, jobArr);
   }
   const slowestQueues = [...observations].sort((a, b) => b.queueMinutes - a.queueMinutes).slice(0, 10);
   const slowestExecution = [...observations].sort((a, b) => b.executionMinutes - a.executionMinutes).slice(0, 10);
@@ -54,6 +60,17 @@ export function summarizeRuns(samples) {
     queueP95Minutes: percentile(jobs.map(row => row.queueMinutes), 0.95),
     executionP95Minutes: percentile(jobs.map(row => row.executionMinutes), 0.95),
   })).sort((a, b) => b.queueP95Minutes - a.queueP95Minutes);
+  const byJob = [...groupedJobs].map(([key, jobs]) => {
+    const [workflow, job] = JSON.parse(key);
+    return {
+      workflow, job, samples: jobs.length,
+      queueP50Minutes: percentile(jobs.map(row => row.queueMinutes), 0.5),
+      queueP95Minutes: percentile(jobs.map(row => row.queueMinutes), 0.95),
+      executionP50Minutes: percentile(jobs.map(row => row.executionMinutes), 0.5),
+      executionP95Minutes: percentile(jobs.map(row => row.executionMinutes), 0.95),
+      failedOrTimedOut: jobs.filter(row => ["failure", "timed_out"].includes(row.conclusion)).length,
+    };
+  }).sort((a, b) => b.executionP95Minutes - a.executionP95Minutes);
   return {
     sampledCompletedPrRuns: samples.length,
     timedJobs: observations.length,
@@ -62,6 +79,7 @@ export function summarizeRuns(samples) {
     executionP50Minutes: percentile(execution, 0.5),
     executionP95Minutes: percentile(execution, 0.95),
     byWorkflow,
+    byJob,
     slowestQueues,
     slowestExecution,
     limitations: [
@@ -116,6 +134,16 @@ function markdownReport(report) {
     "| Workflow | Jobs | Queue p50 | Queue p95 | Execution p95 |",
     "| --- | ---: | ---: | ---: | ---: |",
     rows || "| No completed jobs sampled | 0 | n/a | n/a | n/a |",
+    "",
+    "### Slowest individual jobs (execution minutes)",
+    "",
+    "| Workflow | Job | Samples | Execute p50 | Execute p95 | Queue p95 | Failed/timed out |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+    ...(report.byJob.slice(0, 15).map(row =>
+      "| " + row.workflow.replaceAll("|", "/") +
+      " | " + row.job.replaceAll("|", "/") + " | " + row.samples +
+      " | " + row.executionP50Minutes + " | " + row.executionP95Minutes +
+      " | " + row.queueP95Minutes + " | " + row.failedOrTimedOut + " |")),
     "",
     "### Important limitations",
     ...report.limitations.map(value => "- " + value),
