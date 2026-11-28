@@ -78,7 +78,9 @@ for (const file of files) {
     "assets/css/oncology-editorial.css",
     "assets/css/oncology-hope-v2.css",
     "assets/css/our-story.css",
-    "assets/css/products-editorial.css"
+    "assets/css/products-editorial.css",
+    // Retail editorial price typography uses the same capped optical tracking.
+    "assets/css/retail-expansion.css"
   ]);
   for (const match of source.matchAll(/\bletter-spacing\s*:\s*(-(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)/giu)) {
     const amount = Number(match[1]);
