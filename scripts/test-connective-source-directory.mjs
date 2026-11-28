@@ -181,10 +181,21 @@ test('nine approved Vicks consumer units preserve exact 20 percent VAT and do no
   assert(existsSync(join(root,p.image.slice(1))));
   assert.equal(entry.paymentOfferAdmitted,false);
   assert.equal(entry.supplierBackedSupplyCapacityAttested,false);
+  assert.equal(entry.paymentOfferAdmitted,false);
  }
  for(const p of source.products.filter(p=>p.brand==='VICKS'&&p.classificationReview==='medicine_class_review')) {
   assert(!byId.has(p.ean),'Medicine or device review item entered owner-approved consumer catalogue');
  }
  assert.equal(review.records.find(r=>r.gtin==='4030300023108').consumerPack.includes('42g'),true);
  assert.equal(review.records.find(r=>r.gtin==='4030300573016').consumerPack.includes('42g'),true);
+});
+
+test('pending Vicks guide price remains visible until the live AWS offer replaces it',()=>{
+ const root=fileURLToPath(new URL('../',import.meta.url));
+ const generator=readFileSync(join(root,'scripts/generate-retail-expansion.mjs'),'utf8');
+ assert(generator.includes('const pendingVicksGuide='));
+ assert(generator.includes('r.vatBasisPoints===2000'));
+ assert(generator.includes('r.paymentOfferAdmitted===false'));
+ assert(generator.includes("'+pendingVicksGuide(p)+'<a class="));
+ assert(generator.includes("'+pendingVicksGuide(p)+'<p>Online ordering"));
 });
